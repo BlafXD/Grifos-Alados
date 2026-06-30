@@ -1,0 +1,194 @@
+/* ═══════════════════════════════════════════════════════════════════
+   PERIGOS & AMBIENTES — consulta rápida (perigos.js)
+   Tema pergaminho, alinhado às demais abas.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.pa-cabecalho { text-align: center; margin-bottom: 1.2rem; }
+.pa-cabecalho h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  margin: 0 0 0.3rem;
+}
+.pa-subtitulo {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  margin: 0;
+}
+
+/* ── BARRA DE FILTRO (busca + categorias) ──────────────────────────── */
+.pa-barra {
+  background: var(--parchment);
+  padding: 0.7rem 0 0.8rem;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 1.2rem;
+}
+.pa-busca {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55rem 0.7rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+.pa-busca:focus { outline: 1px solid var(--rust); }
+.pa-busca::placeholder { color: var(--ink-faded); opacity: 0.8; }
+
+.pa-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+.pa-cat-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  padding: 0.35rem 0.7rem;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.pa-cat-btn:hover { background: var(--gold); }
+.pa-cat-btn--ativo {
+  background: var(--ink);
+  color: var(--parchment);
+  border-color: var(--ink);
+}
+
+/* ── CATEGORIAS ────────────────────────────────────────────────────── */
+.pa-cat { margin-bottom: 1.8rem; }
+.pa-cat-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  color: var(--rust-dark);
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 0.35rem;
+  margin: 0 0 0.8rem;
+}
+.pa-cat-icone { font-size: 1.1rem; }
+.pa-cat-contador {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border-radius: 2px;
+  padding: 0.1rem 0.45rem;
+}
+.pa-cat-itens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 0.6rem;
+  align-items: start;
+}
+
+/* ── CARD DE ITEM (details/summary) ────────────────────────────────── */
+.pa-item {
+  border: 1px solid var(--ink-faded);
+  background: var(--parchment2);
+}
+.pa-item[open] { background: var(--parchment); border-color: var(--rust); }
+
+.pa-item-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: 'IM Fell English', serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.pa-item-cab::-webkit-details-marker { display: none; }
+.pa-item-seta {
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  color: var(--rust);
+  transition: transform 0.15s;
+}
+.pa-item[open] .pa-item-seta { transform: rotate(90deg); }
+.pa-item-nome { flex: 1 1 auto; min-width: 0; }
+
+.pa-nd {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.12rem 0.4rem;
+  background: var(--rust-dark);
+  color: var(--parchment);
+  border-radius: 2px;
+}
+.pa-fonte {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+
+.pa-item-corpo {
+  padding: 0.2rem 0.8rem 0.85rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink);
+  border-top: 1px solid var(--gold-dim);
+}
+.pa-item-corpo > :first-child { margin-top: 0.6rem; }
+
+/* blocos dos perigos complexos (Objetivo / Efeito / Ações) */
+.pa-lore { font-style: italic; color: var(--ink-faded); margin: 0.6rem 0; }
+.pa-bloco { margin: 0.55rem 0; }
+.pa-bloco-rot {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 0.15rem;
+}
+
+.pa-vazio {
+  text-align: center;
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  padding: 2rem 0;
+}
+
+.pa-erro {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 2px solid var(--rust);
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+}
+.pa-erro code {
+  font-family: monospace;
+  background: var(--parchment3);
+  padding: 0.05rem 0.3rem;
+}
+
+/* ── RESPONSIVO ────────────────────────────────────────────────────── */
+@media (max-width: 620px) {
+  .pa-cat-itens { grid-template-columns: 1fr; }
+  .pa-cabecalho h1 { font-size: 1.4rem; }
+}

@@ -1,0 +1,227 @@
+/* ═══════════════════════════════════════════════════════════════════
+   BASES (bases.js) — tema pergaminho
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bs-cabecalho { text-align: center; margin-bottom: 1.3rem; }
+.bs-cabecalho h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem; letter-spacing: 0.06em; color: var(--ink); margin: 0 0 0.3rem;
+}
+.bs-subtitulo {
+  font-family: 'Crimson Pro', serif; font-style: italic; color: var(--ink-faded); margin: 0 0 0.7rem;
+}
+.bs-backup { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+.bs-backup-btn {
+  font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink); background: var(--parchment3); border: 1px solid var(--ink-faded);
+  padding: 0.3rem 0.6rem; cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.bs-backup-btn:hover { background: var(--ink); color: var(--parchment); }
+.bs-backup-btn--imp { border-color: var(--gold-dim); color: var(--rust-dark); }
+.bs-backup-btn--imp:hover { background: var(--rust-dark); border-color: var(--rust-dark); color: var(--parchment); }
+
+.bs-vazio {
+  text-align: center; font-family: 'Crimson Pro', serif; font-style: italic;
+  color: var(--ink-faded); padding: 2rem 0;
+}
+.bs-vazio-mini {
+  font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.88rem;
+  color: var(--ink-faded); margin: 0.2rem 0 0.5rem;
+}
+.bs-erro {
+  font-family: 'Crimson Pro', serif; color: var(--rust-dark);
+  background: var(--parchment2); border: 1px solid var(--rust); padding: 0.7rem 0.9rem;
+}
+
+.bs-add {
+  display: block; width: 100%;
+  font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink); background: var(--parchment3); border: 1px dashed var(--ink-faded);
+  padding: 0.7rem; cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.bs-add:hover { background: var(--ink); color: var(--parchment); }
+.bs-add--base { margin-top: 1.4rem; border-style: solid; }
+
+/* ── BASE (card) ───────────────────────────────────────────────────── */
+.bs-base { border: 1px solid var(--ink); margin-bottom: 1.5rem; background: var(--parchment2); }
+.bs-base-cab {
+  display: flex; align-items: center; gap: 0.45rem;
+  padding: 0.6rem 0.8rem; background: var(--ink); color: var(--parchment);
+}
+.bs-base-corpo { padding: 1rem; }
+.bs-flex { flex: 1 1 auto; }
+
+.bs-toggle {
+  flex: 0 0 auto; width: 1.8rem; height: 1.8rem; font-size: 0.8rem;
+  background: transparent; border: none; cursor: pointer; color: inherit;
+}
+.bs-base-nome {
+  flex: 1 1 auto; min-width: 0; background: transparent; border: none;
+  border-bottom: 1px solid transparent; color: inherit;
+  font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.05em;
+}
+.bs-base-nome:hover, .bs-base-nome:focus { outline: none; border-bottom-color: currentColor; }
+.bs-base-nome-ro {
+  font-family: 'Cinzel', serif; font-size: 1.02rem; font-weight: 700; letter-spacing: 0.05em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 14rem;
+}
+.bs-base-tag {
+  flex: 0 0 auto; font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--parchment); border: 1px solid var(--gold);
+  padding: 0.12rem 0.4rem; border-radius: 2px; white-space: nowrap;
+}
+.bs-base-tag--tipo { border-color: var(--gold-light); }
+.bs-base-tag--sitio { border-color: var(--gold-light); color: var(--gold-light); }
+
+.bs-mini {
+  flex: 0 0 auto; width: 1.7rem; height: 1.7rem; font-size: 0.8rem;
+  background: transparent; border: 1px solid currentColor; cursor: pointer;
+  color: inherit; opacity: 0.6; transition: opacity 0.15s, background 0.15s;
+}
+.bs-mini:hover:not(:disabled) { opacity: 1; background: rgba(255,255,255,0.14); }
+.bs-mini:disabled { opacity: 0.2; cursor: default; }
+.bs-mini--del { border-radius: 50%; }
+.bs-mini--del:hover { background: rgba(139, 44, 10, 0.35); }
+
+/* botões ✕ de itens (cômodos/mobílias) usam tom escuro sobre pergaminho */
+.bs-item .bs-mini--del { color: var(--rust-dark); opacity: 0.55; }
+.bs-item .bs-mini--del:hover { opacity: 1; background: rgba(139, 44, 10, 0.18); }
+
+/* ── BLOCOS ────────────────────────────────────────────────────────── */
+.bs-bloco {
+  background: var(--parchment); border: 1px solid var(--ink-faded);
+  padding: 0.8rem 0.9rem; margin-bottom: 0.9rem;
+}
+.bs-bloco-tit {
+  font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 0.04em; color: var(--rust-dark);
+  margin: 0 0 0.7rem; border-bottom: 1px solid var(--gold-dim); padding-bottom: 0.35rem;
+  display: flex; align-items: baseline; gap: 0.5rem;
+}
+.bs-bloco-cont {
+  font-family: 'Crimson Pro', serif; font-size: 0.82rem; font-weight: 400;
+  letter-spacing: 0; color: var(--ink-faded); margin-left: auto; text-transform: none;
+}
+
+.bs-linha { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-bottom: 0.6rem; }
+.bs-campo {
+  display: flex; flex-direction: column; gap: 0.2rem; flex: 1 1 180px;
+  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-faded);
+}
+.bs-select {
+  width: 100%; box-sizing: border-box; padding: 0.4rem 0.5rem;
+  font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--ink);
+  background: var(--parchment2); border: 1px solid var(--ink-faded); cursor: pointer;
+}
+.bs-select:focus { outline: 1px solid var(--rust); }
+.bs-select--mini { font-size: 0.85rem; padding: 0.25rem 0.4rem; }
+.bs-add-linha { margin-top: 0.6rem; }
+.bs-add-sel { background: var(--parchment3); font-weight: 600; }
+
+.bs-tipo-efeito {
+  font-family: 'Crimson Pro', serif; font-size: 0.9rem; line-height: 1.45; color: var(--ink);
+  background: var(--parchment3); border-left: 4px solid var(--gold-dim);
+  padding: 0.45rem 0.6rem; margin-bottom: 0.5rem;
+}
+.bs-porte-info {
+  font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.85rem;
+  color: var(--ink-faded); margin-bottom: 0.6rem;
+}
+.bs-tag-seg {
+  display: inline-block; font-family: 'Cinzel', serif; font-size: 0.56rem; font-weight: 700;
+  letter-spacing: 0.04em; color: var(--parchment); background: #3a5a3a;
+  padding: 0.08rem 0.35rem; border-radius: 2px; white-space: nowrap;
+}
+
+.bs-chk {
+  display: flex; align-items: flex-start; gap: 0.4rem;
+  font-family: 'Crimson Pro', serif; font-size: 0.92rem; color: var(--ink); cursor: pointer;
+}
+.bs-chk input { cursor: pointer; margin-top: 0.2rem; flex: 0 0 auto; }
+.bs-chk--sitio {
+  background: var(--parchment3); border: 1px solid var(--gold-dim);
+  border-left: 4px solid #6e5a1a; padding: 0.45rem 0.6rem;
+}
+
+/* ── PAINEL DE CÁLCULOS ────────────────────────────────────────────── */
+.bs-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.7rem;
+}
+.bs-stat {
+  background: var(--parchment3); border: 1px solid var(--ink-faded);
+  border-top: 3px solid var(--gold-dim); padding: 0.5rem 0.6rem;
+  display: flex; flex-direction: column; gap: 0.15rem;
+}
+.bs-stat--alerta { border-top-color: var(--rust); }
+.bs-stat-rot {
+  font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--ink-faded);
+}
+.bs-stat-val { font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--rust-dark); }
+.bs-stat-sub {
+  font-family: 'Crimson Pro', serif; font-size: 0.78rem; color: var(--ink-faded);
+  display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap;
+}
+.bs-seg-btn {
+  width: 1.4rem; height: 1.4rem; line-height: 1; font-size: 0.9rem;
+  background: var(--parchment); border: 1px solid var(--ink-faded); cursor: pointer; color: var(--ink);
+}
+.bs-seg-btn:hover { background: var(--gold); }
+.bs-seg-input {
+  width: 3rem; text-align: center; padding: 0.15rem; font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem; color: var(--ink); background: var(--parchment); border: 1px solid var(--ink-faded);
+}
+.bs-nota {
+  margin-top: 0.5rem; font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: 0.82rem; color: var(--rust-dark);
+}
+
+/* ── ITENS (cômodos / mobílias) ────────────────────────────────────── */
+.bs-item {
+  background: var(--parchment2); border: 1px solid var(--ink-faded);
+  border-left: 4px solid var(--gold-dim); padding: 0.5rem 0.6rem; margin-bottom: 0.5rem;
+}
+.bs-item-cab { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.bs-item-nome {
+  font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 700; color: var(--ink);
+}
+.bs-item-custo {
+  margin-left: auto; font-family: 'Crimson Pro', serif; font-size: 0.85rem;
+  color: var(--rust-dark); white-space: nowrap;
+}
+.bs-item-efeito {
+  font-family: 'Crimson Pro', serif; font-size: 0.9rem; line-height: 1.4; color: var(--ink);
+  margin-top: 0.3rem;
+}
+.bs-item-onde {
+  font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.82rem;
+  color: var(--ink-faded); margin-top: 0.25rem;
+}
+.bs-item-prereq {
+  font-family: 'Crimson Pro', serif; font-size: 0.84rem; color: var(--rust-dark);
+  background: var(--parchment3); border: 1px solid var(--rust); padding: 0.2rem 0.45rem;
+  margin-top: 0.35rem;
+}
+.bs-item-vinc {
+  display: flex; align-items: center; gap: 0.4rem; margin-top: 0.4rem;
+  font-family: 'Cinzel', serif; font-size: 0.56rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-faded);
+}
+.bs-item-vinc .bs-select { width: auto; flex: 1 1 auto; max-width: 16rem; }
+
+/* ── RESIDENTES & INVENTÁRIO ───────────────────────────────────────── */
+.bs-bloco--duplo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.9rem; }
+.bs-bloco--duplo .bs-bloco-tit { margin-top: 0; }
+.bs-meio { display: flex; flex-direction: column; }
+.bs-textarea {
+  width: 100%; box-sizing: border-box; min-height: 5.5rem; resize: vertical;
+  padding: 0.5rem 0.6rem; font-family: 'Crimson Pro', serif; font-size: 0.95rem;
+  line-height: 1.45; color: var(--ink); background: var(--parchment2); border: 1px solid var(--ink-faded);
+}
+.bs-textarea:focus { outline: 1px solid var(--rust); }
+
+@media (max-width: 560px) {
+  .bs-base-tag { display: none; }
+  .bs-base-cab { gap: 0.3rem; }
+}

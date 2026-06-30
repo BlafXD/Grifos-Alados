@@ -1,0 +1,212 @@
+/* ═══════════════════════════════════════════════════════════════════
+   TEMPO ENTRE AVENTURAS (tempo.js) — tema pergaminho
+   ═══════════════════════════════════════════════════════════════════ */
+
+.tp-cabecalho { text-align: center; margin-bottom: 1.3rem; }
+.tp-cabecalho h1 {
+  font-family: 'Cinzel', serif; font-size: 1.8rem; letter-spacing: 0.06em; color: var(--ink); margin: 0 0 0.3rem;
+}
+.tp-subtitulo { font-family: 'Crimson Pro', serif; font-style: italic; color: var(--ink-faded); margin: 0 0 0.7rem; }
+.tp-medida {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faded);
+}
+.tp-medida .tp-select { width: auto; }
+
+.tp-erro {
+  font-family: 'Crimson Pro', serif; color: var(--rust-dark);
+  background: var(--parchment2); border: 1px solid var(--rust); padding: 0.7rem 0.9rem;
+}
+.tp-vazio-mini {
+  font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.88rem; color: var(--ink-faded); margin: 0.3rem 0;
+}
+
+/* ── BLOCOS ────────────────────────────────────────────────────────── */
+.tp-bloco {
+  background: var(--parchment); border: 1px solid var(--ink-faded);
+  padding: 1rem 1.05rem; margin-bottom: 1.2rem;
+}
+.tp-bloco-tit {
+  font-family: 'Cinzel', serif; font-size: 1.05rem; letter-spacing: 0.03em; color: var(--rust-dark);
+  margin: 0 0 0.5rem; border-bottom: 1px solid var(--gold-dim); padding-bottom: 0.4rem;
+  display: flex; align-items: baseline; gap: 0.5rem;
+}
+.tp-bloco-tag {
+  font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--parchment); background: var(--gold-dim); padding: 0.1rem 0.4rem; border-radius: 2px;
+}
+.tp-bloco-dica {
+  font-family: 'Crimson Pro', serif; font-size: 0.9rem; font-style: italic; line-height: 1.4;
+  color: var(--ink-faded); margin: 0 0 0.8rem;
+}
+
+/* cor de borda esquerda por tipo de bloco */
+.tp-busca     { border-left: 4px solid #2f6f9e; }
+.tp-treino    { border-left: 4px solid #1f7a6b; }
+.tp-custovida { border-left: 4px solid var(--gold-dim); }
+.tp-registro  { border-left: 4px solid #7a3fa6; }
+.tp-ref       { border-left: 4px solid var(--ink-faded); }
+
+/* ── CAMPOS ────────────────────────────────────────────────────────── */
+.tp-linha { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 0.7rem; align-items: flex-end; }
+.tp-campo {
+  display: flex; flex-direction: column; gap: 0.2rem; flex: 1 1 160px; min-width: 0;
+  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-faded);
+}
+.tp-campo--full { flex-basis: 100%; margin-bottom: 0.7rem; }
+.tp-campo--nivel { flex: 0 0 130px; }
+.tp-campo-rot { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-faded); }
+
+.tp-input, .tp-select {
+  width: 100%; box-sizing: border-box; padding: 0.4rem 0.5rem;
+  font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--ink);
+  background: var(--parchment2); border: 1px solid var(--ink-faded);
+}
+.tp-select { cursor: pointer; }
+.tp-input:focus, .tp-select:focus { outline: 1px solid var(--rust); }
+.tp-input--num { text-align: center; }
+.tp-select--mini { width: auto; font-size: 0.88rem; padding: 0.3rem 0.4rem; }
+
+.tp-chk {
+  display: inline-flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
+  font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--ink); cursor: pointer;
+}
+.tp-chk input { cursor: pointer; }
+.tp-chk strong { color: var(--rust-dark); }
+
+/* perícia 3 (rolagem) */
+.tp-p3 { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.tp-p3-out {
+  font-family: 'Crimson Pro', serif; font-size: 0.92rem; color: var(--ink);
+  background: var(--parchment3); border-left: 3px solid #2f6f9e; padding: 0.25rem 0.5rem;
+}
+.tp-p3-out strong { color: var(--rust-dark); }
+.tp-p3-vazio { color: var(--ink-faded); }
+
+/* linha de CD */
+.tp-linha--cd { align-items: center; }
+.tp-cd {
+  font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--ink);
+  background: var(--parchment3); padding: 0.35rem 0.6rem; border: 1px solid var(--ink-faded);
+}
+.tp-cd strong { color: var(--rust-dark); font-size: 1.1rem; }
+
+/* sucessos */
+.tp-linha--suc { align-items: center; gap: 0.6rem; }
+.tp-suc-rot {
+  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-faded);
+}
+.tp-suc {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--ink);
+  background: var(--parchment2); border: 1px solid var(--ink-faded); padding: 0.2rem 0.45rem; cursor: pointer;
+}
+.tp-suc input { cursor: pointer; }
+.tp-suc-cont { font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--ink); margin-left: 0.3rem; }
+.tp-suc-cont strong { color: var(--rust-dark); }
+
+/* botões */
+.tp-acoes-linha { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.4rem; }
+.tp-btn {
+  font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.05em;
+  color: var(--parchment); background: var(--rust-dark); border: 1px solid var(--rust-dark);
+  padding: 0.5rem 0.9rem; cursor: pointer; transition: background 0.15s;
+}
+.tp-btn:hover { background: var(--rust); }
+.tp-btn--sec { color: var(--ink); background: var(--parchment3); border-color: var(--ink-faded); }
+.tp-btn--sec:hover { background: var(--ink); color: var(--parchment); }
+.tp-btn-dado {
+  font-family: 'Cinzel', serif; font-size: 0.78rem; color: var(--ink);
+  background: var(--parchment3); border: 1px solid var(--ink-faded); padding: 0.35rem 0.7rem; cursor: pointer;
+}
+.tp-btn-dado:hover { background: var(--gold); }
+
+/* resultados (recompensas/castigos, benefícios de treino) */
+.tp-resultados { margin-top: 0.7rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.tp-resultado {
+  font-family: 'Crimson Pro', serif; font-size: 0.95rem; line-height: 1.4; color: var(--ink);
+  background: var(--parchment2); border: 1px solid var(--ink-faded); padding: 0.5rem 0.65rem;
+  display: flex; flex-direction: column; gap: 0.2rem;
+}
+.tp-resultado--recompensa { border-left: 4px solid #1f7a6b; }
+.tp-resultado--castigo    { border-left: 4px solid var(--rust); }
+.tp-resultado--neutro     { border-left: 4px solid var(--ink-faded); font-style: italic; color: var(--ink-faded); margin-top: 0.7rem; }
+.tp-resultado-rot {
+  font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faded);
+}
+.tp-resultado strong { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--rust-dark); }
+.tp-resultado-desc { font-size: 0.9rem; }
+.tp-benef { margin: 0.3rem 0 0 1.1rem; font-size: 0.92rem; }
+.tp-benef li { margin-bottom: 0.2rem; }
+
+/* custo de vida */
+.tp-custovida-out {
+  flex: 1 1 240px; display: flex; flex-direction: column; gap: 0.15rem;
+  background: var(--parchment3); border-left: 4px solid var(--gold-dim); padding: 0.45rem 0.6rem;
+}
+.tp-custovida-preco { font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--rust-dark); }
+.tp-custovida-cond { font-family: 'Crimson Pro', serif; font-size: 0.92rem; color: var(--ink); }
+.tp-custovida-cond strong { color: var(--rust-dark); }
+.tp-custovida-desc { font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.85rem; color: var(--ink-faded); }
+
+/* ── REGISTRO POR JOGADOR ──────────────────────────────────────────── */
+.tp-jogador { border: 1px solid var(--ink-faded); background: var(--parchment2); margin-bottom: 0.8rem; }
+.tp-jogador-cab {
+  display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+  padding: 0.5rem 0.6rem; background: var(--parchment3); border-bottom: 1px solid var(--ink-faded);
+}
+.tp-jogador-nome { flex: 1 1 180px; font-family: 'Cinzel', serif; font-weight: 700; }
+.tp-jogador-cv {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faded);
+}
+.tp-acoes { padding: 0.5rem 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.tp-acao { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.tp-input--mes  { flex: 0 0 120px; }
+.tp-select--tipo { flex: 0 0 auto; width: auto; }
+.tp-input--nota { flex: 1 1 160px; }
+
+.tp-mini {
+  flex: 0 0 auto; width: 1.7rem; height: 1.7rem; font-size: 0.8rem;
+  background: transparent; border: 1px solid var(--rust-dark); border-radius: 50%;
+  color: var(--rust-dark); cursor: pointer; opacity: 0.6; transition: opacity 0.15s, background 0.15s;
+}
+.tp-mini:hover { opacity: 1; background: rgba(139, 44, 10, 0.18); }
+
+.tp-add {
+  font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink); background: var(--parchment3); border: 1px dashed var(--ink-faded);
+  padding: 0.45rem 0.8rem; cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.tp-add:hover { background: var(--ink); color: var(--parchment); }
+.tp-add--acao { margin: 0 0.6rem 0.6rem; }
+.tp-add--jogador { display: block; width: 100%; margin-top: 0.5rem; border-style: solid; }
+
+/* ── TABELAS DE REFERÊNCIA ─────────────────────────────────────────── */
+.tp-det { border: 1px solid var(--ink-faded); background: var(--parchment2); margin-bottom: 0.6rem; }
+.tp-det > summary {
+  cursor: pointer; padding: 0.5rem 0.7rem; list-style: none;
+  font-family: 'Cinzel', serif; font-size: 0.82rem; color: var(--rust-dark); background: var(--parchment3);
+}
+.tp-det > summary::-webkit-details-marker { display: none; }
+.tp-det > summary::before { content: '▸ '; }
+.tp-det[open] > summary::before { content: '▾ '; }
+.tp-tabela { width: 100%; border-collapse: collapse; font-family: 'Crimson Pro', serif; font-size: 0.9rem; }
+.tp-tabela th, .tp-tabela td {
+  border: 1px solid var(--ink-faded); padding: 0.3rem 0.55rem; text-align: left; color: var(--ink);
+}
+.tp-tabela th {
+  font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.05em; text-transform: uppercase;
+  background: var(--parchment3); color: var(--rust-dark);
+}
+.tp-tabela tbody tr:nth-child(even) { background: rgba(217, 201, 168, 0.35); }
+.tp-tabela td:first-child { text-align: center; font-weight: 700; width: 4rem; }
+
+.tp-ref-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.8rem; padding: 0.6rem 0.7rem; }
+.tp-ref-sub { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--rust-dark); margin: 0 0 0.35rem; }
+.tp-ref-lista { margin: 0 0 0 1.1rem; font-family: 'Crimson Pro', serif; font-size: 0.9rem; line-height: 1.4; }
+.tp-ref-lista li { margin-bottom: 0.35rem; }
+
+@media (max-width: 560px) {
+  .tp-input--mes, .tp-input--nota { flex: 1 1 100%; }
+}

@@ -1,0 +1,156 @@
+/* ═══════════════════════════════════════════════════════════════════
+   FICHAS_STYLE.CSS — Fichas dos Jogadores (PDF)
+   Localização: /grifos-alados/css/fichas_style.css
+   Usa as variáveis de cor definidas em style.css (:root).
+   ═══════════════════════════════════════════════════════════════════ */
+
+#fichas .wrapper { padding-bottom: 3rem; }
+
+/* ── CABEÇALHO ────────────────────────────────────────────────────── */
+.fc-cabecalho {
+  text-align: center;
+  padding: 2rem 0 1.5rem;
+  border-bottom: 3px double var(--ink);
+  margin-bottom: 2rem;
+}
+.fc-cabecalho h1 {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: normal;
+  color: var(--ink);
+  line-height: 1;
+}
+.fc-subtitulo {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--rust-dark);
+  font-size: 1rem;
+  margin-top: 0.4rem;
+}
+
+/* ── AVISO (armazenamento indisponível) ───────────────────────────── */
+.fc-aviso {
+  margin-bottom: 1rem;
+  padding: 0.55rem 0.8rem;
+  background: #f0e3c2;
+  border-left: 4px solid var(--gold-dim);
+  font-family: 'IM Fell English', serif;
+  font-size: 0.9rem;
+  color: var(--rust-dark);
+}
+
+/* ── BARRA DE ABAS + ADICIONAR ────────────────────────────────────── */
+.fc-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.fc-aba {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.fc-aba:hover { background: var(--parchment3); }
+.fc-aba--ativa {
+  background: var(--ink);
+  color: var(--parchment);
+  border-color: var(--ink);
+}
+
+.fc-add {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px dashed var(--ink-faded);
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.fc-add:hover { background: var(--ink); color: var(--parchment); }
+
+/* ── LINHA DE INFORMAÇÕES DA FICHA ABERTA ─────────────────────────── */
+.fc-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+.fc-info-rotulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.fc-nome {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 0.35rem 0.55rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.fc-nome:focus { outline: 1px solid var(--rust); }
+.fc-tamanho {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-faded);
+}
+.fc-del {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  background: transparent;
+  border: 1px solid var(--rust-dark);
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+.fc-del:hover { opacity: 1; background: var(--rust-dark); color: var(--parchment); }
+
+/* ── VISUALIZADOR DE PDF ──────────────────────────────────────────── */
+.fc-viewer {
+  display: block;
+  width: 100%;
+  height: 82vh;
+  border: 1px solid var(--ink);
+  background: #525659;   /* fundo do leitor enquanto o PDF carrega */
+}
+
+.fc-vazio {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  text-align: center;
+  line-height: 1.8;
+  padding: 2.2rem 1rem;
+}
+.fc-vazio strong { font-style: normal; }
+
+/* ── RESPONSIVO ───────────────────────────────────────────────────── */
+@media (max-width: 620px) {
+  .fc-viewer { height: 70vh; }
+}

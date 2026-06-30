@@ -1,0 +1,18 @@
+# ── Privado (não publicar) ───────────────────────────────────────
+# Configuração e memória do Claude Code
+.claude/
+
+# ── Arquivos-fonte não usados pelo site ──────────────────────────
+# Backup compactado e planilhas/rascunhos que o site não carrega
+Grifos Alados.zip
+*.zip
+T20 - Tabela de geração de tesouros.xlsx
+*.xlsx
+Regras.txt
+
+# ── Lixo do sistema operacional ──────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store

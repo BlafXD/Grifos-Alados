@@ -1,0 +1,1947 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MONSTROS_STYLE.CSS — Bestiário do Mestre
+   Localização: /grifos-alados/css/monstros_style.css
+   Usa as variáveis de cor definidas em style.css (:root).
+   ═══════════════════════════════════════════════════════════════════ */
+
+#monstros .wrapper {
+  padding-bottom: 3rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+#monstros-content { flex: 1 1 auto; min-width: 0; }
+
+/* ── CABEÇALHO ────────────────────────────────────────────────────── */
+.mz-cabecalho {
+  text-align: center;
+  padding: 2rem 0 1.5rem;
+  border-bottom: 3px double var(--ink);
+  margin-bottom: 2rem;
+}
+.mz-cabecalho h1 {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: normal;
+  color: var(--ink);
+  line-height: 1;
+}
+.mz-subtitulo {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--rust-dark);
+  font-size: 1rem;
+  margin-top: 0.4rem;
+}
+
+/* ── BACKUP / EXPORTAÇÃO / IMPORTAÇÃO (cabeçalho) ─────────────────── */
+.mz-backup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+.mz-backup-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: background 0.16s, color 0.16s;
+}
+.mz-backup-btn:hover { background: var(--ink); color: var(--parchment); }
+.mz-backup-btn--imp {
+  border-color: var(--rust-dark);
+  color: var(--rust-dark);
+}
+.mz-backup-btn--imp:hover { background: var(--rust-dark); color: var(--parchment); }
+
+/* ── MENSAGENS DE ESTADO ──────────────────────────────────────────── */
+.mz-vazio {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  text-align: center;
+  padding: 1.6rem 1rem;
+}
+.mz-vazio--menor { padding: 1rem; font-size: 0.92rem; }
+
+/* ── BOTÕES GENÉRICOS ─────────────────────────────────────────────── */
+.mz-add {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px dashed var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.mz-add:hover { background: var(--ink); color: var(--parchment); }
+.mz-add--sessao   { margin-top: 1.4rem; border-style: solid; }
+.mz-add--cena     { margin-top: 0.9rem; }
+.mz-add--criatura { margin-top: 0; }
+
+/* linha com os dois botões (adicionar / importar) */
+.mz-cena-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+.mz-cena-acoes .mz-add { flex: 1 1 220px; width: auto; }
+.mz-add--importar {
+  border-style: solid;
+  border-color: var(--gold-dim);
+  color: var(--rust-dark);
+}
+.mz-add--importar:hover { background: var(--rust-dark); color: var(--parchment); border-color: var(--rust-dark); }
+
+.mz-toggle {
+  flex: 0 0 auto;
+  width: 1.8rem; height: 1.8rem;
+  font-size: 0.8rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+.mz-del {
+  flex: 0 0 auto;
+  width: 1.7rem; height: 1.7rem;
+  font-size: 0.8rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.65;
+  transition: opacity 0.15s, background 0.15s;
+}
+.mz-del:hover { opacity: 1; background: rgba(92, 26, 4, 0.18); }
+
+/* botões de mover criatura (↑ / ↓) */
+.mz-mover {
+  flex: 0 0 auto;
+  width: 1.6rem; height: 1.6rem;
+  font-size: 0.8rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.15s, background 0.15s;
+}
+.mz-mover:hover:not(:disabled) { opacity: 1; background: rgba(0, 0, 0, 0.14); }
+.mz-mover:disabled { opacity: 0.2; cursor: default; }
+
+/* ── NOMES EDITÁVEIS (cabeçalhos) ─────────────────────────────────── */
+.mz-nome {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: inherit;
+  font-family: 'Cinzel', serif;
+}
+.mz-nome:hover  { border-bottom-color: currentColor; }
+.mz-nome:focus  { outline: none; border-bottom-color: currentColor; }
+.mz-nome--sessao   { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.06em; }
+.mz-nome--cena     { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.04em; }
+.mz-nome--criatura {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.mz-contador {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* ── SESSÃO ───────────────────────────────────────────────────────── */
+.mz-sessao {
+  border: 1px solid var(--ink);
+  margin-bottom: 1.5rem;
+  background: var(--parchment2);
+}
+.mz-sessao-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--ink);
+  color: var(--parchment);
+}
+.mz-sessao-corpo { padding: 0.9rem; }
+.mz-sessao:not(.mz-aberto) .mz-sessao-corpo { display: none; }
+
+/* ── CAIXA DE TEXTO SIMPLES COM BOTÃO ⛶ EXPANDIR ──────────────────── */
+/* Envolve as textareas (criatura/perigo). A textarea cresce com o texto
+   (JS autoCrescer) e ainda dá para arrastar a borda; o ⛶ no canto abre o
+   editor em tela cheia. */
+.mz-exp-wrap { position: relative; }
+.mz-exp-wrap .mz-textarea { padding-right: 2.2rem; }   /* espaço p/ o ⛶ */
+
+.mz-exp-btn {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.35rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  line-height: 1;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-radius: 2px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.12s ease, background 0.12s ease, color 0.12s ease;
+}
+.mz-exp-wrap:hover .mz-exp-btn,
+.mz-textarea:focus + .mz-exp-btn,
+.mz-exp-btn:hover,
+.mz-exp-btn:focus { opacity: 1; }
+.mz-exp-btn:hover {
+  background: var(--rust-dark);
+  color: var(--parchment);
+  border-color: var(--rust-dark);
+}
+
+/* Notas de sessão/cena: reaproveitam o editor rico .mz-ataques. As
+   personalizações (.mz-notas-rich) ficam DEPOIS de .mz-ataques no arquivo
+   para vencer no cascata — ver abaixo, perto de .mz-azul. */
+.mz-notas-campo { margin-top: 0.2rem; }
+
+/* ── CENA ─────────────────────────────────────────────────────────── */
+.mz-cena {
+  border: 1px solid var(--rust-dark);
+  margin-bottom: 0.9rem;
+  background: var(--parchment);
+}
+.mz-cena-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  background: var(--rust-dark);
+  color: var(--parchment);
+}
+.mz-cena-corpo { padding: 0.8rem; }
+.mz-cena:not(.mz-aberto) .mz-cena-corpo { display: none; }
+
+/* ── CRIATURA (a ficha) ───────────────────────────────────────────── */
+.mz-criatura {
+  border: 1px solid var(--ink-faded);
+  margin-bottom: 0.8rem;
+  background: var(--parchment2);
+}
+.mz-criatura-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.7rem;
+  background: var(--parchment3);
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink-faded);
+}
+.mz-criatura-corpo { padding: 1.2rem 1.1rem 1.4rem; }
+.mz-criatura:not(.mz-aberto) .mz-criatura-corpo { display: none; }
+.mz-criatura:not(.mz-aberto) .mz-criatura-cabecalho { border-bottom: none; }
+
+/* ── CAMPOS DE TEXTO ──────────────────────────────────────────────── */
+.mz-campo { margin-bottom: 0.9rem; }
+.mz-rotulo {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 0.25rem;
+}
+
+.mz-input, .mz-textarea {
+  width: 100%;
+  padding: 0.4rem 0.55rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.mz-textarea { resize: vertical; line-height: 1.45; }
+.mz-input:focus, .mz-textarea:focus { outline: 1px solid var(--rust); }
+
+/* ── FERRAMENTA "ARMAS NATURAIS & DESARMADO" (na ficha) ───────────── */
+.mz-ferr {
+  border: 1px dashed var(--ink-faded);
+  background: var(--parchment3);
+  margin-bottom: 0.9rem;
+}
+.mz-ferr-sum {
+  cursor: pointer;
+  display: block;                 /* remove o marcador nativo do <summary> */
+  padding: 0.4rem 0.6rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  list-style: none;
+  user-select: none;
+}
+.mz-ferr-sum::-webkit-details-marker { display: none; }
+.mz-ferr-sum::before { content: '▸ '; }
+.mz-ferr[open] .mz-ferr-sum::before { content: '▾ '; }
+.mz-ferr[open] .mz-ferr-sum { color: var(--ink); border-bottom: 1px solid var(--ink-faded); }
+.mz-ferr-corpo { padding: 0.7rem 0.6rem 0.5rem; }
+.mz-ferr-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+.mz-ferr-lbl {
+  flex: 0 0 5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.mz-ferr-tam, .mz-ferr-arma, .mz-ferr-mod, .mz-ferr-bonus {
+  padding: 0.3rem 0.45rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.mz-ferr-arma { flex: 1 1 11rem; min-width: 8rem; }
+.mz-ferr-tam  { flex: 0 1 9rem; }
+.mz-ferr-mod, .mz-ferr-bonus { flex: 1 1 7rem; min-width: 5rem; }
+.mz-ferr-tam:focus, .mz-ferr-arma:focus,
+.mz-ferr-mod:focus, .mz-ferr-bonus:focus { outline: 1px solid var(--rust); }
+.mz-ferr-add {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.7rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+}
+.mz-ferr-add:hover { background: var(--ink); color: var(--parchment); }
+.mz-ferr-nota {
+  font-size: 0.74rem;
+  color: var(--ink-faded);
+  font-style: italic;
+  margin: 0.2rem 0 0;
+  line-height: 1.35;
+}
+.mz-ferr-flash { animation: mzFerrFlash 0.7s ease-out; }
+@keyframes mzFerrFlash {
+  0%   { box-shadow: inset 0 0 0 0 rgba(95, 160, 90, 0); }
+  20%  { box-shadow: inset 0 0 0 3px rgba(95, 160, 90, 0.6); }
+  100% { box-shadow: inset 0 0 0 0 rgba(95, 160, 90, 0); }
+}
+
+/* ── VARIANTE DE MORTE (fim de combate) ──────────────────────────── */
+.mz-morte-papel {
+  padding: 0.25rem 0.4rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.mz-morte-papel:focus { outline: 1px solid var(--rust); }
+.mz-morte-btn { cursor: pointer; }
+.mz-morte-res {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid;
+}
+.mz-morte-res--vivo  { color: #2f6f3f; border-color: #2f6f3f; background: rgba(95, 160, 90, 0.14); }
+.mz-morte-res--morto { color: #8b1020; border-color: #8b1020; background: rgba(139, 16, 32, 0.10); }
+.mz-criatura--morta { opacity: 0.72; filter: grayscale(0.35); }
+
+/* ── ROLADOR DE CRÍTICOS (efeitos & falhas) ───────────────────────── */
+.mz-crit-sel {
+  flex: 0 1 auto;
+  padding: 0.3rem 0.45rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: 2px;
+}
+.mz-crit-sel:focus { outline: 1px solid var(--rust); }
+.mz-crit-res {
+  position: relative;
+  margin: 0.1rem 0 0.5rem;
+  padding: 0.5rem 1.8rem 0.55rem 0.7rem;
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-left: 4px solid var(--rust);
+  border-radius: 2px;
+  animation: mzFerrFlash 0.7s ease-out;
+}
+.mz-crit-res--falha { border-left-color: #8b1020; }
+.mz-crit-res-cab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 0.2rem;
+}
+.mz-crit-res-rol {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  margin-bottom: 0.3rem;
+}
+.mz-crit-res-efeito {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.98rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.mz-crit-aplicar {
+  margin-top: 0.45rem;
+  padding: 0.28rem 0.7rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  color: #2f6f3f;
+  background: rgba(95, 160, 90, 0.12);
+  border: 1px solid #2f6f3f;
+  border-radius: 2px;
+}
+.mz-crit-aplicar:hover { background: #2f6f3f; color: var(--parchment); }
+.mz-crit-aplicada {
+  display: inline-block;
+  margin-top: 0.45rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  color: #2f6f3f;
+}
+.mz-crit-x { position: absolute; top: 0.35rem; right: 0.4rem; }
+
+/* ── GRADE DE ATRIBUTOS (Padrão / Atual) ──────────────────────────── */
+.mz-stats-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 1.2rem;
+}
+/* cada bloco de status ecoa a moldura das tabelas: fio de ouro no topo
+   + brilho interno (igual ao .prog-table-wrap) */
+.mz-stat {
+  border: 1px solid var(--ink-faded);
+  border-top: 2px solid var(--gold-dim);
+  background: var(--parchment);
+  padding: 0.5rem 0.55rem 0.55rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
+}
+.mz-stat--grande { grid-column: span 2; }
+.mz-stat--grande .mz-stat-rotulo { font-size: 0.66rem; }
+.mz-stat--grande .mz-stat-linha input { font-size: 1rem; padding: 0.3rem 0.45rem; }
+.mz-stat--medio { grid-column: span 2; }
+
+/* botão de dado nas perícias roláveis */
+.mz-dado {
+  flex: 0 0 auto;
+  width: 1.55rem; height: 1.55rem;
+  font-size: 0.78rem;
+  line-height: 1;
+  cursor: pointer;
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  transition: background 0.12s, transform 0.08s;
+}
+.mz-dado:hover   { background: var(--gold); }
+.mz-dado:active  { transform: scale(0.9); }
+
+.mz-stat-rotulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  text-align: center;
+  margin-bottom: 0.35rem;
+}
+.mz-stat-linha {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+.mz-stat-linha span {
+  flex: 0 0 3.1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.mz-stat-linha input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.2rem 0.35rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+.mz-stat-linha input:focus { outline: 1px solid var(--rust); }
+
+/* a linha "Atual" recebe destaque — é o valor que muda no combate */
+.mz-stat-linha--atual span { color: var(--rust-dark); font-weight: 700; }
+.mz-stat-linha--atual input {
+  background: #f3e4c4;
+  border-color: var(--rust-dark);
+  font-weight: 700;
+  color: var(--rust-dark);
+}
+
+/* ── ATAQUE E HABILIDADES (texto rico) ────────────────────────────── */
+.mz-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.mz-grifo {
+  padding: 0.3rem 0.6rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid var(--ink-faded);
+  background: var(--parchment3);
+  color: var(--ink);
+  transition: background 0.15s, color 0.15s;
+}
+.mz-grifo--limpa:hover { background: var(--ink); color: var(--parchment); }
+.mz-grifo--exp { margin-left: auto; }   /* empurra "Expandir" para a direita */
+.mz-grifo--exp:hover { background: var(--rust-dark); color: var(--parchment); border-color: var(--rust-dark); }
+.mz-grifo--ler:hover { background: #7a5b14; color: var(--parchment); border-color: #7a5b14; }
+.mz-grifo--box:hover { background: #7a5b14; color: var(--parchment); border-color: #7a5b14; }
+
+/* rótulo "Grifar" antes das amostras de cor */
+.mz-toolbar-rot {
+  align-self: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+/* botão-amostra de cor (swatch) */
+.mz-grifo--sw { padding: 0.28rem 0.3rem; line-height: 0; }
+.mz-grifo--sw .mz-sw {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  background: var(--sw);
+  border: 1px solid rgba(26, 16, 8, 0.35);
+  border-radius: 2px;
+}
+.mz-grifo--sw:hover { border-color: var(--ink); }
+
+.mz-toolbar-dica {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--ink-faded);
+}
+
+.mz-ataques {
+  min-height: 200px;
+  padding: 0.7rem 0.8rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  white-space: pre-wrap;       /* preserva as quebras de linha coladas */
+  overflow-wrap: break-word;
+  overflow-y: auto;            /* habilita a alça de redimensionar */
+  resize: vertical;            /* arrastar a borda p/ cima/baixo */
+}
+.mz-ataques:focus { outline: 1px solid var(--rust); }
+.mz-ataques:empty::before {
+  content: 'Cole aqui os ataques e habilidades da criatura (CTRL+V)…';
+  color: var(--ink-faded);
+  font-style: italic;
+}
+
+/* grifos aplicados pelo mestre (cores) */
+.mz-azul {
+  background: #bcdcee;
+  color: #0c3a5a;
+  box-shadow: 0 0 0 1px #8fb9d4 inset;
+  padding: 0 1px;
+}
+.mz-amarelo  { background: #f3e3a3; color: #5a4a0c; box-shadow: 0 0 0 1px #d9c25f inset; padding: 0 1px; }
+.mz-vermelho { background: #f0c3bb; color: #6a1d12; box-shadow: 0 0 0 1px #d39086 inset; padding: 0 1px; }
+.mz-verde    { background: #c4e3bd; color: #1d4a12; box-shadow: 0 0 0 1px #86b97e inset; padding: 0 1px; }
+
+/* caixa de leitura (boxed) — narração em destaque, estilo livro de aventura */
+.mz-leitura {
+  display: block;
+  margin: 0.45rem 0;
+  padding: 0.55rem 0.85rem;
+  background: var(--parchment3);
+  border-left: 4px solid var(--gold);
+  box-shadow: 0 1px 0 rgba(26, 16, 8, 0.12);
+  font-style: italic;
+}
+
+/* Notas de sessão/cena (mz-ataques + mz-notas-rich): mais baixas que a
+   caixa de ataques e com texto-guia próprio. Ficam DEPOIS de .mz-ataques
+   para vencerem na cascata (mesma especificidade → ordem decide). */
+.mz-notas-rich { min-height: 5.5rem; }
+.mz-notas-rich:empty::before {
+  content: 'Anotações — descreva a cena, ganchos, leituras em voz alta… (selecione um trecho e grife para destacar)';
+}
+/* placeholder do editor rico em tela cheia (evita o texto de "ataques") */
+.mz-ed-rich:empty::before { content: 'Escreva à vontade…'; }
+
+/* ── QUADRADO DE INICIATIVA (no cabeçalho da criatura) ────────────── */
+.mz-init {
+  flex: 0 0 auto;
+  width: 3.2rem;
+  padding: 0.2rem 0.3rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.mz-init:focus { outline: 1px solid var(--rust); }
+.mz-init::placeholder {
+  font-weight: 400;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+}
+
+/* caixa de ND (Nível de Desafio), à esquerda da de Iniciativa */
+.mz-nd {
+  flex: 0 0 auto;
+  width: 3.2rem;
+  padding: 0.2rem 0.3rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+}
+.mz-nd:focus { outline: 1px solid var(--rust); }
+.mz-nd::placeholder {
+  color: var(--ink-faded);
+  font-weight: 400;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+}
+
+/* ── BARRA LATERAL (log + chat) ───────────────────────────────────── */
+.mz-lateral {
+  flex: 0 0 240px;
+  position: sticky;
+  top: calc(var(--nav-h, 48px) + 0.6rem);
+  max-height: calc(100vh - var(--nav-h, 48px) - 1.4rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── PAINEL DO LOG DE ROLAGENS ────────────────────────────────────── */
+.mz-log {
+  flex: 1 1 auto;
+  min-height: 140px;
+  background: var(--parchment2);
+  border: 1px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+.mz-log-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.7rem;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.mz-log-limpar {
+  width: 1.4rem; height: 1.4rem;
+  font-size: 0.72rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.mz-log-limpar:hover { opacity: 1; }
+
+.mz-log-lista {
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+.mz-log-vazio {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--ink-faded);
+  text-align: center;
+  padding: 1rem 0.4rem;
+}
+.mz-log-item {
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--rust-dark);
+  background: var(--parchment);
+  padding: 0.4rem 0.55rem;
+  margin-bottom: 0.4rem;
+}
+.mz-log-item--chat { border-left-color: #2f6f9e; }
+.mz-log-item:last-child {
+  border-left-color: var(--gold);
+  background: #f3e4c4;
+}
+.mz-log-criatura {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.mz-log-pericia {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  margin: 0.1rem 0;
+  word-break: break-word;
+}
+.mz-log-formula {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--ink);
+}
+.mz-log-formula strong { font-weight: 700; }
+
+/* d20 natural: 20 verde, 1 vermelho */
+.mz-d20-max { color: #1f7a33; font-weight: 700; }
+.mz-d20-min { color: #b3261e; font-weight: 700; }
+
+/* ── CHAT / ROLADOR DE EXPRESSÕES ─────────────────────────────────── */
+.mz-chat {
+  flex: 0 0 auto;
+  background: var(--parchment2);
+  border: 1px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+.mz-chat-cabecalho {
+  padding: 0.5rem 0.7rem;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.mz-chat-input {
+  margin: 0.6rem 0.6rem 0.4rem;
+  padding: 0.55rem 0.6rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.mz-chat-input:focus { outline: 1px solid var(--rust); }
+.mz-chat-input::placeholder { font-family: 'IM Fell English', serif; font-style: italic; }
+.mz-chat-status {
+  margin: 0 0.6rem 0.6rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.76rem;
+  color: var(--ink-faded);
+  line-height: 1.3;
+}
+.mz-chat-status--erro {
+  color: var(--rust-dark);
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* ═══ CONDIÇÕES ATIVAS (barra no topo da ficha) ═══════════════════ */
+.mz-condicoes {
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--parchment3);
+}
+.mz-cond-titulo {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 0.4rem;
+}
+.mz-cond-lista {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.4rem;
+}
+.mz-cond-nenhuma {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-faded);
+  align-self: center;
+}
+.mz-cond-add {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px dashed var(--ink-faded);
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.mz-cond-add:hover { background: var(--ink); color: var(--parchment); }
+
+/* ── chip de condição ativa ─────────────────────────────────────── */
+.mz-cond-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.4rem 0.2rem 0.5rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-left: 5px solid var(--cor, #6e6256);
+}
+.mz-cond-info { display: flex; flex-direction: column; line-height: 1.1; }
+.mz-cond-nome {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+.mz-cond-cat {
+  font-family: 'Cinzel', serif;
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor, #6e6256);
+}
+.mz-cond-x {
+  flex: 0 0 auto;
+  width: 1.2rem; height: 1.2rem;
+  font-size: 0.66rem;
+  background: transparent;
+  border: 1px solid var(--ink-faded);
+  border-radius: 50%;
+  color: var(--ink-faded);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s, background 0.15s;
+}
+.mz-cond-x:hover { opacity: 1; background: rgba(92,26,4,0.18); }
+
+/* ── tooltip com a descrição completa (aparece no hover) ────────── */
+.mz-cond-tip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 5px);
+  left: -1px;
+  width: 270px;
+  z-index: 60;
+  background: var(--parchment2);
+  border: 1px solid var(--ink);
+  border-left: 5px solid var(--cor, #6e6256);
+  box-shadow: 0 4px 14px var(--shadow);
+  padding: 0.55rem 0.65rem;
+  cursor: default;
+}
+.mz-cond-chip:hover .mz-cond-tip { display: block; }
+.mz-cond-tip-topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+.mz-cond-tip-topo strong {
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.mz-cond-tip-cat {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor, #6e6256);
+  white-space: nowrap;
+}
+.mz-cond-tip-desc {
+  display: block;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+/* ═══ MODAL "＋ Condição" ═════════════════════════════════════════ */
+.mz-cond-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(26,16,8,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.mz-cond-modal {
+  background: var(--parchment);
+  border: 1px solid var(--ink);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  width: 100%;
+  max-width: 540px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+.mz-cond-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 0.9rem;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.mz-cond-modal-x {
+  width: 1.6rem; height: 1.6rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.75;
+}
+.mz-cond-modal-x:hover { opacity: 1; }
+.mz-cond-busca {
+  margin: 0.7rem 0.9rem 0.4rem;
+  padding: 0.5rem 0.6rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+.mz-cond-busca:focus { outline: 1px solid var(--rust); }
+.mz-cond-modal-corpo {
+  overflow-y: auto;
+  padding: 0.3rem 0.9rem;
+}
+.mz-cond-grupo { margin-bottom: 0.8rem; }
+.mz-cond-grupo-titulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cor, #6e6256);
+  border-bottom: 2px solid var(--cor, #6e6256);
+  padding-bottom: 0.2rem;
+  margin-bottom: 0.4rem;
+}
+.mz-cond-opcao {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-left: 5px solid var(--cor, #6e6256);
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.35rem;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.mz-cond-opcao:hover { background: var(--parchment3); }
+.mz-cond-opcao.ativo { background: #efe2c4; box-shadow: inset 0 0 0 1px var(--cor, #6e6256); }
+.mz-cond-opcao-cab {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin-bottom: 0.15rem;
+}
+.mz-cond-opcao-check {
+  flex: 0 0 auto;
+  width: 1.2rem;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  color: var(--cor, #6e6256);
+}
+.mz-cond-opcao-nome {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.mz-cond-opcao-cat {
+  font-family: 'Cinzel', serif;
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor, #6e6256);
+}
+.mz-cond-opcao-desc {
+  display: block;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--ink-faded);
+}
+.mz-cond-opcao.ativo .mz-cond-opcao-desc { color: var(--ink); }
+.mz-cond-modal-pe {
+  padding: 0.5rem 0.9rem;
+  border-top: 1px solid var(--parchment3);
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--ink-faded);
+}
+
+/* ── sub-barras (Tipo de criatura · Habilidades gerais) ─────────── */
+/* reaproveitam os estilos dos chips de condição, mas encostam na    */
+/* caixa de texto logo acima e não têm o divisor inferior            */
+.mz-condicoes--sub {
+  margin-top: -0.35rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.mz-cond-chip--simples { padding-top: 0.32rem; padding-bottom: 0.32rem; }
+.mz-cond-chip--simples .mz-cond-nome { font-size: 0.92rem; }
+
+/* ═══ MODAL DE IMPORTAÇÃO ═════════════════════════════════════════ */
+.mz-imp-modal { max-width: 640px; }
+.mz-imp-corpo {
+  overflow-y: auto;
+  padding: 0.8rem 0.9rem;
+}
+.mz-imp-rotulo {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 0.4rem;
+}
+.mz-imp-entrada {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Courier New', monospace;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  padding: 0.55rem 0.65rem;
+  resize: vertical;
+}
+.mz-imp-entrada:focus { outline: 1px solid var(--rust); }
+
+.mz-imp-previa {
+  margin-top: 0.8rem;
+  border-top: 1px solid var(--parchment3);
+  padding-top: 0.6rem;
+}
+.mz-imp-vazio {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  font-size: 0.9rem;
+}
+.mz-imp-campo {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px dotted var(--parchment3);
+  font-size: 0.9rem;
+}
+.mz-imp-campo > span {
+  flex: 0 0 130px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  padding-top: 0.15rem;
+}
+.mz-imp-campo > b { font-family: 'Crimson Pro', serif; font-weight: 600; color: var(--ink); }
+.mz-imp-campo--bloco { flex-direction: column; gap: 0.3rem; }
+.mz-imp-bloco {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  padding: 0.5rem 0.6rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.mz-imp-avisos {
+  margin-top: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  background: #f0e3c2;
+  border-left: 4px solid var(--gold-dim);
+  font-family: 'IM Fell English', serif;
+  font-size: 0.85rem;
+  color: var(--rust-dark);
+}
+.mz-imp-pe { display: flex; align-items: center; gap: 0.8rem; justify-content: space-between; }
+.mz-imp-dica { flex: 1; }
+.mz-imp-criar {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--rust);
+  border: 1px solid var(--rust-dark);
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+}
+.mz-imp-criar:hover { background: var(--rust-dark); }
+.mz-imp-criar:disabled { background: var(--parchment3); color: var(--ink-faded); border-color: var(--parchment3); cursor: not-allowed; }
+
+/* ═══ ALTERNADOR DE VISÃO (lista ⇄ painel de combate) ═════════════ */
+.mz-visao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.4rem;
+}
+.mz-visao-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.mz-visao-btn:hover { background: var(--ink); color: var(--parchment); }
+.mz-visao-btn--ativo { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
+.mz-visao-dica {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-faded);
+}
+
+/* botão ◫ de fixar a ficha no painel (cabeçalho da criatura) */
+.mz-fixar {
+  flex: 0 0 auto;
+  width: 1.6rem; height: 1.6rem;
+  font-size: 0.85rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.15s, background 0.15s;
+}
+.mz-fixar:hover { opacity: 1; background: rgba(0, 0, 0, 0.14); }
+.mz-fixar--ativo {
+  opacity: 1;
+  background: var(--gold);
+  border-color: var(--gold-dim);
+  color: var(--ink);
+}
+.mz-fixar--ativo:hover { background: var(--gold-light); }
+
+/* ═══ PAINEL DE COMBATE (fichas lado a lado, sem limite) ══════════ */
+/* a página alarga para caber mais colunas */
+#monstros.mz-modo-painel .wrapper { max-width: min(98vw, 2400px); }
+
+/* barra de controle do painel: sessão narrada + trazer ambientes */
+.mz-painel-controle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.9rem;
+  margin-bottom: 0.9rem;
+  padding: 0.55rem 0.7rem;
+  background: var(--parchment3);
+  border: 1px solid var(--gold-dim);
+  border-left: 5px solid var(--ink);
+}
+.mz-painel-narr {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.mz-painel-narr-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.mz-painel-sessao {
+  padding: 0.35rem 0.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  cursor: pointer;
+}
+.mz-painel-sessao:focus { outline: 1px solid var(--rust); }
+.mz-painel-trazer {
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  background: var(--parchment);
+  border: 1px dashed var(--rust);
+  border-radius: 3px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.mz-painel-trazer:hover { background: var(--rust); color: var(--parchment); }
+
+/* botão que liga/desliga a faixa de combate em viagem */
+.mz-painel-cv-toggle {
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  background: var(--parchment);
+  border: 1px solid var(--rust);
+  border-radius: 3px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+}
+.mz-painel-cv-toggle--ativo { background: var(--rust-dark); color: var(--parchment); border-color: var(--rust-dark); }
+
+/* faixa "Combate em viagem" (abaixo de Ambiente em jogo) */
+.mz-combate-viagem { border-left-color: var(--rust); }
+.mz-combate-viagem .mz-amb-titulo {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.mz-cv-x {
+  background: transparent; border: none; cursor: pointer;
+  color: var(--ink-faded); font-size: 0.8rem; padding: 0 0.2rem;
+}
+.mz-cv-x:hover { color: var(--rust); }
+.mz-cv-regras { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.4rem; }
+.mz-cv-mini { border: 1px solid var(--gold-dim); background: var(--parchment); }
+.mz-cv-mini > summary {
+  cursor: pointer; padding: 0.35rem 0.55rem; list-style: none;
+  font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--ink);
+}
+.mz-cv-mini > summary::-webkit-details-marker { display: none; }
+.mz-cv-mini > summary::before { content: '▸ '; color: var(--rust); }
+.mz-cv-mini[open] > summary::before { content: '▾ '; }
+.mz-cv-mini-corpo {
+  padding: 0.45rem 0.6rem; border-top: 1px solid var(--gold-dim);
+  font-family: 'Crimson Pro', serif; font-size: 0.88rem; line-height: 1.5; color: var(--ink);
+}
+
+/* faixa do veículo da viagem no painel (PV compartilhado) */
+.mz-veiculo-painel { border-left-color: #2f6f9e; }
+.mz-veic-pv {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-top: 0.4rem;
+}
+.mz-veic-pv-rot {
+  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ink-faded); margin-right: 0.2rem;
+}
+.mz-veic-pv-in {
+  width: 3.6rem; text-align: center; padding: 0.3rem;
+  font-family: 'Crimson Pro', serif; font-size: 1.05rem; color: var(--ink);
+  background: var(--parchment); border: 1px solid var(--ink-faded);
+}
+.mz-veic-pv-in:focus { outline: 1px solid var(--rust); }
+.mz-veic-pv-max { font-family: 'Crimson Pro', serif; color: var(--ink-faded); }
+.mz-veic-def {
+  font-family: 'IM Fell English', serif; font-size: 0.85rem; color: var(--ink-faded);
+  margin-left: 0.3rem;
+}
+/* botão −/＋ (passo) reutilizável no painel */
+.mz-step {
+  width: 1.7rem; height: 1.7rem; flex: 0 0 auto;
+  font-size: 0.9rem; line-height: 1; cursor: pointer;
+  color: var(--ink); background: var(--parchment);
+  border: 1px solid var(--ink-faded); border-radius: 3px;
+}
+.mz-step:hover { background: var(--rust); color: var(--parchment); border-color: var(--rust); }
+
+/* ── MONTARIA DA CRIATURA ─────────────────────────────────────────── */
+.mz-mont {
+  margin: 0.5rem 0 0.7rem;
+  padding: 0.5rem 0.6rem;
+  background: var(--parchment3);
+  border: 1px solid var(--gold-dim);
+  border-left: 4px solid #6e5a1a;
+}
+.mz-mont-linha { display: flex; align-items: center; gap: 0.4rem; }
+.mz-mont-icone { flex: 0 0 auto; font-size: 1rem; }
+.mz-mont-sel { flex: 1 1 auto; min-width: 0; }
+.mz-mont-nivel { flex: 0 0 auto; }
+.mz-mont-sel, .mz-mont-nivel {
+  padding: 0.3rem 0.4rem;
+  font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--ink);
+  background: var(--parchment); border: 1px solid var(--ink-faded); cursor: pointer;
+}
+.mz-mont-beneficio {
+  margin-top: 0.45rem;
+  font-family: 'Crimson Pro', serif; font-size: 0.92rem; line-height: 1.45; color: var(--ink);
+}
+.mz-mont-beneficio + .mz-mont-beneficio { margin-top: 0.3rem; }
+.mz-mont-nivel-rot {
+  display: inline-block;
+  font-family: 'Cinzel', serif; font-size: 0.56rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--parchment); background: #6e5a1a;
+  padding: 0.08rem 0.35rem; border-radius: 2px; margin-right: 0.35rem;
+}
+/* nível atual da montaria fica com o rótulo cheio; os níveis abaixo, que
+   continuam valendo, aparecem com o rótulo apenas contornado (mais discreto) */
+.mz-mont-beneficio:not(.mz-mont-beneficio--ativo) .mz-mont-nivel-rot {
+  color: #6e5a1a; background: transparent;
+  border: 1px solid #6e5a1a; padding: 0.02rem 0.3rem;
+}
+.mz-mont-obs {
+  margin-top: 0.3rem;
+  font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: 0.85rem; color: var(--ink-faded);
+}
+
+/* cabem tantas colunas quantas a tela permitir (mín. ~400px cada);
+   os quadrados extras quebram para a linha de baixo */
+.mz-painel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+.mz-painel-slot {
+  border: 2px solid var(--ink);
+  background: var(--parchment2);
+  padding: 0.6rem;
+}
+/* marcador de origem do card (de qual sessão · cena ele veio) */
+.mz-painel-origem {
+  display: inline-block;
+  margin: 0 0 0.6rem;
+  padding: 0.18rem 0.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--ink);
+  border-radius: 2px;
+}
+.mz-painel-slot-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.mz-painel-slot-num {
+  flex: 0 0 auto;
+  width: 1.6rem; height: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--ink);
+  color: var(--parchment);
+}
+.mz-painel-select {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.35rem 0.4rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  cursor: pointer;
+}
+.mz-painel-select:focus { outline: 1px solid var(--rust); }
+
+/* botão de fechar o quadrado (não apaga a criatura) */
+.mz-painel-slot-x {
+  flex: 0 0 auto;
+  width: 1.7rem; height: 1.7rem;
+  font-size: 0.8rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--ink);
+  opacity: 0.65;
+  transition: opacity 0.15s, background 0.15s;
+}
+.mz-painel-slot-x:hover { opacity: 1; background: rgba(92, 26, 4, 0.18); }
+
+/* quadrado tracejado de "adicionar mais um" */
+.mz-painel-add {
+  min-height: 9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 2px dashed var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.mz-painel-add:hover { background: var(--ink); color: var(--parchment); }
+
+.mz-criatura--painel { margin-bottom: 0; }
+
+/* no painel o triângulo é decorativo (a ficha não recolhe) */
+.mz-toggle--fixo {
+  flex: 0 0 auto;
+  width: 1.8rem; height: 1.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+/* ═══ PERIGOS COMPLEXOS ═══════════════════════════════════════════ */
+/* botão "⚠ Perigos complexos" na linha de ações da cena */
+.mz-add--perigo {
+  border-style: solid;
+  border-color: var(--rust);
+  color: var(--rust-dark);
+}
+.mz-add--perigo:hover {
+  background: var(--rust);
+  color: var(--parchment);
+  border-color: var(--rust);
+}
+
+/* grupo que agrupa os cards de perigo dentro da cena */
+.mz-perigos-grupo {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+}
+.mz-perigos-titulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  margin-bottom: 0.5rem;
+}
+
+/* card do perigo — herda .mz-criatura, troca só o tema do cabeçalho */
+.mz-perigo { border-color: var(--rust); }
+.mz-perigo-cabecalho {
+  background: var(--rust-dark);
+  color: var(--parchment);
+  border-bottom-color: var(--rust);
+}
+.mz-perigo-cabecalho .mz-nome::placeholder { color: rgba(245, 236, 217, 0.6); }
+.mz-perigo-icone { flex: 0 0 auto; font-size: 1rem; line-height: 1; }
+.mz-perigo-fonte {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 0.7rem;
+}
+
+/* badge de ND e linha na biblioteca de perigos (modal) */
+.mz-perigo-nd {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.1rem 0.4rem;
+  background: var(--rust-dark);
+  color: var(--parchment);
+  border-radius: 2px;
+}
+.mz-perigo-opcao .mz-cond-opcao-desc { white-space: normal; }
+
+/* ═══ AMBIENTE DA CENA (faixa de terreno/clima/perigos ativos) ════ */
+.mz-ambientes {
+  margin-bottom: 0.9rem;
+  padding: 0.6rem 0.7rem;
+  background: var(--parchment3);
+  border: 1px solid var(--gold-dim);
+  border-left: 5px solid var(--rust);
+}
+.mz-ambientes--painel {
+  margin-bottom: 1rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--parchment2);
+  border-left-width: 6px;
+}
+.mz-amb-titulo {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  margin-bottom: 0.5rem;
+}
+.mz-amb-lista {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+.mz-amb-nenhum {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-faded);
+}
+
+/* chip de ambiente — pílula com [info | ✕] da mesma altura */
+.mz-amb-chip {
+  display: inline-flex;
+  align-items: stretch;
+  min-height: 2.5rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-left: 4px solid var(--cor, #6e6256);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(26, 16, 8, 0.08);
+}
+.mz-amb-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.08rem;
+  padding: 0.22rem 0.6rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink);
+  transition: background 0.12s;
+}
+.mz-amb-info:hover { background: rgba(0, 0, 0, 0.06); }
+.mz-amb-cat {
+  font-family: 'Cinzel', serif;
+  font-size: 0.54rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--cor, var(--ink-faded));
+  white-space: nowrap;
+}
+.mz-amb-nome {
+  font-family: 'IM Fell English', serif;
+  font-size: 1rem;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+.mz-amb-flag { font-size: 0.72rem; }
+.mz-amb-x {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
+  background: transparent;
+  border: none;
+  border-left: 1px solid var(--parchment3);
+  cursor: pointer;
+  color: var(--ink-faded);
+  opacity: 0.65;
+  transition: opacity 0.15s, background 0.15s;
+}
+.mz-amb-x:hover { opacity: 1; background: rgba(92, 26, 4, 0.18); }
+
+/* chip read-only (Painel de Combate) — botão único, mesmo visual */
+.mz-amb-chip--ro {
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0.08rem;
+  padding: 0.28rem 0.65rem;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink);
+  transition: background 0.12s;
+}
+.mz-amb-chip--ro:hover { background: var(--parchment3); }
+
+.mz-amb-add {
+  align-self: stretch;
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  background: var(--parchment);
+  border: 1px dashed var(--rust);
+  border-radius: 3px;
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.mz-amb-add:hover { background: var(--rust); color: var(--parchment); }
+
+/* ── popup de regras + narração do ambiente (GA_abrirModal) ── */
+.mz-amb-pop-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: -1.3rem -1.5rem 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--cor, var(--rust-dark));
+  color: var(--parchment);
+}
+.mz-amb-pop-tag {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+  border-right: 1px solid rgba(245, 236, 217, 0.4);
+  padding-right: 0.6rem;
+}
+.mz-amb-pop-nome {
+  flex: 1 1 auto;
+  font-family: 'IM Fell English', serif;
+  font-size: 1.25rem;
+  line-height: 1.1;
+}
+.mz-amb-pop-cab .mz-cond-modal-x { color: var(--parchment); opacity: 0.85; }
+.mz-amb-pop-cab .mz-cond-modal-x:hover { opacity: 1; }
+.mz-amb-regras {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  max-height: 52vh;
+  overflow-y: auto;
+}
+.mz-amb-nota-bloco {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 2px solid var(--gold-dim);
+}
+.mz-amb-nota {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.3rem;
+  padding: 0.5rem 0.6rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  resize: vertical;
+}
+.mz-amb-nota:focus { outline: 1px solid var(--rust); }
+.mz-amb-nota-dica {
+  display: block;
+  margin-top: 0.3rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--ink-faded);
+}
+.mz-amb-nota-ro {
+  margin-top: 1.1rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--parchment2);
+  border-left: 4px solid var(--gold-dim);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.mz-amb-nota-rot {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 0.3rem;
+}
+
+/* ── EDITOR EM TELA CHEIA DOS CAMPOS (botão ⛶ Expandir) ───────────── */
+.mz-ed-overlay .ga-modal {
+  max-width: 880px;
+  width: 100%;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+.mz-ed-cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--rust-dark);
+  border-bottom: 3px double var(--ink);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+.mz-ed-tit { line-height: 1.2; }
+.mz-ed-area {
+  flex: 1 1 auto;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 55vh;
+  resize: vertical;
+  padding: 0.8rem 0.95rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+.mz-ed-area:focus { outline: 1px solid var(--rust); }
+
+/* barra de grifo dentro do editor em tela cheia */
+.mz-ed-toolbar { flex: 0 0 auto; margin-bottom: 0.6rem; }
+
+/* editor rico (notas / ataques / efeito / ações) em tela cheia */
+.mz-ed-rich {
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  min-height: 55vh;
+  overflow-y: auto;
+  resize: none;                 /* a altura é o espaço do modal */
+  padding: 0.85rem 1rem;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  background: var(--parchment2);
+}
+.mz-ed-pe {
+  margin-top: 0.6rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-faded);
+  text-align: right;
+}
+
+/* ── MODO LEITURA / NARRAÇÃO (botão 📖 Ler) ───────────────────────── */
+.mz-ler-overlay .ga-modal {
+  max-width: 820px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+.mz-ler-cab { align-items: flex-start; }
+.mz-ler-ferramentas { display: flex; align-items: center; gap: 0.4rem; flex: 0 0 auto; }
+.mz-ler-az {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-radius: 2px;
+}
+.mz-ler-az:hover { background: var(--rust-dark); color: var(--parchment); border-color: var(--rust-dark); }
+.mz-ler-texto {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0.4rem 0.3rem 0.6rem;
+  font-family: 'Crimson Pro', serif;
+  line-height: 1.7;
+  color: var(--ink);
+  white-space: pre-wrap;        /* preserva as quebras das anotações */
+  overflow-wrap: break-word;
+}
+.mz-ler-vazio { color: var(--ink-faded); }
+
+/* ── NAVEGAÇÃO RÁPIDA (recolher/expandir tudo + Índice) ───────────── */
+.mz-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.9rem; }
+.mz-nav-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  transition: background 0.15s, color 0.15s;
+}
+.mz-nav-btn:hover { background: var(--rust-dark); color: var(--parchment); border-color: var(--rust-dark); }
+.mz-nav-btn--ativo { background: var(--rust-dark); color: var(--parchment); border-color: var(--rust-dark); }
+
+.mz-indice {
+  margin-bottom: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-left: 4px solid var(--gold);
+}
+.mz-idx-grupo { margin-bottom: 0.5rem; }
+.mz-idx-grupo:last-child { margin-bottom: 0; }
+.mz-idx-link {
+  display: inline-block;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--rust-dark);
+  padding: 0.1rem 0.2rem;
+}
+.mz-idx-link:hover { text-decoration: underline; color: var(--rust); }
+.mz-idx-link--sessao { font-weight: 700; }
+.mz-idx-cenas { display: flex; flex-wrap: wrap; gap: 0.1rem 0.8rem; padding-left: 1rem; }
+.mz-idx-link--cena { font-size: 0.9rem; color: var(--ink); }
+.mz-idx-vazio {
+  display: inline-block;
+  padding-left: 1rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--ink-faded);
+}
+
+/* pular para uma sessão/cena não fica escondido sob o menu fixo do topo */
+.mz-sessao, .mz-cena { scroll-margin-top: calc(var(--nav-h, 60px) + 0.6rem); }
+
+/* ── RESPONSIVO ───────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  /* a barra lateral deixa de ser coluna e vai para o fim da seção */
+  #monstros .wrapper { flex-direction: column; }
+  .mz-lateral {
+    flex-basis: auto;
+    width: 100%;
+    position: static;
+    max-height: none;
+    order: 2;
+  }
+  .mz-log-lista { max-height: 300px; }
+}
+@media (max-width: 620px) {
+  .mz-stats-grade { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+  .mz-sessao-corpo, .mz-cena-corpo, .mz-criatura-corpo { padding-left: 0.5rem; padding-right: 0.5rem; }
+}

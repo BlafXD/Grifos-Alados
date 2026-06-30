@@ -1,0 +1,420 @@
+/* ═══════════════════════════════════════════════════════════════════
+   CONSULTAS RÁPIDAS — sub-abas + cards de veículos/animais
+   Tema pergaminho, alinhado às demais abas.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── barra de sub-abas ──────────────────────────────────────────── */
+.cr-subtabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem 0 0.7rem;
+  margin-bottom: 1rem;
+  background: var(--parchment);
+  border-bottom: 2px solid var(--gold-dim);
+  /* gruda logo abaixo do menu principal (altura real em --nav-h) */
+  position: sticky;
+  top: var(--nav-h, 48px);
+  z-index: 90;
+}
+.cr-subtab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.cr-subtab:hover { background: var(--parchment3); }
+.cr-subtab--ativa {
+  background: var(--ink);
+  color: var(--parchment);
+  border-color: var(--ink);
+}
+
+/* O menu principal segue FIXO no topo também nesta aba, igual às demais
+   (Monstros etc.) — assim as abas não "sobem" ao rolar consultas longas.
+   (Antes havia um override deixando o nav rolar junto; foi removido.) */
+
+/* ── cabeçalho de painel ────────────────────────────────────────── */
+.cr-cabecalho { text-align: center; margin-bottom: 1.1rem; }
+.cr-cabecalho h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.7rem;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  margin: 0 0 0.2rem;
+}
+.cr-sub {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  margin: 0;
+}
+
+/* ── busca (compartilhada) ──────────────────────────────────────── */
+.cr-busca {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 1.1rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+.cr-busca:focus { outline: 2px solid var(--rust); }
+
+/* ── grupos e listas ────────────────────────────────────────────── */
+.vc-grupo { margin-bottom: 1.6rem; }
+.vc-grupo-titulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  border-bottom: 1px solid var(--gold-dim);
+  padding-bottom: 0.35rem;
+  margin: 0 0 0.8rem;
+}
+.vc-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 0.7rem;
+  align-items: start;
+}
+
+/* ── card de veículo / regra ────────────────────────────────────── */
+.vc-card {
+  border: 1px solid var(--gold-dim);
+  border-left: 5px solid var(--rust);
+  background: var(--parchment2);
+}
+.vc-card--regra { border-left-color: var(--ink); }
+/* regras com tabela ocupam a linha inteira da grade (espaço p/ a tabela) */
+.vc-card--tabela { grid-column: 1 / -1; }
+.vc-card-cab {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.vc-card-cab::-webkit-details-marker { display: none; }
+.vc-card-cab::before {
+  content: '▸';
+  float: right;
+  color: var(--rust);
+  font-size: 0.8rem;
+}
+.vc-card[open] .vc-card-cab::before { content: '▾'; }
+.vc-card-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.vc-card-meta {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.82rem;
+  color: var(--ink-faded);
+}
+.vc-card-corpo {
+  padding: 0 0.75rem 0.75rem;
+  border-top: 1px solid var(--gold-dim);
+}
+.vc-desc {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 0.7rem 0;
+}
+
+/* grade de estatísticas — ficha de dados (rótulo em cima, valor embaixo) */
+.vc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 0.9rem;
+  margin: 0.6rem 0;
+}
+.vc-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;                          /* permite o valor quebrar dentro da coluna */
+  border-bottom: 1px dotted var(--gold-dim);
+  padding: 0.1rem 0 0.32rem;
+}
+.vc-stat--wide { grid-column: 1 / -1; }  /* valores longos ocupam a linha inteira */
+.vc-stat-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.vc-stat-val {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.vc-regras {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--parchment3);
+  border-left: 3px solid var(--gold-dim);
+  padding: 0.55rem 0.7rem;
+  margin-top: 0.6rem;
+}
+.vc-regras-rot {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 0.3rem;
+}
+
+/* ── erro / em breve ────────────────────────────────────────────── */
+.cr-erro {
+  font-family: 'Crimson Pro', serif;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 2px solid var(--rust);
+  padding: 1rem 1.2rem;
+}
+.cr-erro code { font-family: monospace; background: var(--parchment3); padding: 0.05rem 0.3rem; }
+.cr-embreve {
+  text-align: center;
+  font-family: 'IM Fell English', serif;
+  font-size: 1.1rem;
+  color: var(--ink-faded);
+  padding: 3rem 1rem;
+  line-height: 1.8;
+}
+
+/* ── ANIMAIS & MONTARIAS ────────────────────────────────────────── */
+/* item comprável / equipamento (card aberto, não recolhível) */
+.am-item {
+  border: 1px solid var(--gold-dim);
+  border-left: 5px solid var(--rust-dark);
+  background: var(--parchment2);
+  padding: 0.6rem 0.75rem;
+}
+.am-item-cab {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.am-item-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.am-badge {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border-radius: 2px;
+  padding: 0.12rem 0.4rem;
+}
+.am-badge--desl { background: var(--ink); }
+.am-item-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.35rem 0; }
+.am-tag {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.74rem;
+  color: var(--ink-faded);
+  background: var(--parchment3);
+  border: 1px solid var(--gold-dim);
+  padding: 0.05rem 0.4rem;
+}
+.am-item-txt {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--ink);
+  margin: 0.25rem 0 0;
+}
+
+/* agrupamento por fonte dentro do bestiário */
+.am-fonte { margin-bottom: 1.1rem; }
+.am-fonte-titulo {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--rust);
+  margin: 0 0 0.5rem;
+}
+
+/* níveis iniciante / veterano / mestre */
+.am-tiers { margin: 0.7rem 0 0.2rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.am-tier {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.5rem;
+  align-items: start;
+}
+.am-tier-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--ink);
+  padding: 0.12rem 0.3rem;
+  text-align: center;
+  border-radius: 2px;
+}
+.am-tier:nth-child(2) .am-tier-rot { background: var(--rust); }
+.am-tier:nth-child(3) .am-tier-rot { background: var(--rust-dark); }
+.am-tier-txt {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.am-obs {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ink-faded);
+  margin: 0.3rem 0 0;
+}
+
+@media (max-width: 620px) {
+  .vc-stats { grid-template-columns: 1fr; }
+  .am-tier { grid-template-columns: 1fr; gap: 0.2rem; }
+  .am-tier-rot { justify-self: start; }
+  .cul-res-grade { grid-template-columns: 1fr; gap: 0.1rem 0; }
+  .cul-res-rot { padding-top: 0.3rem; }
+}
+
+/* ── CULINÁRIA — calculadora "Fabricar prato" ─────────────────────── */
+.cul-calc {
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  border-radius: 3px;
+  padding: 0.8rem 0.9rem 0.9rem;
+  margin-bottom: 1.3rem;
+}
+.cul-calc-cab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+}
+.cul-calc-controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+.cul-sel {
+  flex: 1 1 16rem;
+  padding: 0.4rem 0.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: 2px;
+}
+.cul-sel:focus { outline: 1px solid var(--rust); }
+.cul-tempero {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  color: var(--ink);
+  user-select: none;
+}
+.cul-resultado {
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-left: 4px solid var(--gold);
+  border-radius: 2px;
+  padding: 0.7rem 0.85rem;
+}
+.cul-res-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 1.06rem;
+  color: var(--ink);
+}
+.cul-res-flavor {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--ink-faded);
+  margin-bottom: 0.5rem;
+}
+.cul-res-beneficio {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.03rem;
+  font-weight: 600;
+  color: var(--rust);
+  margin-bottom: 0.6rem;
+}
+.cul-res-grade {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.32rem 0.7rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.97rem;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.cul-res-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  white-space: nowrap;
+}
+.cul-res-grade em { font-style: italic; color: var(--ink-faded); font-size: 0.86rem; }
+.cul-ing-preco { color: var(--ink-faded); font-size: 0.85rem; }
+.cul-res-tempero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.5rem;
+  align-items: baseline;
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed var(--ink-faded);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.93rem;
+  color: var(--ink);
+}
+.cul-res-tempero-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #7a5a12;
+  white-space: nowrap;
+}
+.cul-grupo-ing .prog-table { max-width: 24rem; }

@@ -1,0 +1,468 @@
+/* ═══════════════════════════════════════════════════════════════════
+   PAINEL DE VIAGEM (viagem.js) — tema pergaminho
+   ═══════════════════════════════════════════════════════════════════ */
+
+.vg-cabecalho { text-align: center; margin-bottom: 1.3rem; }
+.vg-cabecalho h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  margin: 0 0 0.3rem;
+}
+.vg-subtitulo {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  margin: 0 0 0.7rem;
+}
+.vg-backup { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+.vg-backup-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.vg-backup-btn:hover { background: var(--ink); color: var(--parchment); }
+.vg-backup-btn--imp { border-color: var(--gold-dim); color: var(--rust-dark); }
+.vg-backup-btn--imp:hover { background: var(--rust-dark); border-color: var(--rust-dark); }
+
+.vg-vazio {
+  text-align: center;
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  padding: 2rem 0;
+}
+.vg-vazio-menor {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ink-faded);
+  margin: 0.3rem 0;
+}
+
+.vg-add {
+  display: block;
+  width: 100%;
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px dashed var(--ink-faded);
+  padding: 0.7rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.vg-add:hover { background: var(--ink); color: var(--parchment); }
+.vg-add--viagem { margin-top: 1.4rem; border-style: solid; }
+.vg-add--parada { margin-top: 0.6rem; padding: 0.5rem; }
+
+/* ── VIAGEM (card) ─────────────────────────────────────────────────── */
+.vg-viagem {
+  border: 1px solid var(--ink);
+  margin-bottom: 1.5rem;
+  background: var(--parchment2);
+}
+.vg-viagem-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--ink);
+  color: var(--parchment);
+}
+.vg-viagem-corpo { padding: 1rem; }
+.vg-viagem:not(.vg-aberta) .vg-viagem-corpo { display: none; }
+
+.vg-toggle {
+  flex: 0 0 auto;
+  width: 1.8rem; height: 1.8rem;
+  font-size: 0.8rem;
+  background: transparent; border: none; cursor: pointer; color: inherit;
+}
+.vg-nome {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: inherit;
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.vg-nome:hover, .vg-nome:focus { outline: none; border-bottom-color: currentColor; }
+.vg-mover {
+  flex: 0 0 auto;
+  width: 1.6rem; height: 1.6rem;
+  font-size: 0.8rem;
+  background: transparent; border: 1px solid currentColor; cursor: pointer;
+  color: inherit; opacity: 0.6; transition: opacity 0.15s, background 0.15s;
+}
+.vg-mover:hover:not(:disabled) { opacity: 1; background: rgba(255,255,255,0.14); }
+.vg-mover:disabled { opacity: 0.2; cursor: default; }
+.vg-del {
+  flex: 0 0 auto;
+  width: 1.7rem; height: 1.7rem;
+  font-size: 0.8rem;
+  background: transparent; border: 1px solid currentColor; border-radius: 50%;
+  cursor: pointer; color: inherit; opacity: 0.65; transition: opacity 0.15s, background 0.15s;
+}
+.vg-del:hover { opacity: 1; background: rgba(139, 44, 10, 0.3); }
+
+/* ── BLOCOS ────────────────────────────────────────────────────────── */
+.vg-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.9rem;
+}
+.vg-bloco {
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  padding: 0.8rem 0.9rem;
+  margin-bottom: 0.9rem;
+}
+.vg-grade .vg-bloco { margin-bottom: 0; }
+.vg-bloco-tit {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--rust-dark);
+  margin: 0 0 0.7rem;
+  border-bottom: 1px solid var(--gold-dim);
+  padding-bottom: 0.35rem;
+}
+
+.vg-linha { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-bottom: 0.6rem; }
+.vg-campo-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1 1 130px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.vg-campo-inline--full { flex-basis: 100%; }
+
+.vg-select, .vg-input, .vg-num {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.4rem 0.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+.vg-select:focus, .vg-input:focus, .vg-num:focus { outline: 1px solid var(--rust); }
+
+.vg-chks { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-bottom: 0.7rem; }
+.vg-chk {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.vg-chk input { cursor: pointer; }
+
+.vg-ritmo-out {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--parchment3);
+  padding: 0.45rem 0.6rem;
+  border-left: 4px solid var(--rust);
+}
+.vg-ritmo-out strong { color: var(--rust-dark); }
+.vg-aviso {
+  margin-top: 0.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 1px solid var(--rust);
+  padding: 0.4rem 0.55rem;
+}
+
+/* barra de progresso */
+.vg-bar {
+  height: 0.85rem;
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  overflow: hidden;
+  margin-bottom: 0.35rem;
+}
+.vg-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--rust), var(--gold));
+  transition: width 0.25s ease;
+}
+.vg-bar-txt {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  margin-bottom: 0.7rem;
+}
+.vg-bar-txt strong { color: var(--rust-dark); }
+
+.vg-linha--dias { align-items: center; gap: 0.4rem; }
+.vg-dias-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.vg-step {
+  width: 1.8rem; height: 1.8rem;
+  font-size: 1rem; line-height: 1;
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  cursor: pointer;
+}
+.vg-step:hover { background: var(--gold); }
+.vg-dias {
+  width: 3rem;
+  text-align: center;
+  padding: 0.3rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+.vg-dica {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--ink-faded);
+  flex: 1 1 100%;
+}
+.vg-linha--dias .vg-dica { flex: 1 1 140px; }
+
+/* ── DIÁRIO ────────────────────────────────────────────────────────── */
+.vg-atalhos { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.7rem; }
+.vg-atalho {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.vg-atalho:hover { background: var(--rust); color: var(--parchment); border-color: var(--rust); }
+
+.vg-diario-item { display: flex; gap: 0.5rem; align-items: flex-start; margin-bottom: 0.5rem; }
+.vg-textarea {
+  flex: 1 1 auto;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 0.55rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  resize: vertical;
+}
+.vg-textarea:focus { outline: 1px solid var(--rust); }
+
+/* ── PARADAS ───────────────────────────────────────────────────────── */
+.vg-parada {
+  border: 1px solid var(--ink-faded);
+  border-left: 4px solid var(--gold);
+  background: var(--parchment2);
+  padding: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+.vg-parada-cab { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.4rem; }
+.vg-parada-nome {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.35rem 0.5rem;
+  font-family: 'IM Fell English', serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.vg-parada-nome:focus { outline: 1px solid var(--rust); }
+
+/* ── REGRAS (consulta) ─────────────────────────────────────────────── */
+.vg-regras {
+  margin-top: 0.4rem;
+  border: 1px solid var(--gold-dim);
+  background: var(--parchment);
+}
+.vg-regras > summary {
+  cursor: pointer;
+  padding: 0.55rem 0.8rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  list-style: none;
+}
+.vg-regras > summary::-webkit-details-marker { display: none; }
+.vg-regras[open] > summary { border-bottom: 1px solid var(--gold-dim); }
+.vg-regras-corpo {
+  padding: 0.6rem 0.9rem 0.9rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.vg-regras-corpo p { margin: 0 0 0.6rem; }
+.vg-regras-corpo strong { color: var(--rust-dark); }
+
+.vg-erro {
+  font-family: 'Crimson Pro', serif;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 2px solid var(--rust);
+  padding: 1rem;
+}
+
+/* ── MEIO DE TRANSPORTE (deslocamento fixado) ──────────────────────── */
+.vg-desloc-fix {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment3);
+  border-left: 4px solid var(--gold-dim);
+  padding: 0.4rem 0.6rem;
+}
+.vg-desloc-fix strong { color: var(--rust-dark); }
+.vg-desloc-fonte { font-style: italic; color: var(--ink-faded); }
+
+/* deslocamento manual (a pé, com efeitos de velocidade) */
+.vg-desloc-manual { flex: 0 1 130px; }
+.vg-desloc-manual .vg-input--num { text-align: center; }
+.vg-desloc-dica {
+  flex: 1 1 100%;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink-faded);
+  align-self: center;
+}
+
+/* ── COMBATE EM VIAGEM ─────────────────────────────────────────────── */
+.vg-add--combate {
+  margin-top: 0.6rem;
+  border-style: solid;
+  border-color: var(--rust);
+  color: var(--rust-dark);
+}
+.vg-add--combate:hover { background: var(--rust); color: var(--parchment); border-color: var(--rust); }
+.vg-combate-regras { margin-top: 0.8rem; }
+.vg-combate-rot {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 0.4rem;
+}
+.vg-regra-mini {
+  border: 1px solid var(--gold-dim);
+  background: var(--parchment);
+  margin-bottom: 0.3rem;
+}
+.vg-regra-mini > summary {
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  color: var(--ink);
+  list-style: none;
+}
+.vg-regra-mini > summary::-webkit-details-marker { display: none; }
+.vg-regra-mini > summary::before { content: '▸ '; color: var(--rust); }
+.vg-regra-mini[open] > summary::before { content: '▾ '; }
+.vg-regra-mini[open] > summary { border-bottom: 1px solid var(--gold-dim); }
+.vg-regra-mini-corpo {
+  padding: 0.5rem 0.7rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* ── FICHA DO VEÍCULO (transporte) ─────────────────────────────────── */
+.vg-ficha-veiculo { border-left: 5px solid var(--rust); }
+.vg-ficha-tam {
+  font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: 0.85rem; color: var(--ink-faded);
+}
+.vg-pv {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;
+  margin: 0.3rem 0 0.8rem;
+}
+.vg-pv-rot {
+  font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--rust-dark); margin-right: 0.3rem;
+}
+.vg-pv-in {
+  width: 3.6rem; text-align: center;
+  padding: 0.3rem; font-family: 'Crimson Pro', serif; font-size: 1rem;
+  color: var(--ink); background: var(--parchment); border: 1px solid var(--ink-faded);
+}
+.vg-pv-in:focus { outline: 1px solid var(--rust); }
+.vg-pv-max { font-family: 'Crimson Pro', serif; color: var(--ink-faded); }
+.vg-pv-full {
+  font-family: 'Cinzel', serif; font-size: 0.62rem; cursor: pointer;
+  color: var(--ink); background: var(--parchment); border: 1px solid var(--gold-dim);
+  padding: 0.28rem 0.5rem;
+}
+.vg-pv-full:hover { background: var(--parchment3); }
+.vg-ficha-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 0.9rem;
+  margin-bottom: 0.6rem;
+}
+.vg-fic-stat {
+  display: flex; flex-direction: column; gap: 0.1rem; min-width: 0;
+  border-bottom: 1px dotted var(--gold-dim); padding: 0.1rem 0 0.3rem;
+  font-family: 'Crimson Pro', serif; font-size: 0.92rem; color: var(--ink);
+}
+.vg-fic-stat--wide { grid-column: 1 / -1; }   /* valores longos ocupam a linha inteira */
+.vg-fic-rot {
+  font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--ink-faded);
+}
+.vg-ficha-regras {
+  font-family: 'Crimson Pro', serif; font-size: 0.9rem; line-height: 1.5;
+  color: var(--ink); background: var(--parchment3); border-left: 3px solid var(--gold-dim);
+  padding: 0.5rem 0.6rem; margin-bottom: 0.5rem;
+}
+
+/* ── RESPONSIVO ────────────────────────────────────────────────────── */
+@media (max-width: 620px) {
+  .vg-grade { grid-template-columns: 1fr; }
+  .vg-cabecalho h1 { font-size: 1.4rem; }
+  .vg-ficha-stats { grid-template-columns: 1fr; }
+}
