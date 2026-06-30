@@ -1,0 +1,921 @@
+/* ═══════════════════════════════════════════════════════════════════
+   LOJA_STYLE.CSS — Estilos para a seção de Gerador de Loja
+   Requer style.css (variáveis CSS globais do projeto)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── CONTAINER PRINCIPAL ────────────────────────────────────────── */
+#loja-content {
+  padding: 2rem 0 3rem;
+  min-height: 70vh;
+}
+
+/* ── CABEÇALHO DA LOJA ──────────────────────────────────────────── */
+.loja-cabecalho {
+  text-align: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 3px double var(--ink);
+  margin-bottom: 2rem;
+}
+
+.loja-titulo-principal {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  color: var(--ink);
+  line-height: 1;
+}
+
+.loja-subtitulo {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--rust-dark);
+  font-size: 1rem;
+  margin-top: 0.4rem;
+}
+
+/* ── ABAS ───────────────────────────────────────────────────────── */
+.loja-abas {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 2rem;
+}
+
+.loja-aba {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.8rem 0.65rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-bottom: none;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  transition: background 0.18s, color 0.18s;
+  position: relative;
+  bottom: -2px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.loja-aba:hover {
+  background: var(--parchment3);
+  color: var(--ink);
+}
+
+.loja-aba.ativa {
+  background: var(--parchment);
+  color: var(--ink);
+  border-color: var(--ink);
+  border-bottom-color: var(--parchment);
+}
+
+.loja-aba-count {
+  font-size: 0.62rem;
+  font-weight: 400;
+  opacity: 0.65;
+  letter-spacing: 0.05em;
+}
+
+/* ── PAINÉIS ────────────────────────────────────────────────────── */
+.loja-painel          { display: none; }
+.loja-painel.ativo    { display: block; }
+
+/* ── BUSCA (Normal / Especial / Magias) ─────────────────────────── */
+.loja-busca {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55rem 0.8rem;
+  margin-bottom: 1.2rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.98rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+.loja-busca::placeholder { color: var(--ink-faded); font-style: italic; }
+.loja-busca:focus { outline: 2px solid var(--rust); }
+
+/* ── LOADING / ERRO ─────────────────────────────────────────────── */
+.loja-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  gap: 1rem;
+}
+
+.loja-loading-icon {
+  font-size: 3rem;
+  animation: pulsar 1.6s ease-in-out infinite;
+}
+
+@keyframes pulsar {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50%       { opacity: 0.7;  transform: scale(1.07); }
+}
+
+.loja-loading-text {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  font-size: 1rem;
+}
+
+.loja-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  gap: 0.8rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.loja-error-titulo {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--rust);
+  margin-bottom: 0.4rem;
+}
+
+.loja-error-msg {
+  font-family: 'Crimson Pro', serif;
+  color: var(--ink-faded);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 540px;
+}
+
+.loja-error-msg code {
+  font-family: 'Courier New', monospace;
+  background: var(--parchment2);
+  padding: 0.1em 0.4em;
+  border-radius: 2px;
+  font-size: 0.85em;
+  color: var(--rust-dark);
+}
+
+.loja-error-detalhe {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--parchment3);
+  margin-top: 0.5rem;
+}
+
+/* ── RESUMO ─────────────────────────────────────────────────────── */
+.loja-resumo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+  align-items: center;
+  padding: 0.7rem 1.1rem;
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  margin-bottom: 1.8rem;
+}
+
+.loja-resumo-item {
+  font-family: 'Cinzel', serif;
+  font-size: 0.67rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-faded);
+  text-transform: uppercase;
+}
+
+.loja-resumo-item strong {
+  color: var(--ink);
+  font-size: 0.8rem;
+}
+
+/* ── DIVISORES DE SEÇÃO ─────────────────────────────────────────── */
+.loja-bloco-tipo {
+  margin-bottom: 2.5rem;
+}
+
+.loja-divisor-tipo {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.loja-divisor-tipo hr {
+  flex: 1;
+  border: none;
+  border-top: 2px solid var(--ink);
+}
+
+.loja-divisor-tipo h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  white-space: nowrap;
+  padding: 0.34rem 1.2rem;
+  border: 2px solid var(--ink);
+  background: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--gold-dim);   /* fio de ouro interno, como anúncio de gazeta */
+}
+
+.loja-divisor-cat {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.9rem 0 0.7rem;
+}
+
+.loja-divisor-cat hr {
+  flex: 1;
+  border: none;
+  border-top: 1px solid var(--parchment3);
+}
+
+.loja-divisor-cat h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  white-space: nowrap;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--parchment3);
+  background: var(--parchment);
+}
+
+/* ── GRID DE ITENS ──────────────────────────────────────────────── */
+.loja-grid-itens {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  align-items: start;
+  gap: 0.65rem;
+  margin-bottom: 0.8rem;
+}
+
+/* ── CARD DE ITEM ───────────────────────────────────────────────── */
+.item-card {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--ink-faded);
+  background: var(--parchment);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.item-card:hover {
+  background: var(--parchment2);
+  border-color: var(--ink);
+}
+
+.item-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.item-nome {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--ink);
+  line-height: 1.35;
+  flex: 1;
+}
+
+.item-badge-desconto {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.12rem 0.45rem;
+  background: var(--rust);
+  color: var(--parchment);
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.item-precos {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.item-preco-orig {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  color: var(--ink-faded);
+  font-weight: 600;
+  text-decoration: line-through;
+  text-decoration-color: var(--rust);
+  text-decoration-thickness: 2px;
+}
+
+.item-seta {
+  font-size: 0.7rem;
+  color: var(--parchment3);
+}
+
+/* preço final como uma "etiqueta" de loja (plaquinha com furo) */
+.item-preco-final {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border: 1px solid var(--ink);
+  padding: 0.14rem 0.55rem 0.14rem 0.85rem;
+  position: relative;
+  white-space: nowrap;
+}
+.item-preco-final::before {              /* furo da etiqueta */
+  content: '';
+  position: absolute;
+  left: 0.32rem;
+  top: 50%;
+  width: 0.34rem;
+  height: 0.34rem;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: var(--parchment);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.item-linha {
+  border: none;
+  border-top: 1px solid var(--parchment3);
+  margin: 0.4rem 0;
+}
+
+.item-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.7rem;
+}
+
+.item-stat {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.75rem;
+  color: var(--ink-faded);
+  line-height: 1.5;
+}
+
+.item-stat strong {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.loja-vazia {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  text-align: center;
+  padding: 3rem 0;
+  font-size: 1rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LOJA ESPECIAL
+   ══════════════════════════════════════════════════════════════════ */
+.especial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1rem;
+  padding-bottom: 2rem;
+}
+
+/* Card de categoria */
+.especial-card {
+  border: 2px solid var(--ink-faded);
+  background: var(--parchment);
+  overflow: hidden;
+}
+
+.especial-card-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--ink);
+  color: var(--parchment);
+  padding: 0.65rem 1rem;
+}
+
+.especial-icone {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.especial-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.especial-contagem {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  color: var(--gold-light);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* Lista de encantamentos */
+.especial-lista {
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.especial-encantamento {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.4rem 0.65rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  transition: background 0.15s;
+}
+
+.especial-encantamento:hover {
+  background: var(--parchment3);
+}
+
+.enc-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--rust-dark);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.enc-sep {
+  color: var(--parchment3);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.enc-efeito {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: var(--ink-faded);
+  line-height: 1.4;
+}
+
+.especial-vazio {
+  padding: 1.2rem 0.5rem;
+  text-align: center;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--parchment3);
+}
+
+/* ── RESPONSIVO ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .loja-abas          { flex-direction: column; }
+  .loja-aba           { bottom: 0; border-bottom: 1px solid var(--ink-faded); }
+  .loja-aba.ativa     { border-color: var(--ink); }
+  .loja-grid-itens    { grid-template-columns: 1fr; }
+  .especial-grid      { grid-template-columns: 1fr; }
+}
+/* ── BOTÃO GERAR NOVA LOJA ──────────────────────────────────────── */
+.loja-gerar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.8rem;
+}
+
+.loja-btn-gerar {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.6rem;
+  cursor: pointer;
+  border: 2px solid var(--ink);
+  background: var(--parchment2);
+  color: var(--ink);
+  transition: background 0.18s, color 0.18s;
+}
+
+.loja-btn-gerar:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--parchment);
+}
+
+.loja-btn-gerar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loja-btn-exportar {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  transition: background 0.18s, color 0.18s;
+}
+
+.loja-btn-exportar:hover {
+  background: var(--ink);
+  color: var(--parchment);
+}
+
+.loja-btn-status {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--ink-faded);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   AJUSTES DE GERAÇÃO (painéis recolhíveis por tipo)
+   ══════════════════════════════════════════════════════════════════ */
+.aj-painel {
+  border: 1px solid var(--ink-faded);
+  background: var(--parchment2);
+  margin-bottom: 1.4rem;
+}
+
+.aj-cabecalho {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  transition: background 0.15s;
+}
+.aj-cabecalho:hover { background: var(--parchment3); }
+
+.aj-seta { color: var(--rust); font-size: 0.7rem; }
+
+/* corpo recolhível */
+.aj-corpo {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.28s ease;
+}
+.aj-painel--aberto .aj-corpo { max-height: 3200px; }
+
+.aj-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.6rem;
+  padding: 0.9rem 1.1rem;
+  border-top: 1px solid var(--parchment3);
+}
+.aj-linha:first-child { border-top: 1px solid var(--ink-faded); }
+
+.aj-tipo {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.02rem;
+  color: var(--ink);
+  min-width: 13rem;
+  flex: 0 0 auto;
+}
+
+.aj-controle { display: flex; flex-direction: column; gap: 0.3rem; }
+
+.aj-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+
+/* ── slider de probabilidade ──────────────────────────────────── */
+.aj-slider-wrap { display: flex; align-items: center; gap: 0.7rem; }
+
+.aj-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 190px;
+  height: 4px;
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  outline: none;
+  cursor: pointer;
+}
+.aj-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--rust);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+}
+.aj-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--rust);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+}
+
+.aj-valor {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--rust-dark);
+  min-width: 3rem;
+  text-align: right;
+}
+
+/* ── campos de desconto ───────────────────────────────────────── */
+.aj-desconto {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink-faded);
+}
+
+.aj-num {
+  width: 3.6rem;
+  padding: 0.25rem 0.35rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.aj-num:focus { outline: 1px solid var(--rust); }
+
+/* ── total disponível no catálogo (ao lado do nome do tipo) ─────── */
+.aj-total {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-top: 0.15rem;
+}
+
+/* ── seletor de modo ──────────────────────────────────────────── */
+.aj-sel {
+  padding: 0.28rem 0.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  cursor: pointer;
+}
+.aj-sel:focus { outline: 1px solid var(--rust); }
+
+.aj-num--qtd { width: 4.4rem; }
+
+/* ── escurece os controles que o modo atual não usa ───────────── */
+.aj-linha[data-modo="quantidade"] .aj-c-prob,
+.aj-linha[data-modo="porcentagem"] .aj-c-qtd,
+.aj-linha[data-modo="porcentagem"] .aj-c-repetir {
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.aj-dica {
+  padding: 0.7rem 1.1rem 0.9rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--ink-faded);
+  border-top: 1px solid var(--parchment3);
+}
+
+@media (max-width: 620px) {
+  .aj-tipo { min-width: 100%; }
+  .aj-slider { width: 150px; }
+}
+/* ═══ HISTÓRICO DAS ÚLTIMAS LOJAS (log persistente) ═══════════════ */
+.log-loja {
+  margin: 0 0 1.6rem;
+  border: 1px solid var(--ink-faded);
+  background: var(--parchment2);
+}
+.log-loja-cab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.5rem 0.8rem;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.log-loja-limpar {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.15s, background 0.15s;
+}
+.log-loja-limpar:hover { opacity: 1; background: rgba(242, 232, 213, 0.18); }
+
+.log-loja-lista { display: flex; flex-direction: column; }
+.log-loja-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.7rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.8rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dotted var(--parchment3);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.log-loja-item:last-child { border-bottom: none; }
+.log-loja-item:hover { background: var(--parchment3); }
+.log-loja-item--ativa { background: #efe2c4; cursor: default; }
+
+.log-loja-quando {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--rust-dark);
+}
+.log-loja-resumo {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink-faded);
+}
+.log-loja-atual {
+  margin-left: auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  border: 1px solid var(--gold-dim);
+  padding: 0.1rem 0.45rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ABA MAGIAS (pergaminhos)
+   ══════════════════════════════════════════════════════════════════ */
+.mag-nota {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-left: 4px solid var(--rust);
+  padding: 0.8rem 1.1rem;
+  margin-bottom: 1.8rem;
+}
+.mag-nota strong { color: var(--ink); }
+.mag-nota em     { color: var(--rust-dark); font-style: italic; }
+
+/* card de pergaminho */
+.mag-circulo-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.12rem 0.45rem;
+  background: var(--ink);
+  color: var(--parchment);
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.mag-preco-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-right: auto;
+}
+
+/* ── tipo (arcana × divina), escola e descrição ─────────────────── */
+.mag-card.mag-tipo-arcana { border-left: 4px solid #3a2a6b; }
+.mag-card.mag-tipo-divina { border-left: 4px solid var(--gold); }
+
+.mag-classificacao {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.35rem 0 0.2rem;
+}
+.mag-tipo-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.45rem;
+  color: var(--parchment);
+  white-space: nowrap;
+}
+.mag-tipo-badge.mag-tipo-arcana { background: #3a2a6b; }
+.mag-tipo-badge.mag-tipo-divina { background: var(--gold); color: var(--ink); }
+
+.mag-escola {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+
+.mag-desc {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink-faded);
+  font-style: italic;
+  margin: 0.2rem 0 0.55rem;
+}
+
+/* ── controles do painel de ajustes ─────────────────────────────── */
+.mag-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink-faded);
+  cursor: pointer;
+}
+.mag-switch input { cursor: pointer; }
+
+.mag-circulos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+}
+.mag-circulo-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.mag-circulo-item input { cursor: pointer; }
+.mag-circulo-item em {
+  font-style: italic;
+  color: var(--ink-faded);
+  font-size: 0.82rem;
+}

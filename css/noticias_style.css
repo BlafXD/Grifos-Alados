@@ -1,0 +1,256 @@
+/* ═══════════════════════════════════════════════════════════════════
+   NOTICIAS_STYLE.CSS — Estilos para a edição dinâmica de notícias
+   Localização: /grifos-alados/css/noticias_style.css
+   Requer: style.css (variáveis CSS globais)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── BOTÃO MODO EDIÇÃO (fixo) ───────────────────────────────────── */
+.nc-btn-edicao {
+  position: fixed;
+  bottom: 1.6rem;
+  right: 1.6rem;
+  z-index: 800;
+  display: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.2rem;
+  cursor: pointer;
+  border: 2px solid var(--ink);
+  background: var(--parchment2);
+  color: var(--ink);
+  transition: background 0.18s, color 0.18s;
+  box-shadow: 2px 3px 10px rgba(30,20,8,.22);
+}
+.nc-btn-edicao:hover              { background: var(--ink); color: var(--parchment); }
+.nc-btn-edicao--ativa             { background: var(--ink); color: var(--parchment); }
+.nc-btn-edicao--ativa:hover       { opacity: 0.82; }
+
+/* ── BOTÕES BASE ────────────────────────────────────────────────── */
+.nc-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  border: 1px solid var(--ink-faded);
+  background: var(--parchment2);
+  color: var(--ink);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.nc-btn:hover     { background: var(--parchment3); border-color: var(--ink); }
+.nc-btn-sm        { padding: 0.18rem 0.5rem; font-size: 0.58rem; }
+.nc-btn-lg        { padding: 0.5rem 1.5rem; font-size: 0.74rem; }
+.nc-btn-primary   { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
+.nc-btn-primary:hover { opacity: 0.84; }
+.nc-btn-add       { border-color: var(--rust-dark); color: var(--rust-dark); }
+.nc-btn-add:hover { background: var(--rust-dark); color: var(--parchment); border-color: var(--rust-dark); }
+.nc-btn-danger    { border-color: var(--rust); color: var(--rust); }
+.nc-btn-danger:hover { background: var(--rust); color: var(--parchment); border-color: var(--rust); }
+
+/* ── CONTROLES DO BLOCO DE ANO ──────────────────────────────────── */
+.nc-ano-ctrl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--parchment3);
+}
+
+/* ── CARD EM MODO EDIÇÃO ────────────────────────────────────────── */
+.nc-editavel {
+  outline: 1px dashed var(--parchment3);
+  outline-offset: 4px;
+}
+
+.nc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.8rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed var(--parchment3);
+}
+
+/* ── BOTÃO + NOVO ANO ───────────────────────────────────────────── */
+.nc-novo-ano {
+  text-align: center;
+  padding: 1.4rem 0 0.5rem;
+}
+
+/* ── VAZIO ──────────────────────────────────────────────────────── */
+.nc-vazio {
+  text-align: center;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  padding: 3rem 0;
+  font-size: 1rem;
+}
+
+/* ── TOAST ──────────────────────────────────────────────────────── */
+.nc-toast {
+  position: fixed;
+  bottom: 5rem;
+  right: 1.6rem;
+  z-index: 900;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.45rem 1rem;
+  background: var(--ink);
+  color: var(--parchment);
+  border: 1px solid var(--parchment3);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.22s, transform 0.22s;
+  pointer-events: none;
+}
+.nc-toast--visivel { opacity: 1; transform: translateY(0); }
+
+/* ══════════════════════════════════════════════════════════════════
+   MODAL
+   ══════════════════════════════════════════════════════════════════ */
+.nc-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 20, 8, 0.65);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.nc-modal {
+  background: var(--parchment);
+  border: 2px solid var(--ink);
+  width: 100%;
+  max-width: 660px;
+  max-height: 92vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.nc-modal-sm { max-width: 380px; }
+
+/* Cabeçalho do modal */
+.nc-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.4rem 0.9rem;
+  border-bottom: 2px solid var(--ink);
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.nc-modal-fechar {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--ink-faded);
+  padding: 0 0.2rem;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.nc-modal-fechar:hover { color: var(--rust); }
+
+/* Corpo do modal */
+.nc-modal-corpo {
+  padding: 1.2rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  flex: 1;
+}
+
+/* Rodapé do modal */
+.nc-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: 0.85rem 1.4rem;
+  border-top: 1px solid var(--parchment3);
+  background: var(--parchment2);
+}
+
+/* Grid de 2 colunas */
+.nc-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+/* Campos do modal */
+.nc-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.nc-campo > span,
+.nc-campo-inline > span {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+
+.nc-campo input,
+.nc-campo select,
+.nc-campo textarea {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  padding: 0.42rem 0.65rem;
+  transition: border-color 0.15s;
+  resize: vertical;
+}
+.nc-campo input:focus,
+.nc-campo select:focus,
+.nc-campo textarea:focus {
+  outline: none;
+  border-color: var(--ink);
+  background: var(--parchment);
+}
+
+/* Campo inline (checkbox) */
+.nc-campo-inline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+.nc-campo-inline input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--ink);
+}
+
+/* ── RESPONSIVO ─────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .nc-row-2     { grid-template-columns: 1fr; }
+  .nc-modal     { max-height: 100vh; border-left: none; border-right: none; }
+  .nc-ano-ctrl  { gap: 0.25rem; }
+}

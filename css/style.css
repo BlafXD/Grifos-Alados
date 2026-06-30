@@ -1,0 +1,1700 @@
+:root {
+  --ink:        #1a1008;
+  --ink-faded:  #3d2b1f;
+  --parchment:  #f2e8d5;
+  --parchment2: #e8d9bc;
+  --parchment3: #d9c9a8;
+  --rust:       #8b2c0a;
+  --rust-dark:  #5c1a04;
+  --gold:       #b8972e;
+  --gold-light: #d4af37;
+  --shadow:     rgba(26,16,8,0.18);
+  /* aliases herdados do gerador-recompensas.html original */
+  --text:      #1a1008;
+  --text-mid:  #3d2b1f;
+  --text-dim:  #6e5a44;
+  --gold-dim:  #8a7320;
+  --border:    #d9c9a8;
+  --blue:      #5c1a04;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  font-family: 'Crimson Pro', Georgia, serif;
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.35;
+}
+
+/* ── NAV BAR — linha de seções da gazeta (faixa fina, fixa ao rolar) ── */
+nav#main-nav {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.28)),
+    var(--ink);
+  border-top: 1px solid var(--gold-dim);
+  border-bottom: 3px double var(--gold);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;                 /* Firefox */
+  -webkit-overflow-scrolling: touch;
+}
+nav#main-nav::-webkit-scrollbar { display: none; }   /* Chromium / Safari */
+
+.nav-inner {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  min-width: max-content;                /* deixa rolar quando não couber */
+  margin: 0 auto;
+  padding: 0 0.4rem;
+}
+
+.nav-link {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--parchment);
+  text-decoration: none;
+  padding: 0.58rem 0.9rem 0.5rem;
+  border-bottom: 3px solid transparent;  /* trilho do sublinhado dourado ativo */
+  transition: color 0.18s, background 0.18s, border-color 0.18s;
+}
+.nav-link + .nav-link { border-left: 1px solid rgba(184,151,46,0.20); }
+
+.nav-link:hover {
+  color: var(--gold-light);
+  background: rgba(184,151,46,0.10);
+}
+.nav-link.active {
+  color: var(--gold-light);
+  background: linear-gradient(180deg, rgba(184,151,46,0.18), rgba(184,151,46,0.03));
+  border-bottom-color: var(--gold);
+}
+
+/* ── WRAPPER ── */
+.wrapper {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+}
+
+/* ── MASTHEAD ── */
+header {
+  background: var(--parchment);
+  border-bottom: 4px solid var(--ink);
+  text-align: center;
+  padding: 2.2rem 1.5rem 1.4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+header::before, header::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 6px;
+}
+header::before { top: 0; background: repeating-linear-gradient(90deg, var(--rust) 0 6px, var(--ink) 6px 12px); }
+header::after  { bottom: 0; background: repeating-linear-gradient(90deg, var(--gold) 0 4px, transparent 4px 8px); }
+
+.masthead-ornament {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.4em;
+  color: var(--rust);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.masthead-title {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.masthead-sub {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--rust-dark);
+  margin-top: 0.3rem;
+  letter-spacing: 0.06em;
+}
+
+.masthead-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 1rem 0 0.6rem;
+}
+.masthead-rule span { flex: 1; height: 1px; background: var(--ink); }
+.masthead-rule em {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-faded);
+}
+
+.masthead-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.08em;
+  color: var(--ink-faded);
+  border-top: 1px solid var(--ink-faded);
+  padding-top: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+/* ── SECTIONS ── */
+section {
+  display: none;
+  background: var(--parchment);
+  min-height: 80vh;
+}
+section.active { display: flow-root; }
+
+/* ── NOTICIAS ── */
+.year-block { padding: 2.5rem 0 0; }
+
+.year-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.8rem;
+}
+.year-header hr { flex: 1; border: none; border-top: 2px solid var(--ink); }
+.year-header h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.28em;
+  color: var(--ink);
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0.3rem 1rem;
+  border: 2px solid var(--ink);
+  background: var(--parchment2);
+}
+
+/* Grid newspaper layout */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 0.9rem;
+  row-gap: 0.9rem;
+  border-top: 3px solid var(--ink);
+  padding-top: 0.9rem;
+}
+
+/* Card variants — each card is a fully closed box */
+.news-card {
+  padding: 1.2rem 0.8rem 1.4rem;
+  border: 1px solid var(--ink-faded);
+  border-radius: 1px;
+  position: relative;
+  background: var(--parchment);
+}
+
+.news-card.span-12 { grid-column: span 12; border-color: var(--ink); border-width: 2px; }
+.news-card.span-8  { grid-column: span 8; }
+.news-card.span-4  { grid-column: span 4; }
+.news-card.span-6  { grid-column: span 6; }
+.news-card.span-3  { grid-column: span 3; }
+
+.news-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.news-title {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  line-height: 1.18;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+.span-12 .news-title { font-size: clamp(1.6rem, 3vw, 2.4rem); }
+.span-8  .news-title { font-size: clamp(1.2rem, 2vw, 1.65rem); }
+.span-6  .news-title { font-size: clamp(1rem, 1.6vw, 1.35rem); }
+.span-4  .news-title { font-size: 1.1rem; }
+.span-3  .news-title { font-size: 0.95rem; }
+
+.news-date {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--rust-dark);
+  margin-bottom: 0.65rem;
+  display: block;
+}
+
+.news-rule {
+  width: 2.5rem;
+  border: none;
+  border-top: 2px solid var(--rust);
+  margin: 0.5rem 0 0.6rem;
+}
+
+.news-body {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--ink-faded);
+  text-align: justify;
+  hyphens: auto;
+}
+.span-12 .news-body { font-size: 1rem; column-count: 3; column-gap: 1.6rem; column-rule: 1px solid rgba(61,43,31,0.22); }
+.span-8  .news-body { column-count: 2; column-gap: 1.2rem; column-rule: 1px solid rgba(61,43,31,0.22); }
+
+/* ── DROP CAP & MANCHETE — abertura de gazeta ─────────────────────── */
+/* Capitular nas matérias grandes (manchetes e matérias largas) */
+.news-card.span-12 .news-body::first-letter,
+.news-card.span-8  .news-body::first-letter {
+  float: left;
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  font-size: 3.3em;
+  line-height: 0.72;
+  padding: 0.05em 0.12em 0 0;
+  margin-top: 0.02em;
+  color: var(--rust-dark);
+}
+
+/* Matéria principal (1ª do ano mais recente) — destaque de capa */
+.news-card.news-lead { border-top: 4px solid var(--gold); }
+.news-card.news-lead .news-title { font-size: clamp(2rem, 4vw, 3rem); }
+.news-card.news-lead .news-body::first-letter { font-size: 3.9em; color: var(--ink); }
+
+/* ── PROGRAMAÇÃO ── */
+.prog-section {
+  padding: 2.5rem 0;
+}
+
+.prog-title {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 3rem;
+  color: var(--ink);
+  text-align: center;
+  border-bottom: 3px double var(--ink);
+  padding-bottom: 0.8rem;
+  margin-bottom: 2rem;
+}
+
+.prog-table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0 0.4rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-top: 3px solid var(--gold);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 2px 12px -7px var(--shadow);
+}
+
+.prog-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Crimson Pro', serif;
+}
+
+.prog-table caption {
+  caption-side: top;
+  text-align: left;
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  padding: 0.55rem 1.1rem 0;
+}
+
+.prog-table thead tr {
+  background: var(--ink);
+  color: var(--parchment);
+}
+
+.prog-table th {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.7rem 1.1rem;
+  text-align: center;
+  white-space: nowrap;
+  border-right: 1px solid rgba(184,151,46,0.22);
+}
+.prog-table th:last-child { border-right: none; }
+
+.prog-table td {
+  padding: 0.58rem 1.1rem;
+  border-bottom: 1px solid var(--parchment3);
+  border-right: 1px solid rgba(217,201,168,0.55);
+  font-size: 0.98rem;
+  text-align: center;
+  vertical-align: middle;
+}
+.prog-table td:last-child { border-right: none; }
+.prog-table tbody tr:last-child td { border-bottom: none; }
+
+.prog-table tbody tr:nth-child(even) td { background: rgba(232,217,188,0.55); }
+.prog-table tbody tr:hover td { background: #e6d6b4; }
+
+/* coluna-chave (ex.: "Normal" na Tabela 3-2) — vence a zebra por ordem/especificidade */
+.prog-table thead th.prog-col-key {
+  background: var(--rust-dark);
+  color: var(--gold-light);
+}
+.prog-table tbody tr td.prog-col-key {
+  background: rgba(184,151,46,0.20);
+  font-weight: 700;
+  color: var(--rust-dark);
+}
+.prog-table tbody tr:hover td.prog-col-key { background: rgba(184,151,46,0.32); }
+
+.prog-table-nota {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin: 0.5rem 0 0.2rem;
+  padding-left: 0.2rem;
+}
+
+.session-badge {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid;
+  border-radius: 2px;
+}
+.badge-realizada { border-color: var(--rust); color: var(--rust); }
+.badge-pendente  { border-color: var(--gold); color: var(--gold-light); background: rgba(184,151,46,0.08); }
+.badge-cancelada { border-color: #888; color: #888; }
+
+/* ── LOJA GENERATOR ── */
+.loja-section {
+  padding: 2.5rem 0;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.loja-title {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 3rem;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+}
+
+.loja-subtitle {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--rust-dark);
+  font-size: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.loja-placeholder {
+  border: 2px dashed var(--parchment3);
+  border-radius: 4px;
+  padding: 4rem 3rem;
+  max-width: 600px;
+  width: 100%;
+}
+
+.loja-placeholder .icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  display: block;
+  opacity: 0.35;
+}
+
+.loja-placeholder p {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.05rem;
+  color: var(--ink-faded);
+  line-height: 1.7;
+}
+
+.loja-placeholder code {
+  font-family: 'Courier New', monospace;
+  background: var(--parchment2);
+  padding: 0.1em 0.4em;
+  border-radius: 2px;
+  font-size: 0.88em;
+}
+
+/* ── ORNAMENTAL DIVIDERS ── */
+.ornament {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--gold);
+  letter-spacing: 0.5em;
+  margin: 1.2rem 0 0;
+  user-select: none;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--ink);
+  color: var(--parchment2);
+  text-align: center;
+  padding: 1.2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  border-top: 3px double var(--gold);
+}
+
+@media (max-width: 768px) {
+  .news-card.span-12 .news-body,
+  .news-card.span-8  .news-body { column-count: 1; }
+  .news-card.span-8,
+  .news-card.span-4,
+  .news-card.span-6,
+  .news-card.span-3 { grid-column: span 12; border-right: none; }
+  .masthead-meta { font-size: 0.62rem; }
+  .nav-link { padding: 0.55rem 0.85rem; font-size: 0.7rem; letter-spacing: 0.08em; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   (Cole este bloco no FINAL do seu style.css existente)
+   GERADOR DE RECOMPENSAS — Estilos integrados ao tema do site
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── LAYOUT DA SEÇÃO ────────────────────────────────────────────── */
+#recompensas-content {
+  padding: 2rem 0 3rem;
+  min-height: 70vh;
+}
+
+/* ── CABEÇALHO ──────────────────────────────────────────────────── */
+#recompensas .recomp-header {
+  text-align: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 3px double var(--ink);
+  margin-bottom: 2rem;
+}
+
+#recompensas h1 {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  color: var(--ink);
+  line-height: 1;
+  font-weight: normal;
+}
+
+#recompensas .subtitle {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--rust-dark);
+  font-size: 1rem;
+  margin-top: 0.4rem;
+  letter-spacing: 0.06em;
+}
+
+#recompensas .header-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.875em;
+  margin-top: 0.9rem;
+}
+#recompensas .header-rule::before,
+#recompensas .header-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--ink);
+}
+#recompensas .header-rule .icon {
+  color: var(--rust);
+  font-size: 1rem;
+}
+
+/* ── PAINEL ─────────────────────────────────────────────────────── */
+#recompensas .panel {
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+#recompensas .panel-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--ink-faded);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--parchment3);
+}
+
+/* ── CONJUNTO DE REGRAS (Padrão × Penitência de Azgher) ─────────── */
+#recompensas .modo-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#recompensas .modo-btn {
+  flex: 1 1 auto;
+  min-width: 12rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.7rem 1rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  color: var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+#recompensas .modo-btn:hover {
+  background: var(--parchment3);
+  border-color: var(--ink-faded);
+  color: var(--ink);
+}
+
+#recompensas .modo-btn.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--parchment);
+}
+
+#recompensas .modo-desc {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ink-faded);
+  margin-top: 0.9rem;
+}
+
+/* ── CATÁLOGO DE TESOUROS (consulta read-only) ─────────────────────── */
+#recompensas .cat-painel {
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  margin-bottom: 1.2rem;
+}
+#recompensas .cat-painel-cab {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.95rem 1.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  user-select: none;
+}
+#recompensas .cat-painel-cab::-webkit-details-marker { display: none; }
+#recompensas .cat-painel-cab::before { content: '▸'; color: var(--rust); }
+#recompensas .cat-painel[open] .cat-painel-cab::before { content: '▾'; }
+#recompensas .cat-painel[open] .cat-painel-cab { border-bottom: 1px solid var(--parchment3); }
+#recompensas .cat-painel-dica {
+  margin-left: auto;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--ink-faded);
+}
+#recompensas .cat-modo-nota {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--parchment3);
+  border-left: 3px solid var(--gold);
+  padding: 0.5rem 0.8rem;
+  margin: 0.9rem 1rem 0.3rem;
+}
+#recompensas #catalogoTesouros {
+  padding: 0.4rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+#recompensas .cat-sec { border: 1px solid var(--parchment3); background: var(--parchment); }
+#recompensas .cat-sec-cab {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  user-select: none;
+}
+#recompensas .cat-sec-cab::-webkit-details-marker { display: none; }
+#recompensas .cat-sec-cab::after { content: '▸'; margin-left: auto; color: var(--rust); font-size: 0.78rem; }
+#recompensas .cat-sec[open] .cat-sec-cab::after { content: '▾'; }
+#recompensas .cat-sec[open] .cat-sec-cab { background: var(--parchment2); border-bottom: 1px solid var(--parchment3); }
+#recompensas .cat-sec-icone { font-size: 0.95rem; flex: 0 0 auto; }
+#recompensas .cat-sec-titulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+}
+#recompensas .cat-sec-cont {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--parchment);
+  background: var(--ink);
+  padding: 0.05rem 0.4rem;
+  border-radius: 2px;
+}
+#recompensas .cat-badge-padrao {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  border: 1px solid var(--rust-dark);
+  padding: 0.04rem 0.35rem;
+}
+#recompensas .cat-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0.55rem 0.8rem 0.7rem;
+  column-width: 13rem;
+  column-gap: 1.4rem;
+}
+#recompensas .cat-item {
+  break-inside: avoid;
+  padding: 0.12rem 0;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  line-height: 1.3;
+}
+#recompensas .cat-item-nome { color: var(--ink); }
+#recompensas .cat-preco { font-family: 'Cinzel', serif; font-size: 0.66rem; color: var(--rust-dark); margin-left: 0.3rem; white-space: nowrap; }
+#recompensas .cat-ref   { font-style: italic; font-size: 0.74rem; color: var(--ink-faded); margin-left: 0.3rem; }
+#recompensas .cat-obs   { font-size: 0.74rem; color: var(--gold-dim); margin-left: 0.3rem; }
+
+/* modo Customizável: blocos cujo filtro está desligado entram esmaecidos */
+#recompensas #catalogoTesouros .cat-sec--off { opacity: 0.4; }
+#recompensas #catalogoTesouros .cat-sec--off .cat-sec-titulo { text-decoration: line-through; }
+
+/* ── FILTROS DO MODO CUSTOMIZÁVEL ─────────────────────────────────── */
+#recompensas .custom-filtros {
+  margin-top: 0.9rem;
+  padding: 0.85rem 1rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+}
+#recompensas .custom-filtros-tit {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  margin: 0 0 0.7rem;
+}
+#recompensas .custom-filtros-grupo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1.1rem;
+  padding: 0.5rem 0;
+  border-top: 1px dashed var(--parchment3);
+}
+#recompensas .custom-filtros-rot {
+  flex: 1 1 100%;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+#recompensas .custom-filtros-rot em {
+  font-family: 'IM Fell English', serif;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink-faded);
+}
+#recompensas .custom-chk {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+}
+#recompensas .custom-chk input { accent-color: var(--rust-dark); cursor: pointer; }
+#recompensas .custom-filtros-nota {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-faded);
+  margin: 0.7rem 0 0;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--parchment3);
+}
+
+/* sub-painel: modo dos pergaminhos (Substituir × Adicional) */
+#recompensas .custom-perg-modo {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1.1rem;
+  margin-top: 0.35rem;
+  margin-left: 1.1rem;
+  padding: 0.4rem 0.7rem;
+  background: var(--parchment3);
+  border-left: 3px solid var(--gold);
+  border-radius: 2px;
+}
+#recompensas .custom-perg-modo[hidden] { display: none; }
+#recompensas .custom-perg-modo-rot {
+  flex: 1 1 100%;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+
+/* ── SELETOR DE ND ──────────────────────────────────────────────── */
+#recompensas .nd-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+#recompensas .nd-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 6px 12px;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  color: var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+#recompensas .nd-btn:hover {
+  background: var(--parchment3);
+  border-color: var(--ink-faded);
+  color: var(--ink);
+}
+
+#recompensas .nd-btn.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--parchment);
+}
+
+/* ── CALCULADORA DE ND DE ENCONTRO (vários inimigos) ─────────────── */
+#recompensas .enc-ajuda {
+  font-size: 0.86rem;
+  color: var(--ink-faded);
+  margin: -0.4rem 0 0.9rem;
+  line-height: 1.4;
+}
+#recompensas .enc-add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+#recompensas .enc-add label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+#recompensas #encNdSel {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  color: var(--ink);
+}
+#recompensas .enc-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 0.45rem 0.9rem;
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  color: var(--ink);
+  cursor: pointer;
+}
+#recompensas .enc-btn:hover { background: var(--ink); color: var(--parchment); }
+#recompensas .enc-btn--limpa { border-style: dashed; }
+#recompensas .enc-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  min-height: 1.5rem;
+  margin-bottom: 0.9rem;
+}
+#recompensas .enc-vazio { font-size: 0.85rem; color: var(--ink-faded); font-style: italic; }
+#recompensas .enc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  padding: 0.25rem 0.3rem 0.25rem 0.6rem;
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  color: var(--ink);
+}
+#recompensas .enc-chip-x {
+  border: none;
+  background: transparent;
+  color: var(--ink-faded);
+  cursor: pointer;
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 0 0.2rem;
+}
+#recompensas .enc-chip-x:hover { color: var(--rust-dark, #8b1020); }
+#recompensas .enc-resultado {
+  border-top: 1px solid var(--parchment3);
+  padding-top: 0.9rem;
+}
+#recompensas .enc-res-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+#recompensas .enc-res-rotulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+#recompensas .enc-res-valor {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+#recompensas .enc-btn--usar {
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.6rem;
+  background: var(--ink);
+  color: var(--parchment);
+}
+#recompensas .enc-btn--usar:hover { background: var(--rust-dark, #5c1a04); }
+#recompensas .enc-nota {
+  font-size: 0.78rem;
+  color: var(--ink-faded);
+  font-style: italic;
+  margin: 0.6rem 0 0;
+  line-height: 1.35;
+}
+
+/* ── CATEGORIA DE TESOURO (Padrão / Metade / Dobro / Nenhum) ──────── */
+#recompensas .cat-tesouro {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--parchment3);
+}
+#recompensas .cat-tesouro-lbl {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 0.6rem;
+}
+#recompensas .cat-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+#recompensas .cat-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 0.45rem 1rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  color: var(--ink-faded);
+  cursor: pointer;
+}
+#recompensas .cat-btn:hover { background: var(--parchment3); border-color: var(--ink-faded); color: var(--ink); }
+#recompensas .cat-btn.active { background: var(--ink); border-color: var(--ink); color: var(--parchment); }
+#recompensas .cat-selo {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.6rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid var(--ink-faded);
+  color: var(--ink);
+  background: var(--parchment3);
+}
+#recompensas .cat-selo--dobro  { border-color: #2f6f3f; color: #2f6f3f; }
+#recompensas .cat-selo--metade { border-color: var(--rust-dark, #8b1020); color: var(--rust-dark, #8b1020); }
+#recompensas .cat-nota {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  background: var(--parchment3);
+  border-left: 3px solid var(--rust-dark, #8b1020);
+  font-size: 0.86rem;
+  color: var(--ink);
+}
+#recompensas .recomp-log-cat {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--ink-faded);
+  color: var(--ink-faded);
+  margin-left: 0.4rem;
+}
+
+/* ── BOTÃO ROLAR ─────────────────────────────────────────────────── */
+#recompensas #rollBtn {
+  display: block;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  color: var(--parchment);
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.12s;
+  margin-bottom: 1.4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+#recompensas #rollBtn:hover {
+  background: var(--rust-dark);
+  border-color: var(--rust-dark);
+  box-shadow: 0 3px 14px var(--shadow);
+  transform: translateY(-2px);
+}
+
+#recompensas #rollBtn:active {
+  transform: translateY(0);
+}
+
+#recompensas #rollBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── ÁREA DE RESULTADOS ─────────────────────────────────────────── */
+#recompensas #resultsArea        { display: none; }
+#recompensas #resultsArea.visible { display: block; }
+
+/* ── SELO DE ND — medalhão de lacre no topo dos resultados ───────── */
+#recompensas .results-head {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 0.6rem;
+  border-bottom: 3px double var(--ink);
+}
+#recompensas .nd-selo {
+  flex: 0 0 auto;
+  width: 4.7rem;
+  height: 4.7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 36%, rgba(255,255,255,0.14), transparent 62%), var(--rust-dark);
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 0 3px var(--rust-dark), 0 0 0 4px var(--gold-dim), 0 3px 11px -4px var(--shadow);
+}
+#recompensas .nd-selo-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  padding-left: 0.3em;                   /* compensa o letter-spacing */
+}
+#recompensas .nd-selo-num {
+  font-family: 'Cinzel', serif;
+  font-size: 1.55rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--parchment);
+}
+#recompensas .results-head-txt { display: flex; flex-direction: column; gap: 0.15rem; }
+#recompensas .results-titulo {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 1.9rem;
+  line-height: 1;
+  color: var(--ink);
+}
+#recompensas .results-sub {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--rust-dark);
+}
+
+#recompensas .section-head {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--ink-faded);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0.75rem;
+  margin-top: 0.25rem;
+}
+#recompensas .section-head::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--parchment3);
+}
+
+#recompensas .divider {
+  border: none;
+  border-top: 1px solid var(--parchment3);
+  margin: 1.2rem 0;
+}
+
+/* ── LINHA DE DADO (d%) ─────────────────────────────────────────── */
+#recompensas .dp-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.6rem;
+}
+
+#recompensas .dp-value {
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--rust-dark);
+  min-width: 36px;
+  text-align: center;
+}
+
+#recompensas .dp-arrow {
+  color: var(--parchment3);
+  font-size: 0.85rem;
+}
+
+#recompensas .dp-match {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink-faded);
+  font-style: italic;
+}
+
+/* ── CARDS DE RESULTADO ─────────────────────────────────────────── */
+#recompensas .result-card {
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-left: 4px solid var(--rust);
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.6rem;
+}
+
+#recompensas .result-card.none {
+  border-left-color: var(--parchment3);
+  background: transparent;
+}
+
+#recompensas .result-card.riqueza {
+  border-left-color: var(--gold);
+}
+
+#recompensas .result-card.magico {
+  border-left-color: var(--rust-dark);
+  background: var(--parchment2);
+}
+
+#recompensas .rc-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 3px;
+}
+
+#recompensas .result-card.none .rc-title {
+  color: var(--ink-faded);
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 1rem;
+}
+
+#recompensas .result-card.magico .rc-title {
+  color: var(--rust-dark);
+}
+
+#recompensas .rc-detail {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: var(--ink-faded);
+  margin-top: 2px;
+  font-style: italic;
+}
+
+#recompensas .rc-body {
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--parchment3);
+}
+
+/* ── SUB-ITENS ───────────────────────────────────────────────────── */
+#recompensas .sub-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 5px;
+}
+
+#recompensas .sub-row + .sub-row {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--parchment3);
+}
+
+#recompensas .sub-line {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+#recompensas .sub-line .bullet {
+  color: var(--rust);
+  font-size: 0.6rem;
+  flex-shrink: 0;
+}
+
+#recompensas .sub-indent {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: var(--ink-faded);
+  margin-left: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+#recompensas .sub-indent .bullet {
+  color: var(--parchment3);
+  font-size: 0.58rem;
+}
+
+/* ── FAIXA DE ATRIBUTOS DO ITEM (dano/crítico/bônus na recompensa) ── */
+#recompensas .rc-stats { margin-top: 3px; }
+#recompensas .rc-stats-txt {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  padding: 0.1rem 0.45rem;
+}
+#recompensas .rc-stats-txt strong { color: var(--ink); font-weight: 700; }
+
+/* ── INLINE DICE ─────────────────────────────────────────────────── */
+#recompensas .dice-inline {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  padding: 1px 6px;
+}
+
+/* ── TAGS ────────────────────────────────────────────────────────── */
+#recompensas .tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  padding: 2px 7px;
+  border: 1px solid var(--parchment3);
+  background: var(--parchment2);
+  color: var(--ink-faded);
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+#recompensas .tag.blue {
+  border-color: var(--ink-faded);
+  background: var(--parchment);
+  color: var(--rust-dark);
+}
+
+#recompensas .peso-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  padding: 1px 5px;
+  border: 1px solid var(--parchment3);
+  background: var(--parchment2);
+  color: var(--ink-faded);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ── REFERÊNCIA DE LIVRO ─────────────────────────────────────────── */
+#recompensas .livro-ref {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  color: var(--rust);
+  font-style: italic;
+}
+
+#recompensas .livro-ref .pag {
+  font-style: normal;
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  color: var(--rust-dark);
+  margin-left: 3px;
+}
+
+#recompensas .ph {
+  color: var(--parchment3);
+  font-style: italic;
+  font-size: 0.82rem;
+}
+
+/* ── ANIMAÇÕES ───────────────────────────────────────────────────── */
+@keyframes recomp-fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#recompensas .anim-in { animation: recomp-fadeIn 0.3s ease both; }
+
+@keyframes recomp-diceShake {
+  0%,100% { transform: rotate(0deg); }
+  20%      { transform: rotate(-8deg) scale(1.1); }
+  40%      { transform: rotate(8deg) scale(1.15); }
+  60%      { transform: rotate(-5deg); }
+  80%      { transform: rotate(5deg); }
+}
+#recompensas .shake { animation: recomp-diceShake 0.4s ease; }
+
+/* ══════════════════════════════════════════════════════════════════
+   MODAL GENÉRICO (GA_abrirModal) — usado pelos exports .txt
+   (Gerador de Loja e Gerador de Recompensas). Tema pergaminho.
+   ══════════════════════════════════════════════════════════════════ */
+.ga-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  background: rgba(26, 16, 8, 0.6);
+  animation: ga-modal-fade 0.15s ease;
+}
+
+@keyframes ga-modal-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.ga-modal {
+  width: 100%;
+  max-width: 460px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--parchment);
+  border: 2px solid var(--ink);
+  box-shadow: 0 8px 28px rgba(26, 16, 8, 0.45);
+  padding: 1.3rem 1.5rem 1.5rem;
+  color: var(--ink);
+}
+
+.ga-modal-cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 3px double var(--ink);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.ga-modal-x {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--ink-faded);
+  padding: 0.2rem 0.4rem;
+}
+.ga-modal-x:hover { color: var(--ink); }
+
+.ga-modal-dica {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ink-faded);
+  margin: 0 0 1rem;
+}
+
+.ga-modal-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.ga-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  cursor: pointer;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--parchment3);
+  background: var(--parchment2);
+}
+.ga-check:hover { border-color: var(--ink-faded); }
+.ga-check input { margin-top: 0.15rem; flex: none; }
+.ga-check strong { font-family: 'Cinzel', serif; }
+.ga-check em { color: var(--gold-dim); font-style: italic; }
+
+.ga-modal-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  border-top: 1px solid var(--ink-faded);
+  padding-top: 1rem;
+}
+
+.ga-btn-principal,
+.ga-btn-sec {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.3rem;
+  cursor: pointer;
+  border: 2px solid var(--ink);
+  transition: background 0.18s, color 0.18s;
+}
+
+.ga-btn-principal {
+  background: var(--ink);
+  color: var(--parchment);
+}
+.ga-btn-principal:hover { background: var(--ink-faded); }
+
+.ga-btn-sec {
+  background: transparent;
+  color: var(--ink);
+  border-width: 1px;
+  padding: 0.55rem 1rem;
+}
+.ga-btn-sec:hover { background: var(--parchment2); }
+
+@media (max-width: 560px) {
+  .ga-modal { padding: 1rem 1.1rem 1.2rem; }
+  .ga-modal-acoes { justify-content: stretch; }
+  .ga-btn-principal, .ga-btn-sec { flex: 1; text-align: center; }
+}
+
+/* ── RODAPÉ DA SEÇÃO ─────────────────────────────────────────────── */
+#recompensas .recomp-footer {
+  text-align: center;
+  margin-top: 2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--parchment3);
+  text-transform: uppercase;
+}
+
+/* ── LOG DAS ÚLTIMAS ROLAGENS ───────────────────────────────────── */
+#recompensas #recompLog { margin-top: 1.6rem; }
+
+#recompensas .recomp-log-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+#recompensas .recomp-log-exportar,
+#recompensas .recomp-log-limpar {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+
+#recompensas .recomp-log-exportar {
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+#recompensas .recomp-log-exportar:hover {
+  opacity: 1;
+  background: var(--ink);
+  color: var(--parchment);
+}
+
+#recompensas .recomp-log-limpar {
+  color: var(--rust-dark);
+  border: 1px solid var(--rust-dark);
+}
+#recompensas .recomp-log-limpar:hover {
+  opacity: 1;
+  background: var(--rust-dark);
+  color: var(--parchment);
+}
+
+#recompensas .recomp-log-item {
+  border: 1px solid var(--parchment3);
+  background: var(--parchment);
+  margin-bottom: 0.5rem;
+}
+#recompensas .recomp-log-item summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.8rem;
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+  list-style: none;
+}
+#recompensas .recomp-log-item summary::-webkit-details-marker { display: none; }
+#recompensas .recomp-log-item summary::before {
+  content: '▸';
+  font-size: 0.8rem;
+  color: var(--ink-faded);
+}
+#recompensas .recomp-log-item[open] summary::before { content: '▾'; }
+#recompensas .recomp-log-item[open] summary {
+  background: var(--parchment2);
+  border-bottom: 1px solid var(--parchment3);
+}
+#recompensas .recomp-log-item summary:hover { background: var(--parchment2); }
+
+#recompensas .recomp-log-nd {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--rust-dark);
+}
+#recompensas .recomp-log-quando {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-faded);
+}
+#recompensas .recomp-log-ultima {
+  margin-left: auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  border: 1px solid var(--gold-dim);
+  padding: 0.1rem 0.45rem;
+}
+#recompensas .recomp-log-corpo { padding: 0.9rem 1rem 1rem; }
+
+/* ── RESPONSIVO ─────────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  #recompensas .panel { padding: 1rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DESCRIÇÕES DE ITENS + TOOLTIPS DE REGRA  (itens-descricoes.js)
+   Usado pela Loja e pelo Gerador de Recompensas.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Termo de regra com explicação ao passar o mouse / focar */
+.ga-tip {
+  position: relative;
+  color: var(--rust-dark);
+  font-weight: 600;
+  border-bottom: 1px dotted var(--rust);
+  cursor: help;
+  outline: none;
+}
+.ga-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 280px;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: 'Crimson Pro', serif;
+  font-weight: 400;
+  font-size: 0.8rem;
+  font-style: normal;
+  line-height: 1.4;
+  text-align: left;
+  letter-spacing: normal;
+  text-transform: none;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--gold);
+  box-shadow: 0 5px 16px rgba(0,0,0,0.45);
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.13s ease;
+  z-index: 60;
+  pointer-events: none;
+}
+.ga-tip::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 2px);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--gold);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.13s ease;
+  z-index: 61;
+  pointer-events: none;
+}
+.ga-tip:hover::after, .ga-tip:focus::after,
+.ga-tip:hover::before, .ga-tip:focus::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Bloco de descrição RECOLHÍVEL (aba de pergaminho) — Loja e Recompensas.
+   Fechado por padrão; o mestre abre só quando quiser ler. */
+.ga-desc {
+  margin-top: 0.5rem;
+  border: 1px solid var(--parchment3);
+  background: var(--parchment2);
+}
+.ga-desc > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.34rem 0.6rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  background: linear-gradient(var(--parchment2), var(--parchment));
+  border-left: 3px solid var(--gold);
+  user-select: none;
+}
+.ga-desc > summary::-webkit-details-marker { display: none; }
+.ga-desc > summary::before { content: '📜'; font-size: 0.8rem; }
+.ga-desc > summary::after {
+  content: '▸';
+  margin-left: auto;
+  font-size: 0.72rem;
+  transition: transform 0.15s ease;
+}
+.ga-desc[open] > summary::after { transform: rotate(90deg); }
+.ga-desc[open] > summary { border-bottom: 1px dashed var(--parchment3); }
+.ga-desc-corpo {
+  padding: 0.55rem 0.7rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.84rem;
+  line-height: 1.46;
+  color: var(--ink-faded);
+  text-align: justify;
+}

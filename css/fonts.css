@@ -1,0 +1,56 @@
+/* ═══════════════════════════════════════════════════════════════════
+   FONTS.CSS — Fontes embutidas (funciona 100% offline)
+   Localização: /grifos-alados/css/fonts.css
+   Arquivos das fontes em: /grifos-alados/fonts/
+   Substitui o carregamento via Google Fonts.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── UnifrakturMaguntia (títulos góticos) ───────────────────────── */
+@font-face {
+  font-family: 'UnifrakturMaguntia';
+  src: url('../fonts/UnifrakturMaguntia.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── IM Fell English (texto com ar antigo) ──────────────────────── */
+@font-face {
+  font-family: 'IM Fell English';
+  src: url('../fonts/IMFellEnglish-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IM Fell English';
+  src: url('../fonts/IMFellEnglish-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ── Cinzel (fonte variável — cobre os pesos 400 a 900) ─────────── */
+@font-face {
+  font-family: 'Cinzel';
+  src: url('../fonts/Cinzel.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Crimson Pro (fonte variável — cobre os pesos 200 a 900) ────── */
+@font-face {
+  font-family: 'Crimson Pro';
+  src: url('../fonts/CrimsonPro.woff2') format('woff2');
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Crimson Pro';
+  src: url('../fonts/CrimsonPro-Italic.woff2') format('woff2');
+  font-weight: 200 900;
+  font-style: italic;
+  font-display: swap;
+}

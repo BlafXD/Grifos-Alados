@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grifos Alados</title>
+  <link rel="icon" type="image/png" href="Grifos_Alados.png">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/loja_style.css">
+  <link rel="stylesheet" href="css/noticias_style.css">
+  <link rel="stylesheet" href="css/monstros_style.css">
+  <link rel="stylesheet" href="css/perigos_style.css">
+  <link rel="stylesheet" href="css/consultas_style.css">
+  <link rel="stylesheet" href="css/viagem_style.css">
+  <link rel="stylesheet" href="css/anotacoes_style.css">
+  <link rel="stylesheet" href="css/mapa_style.css">
+  <link rel="stylesheet" href="css/fichas_style.css">
+  <link rel="stylesheet" href="css/bases_style.css">
+  <link rel="stylesheet" href="css/tempo_style.css">
+</head>
+<body>
+
+<!-- MASTHEAD — nameplate / coroa da gazeta (rola junto com a página) -->
+<header>
+  <div class="masthead-ornament">✦ Fundada no Ano de <span id="mh-fundacao">????</span> · Licença da Coroa de Deheon ✦</div>
+  <div class="masthead-title">Grifos Alados</div>
+  <div class="masthead-sub">O Veículo Oficial de Registros, Notícias e Proclamações de Arton</div>
+  <div class="masthead-rule">
+    <span></span>
+    <em>✦ Verdade · Honra · Registro ✦</em>
+    <span></span>
+  </div>
+  <div class="masthead-meta">
+    <span>VOL. VII, Nº 43</span>
+    <span id="mh-publicado">⚜ Publicado às ???? ⚜</span>
+    <span>Preço: 3 Tibares</span>
+  </div>
+</header>
+
+<!-- NAVIGATION — linha de seções da gazeta (faixa fina, fixa ao rolar) -->
+<nav id="main-nav" aria-label="Seções da gazeta">
+  <div class="nav-inner">
+    <a href="#" class="nav-link active" data-section="noticias">📰 Notícias</a>
+    <a href="#" class="nav-link" data-section="recompensas">🎁 Recompensas</a>
+    <a href="#" class="nav-link" data-section="loja">🏪 Loja</a>
+    <a href="#" class="nav-link" data-section="monstros">⚔ Combates</a>
+    <a href="#" class="nav-link" data-section="perigos">📚 Consultas</a>
+    <a href="#" class="nav-link" data-section="viagem">🐎 Viagem</a>
+    <a href="#" class="nav-link" data-section="anotacoes">📜 Anotações</a>
+    <a href="#" class="nav-link" data-section="fichas">📖 Fichas</a>
+    <a href="#" class="nav-link" data-section="bases">🏰 Bases</a>
+    <a href="#" class="nav-link" data-section="tempo">⏳ Tempo</a>
+  </div>
+</nav>
+
+<!-- ══════════════════ NOTÍCIAS ══════════════════ -->
+<section id="noticias" class="active">
+  <div class="wrapper">
+    <!-- Populado dinamicamente pelo noticias.js -->
+  </div>
+</section>
+
+<!-- ══════════════════ GERADOR DE RECOMPENSAS ══════════════════ -->
+<section id="recompensas">
+  <div class="wrapper">
+
+<div id="recompensas-content">
+
+      <div class="recomp-header">
+        <h1>Gerador de Recompensas</h1>
+        <p class="subtitle">Sistema Tormenta 20</p>
+      </div>
+
+      <!-- Conjunto de Regras: Padrão × Customizável -->
+      <div class="panel">
+        <div class="panel-label">⚖ Conjunto de Regras</div>
+        <div class="modo-toggle">
+          <button id="modoPadrao" class="modo-btn active" type="button">📕 Padrão (T20)</button>
+          <button id="modoCustom" class="modo-btn" type="button">🎛 Customizável</button>
+        </div>
+        <p id="modoDesc" class="modo-desc"></p>
+
+        <!-- Filtros do modo Customizável (visíveis só nele) -->
+        <div id="customFiltros" class="custom-filtros" hidden>
+          <p class="custom-filtros-tit">Escolha o que pode sair ao tirar <strong>“Mágico”</strong>:</p>
+          <div class="custom-filtros-grupo">
+            <span class="custom-filtros-rot">🌟 Itens mágicos específicos <em>(itens nomeados prontos)</em></span>
+            <label class="custom-chk"><input type="checkbox" data-filtro="especArma" checked> Arma</label>
+            <label class="custom-chk"><input type="checkbox" data-filtro="especArmadura" checked> Armadura &amp; Escudo</label>
+            <label class="custom-chk"><input type="checkbox" data-filtro="especEsoter" checked> Esotérico</label>
+          </div>
+          <div class="custom-filtros-grupo">
+            <span class="custom-filtros-rot">💍 Acessórios mágicos nomeados</span>
+            <label class="custom-chk"><input type="checkbox" data-filtro="acessorios" checked> Permitir acessórios (menor / médio / maior)</label>
+          </div>
+          <p class="custom-filtros-nota">O que estiver desmarcado nunca é sorteado: ao cair naquele resultado, a rolagem devolve um item base + encantos no lugar (e acessórios desligados são substituídos por arma/armadura/esotérico).</p>
+
+          <div class="custom-filtros-grupo">
+            <span class="custom-filtros-rot">🧪 Consumíveis <em>(ao tirar “Poção”)</em></span>
+            <label class="custom-chk"><input type="checkbox" data-filtro="catPocao" checked> Poções</label>
+            <label class="custom-chk"><input type="checkbox" data-filtro="pergaminhos"> 📜 Pergaminhos</label>
+            <div class="custom-perg-modo" hidden>
+              <span class="custom-perg-modo-rot">Como os pergaminhos entram:</span>
+              <label class="custom-chk"><input type="radio" name="pergModo" data-perg-modo="substituir" checked> Substituir poções</label>
+              <label class="custom-chk"><input type="radio" name="pergModo" data-perg-modo="adicional"> Adicional <em>(bônus, sem mexer nas poções)</em></label>
+            </div>
+            <p class="custom-filtros-nota">Pergaminhos saem de <strong>window.Magias</strong> com o círculo escalando pelo ND. Desmarque “Poções” para nunca ver poções (se “Pergaminhos · Substituir” estiver ligado, o slot vira pergaminho; senão a categoria é relançada).</p>
+          </div>
+
+          <div class="custom-filtros-grupo">
+            <span class="custom-filtros-rot">⚒ Modos de item</span>
+            <label class="custom-chk"><input type="checkbox" data-filtro="superiorEncantado"> Itens podem ser superiores <strong>e</strong> encantados</label>
+          </div>
+
+          <div class="custom-filtros-grupo">
+            <span class="custom-filtros-rot">📋 Categorias permitidas <em>(desmarque para excluir)</em></span>
+            <label class="custom-chk"><input type="checkbox" data-filtro="catDiverso" checked> Item diverso</label>
+            <label class="custom-chk"><input type="checkbox" data-filtro="catEquipMundano" checked> Equipamento mundano</label>
+            <label class="custom-chk"><input type="checkbox" data-filtro="catSuperior" checked> Superior</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Catálogo de Tesouros — consulta read-only do que pode ser sorteado -->
+      <details class="cat-painel">
+        <summary class="cat-painel-cab">📋 Catálogo de Tesouros
+          <span class="cat-painel-dica">o que pode ser sorteado em cada modo — clique para abrir</span>
+        </summary>
+        <p class="cat-modo-nota" id="catModoNota"></p>
+        <div id="catalogoTesouros"></div>
+      </details>
+
+      <!-- Calculadora de ND de encontro (vários inimigos) -->
+      <div class="panel">
+        <div class="panel-label">⚔ Encontro com vários inimigos — ND total</div>
+        <p class="enc-ajuda">Junte os ND das criaturas do encontro para achar o ND total — XP e tesouro unificados (Ameaças de Arton). Dobrar o nº de inimigos de mesmo ND soma +2.</p>
+        <div class="enc-add">
+          <label for="encNdSel">ND da criatura</label>
+          <select id="encNdSel"></select>
+          <button type="button" id="encAddBtn" class="enc-btn">＋ Adicionar</button>
+          <button type="button" id="encClearBtn" class="enc-btn enc-btn--limpa">Limpar</button>
+        </div>
+        <div id="encLista" class="enc-lista"></div>
+        <div id="encResultado" class="enc-resultado" hidden>
+          <div class="enc-res-linha">
+            <span class="enc-res-rotulo">ND do encontro</span>
+            <span id="encResNd" class="enc-res-valor">—</span>
+          </div>
+          <div class="enc-res-linha">
+            <span class="enc-res-rotulo">XP por personagem</span>
+            <span id="encResXp" class="enc-res-valor">—</span>
+          </div>
+          <button type="button" id="encUsarBtn" class="enc-btn enc-btn--usar">↓ Usar este ND no gerador</button>
+          <p class="enc-nota">Role o tesouro na linha deste ND, usando a categoria (metade / padrão / dobro) da criatura de maior ND e somando os tesouros especiais das participantes.</p>
+        </div>
+      </div>
+
+      <!-- Seleção de ND -->
+      <div class="panel">
+        <div class="panel-label">✦ Selecione o Nível de Dificuldade</div>
+        <div id="ndGrid" class="nd-grid"></div>
+        <div class="cat-tesouro">
+          <span class="cat-tesouro-lbl">Categoria de tesouro da criatura</span>
+          <div id="catGrid" class="cat-grid"></div>
+        </div>
+      </div>
+
+      <!-- Botão de rolagem -->
+      <button id="rollBtn" onclick="rolarRecompensas()">
+        🎲  Rolar Recompensas
+      </button>
+
+      <!-- Área de resultados -->
+      <div id="resultsArea">
+        <div class="panel">
+          <div class="results-head">
+            <div class="nd-selo" title="Nível de Dificuldade">
+              <span class="nd-selo-rot">ND</span>
+              <span class="nd-selo-num" id="resultNdLabel">?</span>
+            </div>
+            <div class="results-head-txt">
+              <span class="results-titulo">Tesouro do Encontro</span>
+              <span class="results-sub">Rolado nas tabelas oficiais de recompensa de Tormenta&nbsp;20</span>
+            </div>
+          </div>
+          <div class="section-head">💰 Dinheiro</div>
+          <div id="moneyOut"></div>
+          <hr class="divider"/>
+          <div class="section-head">🎒 Item</div>
+          <div id="itemsOut"></div>
+        </div>
+        <div class="recomp-footer">✦ Grifos Alados · Tormenta20 · Tabelas de Recompensas ✦</div>
+      </div>
+
+      <!-- Histórico das últimas rolagens (populado pelo recompensas.js) -->
+      <div id="recompLog"></div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════ GERADOR DE LOJA ══════════════════ -->
+<section id="loja">
+  <div class="wrapper">
+    <div id="loja-content">
+      <!-- Populado automaticamente pelo loja.js ao clicar na aba -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ MONSTROS ══════════════════ -->
+<section id="monstros">
+  <div class="wrapper">
+    <div id="monstros-content">
+      <!-- Populado pelo monstros.js -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ CONSULTAS RÁPIDAS ══════════════════ -->
+<section id="perigos">
+  <div class="wrapper">
+    <nav class="cr-subtabs" aria-label="Consultas rápidas">
+      <button type="button" class="cr-subtab cr-subtab--ativa" data-cr-tab="perigos">🌪 Perigos &amp; Ambientes</button>
+      <button type="button" class="cr-subtab" data-cr-tab="veiculos">🚗 Veículos</button>
+      <button type="button" class="cr-subtab" data-cr-tab="animais">🐎 Animais &amp; Montarias</button>
+      <button type="button" class="cr-subtab" data-cr-tab="arsenal">⚔ Arsenal &amp; Regras</button>
+      <button type="button" class="cr-subtab" data-cr-tab="acoes">🎬 Ações &amp; Combate</button>
+      <button type="button" class="cr-subtab" data-cr-tab="ameacas">👹 Regras de Ameaças</button>
+      <button type="button" class="cr-subtab" data-cr-tab="magia">✨ Regras de Magia</button>
+      <button type="button" class="cr-subtab" data-cr-tab="culinaria">🍳 Culinária</button>
+    </nav>
+    <div id="perigos-content" data-cr-panel="perigos">
+      <!-- Populado pelo perigos.js -->
+    </div>
+    <div id="veiculos-content" data-cr-panel="veiculos" hidden>
+      <!-- Populado pelo veiculos.js -->
+    </div>
+    <div id="animais-content" data-cr-panel="animais" hidden>
+      <!-- Populado pelo animais.js -->
+    </div>
+    <div id="arsenal-content" data-cr-panel="arsenal" hidden>
+      <!-- Populado pelo regras-itens.js -->
+    </div>
+    <div id="acoes-content" data-cr-panel="acoes" hidden>
+      <!-- Populado pelo acoes.js -->
+    </div>
+    <div id="ameacas-content" data-cr-panel="ameacas" hidden>
+      <!-- Populado pelo ameacas.js -->
+    </div>
+    <div id="magia-content" data-cr-panel="magia" hidden>
+      <!-- Populado pelo magia-regras.js -->
+    </div>
+    <div id="culinaria-content" data-cr-panel="culinaria" hidden>
+      <!-- Populado pelo culinaria.js -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ PAINEL DE VIAGEM ══════════════════ -->
+<section id="viagem">
+  <div class="wrapper">
+    <div id="viagem-content">
+      <!-- Populado pelo viagem.js -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ ANOTAÇÕES DO MESTRE ══════════════════ -->
+<section id="anotacoes">
+  <div class="wrapper">
+    <nav class="an-subtabs" aria-label="Anotações do Mestre">
+      <button type="button" class="an-subtab an-subtab--ativa" data-an-tab="ramos">📜 Ramos</button>
+      <button type="button" class="an-subtab" data-an-tab="mapa">🗺 Mapa / Linha do tempo</button>
+    </nav>
+    <div id="anotacoes-content" data-an-panel="ramos">
+      <!-- Populado pelo anotacoes.js (árvore de ramos) -->
+    </div>
+    <div id="anotacoes-mapa" data-an-panel="mapa" hidden>
+      <!-- Populado pelo mapa.js (quadro visual estilo Draw.io) -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FICHAS DOS JOGADORES (PDF) ══════════════════ -->
+<section id="fichas">
+  <div class="wrapper">
+    <div id="fichas-content">
+      <!-- Populado pelo fichas.js -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ BASES DO GRUPO ══════════════════ -->
+<section id="bases">
+  <div class="wrapper">
+    <div id="bases-content">
+      <!-- Populado pelo bases.js -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ TEMPO ENTRE AVENTURAS ══════════════════ -->
+<section id="tempo">
+  <div class="wrapper">
+    <div id="tempo-content">
+      <!-- Populado pelo tempo.js -->
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  ✦ GRIFOS ALADOS · ARTON · ANO DE <span id="mh-ano-rodape">1424</span> · TODOS OS DIREITOS RESERVADOS À COROA ✦
+</footer>
+
+<!-- script.js primeiro: define utilitários globais (GA_esc, GA_abrirModal…) usados pelos demais -->
+<script src="js/script.js"></script>
+<script src="js/noticias-data.js"></script>
+<script src="js/noticias.js"></script>
+<script src="js/loja_completa.js"></script>
+<script src="js/itens-descricoes-data.js"></script>
+<script src="js/itens-descricoes-extra-data.js"></script>
+<script src="js/itens-descricoes.js"></script>
+<script src="js/magias.js"></script>
+<script src="js/loja.js"></script>
+<script src="js/perigos-data.js"></script>
+<script src="js/veiculos-data.js"></script>
+<script src="js/animais-data.js"></script>
+<script src="js/criticos-data.js"></script>
+<script src="js/monstros.js"></script>
+<script src="js/perigos.js"></script>
+<script src="js/veiculos.js"></script>
+<script src="js/animais.js"></script>
+<script src="js/regras-itens-data.js"></script>
+<script src="js/regras-itens.js"></script>
+<script src="js/acoes-data.js"></script>
+<script src="js/acoes.js"></script>
+<script src="js/ameacas-data.js"></script>
+<script src="js/ameacas.js"></script>
+<script src="js/magia-regras-data.js"></script>
+<script src="js/magia-regras.js"></script>
+<script src="js/culinaria-data.js"></script>
+<script src="js/culinaria.js"></script>
+<script src="js/consultas.js"></script>
+<script src="js/viagem.js"></script>
+<script src="js/anotacoes.js"></script>
+<script src="js/mapa.js"></script>
+<script src="js/fichas.js"></script>
+<script src="js/bases-data.js"></script>
+<script src="js/bases.js"></script>
+<script src="js/tempo-data.js"></script>
+<script src="js/tempo.js"></script>
+<script src="js/recompensas.js"></script>
+
+</body>
+</html>

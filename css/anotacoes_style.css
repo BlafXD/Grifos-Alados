@@ -1,0 +1,206 @@
+/* ═══════════════════════════════════════════════════════════════════
+   ANOTACOES_STYLE.CSS — Anotações do Mestre
+   Localização: /grifos-alados/css/anotacoes_style.css
+   Usa as variáveis de cor definidas em style.css (:root).
+   Cada ramo recebe --cor da sua categoria (definida no anotacoes.js).
+   ═══════════════════════════════════════════════════════════════════ */
+
+#anotacoes .wrapper { padding-bottom: 3rem; }
+
+/* ── CABEÇALHO ────────────────────────────────────────────────────── */
+.an-cabecalho {
+  text-align: center;
+  padding: 2rem 0 1.5rem;
+  border-bottom: 3px double var(--ink);
+  margin-bottom: 2rem;
+}
+.an-cabecalho h1 {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: normal;
+  color: var(--ink);
+  line-height: 1;
+}
+.an-subtitulo {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--rust-dark);
+  font-size: 1rem;
+  margin-top: 0.4rem;
+}
+
+/* ── BACKUP / EXPORTAÇÃO / IMPORTAÇÃO (cabeçalho) ─────────────────── */
+.an-backup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+.an-backup-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: background 0.16s, color 0.16s;
+}
+.an-backup-btn:hover { background: var(--ink); color: var(--parchment); }
+.an-backup-btn--imp {
+  border-color: var(--rust-dark);
+  color: var(--rust-dark);
+}
+.an-backup-btn--imp:hover { background: var(--rust-dark); color: var(--parchment); }
+
+.an-vazio {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  text-align: center;
+  padding: 1.6rem 1rem;
+}
+
+/* ── RAMO (o cartão) ──────────────────────────────────────────────── */
+.an-ramo {
+  border: 1px solid var(--ink-faded);
+  border-left: 5px solid var(--cor, #6e6256);
+  background: var(--parchment2);
+  margin-bottom: 0.8rem;
+}
+.an-ramo-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--parchment3);
+  border-bottom: 1px solid var(--parchment3);
+}
+.an-corpo { padding: 0.7rem 0.7rem 0.8rem; }
+.an-ramo:not(.an-aberto) .an-corpo { display: none; }
+.an-ramo:not(.an-aberto) .an-ramo-cab { border-bottom: none; }
+
+.an-toggle {
+  flex: 0 0 auto;
+  width: 1.8rem; height: 1.8rem;
+  font-size: 0.8rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* seletor de categoria — pequeno, com a cor do ramo */
+.an-cat {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor, #6e6256);
+  background: var(--parchment);
+  border: 1px solid var(--cor, #6e6256);
+  padding: 0.22rem 0.3rem;
+  cursor: pointer;
+}
+.an-cat:focus { outline: 1px solid var(--rust); }
+
+.an-titulo {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: var(--ink);
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.an-titulo:hover { border-bottom-color: currentColor; }
+.an-titulo:focus { outline: none; border-bottom-color: currentColor; }
+
+.an-contador {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* botões pequenos do cabeçalho (↑ ↓ ✕) */
+.an-mini {
+  flex: 0 0 auto;
+  width: 1.6rem; height: 1.6rem;
+  font-size: 0.8rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.15s, background 0.15s;
+}
+.an-mini:hover:not(:disabled) { opacity: 1; background: rgba(0, 0, 0, 0.14); }
+.an-mini:disabled { opacity: 0.2; cursor: default; }
+.an-mini--del { border-radius: 50%; }
+.an-mini--del:hover { background: rgba(92, 26, 4, 0.18); }
+
+/* ── TEXTO DO RAMO (cresce sozinho) ───────────────────────────────── */
+.an-texto {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 3.6rem;
+  padding: 0.45rem 0.55rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  resize: none;
+  overflow: hidden;
+}
+.an-texto:focus { outline: 1px solid var(--rust); }
+
+/* ── SUB-RAMOS (a ramificação) ────────────────────────────────────── */
+.an-filhos {
+  margin: 0.7rem 0 0 0.7rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--parchment3);
+}
+.an-filhos .an-ramo { background: var(--parchment); }
+.an-filhos .an-filhos .an-ramo { background: var(--parchment2); }
+
+/* ── BOTÕES DE ADICIONAR ──────────────────────────────────────────── */
+.an-add {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px dashed var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.an-add:hover { background: var(--ink); color: var(--parchment); }
+.an-add--raiz { margin-top: 1.4rem; padding: 0.7rem 1rem; font-size: 0.78rem; border-style: solid; }
+.an-add--sub  { margin-top: 0.7rem; }
+
+/* ── RESPONSIVO ───────────────────────────────────────────────────── */
+@media (max-width: 620px) {
+  .an-filhos { margin-left: 0.3rem; padding-left: 0.5rem; }
+  .an-corpo { padding-left: 0.5rem; padding-right: 0.5rem; }
+  .an-contador { display: none; }
+}

@@ -1,0 +1,499 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MAPA_STYLE.CSS — Anotações · Mapa / Linha do tempo
+   Quadro visual editável (estilo Draw.io): nós arrastáveis, ligações
+   com setas, pan + zoom e um botão para auto-organizar em linha do tempo.
+   Usa as variáveis de cor de style.css. Cada nó recebe --cor da categoria.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── SUB-ABAS DAS ANOTAÇÕES (📜 Ramos | 🗺 Mapa) ───────────────────── */
+.an-subtabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 0 0.7rem;
+  margin-bottom: 0.4rem;
+  background: var(--parchment);
+  border-bottom: 2px solid var(--gold-dim);
+  /* gruda logo abaixo do menu principal (altura real em --nav-h) */
+  position: sticky;
+  top: var(--nav-h, 48px);
+  z-index: 90;
+}
+.an-subtab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.an-subtab:hover { background: var(--parchment3); }
+.an-subtab--ativa {
+  background: var(--ink);
+  color: var(--parchment);
+  border-color: var(--ink);
+}
+
+/* ── BARRA DE FERRAMENTAS ──────────────────────────────────────────── */
+.mp-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.8rem 0 0.9rem;
+}
+.mp-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.mp-btn:hover { background: var(--ink); color: var(--parchment); }
+.mp-btn--destaque {
+  background: var(--ink);
+  color: var(--parchment);
+}
+.mp-btn--destaque:hover { background: var(--rust-dark); border-color: var(--rust-dark); }
+.mp-btn--perigo { border-color: var(--rust-dark); color: var(--rust-dark); }
+.mp-btn--perigo:hover { background: var(--rust-dark); color: var(--parchment); }
+.mp-btn--ativo { background: var(--rust-dark); color: var(--parchment); border-color: var(--rust-dark); }
+.mp-btn--ativo:hover { background: var(--ink); border-color: var(--ink); }
+.mp-toolbar-sep { flex: 1 1 0; min-width: 0; }       /* empurra o grupo seguinte p/ a direita */
+
+/* ── DICA DE LIGAÇÃO (aparece ao conectar nós) ─────────────────────── */
+.mp-dica {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border: 1px solid var(--ink);
+  padding: 0.4rem 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── VIEWPORT (a moldura do quadro) ────────────────────────────────── */
+.mp-viewport {
+  position: relative;
+  height: clamp(500px, 80vh, 1200px);
+  overflow: hidden;
+  background-color: var(--parchment2);
+  /* grade fina estilo papel quadriculado */
+  background-image:
+    linear-gradient(rgba(26,16,8,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,16,8,0.06) 1px, transparent 1px),
+    linear-gradient(rgba(26,16,8,0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,16,8,0.10) 1px, transparent 1px);
+  background-size: 28px 28px, 28px 28px, 140px 140px, 140px 140px;
+  border: 2px solid var(--ink);
+  box-shadow: inset 0 0 30px rgba(26,16,8,0.12);
+  cursor: grab;
+  touch-action: none;                 /* o pan/zoom é nosso, não do navegador */
+  user-select: none;
+}
+.mp-viewport.mp--panning { cursor: grabbing; }
+
+/* ── CANVAS (mundo transformável: pan + zoom) ──────────────────────── */
+.mp-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+}
+
+/* SVG das ligações — não captura clique (os nós e os ✕ ficam por cima) */
+.mp-links {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  overflow: visible;
+  pointer-events: none;
+}
+.mp-link-path { fill: none; stroke-width: 2.4px; }
+
+/* botõezinhos ✕ no meio de cada ligação (apagam a seta) */
+.mp-edge-dels { position: absolute; top: 0; left: 0; pointer-events: none; }
+.mp-edge-del {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 1.15rem;
+  height: 1.15rem;
+  line-height: 1;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--rust-dark);
+  background: var(--parchment);
+  color: var(--rust-dark);
+  cursor: pointer;
+  opacity: 0.35;
+  pointer-events: auto;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+.mp-edge-del:hover { opacity: 1; background: var(--rust-dark); color: var(--parchment); }
+
+/* ── NÓ (o cartão arrastável) ──────────────────────────────────────── */
+.mp-no {
+  position: absolute;
+  width: 210px;
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-left: 5px solid var(--cor, #6e6256);
+  box-shadow: 0 2px 8px rgba(26,16,8,0.22);
+  transition: left 0.34s ease, top 0.34s ease, box-shadow 0.15s;
+}
+/* enquanto arrasta/organiza, sem transição "preguiçosa" no que move */
+.mp--arrastando .mp-no { transition: box-shadow 0.15s; }
+
+/* nó de tamanho fixo (depois de redimensionar): a caixa de texto preenche o corpo */
+.mp-no--fixa { display: flex; flex-direction: column; }
+.mp-no--fixa .mp-no-texto { flex: 1 1 auto; height: auto; min-height: 0; overflow: auto; }
+
+/* alça de redimensionar — canto inferior direito */
+.mp-no-resize {
+  position: absolute;
+  right: 1px; bottom: 1px;
+  width: 0.95rem; height: 0.95rem;
+  display: flex; align-items: flex-end; justify-content: flex-end;
+  font-size: 0.7rem; line-height: 1;
+  color: var(--ink-faded);
+  cursor: nwse-resize;
+  opacity: 0.3;
+  user-select: none;
+  transition: opacity 0.15s, color 0.15s;
+}
+.mp-no:hover .mp-no-resize { opacity: 0.75; }
+.mp-no-resize:hover { opacity: 1; color: var(--rust-dark); }
+.mp-no.mp-no--origem { box-shadow: 0 0 0 3px var(--rust), 0 2px 8px rgba(26,16,8,0.3); }
+.mp--ligando .mp-no { cursor: crosshair; }
+.mp--ligando .mp-no:hover { box-shadow: 0 0 0 3px var(--gold), 0 2px 8px rgba(26,16,8,0.3); }
+
+.mp-no-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.4rem;
+  background: var(--parchment3);
+  border-bottom: 1px solid var(--gold-dim);
+  cursor: grab;
+}
+.mp--arrastando .mp-no-cab { cursor: grabbing; }
+.mp-no-grip { font-size: 0.8rem; color: var(--ink-faded); opacity: 0.7; cursor: grab; }
+
+.mp-no-cat {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cor, #6e6256);
+  background: var(--parchment);
+  border: 1px solid var(--cor, #6e6256);
+  padding: 0.18rem 0.26rem;
+  cursor: pointer;
+}
+.mp-no-espaco { flex: 1 1 auto; }
+.mp-no-del {
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 1.35rem;
+  font-size: 0.72rem;
+  border-radius: 50%;
+  border: 1px solid var(--ink-faded);
+  background: transparent;
+  color: var(--ink-faded);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+.mp-no-del:hover { opacity: 1; background: rgba(92,26,4,0.2); color: var(--rust-dark); }
+
+.mp-no-dup {
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 1.35rem;
+  font-size: 0.7rem;
+  border: 1px solid var(--ink-faded);
+  background: transparent;
+  color: var(--ink-faded);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+.mp-no-dup:hover { opacity: 1; background: rgba(26,16,8,0.12); color: var(--ink); }
+
+.mp-no-titulo {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  padding: 0.4rem 0.5rem 0.2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.mp-no-titulo:focus { outline: none; border-bottom-color: var(--cor, var(--rust)); }
+
+/* corpo do nó = texto rico (contenteditable): negrito/itálico/tamanho por trecho */
+.mp-no-texto {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 2.4rem;
+  padding: 0.2rem 0.5rem 0.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink-faded);
+  background: transparent;
+  border: none;
+  overflow: hidden;
+  cursor: text;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.mp-no-texto:focus { outline: none; }
+.mp-no-texto:empty::before {
+  content: attr(data-ph);
+  color: var(--ink-faded);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* alça de conexão — o "plugue" à direita do nó */
+.mp-no-handle {
+  position: absolute;
+  right: -0.62rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--parchment);
+  background: var(--cor, #6e6256);
+  color: var(--parchment);
+  font-size: 0.72rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: crosshair;
+  box-shadow: 0 1px 4px rgba(26,16,8,0.4);
+  opacity: 0.55;
+  transition: opacity 0.15s, transform 0.12s;
+}
+.mp-no:hover .mp-no-handle { opacity: 1; }
+.mp-no-handle:hover { transform: translateY(-50%) scale(1.18); }
+
+/* ── ESTADO VAZIO ──────────────────────────────────────────────────── */
+.mp-vazio {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+  pointer-events: none;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--ink-faded);
+  padding: 2rem;
+}
+.mp-vazio strong {
+  font-family: 'Cinzel', serif;
+  font-style: normal;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+}
+/* display:flex acima venceria o [hidden] do navegador — reforça o ocultar */
+.mp-vazio[hidden] { display: none; }
+
+/* ── RODAPÉ (dica de uso) ──────────────────────────────────────────── */
+.mp-rodape {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-faded);
+  text-align: center;
+  margin-top: 0.7rem;
+  line-height: 1.6;
+}
+.mp-rodape kbd {
+  font-family: 'Cinzel', serif;
+  font-style: normal;
+  font-size: 0.7rem;
+  background: var(--parchment3);
+  border: 1px solid var(--gold-dim);
+  border-radius: 2px;
+  padding: 0.05rem 0.35rem;
+}
+
+/* ── FORMATAÇÃO (cor/recolher/travar no bloco; B/I/A± no trecho selecionado) ── */
+/* barra de formatação — revela ao passar o mouse / focar / selecionar */
+.mp-no-fmt {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--parchment3);
+  border-bottom: 1px solid var(--gold-dim);
+  padding: 0 4px;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.15s ease, opacity 0.15s ease, padding 0.15s ease;
+}
+.mp-no:hover .mp-no-fmt,
+.mp-no:focus-within .mp-no-fmt,
+.mp-no--sel .mp-no-fmt { max-height: 1.7rem; opacity: 1; padding: 2px 4px; }
+.mp-fmt-btn {
+  flex: 0 0 auto;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  font-size: 0.64rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gold-dim);
+  background: var(--parchment);
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0 0.15rem;
+  border-radius: 2px;
+}
+.mp-fmt-btn:hover { background: var(--ink); color: var(--parchment); }
+.mp-fmt-on { background: var(--ink); color: var(--parchment); }
+.mp-fmt-sep { width: 1px; height: 0.85rem; background: var(--gold-dim); margin: 0 1px; flex: 0 0 auto; }
+.mp-fmt-cor {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 1px solid var(--gold-dim);
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.mp-no-cor { width: 1.7rem; height: 1.7rem; border: none; background: none; padding: 0; cursor: pointer; }
+
+/* recolhido: mostra só cabeçalho + título */
+.mp-no--recolhido { height: auto !important; }
+.mp-no--recolhido .mp-no-texto,
+.mp-no--recolhido .mp-no-resize { display: none; }
+
+/* travado: não move/edita; sem alça nem plugue, com cadeado no canto */
+.mp-no--travado .mp-no-resize,
+.mp-no--travado .mp-no-handle { display: none; }
+.mp-no--travado .mp-no-cab,
+.mp-no--travado .mp-no-grip,
+.mp-no--travado .mp-no-titulo,
+.mp-no--travado .mp-no-texto { cursor: default; }
+.mp-no--travado .mp-no-grip { opacity: 0.3; }
+.mp-no--travado::after {
+  content: '🔒';
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  font-size: 0.72rem;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+/* selecionado para agrupar */
+.mp-no--sel { box-shadow: 0 0 0 3px var(--rust), 0 2px 10px rgba(26,16,8,0.3) !important; }
+
+/* busca: realça quem casa, apaga o resto */
+.mp-no--apaga { opacity: 0.22; }
+.mp-no--match { box-shadow: 0 0 0 3px var(--gold-light), 0 2px 10px rgba(26,16,8,0.3); }
+
+/* rótulo no meio da seta (clique para editar; ＋ aparece ao passar o mouse) */
+.mp-edge-rot {
+  position: absolute;
+  transform: translate(-50%, -165%);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  padding: 0 0.3rem;
+  max-width: 11rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.mp-edge-rot--vazio { opacity: 0; border-style: dashed; color: var(--ink-faded); }
+.mp-edge-rot--vazio:hover { opacity: 0.85; }
+
+/* campo de busca na toolbar */
+.mp-busca-inp {
+  flex: 0 0 auto;
+  width: 9.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--ink-faded);
+  background: var(--parchment2);
+  color: var(--ink);
+}
+.mp-busca-inp:focus { outline: 2px solid var(--rust); }
+
+/* botão desabilitado (ex.: Agrupar sem 2+ selecionados) */
+.mp-btn:disabled { opacity: 0.4; cursor: default; }
+.mp-btn:disabled:hover { background: var(--parchment2); color: var(--ink); }
+
+/* ── TELA CHEIA (Fullscreen API) / MAXIMIZADO (fallback CSS) ─────────── */
+#anotacoes-mapa:fullscreen,
+#anotacoes-mapa.mp--maximizado {
+  background: var(--parchment);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0.7rem 1rem 0.9rem;
+}
+#anotacoes-mapa.mp--maximizado {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+#anotacoes-mapa:fullscreen .mp-viewport,
+#anotacoes-mapa.mp--maximizado .mp-viewport {
+  height: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+#anotacoes-mapa:fullscreen .mp-rodape,
+#anotacoes-mapa.mp--maximizado .mp-rodape { display: none; }
+
+/* ── RESPONSIVO ────────────────────────────────────────────────────── */
+@media (max-width: 620px) {
+  .mp-toolbar-sep { flex-basis: 100%; height: 0; }
+  .mp-viewport { height: clamp(420px, 70vh, 760px); }
+}
