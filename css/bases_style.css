@@ -2,13 +2,37 @@
    BASES (bases.js) — tema pergaminho
    ═══════════════════════════════════════════════════════════════════ */
 
-.bs-cabecalho { text-align: center; margin-bottom: 1.3rem; }
-.bs-cabecalho h1 {
+.bs-cabecalho {
+  text-align: center;
+  padding: 1.8rem 0 1.4rem;
+  border-bottom: 3px double var(--ink);
+  margin-bottom: 1.8rem;
+}
+.bs-cabecalho::before {
+  content: '✦ Cartório de Arton ✦';
+  display: block;
   font-family: 'Cinzel', serif;
-  font-size: 1.8rem; letter-spacing: 0.06em; color: var(--ink); margin: 0 0 0.3rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 0.55rem;
+}
+.bs-cabecalho h1 {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: clamp(2.1rem, 5vw, 3.3rem);
+  font-weight: normal;
+  color: var(--ink);
+  line-height: 1;
+  margin: 0;
 }
 .bs-subtitulo {
-  font-family: 'Crimson Pro', serif; font-style: italic; color: var(--ink-faded); margin: 0 0 0.7rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--rust-dark);
+  margin: 0.4rem 0 0.85rem;
 }
 .bs-backup { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
 .bs-backup-btn {

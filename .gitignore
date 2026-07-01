@@ -10,6 +10,11 @@ T20 - Tabela de geração de tesouros.xlsx
 *.xlsx
 Regras.txt
 
+# ── Pasta-rascunho pessoal (jogar coisas aqui sem risco de commit) ─
+# A pasta é mantida no repo pelo .gitkeep; todo o resto é ignorado.
+Inútil/*
+!Inútil/.gitkeep
+
 # ── Lixo do sistema operacional ──────────────────────────────────
 Thumbs.db
 ehthumbs.db

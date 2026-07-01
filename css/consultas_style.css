@@ -9,10 +9,12 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.4rem;
-  padding: 0.5rem 0 0.7rem;
-  margin-bottom: 1rem;
-  background: var(--parchment);
-  border-bottom: 2px solid var(--gold-dim);
+  padding: 0.6rem 0.4rem 0.75rem;
+  margin-bottom: 1.2rem;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.22), transparent 45%),
+    var(--parchment);
+  border-bottom: 3px double var(--gold-dim);
   /* gruda logo abaixo do menu principal (altura real em --nav-h) */
   position: sticky;
   top: var(--nav-h, 48px);
@@ -20,40 +22,70 @@
 }
 .cr-subtab {
   font-family: 'Cinzel', serif;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--ink);
+  letter-spacing: 0.06em;
+  color: var(--ink-faded);
   background: var(--parchment2);
   border: 1px solid var(--gold-dim);
-  padding: 0.45rem 0.9rem;
+  padding: 0.45rem 0.95rem;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
 }
-.cr-subtab:hover { background: var(--parchment3); }
-.cr-subtab--ativa {
-  background: var(--ink);
+.cr-subtab:hover { background: var(--parchment3); color: var(--ink); }
+.cr-subtab--ativa,
+.cr-subtab--ativa:hover {
   color: var(--parchment);
+  background: var(--ink);
   border-color: var(--ink);
+  box-shadow: inset 0 2px 0 var(--gold);      /* fio de ouro no topo da aba ativa */
 }
 
 /* O menu principal segue FIXO no topo também nesta aba, igual às demais
    (Monstros etc.) — assim as abas não "sobem" ao rolar consultas longas.
    (Antes havia um override deixando o nav rolar junto; foi removido.) */
 
-/* ── cabeçalho de painel ────────────────────────────────────────── */
-.cr-cabecalho { text-align: center; margin-bottom: 1.1rem; }
+/* ── cabeçalho de painel — "dateline de departamento" da gazeta ──── */
+.cr-cabecalho {
+  position: relative;
+  margin: 0.3rem 0 1.5rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 2px solid var(--ink);
+}
+.cr-cabecalho::after {                 /* fio de ouro que ecoa o masthead */
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -5px;
+  height: 1px;
+  background: var(--gold-dim);
+}
+.cr-cabecalho::before {                /* sobrancelha */
+  content: '✦ Compêndio de Arton ✦';
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 0.4rem;
+}
 .cr-cabecalho h1 {
   font-family: 'Cinzel', serif;
-  font-size: 1.7rem;
-  letter-spacing: 0.05em;
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.12;
   color: var(--ink);
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.3rem;
 }
 .cr-sub {
   font-family: 'IM Fell English', serif;
   font-style: italic;
+  font-size: 1.02rem;
+  line-height: 1.4;
   color: var(--ink-faded);
+  max-width: 62ch;
   margin: 0;
 }
 
@@ -61,27 +93,45 @@
 .cr-busca {
   width: 100%;
   box-sizing: border-box;
-  padding: 0.6rem 0.8rem;
-  margin-bottom: 1.1rem;
+  padding: 0.62rem 0.85rem;
+  margin-bottom: 1.3rem;
   font-family: 'Crimson Pro', serif;
   font-size: 1rem;
   color: var(--ink);
   background: var(--parchment2);
   border: 1px solid var(--ink-faded);
+  box-shadow: inset 0 1px 3px rgba(26,16,8,0.12);
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-.cr-busca:focus { outline: 2px solid var(--rust); }
+.cr-busca::placeholder { color: var(--ink-faded); opacity: 0.7; font-style: italic; }
+.cr-busca:focus {
+  outline: none;
+  border-color: var(--rust);
+  box-shadow: inset 0 1px 3px rgba(26,16,8,0.12), 0 0 0 2px rgba(139,44,10,0.28);
+}
 
 /* ── grupos e listas ────────────────────────────────────────────── */
-.vc-grupo { margin-bottom: 1.6rem; }
+.vc-grupo { margin-bottom: 1.9rem; }
 .vc-grupo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-family: 'Cinzel', serif;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--rust-dark);
-  border-bottom: 1px solid var(--gold-dim);
-  padding-bottom: 0.35rem;
-  margin: 0 0 0.8rem;
+  padding-bottom: 0.4rem;
+  margin: 0 0 0.9rem;
+  /* fio de ouro que esvai à direita — divisor de "departamento" */
+  border-bottom: 1px solid transparent;
+  border-image: linear-gradient(90deg, var(--gold-dim) 30%, transparent) 1;
+}
+.vc-grupo-titulo::before {             /* losango de ferrugem */
+  content: '◆';
+  font-size: 0.62rem;
+  color: var(--rust);
+  flex: 0 0 auto;
 }
 .vc-lista {
   display: grid;
@@ -90,35 +140,74 @@
   align-items: start;
 }
 
-/* ── card de veículo / regra ────────────────────────────────────── */
+/* ── card de veículo / regra — "verba de registro iluminada" ─────── */
 .vc-card {
+  position: relative;
   border: 1px solid var(--gold-dim);
-  border-left: 5px solid var(--rust);
-  background: var(--parchment2);
+  border-left: 4px solid var(--rust);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.35), transparent 55%),
+    var(--parchment2);
+  transition: box-shadow 0.16s ease, border-color 0.16s ease;
 }
 .vc-card--regra { border-left-color: var(--ink); }
-/* regras com tabela ocupam a linha inteira da grade (espaço p/ a tabela) */
-.vc-card--tabela { grid-column: 1 / -1; }
+/* Cards com tabela ficam como célula normal FECHADOS (grade uniforme) e só
+   ocupam a linha inteira ao ABRIR — quando a tabela realmente precisa da largura. */
+.vc-card--tabela[open] { grid-column: 1 / -1; }
+.vc-card:hover {
+  border-left-color: var(--rust);
+  box-shadow: 0 3px 12px -6px rgba(26,16,8,0.55);
+}
+.vc-card[open] {
+  border-left-color: var(--rust-dark);
+  box-shadow: 0 3px 14px -7px rgba(26,16,8,0.5);
+}
 .vc-card-cab {
   list-style: none;
   cursor: pointer;
-  padding: 0.6rem 0.75rem;
+  padding: 0.6rem 2.35rem 0.6rem 0.8rem;   /* folga à direita p/ o selo +/− */
   display: flex;
   flex-direction: column;
+  justify-content: center;                 /* centra o título quando sobra altura */
   gap: 0.15rem;
+  min-height: 2.5rem;                       /* 1 e 2 linhas ocupam a mesma altura → grade alinhada */
 }
 .vc-card-cab::-webkit-details-marker { display: none; }
+.vc-card-cab:focus-visible { outline: 2px solid var(--rust); outline-offset: -2px; }
+/* selo circular de abrir/fechar (+ / −) no canto superior direito */
 .vc-card-cab::before {
-  content: '▸';
-  float: right;
-  color: var(--rust);
-  font-size: 0.8rem;
+  content: '+';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);             /* alinha o selo ao título centrado */
+  right: 0.6rem;
+  width: 1.3rem;
+  height: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--rust-dark);
+  background: var(--parchment);
+  border: 1px solid var(--gold-dim);
+  border-radius: 50%;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-.vc-card[open] .vc-card-cab::before { content: '▾'; }
+.vc-card:hover .vc-card-cab::before { background: var(--parchment3); }
+.vc-card[open] .vc-card-cab::before {
+  content: '\2212';                        /* sinal de menos − */
+  color: var(--parchment);
+  background: var(--ink);
+  border-color: var(--ink);
+}
 .vc-card-nome {
   font-family: 'Cinzel', serif;
   font-size: 1rem;
   font-weight: 700;
+  line-height: 1.2;
   color: var(--ink);
 }
 .vc-card-meta {
@@ -127,7 +216,8 @@
   color: var(--ink-faded);
 }
 .vc-card-corpo {
-  padding: 0 0.75rem 0.75rem;
+  padding: 0.15rem 0.8rem 0.8rem;
+  margin: 0 0.5rem;
   border-top: 1px solid var(--gold-dim);
 }
 .vc-desc {
@@ -318,10 +408,12 @@
 }
 .cul-calc-cab {
   font-family: 'Cinzel', serif;
-  font-size: 0.92rem;
-  letter-spacing: 0.04em;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
   color: var(--ink);
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--gold-dim);
 }
 .cul-calc-controles {
   display: flex;
@@ -418,3 +510,11 @@
   white-space: nowrap;
 }
 .cul-grupo-ing .prog-table { max-width: 24rem; }
+
+/* ── acessibilidade: respeita quem pediu menos movimento ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cr-subtab,
+  .cr-busca,
+  .vc-card,
+  .vc-card-cab::before { transition: none; }
+}

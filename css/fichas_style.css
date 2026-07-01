@@ -13,6 +13,17 @@
   border-bottom: 3px double var(--ink);
   margin-bottom: 2rem;
 }
+.fc-cabecalho::before {                    /* sobrancelha de "seção da gazeta" */
+  content: '✦ Arquivo de Heróis ✦';
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 0.6rem;
+}
 .fc-cabecalho h1 {
   font-family: 'UnifrakturMaguntia', cursive;
   font-size: clamp(2.2rem, 5vw, 3.5rem);
