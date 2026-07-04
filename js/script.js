@@ -42,6 +42,46 @@ window.carimboArquivo = function () {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}`;
 };
 
+// Junta linhas quebradas (ex.: texto colado de um PDF) em parágrafos
+// corridos, mantendo como parágrafos separados só as linhas em branco
+// ou que comecem um novo item (marcador de lista/numeração).
+window.GA_limparQuebras = function (texto) {
+  const linhas = String(texto == null ? '' : texto)
+    .replace(/\r\n?/g, '\n')
+    .split('\n');
+
+  function iniciaItem(linha) {
+    return /^\s*([•‣▪●◦*–—-]\s|\d+[.)]\s)/.test(linha);
+  }
+
+  const blocos = [];
+  let atual = '';
+
+  for (let i = 0; i < linhas.length; i++) {
+    const linha = linhas[i].trim();
+
+    if (linha === '') {                       // linha em branco = novo parágrafo
+      if (atual) { blocos.push(atual); atual = ''; }
+      continue;
+    }
+    if (atual === '') { atual = linha; continue; }
+
+    const novoItem        = iniciaItem(linha);
+    const fechouFrase     = /[.!?]$/.test(atual);          // bloco anterior terminou em pontuação
+    const comecaMaiuscula = /^[A-ZÀ-Ý]/.test(linha);
+
+    if (novoItem || (fechouFrase && comecaMaiuscula)) {
+      blocos.push(atual);                     // nova linha
+      atual = linha;
+    } else {
+      atual += ' ' + linha;                   // continuação da mesma frase
+    }
+  }
+  if (atual) blocos.push(atual);
+
+  return blocos.join('\n');
+};
+
 // Converte um trecho de HTML (ex.: caixa de ataques das fichas) em texto
 // plano, preservando as quebras de linha de <br>, <div> e <p>.
 window.htmlParaTexto = function (html) {

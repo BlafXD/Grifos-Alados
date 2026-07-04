@@ -259,6 +259,7 @@
     painel.addEventListener('click', aoClicar);
     painel.addEventListener('input', aoDigitar);
     painel.addEventListener('change', aoMudar);
+    painel.addEventListener('paste', aoColar);
     painel.addEventListener('mousedown', e => {
       // ao clicar num botão de formatar, NÃO roubar o foco/seleção do texto
       if (e.target.closest('[data-mp-fmt]')) e.preventDefault();
@@ -680,7 +681,7 @@
     const ids = [...selec];
     const nos = ids.map(noPorId).filter(Boolean);
     if (nos.length < 2) { limparSelecao(); return; }
-    if (!confirm(`Agrupar ${nos.length} nós em um só? O conteúdo é juntado num bloco e os originais somem (não há desfazer).`)) return;
+    if (!confirm(`Agrupar ${nos.length} nós em um só? O conteúdo é juntado num bloco e os originais somem (não há desfazer). Recomenda-se fazer backup.`)) return;
 
     const setIds = new Set(ids);
     const x = Math.min.apply(null, nos.map(n => n.x));
@@ -784,6 +785,28 @@
     else if (e.target.classList.contains('mp-no-texto')) {
       no.texto = e.target.innerHTML;
       desenharLigacoes();                       // altura pode mudar → setas acompanham
+      salvar();
+    }
+  }
+
+  // colar limpo no corpo do nó (junta as quebras duras de PDF, igual às
+  // caixas de texto rico do Bestiário/Combates — sem isso o navegador
+  // colaria cada linha copiada como um <div> à parte, quebrando o layout)
+  function aoColar(e) {
+    const corpo = e.target.closest('.mp-no-texto');
+    if (!corpo) return;
+    e.preventDefault();
+    const bruto = (e.clipboardData || window.clipboardData).getData('text/plain');
+    const limpo = window.GA_limparQuebras(bruto);
+    const sel = window.getSelection();
+    if (!sel.rangeCount || !corpo.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+    sel.deleteFromDocument();
+    sel.getRangeAt(0).insertNode(document.createTextNode(limpo));
+    sel.collapseToEnd();
+    const no = noPorId(corpo.closest('.mp-no').dataset.id);
+    if (no) {
+      no.texto = corpo.innerHTML;
+      desenharLigacoes();
       salvar();
     }
   }
