@@ -1991,7 +1991,7 @@
       // colar limpo (junta as quebras duras de PDF, igual às caixas inline)
       ed.addEventListener('paste', e => {
         e.preventDefault();
-        const limpo = limparQuebras((e.clipboardData || window.clipboardData).getData('text/plain'));
+        const limpo = window.GA_limparQuebras((e.clipboardData || window.clipboardData).getData('text/plain'));
         const sel = window.getSelection();
         if (!sel.rangeCount) return;
         sel.deleteFromDocument();
@@ -2059,44 +2059,6 @@
   // visual. Esta função junta as quebras de uma mesma frase/parágrafo,
   // mantendo apenas as quebras "de verdade": antes de itens com marcador
   // (•, -, 1., …) e entre parágrafos (linhas em branco).
-  function limparQuebras(texto) {
-    const linhas = String(texto == null ? '' : texto)
-      .replace(/\r\n?/g, '\n')
-      .split('\n');
-
-    // a linha começa um novo item (marcador de lista ou numeração)?
-    function iniciaItem(linha) {
-      return /^\s*([•‣▪●◦*–—-]\s|\d+[.)]\s)/.test(linha);
-    }
-
-    const blocos = [];
-    let atual = '';
-
-    for (let i = 0; i < linhas.length; i++) {
-      const linha = linhas[i].trim();
-
-      if (linha === '') {                       // linha em branco = novo parágrafo
-        if (atual) { blocos.push(atual); atual = ''; }
-        continue;
-      }
-      if (atual === '') { atual = linha; continue; }
-
-      const novoItem        = iniciaItem(linha);
-      const fechouFrase     = /[.!?]$/.test(atual);          // bloco anterior terminou em pontuação
-      const comecaMaiuscula = /^[A-ZÀ-Ý]/.test(linha);
-
-      if (novoItem || (fechouFrase && comecaMaiuscula)) {
-        blocos.push(atual);                     // nova linha
-        atual = linha;
-      } else {
-        atual += ' ' + linha;                   // continuação da mesma frase
-      }
-    }
-    if (atual) blocos.push(atual);
-
-    return blocos.join('\n');
-  }
-
   // ── COLAR (Ataques + textareas): limpa as quebras antes de inserir ─
   function aoColar(e) {
     const textarea = e.target.closest('.mz-textarea');
@@ -2105,7 +2067,7 @@
 
     e.preventDefault();
     const bruto = (e.clipboardData || window.clipboardData).getData('text/plain');
-    const limpo = limparQuebras(bruto);
+    const limpo = window.GA_limparQuebras(bruto);
 
     if (textarea) {
       // insere no textarea, na posição do cursor
