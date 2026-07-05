@@ -450,6 +450,137 @@ const LojaCompleta = (function () {
 
   let _config = _clonar(CONFIG_PADRAO);
 
+  // ╔══════════════════════════════════════════════════╗
+  // ║  CLASSIFICAÇÃO DA COMUNIDADE (Ambientes Urbanos, T20)             ║
+  // ║  Cada tipo de comunidade limita o que a loja pode ter:            ║
+  // ║   teto    → preço máximo dos itens à venda (null = sem limite)    ║
+  // ║   estoque → 'todos' rola 1d6 por item (aldeia);                   ║
+  // ║             'raros' rola 2d6 só nos itens raros (vila)            ║
+  // ║   caixa   → dinheiro da comunidade p/ COMPRAR dos jogadores       ║
+  // ║   magicos → encantamentos/pergaminhos à venda (só metrópole)      ║
+  // ╚═══════════════════════════════════════════════════╝
+  const CLASSIFICACOES = {
+    livre: {
+      rotulo: 'Livre (sem limites)', icone: '🎲', pop: null,
+      teto: null, estoque: null, caixa: null, magicos: true,
+      resumo: 'Comporta-se como hoje: todo o catálogo disponível, sem estoque nem caixa.',
+    },
+    aldeia: {
+      rotulo: 'Aldeia', icone: '🏡', pop: 'até 1.000 habitantes',
+      teto: 50, estoque: 'todos',
+      caixa: { qtd: 1, dado: 4, mult: 100, formula: '1d4 × T$ 100' },
+      magicos: false,
+      resumo: 'Um único armazém: apenas itens de até T$ 50, em quantidades limitadas (1d6 de cada).',
+    },
+    vila: {
+      rotulo: 'Vila', icone: '🏘', pop: 'até 5.000 habitantes',
+      teto: 1000, estoque: 'raros',
+      caixa: { qtd: 1, dado: 6, mult: 1000, formula: '1d6 × T$ 1.000' },
+      magicos: false,
+      resumo: 'Mercado com lojas e oficinas: itens de até T$ 1.000; itens raros em quantidades limitadas (2d6 de cada — raros: armas exóticas e de fogo, alquímicos, esotéricos, aparatos e itens acima de T$ 300).',
+    },
+    cidade: {
+      rotulo: 'Cidade', icone: '🏰', pop: 'até 25.000 habitantes',
+      teto: 10000, estoque: null,
+      caixa: { qtd: 2, dado: 4, mult: 10000, formula: '2d4 × T$ 10.000' },
+      magicos: false,
+      resumo: 'Praticamente qualquer item mundano; só itens acima de T$ 10.000 podem faltar.',
+    },
+    metropole: {
+      rotulo: 'Metrópole', icone: '🌆', pop: '~100.000+ habitantes',
+      teto: null, estoque: null, caixa: null, magicos: true,
+      resumo: 'Bazares supridos pelo mundo inteiro — tudo disponível, até itens mágicos (em leilões exclusivos). Dinheiro virtualmente ilimitado.',
+    },
+  };
+  const ORDEM_CLASSIFICACOES = ['livre', 'aldeia', 'vila', 'cidade', 'metropole'];
+
+  // Armas de fogo (e suas munições) — "proibidas em todo o Reinado"
+  // (Lei & Ordem). Identificadas por nome, como aparecem no catálogo.
+  const ARMAS_FOGO = new Set([
+    'Pistola', 'Garrucha', 'Traque', 'Mosquete', 'Arcabuz', 'Bacamarte',
+    'Canhão portátil', 'Pistola-punhal', 'Lança de fogo',
+    'Balas (20)', 'Balas(20)', 'Bola de ferro (1)',
+  ]);
+
+  // Itens "raros" numa vila (armas exóticas, alquímicos, superiores…).
+  // Armas exóticas: extraídas das descrições oficiais do próprio app
+  // (itens-descricoes) — cada uma diz "é uma arma exótica" no texto.
+  // Armas de fogo também são exóticas. Além delas: categorias de nicho
+  // inteiras + qualquer item acima de T$ 300 (proxy de "superior/valioso
+  // demais para produção local").
+  const ARMAS_EXOTICAS = new Set([
+    'Balestra', 'Besta de repetição', 'Chakram', 'Espada bastarda',
+    'Katana', 'Lança de falange', 'Machado anão', 'Machado de haste',
+    'Machado táurico', 'Marrão', 'Mordida do diabo', 'Presa de serpente',
+  ]);
+  const CATEGORIAS_RARAS = new Set([
+    'Alquímicos — Preparados', 'Alquímicos — Catalisadores',
+    'Alquímicos — Venenos', 'Esotéricos', 'Aparatos',
+  ]);
+  const PRECO_RARO = 300;
+
+  function _ehItemRaro(it) {
+    if (CATEGORIAS_RARAS.has(it.category)) return true;
+    if (ARMAS_EXOTICAS.has(it.name) || ARMAS_FOGO.has(it.name)) return true;
+    return typeof it.price === 'number' && it.price > PRECO_RARO;
+  }
+
+  // Estado da comunidade selecionada (vale para as PRÓXIMAS gerações).
+  const COMUNIDADE_PADRAO = { classe: 'livre', semArmasFogo: true };
+  let _comunidade = _clonar(COMUNIDADE_PADRAO);
+
+  function obterComunidade() { return _clonar(_comunidade); }
+
+  function definirComunidade(nova) {
+    if (!nova || typeof nova !== 'object') return;
+    if (CLASSIFICACOES[nova.classe]) _comunidade.classe = nova.classe;
+    if (nova.semArmasFogo != null)   _comunidade.semArmasFogo = !!nova.semArmasFogo;
+  }
+
+  function _rolarDados(qtd, faces) {
+    let total = 0;
+    for (let i = 0; i < qtd; i++) total += 1 + Math.floor(Math.random() * faces);
+    return total;
+  }
+
+  // Rola o dinheiro disponível da comunidade selecionada.
+  // null → caixa ilimitada (livre / metrópole).
+  function rolarCaixa(classe) {
+    const cl = CLASSIFICACOES[classe || _comunidade.classe];
+    if (!cl || !cl.caixa) return null;
+    return {
+      formula: cl.caixa.formula,
+      valor:   _rolarDados(cl.caixa.qtd, cl.caixa.dado) * cl.caixa.mult,
+    };
+  }
+
+  // Aplica os limites da comunidade ao pool de itens-base de um tipo.
+  function _filtrarPoolComunidade(pool) {
+    const cl = CLASSIFICACOES[_comunidade.classe] || CLASSIFICACOES.livre;
+    let out = pool;
+    if (_comunidade.classe !== 'livre' && _comunidade.semArmasFogo) {
+      out = out.filter(it => !ARMAS_FOGO.has(it.name));
+    }
+    if (cl.teto != null) {
+      // Itens sem preço numérico ("—") continuam: são improvisos/baratos.
+      out = out.filter(it => typeof it.price !== 'number' || it.price <= cl.teto);
+    }
+    return out;
+  }
+
+  // Rola o estoque de uma linha já montada (null = ilimitado).
+  function _rolarEstoqueLinha(linha, itemBase) {
+    const cl = CLASSIFICACOES[_comunidade.classe] || CLASSIFICACOES.livre;
+    let est = null;
+    if (cl.estoque === 'todos')                            est = _rolarDados(1, 6);
+    else if (cl.estoque === 'raros' && _ehItemRaro(itemBase)) est = _rolarDados(2, 6);
+    if (est != null) {
+      linha.estoque    = est;
+      linha.estoqueMax = est;
+    }
+    return linha;
+  }
+
   // ── AUXILIARES ────────────────────────────────────
   function _clonar(o) { return JSON.parse(JSON.stringify(o)); }
 
@@ -611,8 +742,11 @@ const LojaCompleta = (function () {
 
     for (const tipo of ['weapon', 'armor', 'misc']) {
       const cfg = _config.itens[tipo] || CONFIG_PADRAO.itens[tipo] || CONFIG_PADRAO.itens.misc;
-      const escolhidos = _amostrar(grupos[tipo] || [], cfg);
-      for (const it of escolhidos) linhas.push(_montarLinhaItem(it, cfg));
+      const pool = _filtrarPoolComunidade(grupos[tipo] || []);
+      const escolhidos = _amostrar(pool, cfg);
+      for (const it of escolhidos) {
+        linhas.push(_rolarEstoqueLinha(_montarLinhaItem(it, cfg), it));
+      }
     }
 
     linhas.sort((a, b) =>
@@ -681,5 +815,11 @@ const LojaCompleta = (function () {
     totaisEncantos:    totaisEncantos,
     statsDeItem:       statsDeItem,
     CONFIG_PADRAO:     _clonar(CONFIG_PADRAO),
+    // classificação da comunidade (ambientes urbanos)
+    CLASSIFICACOES:       _clonar(CLASSIFICACOES),
+    ORDEM_CLASSIFICACOES: ORDEM_CLASSIFICACOES.slice(),
+    obterComunidade:      obterComunidade,
+    definirComunidade:    definirComunidade,
+    rolarCaixa:           rolarCaixa,
   };
 })();
