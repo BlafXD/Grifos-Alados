@@ -518,3 +518,67 @@
   .vc-card,
   .vc-card-cab::before { transition: none; }
 }
+
+/* ── VIDA URBANA — rolador de eventos de perseguição ──────────────── */
+.urb-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--rust);
+  border: 1px solid var(--rust-dark);
+  border-radius: 2px;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.urb-btn:hover { background: var(--rust-dark); }
+
+.urb-dica {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  flex: 1 1 16rem;
+}
+
+.urb-resultado { margin-top: 0.2rem; }
+
+.urb-res-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.98rem;
+  color: var(--ink);
+}
+.urb-res-d20 {
+  font-weight: 700;
+  color: var(--rust-dark);
+  border: 1px solid var(--gold-dim);
+  padding: 0.05rem 0.5rem;
+  background: var(--parchment2);
+}
+.urb-res-teste {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--rust-dark);
+}
+.urb-res-exemplo {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink);
+  margin-top: 0.35rem;
+}
+.urb-res-efeito {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  color: var(--ink-faded);
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--ink-faded);
+}

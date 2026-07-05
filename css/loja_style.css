@@ -919,3 +919,224 @@
   color: var(--ink-faded);
   font-size: 0.82rem;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   CLASSIFICAÇÃO DA COMUNIDADE (Ambientes Urbanos, T20)
+   Painel acima das abas: seletor de comunidade, lei de armas de fogo,
+   caixa da comunidade e avisos de mercado mágico.
+   ══════════════════════════════════════════════════════════════════ */
+.comun-painel {
+  border: 1px solid var(--ink);
+  background: var(--parchment2);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.6rem;
+}
+
+.comun-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem 1.4rem;
+}
+
+.comun-titulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.comun-sel {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  padding: 0.35rem 0.5rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  cursor: pointer;
+}
+.comun-sel:focus { outline: 2px solid var(--rust); }
+
+.comun-fogo { margin-left: auto; }
+.comun-fogo input:disabled + span { opacity: 0.45; }
+
+.comun-resumo {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink-faded);
+  margin: 0.7rem 0 0;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--parchment3);
+}
+.comun-resumo strong { color: var(--ink); }
+.comun-resumo em     { color: var(--rust-dark); font-style: italic; }
+
+.comun-aplicar {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--rust-dark);
+  background: rgba(154, 78, 32, 0.08);
+  border: 1px dashed var(--rust);
+  padding: 0.45rem 0.8rem;
+  margin: 0.7rem 0 0;
+}
+
+/* ── caixa da comunidade ─────────────────────────────────────────── */
+.comun-caixa {
+  margin-top: 0.8rem;
+  border: 1px solid var(--ink-faded);
+  border-left: 4px solid var(--gold-dim);
+  background: var(--parchment);
+  padding: 0.7rem 0.9rem;
+}
+
+.comun-caixa-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1.2rem;
+}
+
+.comun-caixa-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.comun-caixa-rot em {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-faded);
+  font-style: italic;
+}
+
+.comun-caixa-valor {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--rust-dark);
+}
+.comun-caixa-valor em {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--ink-faded);
+  font-style: italic;
+}
+
+.comun-caixa-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+}
+
+.comun-caixa-input {
+  width: 7rem;
+  padding: 0.3rem 0.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+
+.comun-caixa-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.comun-caixa-btn:hover { background: var(--parchment2); border-color: var(--ink); }
+
+.comun-caixa-dica {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  margin: 0.55rem 0 0;
+}
+.comun-caixa-dica strong { font-style: normal; color: var(--ink); }
+
+/* ── aviso de mercado mágico (abas Especial/Magias) ──────────────── */
+.comun-aviso {
+  border: 1px solid var(--ink-faded);
+  border-left: 4px solid var(--rust);
+  background: var(--parchment2);
+  padding: 0.8rem 1.1rem;
+  margin-bottom: 1.4rem;
+}
+.comun-aviso-txt {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink-faded);
+  margin: 0 0 0.55rem;
+}
+.comun-aviso-txt strong { color: var(--ink); }
+
+.comun-teto-nota {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--rust-dark);
+  margin: 0 0 1rem;
+}
+
+/* ── estoque limitado nos cards ──────────────────────────────────── */
+.item-estoque {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  padding: 0.18rem 0.55rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.item-estoque:hover { background: var(--parchment2); border-color: var(--ink); }
+.item-estoque strong { color: var(--rust-dark); font-size: 0.72rem; }
+
+.item-estoque--zero {
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border-color: var(--rust-dark);
+}
+.item-estoque--zero:hover { background: var(--rust); border-color: var(--rust); }
+
+.item-card--esgotado {
+  opacity: 0.55;
+  filter: grayscale(0.5);
+}
+.item-card--esgotado .item-nome { text-decoration: line-through; }
+
+/* responsivo: painel da comunidade empilha no celular */
+@media (max-width: 640px) {
+  .comun-topo { flex-direction: column; align-items: stretch; }
+  .comun-fogo { margin-left: 0; }
+  .comun-caixa-info { flex-direction: column; }
+}

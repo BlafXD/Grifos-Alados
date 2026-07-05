@@ -40,6 +40,8 @@
   const CONFIG_STORAGE_KEY = 'grifosAlados.lojaConfig';
   // Chave separada para os ajustes da aba de Magias (pergaminhos).
   const MAGIAS_CONFIG_KEY  = 'grifosAlados.magiasConfig';
+  // Classificação da comunidade (Livre/Aldeia/Vila/Cidade/Metrópole).
+  const COMUN_STORAGE_KEY  = 'grifosAlados.lojaComunidade';
 
   // Histórico das últimas lojas geradas — os DADOS completos ficam
   // salvos no navegador, então a loja exibida sobrevive a F5 e a
@@ -85,13 +87,23 @@
   }
 
   // Gera uma loja nova e registra no histórico (vira a exibida).
+  // A classificação da comunidade selecionada é fotografada na entrada:
+  // caixa rolada na hora, estoques já rolados dentro de gerarLojaNormal.
   function novaEntradaLog() {
+    const com   = LojaCompleta.obterComunidade();
+    const caixa = LojaCompleta.rolarCaixa(com.classe);
     const ent = {
       id: 'l_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
       quando: Date.now(),
       normal:   LojaCompleta.gerarLojaNormal(),
       especial: LojaCompleta.gerarLojaEspecial(),
       magias:   (typeof Magias !== 'undefined') ? Magias.gerar() : null,
+      comunidade: {
+        classe:       com.classe,
+        semArmasFogo: com.semArmasFogo,
+        caixa: caixa ? { formula: caixa.formula, max: caixa.valor, atual: caixa.valor } : null,
+        permitir: { encantos: false, pergaminhos: false },
+      },
     };
     _log.unshift(ent);
     while (_log.length > LOG_MAX) _log.pop();
@@ -113,6 +125,7 @@
     // Aplica os ajustes salvos ANTES da primeira geração.
     carregarConfigSalva();
     carregarConfigMagias();
+    carregarComunidade();
     carregarLog();
 
     // Ouvintes delegados — ficam no #loja-content (que nunca é recriado),
@@ -123,6 +136,7 @@
       lojaContent.addEventListener('input', aoBuscar);
       lojaContent.addEventListener('click', aoClicarAjuste);
       lojaContent.addEventListener('click', aoClicarLog);
+      lojaContent.addEventListener('click', aoClicarComunidade);
     }
 
     if (secaoLoja.classList.contains('active')) {
@@ -149,7 +163,7 @@
       if (!ent) ent = novaEntradaLog();
       _logSel = ent.id;
       salvarLogSel();
-      renderizarLoja(container, ent.normal, ent.especial, ent.magias);
+      renderizarLoja(container, ent);
     } catch (err) {
       renderizarErro(container, err);
     }
@@ -224,6 +238,233 @@
       localStorage.setItem(MAGIAS_CONFIG_KEY, JSON.stringify(Magias.obterConfig()));
     } catch (e) {
       console.warn('[loja] Não foi possível salvar os ajustes de magias:', e.message);
+    }
+  }
+
+  // ── PERSISTÊNCIA DA CLASSIFICAÇÃO DA COMUNIDADE ──────────────────
+  function carregarComunidade() {
+    try {
+      const txt = localStorage.getItem(COMUN_STORAGE_KEY);
+      if (txt) LojaCompleta.definirComunidade(JSON.parse(txt));
+    } catch (e) {
+      console.warn('[loja] Não foi possível ler a classificação salva:', e.message);
+    }
+  }
+
+  function salvarComunidade() {
+    try {
+      localStorage.setItem(COMUN_STORAGE_KEY, JSON.stringify(LojaCompleta.obterComunidade()));
+    } catch (e) {
+      console.warn('[loja] Não foi possível salvar a classificação:', e.message);
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  //  CLASSIFICAÇÃO DA COMUNIDADE — helpers de exibição
+  //  (Ambientes Urbanos, T20 — teto de preço, estoque, caixa e mágicos)
+  // ══════════════════════════════════════════════════════════════════
+  function _classifDe(ent) {
+    const c = ent && ent.comunidade;
+    if (!c || !LojaCompleta.CLASSIFICACOES[c.classe]) return 'livre';
+    return c.classe;
+  }
+
+  // Encantamentos/pergaminhos liberados nesta loja? Pelo livro, itens
+  // mágicos à venda são coisa de metrópole; o mestre pode liberar na mão.
+  function magicosPermitidos(ent) {
+    const cl = LojaCompleta.CLASSIFICACOES[_classifDe(ent)];
+    if (!cl || cl.magicos) return { encantos: true, pergaminhos: true };
+    const p = (ent.comunidade && ent.comunidade.permitir) || {};
+    return { encantos: !!p.encantos, pergaminhos: !!p.pergaminhos };
+  }
+
+  // Pergaminhos que realmente ficam à venda: respeitam a permissão e o
+  // teto de preço da comunidade (ex.: Vila T$ 1.000 → só 1º e 2º círculos).
+  function pergaminhosEfetivos(ent) {
+    const lista = (ent.magias && ent.magias.pergaminhos) || [];
+    if (!magicosPermitidos(ent).pergaminhos) {
+      return { lista: [], cortados: 0, bloqueado: true, teto: null };
+    }
+    const teto = LojaCompleta.CLASSIFICACOES[_classifDe(ent)].teto;
+    if (teto == null) return { lista: lista, cortados: 0, bloqueado: false, teto: null };
+    const ok = lista.filter(p => p.precoPergaminho <= teto);
+    return { lista: ok, cortados: lista.length - ok.length, bloqueado: false, teto: teto };
+  }
+
+  function _fmtT(n) { return Number(n).toLocaleString('pt-BR'); }
+
+  function textoResumoClasse(classe) {
+    const cl = LojaCompleta.CLASSIFICACOES[classe] || LojaCompleta.CLASSIFICACOES.livre;
+    const partes = [cl.resumo];
+    if (cl.caixa) partes.push(`Caixa da comunidade: <strong>${cl.caixa.formula}</strong>.`);
+    if (classe === 'metropole') partes.push('Caixa ilimitada.');
+    if (!cl.magicos && classe !== 'livre') {
+      partes.push('Sem mercado de encantamentos/pergaminhos — liberável nas abas da loja gerada.');
+    }
+    const pop = cl.pop ? ` <em>(${cl.pop})</em>` : '';
+    return `${cl.icone} <strong>${cl.rotulo}</strong>${pop} — ${partes.join(' ')}`;
+  }
+
+  // Painel exibido acima das abas: seletor (vale para a PRÓXIMA geração),
+  // lei de armas de fogo e a caixa da comunidade da loja EXIBIDA.
+  function construirPainelComunidade(ent) {
+    const sel = LojaCompleta.obterComunidade();
+    const CLS = LojaCompleta.CLASSIFICACOES;
+    const opts = LojaCompleta.ORDEM_CLASSIFICACOES.map(k => {
+      const cl = CLS[k];
+      const pop = cl.pop ? ` — ${cl.pop}` : '';
+      return `<option value="${k}" ${sel.classe === k ? 'selected' : ''}>${cl.icone} ${cl.rotulo}${pop}</option>`;
+    }).join('');
+
+    const classeExibida = _classifDe(ent);
+    const exib  = CLS[classeExibida];
+    const igual = sel.classe === classeExibida;
+
+    return `
+      <div class="comun-painel">
+        <div class="comun-topo">
+          <label class="comun-titulo" for="comunClasse">🏛 Qual a classificação da comunidade?</label>
+          <select id="comunClasse" class="aj-sel comun-sel" data-comun-classe
+                  title="Limites de economia (Ambientes Urbanos, T20) — valem para a próxima loja gerada">
+            ${opts}
+          </select>
+          <label class="mag-switch comun-fogo"
+                 title="Lei &amp; Ordem: armas de fogo são proibidas em todo o Reinado">
+            <input type="checkbox" data-comun-fogo ${sel.semArmasFogo ? 'checked' : ''}
+                   ${sel.classe === 'livre' ? 'disabled' : ''}>
+            <span>🚫 Sem armas de fogo (lei do Reinado)</span>
+          </label>
+        </div>
+        <p class="comun-resumo">${textoResumoClasse(sel.classe)}</p>
+        <p class="comun-aplicar" ${igual ? 'hidden' : ''}>⚠ A loja exibida foi gerada como
+          <strong>${exib.icone} ${exib.rotulo}</strong> — clique em
+          <strong>🎲 Gerar Nova Loja</strong> para aplicar a nova classificação.</p>
+        ${construirCaixaHTML(ent)}
+      </div>`;
+  }
+
+  // Bloco da caixa da comunidade (dinheiro p/ comprar itens DOS jogadores).
+  function construirCaixaHTML(ent) {
+    const classe = _classifDe(ent);
+    if (classe === 'livre') return '';
+    const cl = LojaCompleta.CLASSIFICACOES[classe];
+    const c  = ent.comunidade;
+    const rot = `💰 Caixa da comunidade <em>(${cl.icone} ${cl.rotulo} — loja exibida)</em>`;
+
+    if (!c.caixa) {
+      return `
+        <div class="comun-caixa">
+          <div class="comun-caixa-info">
+            <span class="comun-caixa-rot">${rot}</span>
+            <span class="comun-caixa-valor">T$ ∞ <em>— virtualmente ilimitada</em></span>
+          </div>
+        </div>`;
+    }
+
+    return `
+      <div class="comun-caixa">
+        <div class="comun-caixa-info">
+          <span class="comun-caixa-rot">${rot}</span>
+          <span class="comun-caixa-valor" data-caixa-valor>T$ ${_fmtT(c.caixa.atual)}
+            <em>de T$ ${_fmtT(c.caixa.max)} (${c.caixa.formula})</em></span>
+        </div>
+        <div class="comun-caixa-acoes">
+          <input type="number" class="aj-num comun-caixa-input" placeholder="T$"
+                 title="Quanto a comunidade pagou aos jogadores (negativo devolve à caixa)">
+          <button type="button" class="comun-caixa-btn" data-caixa-descontar>− Descontar</button>
+          <button type="button" class="comun-caixa-btn" data-caixa-rolar
+                  title="Rola a caixa de novo (nova semana, chegada de caravana…)">🎲 Re-rolar</button>
+        </div>
+        <p class="comun-caixa-dica">É quanto a comunidade tem para <strong>comprar itens dos
+          jogadores</strong> ou pagá-los (regra padrão: um item usado vende por metade do preço
+          de lista). Registre cada venda descontando daqui.</p>
+      </div>`;
+  }
+
+  // Aviso exibido nas abas Especial/Magias quando a comunidade não tem
+  // mercado mágico (com a caixinha de liberar mesmo assim).
+  function avisoMagicosHTML(ent, chave, rotulo) {
+    const classe = _classifDe(ent);
+    const cl = LojaCompleta.CLASSIFICACOES[classe];
+    if (!cl || cl.magicos) return '';
+    const marcado = !!(ent.comunidade.permitir && ent.comunidade.permitir[chave]);
+    return `
+      <div class="comun-aviso">
+        <p class="comun-aviso-txt"><strong>${cl.icone} ${cl.rotulo}:</strong> pelo livro, itens
+          mágicos à venda são coisa de metrópoles (em leilões exclusivos) — nesta comunidade
+          não há mercado de ${rotulo}.</p>
+        <label class="mag-switch">
+          <input type="checkbox" data-permitir="${chave}" ${marcado ? 'checked' : ''}>
+          <span>Permitir mesmo assim nesta loja</span>
+        </label>
+      </div>`;
+  }
+
+  // Atualiza resumo/hint/toggle após mudar o seletor (sem re-renderizar).
+  function atualizarResumoComunidadeDOM() {
+    const cont = document.getElementById('loja-content');
+    if (!cont) return;
+    const sel    = cont.querySelector('[data-comun-classe]');
+    const resumo = cont.querySelector('.comun-resumo');
+    if (sel && resumo) resumo.innerHTML = textoResumoClasse(sel.value);
+    const fogo = cont.querySelector('[data-comun-fogo]');
+    if (fogo && sel) fogo.disabled = (sel.value === 'livre');
+    const hint = cont.querySelector('.comun-aplicar');
+    if (hint && sel) hint.hidden = (sel.value === _classifDe(entradaSelecionada()));
+  }
+
+  // ── EVENTO: cliques da comunidade (caixa e estoque) ───────────────
+  function aoClicarComunidade(e) {
+    // baixa/devolução de estoque no card
+    const est = e.target.closest('[data-est-idx]');
+    if (est) {
+      const ent = entradaSelecionada();
+      if (!ent) return;
+      const linha = (ent.normal.itens || [])[Number(est.dataset.estIdx)];
+      if (!linha || linha.estoque == null) return;
+      const max = linha.estoqueMax != null ? linha.estoqueMax : linha.estoque;
+      linha.estoque = e.shiftKey
+        ? Math.min(max, linha.estoque + 1)
+        : Math.max(0, linha.estoque - 1);
+      salvarLog();
+      est.innerHTML = linha.estoque > 0
+        ? `📦 Estoque: <strong>${linha.estoque}</strong>`
+        : '📦 Esgotado';
+      est.classList.toggle('item-estoque--zero', linha.estoque === 0);
+      const card = est.closest('.item-card');
+      if (card) card.classList.toggle('item-card--esgotado', linha.estoque === 0);
+      return;
+    }
+
+    // caixa da comunidade: descontar venda / re-rolar
+    if (e.target.closest('[data-caixa-descontar]')) {
+      const ent = entradaSelecionada();
+      const cx  = ent && ent.comunidade && ent.comunidade.caixa;
+      if (!cx) return;
+      const inp = document.querySelector('#loja-content .comun-caixa-input');
+      const v   = inp ? Number(inp.value) : NaN;
+      if (!v || isNaN(v)) return;
+      cx.atual = Math.max(0, Math.min(cx.max, cx.atual - v));
+      salvarLog();
+      if (inp) inp.value = '';
+      atualizarCaixaDOM(cx);
+      return;
+    }
+    if (e.target.closest('[data-caixa-rolar]')) {
+      const ent = entradaSelecionada();
+      if (!ent || !ent.comunidade) return;
+      const rolado = LojaCompleta.rolarCaixa(ent.comunidade.classe);
+      if (!rolado) return;
+      ent.comunidade.caixa = { formula: rolado.formula, max: rolado.valor, atual: rolado.valor };
+      salvarLog();
+      atualizarCaixaDOM(ent.comunidade.caixa);
+    }
+  }
+
+  function atualizarCaixaDOM(cx) {
+    const span = document.querySelector('#loja-content [data-caixa-valor]');
+    if (span) {
+      span.innerHTML = `T$ ${_fmtT(cx.atual)} <em>de T$ ${_fmtT(cx.max)} (${cx.formula})</em>`;
     }
   }
 
@@ -373,6 +614,31 @@
     const el = e.target;
     if (!el.matches) return;
 
+    // ── Classificação da comunidade (vale p/ a próxima geração) ──
+    if (el.matches('[data-comun-classe], [data-comun-fogo]')) {
+      const cont = document.getElementById('loja-content');
+      const sel  = cont.querySelector('[data-comun-classe]');
+      const fogo = cont.querySelector('[data-comun-fogo]');
+      LojaCompleta.definirComunidade({
+        classe:       sel  ? sel.value    : undefined,
+        semArmasFogo: fogo ? fogo.checked : undefined,
+      });
+      salvarComunidade();
+      atualizarResumoComunidadeDOM();
+      return;
+    }
+
+    // ── Liberar mágicos "mesmo assim" na loja exibida ─────────────
+    if (el.matches('[data-permitir]')) {
+      const ent = entradaSelecionada();
+      if (!ent || !ent.comunidade) return;
+      ent.comunidade.permitir = ent.comunidade.permitir || {};
+      ent.comunidade.permitir[el.dataset.permitir] = el.checked;
+      salvarLog();
+      rerenderAtual();
+      return;
+    }
+
     // ── Controles da aba Magias ──────────────────────────────────
     if (el.matches('.mag-ctrl')) {
       // troca de modo → atualiza o dim dos controles da linha
@@ -486,18 +752,23 @@
   }
 
   // ── RENDERIZAÇÃO PRINCIPAL ───────────────────────────────────────
-  function renderizarLoja(container, dadosNormal, dadosEspecial, dadosMagias) {
-    const totalItens  = dadosNormal.total_itens || 0;
-    const totalEncs   = contarEncantamentos(dadosEspecial);
+  function renderizarLoja(container, ent) {
     // Magias podem faltar em lojas antigas do histórico → gera na hora.
-    if (!dadosMagias && typeof Magias !== 'undefined') dadosMagias = Magias.gerar();
-    const totalMagias = (dadosMagias && dadosMagias.total) || 0;
+    if (!ent.magias && typeof Magias !== 'undefined') ent.magias = Magias.gerar();
+
+    const totalItens  = ent.normal.total_itens || 0;
+    // As abas contam o que está À VENDA de fato (classificação aplicada).
+    const perm        = magicosPermitidos(ent);
+    const totalEncs   = perm.encantos ? contarEncantamentos(ent.especial) : 0;
+    const totalMagias = pergaminhosEfetivos(ent).lista.length;
 
     container.innerHTML = `
       <div class="loja-cabecalho">
         <div class="loja-titulo-principal">Mercado & Encantamentos</div>
         <p class="loja-subtitulo">Inventário gerado para as Cidades do Reinado de Arton</p>
       </div>
+
+      ${construirPainelComunidade(ent)}
 
       <div class="loja-abas">
         <button class="loja-aba ativa" data-painel="painel-normal">
@@ -528,15 +799,15 @@
 
       <div id="painel-normal" class="loja-painel ativo">
         ${construirAjustesItens()}
-        ${construirLojaNormal(dadosNormal)}
+        ${construirLojaNormal(ent.normal)}
       </div>
       <div id="painel-especial" class="loja-painel">
         ${construirAjustesEncantos()}
-        ${construirLojaEspecial(dadosEspecial)}
+        ${construirLojaEspecial(ent)}
       </div>
       <div id="painel-magias" class="loja-painel">
         ${construirAjustesMagias()}
-        ${construirLojaMagias(dadosMagias)}
+        ${construirLojaMagias(ent)}
       </div>
     `;
 
@@ -591,7 +862,7 @@
     if (!container || !ent) return;
     const painelAtivo =
       (container.querySelector('.loja-painel.ativo') || {}).id || 'painel-normal';
-    renderizarLoja(container, ent.normal, ent.especial, ent.magias);
+    renderizarLoja(container, ent);
     restaurarPainel(container, painelAtivo);
   }
 
@@ -633,6 +904,10 @@
     if (!itens.length) {
       return '<p class="loja-vazia">Nenhum item disponível nesta geração. Execute novamente o script Python.</p>';
     }
+
+    // Índice de cada linha no array da entrada — usado pelo badge de
+    // estoque para dar baixa no item certo (persistido no histórico).
+    itens.forEach((item, i) => { item._idx = i; });
 
     // Agrupa por tipo_item → categoria
     const porTipo = {};
@@ -721,8 +996,17 @@
          <span class="item-seta">→</span>
          <span class="item-preco-final">T$ ${precoFinal}</span>`;
 
+    // Estoque limitado pela classificação da comunidade (Aldeia 1d6 em
+    // tudo; Vila 2d6 nos raros). Clique dá baixa; Shift+clique devolve.
+    const esgotado   = item.estoque === 0;
+    const estoqueHtml = item.estoque == null ? '' : (esgotado
+      ? `<button type="button" class="item-estoque item-estoque--zero" data-est-idx="${item._idx}"
+                 title="Esgotado — Shift+clique devolve 1 ao estoque">📦 Esgotado</button>`
+      : `<button type="button" class="item-estoque" data-est-idx="${item._idx}"
+                 title="Clique: dar baixa de 1 (vendido) · Shift+clique: devolver 1">📦 Estoque: <strong>${item.estoque}</strong></button>`);
+
     return `
-      <div class="item-card">
+      <div class="item-card${esgotado ? ' item-card--esgotado' : ''}">
         <div class="item-topo">
           <span class="item-nome">${item.nome || '—'}</span>
           ${badge}
@@ -730,6 +1014,7 @@
         <div class="item-precos">
           ${precosHtml}
         </div>
+        ${estoqueHtml}
         ${statsHtml ? `<hr class="item-linha"/><div class="item-stats">${statsHtml}</div>` : ''}
         ${descHtml}
       </div>`;
@@ -742,9 +1027,13 @@
   // ══════════════════════════════════════════════════════════════════
   //  LOJA ESPECIAL
   // ══════════════════════════════════════════════════════════════════
-  function construirLojaEspecial(dados) {
+  function construirLojaEspecial(ent) {
+    const aviso = avisoMagicosHTML(ent, 'encantos', 'encantamentos');
+    if (!magicosPermitidos(ent).encantos) return aviso;
+
+    const dados = ent.especial;
     const cats = dados.categorias || {};
-    let html = buscaHTML('especial', '🔍 Buscar encantamento — nome ou efeito…');
+    let html = aviso + buscaHTML('especial', '🔍 Buscar encantamento — nome ou efeito…');
     html += `<div class="especial-grid">`;
 
     ORDEM_TIPOS_ESPECIAL.forEach(cat => {
@@ -882,14 +1171,24 @@
   }
 
   // ── LISTA DE PERGAMINHOS ─────────────────────────────────────────
-  function construirLojaMagias(dados) {
+  function construirLojaMagias(ent) {
     if (typeof Magias === 'undefined') {
       return '<p class="loja-vazia">Módulo de magias não carregado (js/magias.js).</p>';
     }
-    const pergaminhos = (dados && dados.pergaminhos) || [];
+    const aviso  = avisoMagicosHTML(ent, 'pergaminhos', 'pergaminhos');
+    const pergEf = pergaminhosEfetivos(ent);
+    if (pergEf.bloqueado) return aviso;
+
+    const pergaminhos = pergEf.lista;
+    const notaTeto = pergEf.cortados > 0
+      ? `<p class="comun-teto-nota">✂ ${pergEf.cortados === 1
+            ? '1 pergaminho sorteado ficou fora'
+            : pergEf.cortados + ' pergaminhos sorteados ficaram fora'}
+           por passar do teto de preço da comunidade (T$ ${_fmtT(pergEf.teto)}).</p>`
+      : '';
 
     if (!pergaminhos.length) {
-      return `<p class="loja-vazia">Nenhum pergaminho nesta geração. Ajuste a
+      return `${aviso}${notaTeto}<p class="loja-vazia">Nenhum pergaminho à venda nesta geração. Ajuste a
         quantidade ou os círculos disponíveis e gere a loja novamente.</p>`;
     }
 
@@ -900,7 +1199,7 @@
     });
 
     // busca + resumo
-    let html = buscaHTML('magias', '🔍 Buscar pergaminho — magia, escola, tipo…');
+    let html = aviso + notaTeto + buscaHTML('magias', '🔍 Buscar pergaminho — magia, escola, tipo…');
     html += `<div class="loja-resumo">`;
     html += `<span class="loja-resumo-item">Total: <strong>${pergaminhos.length} pergaminhos</strong></span>`;
     [1, 2, 3, 4, 5].forEach(c => {
@@ -1052,7 +1351,9 @@
         out += `  ${cat}:\n`;
         lista.forEach(item => {
           const stats = _expItemStats(item);
-          out += `    • ${item.nome || '—'} — ${_expPreco(item)}\n`;
+          const est = item.estoque == null ? ''
+            : (item.estoque > 0 ? ` · Estoque: ${item.estoque}` : ' · ESGOTADO');
+          out += `    • ${item.nome || '—'} — ${_expPreco(item)}${est}\n`;
           if (stats) out += `        ${stats}\n`;
           out += _expDesc(item.nome);
         });
@@ -1061,7 +1362,14 @@
     return out;
   }
 
-  function _expSecaoEspecial(dados) {
+  function _expSecaoEspecial(ent) {
+    if (!magicosPermitidos(ent).encantos) {
+      const cl = LojaCompleta.CLASSIFICACOES[_classifDe(ent)];
+      return `\n✨ LOJA ESPECIAL\n${'═'.repeat(46)}\n` +
+             `  Sem mercado de encantamentos nesta comunidade (${cl.rotulo}) —\n` +
+             `  itens mágicos à venda são coisa de metrópoles.\n`;
+    }
+    const dados = ent.especial;
     const cats = (dados && dados.categorias) || {};
     let linhas = '';
     ORDEM_TIPOS_ESPECIAL.forEach(cat => {
@@ -1085,13 +1393,23 @@
     return `\n✨ LOJA ESPECIAL — ${total} encantamento${total !== 1 ? 's' : ''}\n${'═'.repeat(46)}\n${linhas}`;
   }
 
-  function _expSecaoMagias(dados) {
-    const perg = (dados && dados.pergaminhos) || [];
+  function _expSecaoMagias(ent) {
+    const pergEf = pergaminhosEfetivos(ent);
+    if (pergEf.bloqueado) {
+      const cl = LojaCompleta.CLASSIFICACOES[_classifDe(ent)];
+      return `\n📜 MAGIAS (Pergaminhos)\n${'═'.repeat(46)}\n` +
+             `  Sem mercado de pergaminhos nesta comunidade (${cl.rotulo}) —\n` +
+             `  itens mágicos à venda são coisa de metrópoles.\n`;
+    }
+    const perg = pergEf.lista;
     if (!perg.length) return '';
     const porC = {};
     perg.forEach(p => { (porC[p.circulo] = porC[p.circulo] || []).push(p); });
 
     let out = `\n📜 MAGIAS (Pergaminhos) — ${perg.length} pergaminho${perg.length !== 1 ? 's' : ''}\n${'═'.repeat(46)}\n`;
+    if (pergEf.cortados > 0) {
+      out += `  (${pergEf.cortados} acima do teto de T$ ${_fmtT(pergEf.teto)} da comunidade ficaram fora)\n`;
+    }
     [1, 2, 3, 4, 5].forEach(c => {
       if (!porC[c]) return;
       const pm = Magias.PM_POR_CIRCULO[c];
@@ -1106,6 +1424,20 @@
     return out;
   }
 
+  // Bloco de comunidade do cabeçalho do .txt (classificação + caixa).
+  function _expComunidade(ent) {
+    const classe = _classifDe(ent);
+    if (classe === 'livre') return '';
+    const cl = LojaCompleta.CLASSIFICACOES[classe];
+    const c  = ent.comunidade;
+    let out = `\n🏛 Comunidade: ${cl.rotulo}${cl.pop ? ' (' + cl.pop + ')' : ''}\n`;
+    out += c.caixa
+      ? `💰 Caixa da comunidade: T$ ${_fmtT(c.caixa.atual)} de T$ ${_fmtT(c.caixa.max)} (${c.caixa.formula})\n`
+      : '💰 Caixa da comunidade: virtualmente ilimitada\n';
+    if (c.semArmasFogo) out += '🚫 Armas de fogo: proibidas (lei do Reinado)\n';
+    return out;
+  }
+
   function exportarLoja(secoes) {
     const ent = entradaSelecionada();
     if (!ent) return;
@@ -1117,9 +1449,11 @@
       '',
     ].join('\n');
 
+    txt += _expComunidade(ent);
+
     if (secoes.normal)   txt += _expSecaoNormal(ent.normal);
-    if (secoes.especial) txt += _expSecaoEspecial(ent.especial);
-    if (secoes.magias)   txt += _expSecaoMagias(ent.magias);
+    if (secoes.especial) txt += _expSecaoEspecial(ent);
+    if (secoes.magias)   txt += _expSecaoMagias(ent);
 
     baixarTxt(`loja_${carimboArquivo()}.txt`, txt + '\n');
   }
@@ -1181,7 +1515,7 @@
         // renderizarLoja recria todo o conteúdo do container — inclusive
         // o #lojaStatus e o #btnGerarLoja. Por isso o status é definido
         // DEPOIS, no elemento recém-criado.
-        renderizarLoja(container, ent.normal, ent.especial, ent.magias);
+        renderizarLoja(container, ent);
 
         const totalEnc    = contarEncantamentos(ent.especial);
         const totalMag    = (ent.magias && ent.magias.total) || 0;
