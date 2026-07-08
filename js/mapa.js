@@ -30,7 +30,7 @@
   CATS.forEach(c => { CAT_POR_CHAVE[c.chave] = c; });
 
   const LARGURA_NO = 210;          // casado com .mp-no { width } no CSS
-  const ZOOM_MIN = 0.3, ZOOM_MAX = 2.4;
+  const ZOOM_MIN = 0.1, ZOOM_MAX = 2.4;
 
   const esc = window.GA_esc;
 
@@ -438,6 +438,14 @@
   // ═══════════════════════════════════════════════════════════════
   //  INTERAÇÃO — arrastar nós, pan, zoom, ligar
   // ═══════════════════════════════════════════════════════════════
+  // O pan e o arrasto chamam preventDefault, o que impede o navegador de
+  // tirar sozinho o foco da caixa em edição — sem isto, o cursor de
+  // digitação ficava preso no nó mesmo depois de clicar fora dele.
+  function desfocarEdicao() {
+    const ae = document.activeElement;
+    if (ae && ae !== document.body && painel && painel.contains(ae)) ae.blur();
+  }
+
   function aoPointerDown(e) {
     if (e.button !== 0) return;
 
@@ -451,14 +459,16 @@
 
     // alça de ligação ou clique em campo: não arrasta nem dá pan
     if (e.target.closest('.mp-no-handle')) return;
-    if (e.target.closest('.mp-no-resize')) { if (no && !no.travado) iniciarResize(e, noEl); return; }
+    if (e.target.closest('.mp-no-resize')) { if (no && !no.travado) { desfocarEdicao(); iniciarResize(e, noEl); } return; }
     if (noEl) {
       const naCab = e.target.closest('.mp-no-cab');
       const emControle = e.target.closest('select, button, input, textarea, label');
-      if (naCab && !emControle && no && !no.travado) { iniciarArrastoNo(e, noEl); }
+      if (naCab && !emControle && no && !no.travado) { desfocarEdicao(); iniciarArrastoNo(e, noEl); }
       return;                                   // dentro do nó: edição normal
     }
-    // fundo do quadro → pan
+    // fundo do quadro → encerra a digitação e dá pan (um clique parado,
+    // sem arrastar, também limpa a seleção múltipla — ver aoPointerUp)
+    desfocarEdicao();
     iniciarPan(e);
   }
 
@@ -485,7 +495,7 @@
   }
 
   function iniciarPan(e) {
-    arrasto = { tipo: 'pan', sx: e.clientX, sy: e.clientY, ox: dados.view.x, oy: dados.view.y };
+    arrasto = { tipo: 'pan', sx: e.clientX, sy: e.clientY, ox: dados.view.x, oy: dados.view.y, moveu: false };
     viewport.classList.add('mp--panning');
     e.preventDefault();
   }
@@ -511,6 +521,7 @@
       arrasto.el.style.height = arrasto.no.h + 'px';
       desenharLigacoes();
     } else if (arrasto.tipo === 'pan') {
+      if (Math.abs(e.clientX - arrasto.sx) + Math.abs(e.clientY - arrasto.sy) > 3) arrasto.moveu = true;
       dados.view.x = arrasto.ox + (e.clientX - arrasto.sx);
       dados.view.y = arrasto.oy + (e.clientY - arrasto.sy);
       aplicarView();
@@ -520,7 +531,11 @@
   function aoPointerUp() {
     if (!arrasto) return;
     if (arrasto.tipo === 'no' || arrasto.tipo === 'resize') canvas.classList.remove('mp--arrastando');
-    if (arrasto.tipo === 'pan') viewport.classList.remove('mp--panning');
+    if (arrasto.tipo === 'pan') {
+      viewport.classList.remove('mp--panning');
+      // clique parado no fundo (sem arrastar) → desmarca a seleção múltipla
+      if (!arrasto.moveu) limparSelecao();
+    }
     arrasto = null;
     salvar();
   }
