@@ -992,6 +992,8 @@
                     data-s="${si}" data-c="${ci}">＋ Adicionar criatura</button>
             <button class="mz-add mz-add--perigo" data-acao="abrir-perigos"
                     data-s="${si}" data-c="${ci}">⚠ Perigos complexos</button>
+            <button class="mz-add mz-add--npc" data-acao="abrir-npcs"
+                    data-s="${si}" data-c="${ci}">👤 Guia de NPCs</button>
             <button class="mz-add mz-add--importar" data-acao="importar-ficha"
                     data-s="${si}" data-c="${ci}">📋 Importar do livro</button>
           </div>
@@ -1609,6 +1611,10 @@
     }
     if (acao === 'abrir-perigos') {
       abrirModalPerigos(+alvo.dataset.s, +alvo.dataset.c);
+      return;
+    }
+    if (acao === 'abrir-npcs') {
+      abrirModalNPCs(+alvo.dataset.s, +alvo.dataset.c);
       return;
     }
     if (acao === 'abrir-ambientes') {
@@ -2900,9 +2906,9 @@
       if (bloco) cr.ataques = _txtParaHtml(_formatarAtaques(bloco));
     }
 
-    // 9) ATRIBUTOS
+    // 9) ATRIBUTOS (vai até Perícias/Equipamento/Tesouro, o que vier antes)
     if (iAtr >= 0) {
-      const segAtr = t.slice(iAtr, fim(iAtr, [iPer, iTes]));
+      const segAtr = t.slice(iAtr, fim(iAtr, [iPer, iEquip, iTes]));
       cr.atributos = segAtr.replace(/\s*[.;]\s*$/, '').trim();
     } else {
       avisos.push('Atributos (For… Car) não encontrados.');
@@ -3132,6 +3138,186 @@
     salvar();
     fecharModalPerigos();
     render();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  BIBLIOTECA DO GUIA DE NPCS (botão "👤 Guia de NPCs")
+  //  Lista window.GUIA_NPCS (js/npcs-data.js); clicar insere uma cópia
+  //  completa e editável da ficha na cena. O texto da biblioteca passa
+  //  pelo MESMO parser do "📋 Importar do livro" (parsearFicha), então
+  //  a criatura nasce com stats, chips e caixas preenchidos.
+  // ═══════════════════════════════════════════════════════════════
+  let _npcAlvo = null;   // { s, c }
+
+  function _guiaNPCCategorias() {
+    const g = window.GUIA_NPCS;
+    return (g && Array.isArray(g.categorias)) ? g.categorias : [];
+  }
+  function _guiaNPCPorChave(chave) {
+    let achado = null;
+    _guiaNPCCategorias().forEach(cat => (cat.fichas || []).forEach(f => {
+      if (f.chave === chave) achado = f;
+    }));
+    return achado;
+  }
+  // ND em número, para ordenar ("1/4" -> 0.25; "S+" e vazios vão pro fim)
+  function _ndValor(nd) {
+    const s = String(nd || '').trim();
+    const fr = s.match(/^(\d+)\s*\/\s*(\d+)$/);
+    if (fr) return (+fr[1]) / (+fr[2]);
+    const n = parseFloat(s.replace(',', '.'));
+    return isNaN(n) ? 999 : n;
+  }
+
+  // Monta uma criatura do bestiário a partir de uma ficha da biblioteca.
+  function criaturaDeGuiaNPC(def) {
+    const r = parsearFicha(def.texto);
+    if (!r || !r.cr) return null;
+    const cr = r.cr;
+    // chips que o parser não pesca pelo texto (ex.: "resistência mental")
+    (def.habilidadesExtra || []).forEach(k => {
+      if (HAB_POR_CHAVE[k] && cr.habilidades.indexOf(k) < 0) cr.habilidades.push(k);
+    });
+    normalizarCriatura(cr);
+    return cr;
+  }
+
+  // "Guarda Palaciano", depois "Guarda Palaciano 2", "… 3" — por cena.
+  function _nomeUnicoNaCena(cena, nome) {
+    const base = String(nome || 'NPC').trim();
+    const existe = n => cena.criaturas.some(cr =>
+      String(cr.nome || '').trim().toLowerCase() === n.toLowerCase());
+    if (!existe(base)) return base;
+    let n = 2;
+    while (existe(base + ' ' + n)) n++;
+    return base + ' ' + n;
+  }
+
+  // Insere o NPC na cena indicada. Devolve a criatura criada (ou null).
+  function inserirNPCNaCena(chave, si, ci) {
+    const def = _guiaNPCPorChave(chave);
+    const sessao = dados.sessoes[si];
+    const cena = sessao && sessao.cenas[ci];
+    if (!def || !cena) return null;
+    const cr = criaturaDeGuiaNPC(def);
+    if (!cr) return null;
+    cr.nome = _nomeUnicoNaCena(cena, cr.nome || def.nome);
+    cr.aberto = false;   // entra recolhida — pronta, sem inundar a tela
+    cena.criaturas.push(cr);
+    salvar();
+    render();
+    return cr;
+  }
+
+  function abrirModalNPCs(si, ci) {
+    fecharModalNPCs();
+    _npcAlvo = { s: si, c: ci };
+    const cats = _guiaNPCCategorias();
+
+    let grupos = '';
+    cats.forEach(cat => {
+      const fichas = (cat.fichas || []).slice()
+        .sort((a, b) => _ndValor(a.nd) - _ndValor(b.nd) || a.nome.localeCompare(b.nome, 'pt'));
+      let linhas = '';
+      fichas.forEach(f => {
+        const busca = _semAcento([f.nome, 'nd ' + f.nd, f.tipo, f.resumo, cat.nome].join(' '));
+        linhas += `
+          <button class="mz-cond-opcao mz-npc-opcao" style="--cor:${cat.cor || '#6e6256'}"
+                  data-npc-inserir="${f.chave}" data-busca="${esc(busca)}">
+            <span class="mz-cond-opcao-cab">
+              <span class="mz-cond-opcao-check">＋</span>
+              <span class="mz-cond-opcao-nome">${esc(f.nome)}</span>
+              <span class="mz-perigo-nd">ND ${esc(f.nd)}</span>
+              <span class="mz-cond-opcao-cat">${esc(f.tipo || '')}</span>
+            </span>
+            <span class="mz-cond-opcao-desc">${esc(f.resumo || '')}</span>
+          </button>`;
+      });
+      grupos += `
+        <div class="mz-npc-grupo" data-npc-grupo="${cat.chave}">
+          <div class="mz-npc-grupo-titulo" style="--cor:${cat.cor || '#6e6256'}">${esc(cat.icone || '')} ${esc(cat.nome)}</div>
+          ${linhas}
+        </div>`;
+    });
+    if (!grupos) grupos = '<p class="mz-imp-vazio">Nenhum NPC na biblioteca (npcs-data.js não carregou).</p>';
+
+    let chips = '<button class="mz-npc-cat ativo" data-npc-cat="">Todas</button>';
+    cats.forEach(cat => {
+      chips += `<button class="mz-npc-cat" data-npc-cat="${cat.chave}" style="--cor:${cat.cor || '#6e6256'}">${esc(cat.icone || '')} ${esc(cat.nome)}</button>`;
+    });
+
+    const overlay = document.createElement('div');
+    overlay.id = 'mzNPCModal';
+    overlay.className = 'mz-cond-overlay';
+    overlay.innerHTML = `
+      <div class="mz-cond-modal mz-npc-modal" role="dialog" aria-modal="true">
+        <div class="mz-cond-modal-head">
+          <span>👤 Guia de NPCs — inserir na cena</span>
+          <button class="mz-cond-modal-x" data-npc-fechar title="Fechar">✕</button>
+        </div>
+        <input class="mz-cond-busca" type="text" placeholder="Buscar NPC (guarda, acólito, ND 2…)" autocomplete="off">
+        <div class="mz-npc-cats">${chips}</div>
+        <div class="mz-cond-modal-corpo">${grupos}</div>
+        <div class="mz-cond-modal-pe" data-npc-pe>Clique em um NPC para adicioná-lo à cena — o modal continua aberto, dá para montar o encontro inteiro. As fichas entram recolhidas e editáveis.</div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    let catAtiva = '';
+    const busca = overlay.querySelector('.mz-cond-busca');
+
+    function aplicarFiltro() {
+      const termo = _semAcento(busca.value.trim());
+      overlay.querySelectorAll('.mz-npc-grupo').forEach(g => {
+        const daCat = !catAtiva || g.dataset.npcGrupo === catAtiva;
+        let algum = false;
+        g.querySelectorAll('[data-npc-inserir]').forEach(o => {
+          const bate = daCat && (!termo || o.dataset.busca.indexOf(termo) >= 0);
+          o.style.display = bate ? '' : 'none';
+          if (bate) algum = true;
+        });
+        g.style.display = algum ? '' : 'none';
+      });
+    }
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay || e.target.closest('[data-npc-fechar]')) { fecharModalNPCs(); return; }
+      const chip = e.target.closest('[data-npc-cat]');
+      if (chip) {
+        catAtiva = chip.dataset.npcCat;
+        overlay.querySelectorAll('.mz-npc-cat').forEach(b =>
+          b.classList.toggle('ativo', b === chip));
+        aplicarFiltro();
+        return;
+      }
+      const opc = e.target.closest('[data-npc-inserir]');
+      if (opc && _npcAlvo) {
+        const cr = inserirNPCNaCena(opc.dataset.npcInserir, _npcAlvo.s, _npcAlvo.c);
+        if (!cr) return;
+        // feedback sem fechar o modal: ✓ na linha + aviso no rodapé
+        opc.classList.add('mz-npc-ok');
+        const check = opc.querySelector('.mz-cond-opcao-check');
+        if (check) check.textContent = '✓';
+        setTimeout(() => {
+          opc.classList.remove('mz-npc-ok');
+          if (check) check.textContent = '＋';
+        }, 900);
+        const pe = overlay.querySelector('[data-npc-pe]');
+        if (pe) pe.innerHTML = `✓ <strong>${esc(cr.nome)}</strong> adicionado à cena. Clique em outros para continuar montando o encontro.`;
+      }
+    });
+
+    busca.addEventListener('input', aplicarFiltro);
+    document.addEventListener('keydown', _npcEsc);
+    setTimeout(() => busca.focus(), 50);
+  }
+
+  function _npcEsc(e) { if (e.key === 'Escape') fecharModalNPCs(); }
+
+  function fecharModalNPCs() {
+    const el = document.getElementById('mzNPCModal');
+    if (el) el.remove();
+    document.removeEventListener('keydown', _npcEsc);
+    _npcAlvo = null;
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -3530,10 +3716,41 @@
     });
   }
 
-  // ── API PÚBLICA (consumida pela aba Viagem) ──────────────────────
+  // ── API PÚBLICA (consumida pelas abas Viagem e Consultas rápidas) ─
   // Cria uma cena de combate ligada a uma viagem, agrupada numa sessão
   // própria, e devolve onde ficou. A aba Viagem chama isto e navega para cá.
   window.GA_Monstros = {
+    // Insere um NPC da biblioteca (js/npcs-data.js) na cena narrada; se
+    // nenhuma cena estiver sendo narrada, agrupa numa sessão própria.
+    // Usado pela sub-aba "👤 Guia de NPCs" das Consultas rápidas.
+    // Devolve { sessao, cena, nome, narrada } ou null.
+    inserirNPC: function (chave) {
+      let si = -1, ci = -1;
+      if (dados.cenaNarrada) {
+        dados.sessoes.forEach((s, i) => s.cenas.forEach((c, j) => {
+          if (c.id === dados.cenaNarrada) { si = i; ci = j; }
+        }));
+      }
+      const narrada = si >= 0;
+      if (!narrada) {
+        const NOME = '👤 NPCs do Guia';
+        let s = dados.sessoes.find(x => x.nome === NOME);
+        if (!s) { s = novaSessao(dados.sessoes.length + 1); s.nome = NOME; dados.sessoes.push(s); }
+        s.aberto = true;
+        if (!s.cenas.length) { const c = novaCena(1); c.nome = 'Fichas avulsas'; s.cenas.push(c); }
+        si = dados.sessoes.indexOf(s);
+        ci = s.cenas.length - 1;
+      }
+      const cr = inserirNPCNaCena(chave, si, ci);
+      if (!cr) return null;
+      return {
+        sessao: dados.sessoes[si].nome,
+        cena: dados.sessoes[si].cenas[ci].nome,
+        nome: cr.nome,
+        narrada: narrada,
+      };
+    },
+
     criarCombateViagem: function (nomeViagem, evento, viagemId) {
       const NOME = '🐎 Combates de Viagem';
       let s = dados.sessoes.find(x => x.nome === NOME);

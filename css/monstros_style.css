@@ -1945,3 +1945,59 @@
   .mz-stats-grade { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
   .mz-sessao-corpo, .mz-cena-corpo, .mz-criatura-corpo { padding-left: 0.5rem; padding-right: 0.5rem; }
 }
+
+/* ── BOTÃO E MODAL "👤 GUIA DE NPCS" ─────────────────────────────── */
+.mz-add--npc {
+  border-style: solid;
+  border-color: var(--gold-dim);
+  color: var(--rust-dark);
+}
+.mz-add--npc:hover { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
+
+.mz-npc-modal { max-width: 680px; }
+
+/* chips de categoria (Todas / Plebe / Templo / …) */
+.mz-npc-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.15rem 0.9rem 0.55rem;
+  border-bottom: 1px solid var(--gold-dim);
+}
+.mz-npc-cat {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.55rem;
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  color: var(--ink);
+  cursor: pointer;
+}
+.mz-npc-cat:hover { border-color: var(--cor, var(--rust)); color: var(--cor, var(--rust)); }
+.mz-npc-cat.ativo {
+  background: var(--cor, var(--ink));
+  border-color: var(--cor, var(--ink));
+  color: var(--parchment);
+}
+
+/* grupos por categoria dentro do modal */
+.mz-npc-grupo { margin-bottom: 0.85rem; }
+.mz-npc-grupo-titulo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cor, var(--ink));
+  border-bottom: 1px dashed var(--gold-dim);
+  padding: 0.5rem 0 0.25rem;
+  margin-bottom: 0.35rem;
+}
+.mz-npc-opcao .mz-cond-opcao-cat { text-transform: none; letter-spacing: 0.02em; }
+
+/* pisca verde ao inserir (o modal fica aberto para inserir vários) */
+.mz-npc-ok { background: rgba(63, 122, 63, 0.18) !important; }
+.mz-npc-ok .mz-cond-opcao-check { color: #3f7a3f; }
