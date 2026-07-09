@@ -929,6 +929,134 @@ Para mais informações sobre como modificar fichas de criaturas, veja Ameaças 
     },
   ],
 
+  // ── 🧬 NPCS DE OUTRAS RAÇAS (ajustes estruturados) ───────────────
+  // Versão aplicável por código da regra "NPCs de Outras Raças" (o texto
+  // integral segue no card de regras abaixo). O modal "👤 Guia de NPCs"
+  // do monstros.js usa estes campos para ajustar a ficha ao inserir:
+  //   atrib      — deltas na linha de atributos (For/Des/Con/Int/Sab/Car)
+  //   stats      — deltas nas caixinhas (defesa, fortitude, reflexos,
+  //                vontade, iniciativa, percepcao)
+  //   pvPorND    — ±PV por ND da ficha (mínimo ±1)
+  //   tamanho    — muda o tamanho na linha de tipo (ex.: 'Pequeno')
+  //   racaTexto  — substitui a raça entre parênteses no tipo ('(humano)')
+  //   deslocamentoFixo / deslocamentoDelta — muda o deslocamento base
+  //   escaladaIgualDesloc / natacao        — deslocamentos extras
+  //   sentidos   — chips de sentidos ganhos (chaves do monstros.js)
+  //   tipoEspirito — vira tipo Espírito (chip 'espiritos' + linha de tipo)
+  //   linha      — texto do ajuste que não é numérico (vai para a caixa
+  //                de Ataque e Habilidades, com o rótulo da raça)
+  //   auto       — resumo do que É aplicado automaticamente (declarado
+  //                na ficha como "ajustes já aplicados")
+  racas: [
+    {
+      chave: 'anao', nome: 'Anão', racaTexto: 'anão',
+      atrib: { Con: 1, Des: -1 }, stats: { fortitude: 1, reflexos: -1 }, pvPorND: 2,
+      sentidos: ['visaoNoEscuro'], deslocamentoFixo: '6m (4q)',
+      linha: 'Troque a arma corpo a corpo por um machado anão, com +1 no teste de ataque com o machado (bônus ainda não somado).',
+      auto: 'Con +1, Des –1, Fort +1, Ref –1, +2 PV/ND, visão no escuro, deslocamento 6m',
+    },
+    {
+      chave: 'dahllan', nome: 'Dahllan', racaTexto: 'dahllan',
+      atrib: { Sab: 1, Int: -1 }, stats: { percepcao: 1, vontade: 1 },
+      linha: 'Recebe Empatia Selvagem e, uma vez por cena, pode lançar Controlar Plantas.',
+      auto: 'Sab +1, Int –1, Percepção +1, Von +1',
+    },
+    {
+      chave: 'elfo', nome: 'Elfo', racaTexto: 'elfo',
+      atrib: { Int: 1, Con: -1 }, stats: { percepcao: 2, fortitude: -1 }, pvPorND: -1,
+      deslocamentoDelta: 3,
+      auto: 'Int +1, Con –1, Percepção +2, Fort –1, –1 PV/ND, deslocamento +3m',
+    },
+    {
+      chave: 'goblin', nome: 'Goblin', racaTexto: 'goblin',
+      atrib: { Des: 1, Car: -1 }, stats: { iniciativa: 1, defesa: 1, fortitude: 2, reflexos: 1 },
+      tamanho: 'Pequeno', sentidos: ['visaoNoEscuro'], escaladaIgualDesloc: true,
+      auto: 'Des +1, Car –1, tamanho Pequeno, Iniciativa +1, Defesa +1, Fort +2, Ref +1, visão no escuro, escalada igual ao deslocamento',
+    },
+    {
+      chave: 'hynne', nome: 'Hynne', racaTexto: 'hynne',
+      atrib: { Des: 1, For: -1 }, stats: { iniciativa: 1, defesa: 1, reflexos: 1 },
+      tamanho: 'Pequeno', deslocamentoDelta: -3,
+      linha: 'Sofre –1 em testes de ataque e rolagens de dano corpo a corpo e recebe um ataque à distância de funda (ajuste os ataques manualmente).',
+      auto: 'Des +1, For –1, tamanho Pequeno, Iniciativa +1, Defesa +1, Ref +1, deslocamento –3m',
+    },
+    {
+      chave: 'lefou', nome: 'Lefou', racaTexto: 'lefou',
+      atrib: { Car: -1 },
+      linha: 'Recebe +2 em uma perícia ou um poder da Tormenta à sua escolha.',
+      auto: 'Car –1',
+    },
+    {
+      chave: 'minotauro', nome: 'Minotauro', racaTexto: 'minotauro',
+      atrib: { For: 1, Sab: -1 }, stats: { defesa: 1, vontade: -1 }, sentidos: ['faro'],
+      linha: 'Recebe um ataque de chifres (teste de ataque igual ao corpo a corpo já existente, dano 1d6+Força), +1 em testes de ataque e rolagens de dano corpo a corpo (some nos ataques) e Medo de Altura (abalado adjacente a quedas de 3m+).',
+      auto: 'For +1, Sab –1, Defesa +1, Von –1, faro',
+    },
+    {
+      chave: 'qareen', nome: 'Qareen', racaTexto: 'qareen',
+      atrib: { Car: 1, Sab: -1 }, stats: { percepcao: -1, vontade: -1 },
+      linha: 'Recebe Tatuagem Mística: uma vez por cena, pode lançar uma magia específica de 1º círculo (escolha ao aplicar).',
+      auto: 'Car +1, Sab –1, Percepção –1, Von –1',
+    },
+    {
+      chave: 'sereia', nome: 'Sereia/Tritão', racaTexto: 'sereia',
+      natacao: '12m (8q)',
+      linha: 'Pode lançar UMA das magias a seguir (escolha ao aplicar): Amedrontar, Comando, Despedaçar, Enfeitiçar, Hipnotismo ou Sono.',
+      auto: 'deslocamento de natação 12m',
+    },
+    {
+      chave: 'suraggelAggelus', nome: 'Suraggel (aggelus)', racaTexto: 'suraggel aggelus',
+      atrib: { Sab: 1 }, sentidos: ['visaoNoEscuro'], tipoEspirito: true,
+      linha: 'Pode lançar Luz.',
+      auto: 'Sab +1, tipo Espírito, visão no escuro',
+    },
+    {
+      chave: 'suraggelSulfure', nome: 'Suraggel (sulfure)', racaTexto: 'suraggel sulfure',
+      atrib: { Des: 1 }, sentidos: ['visaoNoEscuro'], tipoEspirito: true,
+      linha: 'Pode lançar Escuridão.',
+      auto: 'Des +1, tipo Espírito, visão no escuro',
+    },
+    {
+      chave: 'trog', nome: 'Trog', racaTexto: 'trog',
+      atrib: { Con: 1, Int: -1 }, stats: { defesa: 1, fortitude: 1 }, pvPorND: 2,
+      linha: 'Recebe um ataque de mordida (teste de ataque igual ao corpo a corpo já existente, dano 1d6+Força), Sangue Frio e Mau Cheiro (habilidades raciais de trog).',
+      auto: 'Con +1, Int –1, Defesa +1, Fort +1, +2 PV/ND',
+    },
+  ],
+
+  // ── ⚔ TRUQUES MERCENÁRIOS (ajustes estruturados) ─────────────────
+  // Regra das companhias mercenárias: escolha UM truque e aplique-o a
+  // todos os membros da companhia. `stats` é somado nas caixinhas;
+  // `critMult` aumenta o multiplicador do rolador de críticos; `linha`
+  // é registrada na caixa de Ataque e Habilidades da ficha.
+  truques: [
+    {
+      chave: 'armadurasReforcadas', nome: 'Armaduras Reforçadas', stats: { defesa: 2 },
+      linha: 'O mercenário recebe +2 na Defesa (já somado na ficha).',
+    },
+    {
+      chave: 'armasEnvenenadas', nome: 'Armas Envenenadas',
+      linha: 'Quando acerta seu primeiro ataque com arma na cena, o mercenário faz com que a vítima perca 1d12 pontos de vida por veneno.',
+    },
+    {
+      chave: 'disciplinaSurpreendente', nome: 'Disciplina Surpreendente',
+      stats: { fortitude: 2, reflexos: 2, vontade: 2 },
+      linha: 'O mercenário recebe +2 em testes de resistência (já somado na ficha).',
+    },
+    {
+      chave: 'laminasFarpadas', nome: 'Lâminas Farpadas', critMult: 1,
+      linha: 'O multiplicador de crítico dos ataques corpo a corpo do mercenário aumenta em +1.',
+    },
+    {
+      chave: 'poArdente', nome: 'Pó Ardente',
+      linha: 'Pó Ardente (Movimento) Uma vez por cena, o mercenário deixa uma criatura adjacente ofuscada. A vítima pode remover essa condição gastando uma ação padrão para limpar os olhos.',
+    },
+    {
+      chave: 'taticasDeEmboscada', nome: 'Táticas de Emboscada',
+      linha: 'Os ataques do mercenário causam +2d6 pontos de dano contra criaturas surpreendidas.',
+    },
+  ],
+
   // ── 🗡 ITENS ESPECIAIS CITADOS PELAS FICHAS ──────────────────────
   itens: [
     {

@@ -356,6 +356,7 @@
       critTipo: 'corte', critMult: 'x2', critLocal: '', ultimoCritico: null,
       condicoesAtivas: [],
       tipoCriatura: '', habilidades: [], sentidos: [],
+      devoto: '',
       stats: stats,
       montaria: { chave: '', nivel: 'iniciante' },
       condicoes: '', ataques: '', atributos: '', pericias: '', equipamento: '', recompensas: '',
@@ -407,6 +408,7 @@
     if (typeof cr.tipoCriatura !== 'string') cr.tipoCriatura = '';
     if (!Array.isArray(cr.habilidades)) cr.habilidades = [];
     if (!Array.isArray(cr.sentidos)) cr.sentidos = [];
+    if (typeof cr.devoto !== 'string') cr.devoto = '';   // chave do deus (GA_DEVOTOS)
     // montaria opcional da criatura (com nível de parceiro)
     if (!cr.montaria || typeof cr.montaria !== 'object') cr.montaria = { chave: '', nivel: 'iniciante' };
     if (typeof cr.montaria.chave !== 'string') cr.montaria.chave = '';
@@ -1335,6 +1337,114 @@
     caixa.classList.add('mz-ferr-flash');
   }
 
+  // ── DEVOTO & PODERES CONCEDIDOS (dados de js/devotos-data.js) ────
+  // Bloco fixo da ficha quando cr.devoto está marcado: diz de quem a
+  // criatura é devota e mostra como ela age (Crenças) e o que lhe é
+  // proibido (Obrigações & Restrições). Aparece na lista E no painel.
+  function construirBlocoDevoto(cr, ds) {
+    const G = window.GA_DEVOTOS;
+    if (!G || !cr.devoto) return '';
+    const d = G.deusPorChave[cr.devoto];
+    if (!d) return '';
+    return `
+          <div class="mz-devoto">
+            <div class="mz-devoto-cab">
+              <span class="mz-devoto-icone" title="Criatura devota">🙏</span>
+              <span class="mz-devoto-titulo">Devoto de <strong>${esc(d.nome)}</strong> ${d.icone} · ${esc(d.titulo)}</span>
+              <button class="mz-cond-x" data-acao="devoto-remover" ${ds} title="Remover devoção">✕</button>
+            </div>
+            <details class="mz-devoto-det">
+              <summary>Como age (Crenças) &amp; o que é proibido (Obrigações &amp; Restrições)</summary>
+              <div class="mz-devoto-corpo">
+                <p><strong>Crenças &amp; Objetivos.</strong> ${esc(d.crencas)}</p>
+                <p><strong>Obrigações &amp; Restrições.</strong> ${esc(d.obrigacoes)}</p>
+                <p class="mz-devoto-meta">Símbolo sagrado: ${esc(d.simbolo)} · Canalizar energia: ${esc(d.energia)} · Arma preferida: ${esc(d.arma)}.</p>
+                <p class="mz-devoto-meta">Se violar as O&amp;R: perde todos os PM e só os recupera a partir do próximo dia; nova violação na mesma aventura exige penitência (perícia Religião).</p>
+              </div>
+            </details>
+          </div>`;
+  }
+
+  // options do seletor de poder concedido para um deus ('' => instrução)
+  function _opcoesPoderHtml(deusChave) {
+    const G = window.GA_DEVOTOS;
+    if (!G || !deusChave || !G.deusPorChave[deusChave]) {
+      return '<option value="">— primeiro escolha o deus —</option>';
+    }
+    let html = '<option value="">— escolha o poder —</option>' +
+               '<option value="~sortear">🎲 Sortear um poder do deus</option>';
+    G.poderesDoDeus(deusChave).forEach(p => {
+      html += `<option value="${p.chave}">${esc(p.nome)}${p.magica ? ' ✨' : ''}</option>`;
+    });
+    return html;
+  }
+
+  // Linha HTML de um poder concedido (para a caixa de Ataque e Habilidades)
+  function _linhaPoderHtml(p, d) {
+    const origem = 'poder concedido de ' + d.nome + (p.magica ? ' · habilidade mágica' : '');
+    return `<div><strong>${esc(p.nome)} (${esc(origem)})</strong> ${_txtParaHtml(p.texto)}</div>`;
+  }
+
+  // Ferramenta "Devoto & poder concedido" — só na lista, junto das
+  // ferramentas de ataque. Selects sem data-campo (o salvador de campos
+  // os ignora); o select de deus repopula o de poder via aoDigitar.
+  function construirFerramentaDevoto(cr, ds) {
+    const G = window.GA_DEVOTOS;
+    if (!G) return '';
+    const optDeus = ['<option value="">— escolha o deus —</option>']
+      .concat(G.deuses.map(d =>
+        `<option value="${d.chave}"${d.chave === cr.devoto ? ' selected' : ''}>${d.icone} ${esc(d.nome)} — ${esc(d.titulo)}</option>`))
+      .join('');
+    return `
+          <details class="mz-ferr mz-ferr--devoto">
+            <summary class="mz-ferr-sum">🙏 Devoto &amp; poder concedido</summary>
+            <div class="mz-ferr-corpo">
+              <div class="mz-ferr-linha">
+                <span class="mz-ferr-lbl">Deus</span>
+                <select class="mz-dev-deus" title="Deuses do Panteão — consulte a sub-aba 🙏 Poderes Concedidos">${optDeus}</select>
+                <button type="button" class="mz-ferr-add" data-acao="devoto-marcar" ${ds}
+                        title="Marca a criatura como devota — a ficha ganha o bloco com Crenças e Obrigações & Restrições do deus">🙏 marcar devoto</button>
+              </div>
+              <div class="mz-ferr-linha">
+                <span class="mz-ferr-lbl">Poder</span>
+                <select class="mz-dev-poder" ${cr.devoto ? '' : 'disabled'}>${_opcoesPoderHtml(cr.devoto)}</select>
+                <button type="button" class="mz-ferr-add" data-acao="inserir-poder-concedido" ${ds}
+                        title="Insere o texto completo do poder na caixa de Ataque e Habilidades">＋ inserir</button>
+              </div>
+              <p class="mz-ferr-nota">Pré-requisito: ser devoto do deus indicado (atributo-chave Sabedoria) · ✨ = habilidade mágica · Violar as O&amp;R: perde todos os PM até o próximo dia.</p>
+            </div>
+          </details>`;
+  }
+
+  // Insere o texto do poder escolhido na caixa de ataques/habilidades.
+  // Sem re-render (como o inserirAtaqueCalculado): o painel fica aberto
+  // para inserir vários poderes em sequência.
+  function inserirPoderConcedido(btn) {
+    const G = window.GA_DEVOTOS;
+    const card = btn.closest('.mz-criatura');
+    const ferr = btn.closest('.mz-ferr');
+    if (!G || !card || !ferr) return;
+    const selDeus  = ferr.querySelector('.mz-dev-deus');
+    const selPoder = ferr.querySelector('.mz-dev-poder');
+    const d = G.deusPorChave[(selDeus && selDeus.value) || ''];
+    if (!d) { if (selDeus) selDeus.focus(); return; }
+    let chave = (selPoder && selPoder.value) || '';
+    if (chave === '~sortear') {
+      const lista = G.poderesDoDeus(d.chave);
+      chave = lista.length ? lista[Math.floor(Math.random() * lista.length)].chave : '';
+    }
+    const p = G.poderPorChave[chave];
+    if (!p) { if (selPoder) selPoder.focus(); return; }
+    const caixa = card.querySelector('.mz-ataques[data-campo="ataques"]');
+    if (!caixa) return;
+    caixa.innerHTML = caixa.innerHTML.trim() + _linhaPoderHtml(p, d);
+    const cr = pegarCriatura(btn);
+    if (cr) { cr.ataques = caixa.innerHTML; salvar(); }
+    caixa.classList.remove('mz-ferr-flash');
+    void caixa.offsetWidth;
+    caixa.classList.add('mz-ferr-flash');
+  }
+
   function construirCriatura(cr, si, ci, cri, total, painel) {
     const ds = `data-s="${si}" data-c="${ci}" data-cr="${cri}"`;
     // No painel a ficha usa um estado próprio (cr.painelAberto), aberto por padrão.
@@ -1424,6 +1534,8 @@
 
           ${construirBarraCriticos(cr, ds)}
 
+          ${construirBlocoDevoto(cr, ds)}
+
           <div class="mz-campo">
             <label class="mz-rotulo">Tipo e tamanho</label>
             <input class="mz-input" type="text" value="${esc(cr.tipoTamanho)}"
@@ -1462,7 +1574,7 @@
                  data-campo="ataques" ${ds}>${cr.ataques || ''}</div>
           </div>
 
-          ${painel ? '' : construirFerramentasAtaque(cr, ds)}
+          ${painel ? '' : construirFerramentasAtaque(cr, ds) + construirFerramentaDevoto(cr, ds)}
 
           ${caixasHtml}
 
@@ -1786,6 +1898,22 @@
       return;
     }
 
+    if (acao === 'inserir-poder-concedido') { inserirPoderConcedido(alvo); return; }
+    if (acao === 'devoto-marcar') {
+      const ferr = alvo.closest('.mz-ferr');
+      const sel = ferr && ferr.querySelector('.mz-dev-deus');
+      const G = window.GA_DEVOTOS;
+      if (!sel || !sel.value || !G || !G.deusPorChave[sel.value]) { if (sel) sel.focus(); return; }
+      const cr = pegarCriatura(alvo);
+      if (cr) { cr.devoto = sel.value; salvar(); render(); }
+      return;
+    }
+    if (acao === 'devoto-remover') {
+      const cr = pegarCriatura(alvo);
+      if (cr) { cr.devoto = ''; salvar(); render(); }
+      return;
+    }
+
     if (acao === 'resolver-morte') { resolverMorte(alvo); return; }
     if (acao === 'limpar-morte') {
       const cr = pegarCriatura(alvo);
@@ -1846,6 +1974,18 @@
 
     // qualquer caixa de texto simples cresce com o conteúdo ao digitar
     if (el.classList && el.classList.contains('mz-textarea')) autoCrescer(el);
+
+    // ferramenta de devoto: trocar o deus repopula o seletor de poderes
+    // (selects sem data-campo — nada é salvo até clicar num botão)
+    if (el.classList && el.classList.contains('mz-dev-deus')) {
+      const ferr = el.closest('.mz-ferr');
+      const selPoder = ferr && ferr.querySelector('.mz-dev-poder');
+      if (selPoder) {
+        selPoder.innerHTML = _opcoesPoderHtml(el.value);
+        selPoder.disabled = !el.value;
+      }
+      return;
+    }
 
     // seletor de criatura de um quadrado do painel
     if (el.dataset && el.dataset.painelSlot != null) {
@@ -3160,6 +3300,14 @@
     }));
     return achado;
   }
+  // categoria (chave) de uma ficha do Guia — para as dicas do modal
+  function _guiaNPCCatDe(chave) {
+    let achada = null;
+    _guiaNPCCategorias().forEach(cat => (cat.fichas || []).forEach(f => {
+      if (f.chave === chave) achada = cat.chave;
+    }));
+    return achada;
+  }
   // ND em número, para ordenar ("1/4" -> 0.25; "S+" e vazios vão pro fim)
   function _ndValor(nd) {
     const s = String(nd || '').trim();
@@ -3182,6 +3330,145 @@
     return cr;
   }
 
+  // ── REGRAS ESPECIAIS DO GUIA (raça / truque mercenário / devoto) ──
+  // Aplicadas sobre a criatura recém-parseada, ANTES de entrar na cena.
+  // Ajustes numéricos entram direto nas caixinhas; o que é textual vira
+  // uma linha rotulada na caixa de Ataque e Habilidades — o mestre vê
+  // exatamente o que foi somado e o que ainda é escolha manual.
+
+  // Soma um delta numérico numa caixinha de stat (padrão e atual juntos —
+  // a ficha acabou de nascer, os dois ainda são iguais).
+  function _somarStat(cr, chave, delta) {
+    const st = cr.stats[chave];
+    if (!st) return false;
+    const v = parseInt(String(st.padrao).replace(/[–—−]/g, '-'), 10);
+    if (isNaN(v)) return false;
+    st.padrao = String(v + delta);
+    st.atual = st.padrao;
+    return true;
+  }
+
+  // ND numérico para os ajustes de PV por ND (fração "1/4" → 0.25;
+  // ilegível → 1, para a raça nunca sair "de graça").
+  function _ndNumero(nd) {
+    const v = _ndValor(nd);
+    return v >= 900 ? 1 : Math.max(v, 0.25);
+  }
+
+  // "For 2, Des 0, … Car 1" + {Con:+1, Des:-1} → linha ajustada.
+  // Mantém o travessão "–" dos negativos (padrão das fichas do livro).
+  function _ajustarAtributos(cr, deltas) {
+    if (!cr.atributos) return;
+    let txt = cr.atributos;
+    Object.keys(deltas).forEach(atr => {
+      const re = new RegExp('\\b(' + atr + ')\\s+([+\\-–—−]?\\d+)', 'i');
+      const m = txt.match(re);
+      if (!m) return;
+      const v = parseInt(m[2].replace(/[–—−]/g, '-'), 10) + deltas[atr];
+      txt = txt.replace(re, '$1 ' + (v < 0 ? '–' + Math.abs(v) : v));
+    });
+    cr.atributos = txt;
+  }
+
+  // Deslocamento base: valor fixo ("6m (4q)") ou delta em metros.
+  function _ajustarDeslocamento(cr, raca) {
+    const st = cr.stats.deslocamento;
+    if (!st) return;
+    if (raca.deslocamentoFixo) { st.padrao = raca.deslocamentoFixo; st.atual = st.padrao; return; }
+    if (raca.deslocamentoDelta) {
+      const m = String(st.padrao).match(/(\d+(?:[.,]\d+)?)\s*m/);
+      if (!m) return;
+      const metros = Math.max(0, parseFloat(m[1].replace(',', '.')) + raca.deslocamentoDelta);
+      st.padrao = metros + 'm (' + Math.round(metros / 1.5) + 'q)';
+      st.atual = st.padrao;
+    }
+  }
+
+  // Linha de tipo: troca a raça entre parênteses, o tamanho e, para
+  // suraggel, o tipo Humanoide → Espírito (chip incluído).
+  function _ajustarTipoLinha(cr, raca) {
+    let t = cr.tipoTamanho || '';
+    if (raca.racaTexto) {
+      if (/\([^)]*\)/.test(t)) t = t.replace(/\([^)]*\)/, '(' + raca.racaTexto + ')');
+      else if (t) t = t + ' (' + raca.racaTexto + ')';
+    }
+    if (raca.tamanho) {
+      const reTam = /\b(Min[úu]sculo|Pequeno|M[ée]dio|Grande|Enorme|Colossal)\b/i;
+      t = reTam.test(t) ? t.replace(reTam, raca.tamanho) : (t + ' ' + raca.tamanho).trim();
+    }
+    if (raca.tipoEspirito) {
+      t = t.replace(/^Humanoide/i, 'Espírito');
+      cr.tipoCriatura = 'espiritos';
+    }
+    cr.tipoTamanho = t;
+  }
+
+  // Aplica raça (NPCs de Outras Raças), truque mercenário e devoto/poder
+  // concedido. Devolve a lista de descrições do que foi aplicado.
+  function aplicarRegrasEspeciaisNPC(cr, opcoes) {
+    const aplicado = [];
+    const g = window.GUIA_NPCS || {};
+    const G = window.GA_DEVOTOS;
+
+    // 1) raça — ajustes do quadro "NPCs de Outras Raças"
+    const raca = (g.racas || []).find(r => r.chave === (opcoes.raca || ''));
+    if (raca) {
+      if (raca.atrib) _ajustarAtributos(cr, raca.atrib);
+      Object.keys(raca.stats || {}).forEach(k => _somarStat(cr, k, raca.stats[k]));
+      if (raca.pvPorND) {
+        const delta = Math.max(1, Math.round(Math.abs(raca.pvPorND) * _ndNumero(cr.nd)));
+        _somarStat(cr, 'pv', raca.pvPorND < 0 ? -delta : delta);
+      }
+      _ajustarDeslocamento(cr, raca);
+      if (raca.escaladaIgualDesloc && cr.stats.deslocamento.padrao) {
+        cr.stats.desEscalada.padrao = cr.stats.deslocamento.padrao;
+        cr.stats.desEscalada.atual = cr.stats.desEscalada.padrao;
+      }
+      if (raca.natacao) { cr.stats.desNatacao.padrao = raca.natacao; cr.stats.desNatacao.atual = raca.natacao; }
+      (raca.sentidos || []).forEach(sk => { if (cr.sentidos.indexOf(sk) < 0) cr.sentidos.push(sk); });
+      _ajustarTipoLinha(cr, raca);
+      cr.ataques = (cr.ataques || '') +
+        `<div><strong>Raça — ${esc(raca.nome)} (Guia de NPCs):</strong> ajustes já aplicados na ficha: ${esc(raca.auto)}.` +
+        (raca.linha ? ' ' + _txtParaHtml(raca.linha) : '') + '</div>';
+      cr.nome = ((cr.nome || '') + ' (' + raca.racaTexto + ')').trim();
+      aplicado.push('raça ' + raca.nome);
+    }
+
+    // 2) truque mercenário — regra das companhias (um truque para todos)
+    const truque = (g.truques || []).find(t => t.chave === (opcoes.truque || ''));
+    if (truque) {
+      Object.keys(truque.stats || {}).forEach(k => _somarStat(cr, k, truque.stats[k]));
+      if (truque.critMult) {
+        const ordem = ['x2', 'x3', 'x4', 'x5'];
+        const i = ordem.indexOf(cr.critMult);
+        cr.critMult = ordem[Math.min(ordem.length - 1, (i < 0 ? 0 : i) + truque.critMult)];
+      }
+      cr.ataques = (cr.ataques || '') +
+        `<div><strong>Truque mercenário — ${esc(truque.nome)}:</strong> ${_txtParaHtml(truque.linha)}</div>`;
+      aplicado.push('truque ' + truque.nome);
+    }
+
+    // 3) devoto + poder concedido — regra d'O Templo (vale para qualquer ficha)
+    if (G && opcoes.deus && G.deusPorChave[opcoes.deus]) {
+      const d = G.deusPorChave[opcoes.deus];
+      cr.devoto = d.chave;
+      let pChave = opcoes.poder || '';
+      if (pChave === '~sortear') {
+        const lista = G.poderesDoDeus(d.chave);
+        pChave = lista.length ? lista[Math.floor(Math.random() * lista.length)].chave : '';
+      }
+      const p = G.poderPorChave[pChave];
+      if (p && p.deuses.indexOf(d.chave) >= 0) {
+        cr.ataques = (cr.ataques || '') + _linhaPoderHtml(p, d);
+        aplicado.push('devoto de ' + d.nome + ' — poder: ' + p.nome);
+      } else {
+        aplicado.push('devoto de ' + d.nome);
+      }
+    }
+
+    return aplicado;
+  }
+
   // "Guarda Palaciano", depois "Guarda Palaciano 2", "… 3" — por cena.
   function _nomeUnicoNaCena(cena, nome) {
     const base = String(nome || 'NPC').trim();
@@ -3193,20 +3480,23 @@
     return base + ' ' + n;
   }
 
-  // Insere o NPC na cena indicada. Devolve a criatura criada (ou null).
-  function inserirNPCNaCena(chave, si, ci) {
+  // Insere o NPC na cena indicada, aplicando as regras especiais pedidas
+  // (opcoes = { raca, truque, deus, poder }, todas opcionais).
+  // Devolve { cr, aplicado: [descrições] } ou null.
+  function inserirNPCNaCena(chave, si, ci, opcoes) {
     const def = _guiaNPCPorChave(chave);
     const sessao = dados.sessoes[si];
     const cena = sessao && sessao.cenas[ci];
     if (!def || !cena) return null;
     const cr = criaturaDeGuiaNPC(def);
     if (!cr) return null;
+    const aplicado = aplicarRegrasEspeciaisNPC(cr, opcoes || {});
     cr.nome = _nomeUnicoNaCena(cena, cr.nome || def.nome);
     cr.aberto = false;   // entra recolhida — pronta, sem inundar a tela
     cena.criaturas.push(cr);
     salvar();
     render();
-    return cr;
+    return { cr: cr, aplicado: aplicado };
   }
 
   function abrirModalNPCs(si, ci) {
@@ -3246,6 +3536,41 @@
       chips += `<button class="mz-npc-cat" data-npc-cat="${cat.chave}" style="--cor:${cat.cor || '#6e6256'}">${esc(cat.icone || '')} ${esc(cat.nome)}</button>`;
     });
 
+    // barra "⚙ Regras especiais": raça (NPCs de Outras Raças), truque
+    // mercenário e devoto + poder concedido (regra d'O Templo). O que
+    // estiver escolhido aqui é aplicado a CADA ficha inserida.
+    const RACAS = (window.GUIA_NPCS && window.GUIA_NPCS.racas) || [];
+    const TRUQUES = (window.GUIA_NPCS && window.GUIA_NPCS.truques) || [];
+    const DEV = window.GA_DEVOTOS;
+    let regrasBar = '';
+    if (RACAS.length || TRUQUES.length || DEV) {
+      const optR = ['<option value="">Humano — ficha original</option>']
+        .concat(RACAS.map(r =>
+          `<option value="${r.chave}" title="${esc(r.auto + (r.linha ? ' · ' + r.linha : ''))}">${esc(r.nome)}</option>`)).join('');
+      const optT = ['<option value="">— nenhum —</option>']
+        .concat(TRUQUES.map(t => `<option value="${t.chave}" title="${esc(t.linha)}">${esc(t.nome)}</option>`)).join('');
+      const optD = ['<option value="">— não é devoto —</option>']
+        .concat((DEV ? DEV.deuses : []).map(d =>
+          `<option value="${d.chave}">${d.icone} ${esc(d.nome)} — ${esc(d.titulo)}</option>`)).join('');
+      regrasBar = `
+        <details class="mz-npc-regras">
+          <summary class="mz-npc-regras-tit">⚙ Regras especiais — aplicadas a cada NPC inserido</summary>
+          <div class="mz-npc-regras-corpo">
+            <div class="mz-npc-regras-grade">
+              <label class="mz-npc-regra">🧬 Raça (NPCs de Outras Raças)
+                <select data-npc-raca>${optR}</select></label>
+              <label class="mz-npc-regra">⚔ Truque mercenário
+                <select data-npc-truque>${optT}</select></label>
+              <label class="mz-npc-regra">🙏 Devoto de
+                <select data-npc-deus>${optD}</select></label>
+              <label class="mz-npc-regra">Poder concedido
+                <select data-npc-poder disabled><option value="">— primeiro escolha o deus —</option></select></label>
+            </div>
+            <p class="mz-npc-regras-dica">A raça ajusta a ficha automaticamente (atributos, defesas, PV, sentidos, deslocamento — o que não é numérico entra como linha na ficha). O truque é a regra das companhias mercenárias: aplique o <strong>mesmo</strong> truque a toda a companhia. As fichas d'O Templo são devotas por regra: escolha o deus e um poder concedido — a ficha ganha o bloco de devoto com Crenças e Obrigações &amp; Restrições. Consulte a sub-aba 🙏 Poderes Concedidos.</p>
+          </div>
+        </details>`;
+    }
+
     const overlay = document.createElement('div');
     overlay.id = 'mzNPCModal';
     overlay.className = 'mz-cond-overlay';
@@ -3257,10 +3582,32 @@
         </div>
         <input class="mz-cond-busca" type="text" placeholder="Buscar NPC (guarda, acólito, ND 2…)" autocomplete="off">
         <div class="mz-npc-cats">${chips}</div>
+        ${regrasBar}
         <div class="mz-cond-modal-corpo">${grupos}</div>
         <div class="mz-cond-modal-pe" data-npc-pe>Clique em um NPC para adicioná-lo à cena — o modal continua aberto, dá para montar o encontro inteiro. As fichas entram recolhidas e editáveis.</div>
       </div>`;
     document.body.appendChild(overlay);
+
+    // trocar o deus repopula o seletor de poderes concedidos
+    overlay.addEventListener('input', e => {
+      if (e.target && e.target.matches && e.target.matches('[data-npc-deus]')) {
+        const selPoder = overlay.querySelector('[data-npc-poder]');
+        if (selPoder) {
+          selPoder.innerHTML = _opcoesPoderHtml(e.target.value);
+          selPoder.disabled = !e.target.value;
+        }
+      }
+    });
+    // o que está escolhido na barra de regras especiais agora
+    function _opcoesEspeciais() {
+      const val = sel => { const el = overlay.querySelector(sel); return (el && el.value) || ''; };
+      return {
+        raca: val('[data-npc-raca]'),
+        truque: val('[data-npc-truque]'),
+        deus: val('[data-npc-deus]'),
+        poder: val('[data-npc-poder]'),
+      };
+    }
 
     let catAtiva = '';
     const busca = overlay.querySelector('.mz-cond-busca');
@@ -3291,8 +3638,9 @@
       }
       const opc = e.target.closest('[data-npc-inserir]');
       if (opc && _npcAlvo) {
-        const cr = inserirNPCNaCena(opc.dataset.npcInserir, _npcAlvo.s, _npcAlvo.c);
-        if (!cr) return;
+        const opcoes = _opcoesEspeciais();
+        const res = inserirNPCNaCena(opc.dataset.npcInserir, _npcAlvo.s, _npcAlvo.c, opcoes);
+        if (!res) return;
         // feedback sem fechar o modal: ✓ na linha + aviso no rodapé
         opc.classList.add('mz-npc-ok');
         const check = opc.querySelector('.mz-cond-opcao-check');
@@ -3302,7 +3650,14 @@
           if (check) check.textContent = '＋';
         }, 900);
         const pe = overlay.querySelector('[data-npc-pe]');
-        if (pe) pe.innerHTML = `✓ <strong>${esc(cr.nome)}</strong> adicionado à cena. Clique em outros para continuar montando o encontro.`;
+        if (pe) {
+          const extras = res.aplicado.length ? ' — ' + esc(res.aplicado.join(' · ')) : '';
+          // fichas d'O Templo são devotas por regra — lembra o mestre
+          const dicaTemplo = (!opcoes.deus && _guiaNPCCatDe(opc.dataset.npcInserir) === 'templo')
+            ? '<br>💡 Fichas d\'O Templo são devotas por regra: escolha um deus e um poder concedido em "⚙ Regras especiais".'
+            : '';
+          pe.innerHTML = `✓ <strong>${esc(res.cr.nome)}</strong> adicionado à cena${extras}.${dicaTemplo}`;
+        }
       }
     });
 
@@ -3528,6 +3883,8 @@
     out.push('  ▸ ' + cabeca);
 
     add('Tipo', cr.tipoCriatura ? (TIPO_POR_CHAVE[cr.tipoCriatura] || {}).nome : '');
+    const _deusDev = cr.devoto && window.GA_DEVOTOS && window.GA_DEVOTOS.deusPorChave[cr.devoto];
+    add('Devoto', _deusDev ? _deusDev.nome + ' — ' + _deusDev.titulo + ' (segue as Obrigações & Restrições do culto)' : '');
     add('Sentidos', (cr.sentidos || []).map(k => (SENTIDO_POR_CHAVE[k] || {}).nome || k).join(', '));
     add('Defesas', [v(st.defesa) && 'Defesa ' + v(st.defesa),
                     v(st.fortitude) && 'Fort ' + v(st.fortitude),
@@ -3723,8 +4080,11 @@
     // Insere um NPC da biblioteca (js/npcs-data.js) na cena narrada; se
     // nenhuma cena estiver sendo narrada, agrupa numa sessão própria.
     // Usado pela sub-aba "👤 Guia de NPCs" das Consultas rápidas.
+    // opcoes (opcional) = { raca, truque, deus, poder } — as mesmas
+    // regras especiais do modal (raça do Guia, truque mercenário,
+    // devoto + poder concedido).
     // Devolve { sessao, cena, nome, narrada } ou null.
-    inserirNPC: function (chave) {
+    inserirNPC: function (chave, opcoes) {
       let si = -1, ci = -1;
       if (dados.cenaNarrada) {
         dados.sessoes.forEach((s, i) => s.cenas.forEach((c, j) => {
@@ -3741,12 +4101,12 @@
         si = dados.sessoes.indexOf(s);
         ci = s.cenas.length - 1;
       }
-      const cr = inserirNPCNaCena(chave, si, ci);
-      if (!cr) return null;
+      const res = inserirNPCNaCena(chave, si, ci, opcoes);
+      if (!res) return null;
       return {
         sessao: dados.sessoes[si].nome,
         cena: dados.sessoes[si].cenas[ci].nome,
-        nome: cr.nome,
+        nome: res.cr.nome,
         narrada: narrada,
       };
     },

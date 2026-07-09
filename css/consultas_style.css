@@ -674,3 +674,76 @@
   font-size: 0.88rem;
   color: #3f7a3f;
 }
+
+/* ══════════════ 🙏 PODERES CONCEDIDOS (sub-aba Devotos) ══════════════ */
+
+/* régua de navegação — um botão por deus, rola até o grupo */
+.dev-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0.75rem 0 1rem;
+  padding: 0.55rem 0.6rem;
+  border: 1px dashed var(--gold-dim);
+  background: var(--parchment3, rgba(0, 0, 0, 0.03));
+}
+.dev-ir {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.24rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--ink-faded);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.dev-ir:hover { background: var(--ink); border-color: var(--ink); color: var(--parchment); }
+
+/* card do culto (primeiro de cada grupo) — moldura mais forte */
+.dev-culto { border-left: 3px solid var(--cor, var(--rust)); }
+.dev-culto .vc-card-nome { color: var(--rust-dark); }
+.dev-lore {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--ink-faded);
+  margin: 0 0 0.6rem;
+}
+.dev-obrig {
+  border: 1px solid var(--gold-dim);
+  border-left: 3px solid var(--rust);
+  background: rgba(140, 60, 30, 0.06);
+  padding: 0.5rem 0.65rem;
+  margin: 0.55rem 0;
+  line-height: 1.45;
+}
+.dev-obrig-pena {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  margin: 0.45rem 0 0;
+}
+.dev-meta {
+  font-size: 0.85rem;
+  color: var(--ink-faded);
+  margin: 0.35rem 0 0;
+}
+
+/* cards de poder */
+.dev-poder { border-left-color: var(--gold-dim); }
+.dev-badge {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.4rem;
+  border: 1px solid var(--gold-dim);
+  margin-left: 0.3rem;
+  white-space: nowrap;
+}
+.dev-badge--magica { color: #5a3a7a; border-color: #5a3a7a; background: rgba(90, 58, 122, 0.07); }
