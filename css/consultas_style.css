@@ -582,3 +582,95 @@
   padding-top: 0.35rem;
   border-top: 1px dashed var(--ink-faded);
 }
+
+/* ── 👤 GUIA DE NPCS ─────────────────────────────────────────────── */
+.npc-intro {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--ink-faded);
+  margin: -0.4rem 0 0.9rem;
+  max-width: 72ch;
+}
+
+/* card de ficha — a cor da categoria entra pela borda esquerda */
+.npc-card { border-left-color: var(--cor, var(--rust)); }
+.npc-nd {
+  display: inline-block;
+  vertical-align: 0.12em;
+  margin-left: 0.35rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--gold-dim);
+  background: var(--parchment2);
+  color: var(--rust-dark);
+  white-space: nowrap;
+}
+
+/* statblock formatado */
+.npc-block { margin-top: 0.2rem; }
+.npc-desc {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--ink-faded);
+  margin: 0 0 0.5rem;
+}
+.npc-linha {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0.12rem 0;
+}
+.npc-linha--tipo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--cor, var(--rust-dark));
+  border-bottom: 1px dashed var(--gold-dim);
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.3rem;
+}
+.npc-linha--atrib {
+  font-weight: 600;
+  border-top: 1px dashed var(--gold-dim);
+  padding-top: 0.3rem;
+  margin-top: 0.3rem;
+}
+.npc-linha--magia { padding-left: 1.1rem; }
+
+/* rodapé do card: enviar para o combate */
+.npc-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--gold-dim);
+}
+.npc-enviar {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.38rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--rust);
+  color: var(--rust-dark);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.npc-enviar:hover { background: var(--rust); color: var(--parchment); }
+.npc-envio-info {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: #3f7a3f;
+}
