@@ -2001,3 +2001,129 @@
 /* pisca verde ao inserir (o modal fica aberto para inserir vários) */
 .mz-npc-ok { background: rgba(63, 122, 63, 0.18) !important; }
 .mz-npc-ok .mz-cond-opcao-check { color: #3f7a3f; }
+
+/* ── ⚙ REGRAS ESPECIAIS DO GUIA (barra do modal de NPCs) ─────────── */
+/* Raça (NPCs de Outras Raças), truque mercenário e devoto + poder
+   concedido — o que estiver escolhido é aplicado a cada ficha inserida. */
+.mz-npc-regras {
+  margin: 0 0.9rem 0.55rem;
+  border: 1px dashed var(--gold-dim);
+  background: var(--parchment3);
+}
+.mz-npc-regras-tit {
+  cursor: pointer;
+  display: block;
+  padding: 0.4rem 0.6rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  list-style: none;
+  user-select: none;
+}
+.mz-npc-regras-tit::-webkit-details-marker { display: none; }
+.mz-npc-regras-tit::before { content: '▸ '; }
+.mz-npc-regras[open] .mz-npc-regras-tit::before { content: '▾ '; }
+.mz-npc-regras[open] .mz-npc-regras-tit { border-bottom: 1px solid var(--gold-dim); }
+.mz-npc-regras-corpo { padding: 0.55rem 0.6rem 0.5rem; }
+.mz-npc-regras-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.45rem 0.7rem;
+}
+.mz-npc-regra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.mz-npc-regra select {
+  padding: 0.3rem 0.45rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  min-width: 0;
+  max-width: 100%;
+}
+.mz-npc-regra select:focus { outline: 1px solid var(--rust); }
+.mz-npc-regras-dica {
+  font-size: 0.76rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  line-height: 1.4;
+  margin: 0.5rem 0 0;
+}
+
+/* ── 🙏 BLOCO "DEVOTO DE…" (na ficha, lista e painel) ────────────── */
+.mz-devoto {
+  border: 1px solid var(--gold-dim);
+  border-left: 3px solid var(--rust);
+  background: var(--parchment3);
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.9rem;
+}
+.mz-devoto-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.mz-devoto-icone { font-size: 1rem; }
+.mz-devoto-titulo {
+  flex: 1 1 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+.mz-devoto-titulo strong { font-size: 0.8rem; color: var(--ink); }
+.mz-devoto-det { margin-top: 0.3rem; }
+.mz-devoto-det > summary {
+  cursor: pointer;
+  list-style: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  user-select: none;
+}
+.mz-devoto-det > summary::-webkit-details-marker { display: none; }
+.mz-devoto-det > summary::before { content: '▸ '; }
+.mz-devoto-det[open] > summary::before { content: '▾ '; }
+.mz-devoto-corpo {
+  padding: 0.4rem 0.1rem 0.1rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.mz-devoto-corpo p { margin: 0 0 0.45rem; }
+.mz-devoto-meta {
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--ink-faded);
+}
+
+/* ferramenta 🙏 Devoto & poder concedido (selects na linha) */
+.mz-dev-deus, .mz-dev-poder {
+  padding: 0.3rem 0.45rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  flex: 1 1 12rem;
+  min-width: 9rem;
+  max-width: 100%;
+}
+.mz-dev-deus:focus, .mz-dev-poder:focus { outline: 1px solid var(--rust); }
+.mz-dev-poder:disabled { opacity: 0.55; cursor: not-allowed; }
