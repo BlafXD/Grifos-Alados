@@ -150,6 +150,12 @@
     });
   });
 
+  // Estamos na "edição dos jogadores" (jogadores.html)? Lá a loja é só
+  // espelho do que o mestre transmite — nunca inventamos uma nem gravamos.
+  function ehJogador() {
+    return document.documentElement.classList.contains('ga-jogador');
+  }
+
   function carregarLoja() {
     if (_carregado) return;
     _carregado = true;
@@ -160,13 +166,27 @@
     // Restaura a última loja salva; só gera uma nova se não houver nenhuma.
     try {
       let ent = entradaSelecionada();
-      if (!ent) ent = novaEntradaLog();
+      if (!ent) {
+        // Jogador sem loja transmitida ainda: espera o mestre, não inventa.
+        if (ehJogador()) { renderizarAguardando(container); return; }
+        ent = novaEntradaLog();
+      }
       _logSel = ent.id;
-      salvarLogSel();
+      if (!ehJogador()) salvarLogSel();
       renderizarLoja(container, ent);
     } catch (err) {
       renderizarErro(container, err);
     }
+  }
+
+  // Tela de espera da edição dos jogadores (enquanto o mestre não transmitiu).
+  function renderizarAguardando(container) {
+    container.innerHTML = `
+      <div class="loja-cabecalho">
+        <div class="loja-titulo-principal">Mercado &amp; Encantamentos</div>
+        <p class="loja-subtitulo">Aguardando o mestre transmitir a loja…</p>
+      </div>
+      <p class="loja-vazia">📡 Assim que o mestre rolar (ou abrir) a loja, ela aparece aqui sozinha.</p>`;
   }
 
   // ── TELA DE ERRO ─────────────────────────────────────────────────
@@ -875,6 +895,23 @@
     const abaAlvo = container.querySelector(`.loja-aba[data-painel="${painelAtivo}"]`);
     if (abaAlvo) abaAlvo.classList.add('ativa');
   }
+
+  // ── API pública (edição dos jogadores) ──────────────────────────────
+  //  O sync-jogador chama isto quando o mestre transmite uma loja nova, em
+  //  vez de recarregar a página — assim NÃO pisca e a sub-aba aberta
+  //  (Normal/Especial/Magias) é preservada.
+  window.GA_Loja = {
+    recarregar: function () {
+      carregarLog();          // relê o histórico (o sync já escreveu no localStorage)
+      carregarComunidade();
+      if (!_carregado) return;   // aba ainda não aberta — abrirá já com o novo
+      const container = document.getElementById('loja-content');
+      if (!container) return;
+      const ent = entradaSelecionada();
+      if (!ent) { if (ehJogador()) renderizarAguardando(container); return; }
+      rerenderAtual();        // preserva a sub-aba ativa
+    }
+  };
 
   // ── EVENTO: cliques no histórico (reabrir / limpar) ──────────────
   function aoClicarLog(e) {

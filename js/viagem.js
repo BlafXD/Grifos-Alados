@@ -706,7 +706,10 @@
     setVeiculoPV: function (viagemId, pv) {
       const v = dados.viagens.find(x => x.id === viagemId);
       if (v) _aplicarPV(v, pv);
-    }
+    },
+    // edição dos jogadores: sync-jogador relê o localStorage e redesenha
+    // as viagens transmitidas pelo mestre, sem recarregar a página.
+    recarregar: function () { carregar(); render(); }
   };
 
   // ── INICIALIZAÇÃO ────────────────────────────────────────────────
