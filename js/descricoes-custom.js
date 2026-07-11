@@ -24,6 +24,33 @@ window.GA_Tip = (function () {
     return String(t == null ? '' : t).replace(/\s+/g, ' ').trim();
   }
 
+  // Ficha de atributos (texto puro) de uma arma/armadura do catálogo da
+  // Loja (LojaCompleta.statsDeItem): dano/crítico/tipo/alcance/peso das
+  // armas; defesa/penalidade/peso das armaduras. '' se o item não tiver
+  // stats lá. Assim a nuvem já nasce com os números, além da descrição.
+  function statsTexto(nome) {
+    const LC = (typeof LojaCompleta !== 'undefined') ? LojaCompleta : window.LojaCompleta;
+    if (!LC || !LC.statsDeItem) return '';
+    const st = LC.statsDeItem(nome);
+    if (!st) return '';
+    const p = [];
+    if (st.kind === 'weapon') {
+      if (st.dano)         p.push('Dano ' + st.dano);
+      if (st.critico)      p.push('Crítico ' + String(st.critico).replace(/[xX]/g, '×'));
+      if (st.tipo)         p.push(st.tipo);
+      if (st.alcance)      p.push(st.alcance);
+      if (st.peso != null) p.push(st.peso + ' esp.');
+      return p.length ? '⚔ ' + p.join(' · ') : '';
+    }
+    if (st.kind === 'armor') {
+      if (st.bonus != null) p.push('Defesa +' + st.bonus);
+      if (st.penalidade)    p.push('Penalidade ' + st.penalidade);
+      if (st.peso != null)  p.push(st.peso + ' esp.');
+      return p.length ? '🛡 ' + p.join(' · ') : '';
+    }
+    return '';
+  }
+
   // ── Índice de busca (montado na 1ª abertura; toda fonte é opcional) ─
   let _indice = null;
   function indice() {
@@ -38,10 +65,32 @@ window.GA_Tip = (function () {
 
     (((window.GA_CONDICOES || {}).LISTA) || []).forEach(c =>
       add(c.nome, c.texto + (c.tipo ? ' Efeito de ' + c.tipo.toLowerCase() + '.' : ''), 'condição'));
+    // Descrições de itens (lore) indexadas por nome sem acento; D1 vence D2.
+    const lore = {};
     const D1 = window.GA_ITENS_DESC || {};
     const D2 = window.GA_ITENS_DESC_EXTRA || {};
-    Object.keys(D1).forEach(k => add(cap(k), D1[k], 'item'));
-    Object.keys(D2).forEach(k => { if (!D1[k]) add(cap(k), D2[k], 'item'); });
+    Object.keys(D2).forEach(k => { lore[window.GA_semAcento(k)] = { nome: cap(k), texto: D2[k] }; });
+    Object.keys(D1).forEach(k => { lore[window.GA_semAcento(k)] = { nome: cap(k), texto: D1[k] }; });
+    // Armas e armaduras do catálogo entram PRIMEIRO, com a ficha de
+    // atributos + a lore (quando houver). O resto entra como item comum.
+    const usados = {};
+    const LC = (typeof LojaCompleta !== 'undefined') ? LojaCompleta : window.LojaCompleta;
+    if (LC && LC.catalogoNomes) {
+      LC.catalogoNomes().forEach(it => {
+        if (it.kind !== 'weapon' && it.kind !== 'armor') return;
+        const stats = statsTexto(it.nome);
+        if (!stats) return;
+        const chave = window.GA_semAcento(it.nome);
+        const l = lore[chave];
+        add(it.nome, stats + (l && l.texto ? ' — ' + l.texto : ''),
+            it.kind === 'weapon' ? 'arma' : 'armadura');
+        usados[chave] = true;
+      });
+    }
+    Object.keys(lore).forEach(chave => {
+      if (usados[chave]) return;
+      add(lore[chave].nome, lore[chave].texto, 'item');
+    });
     (((window.Magias || {}).TODAS) || []).forEach(m => add(m.nome, m.descricao, 'magia'));
     const C = window.GA_CULINARIA;
     if (C) {
