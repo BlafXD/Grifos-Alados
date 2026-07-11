@@ -567,6 +567,15 @@
     leitor.readAsText(arq);
   }
 
+  // ── API pública (edição dos jogadores) ──────────────────────────────
+  //  O sync-jogador chama isto ao receber as bases do mestre: relê o
+  //  localStorage (já escrito pelo sync) e redesenha — sem recarregar a
+  //  página. Resolve a corrida do 1º carregamento (init lê antes do sync
+  //  escrever) e não pisca a tela.
+  window.GA_Bases = {
+    recarregar: function () { carregar(); render(); }
+  };
+
   // ── INICIALIZAÇÃO ────────────────────────────────────────────────
   function init() {
     const secao = document.getElementById('bases');

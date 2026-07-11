@@ -2,8 +2,8 @@
 //  SYNC-JOGADOR.JS — "Mesa ao vivo" (lado dos JOGADORES)
 //  Carregado só no jogadores.html. Assina no Firebase os dados que o
 //  mestre transmite (loja rolada, viagens, bases), grava no localStorage
-//  local e recarrega a página (com rolagem preservada) quando algo muda —
-//  as abas re-renderizam sozinhas a partir do localStorage, como sempre.
+//  local e RE-RENDERIZA só a aba afetada (sem recarregar a página — nada
+//  de piscar a tela nem perder a sub-aba aberta da Loja).
 //  Sala: jogadores.html?sala=nome (padrão "mesa").
 // ═══════════════════════════════════════════════════════════════════
 (function () {
@@ -16,9 +16,19 @@
     viagens:        'grifosAlados.viagens',
     bases:          'grifosAlados.bases',
   };
-  const INTERVALO_MIN_RELOAD = 4000;   // não recarrega em rajada
-  let ultimaCarga = Date.now();
-  let reloadAgendado = false;
+  // cada chave pertence a um módulo; cada módulo é redesenhado UMA vez.
+  const MODULO = {
+    lojaLog: 'loja', lojaLogSel: 'loja', lojaComunidade: 'loja',
+    viagens: 'viagem', bases: 'bases',
+  };
+  function redesenhar(mod) {
+    try {
+      if (mod === 'loja'   && window.GA_Loja)   return GA_Loja.recarregar(), true;
+      if (mod === 'viagem' && window.GA_Viagem) return GA_Viagem.recarregar(), true;
+      if (mod === 'bases'  && window.GA_Bases)  return GA_Bases.recarregar(), true;
+    } catch (e) { console.warn('[sync-jogador] re-render', mod, e && e.message); }
+    return false;   // módulo não está nesta página
+  }
 
   const sala = (new URLSearchParams(location.search).get('sala') || 'mesa').trim() || 'mesa';
 
@@ -33,19 +43,20 @@
     el.innerHTML = texto;
   }
 
-  function recarregar() {
-    if (reloadAgendado) return;
-    const espera = Math.max(0, INTERVALO_MIN_RELOAD - (Date.now() - ultimaCarga));
-    reloadAgendado = true;
-    setTimeout(() => {
-      // guarda onde o jogador estava para voltar ao mesmo lugar
-      try {
-        const ativa = document.querySelector('section.active');
-        sessionStorage.setItem('gaJog.secao', ativa ? ativa.id : '');
-        sessionStorage.setItem('gaJog.scroll', String(window.scrollY || 0));
-      } catch (e) {}
-      location.reload();
-    }, espera + 300);
+  // Escreve o que mudou no localStorage e redesenha as abas afetadas.
+  function aplicar(dados) {
+    const mods = new Set();
+    Object.keys(CHAVES).forEach(nome => {
+      const v = dados[nome];
+      if (typeof v !== 'string') return;
+      let atual = null;
+      try { atual = localStorage.getItem(CHAVES[nome]); } catch (e) {}
+      if (atual !== v) {
+        try { localStorage.setItem(CHAVES[nome], v); mods.add(MODULO[nome]); } catch (e) {}
+      }
+    });
+    mods.forEach(redesenhar);
+    return mods.size > 0;
   }
 
   function init() {
@@ -65,21 +76,7 @@
     chip('📡 Conectando à sala <strong>' + sala + '</strong>…');
 
     db.ref('mesas/' + sala + '/dados').on('value', snap => {
-      const dados = snap.val() || {};
-      let mudou = false;
-      Object.keys(CHAVES).forEach(nome => {
-        const v = dados[nome];
-        if (typeof v !== 'string') return;
-        let atual = null;
-        try { atual = localStorage.getItem(CHAVES[nome]); } catch (e) {}
-        if (atual !== v) {
-          try { localStorage.setItem(CHAVES[nome], v); mudou = true; } catch (e) {}
-        }
-      });
-      if (mudou) {
-        chip('📡 A mesa mudou — atualizando…');
-        recarregar();
-      }
+      aplicar(snap.val() || {});
     }, err => {
       chip('⚠ Sem permissão para ler a sala "' + sala + '" — confira as regras do banco.', 'ga-jog-chip--off');
       console.warn('[sync-jogador]', err && err.message);
