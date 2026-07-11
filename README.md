@@ -6,7 +6,7 @@
   **Ferramenta de mesa para mestres de _Tormenta 20_** — uma "gazeta de Arton" com geradores,
   bestiário, consultas de regras e organização de campanha, tudo em um site só.
 
-  ### 👉 [**Acessar o site**](https://blafxd.github.io/Grifos-Alados/)
+  ### 👉 [**Abrir o site (mestre)**](https://blafxd.github.io/Grifos-Alados/) · 📡 [**Edição dos jogadores**](https://blafxd.github.io/Grifos-Alados/jogadores.html?sala=mesa)
 
   _Não precisa instalar nem fazer login — é só abrir o link e usar._
 </div>
@@ -38,6 +38,21 @@ navegador, e cada aba tem botão de **backup `.json`** para você não perder na
 
 Basta abrir **[o site](https://blafxd.github.io/Grifos-Alados/)** no navegador. Funciona em
 computador e celular. Mande o link para a sua mesa — qualquer pessoa abre e usa, sem login.
+
+## 📡 Mesa ao vivo (os jogadores acompanham)
+
+Há uma **edição dos jogadores** que mostra, **só para ver**, a **Loja** que o mestre rolou (com
+encantamentos e pergaminhos), as **Bases**, as **Viagens**, as **Notícias** e todas as **Consultas** —
+sem precisar mandar `.txt`. Quando o mestre mexe em algo, a página deles se atualiza sozinha.
+
+| Página | Link |
+|--------|------|
+| 🎲 **Mestre** (edita tudo) | <https://blafxd.github.io/Grifos-Alados/> |
+| 👥 **Jogadores** (só visualiza) | <https://blafxd.github.io/Grifos-Alados/jogadores.html?sala=mesa> |
+
+O mestre liga a transmissão pelo botão **📡** (canto inferior direito) e entra com o usuário de
+mestre. A sincronização em tempo real usa o **Firebase** — a configuração (uma vez só) está
+detalhada em **[`MODO-JOGADOR.md`](MODO-JOGADOR.md)**.
 
 > 💾 **Seus dados** (bestiário, anotações, bases, fichas em PDF…) ficam guardados no **seu**
 > navegador (`localStorage` e `IndexedDB`): sobrevivem a fechar a aba e reiniciar, mas são

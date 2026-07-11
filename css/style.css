@@ -1971,7 +1971,8 @@ footer {
 .ga-jogador .bs-mini,
 .ga-jogador .bs-seg-btn,
 .ga-jogador .bs-add-linha,
-.ga-jogador .ga-rich-btn { display: none !important; }
+.ga-jogador .ga-rich-btn,
+.ga-jogador #ncBtnEdicao { display: none !important; }
 /* campos que sobram viram vitrine: sem aparência de formulário ativo */
 .ga-jogador section:not(#perigos) select,
 .ga-jogador section:not(#perigos) input[type="checkbox"],

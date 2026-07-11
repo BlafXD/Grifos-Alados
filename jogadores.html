@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/loja_style.css">
+  <link rel="stylesheet" href="css/noticias_style.css">
   <link rel="stylesheet" href="css/monstros_style.css">
   <link rel="stylesheet" href="css/perigos_style.css">
   <link rel="stylesheet" href="css/consultas_style.css">
@@ -36,15 +37,23 @@
 <!-- NAVIGATION — só as seções abertas ao público -->
 <nav id="main-nav" aria-label="Seções da gazeta">
   <div class="nav-inner">
-    <a href="#" class="nav-link active" data-section="loja">🏪 Loja</a>
+    <a href="#" class="nav-link active" data-section="noticias">📰 Notícias</a>
+    <a href="#" class="nav-link" data-section="loja">🏪 Loja</a>
     <a href="#" class="nav-link" data-section="perigos">📚 Consultas</a>
     <a href="#" class="nav-link" data-section="viagem">🐎 Viagem</a>
     <a href="#" class="nav-link" data-section="bases">🏰 Bases</a>
   </div>
 </nav>
 
+<!-- ══════════════════ NOTÍCIAS (a gazeta de Arton) ══════════════════ -->
+<section id="noticias" class="active">
+  <div class="wrapper">
+    <!-- Populado pelo noticias.js -->
+  </div>
+</section>
+
 <!-- ══════════════════ LOJA (a que o mestre rolou) ══════════════════ -->
-<section id="loja" class="active">
+<section id="loja">
   <div class="wrapper">
     <div id="loja-content">
       <!-- Populado pelo loja.js com a loja transmitida pelo mestre -->
@@ -105,6 +114,8 @@
 
 <!-- script.js primeiro: define utilitários globais (GA_esc, GA_abrirModal…) usados pelos demais -->
 <script src="js/script.js"></script>
+<script src="js/noticias-data.js"></script>
+<script src="js/noticias.js"></script>
 <script src="js/loja_completa.js"></script>
 <script src="js/itens-descricoes-data.js"></script>
 <script src="js/itens-descricoes-extra-data.js"></script>
