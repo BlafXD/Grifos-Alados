@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grifos Alados — Edição dos Jogadores</title>
+  <link rel="icon" type="image/png" href="Grifos_Alados.png">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/loja_style.css">
+  <link rel="stylesheet" href="css/monstros_style.css">
+  <link rel="stylesheet" href="css/perigos_style.css">
+  <link rel="stylesheet" href="css/consultas_style.css">
+  <link rel="stylesheet" href="css/viagem_style.css">
+  <link rel="stylesheet" href="css/bases_style.css">
+</head>
+<body>
+
+<!-- MASTHEAD — a mesma gazeta, na edição que circula pela taverna -->
+<header>
+  <div class="masthead-ornament">✦ Fundada no Ano de <span id="mh-fundacao">????</span> · Licença da Coroa de Deheon ✦</div>
+  <div class="masthead-title">Grifos Alados</div>
+  <div class="masthead-sub">Edição dos Jogadores — Mercado, Registros e Guias de Arton</div>
+  <div class="masthead-rule">
+    <span></span>
+    <em>✦ Verdade · Honra · Registro ✦</em>
+    <span></span>
+  </div>
+  <div class="masthead-meta">
+    <span>VOL. VII, Nº 43</span>
+    <span id="mh-publicado">⚜ Publicado às ???? ⚜</span>
+    <span>Preço: 3 Tibares</span>
+  </div>
+</header>
+
+<!-- NAVIGATION — só as seções abertas ao público -->
+<nav id="main-nav" aria-label="Seções da gazeta">
+  <div class="nav-inner">
+    <a href="#" class="nav-link active" data-section="loja">🏪 Loja</a>
+    <a href="#" class="nav-link" data-section="perigos">📚 Consultas</a>
+    <a href="#" class="nav-link" data-section="viagem">🐎 Viagem</a>
+    <a href="#" class="nav-link" data-section="bases">🏰 Bases</a>
+  </div>
+</nav>
+
+<!-- ══════════════════ LOJA (a que o mestre rolou) ══════════════════ -->
+<section id="loja" class="active">
+  <div class="wrapper">
+    <div id="loja-content">
+      <!-- Populado pelo loja.js com a loja transmitida pelo mestre -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ CONSULTAS RÁPIDAS ══════════════════ -->
+<section id="perigos">
+  <div class="wrapper">
+    <nav class="cr-subtabs" aria-label="Consultas rápidas">
+      <button type="button" class="cr-subtab cr-subtab--ativa" data-cr-tab="perigos">🌪 Perigos &amp; Ambientes</button>
+      <button type="button" class="cr-subtab" data-cr-tab="veiculos">🚗 Veículos</button>
+      <button type="button" class="cr-subtab" data-cr-tab="animais">🐎 Animais &amp; Montarias</button>
+      <button type="button" class="cr-subtab" data-cr-tab="npcs">👤 Guia de NPCs</button>
+      <button type="button" class="cr-subtab" data-cr-tab="devotos">🙏 Poderes Concedidos</button>
+      <button type="button" class="cr-subtab" data-cr-tab="arsenal">⚔ Arsenal &amp; Regras</button>
+      <button type="button" class="cr-subtab" data-cr-tab="acoes">🎬 Ações &amp; Combate</button>
+      <button type="button" class="cr-subtab" data-cr-tab="condicoes">🌀 Condições</button>
+      <button type="button" class="cr-subtab" data-cr-tab="ameacas">👹 Regras de Ameaças</button>
+      <button type="button" class="cr-subtab" data-cr-tab="magia">✨ Regras de Magia</button>
+      <button type="button" class="cr-subtab" data-cr-tab="culinaria">🍳 Culinária</button>
+      <button type="button" class="cr-subtab" data-cr-tab="urbano">🏙 Vida Urbana</button>
+    </nav>
+    <div id="perigos-content" data-cr-panel="perigos"></div>
+    <div id="veiculos-content" data-cr-panel="veiculos" hidden></div>
+    <div id="animais-content" data-cr-panel="animais" hidden></div>
+    <div id="npcs-content" data-cr-panel="npcs" hidden></div>
+    <div id="devotos-content" data-cr-panel="devotos" hidden></div>
+    <div id="arsenal-content" data-cr-panel="arsenal" hidden></div>
+    <div id="acoes-content" data-cr-panel="acoes" hidden></div>
+    <div id="condicoes-content" data-cr-panel="condicoes" hidden></div>
+    <div id="ameacas-content" data-cr-panel="ameacas" hidden></div>
+    <div id="magia-content" data-cr-panel="magia" hidden></div>
+    <div id="culinaria-content" data-cr-panel="culinaria" hidden></div>
+    <div id="urbano-content" data-cr-panel="urbano" hidden></div>
+  </div>
+</section>
+
+<!-- ══════════════════ PAINEL DE VIAGEM ══════════════════ -->
+<section id="viagem">
+  <div class="wrapper">
+    <div id="viagem-content"></div>
+  </div>
+</section>
+
+<!-- ══════════════════ BASES DO GRUPO ══════════════════ -->
+<section id="bases">
+  <div class="wrapper">
+    <div id="bases-content"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  ✦ GRIFOS ALADOS · ARTON · ANO DE <span id="mh-ano-rodape">1424</span> · TODOS OS DIREITOS RESERVADOS À COROA ✦
+</footer>
+
+<!-- script.js primeiro: define utilitários globais (GA_esc, GA_abrirModal…) usados pelos demais -->
+<script src="js/script.js"></script>
+<script src="js/loja_completa.js"></script>
+<script src="js/itens-descricoes-data.js"></script>
+<script src="js/itens-descricoes-extra-data.js"></script>
+<script src="js/itens-descricoes.js"></script>
+<script src="js/magias.js"></script>
+<script src="js/loja.js"></script>
+<script src="js/perigos-data.js"></script>
+<script src="js/veiculos-data.js"></script>
+<script src="js/animais-data.js"></script>
+<script src="js/npcs-data.js"></script>
+<script src="js/devotos-data.js"></script>
+<script src="js/perigos.js"></script>
+<script src="js/veiculos.js"></script>
+<script src="js/animais.js"></script>
+<script src="js/npcs.js"></script>
+<script src="js/devotos.js"></script>
+<script src="js/regras-itens-data.js"></script>
+<script src="js/regras-itens.js"></script>
+<script src="js/acoes-data.js"></script>
+<script src="js/acoes.js"></script>
+<script src="js/condicoes-data.js"></script>
+<script src="js/condicoes.js"></script>
+<script src="js/ameacas-data.js"></script>
+<script src="js/ameacas.js"></script>
+<script src="js/magia-regras-data.js"></script>
+<script src="js/magia-regras.js"></script>
+<script src="js/culinaria-data.js"></script>
+<script src="js/culinaria.js"></script>
+<script src="js/urbano-data.js"></script>
+<script src="js/urbano.js"></script>
+<script src="js/consultas.js"></script>
+<script src="js/viagem.js"></script>
+<script src="js/bases-data.js"></script>
+<script src="js/bases.js"></script>
+
+<!-- Mesa ao vivo: trava de só-leitura + assinatura do que o mestre transmite -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/modo-jogador.js"></script>
+<script src="js/sync-jogador.js"></script>
+</body>
+</html>

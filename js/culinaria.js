@@ -13,11 +13,20 @@
 
   function fmtT(v) { return 'T$ ' + v; }
 
+  // Nome de ingrediente com a nuvem de descrição (ga-tip: hover mostra,
+  // clique fixa para copiar). Sem descrição, devolve só o nome escapado.
+  function ingTip(nome) {
+    const C = window.GA_CULINARIA;
+    const ing = (C.INGREDIENTES || []).find(i => i.nome === nome);
+    if (!ing || !ing.desc) return esc(nome);
+    return `<span class="ga-tip" tabindex="0" data-tip="${esc(ing.desc)}">${esc(nome)}</span>`;
+  }
+
   // Resultado da calculadora para o prato p (com/sem Tempero Especial).
   function montarResultado(p, tempero) {
     const C = window.GA_CULINARIA;
     const ings = p.ingredientes
-      .map(n => `${esc(n)} <span class="cul-ing-preco">(${fmtT(C.PRECO_ING[n] || 0)})</span>`)
+      .map(n => `${ingTip(n)} <span class="cul-ing-preco">(${fmtT(C.PRECO_ING[n] || 0)})</span>`)
       .join(' · ');
     const custo = tempero ? p.custo + C.ESPECIARIAS : p.custo;
     const cd = tempero ? p.cd + 5 : p.cd;
@@ -60,7 +69,7 @@
       return `<tr data-busca="${esc(busca)}">
         <td><strong>${esc(p.nome)}</strong></td>
         <td>${esc(p.beneficio)}</td>
-        <td>${esc(p.ingredientes.join(', '))}</td>
+        <td>${p.ingredientes.map(ingTip).join(', ')}</td>
         <td>${fmtT(p.custo)}</td>
         <td>${p.cd}</td>
         <td>${fmtT(p.preco)}</td>
@@ -74,12 +83,17 @@
   }
 
   function tabelaIngredientes(ings) {
-    const linhas = ings.map(i => `<tr><td>${esc(i.nome)}</td><td>${fmtT(i.preco)}</td></tr>`).join('');
+    const linhas = ings.map(i => `<tr data-busca="${esc(semAcento(i.nome + ' ' + (i.desc || '')))}">
+        <td><strong>${esc(i.nome)}</strong></td>
+        <td>${fmtT(i.preco)}</td>
+        <td class="cul-ing-desc">${esc(i.desc || '—')}</td>
+      </tr>`).join('');
     return `<div class="prog-table-wrap"><table class="prog-table">
       <caption>Tabela 4-7 — Ingredientes</caption>
-      <thead><tr><th>Ingrediente</th><th>Preço</th></tr></thead>
+      <thead><tr><th>Ingrediente</th><th>Preço</th><th>Descrição</th></tr></thead>
       <tbody>${linhas}</tbody></table></div>
-      <p class="prog-table-nota">Preços de insumos de ótima qualidade. Cada ingrediente ocupa 0,5 espaço.</p>`;
+      <p class="prog-table-nota">Preços de insumos de ótima qualidade. Cada ingrediente ocupa 0,5 espaço.
+        Nos pratos e na calculadora, passe o mouse no nome do ingrediente para ver a descrição (clique fixa a nuvem).</p>`;
   }
 
   function cardRegra(r) {
@@ -150,9 +164,8 @@
     temp.addEventListener('change', atualizar);
     atualizar();
 
-    // ── busca (filtra cards de regra E linhas da tabela de pratos) ──
+    // ── busca (filtra regras, tabela de pratos E tabela de ingredientes) ──
     const busca = cont.querySelector('.cr-busca');
-    const tabelaPratosEl = cont.querySelectorAll('.prog-table')[0];
     busca.addEventListener('input', () => {
       const termo = semAcento(busca.value.trim());
       cont.querySelectorAll('.vc-card').forEach(c => {
@@ -160,11 +173,9 @@
         c.style.display = bate ? '' : 'none';
         c.open = !!termo && bate;
       });
-      if (tabelaPratosEl) {
-        tabelaPratosEl.querySelectorAll('tbody tr').forEach(tr => {
-          tr.style.display = (!termo || (tr.dataset.busca || '').indexOf(termo) >= 0) ? '' : 'none';
-        });
-      }
+      cont.querySelectorAll('.prog-table tbody tr[data-busca]').forEach(tr => {
+        tr.style.display = (!termo || tr.dataset.busca.indexOf(termo) >= 0) ? '' : 'none';
+      });
     });
   }
 

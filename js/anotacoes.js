@@ -45,6 +45,12 @@
   function normalizarRamo(r) {
     if (typeof r.titulo !== 'string') r.titulo = '';
     if (typeof r.texto !== 'string')  r.texto = '';
+    // texto rico (grifos e 📖 descrições penduradas) com espelho PURO em
+    // r.texto — o export .txt e o "Trazer dos Ramos" antigos seguem lendo
+    // o puro. Migração idempotente: ramos antigos ganham o HTML na hora.
+    r.textoHtml = (typeof r.textoHtml === 'string')
+      ? window.GA_limparHtml(r.textoHtml)
+      : window.GA_nl2br(r.texto);
     if (typeof r.cat !== 'string' || !CAT_POR_CHAVE[r.cat]) r.cat = 'outro';
     if (typeof r.aberto !== 'boolean') r.aberto = true;
     if (!r.id) r.id = uid('r');
@@ -76,7 +82,7 @@
   const esc = window.GA_esc;
 
   function novoRamo() {
-    return { id: uid('r'), aberto: true, cat: 'ideia', titulo: '', texto: '', filhos: [] };
+    return { id: uid('r'), aberto: true, cat: 'ideia', titulo: '', texto: '', textoHtml: '', filhos: [] };
   }
 
   // ── LOCALIZAÇÃO POR CAMINHO (data-caminho="0.2.1") ───────────────
@@ -132,9 +138,6 @@
 
     cont.innerHTML = html;
 
-    // ajusta a altura de todas as caixas de texto ao conteúdo
-    cont.querySelectorAll('.an-texto').forEach(ajustarAltura);
-
     // volta para onde o mestre estava (evita o "pulo" ao adicionar/remover/mover)
     window.scrollTo({ top: scrollY, behavior: 'instant' });
   }
@@ -179,19 +182,17 @@
           <button class="an-mini an-mini--del" data-acao="del" data-caminho="${caminho}" title="Remover ramo">✕</button>
         </div>
         <div class="an-corpo">
-          <textarea class="an-texto" rows="2"
-                    placeholder="Anote a ideia, o encontro, a narração, o segredo…"
-                    data-campo="texto" data-caminho="${caminho}">${esc(r.texto)}</textarea>
+          <div class="ga-rich-wrap">
+            <div class="an-texto ga-rich" contenteditable="true" spellcheck="true"
+                 data-ph="Anote a ideia, o encontro, a narração, o segredo…"
+                 data-campo="texto" data-caminho="${caminho}">${r.textoHtml}</div>
+            <button type="button" class="ga-rich-btn" data-rich-desc
+                    title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖</button>
+          </div>
           ${r.filhos.length ? `<div class="an-filhos">${filhosHtml}</div>` : ''}
           <button class="an-add an-add--sub" data-acao="add-sub" data-caminho="${caminho}">＋ Ramificar</button>
         </div>
       </div>`;
-  }
-
-  // A caixa de texto cresce sozinha conforme o conteúdo.
-  function ajustarAltura(t) {
-    t.style.height = 'auto';
-    t.style.height = (t.scrollHeight + 2) + 'px';
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -233,7 +234,6 @@
       if (ramo) {
         ramo.classList.toggle('an-aberto', no.aberto);
         alvo.textContent = no.aberto ? '▾' : '▸';
-        if (no.aberto) ramo.querySelectorAll('.an-texto').forEach(ajustarAltura);
       }
       salvar();
       return;
@@ -266,8 +266,9 @@
 
     if (campo === 'titulo') { no.titulo = el.value; salvar(); return; }
     if (campo === 'texto')  {
-      no.texto = el.value;
-      ajustarAltura(el);
+      // caixa rica: guarda o HTML e espelha em texto puro (export .txt)
+      no.textoHtml = el.innerHTML;
+      no.texto = window.htmlParaTexto(el.innerHTML);
       salvar(); return;
     }
     if (campo === 'cat') {
@@ -331,12 +332,17 @@
   // ── IMPORTAR ─────────────────────────────────────────────────────
   function _normalizarRamoImport(r) {
     if (!r || typeof r !== 'object') return null;
+    const texto = typeof r.texto === 'string' ? r.texto : '';
     const ramo = {
       id: uid('r'),                                  // reid para nunca colidir
       aberto: typeof r.aberto === 'boolean' ? r.aberto : true,
       cat: (typeof r.cat === 'string' && CAT_POR_CHAVE[r.cat]) ? r.cat : 'outro',
       titulo: typeof r.titulo === 'string' ? r.titulo : '',
-      texto: typeof r.texto === 'string' ? r.texto : '',
+      texto: texto,
+      // backups novos trazem o HTML (sanitiza!); antigos, só o texto puro
+      textoHtml: (typeof r.textoHtml === 'string')
+        ? window.GA_limparHtml(r.textoHtml)
+        : window.GA_nl2br(texto),
       filhos: [],
     };
     (Array.isArray(r.filhos) ? r.filhos : []).forEach(f => {
@@ -416,15 +422,9 @@
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoDigitar);
     secao.addEventListener('change', aoEscolherBackup);
-
-    // a seção começa oculta (display:none) e nesse estado o scrollHeight
-    // é 0 — reajusta as alturas quando a aba é aberta pela navegação
-    const navLink = document.querySelector('.nav-link[data-section="anotacoes"]');
-    if (navLink) navLink.addEventListener('click', () => {
-      setTimeout(() => {
-        secao.querySelectorAll('.an-texto').forEach(ajustarAltura);
-      }, 0);
-    });
+    // campos ricos: 📖 descrição pendurada + colar limpo (handlers globais)
+    secao.addEventListener('mousedown', window.GA_richDescMousedown);
+    secao.addEventListener('paste', window.GA_richPaste);
 
     window.addEventListener('beforeunload', salvarAgora);
     document.addEventListener('visibilitychange', () => {

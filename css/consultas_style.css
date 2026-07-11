@@ -747,3 +747,62 @@
   white-space: nowrap;
 }
 .dev-badge--magica { color: #5a3a7a; border-color: #5a3a7a; background: rgba(90, 58, 122, 0.07); }
+
+/* ═══ SUB-ABA 🌀 CONDIÇÕES ═════════════════════════════════════════ */
+/* regra de acúmulo/fim de cena, em destaque acima dos filtros */
+.cond-intro {
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--gold-dim);
+  border-left: 4px solid var(--gold);
+  background: var(--parchment2);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* chips de filtro por tipo de efeito */
+.cond-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.8rem;
+}
+.cond-chip {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--cor, var(--ink));
+  background: var(--parchment);
+  border: 1px solid var(--cor, var(--ink-faded));
+  padding: 0.22rem 0.55rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.cond-chip:hover { background: var(--parchment3); }
+.cond-chip--on { background: var(--cor, var(--ink)); color: var(--parchment); }
+
+/* coluna "Descrição" da Tabela 4-7 (ingredientes da Culinária) */
+.prog-table td.cul-ing-desc {
+  font-style: italic;
+  font-size: 0.84rem;
+  color: var(--ink-faded);
+}
+
+/* etiqueta do tipo de efeito no cabeçalho do card */
+.cond-badge {
+  align-self: flex-start;
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor, var(--ink));
+  border: 1px solid var(--cor, var(--ink-faded));
+  background: var(--parchment);
+  padding: 0.1rem 0.4rem;
+  white-space: nowrap;
+}

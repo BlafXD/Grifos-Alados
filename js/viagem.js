@@ -89,8 +89,21 @@
     if (typeof v.dias !== 'number') v.dias = parseInt(v.dias, 10) || 0;
     if (!Array.isArray(v.diario)) v.diario = [];
     if (!Array.isArray(v.paradas)) v.paradas = [];
-    v.diario.forEach(d => { if (!d.id) d.id = uid('d'); if (typeof d.texto !== 'string') d.texto = ''; });
-    v.paradas.forEach(p => { if (!p.id) p.id = uid('p'); if (typeof p.nome !== 'string') p.nome = ''; if (typeof p.texto !== 'string') p.texto = ''; });
+    // diário/paradas: texto rico (grifos e 📖) com espelho PURO em .texto
+    // (o export .txt lê o puro). Migração idempotente de dados antigos.
+    v.diario.forEach(d => {
+      if (!d.id) d.id = uid('d');
+      if (typeof d.texto !== 'string') d.texto = '';
+      d.textoHtml = (typeof d.textoHtml === 'string')
+        ? window.GA_limparHtml(d.textoHtml) : window.GA_nl2br(d.texto);
+    });
+    v.paradas.forEach(p => {
+      if (!p.id) p.id = uid('p');
+      if (typeof p.nome !== 'string') p.nome = '';
+      if (typeof p.texto !== 'string') p.texto = '';
+      p.textoHtml = (typeof p.textoHtml === 'string')
+        ? window.GA_limparHtml(p.textoHtml) : window.GA_nl2br(p.texto);
+    });
   }
 
   function pegarViagem(el) { return dados.viagens[+el.dataset.v]; }
@@ -307,8 +320,13 @@
       v.diario.forEach((d, di) => {
         diarioItens += `
           <div class="vg-diario-item">
-            <textarea class="vg-textarea" rows="2" data-campo="diario-texto" data-v="${vi}" data-d="${di}"
-                      placeholder="O que aconteceu…">${esc(d.texto)}</textarea>
+            <div class="ga-rich-wrap">
+              <div class="vg-textarea ga-rich" contenteditable="true" spellcheck="true"
+                   data-campo="diario-texto" data-v="${vi}" data-d="${di}"
+                   data-ph="O que aconteceu…">${d.textoHtml}</div>
+              <button type="button" class="ga-rich-btn" data-rich-desc
+                      title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖</button>
+            </div>
             <button class="vg-del" data-acao="del-diario" data-v="${vi}" data-d="${di}" title="Remover">✕</button>
           </div>`;
       });
@@ -333,8 +351,13 @@
                      value="${esc(pa.nome)}" placeholder="Nome da parada (ex.: Santuário de Khalmyr)">
               <button class="vg-del" data-acao="del-parada" data-v="${vi}" data-p="${pi}" title="Remover">✕</button>
             </div>
-            <textarea class="vg-textarea" rows="3" data-campo="parada-texto" data-v="${vi}" data-p="${pi}"
-                      placeholder="Narração / efeito desta parada…">${esc(pa.texto)}</textarea>
+            <div class="ga-rich-wrap">
+              <div class="vg-textarea vg-textarea--parada ga-rich" contenteditable="true" spellcheck="true"
+                   data-campo="parada-texto" data-v="${vi}" data-p="${pi}"
+                   data-ph="Narração / efeito desta parada…">${pa.textoHtml}</div>
+              <button type="button" class="ga-rich-btn" data-rich-desc
+                      title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖</button>
+            </div>
           </div>`;
       });
     }
@@ -508,7 +531,8 @@
     }
     if (acao === 'quick-diario') {
       const v = pegarViagem(alvo);
-      v.diario.push({ id: uid('d'), texto: alvo.dataset.prefixo || '' });
+      const prefixo = alvo.dataset.prefixo || '';
+      v.diario.push({ id: uid('d'), texto: prefixo, textoHtml: esc(prefixo) });
       salvar(); render(); return;
     }
     if (acao === 'criar-combate') {
@@ -521,7 +545,8 @@
       if (evento === null) return;   // cancelou
       const desc = (evento || '').trim();
       window.GA_Monstros.criarCombateViagem(v.nome, desc, v.id);
-      v.diario.push({ id: uid('d'), texto: '⚔ Combate — ' + (desc || 'sem descrição') + ' (cena criada na aba Monstros)' });
+      const linha = '⚔ Combate — ' + (desc || 'sem descrição') + ' (cena criada na aba Monstros)';
+      v.diario.push({ id: uid('d'), texto: linha, textoHtml: esc(linha) });
       salvarAgora();
       const link = document.querySelector('.nav-link[data-section="monstros"]');
       if (link) link.click();        // leva o mestre para a cena recém-criada
@@ -532,7 +557,7 @@
       salvar(); render(); return;
     }
     if (acao === 'add-parada') {
-      pegarViagem(alvo).paradas.push({ id: uid('p'), nome: '', texto: '' });
+      pegarViagem(alvo).paradas.push({ id: uid('p'), nome: '', texto: '', textoHtml: '' });
       salvar(); render(); return;
     }
     if (acao === 'del-parada') {
@@ -565,9 +590,19 @@
     if (campo === 'distTotal' || campo === 'distFeita') {
       v[campo] = el.value; salvar(); atualizarProgresso(el); return;
     }
-    if (campo === 'diario-texto') { v.diario[+el.dataset.d].texto = el.value; salvar(); return; }
+    if (campo === 'diario-texto') {
+      const d = v.diario[+el.dataset.d];
+      d.textoHtml = el.innerHTML;
+      d.texto = window.htmlParaTexto(el.innerHTML);   // espelho puro (export .txt)
+      salvar(); return;
+    }
     if (campo === 'parada-nome')  { v.paradas[+el.dataset.p].nome = el.value; salvar(); return; }
-    if (campo === 'parada-texto') { v.paradas[+el.dataset.p].texto = el.value; salvar(); return; }
+    if (campo === 'parada-texto') {
+      const pa = v.paradas[+el.dataset.p];
+      pa.textoHtml = el.innerHTML;
+      pa.texto = window.htmlParaTexto(el.innerHTML);
+      salvar(); return;
+    }
   }
 
   // change — select de deslocamento e checkboxes (re-renderiza p/ recalcular)
@@ -688,6 +723,9 @@
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoEntrada);
     secao.addEventListener('change', aoMudar);
+    // campos ricos: 📖 descrição pendurada + colar limpo (handlers globais)
+    secao.addEventListener('mousedown', window.GA_richDescMousedown);
+    secao.addEventListener('paste', window.GA_richPaste);
     window.addEventListener('beforeunload', salvarAgora);
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') salvarAgora(); });
     // sincroniza o PV do veículo quando a aba Monstros o altera (mesma vida)

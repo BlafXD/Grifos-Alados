@@ -299,6 +299,7 @@
         if (!Array.isArray(c.perigos)) c.perigos = [];
         c.perigos.forEach(normalizarPerigo);
         c.ambientes = normalizarAmbientes(c.ambientes);
+        normalizarMasmorra(c);
       });
     });
   }
@@ -362,8 +363,41 @@
       condicoes: '', ataques: '', atributos: '', pericias: '', equipamento: '', recompensas: '',
     };
   }
-  function novaCena(n)   { return { id: uid('c'), aberto: true, nome: 'Cena ' + n, notas: '', notasHtml: '', criaturas: [], perigos: [], ambientes: [] }; }
+  function novaCena(n)   { return { id: uid('c'), aberto: true, nome: 'Cena ' + n, notas: '', notasHtml: '', criaturas: [], perigos: [], ambientes: [], masmorra: novaMasmorra() }; }
   function novaSessao(n) { return { id: uid('s'), aberto: true, nome: 'Sessão ' + n, notas: '', notasHtml: '', cenas: [] }; }
+
+  // Masmorra ("Dungeon?") da cena — estado das ferramentas de exploração
+  // (T20 p. 263 + Heróis de Arton; regras em window.GA_MASMORRA).
+  function novaMasmorra() {
+    return {
+      ativo: false, aberto: true,
+      barulho: 'padrao',                    // categoria → dado de encontro
+      segmentos: 0, avisoCena: false,       // relógio: 6 segmentos = 1 cena
+      aberturas: 0, barricada: false, guardas: 0,   // controles do descanso
+      ultimoEncontro: null, ultimoDescanso: null, ultimaIdeia: null,
+    };
+  }
+  const MAS_BARULHOS = ['silencioso', 'padrao', 'barulhento', 'estrondoso'];
+  // Completa/valida a masmorra de uma cena (cenas antigas não tinham o campo;
+  // backups importados podem trazer qualquer coisa). Idempotente.
+  function normalizarMasmorra(c) {
+    if (!c.masmorra || typeof c.masmorra !== 'object') { c.masmorra = novaMasmorra(); return; }
+    const m = c.masmorra;
+    m.ativo  = m.ativo === true;
+    m.aberto = m.aberto !== false;
+    if (MAS_BARULHOS.indexOf(m.barulho) < 0) m.barulho = 'padrao';
+    m.segmentos = Math.max(0, parseInt(m.segmentos, 10) || 0);
+    m.avisoCena = m.avisoCena === true;
+    m.aberturas = Math.min(4, Math.max(0, parseInt(m.aberturas, 10) || 0));
+    m.barricada = m.barricada === true;
+    // guardas sem teto baixo: 10 heróis, NPCs e parceiros também vigiam
+    // (o dado trava no topo da escada de qualquer forma)
+    m.guardas   = Math.min(99, Math.max(0, parseInt(m.guardas, 10) || 0));
+    ['ultimoEncontro', 'ultimoDescanso', 'ultimaIdeia'].forEach(k => {
+      if (!m[k] || typeof m[k] !== 'object') m[k] = null;
+    });
+  }
+  function masmorraDe(c) { normalizarMasmorra(c); return c.masmorra; }
 
   // Perigo complexo — montado a partir de uma entrada da biblioteca
   // (window.PERIGOS_COMPLEXOS) ou em branco. Os campos efeito/acoes são
@@ -664,8 +698,10 @@
                 title="Mostra/esconde a faixa de regras de combate em viagem">⚔ Combate em viagem</button>
       </div>`;
 
-    // banner de ambientes EDITÁVEL + faixa de combate + ficha do veículo
+    // banner de ambientes EDITÁVEL + faixa da masmorra da cena narrada +
+    // faixa de combate + ficha do veículo
     const bannerAmb = construirBarraAmbientesPainel();
+    const bandaMas = construirBandaMasmorraPainel();
     const bandaCV = construirBandaCombateViagem();
     const bandaVeic = construirBlocoVeiculoPainel();
 
@@ -673,7 +709,7 @@
     const ordemSess = dados.sessoes.slice();
     if (cenaRef && cenaRef.si > 0) { const sn = ordemSess.splice(cenaRef.si, 1)[0]; ordemSess.unshift(sn); }
 
-    let html = controle + bannerAmb + bandaCV + bandaVeic + '<div class="mz-painel">';
+    let html = controle + bannerAmb + bandaMas + bandaCV + bandaVeic + '<div class="mz-painel">';
     for (let slot = 0; slot < dados.painel.length; slot++) {
       let id = dados.painel[slot];
       let ref = null;
@@ -742,6 +778,7 @@
     ).join('');
     return `<span class="mz-toolbar-rot">Grifar</span>${sw}
             <button type="button" class="mz-grifo mz-grifo--box" ${attr}="grifar" data-cor="mz-leitura" ${ds} title="Marcar o trecho como caixa de leitura (boxed, estilo livro de aventura)">▣ Caixa</button>
+            <button type="button" class="mz-grifo mz-grifo--desc" ${attr}="descrever" ${ds} title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖 Descrição</button>
             <button type="button" class="mz-grifo mz-grifo--limpa" ${attr}="desgrifar" ${ds}>✦ Remover</button>`;
   }
 
@@ -866,6 +903,225 @@
       </div>`;
   }
 
+  // ── MASMORRA ("Dungeon?") DA CENA ────────────────────────────────
+  // Faixa no corpo da cena. Desligada: uma linha discreta com o toggle.
+  // Ligada: definição + ferramentas de mesa (dado de encontro por barulho,
+  // relógio de 6 segmentos, descanso) + regras completas (GA_MASMORRA)
+  // em blocos recolhíveis, no mesmo estilo das regras de veículo.
+  const MAS_PASSOS = [3, 4, 6, 8, 10, 12];   // escada de dados de encontro
+  function masPassoDado(delta) {
+    let i = MAS_PASSOS.indexOf(6) + delta;
+    i = Math.max(0, Math.min(i, MAS_PASSOS.length - 1));
+    return MAS_PASSOS[i];
+  }
+  function masBarulhoInfo(chave) {
+    const G = window.GA_MASMORRA;
+    return (G && G.BARULHO.find(b => b.chave === chave))
+        || { chave: 'padrao', rot: 'Padrão', icone: '👣', dado: 6, desc: '' };
+  }
+  // dado das 2 rolagens do descanso: −1 passo por abertura extra,
+  // +1 por barricada (não cumulativa), +1 por guarda (cumulativo)
+  function masDadoDescanso(m) {
+    return masPassoDado(-(+m.aberturas || 0) + (m.barricada ? 1 : 0) + (+m.guardas || 0));
+  }
+  // Atualiza, SEM re-render, o dado nos botões "Rolar descanso" da cena
+  // (bloco grande e faixa do painel) — usado enquanto se digita o número
+  // de guardas, para o campo não perder o foco.
+  function atualizarDadoDescanso(el) {
+    const m = masmorraDe(pegarCena(el));
+    const d = masDadoDescanso(m);
+    document.querySelectorAll(
+      `[data-acao="mas-rolar-descanso"][data-s="${el.dataset.s}"][data-c="${el.dataset.c}"]`
+    ).forEach(btn => {
+      btn.textContent = btn.closest('.mz-masmorra--painel')
+        ? `🛏 Descanso (2 × 1d${d})`
+        : `🎲 Rolar descanso (2 × 1d${d})`;
+    });
+  }
+
+  function _masTabelaHtml(t) {
+    const cab = `<tr>${t.cab.map(h => `<th>${esc(h)}</th>`).join('')}</tr>`;
+    const linhas = t.linhas.map(l =>
+      `<tr>${l.map(v => `<td>${esc(String(v))}</td>`).join('')}</tr>`).join('');
+    return `${t.titulo ? `<p class="mz-mas-tab-titulo">${esc(t.titulo)}</p>` : ''}
+      <table class="mz-mas-tab">${cab}${linhas}</table>
+      ${t.nota ? `<p class="mz-mas-nota">${esc(t.nota)}</p>` : ''}`;
+  }
+  // corpo de uma seção de regras: texto (com tooltips de condição) +
+  // tabela opcional + exemplo de tabela de encontros opcional
+  function _masCorpoSecao(s) {
+    let h = _txtParaHtml(s.texto || '');
+    if (s.tabela) h += _masTabelaHtml(s.tabela);
+    if (Array.isArray(s.exemplo)) {
+      h += s.exemplo.map(l => `
+        <div class="mz-mas-ex">
+          <span class="mz-mas-ex-cab"><strong>${esc(l.faixa)}</strong> · ${esc(l.nome)}
+            <em>${l.nd && l.nd !== '—' ? 'ND ' + esc(l.nd) : 'sem ND'}</em></span>
+          <span class="mz-mas-ex-txt">${_txtParaHtml(l.txt)}</span>
+        </div>`).join('');
+    }
+    return h;
+  }
+
+  function construirMasmorra(c, si, ci) {
+    const G = window.GA_MASMORRA;
+    if (!G) return '';
+    const m = masmorraDe(c);
+    const ds = `data-s="${si}" data-c="${ci}"`;
+
+    const interruptor = `
+      <button class="mz-mas-switch ${m.ativo ? 'mz-mas-switch--on' : ''}" data-acao="mas-toggle" ${ds}
+              title="${m.ativo ? 'Desligar' : 'Ligar'} as regras de masmorra nesta cena">
+        ${m.ativo ? '● ligada' : '○ desligada'}</button>`;
+
+    if (!m.ativo) {
+      return `
+        <div class="mz-ambientes mz-masmorra">
+          <span class="mz-amb-titulo mz-mas-cab">🏰 Dungeon? ${interruptor}</span>
+          <span class="mz-amb-nenhum">${esc(G.resumo)}</span>
+        </div>`;
+    }
+
+    const btnRecolher = `
+      <button class="mz-mas-recolher" data-acao="mas-recolher" ${ds}
+              title="${m.aberto ? 'Recolher' : 'Expandir'} o painel da masmorra">${m.aberto ? '▾' : '▸'}</button>`;
+
+    const resto = m.segmentos % 6;
+    const cenasComp = Math.floor(m.segmentos / 6);
+
+    if (!m.aberto) {
+      const b = masBarulhoInfo(m.barulho);
+      return `
+        <div class="mz-ambientes mz-masmorra mz-masmorra--on">
+          <span class="mz-amb-titulo mz-mas-cab">🏰 Dungeon? ${interruptor} ${btnRecolher}</span>
+          <span class="mz-amb-nenhum">painel recolhido — barulho ${esc(b.rot.toLowerCase())} (1d${b.dado}) ·
+            relógio ${resto}/6 · ${cenasComp} cena${cenasComp !== 1 ? 's' : ''} completa${cenasComp !== 1 ? 's' : ''}.</span>
+        </div>`;
+    }
+
+    // ── ferramenta 1: encontro aleatório (dado conforme o barulho) ──
+    const chips = G.BARULHO.map(b => `
+      <button class="mz-mas-chip ${m.barulho === b.chave ? 'mz-mas-chip--on' : ''}"
+              data-acao="mas-barulho" data-bar="${b.chave}" ${ds}
+              title="${esc(b.desc)}">${b.icone} ${esc(b.rot)} · d${b.dado}</button>`).join('');
+    const bAtual = masBarulhoInfo(m.barulho);
+    let resEnc = '';
+    if (m.ultimoEncontro) {
+      const u = m.ultimoEncontro;
+      resEnc = (u.res === 1)
+        ? `<span class="mz-mas-res mz-mas-res--perigo">1d${u.lados} = <strong>1</strong> — ⚠ ENCONTRO!
+             Role na sua tabela de encontros (exemplo pronto nas regras abaixo).</span>`
+        : `<span class="mz-mas-res">1d${u.lados} = <strong>${u.res}</strong> — sem encontro.</span>`;
+    }
+
+    // ── ferramenta 2: relógio de segmentos (6 = uma cena) ──
+    const risquinhos =
+      `<span class="mz-mas-seg-cheio">${'▮'.repeat(resto)}</span>${'▯'.repeat(6 - resto)}`;
+    const avisoCena = m.avisoCena
+      ? `<span class="mz-mas-res mz-mas-res--perigo">🕯 Uma cena se passou! Efeitos "por cena" terminam —
+           tochas apagam, magias de luz expiram.</span>`
+      : '';
+
+    // ── ferramenta 3: descanso (dormir na masmorra) ──
+    const dadoDesc = masDadoDescanso(m);
+    const opts = (n, sel) => {
+      let o = '';
+      for (let i = 0; i <= n; i++) o += `<option value="${i}" ${i === sel ? 'selected' : ''}>${i}</option>`;
+      return o;
+    };
+    let resDesc = '';
+    if (m.ultimoDescanso) {
+      const u = m.ultimoDescanso;
+      const enc = (u.r1 === 1 ? 1 : 0) + (u.r2 === 1 ? 1 : 0);
+      resDesc = enc
+        ? `<span class="mz-mas-res mz-mas-res--perigo">2 × 1d${u.lados}: <strong>${u.r1}</strong> e <strong>${u.r2}</strong>
+             — ⚠ ${enc} encontro${enc > 1 ? 's' : ''} durante o descanso!</span>`
+        : `<span class="mz-mas-res">2 × 1d${u.lados}: <strong>${u.r1}</strong> e <strong>${u.r2}</strong> — noite tranquila.</span>`;
+    }
+
+    // ── regras & definição (blocos recolhíveis) ──
+    const secoes = (G.SECOES || []).map(s => `
+      <details class="mz-cv-mini">
+        <summary>${esc(s.titulo)}</summary>
+        <div class="mz-cv-mini-corpo">${_masCorpoSecao(s)}</div>
+      </details>`).join('');
+
+    return `
+      <div class="mz-ambientes mz-masmorra mz-masmorra--on">
+        <span class="mz-amb-titulo mz-mas-cab">🏰 Dungeon? ${interruptor} ${btnRecolher}</span>
+        <p class="mz-mas-def">${window.ItensDescricoes ? window.ItensDescricoes.marcar(G.defCurta) : esc(G.defCurta)}</p>
+
+        <div class="mz-mas-blocos">
+          <div class="mz-mas-bloco">
+            <span class="mz-mas-bloco-tit">📢 Barulho do grupo → dado de encontro</span>
+            <div class="mz-mas-chips">${chips}</div>
+            <div class="mz-mas-acao">
+              <button class="mz-mas-btn" data-acao="mas-rolar-encontro" ${ds}
+                      title="Rolagem ao entrar em cada sala ou corredor — 1 indica um encontro">
+                🎲 Rolar encontro (1d${bAtual.dado})</button>
+              ${resEnc}
+            </div>
+            <span class="mz-mas-nota">role ao entrar em cada sala/corredor — 1 = encontro. Na mesa, deixe os
+              jogadores rolarem, alternando. A categoria volta a Padrão após cada sala.</span>
+          </div>
+
+          <div class="mz-mas-bloco">
+            <span class="mz-mas-bloco-tit">⏱ Relógio da cena (6 segmentos)</span>
+            <div class="mz-mas-seg">
+              <span class="mz-mas-risco" title="${resto}/6 segmentos">${risquinhos}</span>
+              <span class="mz-mas-seg-info">${resto}/6 · ${cenasComp} cena${cenasComp !== 1 ? 's' : ''}
+                completa${cenasComp !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="mz-mas-acao">
+              <button class="mz-mas-btn" data-acao="mas-seg" data-n="1" ${ds}
+                      title="Ação curta — poucos minutos (passar por um corredor, explorá-lo)">+1 curta</button>
+              <button class="mz-mas-btn" data-acao="mas-seg" data-n="2" ${ds}
+                      title="Ação longa — vários minutos a 1h (passar/explorar uma sala, cuidados prolongados, acampar)">+2 longa</button>
+              <button class="mz-mas-btn" data-acao="mas-seg" data-n="6" ${ds}
+                      title="Ação muito longa — algumas horas ou uma parte do dia (cena inteira)">+6 muito longa</button>
+              <button class="mz-mas-btn mz-mas-btn--sutil" data-acao="mas-seg-zerar" ${ds}
+                      title="Zerar o relógio e a contagem de cenas">↺</button>
+            </div>
+            ${avisoCena}
+            <span class="mz-mas-nota">um jogador anota os risquinhos; ao fechar 6, efeitos "por cena" acabam —
+              troque a fonte de luz.</span>
+          </div>
+
+          <div class="mz-mas-bloco">
+            <span class="mz-mas-bloco-tit">🛏 Descanso na masmorra</span>
+            <div class="mz-mas-desc-ctl">
+              <label title="O dado diminui um passo por abertura além da primeira (portas, corredores…)">
+                aberturas além da 1ª <select data-campo="mas-aberturas" ${ds}>${opts(4, m.aberturas)}</select></label>
+              <label class="mz-mas-chk" title="Teste de Guerra ou Sobrevivência (mesma CD do acampamento): +1 passo, não cumulativo">
+                <input type="checkbox" data-campo="mas-barricada" ${ds} ${m.barricada ? 'checked' : ''}> barricada</label>
+              <label title="+1 passo por guarda (cumulativo) — vale herói, NPC ou parceiro; cada guarda testa Fortitude CD 20 (+1 por dia seguido)">
+                guardas <input class="mz-mas-num" type="number" inputmode="numeric" min="0" max="99"
+                               data-campo="mas-guardas" ${ds} value="${m.guardas}"></label>
+            </div>
+            <div class="mz-mas-acao">
+              <button class="mz-mas-btn" data-acao="mas-rolar-descanso" ${ds}
+                      title="Dormir = 1 ração por personagem + DUAS rolagens de encontro">
+                🎲 Rolar descanso (2 × 1d${dadoDesc})</button>
+              ${resDesc}
+            </div>
+            <span class="mz-mas-nota">dormir = 1 ração por personagem (parceiros também). Guardas: Fortitude CD 20
+              (+1/dia seguido) — falha: fatigado e descanso uma categoria pior.</span>
+          </div>
+        </div>
+
+        <div class="mz-mas-regras">
+          <span class="mz-mas-bloco-tit">📖 Regras &amp; definição — masmorras (T20 p. 263 + Heróis de Arton)</span>
+          <div class="mz-mas-acao">
+            <button class="mz-mas-btn" data-acao="mas-rolar-ideia" ${ds}
+                    title="Tabela 6-2: Ideias de Masmorras">🎲 Ideia de masmorra (1d20)</button>
+            ${m.ultimaIdeia ? `<span class="mz-mas-res">1d20 = <strong>${m.ultimaIdeia.d}</strong> —
+              ${esc(m.ultimaIdeia.txt)}</span>` : ''}
+          </div>
+          ${secoes}
+        </div>
+      </div>`;
+  }
+
   // Banner de ambientes do PAINEL (palco ao vivo) — editável e
   // independente das cenas. Adicionar/remover/editar aqui nunca toca na
   // preparação; o conteúdo vem de dados.painelAmbientes.
@@ -941,6 +1197,94 @@
       </div>`;
   }
 
+  // Faixa compacta do "🏰 Dungeon" no painel (palco ao vivo): aparece
+  // quando a CENA NARRADA está com as regras de masmorra ligadas e espelha
+  // o MESMO c.masmorra dela — os botões carregam o data-s/-c da cena
+  // narrada e reusam as ações mas-* existentes, então rolar/marcar aqui ou
+  // na preparação dá no mesmo. Aberturas/guardas e as regras completas
+  // ficam no painel grande da cena (aba lista).
+  function construirBandaMasmorraPainel() {
+    const G = window.GA_MASMORRA;
+    const ref = cenaNarradaRef();
+    if (!G || !ref) return '';
+    const c = dados.sessoes[ref.si].cenas[ref.ci];
+    const m = masmorraDe(c);
+    if (!m.ativo) return '';
+    const ds = `data-s="${ref.si}" data-c="${ref.ci}"`;
+
+    // barulho (chips curtos) + rolagem de encontro
+    const bAtual = masBarulhoInfo(m.barulho);
+    const chips = G.BARULHO.map(b => `
+      <button class="mz-mas-chip ${m.barulho === b.chave ? 'mz-mas-chip--on' : ''}"
+              data-acao="mas-barulho" data-bar="${b.chave}" ${ds}
+              title="${esc(b.rot)} — ${esc(b.desc)}">${b.icone} d${b.dado}</button>`).join('');
+    let resEnc = '';
+    if (m.ultimoEncontro) {
+      const u = m.ultimoEncontro;
+      resEnc = (u.res === 1)
+        ? `<span class="mz-mas-res mz-mas-res--perigo">1d${u.lados} = <strong>1</strong> — ⚠ ENCONTRO!</span>`
+        : `<span class="mz-mas-res">1d${u.lados} = <strong>${u.res}</strong> — sem encontro.</span>`;
+    }
+
+    // relógio da cena (6 segmentos)
+    const resto = m.segmentos % 6;
+    const cenasComp = Math.floor(m.segmentos / 6);
+    const risquinhos =
+      `<span class="mz-mas-seg-cheio">${'▮'.repeat(resto)}</span>${'▯'.repeat(6 - resto)}`;
+
+    // descanso — controles completos na faixa (mesmos campos da cena)
+    const dadoDesc = masDadoDescanso(m);
+    const optsAb = (() => {
+      let o = '';
+      for (let i = 0; i <= 4; i++) o += `<option value="${i}" ${i === m.aberturas ? 'selected' : ''}>${i}</option>`;
+      return o;
+    })();
+    const ctlDesc = `
+            <label class="mz-masp-ctl" title="O dado diminui um passo por abertura além da primeira (portas, corredores…)">
+              aberturas +1ª <select data-campo="mas-aberturas" ${ds}>${optsAb}</select></label>
+            <label class="mz-masp-ctl mz-mas-chk" title="Teste de Guerra ou Sobrevivência (mesma CD do acampamento): +1 passo, não cumulativo">
+              <input type="checkbox" data-campo="mas-barricada" ${ds} ${m.barricada ? 'checked' : ''}> barricada</label>
+            <label class="mz-masp-ctl" title="+1 passo por guarda (cumulativo) — vale herói, NPC ou parceiro; cada guarda testa Fortitude CD 20 (+1 por dia seguido)">
+              guardas <input class="mz-mas-num" type="number" inputmode="numeric" min="0" max="99"
+                             data-campo="mas-guardas" ${ds} value="${m.guardas}"></label>`;
+    let resDesc = '';
+    if (m.ultimoDescanso) {
+      const u = m.ultimoDescanso;
+      const enc = (u.r1 === 1 ? 1 : 0) + (u.r2 === 1 ? 1 : 0);
+      resDesc = enc
+        ? `<span class="mz-mas-res mz-mas-res--perigo">2 × 1d${u.lados}: <strong>${u.r1}</strong> e <strong>${u.r2}</strong> — ⚠ ${enc} encontro${enc > 1 ? 's' : ''} no descanso!</span>`
+        : `<span class="mz-mas-res">2 × 1d${u.lados}: <strong>${u.r1}</strong> e <strong>${u.r2}</strong> — noite tranquila.</span>`;
+    }
+
+    return `
+      <div class="mz-ambientes mz-ambientes--painel mz-masmorra mz-masmorra--on mz-masmorra--painel">
+        <span class="mz-amb-titulo mz-mas-cab">🏰 Dungeon — ${esc(c.nome || '(cena narrada)')}</span>
+        <div class="mz-masp-grupos">
+          <span class="mz-masp-grupo" title="Barulho do grupo → dado da rolagem de encontro (1 = encontro). Role ao entrar em cada sala/corredor; a categoria volta a Padrão após cada sala.">
+            ${chips}
+            <button class="mz-mas-btn" data-acao="mas-rolar-encontro" ${ds}
+                    title="Rolagem ao entrar em cada sala ou corredor — 1 indica um encontro">🎲 Encontro (1d${bAtual.dado})</button>
+            ${resEnc}
+          </span>
+          <span class="mz-masp-grupo" title="Relógio da cena: 6 segmentos = 1 cena — efeitos ‘por cena’ acabam (tochas, luz).">
+            <span class="mz-mas-risco" title="${resto}/6 segmentos">${risquinhos}</span>
+            <span class="mz-mas-seg-info">${resto}/6 · ${cenasComp} cena${cenasComp !== 1 ? 's' : ''}</span>
+            <button class="mz-mas-btn" data-acao="mas-seg" data-n="1" ${ds} title="Ação curta — poucos minutos (corredor)">+1</button>
+            <button class="mz-mas-btn" data-acao="mas-seg" data-n="2" ${ds} title="Ação longa — vários minutos a 1h (sala, cuidados prolongados)">+2</button>
+            <button class="mz-mas-btn" data-acao="mas-seg" data-n="6" ${ds} title="Ação muito longa — cena inteira">+6</button>
+            <button class="mz-mas-btn mz-mas-btn--sutil" data-acao="mas-seg-zerar" ${ds} title="Zerar o relógio e a contagem de cenas">↺</button>
+            ${m.avisoCena ? `<span class="mz-mas-res mz-mas-res--perigo">🕯 Uma cena se passou!</span>` : ''}
+          </span>
+          <span class="mz-masp-grupo" title="Descanso na masmorra — dormir gasta 1 ração por personagem (parceiros também)">
+            ${ctlDesc}
+            <button class="mz-mas-btn" data-acao="mas-rolar-descanso" ${ds}
+                    title="Dormir = 1 ração por personagem + DUAS rolagens de encontro (dado já com aberturas, barricada e guardas)">🛏 Descanso (2 × 1d${dadoDesc})</button>
+            ${resDesc}
+          </span>
+        </div>
+      </div>`;
+  }
+
   function construirCena(c, si, ci) {
     let critHtml = '';
     if (c.criaturas.length === 0) {
@@ -982,6 +1326,7 @@
         </div>
         <div class="mz-cena-corpo">
           ${construirBarraAmbientes(c, si, ci)}
+          ${construirMasmorra(c, si, ci)}
           <div class="mz-campo mz-notas-campo">
             ${barraGrifo(`data-s="${si}" data-c="${ci}"`, { ler: true })}
             <div class="mz-ataques mz-notas-rich" contenteditable="true" spellcheck="true"
@@ -1767,6 +2112,39 @@
       dados.painelAmbientes = novos;
       salvar(); render(); return;
     }
+    // ── masmorra ("Dungeon?") da cena ──
+    if (acao === 'mas-toggle') {
+      const m = masmorraDe(pegarCena(alvo));
+      m.ativo = !m.ativo;
+      if (m.ativo) m.aberto = true;
+      salvar(); render(); return;
+    }
+    if (acao === 'mas-recolher') {
+      const m = masmorraDe(pegarCena(alvo));
+      m.aberto = !m.aberto;
+      salvar(); render(); return;
+    }
+    if (acao === 'mas-barulho') {
+      const m = masmorraDe(pegarCena(alvo));
+      if (MAS_BARULHOS.indexOf(alvo.dataset.bar) >= 0) m.barulho = alvo.dataset.bar;
+      salvar(); render(); return;
+    }
+    if (acao === 'mas-seg') {
+      const m = masmorraDe(pegarCena(alvo));
+      const cenasAntes = Math.floor(m.segmentos / 6);
+      m.segmentos += Math.max(1, parseInt(alvo.dataset.n, 10) || 1);
+      m.avisoCena = Math.floor(m.segmentos / 6) > cenasAntes;   // fechou uma cena agora?
+      salvar(); render(); return;
+    }
+    if (acao === 'mas-seg-zerar') {
+      const m = masmorraDe(pegarCena(alvo));
+      m.segmentos = 0; m.avisoCena = false;
+      salvar(); render(); return;
+    }
+    if (acao === 'mas-rolar-encontro') { rolarEncontroMasmorra(alvo); return; }
+    if (acao === 'mas-rolar-ideia')    { rolarIdeiaMasmorra(alvo);    return; }
+    if (acao === 'mas-rolar-descanso') { rolarDescansoMasmorra(alvo); return; }
+
     if (acao === 'toggle-combate-viagem') {
       dados.combateViagem = !dados.combateViagem;
       salvar(); render(); return;
@@ -2019,6 +2397,21 @@
 
     if (campo === 'nome-sessao')  { pegarSessao(el).nome  = el.value; salvar(); return; }
     if (campo === 'nome-cena')    { pegarCena(el).nome    = el.value; salvar(); return; }
+
+    // masmorra ("Dungeon?") — controles do descanso. Guardas é um número
+    // digitável (10 heróis? NPCs?): atualiza o dado do botão SEM re-render,
+    // senão o campo perde o foco a cada tecla. Os demais re-renderizam.
+    if (campo === 'mas-guardas') {
+      const m = masmorraDe(pegarCena(el));
+      m.guardas = Math.min(99, Math.max(0, parseInt(el.value, 10) || 0));
+      salvar(); atualizarDadoDescanso(el); return;
+    }
+    if (campo === 'mas-aberturas' || campo === 'mas-barricada') {
+      const m = masmorraDe(pegarCena(el));
+      if (campo === 'mas-barricada') m.barricada = el.checked;
+      else m.aberturas = Math.max(0, parseInt(el.value, 10) || 0);
+      salvar(); render(); return;
+    }
     if (campo === 'notas-sessao' || campo === 'notas-cena') {
       const owner = (campo === 'notas-sessao') ? pegarSessao(el) : pegarCena(el);
       owner.notasHtml = el.innerHTML;
@@ -2132,6 +2525,10 @@
         const btn = e.target.closest('[data-grifo]');
         if (!btn) return;
         e.preventDefault();                       // mantém a seleção viva
+        if (btn.dataset.grifo === 'descrever') {
+          if (window.GA_Tip) window.GA_Tip.editarSelecao(ed, sincronizar);
+          return;
+        }
         if (aplicarGrifo(ed, btn.dataset.grifo, btn.dataset.cor)) sincronizar();
       });
       // colar limpo (junta as quebras duras de PDF, igual às caixas inline)
@@ -2274,11 +2671,17 @@
   }
 
   function aoMousedownToolbar(e) {
-    const btn = e.target.closest('[data-acao="grifar"], [data-acao="desgrifar"]');
+    const btn = e.target.closest('[data-acao="grifar"], [data-acao="desgrifar"], [data-acao="descrever"]');
     if (!btn) return;
     e.preventDefault(); // mantém a seleção viva
     const editor = btn.closest('.mz-campo').querySelector('.mz-ataques');
     if (!editor) return;
+    if (btn.dataset.acao === 'descrever') {
+      // 📖 pendura uma descrição no trecho selecionado (GA_Tip abre o
+      // modal; ao concluir, salva o HTML da caixa como qualquer edição)
+      if (window.GA_Tip) window.GA_Tip.editarSelecao(editor, () => salvarRich(editor));
+      return;
+    }
     if (aplicarGrifo(editor, btn.dataset.acao, btn.dataset.cor)) salvarRich(editor);
   }
 
@@ -2485,6 +2888,55 @@
     salvar();
     render();
     renderLog();
+  }
+
+  // ── MASMORRA ("Dungeon?") — rolagens da cena ─────────────────────
+  // Encontro aleatório (dado conforme o barulho), ideia de masmorra
+  // (Tabela 6-2) e descanso (2 rolagens). Tudo vai para o log lateral.
+  function _masLog(c, pericia, formula) {
+    dados.log.push({
+      criatura: '🏰 ' + (c.nome || 'Masmorra'),
+      pericia:  pericia,
+      formula:  formula,
+      tipo:     'masmorra',
+    });
+    while (dados.log.length > MAX_LOG) dados.log.shift();
+  }
+
+  function rolarEncontroMasmorra(alvo) {
+    const c = pegarCena(alvo);
+    const m = masmorraDe(c);
+    const b = masBarulhoInfo(m.barulho);
+    const r = rolarDado(b.dado);
+    m.ultimoEncontro = { lados: b.dado, res: r, barulho: b.chave };
+    _masLog(c, `Encontro aleatório · ${b.rot}`,
+      `1d${b.dado} (<strong>${r}</strong>) → ${r === 1 ? '<strong>⚠ ENCONTRO!</strong>' : 'sem encontro'}`);
+    salvar(); render(); renderLog();
+  }
+
+  function rolarIdeiaMasmorra(alvo) {
+    const G = window.GA_MASMORRA;
+    if (!G) return;
+    const c = pegarCena(alvo);
+    const m = masmorraDe(c);
+    const d = rolarDado(20);
+    m.ultimaIdeia = { d: d, txt: G.IDEIAS[d - 1] || '' };
+    _masLog(c, 'Ideia de masmorra (Tabela 6-2)',
+      `1d20 (<strong>${d}</strong>) → ${esc(m.ultimaIdeia.txt)}`);
+    salvar(); render(); renderLog();
+  }
+
+  function rolarDescansoMasmorra(alvo) {
+    const c = pegarCena(alvo);
+    const m = masmorraDe(c);
+    const lados = masDadoDescanso(m);
+    const r1 = rolarDado(lados), r2 = rolarDado(lados);
+    m.ultimoDescanso = { lados: lados, r1: r1, r2: r2 };
+    const enc = (r1 === 1 ? 1 : 0) + (r2 === 1 ? 1 : 0);
+    _masLog(c, 'Descanso (2 rolagens de encontro)',
+      `2 × 1d${lados}: <strong>${r1}</strong> e <strong>${r2}</strong> → ` +
+      (enc ? `<strong>⚠ ${enc} encontro${enc > 1 ? 's' : ''}!</strong>` : 'noite tranquila'));
+    salvar(); render(); renderLog();
   }
 
   // ── ROLADOR DE CRÍTICOS (efeitos & falhas, regras opcionais) ─────
@@ -3958,6 +4410,11 @@
             if (it && a.nota && a.nota.trim()) txt += `\n     📝 ${it.nome}: ${a.nota.trim().replace(/\n/g, ' ')}`;
           });
         }
+        if (c.masmorra && c.masmorra.ativo) {
+          const b = masBarulhoInfo(c.masmorra.barulho);
+          const seg = Math.max(0, parseInt(c.masmorra.segmentos, 10) || 0);
+          txt += `\n  🏰 Dungeon: ligada · barulho ${b.rot} (1d${b.dado}) · relógio ${seg % 6}/6 segmentos (${Math.floor(seg / 6)} cena(s) completa(s))`;
+        }
         if ((c.notas || '').trim()) txt += `\n  ${c.notas.trim()}`;
         if (!c.criaturas.length && !(c.perigos && c.perigos.length)) txt += `\n    (sem criaturas)`;
         c.criaturas.forEach(cr => { txt += '\n' + _txtCriatura(cr); });
@@ -3990,7 +4447,9 @@
         criaturas: [],
         perigos: [],
         ambientes: normalizarAmbientes(c.ambientes),
+        masmorra: (c.masmorra && typeof c.masmorra === 'object') ? c.masmorra : undefined,
       };
+      normalizarMasmorra(cena);
       (Array.isArray(c.criaturas) ? c.criaturas : []).forEach(cr => {
         if (!cr || typeof cr !== 'object') return;
         cr.id = uid('cr');          // reid para nunca colidir com o que já existe

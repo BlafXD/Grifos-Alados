@@ -1608,12 +1608,13 @@ footer {
   cursor: help;
   outline: none;
 }
-.ga-tip::after {
-  content: attr(data-tip);
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 8px);
-  transform: translateX(-50%);
+/* O balão em si é um elemento único no <body> ("portal"), criado e
+   posicionado pelo itens-descricoes.js com position:fixed. Antes era um
+   ::after do próprio termo — dentro de caixas com rolagem (ex.: o texto
+   rico da aba Combates), o overflow recortava o balão e só a borda
+   aparecia. Como portal, nenhum contêiner consegue cortá-lo. */
+.ga-tip-pop {
+  position: fixed;
   width: max-content;
   max-width: 280px;
   background: var(--ink);
@@ -1630,31 +1631,189 @@ footer {
   border: 1px solid var(--gold);
   box-shadow: 0 5px 16px rgba(0,0,0,0.45);
   white-space: normal;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.13s ease;
-  z-index: 60;
+  z-index: 10050;          /* acima dos modais (1000) e da nav (9999) */
   pointer-events: none;
 }
-.ga-tip::before {
-  content: '';
+.ga-tip-pop[hidden] { display: none; }
+.ga-tip-pop-seta {
   position: absolute;
-  left: 50%;
-  bottom: calc(100% + 2px);
-  transform: translateX(-50%);
+  top: 100%;
+  margin-left: -6px;
   border: 6px solid transparent;
   border-top-color: var(--gold);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.13s ease;
-  z-index: 61;
+}
+/* sem espaço acima do termo → o balão abre abaixo e a seta aponta p/ cima */
+.ga-tip-pop--abaixo .ga-tip-pop-seta {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: var(--gold);
+}
+/* nuvem FIXADA por clique: aceita o mouse e deixa selecionar/copiar */
+.ga-tip-pop--fixado {
+  pointer-events: auto;
+  user-select: text;
+  cursor: auto;
+}
+.ga-tip-pop-pin { display: none; }
+.ga-tip-pop--fixado .ga-tip-pop-pin {
+  display: block;
+  margin-top: 0.4rem;
+  padding-top: 0.3rem;
+  border-top: 1px dotted rgba(244, 232, 208, 0.4);
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.68rem;
+  opacity: 0.75;
+  user-select: none;
+}
+
+/* ── CAMPOS RICOS COM 📖 DESCRIÇÃO (Ramos, Viagem, Bases) ──────────
+   O textarea virou contenteditable para aceitar a descrição pendurada
+   (span.ga-tip) — cada aba mantém a classe visual antiga (.an-texto,
+   .vg-textarea, .bs-textarea); aqui ficam só o embrulho, o placeholder
+   e o 📖 flutuante (irmão do ⛶ das caixas do Combate). */
+.ga-rich-wrap { position: relative; flex: 1 1 auto; min-width: 0; }
+.ga-rich-wrap .ga-rich {
+  padding-right: 2.2rem;      /* espaço para o 📖 */
+  overflow-wrap: break-word;
+  cursor: text;
+}
+.ga-rich[data-ph]:empty::before {
+  content: attr(data-ph);
+  color: var(--ink-faded);
+  opacity: 0.8;
   pointer-events: none;
 }
-.ga-tip:hover::after, .ga-tip:focus::after,
-.ga-tip:hover::before, .ga-tip:focus::before {
-  opacity: 1;
-  visibility: visible;
+.ga-rich-btn {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.35rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 0.85rem;
+  line-height: 1;
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-radius: 2px;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.12s ease, background 0.12s ease;
 }
+.ga-rich-wrap:hover .ga-rich-btn,
+.ga-rich-btn:hover,
+.ga-rich-btn:focus { opacity: 1; }
+.ga-rich-btn:hover { background: var(--gold-pale, var(--parchment3)); }
+
+/* ── MODAL "📖 Descrição do trecho" (js/descricoes-custom.js) ──────
+   Escrever/buscar uma descrição e pendurá-la num trecho selecionado
+   (vira <span class="ga-tip" data-tip="…">). Usado pelo Combate, Mapa
+   e pelos campos ricos dos Ramos, da Viagem e das Bases. */
+.gd-termo {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  margin: 0 0 0.6rem;
+}
+.gd-termo strong { color: var(--rust-dark); }
+.gd-busca {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.gd-busca:focus { outline: 1px solid var(--rust); }
+.gd-resultados {
+  max-height: 11rem;
+  overflow-y: auto;
+  border: 1px solid var(--parchment3);
+  margin: 0.3rem 0 0.6rem;
+  background: var(--parchment2);
+}
+.gd-resultados:empty { display: none; }
+.gd-res-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.32rem 0.55rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--parchment3);
+  cursor: pointer;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+.gd-res-item:hover { background: var(--parchment3); }
+.gd-res-item .gd-res-fonte {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  margin-right: 0.4rem;
+}
+.gd-res-item .gd-res-previa {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--ink-faded);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gd-texto {
+  width: 100%;
+  min-height: 7rem;
+  resize: vertical;
+  padding: 0.5rem 0.6rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.gd-texto:focus { outline: 1px solid var(--rust); }
+.gd-dica {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--ink-faded);
+  margin: 0.4rem 0 0.7rem;
+}
+.gd-acoes {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.gd-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  border: 1px solid var(--rust);
+  background: var(--rust-dark);
+  color: var(--parchment);
+}
+.gd-btn:hover { background: var(--rust); }
+.gd-btn--remover {
+  margin-right: auto;
+  background: var(--parchment);
+  color: #8b1020;
+  border-color: #8b1020;
+}
+.gd-btn--remover:hover { background: #8b1020; color: var(--parchment); }
 
 /* Bloco de descrição RECOLHÍVEL (aba de pergaminho) — Loja e Recompensas.
    Fechado por padrão; o mestre abre só quando quiser ler. */
@@ -1698,3 +1857,123 @@ footer {
   color: var(--ink-faded);
   text-align: justify;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   MESA AO VIVO (📡) — sync-mestre.js / sync-jogador.js / modo-jogador.js
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* botão flutuante do mestre (canto inferior direito, discreto) */
+.ga-sync-btn {
+  position: fixed;
+  right: 0.8rem;
+  bottom: 0.8rem;
+  z-index: 9000;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(26, 16, 8, 0.25);
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.ga-sync-btn:hover { opacity: 1; }
+.ga-sync-btn--on   { border-color: #1f7a6b; box-shadow: 0 0 0 2px rgba(31, 122, 107, 0.35); }
+.ga-sync-btn--erro { border-color: #8b1020; box-shadow: 0 0 0 2px rgba(139, 16, 32, 0.35); }
+
+/* modal do 📡 */
+.ga-sync-p { font-family: 'Crimson Pro', serif; font-size: 0.95rem; line-height: 1.5; margin: 0.4rem 0; }
+.ga-sync-p--dica { font-style: italic; color: var(--ink-faded); }
+.ga-sync-p code { background: var(--parchment3); padding: 0 0.25rem; }
+.ga-sync-campo {
+  display: block;
+  margin: 0.45rem 0;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+.ga-sync-campo input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.2rem;
+  padding: 0.42rem 0.55rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.ga-sync-campo input:focus { outline: 1px solid var(--rust); }
+.ga-sync-mini {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.74rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink-faded);
+}
+.ga-sync-erro {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: #8b1020;
+  background: rgba(139, 16, 32, 0.07);
+  border-left: 3px solid #8b1020;
+  padding: 0.35rem 0.55rem;
+}
+
+/* chip de estado da página dos jogadores (rodapé fixo) */
+.ga-jog-chip {
+  position: fixed;
+  left: 50%;
+  bottom: 0.55rem;
+  transform: translateX(-50%);
+  z-index: 9000;
+  max-width: min(92vw, 34rem);
+  padding: 0.3rem 0.8rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim, var(--ink-faded));
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(26, 16, 8, 0.25);
+  text-align: center;
+}
+.ga-jog-chip--on  { border-color: #1f7a6b; }
+.ga-jog-chip--off { border-color: var(--ink-faded); color: var(--ink-faded); }
+
+/* MODO JOGADOR — esconde os controles de mestre nas abas só-leitura.
+   (O bloqueio de verdade é o modo-jogador.js + as regras do banco;
+   isto aqui é para a página nem oferecer o que não se pode usar.) */
+.ga-jogador .loja-gerar-wrapper,
+.ga-jogador .log-loja,
+.ga-jogador .aj-cabecalho,
+.ga-jogador .aj-corpo,
+.ga-jogador .vg-backup,
+.ga-jogador .bs-backup,
+.ga-jogador .vg-add,
+.ga-jogador .bs-add,
+.ga-jogador .vg-del,
+.ga-jogador .vg-step,
+.ga-jogador .vg-mover,
+.ga-jogador .vg-atalho,
+.ga-jogador .vg-pv-full,
+.ga-jogador .bs-mini,
+.ga-jogador .bs-seg-btn,
+.ga-jogador .bs-add-linha,
+.ga-jogador .ga-rich-btn { display: none !important; }
+/* campos que sobram viram vitrine: sem aparência de formulário ativo */
+.ga-jogador section:not(#perigos) select,
+.ga-jogador section:not(#perigos) input[type="checkbox"],
+.ga-jogador section:not(#perigos) input[type="number"] { pointer-events: none; opacity: 0.75; }
+.ga-jogador section:not(#perigos) .ga-rich { cursor: default; }

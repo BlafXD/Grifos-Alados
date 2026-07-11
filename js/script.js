@@ -94,6 +94,96 @@ window.htmlParaTexto = function (html) {
   return txt.replace(/ /g, ' ').replace(/[ \t]+\n/g, '\n').trim();
 };
 
+// ── TEXTO RICO (contenteditable) — sanitização compartilhada ─────────
+// Mantém só formatação inline segura e preserva as descrições penduradas
+// (📖: span.ga-tip[data-tip]). Vital ao renderizar conteúdo vindo de um
+// backup .json (evita HTML malicioso). Usado pelo Mapa, Ramos, Viagem e Bases.
+window.GA_limparHtml = (function () {
+  const TAGS_OK = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, BR: 1, DIV: 1, P: 1, SPAN: 1 };
+  function filtrarEstilo(s) {
+    const ok = [];
+    String(s || '').split(';').forEach(par => {
+      const i = par.indexOf(':');
+      if (i < 0) return;
+      const prop = par.slice(0, i).trim().toLowerCase();
+      const val = par.slice(i + 1).trim();
+      if (/^(font-size|font-weight|font-style|text-decoration|color)$/.test(prop) &&
+          !/url\(|expression|javascript:/i.test(val)) ok.push(prop + ':' + val);
+    });
+    return ok.join(';');
+  }
+  return function (html) {
+    const cont = document.createElement('div');
+    cont.innerHTML = String(html == null ? '' : html);
+    (function processar(pai) {
+      let n = pai.firstChild;
+      while (n) {
+        const prox = n.nextSibling;
+        if (n.nodeType === 1) {
+          if (!TAGS_OK[n.tagName]) {                 // tag não permitida → desembrulha
+            while (n.firstChild) pai.insertBefore(n.firstChild, n);
+            pai.removeChild(n);
+            processar(pai);
+            return;
+          }
+          const estilo = filtrarEstilo(n.getAttribute('style') || '');
+          // preserva as descrições penduradas (📖): span.ga-tip[data-tip]
+          // — a nuvem é desenhada pelo itens-descricoes.js (texto puro)
+          const ehTip = n.tagName === 'SPAN' && /(^|\s)ga-tip(\s|$)/.test(n.className || '');
+          const tip = ehTip ? n.getAttribute('data-tip') : null;
+          while (n.attributes.length) n.removeAttribute(n.attributes[0].name);
+          if (estilo) n.setAttribute('style', estilo);
+          if (ehTip && tip) {
+            n.className = 'ga-tip';
+            n.setAttribute('data-tip', tip);
+            n.setAttribute('tabindex', '0');
+          }
+          processar(n);
+        } else if (n.nodeType !== 3) {
+          pai.removeChild(n);                          // comentários etc.
+        }
+        n = prox;
+      }
+    })(cont);
+    return cont.innerHTML;
+  };
+})();
+
+// ── CAMPOS RICOS COM 📖 DESCRIÇÃO (Ramos, Viagem, Bases) ─────────────
+// Handlers compartilhados: cada aba os registra nos listeners da própria
+// seção. Ao concluir qualquer mudança, disparam 'input' no campo — o
+// handler de input da aba salva, como numa digitação normal.
+
+// Clique no 📖 flutuante (.ga-rich-btn): mousedown + preventDefault para
+// NÃO perder a seleção (o truque do aoMousedownToolbar do Combate).
+window.GA_richDescMousedown = function (e) {
+  const btn = e.target.closest('[data-rich-desc]');
+  if (!btn) return;
+  e.preventDefault();
+  const wrap = btn.closest('.ga-rich-wrap');
+  const editor = wrap && wrap.querySelector('.ga-rich');
+  if (!editor || !window.GA_Tip) return;
+  const abriu = window.GA_Tip.editarSelecao(editor, () => {
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  if (!abriu) editor.focus();   // sem trecho selecionado: devolve o cursor
+};
+
+// Colar limpo nos campos ricos: junta as quebras "duras" de PDF e insere
+// como texto puro (sem arrastar HTML de fora).
+window.GA_richPaste = function (e) {
+  const editor = e.target.closest('.ga-rich');
+  if (!editor) return;
+  e.preventDefault();
+  const limpo = window.GA_limparQuebras((e.clipboardData || window.clipboardData).getData('text/plain'));
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  sel.deleteFromDocument();
+  sel.getRangeAt(0).insertNode(document.createTextNode(limpo));
+  sel.collapseToEnd();
+  editor.dispatchEvent(new Event('input', { bubbles: true }));
+};
+
 // Abre um modal genérico com o HTML informado. Fecha ao clicar fora,
 // no botão [data-ga-fechar] ou com Esc. Retorna o elemento do overlay.
 window.GA_abrirModal = function (htmlInterno) {

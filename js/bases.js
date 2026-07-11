@@ -58,7 +58,7 @@
     return {
       id: uid('base'), aberta: true, nome: 'Base ' + n,
       tipo: '', porte: 'minima', sitio: false, segAjuste: 0,
-      residentes: '', inventario: '',
+      residentes: '', residentesHtml: '', inventario: '', inventarioHtml: '',
       comodos: [], mobilias: [],
     };
   }
@@ -73,6 +73,12 @@
     if (typeof b.segAjuste !== 'number') b.segAjuste = parseInt(b.segAjuste, 10) || 0;
     if (typeof b.residentes !== 'string') b.residentes = '';
     if (typeof b.inventario !== 'string') b.inventario = '';
+    // residentes/inventário: texto rico (grifos e 📖) com espelho PURO nos
+    // campos antigos (o export .txt lê o puro). Migração idempotente.
+    b.residentesHtml = (typeof b.residentesHtml === 'string')
+      ? window.GA_limparHtml(b.residentesHtml) : window.GA_nl2br(b.residentes);
+    b.inventarioHtml = (typeof b.inventarioHtml === 'string')
+      ? window.GA_limparHtml(b.inventarioHtml) : window.GA_nl2br(b.inventario);
     if (!Array.isArray(b.comodos)) b.comodos = [];
     if (!Array.isArray(b.mobilias)) b.mobilias = [];
     b.comodos = b.comodos.filter(c => c && comodoDef(c.chave));
@@ -323,17 +329,26 @@
       </div>`;
 
     // ── Residentes & Inventário ──
+    const tipDesc = 'Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar';
     const blocoTextos = `
       <div class="bs-bloco bs-bloco--duplo">
         <div class="bs-meio">
           <h3 class="bs-bloco-tit">🧑‍🤝‍🧑 Residentes</h3>
-          <textarea class="bs-textarea" data-campo="residentes" ${ds}
-            placeholder="Quem mora ou se beneficia da base — um por linha…">${esc(b.residentes)}</textarea>
+          <div class="ga-rich-wrap">
+            <div class="bs-textarea ga-rich" contenteditable="true" spellcheck="true"
+                 data-campo="residentes" ${ds}
+                 data-ph="Quem mora ou se beneficia da base — um por linha…">${b.residentesHtml}</div>
+            <button type="button" class="ga-rich-btn" data-rich-desc title="${tipDesc}">📖</button>
+          </div>
         </div>
         <div class="bs-meio">
           <h3 class="bs-bloco-tit">🎒 Inventário da base</h3>
-          <textarea class="bs-textarea" data-campo="inventario" ${ds}
-            placeholder="Itens deixados na base pelos jogadores, suprimentos, tesouros guardados…">${esc(b.inventario)}</textarea>
+          <div class="ga-rich-wrap">
+            <div class="bs-textarea ga-rich" contenteditable="true" spellcheck="true"
+                 data-campo="inventario" ${ds}
+                 data-ph="Itens deixados na base pelos jogadores, suprimentos, tesouros guardados…">${b.inventarioHtml}</div>
+            <button type="button" class="ga-rich-btn" data-rich-desc title="${tipDesc}">📖</button>
+          </div>
         </div>
       </div>`;
 
@@ -422,8 +437,16 @@
     if (!b) return;
 
     if (campo === 'nome')       { b.nome = el.value; salvar(); return; }
-    if (campo === 'residentes') { b.residentes = el.value; salvar(); return; }
-    if (campo === 'inventario') { b.inventario = el.value; salvar(); return; }
+    if (campo === 'residentes') {
+      b.residentesHtml = el.innerHTML;
+      b.residentes = window.htmlParaTexto(el.innerHTML);   // espelho puro (export .txt)
+      salvar(); return;
+    }
+    if (campo === 'inventario') {
+      b.inventarioHtml = el.innerHTML;
+      b.inventario = window.htmlParaTexto(el.innerHTML);
+      salvar(); return;
+    }
     if (campo === 'segAjuste')  { b.segAjuste = parseInt(el.value, 10) || 0; salvar(); atualizarSeg(el, b); return; }
   }
 
@@ -558,6 +581,9 @@
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoEntrada);
     secao.addEventListener('change', aoMudar);
+    // campos ricos: 📖 descrição pendurada + colar limpo (handlers globais)
+    secao.addEventListener('mousedown', window.GA_richDescMousedown);
+    secao.addEventListener('paste', window.GA_richPaste);
     window.addEventListener('beforeunload', salvarAgora);
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') salvarAgora(); });
   }
