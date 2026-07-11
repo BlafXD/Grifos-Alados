@@ -304,6 +304,10 @@
   resize: vertical;
 }
 .vg-textarea:focus { outline: 1px solid var(--rust); }
+/* como caixa rica (contenteditable) a altura vem do conteúdo — os mínimos
+   reproduzem os rows="2"/"3" dos textareas antigos */
+.vg-textarea.ga-rich { min-height: 3.4rem; }
+.vg-textarea--parada.ga-rich { min-height: 4.7rem; }
 
 /* ── PARADAS ───────────────────────────────────────────────────────── */
 .vg-parada {

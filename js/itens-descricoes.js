@@ -171,7 +171,127 @@ window.ItensDescricoes = (function () {
          + `<div class="ga-desc-corpo">${h}</div></details>`;
   }
 
+  // ── Balão flutuante ("portal") dos termos .ga-tip ──────────────────
+  //  O desenho antigo era 100% CSS (::after acima do termo), mas dentro
+  //  de caixas com rolagem — como o texto rico da aba Combates — o
+  //  overflow recortava o balão (só a barrinha aparecia). Agora um único
+  //  elemento no <body>, posicionado com position:fixed, mostra a
+  //  definição: nenhum contêiner consegue cortá-lo. Os <span class="ga-tip">
+  //  já salvos nas fichas continuam valendo — o gatilho é delegado.
+  let _pop = null;
+  let _tipAtual = null;   // o <span> cuja definição está visível
+  let _fixado = false;    // nuvem FIXADA por clique (para copiar o texto)
+
+  function _popEl() {
+    if (_pop) return _pop;
+    _pop = document.createElement('div');
+    _pop.className = 'ga-tip-pop';
+    _pop.setAttribute('role', 'tooltip');
+    _pop.hidden = true;
+    const txt = document.createElement('div');
+    txt.className = 'ga-tip-pop-txt';
+    const pin = document.createElement('span');
+    pin.className = 'ga-tip-pop-pin';
+    pin.textContent = '📌 fixada — clique fora (ou Esc) para soltar';
+    const seta = document.createElement('span');
+    seta.className = 'ga-tip-pop-seta';
+    _pop.appendChild(txt);
+    _pop.appendChild(pin);
+    _pop.appendChild(seta);
+    document.body.appendChild(_pop);
+    return _pop;
+  }
+
+  function _mostrarTip(span) {
+    const def = span.getAttribute('data-tip');
+    if (!def) return;
+    const pop = _popEl();
+    _tipAtual = span;
+    pop.querySelector('.ga-tip-pop-txt').textContent = def;
+    pop.classList.remove('ga-tip-pop--abaixo');
+    pop.hidden = false;
+
+    // mede no canto (0,0), para o max-width valer sem a borda da janela
+    pop.style.left = '0px';
+    pop.style.top  = '0px';
+    const r  = span.getBoundingClientRect();
+    const vw = document.documentElement.clientWidth;
+    const pw = pop.offsetWidth;
+    const ph = pop.offsetHeight;
+
+    let left = Math.round(r.left + r.width / 2 - pw / 2);
+    left = Math.max(6, Math.min(left, vw - pw - 6));
+
+    let top = Math.round(r.top - ph - 8);      // preferência: acima do termo
+    if (top < 6) {                             // sem espaço → abre abaixo
+      top = Math.round(r.bottom + 8);
+      pop.classList.add('ga-tip-pop--abaixo');
+    }
+
+    // a seta persegue o centro do termo mesmo com o balão preso na borda
+    const seta = pop.querySelector('.ga-tip-pop-seta');
+    const alvoX = r.left + r.width / 2 - left;
+    seta.style.left = Math.round(Math.max(10, Math.min(alvoX, pw - 10))) + 'px';
+
+    pop.style.left = left + 'px';
+    pop.style.top  = top + 'px';
+  }
+
+  function _esconderTip() {
+    if (_pop) { _pop.hidden = true; _pop.classList.remove('ga-tip-pop--fixado'); }
+    _tipAtual = null;
+    _fixado = false;
+  }
+
+  // Fixa a nuvem no termo (clique): ela ganha ponteiro/seleção de texto
+  // para o mestre poder COPIAR o conteúdo. Clique fora ou Esc solta.
+  function _fixarTip(span) {
+    _mostrarTip(span);                          // garante a nuvem visível
+    _pop.classList.add('ga-tip-pop--fixado');   // rodapé "📌 fixada" aparece…
+    _mostrarTip(span);                          // …então re-mede e reposiciona
+    _fixado = true;
+  }
+
+  if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+    document.addEventListener('mouseover', e => {
+      if (_fixado) return;   // fixada por clique: o mouse não a dispensa
+      const alvo = e.target && e.target.closest ? e.target.closest('.ga-tip') : null;
+      if (alvo) _mostrarTip(alvo);
+      else if (_tipAtual) _esconderTip();
+    });
+    // clique num termo FIXA a nuvem (de novo no mesmo termo = solta);
+    // clique dentro da nuvem fixada não faz nada (selecionar/copiar)
+    document.addEventListener('click', e => {
+      const alvo = e.target && e.target.closest ? e.target.closest('.ga-tip') : null;
+      if (alvo) {
+        if (_fixado && _tipAtual === alvo) { _esconderTip(); return; }
+        _fixarTip(alvo);
+        return;
+      }
+      if (_fixado && _pop && _pop.contains(e.target)) return;
+      if (_fixado) _esconderTip();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && _fixado) _esconderTip();
+    });
+    // digitou em qualquer lugar → solta a nuvem (evita nuvem órfã ao editar)
+    document.addEventListener('input', () => { if (_fixado) _esconderTip(); }, true);
+    // teclado: os termos têm tabindex="0"
+    document.addEventListener('focusin', e => {
+      if (_fixado) return;
+      const alvo = e.target && e.target.closest ? e.target.closest('.ga-tip') : null;
+      if (alvo) _mostrarTip(alvo);
+    });
+    document.addEventListener('focusout', () => { if (_tipAtual && !_fixado) _esconderTip(); });
+    // rolagem/redimensionamento deslocam o termo — o balão some em vez
+    // de ficar flutuando solto (capture pega o scroll de qualquer caixa);
+    // fixada, ela permanece, para dar tempo de copiar
+    document.addEventListener('scroll', () => { if (_tipAtual && !_fixado) _esconderTip(); }, true);
+    window.addEventListener('resize', () => { if (_tipAtual && !_fixado) _esconderTip(); });
+  }
+
   return { get, html, bloco, marcar, norm,
+           fecharNuvem: _esconderTip,   // fecha/solta a nuvem (usado pelo GA_Tip)
            _total: Object.keys(DESC).length + Object.keys(EXTRA).length,
            _glossario: GLOSSARIO };
 })();

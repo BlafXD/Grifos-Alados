@@ -123,45 +123,9 @@
   // ── TEXTO RICO ────────────────────────────────────────────────────
   // Sanitiza o HTML do corpo: mantém só formatação inline segura. Vital
   // ao renderizar conteúdo vindo de um backup .json (evita HTML malicioso).
-  const TAGS_OK = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, BR: 1, DIV: 1, P: 1, SPAN: 1 };
-  function filtrarEstilo(s) {
-    const ok = [];
-    String(s || '').split(';').forEach(par => {
-      const i = par.indexOf(':');
-      if (i < 0) return;
-      const prop = par.slice(0, i).trim().toLowerCase();
-      const val = par.slice(i + 1).trim();
-      if (/^(font-size|font-weight|font-style|text-decoration|color)$/.test(prop) &&
-          !/url\(|expression|javascript:/i.test(val)) ok.push(prop + ':' + val);
-    });
-    return ok.join(';');
-  }
-  function limparHtml(html) {
-    const cont = document.createElement('div');
-    cont.innerHTML = String(html == null ? '' : html);
-    (function processar(pai) {
-      let n = pai.firstChild;
-      while (n) {
-        const prox = n.nextSibling;
-        if (n.nodeType === 1) {
-          if (!TAGS_OK[n.tagName]) {                 // tag não permitida → desembrulha
-            while (n.firstChild) pai.insertBefore(n.firstChild, n);
-            pai.removeChild(n);
-            processar(pai);
-            return;
-          }
-          const estilo = filtrarEstilo(n.getAttribute('style') || '');
-          while (n.attributes.length) n.removeAttribute(n.attributes[0].name);
-          if (estilo) n.setAttribute('style', estilo);
-          processar(n);
-        } else if (n.nodeType !== 3) {
-          pai.removeChild(n);                          // comentários etc.
-        }
-        n = prox;
-      }
-    })(cont);
-    return cont.innerHTML;
-  }
+  // A implementação virou o global GA_limparHtml (script.js) — os campos
+  // ricos dos Ramos, da Viagem e das Bases usam a mesma.
+  const limparHtml = window.GA_limparHtml;
   // a seleção atual está dentro deste corpo editável?
   function selecaoDentro(corpo) {
     const sel = window.getSelection();
@@ -341,6 +305,7 @@
         <button class="mp-fmt-btn" data-mp-fmt="i" title="Itálico (só no trecho selecionado)"><i>I</i></button>
         <button class="mp-fmt-btn" data-mp-fmt="menor" title="Diminuir o trecho selecionado">A−</button>
         <button class="mp-fmt-btn" data-mp-fmt="maior" title="Aumentar o trecho selecionado">A+</button>
+        <button class="mp-fmt-btn" data-mp-fmt="desc" title="Pendurar uma descrição no trecho selecionado — a nuvem aparece ao passar o mouse; clique no trecho para fixá-la e copiar">📖</button>
         <label class="mp-fmt-cor" title="Cor do bloco"><input type="color" class="mp-no-cor" value="${cor}" ${dis}></label>
         <span class="mp-fmt-sep"></span>
         <button class="mp-fmt-btn ${no.recolhido ? 'mp-fmt-on' : ''}" data-mp-fmt="recolher" title="Recolher / expandir">${no.recolhido ? '⊞' : '⊟'}</button>
@@ -652,6 +617,15 @@
     const corpo = elNo[id] && elNo[id].querySelector('.mp-no-texto');
     if (!corpo) return;
     if (!selecaoDentro(corpo)) { corpo.focus(); return; }   // precisa de cursor/seleção no texto
+    if (tipo === 'desc') {
+      // 📖 descrição pendurada — o modal é assíncrono; salva ao concluir
+      if (window.GA_Tip) window.GA_Tip.editarSelecao(corpo, () => {
+        no.texto = corpo.innerHTML;
+        desenharLigacoes();
+        salvar();
+      });
+      return;
+    }
     if (tipo === 'b') document.execCommand('bold');
     else if (tipo === 'i') document.execCommand('italic');
     else if (tipo === 'maior') envolverSelecao('1.18em');
@@ -1099,8 +1073,11 @@
       const no = {
         id: uid('n'), cat, w: LARGURA_NO, h: 0,
         titulo: typeof ramo.titulo === 'string' ? ramo.titulo : '',
-        // o corpo do Ramo é texto puro → vira HTML seguro (com quebras de linha)
-        texto: window.GA_nl2br ? window.GA_nl2br(ramo.texto || '') : esc(ramo.texto || ''),
+        // o corpo do Ramo agora também é rico (textoHtml, com grifos e 📖)
+        // — vem como está (o normalizar/render sanitiza). Ramos antigos, só
+        // com texto puro, viram HTML seguro com as quebras de linha.
+        texto: (typeof ramo.textoHtml === 'string') ? ramo.textoHtml
+             : (window.GA_nl2br ? window.GA_nl2br(ramo.texto || '') : esc(ramo.texto || '')),
         x: 60 + prof * GAP_X,
         y: 60 + linha * GAP_Y,
       };

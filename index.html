@@ -230,6 +230,7 @@
       <button type="button" class="cr-subtab" data-cr-tab="devotos">🙏 Poderes Concedidos</button>
       <button type="button" class="cr-subtab" data-cr-tab="arsenal">⚔ Arsenal &amp; Regras</button>
       <button type="button" class="cr-subtab" data-cr-tab="acoes">🎬 Ações &amp; Combate</button>
+      <button type="button" class="cr-subtab" data-cr-tab="condicoes">🌀 Condições</button>
       <button type="button" class="cr-subtab" data-cr-tab="ameacas">👹 Regras de Ameaças</button>
       <button type="button" class="cr-subtab" data-cr-tab="magia">✨ Regras de Magia</button>
       <button type="button" class="cr-subtab" data-cr-tab="culinaria">🍳 Culinária</button>
@@ -255,6 +256,9 @@
     </div>
     <div id="acoes-content" data-cr-panel="acoes" hidden>
       <!-- Populado pelo acoes.js -->
+    </div>
+    <div id="condicoes-content" data-cr-panel="condicoes" hidden>
+      <!-- Populado pelo condicoes.js -->
     </div>
     <div id="ameacas-content" data-cr-panel="ameacas" hidden>
       <!-- Populado pelo ameacas.js -->
@@ -336,6 +340,7 @@
 <script src="js/itens-descricoes-data.js"></script>
 <script src="js/itens-descricoes-extra-data.js"></script>
 <script src="js/itens-descricoes.js"></script>
+<script src="js/descricoes-custom.js"></script>
 <script src="js/magias.js"></script>
 <script src="js/loja.js"></script>
 <script src="js/perigos-data.js"></script>
@@ -344,6 +349,7 @@
 <script src="js/npcs-data.js"></script>
 <script src="js/devotos-data.js"></script>
 <script src="js/criticos-data.js"></script>
+<script src="js/masmorra-data.js"></script>
 <script src="js/monstros.js"></script>
 <script src="js/perigos.js"></script>
 <script src="js/veiculos.js"></script>
@@ -354,6 +360,8 @@
 <script src="js/regras-itens.js"></script>
 <script src="js/acoes-data.js"></script>
 <script src="js/acoes.js"></script>
+<script src="js/condicoes-data.js"></script>
+<script src="js/condicoes.js"></script>
 <script src="js/ameacas-data.js"></script>
 <script src="js/ameacas.js"></script>
 <script src="js/magia-regras-data.js"></script>
@@ -372,6 +380,15 @@
 <script src="js/tempo-data.js"></script>
 <script src="js/tempo.js"></script>
 <script src="js/recompensas.js"></script>
+
+<!-- 📡 Mesa ao vivo (opcional): transmite Loja/Viagem/Bases para o
+     jogadores.html. Sem js/firebase-config.js preenchido ou sem internet,
+     nada disto roda e o site segue 100% offline. Guia: MODO-JOGADOR.md -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/sync-mestre.js"></script>
 
 </body>
 </html>
