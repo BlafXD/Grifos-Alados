@@ -24,10 +24,20 @@ window.GA_Tip = (function () {
     return String(t == null ? '' : t).replace(/\s+/g, ' ').trim();
   }
 
-  // Ficha de atributos (texto puro) de uma arma/armadura do catálogo da
-  // Loja (LojaCompleta.statsDeItem): dano/crítico/tipo/alcance/peso das
-  // armas; defesa/penalidade/peso das armaduras. '' se o item não tiver
-  // stats lá. Assim a nuvem já nasce com os números, além da descrição.
+  // Formata preço em Tibares do mesmo jeito que o resto do site (loja.js,
+  // formatarPreco): inteiro sem casas quando é redondo, 2 casas quando não é.
+  function precoTexto(v) {
+    const n = parseFloat(v);
+    if (isNaN(n)) return String(v);
+    return n % 1 === 0 ? n.toFixed(0) : n.toFixed(2);
+  }
+
+  // Ficha de atributos (texto puro) de uma arma/armadura/item geral do
+  // catálogo da Loja (LojaCompleta.statsDeItem): dano/crítico/tipo/alcance/
+  // peso/preço das armas; defesa/penalidade/peso/preço das armaduras;
+  // peso/preço dos itens gerais (poções, equipamento de aventura, comida
+  // etc.). '' se o item não tiver stats lá. Assim a nuvem já nasce com os
+  // números — incluindo o preço em T$ — além da descrição.
   function statsTexto(nome) {
     const LC = (typeof LojaCompleta !== 'undefined') ? LojaCompleta : window.LojaCompleta;
     if (!LC || !LC.statsDeItem) return '';
@@ -35,18 +45,25 @@ window.GA_Tip = (function () {
     if (!st) return '';
     const p = [];
     if (st.kind === 'weapon') {
-      if (st.dano)         p.push('Dano ' + st.dano);
-      if (st.critico)      p.push('Crítico ' + String(st.critico).replace(/[xX]/g, '×'));
-      if (st.tipo)         p.push(st.tipo);
-      if (st.alcance)      p.push(st.alcance);
-      if (st.peso != null) p.push(st.peso + ' esp.');
+      if (st.dano)          p.push('Dano ' + st.dano);
+      if (st.critico)       p.push('Crítico ' + String(st.critico).replace(/[xX]/g, '×'));
+      if (st.tipo)          p.push(st.tipo);
+      if (st.alcance)       p.push(st.alcance);
+      if (st.peso != null)  p.push(st.peso + ' esp.');
+      if (st.preco != null) p.push('T$ ' + precoTexto(st.preco));
       return p.length ? '⚔ ' + p.join(' · ') : '';
     }
     if (st.kind === 'armor') {
-      if (st.bonus != null) p.push('Defesa +' + st.bonus);
-      if (st.penalidade)    p.push('Penalidade ' + st.penalidade);
-      if (st.peso != null)  p.push(st.peso + ' esp.');
+      if (st.bonus != null)  p.push('Defesa +' + st.bonus);
+      if (st.penalidade)     p.push('Penalidade ' + st.penalidade);
+      if (st.peso != null)   p.push(st.peso + ' esp.');
+      if (st.preco != null)  p.push('T$ ' + precoTexto(st.preco));
       return p.length ? '🛡 ' + p.join(' · ') : '';
+    }
+    if (st.kind === 'misc') {
+      if (st.peso != null)   p.push(st.peso + ' esp.');
+      if (st.preco != null)  p.push('T$ ' + precoTexto(st.preco));
+      return p.length ? '🎒 ' + p.join(' · ') : '';
     }
     return '';
   }
@@ -71,19 +88,20 @@ window.GA_Tip = (function () {
     const D2 = window.GA_ITENS_DESC_EXTRA || {};
     Object.keys(D2).forEach(k => { lore[window.GA_semAcento(k)] = { nome: cap(k), texto: D2[k] }; });
     Object.keys(D1).forEach(k => { lore[window.GA_semAcento(k)] = { nome: cap(k), texto: D1[k] }; });
-    // Armas e armaduras do catálogo entram PRIMEIRO, com a ficha de
-    // atributos + a lore (quando houver). O resto entra como item comum.
+    // Armas, armaduras E itens gerais do catálogo entram PRIMEIRO, com a
+    // ficha de atributos (peso + preço em T$, e dano/defesa quando houver)
+    // + a lore (quando houver). O resto entra como item comum.
     const usados = {};
     const LC = (typeof LojaCompleta !== 'undefined') ? LojaCompleta : window.LojaCompleta;
     if (LC && LC.catalogoNomes) {
       LC.catalogoNomes().forEach(it => {
-        if (it.kind !== 'weapon' && it.kind !== 'armor') return;
+        const chave = window.GA_semAcento(it.nome);
+        if (usados[chave]) return;   // mesmo nome em 2 categorias do catálogo — 1 entrada só
         const stats = statsTexto(it.nome);
         if (!stats) return;
-        const chave = window.GA_semAcento(it.nome);
         const l = lore[chave];
-        add(it.nome, stats + (l && l.texto ? ' — ' + l.texto : ''),
-            it.kind === 'weapon' ? 'arma' : 'armadura');
+        const fonte = it.kind === 'weapon' ? 'arma' : it.kind === 'armor' ? 'armadura' : 'item';
+        add(it.nome, stats + (l && l.texto ? ' — ' + l.texto : ''), fonte);
         usados[chave] = true;
       });
     }

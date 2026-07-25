@@ -791,10 +791,12 @@ const LojaCompleta = (function () {
     return t;
   }
 
-  // ── LOOKUP DE ATRIBUTOS POR NOME (p/ o Gerador de Recompensas) ──────
+  // ── LOOKUP DE ATRIBUTOS POR NOME (p/ Recompensas e a nuvem "📖 Descrição") ─
   //  Acha um item-base do catálogo pelo nome e devolve seus atributos de
   //  combate (dano/crítico/tipo/alcance de armas; bônus/penalidade de
-  //  armaduras). Comparação sem acento/maiúsculas. null se não houver.
+  //  armaduras) + peso e PREÇO (T$) — comum aos três tipos, incluindo os
+  //  itens gerais (kind 'misc'). Comparação sem acento/maiúsculas. null se
+  //  não houver o item, e preco vem null se o próprio catálogo não tiver.
   function statsDeItem(nome) {
     if (!nome) return null;
     const norm = s => String(s).normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
@@ -802,10 +804,10 @@ const LojaCompleta = (function () {
     for (const it of ITENS_BASE) {
       if (norm(it.name) !== alvo) continue;
       if (it.kind === 'weapon')
-        return { kind: 'weapon', dano: it.damage, critico: it.crit, tipo: it.tipo, alcance: it.alcance, peso: it.peso };
+        return { kind: 'weapon', dano: it.damage, critico: it.crit, tipo: it.tipo, alcance: it.alcance, peso: it.peso, preco: it.price };
       if (it.kind === 'armor')
-        return { kind: 'armor', bonus: it.armor_bonus, penalidade: it.armor_penalty, peso: it.armor_weight };
-      return { kind: 'misc', peso: it.weight };
+        return { kind: 'armor', bonus: it.armor_bonus, penalidade: it.armor_penalty, peso: it.armor_weight, preco: it.price };
+      return { kind: 'misc', peso: it.weight, preco: it.price };
     }
     return null;
   }
