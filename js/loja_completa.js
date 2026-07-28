@@ -816,7 +816,7 @@ const LojaCompleta = (function () {
   // Usado pela busca do "📖 Descrição" para listar TODA arma/armadura com
   // seus atributos, mesmo as que não têm texto de lore.
   function catalogoNomes() {
-    return ITENS_BASE.map(it => ({ nome: it.name, kind: it.kind }));
+    return ITENS_BASE.map(it => ({ nome: it.name, kind: it.kind, categoria: it.category }));
   }
 
   // ── EXPORTAÇÃO ──────────────────────────────────────

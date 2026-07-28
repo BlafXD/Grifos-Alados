@@ -1,0 +1,232 @@
+/* ═══════════════════════════════════════════════════════════════════
+   CRIACAO-ITENS_STYLE.CSS — Sub-aba "🔨 Criação de Itens" (Consultas)
+   Reaproveita .cr-*/.vc-*/.prog-table de consultas_style.css e style.css;
+   aqui só o que é exclusivo da calculadora (prefixo .ci-).
+   ═══════════════════════════════════════════════════════════════════ */
+
+.ci-calc {
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  border-radius: 3px;
+  padding: 0.8rem 0.9rem 0.9rem;
+  margin-bottom: 1.3rem;
+}
+.ci-calc-cab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--gold-dim);
+}
+
+/* ── escolha do item: catálogo × personalizado ────────────────────── */
+.ci-item-modo {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+.ci-modo-btn {
+  flex: 1 1 auto;
+  padding: 0.4rem 0.6rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  cursor: pointer;
+}
+.ci-modo-btn--ativo { color: var(--parchment); background: var(--ink); border-color: var(--ink); }
+
+.ci-busca-item, .ci-custom-nome, .ci-custom-preco, .ci-select, .ci-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.4rem 0.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.98rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: 2px;
+}
+.ci-busca-item:focus, .ci-custom-nome:focus, .ci-custom-preco:focus,
+.ci-select:focus, .ci-input:focus { outline: 1px solid var(--rust); }
+
+.ci-item-resultados {
+  margin-top: 0.35rem;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--ink-faded);
+  background: var(--parchment);
+}
+.ci-item-resultado {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px dotted var(--parchment3);
+  cursor: pointer;
+  font-size: 0.92rem;
+}
+.ci-item-resultado:last-child { border-bottom: none; }
+.ci-item-resultado:hover { background: var(--parchment2); }
+.ci-item-resultado-nome { color: var(--ink); }
+.ci-item-resultado-preco { color: var(--gold-dim); font-family: 'Cinzel', serif; font-size: 0.78rem; white-space: nowrap; }
+.ci-item-resultado--vazio { color: var(--ink-faded); font-style: italic; cursor: default; }
+.ci-item-resultado--vazio:hover { background: none; }
+
+.ci-item-custom { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.ci-item-custom .ci-custom-nome { flex: 2 1 12rem; }
+.ci-item-custom .ci-custom-preco { flex: 1 1 8rem; }
+
+.ci-item-escolhido {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--parchment);
+  border-left: 3px solid var(--gold);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.ci-item-escolhido b { font-family: 'Cinzel', serif; font-weight: 600; }
+
+/* ── grade de campos ───────────────────────────────────────────────── */
+.ci-calc-linha { margin-top: 0.7rem; }
+.ci-calc-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.7rem;
+}
+.ci-campo label, .ci-calc-linha label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 0.25rem;
+}
+.ci-fracao-wrap { display: flex; gap: 0.4rem; }
+.ci-fracao-wrap .ci-input { flex: 1 1 6rem; }
+
+/* ── resultado ────────────────────────────────────────────────────── */
+.ci-resultado {
+  margin-top: 0.8rem;
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-left: 4px solid var(--gold);
+  border-radius: 2px;
+  padding: 0.7rem 0.85rem;
+}
+.ci-res-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 1.06rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+.ci-res-grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1rem;
+}
+.ci-res-bloco { }
+.ci-res-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+}
+.ci-res-val {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.28rem;
+  font-weight: 600;
+  color: var(--rust);
+}
+.ci-res-detalhe {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  color: var(--ink-faded);
+  margin-top: 0.1rem;
+}
+.ci-res-aviso {
+  margin-top: 0.6rem;
+  padding: 0.4rem 0.55rem;
+  background: #f0e3c2;
+  border-left: 3px solid var(--gold-dim);
+  font-family: 'IM Fell English', serif;
+  font-size: 0.84rem;
+  color: var(--rust-dark);
+}
+
+/* ── ajustar tabela de preços ─────────────────────────────────────── */
+.ci-ajustes {
+  margin-top: 0.8rem;
+  border-top: 1px solid var(--parchment3);
+  padding-top: 0.5rem;
+}
+.ci-ajustes summary {
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.ci-ajustes summary:hover { color: var(--ink); }
+.ci-ajustes-corpo { margin-top: 0.6rem; }
+.ci-ajustes-nota {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--ink-faded);
+  margin-bottom: 0.5rem;
+}
+.ci-ajustes-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.6rem;
+  font-size: 0.86rem;
+}
+.ci-ajustes-tabela th {
+  text-align: left;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  padding: 0.25rem 0.4rem;
+  border-bottom: 1px solid var(--ink-faded);
+}
+.ci-ajustes-tabela td { padding: 0.25rem 0.4rem; border-bottom: 1px dotted var(--parchment3); }
+.ci-ajustes-tabela input[type="number"] {
+  width: 6.5rem;
+  padding: 0.2rem 0.35rem;
+  font-family: 'Crimson Pro', serif;
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: 2px;
+}
+.ci-ajustes-estimado { color: var(--rust); font-size: 0.72rem; }
+.ci-restaurar {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px dashed var(--ink-faded);
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+}
+.ci-restaurar:hover { background: var(--ink); color: var(--parchment); }
+
+@media (max-width: 640px) {
+  .ci-res-grade { grid-template-columns: 1fr; }
+  .ci-calc-grade { grid-template-columns: 1fr 1fr; }
+}
