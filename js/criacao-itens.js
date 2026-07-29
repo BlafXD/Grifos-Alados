@@ -49,14 +49,34 @@
     };
   }
   function carregarTabela() {
+    let tab = null;
     try {
       const txt = localStorage.getItem(CHAVE_TABELA);
       if (txt) {
         const t = JSON.parse(txt);
-        if (t && Array.isArray(t.melhorias) && Array.isArray(t.encantos)) return t;
+        if (t && Array.isArray(t.melhorias) && Array.isArray(t.encantos)) tab = t;
       }
     } catch (e) { console.warn('[criacao-itens] não foi possível carregar a tabela:', e.message); }
-    return tabelaPadrao();
+    if (!tab) return tabelaPadrao();
+
+    // Migração: se alguém (mestre ou jogador) já tinha aberto "Ajustar
+    // tabela de preços" ANTES de a Tabela 8-7 real ser confirmada, o
+    // navegador dele guardou o valor estimado antigo — o que faria essa
+    // pessoa continuar vendo o número errado para sempre, mesmo depois da
+    // correção. Qualquer linha que ainda esteja marcada `estimado` é
+    // atualizada para o valor oficial atual; o resto da tabela (inclusive
+    // personalizações que a pessoa tenha feito de propósito) não é tocado.
+    const padrao = tabelaPadrao();
+    let migrou = false;
+    ['melhorias', 'encantos'].forEach(tipo => {
+      (tab[tipo] || []).forEach(linha => {
+        if (!linha.estimado) return;
+        const oficial = padrao[tipo].find(p => p.n === linha.n);
+        if (oficial) { linha.preco = oficial.preco; linha.cd = oficial.cd; linha.estimado = !!oficial.estimado; migrou = true; }
+      });
+    });
+    if (migrou) salvarTabela(tab);
+    return tab;
   }
   function salvarTabela(tab) {
     try { localStorage.setItem(CHAVE_TABELA, JSON.stringify(tab)); }
@@ -206,7 +226,7 @@
         <td><input type="number" class="ci-aj-cd" data-tipo="${rotuloSingular === 'melhoria' ? 'melhorias' : 'encantos'}" data-n="${x.n}" value="${x.cd}" min="0" step="1"></td>
       </tr>`).join('');
     return `
-      <p class="ci-ajustes-nota">O valor de 2 encantos não veio confirmado no Regras.txt (o livro só cita 1 e 3 nos exemplos) — está marcado ⚠ como estimativa. Se sua edição tiver outro número, corrija aqui; fica salvo automaticamente neste navegador.</p>
+      <p class="ci-ajustes-nota">Valores da Tabela 3-7 (Melhorias) e Tabela 8-7 (Encantos) do seu Regras.txt. Se sua mesa usa números diferentes (outra edição, regra da casa), corrija aqui — fica salvo automaticamente neste navegador.</p>
       <table class="ci-ajustes-tabela">
         <thead><tr><th>Melhorias</th><th>Aumento no preço (T$)</th><th>Aumento na CD</th></tr></thead>
         <tbody>${linha(TAB.melhorias, 'melhoria')}</tbody>
@@ -453,6 +473,7 @@
           if (!linha) return;
           if (inp.classList.contains('ci-aj-preco')) linha.preco = parseFloat(inp.value) || 0;
           else linha.cd = parseFloat(inp.value) || 0;
+          linha.estimado = false; // valor agora confirmado/ajustado à mão, não é mais um palpite
           salvarTabela(TAB);
           popularSelectContagem(elMelhorias, TAB.melhorias, 'melhoria');
           popularSelectContagem(elEncantos,  TAB.encantos,  'encanto');

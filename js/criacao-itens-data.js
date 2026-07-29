@@ -7,17 +7,15 @@
 //  tabela? }. Consumido por criacao-itens.js — mesmo motor de
 //  acoes.js (cards recolhíveis + busca), mais a calculadora no topo.
 //
-//  ── SOBRE OS VALORES DE ENCANTOS (leia antes de mexer) ───────────
-//  A Tabela de Preço de Encantos é citada no livro como "veja a
-//  tabela ao lado", mas essa tabela lateral não veio no Regras.txt.
-//  Os valores de 1 e 3 encantos SÃO confirmados — aparecem nos
-//  próprios exemplos do texto (espada longa +1 encanto = T$18.015,
-//  CD 30; +4 melhorias +3 encantos = T$90.015, CD 60). O valor de
-//  2 encantos foi interpolado (progressão linear que bate com os
-//  dois valores confirmados) e está marcado `estimado: true` — a
-//  calculadora avisa isso na tela. Se seu livro tiver outro valor,
-//  edite em ENCANTOS_PADRAO abaixo (ou ajuste ao vivo pela própria
-//  aba, em "⚙ Ajustar tabela de preços" — fica salvo automaticamente).
+//  ── SOBRE OS VALORES DE ENCANTOS ──────────────────────────────────
+//  Tabela 8-7: Preço de Encantos, confirmada no Regras.txt do projeto:
+//    1 encanto  → +T$ 18.000, +10 CD
+//    2 encantos → +T$ 36.000, +15 CD
+//    3 encantos → +T$ 72.000, +20 CD
+//  (Os exemplos do próprio livro já confirmavam 1 e 3; o Regras.txt
+//  atualizado trouxe a Tabela 8-7 completa, com o valor de 2.)
+//  Editável ao vivo pela própria aba, em "⚙ Ajustar tabela de preços"
+//  — fica salvo automaticamente (útil se sua mesa usa outros números).
 // ════════════════════════════════════════════════════════════════════
 window.GA_CRIACAO_ITENS = (function () {
 
@@ -29,10 +27,10 @@ window.GA_CRIACAO_ITENS = (function () {
     { n: 4, preco: 18000, cd: 20 },
   ];
 
-  // ── PREÇO DE ENCANTOS (1 e 3 confirmados; 2 é estimativa — ver nota acima) ─
+  // ── TABELA 8-7: PREÇO DE ENCANTOS (confirmada, completa) ──────────
   const ENCANTOS_PADRAO = [
     { n: 1, preco: 18000, cd: 10 },
-    { n: 2, preco: 36000, cd: 15, estimado: false },
+    { n: 2, preco: 36000, cd: 15 },
     { n: 3, preco: 72000, cd: 20 },
   ];
 
@@ -136,7 +134,7 @@ Itens Encantados funcionam como itens superiores — mas em vez de melhorias, po
 Um mesmo item pode ser superior E encantado — some os modificadores de preço e CD, e os bônus de melhorias e encantos, normalmente.
 Exemplo do livro: uma espada longa com um encanto tem preço T$ 18.015; fabricá-la exige T$ 6.005 e CD 30. Uma espada longa com quatro melhorias e três encantos (o máximo possível) tem preço T$ 90.015 (T$ 15 da espada + T$ 18.000 das quatro melhorias + T$ 72.000 dos três encantos); fabricá-la exige T$ 30.005 e CD 60.
 Itens Específicos usam as regras normais de fabricação. O preço de cada um vem nas tabelas do livro. A CD é dada pela categoria: CD 30 para itens menores, 40 para médios, 50 para maiores. A perícia usada é Ofício (armeiro) para armas/armaduras e Ofício (artesão) para acessórios (o mestre pode liberar outros Ofícios, como joalheiro para um anel). Itens específicos NÃO podem receber encantos. Todas as armas e armaduras específicas do livro são itens maiores.`,
-      tabela: { cab: ['Nº de encantos', 'Aumento no preço', 'Aumento na CD'], titulo: 'Preço de Encantos', destaque: 0,
+      tabela: { cab: ['Nº de encantos', 'Aumento no preço', 'Aumento na CD'], titulo: 'Tabela 8-7: Preço de Encantos', destaque: 0,
         linhas: ENCANTOS_PADRAO.map(e => [String(e.n), '+ T$ ' + e.preco.toLocaleString('pt-BR') + (e.estimado ? ' ⚠' : ''), '+' + e.cd + (e.estimado ? ' ⚠' : '')]) } },
 
     { grupo: '✨ Itens Mágicos', titulo: 'Custo em Pontos de Mana', texto:
