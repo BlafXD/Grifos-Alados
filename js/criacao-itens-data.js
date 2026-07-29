@@ -32,7 +32,7 @@ window.GA_CRIACAO_ITENS = (function () {
   // ── PREÇO DE ENCANTOS (1 e 3 confirmados; 2 é estimativa — ver nota acima) ─
   const ENCANTOS_PADRAO = [
     { n: 1, preco: 18000, cd: 10 },
-    { n: 2, preco: 45000, cd: 15, estimado: true },
+    { n: 2, preco: 36000, cd: 15, estimado: false },
     { n: 3, preco: 72000, cd: 20 },
   ];
 
@@ -136,7 +136,7 @@ Itens Encantados funcionam como itens superiores — mas em vez de melhorias, po
 Um mesmo item pode ser superior E encantado — some os modificadores de preço e CD, e os bônus de melhorias e encantos, normalmente.
 Exemplo do livro: uma espada longa com um encanto tem preço T$ 18.015; fabricá-la exige T$ 6.005 e CD 30. Uma espada longa com quatro melhorias e três encantos (o máximo possível) tem preço T$ 90.015 (T$ 15 da espada + T$ 18.000 das quatro melhorias + T$ 72.000 dos três encantos); fabricá-la exige T$ 30.005 e CD 60.
 Itens Específicos usam as regras normais de fabricação. O preço de cada um vem nas tabelas do livro. A CD é dada pela categoria: CD 30 para itens menores, 40 para médios, 50 para maiores. A perícia usada é Ofício (armeiro) para armas/armaduras e Ofício (artesão) para acessórios (o mestre pode liberar outros Ofícios, como joalheiro para um anel). Itens específicos NÃO podem receber encantos. Todas as armas e armaduras específicas do livro são itens maiores.`,
-      tabela: { cab: ['Nº de encantos', 'Aumento no preço', 'Aumento na CD'], titulo: 'Preço de Encantos (1 e 3 confirmados no livro · 2 é estimativa — veja a calculadora)', destaque: 0,
+      tabela: { cab: ['Nº de encantos', 'Aumento no preço', 'Aumento na CD'], titulo: 'Preço de Encantos', destaque: 0,
         linhas: ENCANTOS_PADRAO.map(e => [String(e.n), '+ T$ ' + e.preco.toLocaleString('pt-BR') + (e.estimado ? ' ⚠' : ''), '+' + e.cd + (e.estimado ? ' ⚠' : '')]) } },
 
     { grupo: '✨ Itens Mágicos', titulo: 'Custo em Pontos de Mana', texto:
