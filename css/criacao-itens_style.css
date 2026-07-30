@@ -2,23 +2,66 @@
    CRIACAO-ITENS_STYLE.CSS — Sub-aba "🔨 Criação de Itens" (Consultas)
    Reaproveita .cr-*/.vc-*/.prog-table de consultas_style.css e style.css;
    aqui só o que é exclusivo da calculadora (prefixo .ci-).
+
+   Linguagem visual: mesmo "bloco" usado nos cards de consulta (.vc-card)
+   e nas tabelas de referência (.prog-table) — faixa colorida à esquerda,
+   leve gradiente, cabeçalho em Cinzel — para a calculadora ficar no
+   mesmo idioma visual do resto do site, em vez de um painel achatado.
    ═══════════════════════════════════════════════════════════════════ */
 
-.ci-calc {
-  background: var(--parchment3);
-  border: 1px solid var(--ink-faded);
-  border-radius: 3px;
-  padding: 0.8rem 0.9rem 0.9rem;
-  margin-bottom: 1.3rem;
-}
+.ci-calc { margin-bottom: 1.3rem; }
 .ci-calc-cab {
   font-family: 'Cinzel', serif;
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
+  font-size: 1.08rem;
+  letter-spacing: 0.04em;
   color: var(--ink);
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.9rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--gold-dim);
+  border-bottom: 2px solid var(--gold-dim);
+}
+
+/* ── bloco reutilizável (o "cartão" que envolve cada etapa) ─────────── */
+.ci-bloco {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.35), transparent 55%),
+    var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  border-left: 4px solid var(--rust);
+  border-radius: 2px;
+  padding: 0.85rem 0.95rem 0.95rem;
+  margin-bottom: 0.9rem;
+  transition: box-shadow 0.16s ease, border-color 0.16s ease;
+}
+.ci-bloco:hover, .ci-bloco:focus-within {
+  border-left-color: var(--rust-dark);
+  box-shadow: 0 3px 12px -6px rgba(26,16,8,0.45);
+}
+.ci-bloco-titulo {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  margin-bottom: 0.65rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dotted var(--gold-dim);
+}
+.ci-bloco-passo {
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--parchment);
+  background: var(--rust);
+  border-radius: 50%;
 }
 
 /* ── escolha do item: catálogo × personalizado ────────────────────── */
@@ -36,16 +79,18 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--ink-faded);
-  background: var(--parchment2);
+  background: var(--parchment);
   border: 1px solid var(--ink-faded);
+  border-radius: 2px;
   cursor: pointer;
+  transition: background 0.15s, color 0.15s;
 }
 .ci-modo-btn--ativo { color: var(--parchment); background: var(--ink); border-color: var(--ink); }
 
 .ci-busca-item, .ci-custom-nome, .ci-custom-preco, .ci-select, .ci-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 0.4rem 0.5rem;
+  padding: 0.45rem 0.55rem;
   font-family: 'Crimson Pro', serif;
   font-size: 0.98rem;
   color: var(--ink);
@@ -57,23 +102,25 @@
 .ci-select:focus, .ci-input:focus { outline: 1px solid var(--rust); }
 
 .ci-item-resultados {
-  margin-top: 0.35rem;
+  margin-top: 0.4rem;
   max-height: 220px;
   overflow-y: auto;
   border: 1px solid var(--ink-faded);
+  border-radius: 2px;
   background: var(--parchment);
+  box-shadow: 0 3px 10px -6px rgba(26,16,8,0.4);
 }
 .ci-item-resultado {
   display: flex;
   justify-content: space-between;
   gap: 0.6rem;
-  padding: 0.4rem 0.6rem;
+  padding: 0.42rem 0.6rem;
   border-bottom: 1px dotted var(--parchment3);
   cursor: pointer;
   font-size: 0.92rem;
 }
 .ci-item-resultado:last-child { border-bottom: none; }
-.ci-item-resultado:hover { background: var(--parchment2); }
+.ci-item-resultado:hover { background: var(--parchment3); }
 .ci-item-resultado-nome { color: var(--ink); }
 .ci-item-resultado-preco { color: var(--gold-dim); font-family: 'Cinzel', serif; font-size: 0.78rem; white-space: nowrap; }
 .ci-item-resultado--vazio { color: var(--ink-faded); font-style: italic; cursor: default; }
@@ -84,145 +131,201 @@
 .ci-item-custom .ci-custom-preco { flex: 1 1 8rem; }
 
 .ci-item-escolhido {
-  margin-top: 0.5rem;
-  padding: 0.4rem 0.6rem;
+  margin-top: 0.6rem;
+  padding: 0.45rem 0.65rem;
   background: var(--parchment);
+  border: 1px solid var(--parchment3);
   border-left: 3px solid var(--gold);
+  border-radius: 2px;
   font-family: 'Crimson Pro', serif;
   font-size: 0.92rem;
   color: var(--ink);
 }
 .ci-item-escolhido b { font-family: 'Cinzel', serif; font-weight: 600; }
 
-/* ── grade de campos ───────────────────────────────────────────────── */
-.ci-calc-linha { margin-top: 0.7rem; }
+/* ── grade de campos (dentro do bloco 2) ─────────────────────────────── */
+.ci-calc-linha { margin-bottom: 0.7rem; }
+.ci-calc-linha:last-child { margin-bottom: 0; }
 .ci-calc-grade {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
   gap: 0.6rem;
-  margin-top: 0.7rem;
 }
-.ci-campo label, .ci-calc-linha label {
+.ci-campo label, .ci-calc-linha > label {
   display: block;
   font-family: 'Cinzel', serif;
   font-size: 0.64rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--ink-faded);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.28rem;
 }
 .ci-fracao-wrap { display: flex; gap: 0.4rem; }
 .ci-fracao-wrap .ci-input { flex: 1 1 6rem; }
 
-/* ── resultado ────────────────────────────────────────────────────── */
+/* ── resultado — o "veredito" da calculadora, mais destacado ────────── */
 .ci-resultado {
-  margin-top: 0.8rem;
-  background: var(--parchment);
-  border: 1px solid var(--ink-faded);
-  border-left: 4px solid var(--gold);
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.4), transparent 60%),
+    var(--parchment);
+  border: 1px solid var(--gold-dim);
+  border-left: 5px solid var(--gold);
   border-radius: 2px;
-  padding: 0.7rem 0.85rem;
+  padding: 0.8rem 0.95rem;
+  box-shadow: 0 3px 14px -7px rgba(26,16,8,0.4);
 }
 .ci-res-nome {
   font-family: 'Cinzel', serif;
-  font-size: 1.06rem;
+  font-size: 1.08rem;
   color: var(--ink);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.55rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dotted var(--gold-dim);
 }
 .ci-res-grade {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem 1rem;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.6rem 1rem;
 }
 .ci-res-bloco { }
 .ci-res-rot {
   font-family: 'Cinzel', serif;
-  font-size: 0.62rem;
-  letter-spacing: 0.05em;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--gold-dim);
 }
 .ci-res-val {
   font-family: 'Crimson Pro', serif;
-  font-size: 1.28rem;
+  font-size: 1.34rem;
   font-weight: 600;
   color: var(--rust);
+  line-height: 1.25;
 }
 .ci-res-detalhe {
   font-family: 'Crimson Pro', serif;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--ink-faded);
   margin-top: 0.1rem;
 }
 .ci-res-aviso {
-  margin-top: 0.6rem;
-  padding: 0.4rem 0.55rem;
+  margin-top: 0.65rem;
+  padding: 0.42rem 0.6rem;
   background: #f0e3c2;
   border-left: 3px solid var(--gold-dim);
+  border-radius: 2px;
   font-family: 'IM Fell English', serif;
   font-size: 0.84rem;
   color: var(--rust-dark);
 }
 
-/* ── ajustar tabela de preços ─────────────────────────────────────── */
-.ci-ajustes {
-  margin-top: 0.8rem;
-  border-top: 1px solid var(--parchment3);
-  padding-top: 0.5rem;
-}
+/* ── ajustar tabela de preços (recolhível, no fim da calculadora) ──── */
+.ci-ajustes { margin-top: 0.3rem; }
 .ci-ajustes summary {
   cursor: pointer;
+  list-style: none;
+  padding: 0.55rem 0.8rem;
   font-family: 'Cinzel', serif;
   font-size: 0.72rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  border-radius: 2px;
+  transition: color 0.15s, background 0.15s;
 }
-.ci-ajustes summary:hover { color: var(--ink); }
-.ci-ajustes-corpo { margin-top: 0.6rem; }
+.ci-ajustes summary::-webkit-details-marker { display: none; }
+.ci-ajustes summary::before { content: '▸ '; }
+.ci-ajustes[open] summary::before { content: '▾ '; }
+.ci-ajustes summary:hover { color: var(--ink); background: var(--parchment3); }
+.ci-ajustes[open] summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.ci-ajustes-corpo {
+  padding: 0.8rem 0.9rem 0.9rem;
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  border-top: none;
+  border-radius: 0 0 2px 2px;
+}
 .ci-ajustes-nota {
   font-family: 'IM Fell English', serif;
   font-style: italic;
   font-size: 0.82rem;
   color: var(--ink-faded);
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.7rem;
 }
+
+/* tabela editável — mesma linguagem visual do .prog-table (cabeçalho
+   escuro + zebra), adaptada para caber inputs numéricos nas células */
+.ci-ajustes-tabela-wrap {
+  overflow-x: auto;
+  margin-bottom: 0.9rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-top: 3px solid var(--gold);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
+}
+.ci-ajustes-tabela-wrap:last-of-type { margin-bottom: 1rem; }
 .ci-ajustes-tabela {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 0.6rem;
-  font-size: 0.86rem;
+  font-family: 'Crimson Pro', serif;
 }
-.ci-ajustes-tabela th {
+.ci-ajustes-tabela caption {
+  caption-side: top;
   text-align: left;
   font-family: 'Cinzel', serif;
-  font-size: 0.6rem;
-  letter-spacing: 0.05em;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--gold-dim);
-  padding: 0.25rem 0.4rem;
-  border-bottom: 1px solid var(--ink-faded);
+  padding: 0.55rem 0.9rem 0.15rem;
 }
-.ci-ajustes-tabela td { padding: 0.25rem 0.4rem; border-bottom: 1px dotted var(--parchment3); }
+.ci-ajustes-tabela th {
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0.55rem 0.8rem;
+  white-space: nowrap;
+}
+.ci-ajustes-tabela td {
+  padding: 0.4rem 0.8rem;
+  border-bottom: 1px solid var(--parchment3);
+  font-size: 0.92rem;
+  vertical-align: middle;
+}
+.ci-ajustes-tabela tbody tr:last-child td { border-bottom: none; }
+.ci-ajustes-tabela tbody tr:nth-child(even) td { background: rgba(232,217,188,0.5); }
+.ci-ajustes-tabela tbody tr:hover td { background: #e6d6b4; }
 .ci-ajustes-tabela input[type="number"] {
-  width: 6.5rem;
-  padding: 0.2rem 0.35rem;
+  width: 6.4rem;
+  padding: 0.22rem 0.4rem;
   font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
   border-radius: 2px;
 }
+.ci-ajustes-tabela input[type="number"]:focus { outline: 1px solid var(--rust); }
 .ci-ajustes-estimado { color: var(--rust); font-size: 0.72rem; }
+
 .ci-restaurar {
   font-family: 'Cinzel', serif;
   font-size: 0.66rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--ink);
-  background: var(--parchment2);
+  background: var(--parchment);
   border: 1px dashed var(--ink-faded);
-  padding: 0.35rem 0.6rem;
+  border-radius: 2px;
+  padding: 0.4rem 0.65rem;
   cursor: pointer;
+  transition: background 0.15s, color 0.15s;
 }
 .ci-restaurar:hover { background: var(--ink); color: var(--parchment); }
 

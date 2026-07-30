@@ -155,56 +155,64 @@
       <div class="ci-calc">
         <div class="ci-calc-cab">🔨 Calculadora — melhorias e encantos</div>
 
-        <div class="ci-item-modo">
-          <button type="button" class="ci-modo-btn ci-modo-btn--ativo" data-ci-modo="catalogo">📖 Item do catálogo</button>
-          <button type="button" class="ci-modo-btn" data-ci-modo="custom">✏ Personalizado</button>
-        </div>
+        <div class="ci-bloco">
+          <div class="ci-bloco-titulo"><span class="ci-bloco-passo">1</span> Escolha o item</div>
 
-        <div class="ci-item-catalogo">
-          <input type="text" class="ci-busca-item" placeholder="Buscar item elegível (arma, armadura, escudo, ferramenta, vestuário, esotérico)…" autocomplete="off">
-          <div class="ci-item-resultados" hidden></div>
-        </div>
-
-        <div class="ci-item-custom" hidden>
-          <input type="text" class="ci-custom-nome" placeholder="Nome do item">
-          <input type="number" class="ci-custom-preco" placeholder="Preço base (T$)" min="0" step="0.1" value="0">
-        </div>
-
-        <div class="ci-item-escolhido" hidden></div>
-
-        <div class="ci-calc-linha">
-          <label>Categoria (define a CD base de fabricação)</label>
-          <select class="ci-select ci-categoria">${catOpts}</select>
-        </div>
-        <div class="ci-calc-linha ci-cd-custom-linha" hidden>
-          <label>CD base (personalizada)</label>
-          <input type="number" class="ci-input ci-cd-custom" value="15" step="1">
-        </div>
-
-        <div class="ci-calc-grade">
-          <div class="ci-campo">
-            <label>Melhorias</label>
-            <select class="ci-select ci-melhorias"></select>
+          <div class="ci-item-modo">
+            <button type="button" class="ci-modo-btn ci-modo-btn--ativo" data-ci-modo="catalogo">📖 Item do catálogo</button>
+            <button type="button" class="ci-modo-btn" data-ci-modo="custom">✏ Personalizado</button>
           </div>
-          <div class="ci-campo">
-            <label>Encantos</label>
-            <select class="ci-select ci-encantos"></select>
+
+          <div class="ci-item-catalogo">
+            <input type="text" class="ci-busca-item" placeholder="Buscar item elegível (arma, armadura, escudo, ferramenta, vestuário, esotérico)…" autocomplete="off">
+            <div class="ci-item-resultados" hidden></div>
           </div>
-          <div class="ci-campo">
-            <label>Outros CD</label>
-            <input type="number" class="ci-input ci-outros-cd" value="0" step="1">
+
+          <div class="ci-item-custom" hidden>
+            <input type="text" class="ci-custom-nome" placeholder="Nome do item">
+            <input type="number" class="ci-custom-preco" placeholder="Preço base (T$)" min="0" step="0.1">
           </div>
-          <div class="ci-campo">
-            <label>Fração p/ fabricar</label>
-            <div class="ci-fracao-wrap">
-              <select class="ci-select ci-fracao">
-                <option value="3">1/3 (padrão)</option>
-                <option value="4">1/4</option>
-                <option value="5">1/5</option>
-                <option value="6">1/6</option>
-                <option value="custom">Outra…</option>
-              </select>
-              <input type="number" class="ci-input ci-fracao-custom" hidden min="1" step="1" value="3">
+
+          <div class="ci-item-escolhido" hidden></div>
+        </div>
+
+        <div class="ci-bloco">
+          <div class="ci-bloco-titulo"><span class="ci-bloco-passo">2</span> Melhorias, encantos e CD</div>
+
+          <div class="ci-calc-linha">
+            <label>Categoria (define a CD base de fabricação)</label>
+            <select class="ci-select ci-categoria">${catOpts}</select>
+          </div>
+          <div class="ci-calc-linha ci-cd-custom-linha" hidden>
+            <label>CD base (personalizada)</label>
+            <input type="number" class="ci-input ci-cd-custom" value="15" step="1">
+          </div>
+
+          <div class="ci-calc-grade">
+            <div class="ci-campo">
+              <label>Melhorias</label>
+              <select class="ci-select ci-melhorias"></select>
+            </div>
+            <div class="ci-campo">
+              <label>Encantos</label>
+              <select class="ci-select ci-encantos"></select>
+            </div>
+            <div class="ci-campo">
+              <label>Outros CD</label>
+              <input type="number" class="ci-input ci-outros-cd" value="0" step="1">
+            </div>
+            <div class="ci-campo">
+              <label>Fração p/ fabricar</label>
+              <div class="ci-fracao-wrap">
+                <select class="ci-select ci-fracao">
+                  <option value="3">1/3 (padrão)</option>
+                  <option value="4">1/4</option>
+                  <option value="5">1/5</option>
+                  <option value="6">1/6</option>
+                  <option value="custom">Outra…</option>
+                </select>
+                <input type="number" class="ci-input ci-fracao-custom" hidden min="1" step="1" value="3">
+              </div>
             </div>
           </div>
         </div>
@@ -227,14 +235,20 @@
       </tr>`).join('');
     return `
       <p class="ci-ajustes-nota">Valores da Tabela 3-7 (Melhorias) e Tabela 8-7 (Encantos) do seu Regras.txt. Se sua mesa usa números diferentes (outra edição, regra da casa), corrija aqui — fica salvo automaticamente neste navegador.</p>
-      <table class="ci-ajustes-tabela">
-        <thead><tr><th>Melhorias</th><th>Aumento no preço (T$)</th><th>Aumento na CD</th></tr></thead>
-        <tbody>${linha(TAB.melhorias, 'melhoria')}</tbody>
-      </table>
-      <table class="ci-ajustes-tabela">
-        <thead><tr><th>Encantos</th><th>Aumento no preço (T$)</th><th>Aumento na CD</th></tr></thead>
-        <tbody>${linha(TAB.encantos, 'encanto')}</tbody>
-      </table>
+      <div class="ci-ajustes-tabela-wrap">
+        <table class="ci-ajustes-tabela">
+          <caption>Tabela 3-7: Preço de Melhorias</caption>
+          <thead><tr><th>Melhorias</th><th>Aumento no preço (T$)</th><th>Aumento na CD</th></tr></thead>
+          <tbody>${linha(TAB.melhorias, 'melhoria')}</tbody>
+        </table>
+      </div>
+      <div class="ci-ajustes-tabela-wrap">
+        <table class="ci-ajustes-tabela">
+          <caption>Tabela 8-7: Preço de Encantos</caption>
+          <thead><tr><th>Encantos</th><th>Aumento no preço (T$)</th><th>Aumento na CD</th></tr></thead>
+          <tbody>${linha(TAB.encantos, 'encanto')}</tbody>
+        </table>
+      </div>
       <button type="button" class="ci-restaurar" data-ci-restaurar>↺ Restaurar padrão do livro</button>`;
   }
 
