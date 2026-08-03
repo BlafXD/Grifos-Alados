@@ -1002,28 +1002,38 @@
     const precoFinal = formatarPreco(item.preco_final);
     const desconto   = item.desconto_pct;
 
-    // Stats relevantes por tipo
-    let statsHtml = '';
+    // Stats relevantes por tipo — a mesma lista alimenta o card e o texto
+    // que o botão "⧉ Copiar" da descrição joga na área de transferência.
+    const stats = [];
     if (item.tipo_item === 'weapon') {
-      if (item.dano)      statsHtml += statSpan('Dano', item.dano);
-      if (item.critico)   statsHtml += statSpan('Crítico', item.critico);
-      if (item.alcance)   statsHtml += statSpan('Alcance', item.alcance);
-      if (item.tipo_arma) statsHtml += statSpan('Tipo', item.tipo_arma);
-      if (item.peso != null) statsHtml += statSpan('Peso', item.peso);
+      if (item.dano)      stats.push(['Dano', item.dano]);
+      if (item.critico)   stats.push(['Crítico', item.critico]);
+      if (item.alcance)   stats.push(['Alcance', item.alcance]);
+      if (item.tipo_arma) stats.push(['Tipo', item.tipo_arma]);
+      if (item.peso != null) stats.push(['Peso', item.peso]);
     } else if (item.tipo_item === 'armor') {
-      if (item.bonus_armadura != null)   statsHtml += statSpan('Bônus', `+${item.bonus_armadura}`);
-      if (item.penalidade_armadura)      statsHtml += statSpan('Penalidade', item.penalidade_armadura);
-      if (item.peso_armadura != null)    statsHtml += statSpan('Peso', item.peso_armadura);
+      if (item.bonus_armadura != null)   stats.push(['Bônus', `+${item.bonus_armadura}`]);
+      if (item.penalidade_armadura)      stats.push(['Penalidade', item.penalidade_armadura]);
+      if (item.peso_armadura != null)    stats.push(['Peso', item.peso_armadura]);
     } else {
-      if (item.peso != null) statsHtml += statSpan('Peso', item.peso);
+      if (item.peso != null) stats.push(['Peso', item.peso]);
     }
-
-    // Descrição do item em aba recolhível (+ tooltips de regra), se houver.
-    const descHtml = window.ItensDescricoes ? ItensDescricoes.bloco(item.nome) : '';
+    const statsHtml = stats.map(([rot, val]) => statSpan(rot, val)).join('');
 
     // Sem desconto real (0% ou preço inalterado): mostra um único valor,
     // evitando o redundante "T$ 5 → T$ 5".
     const semDesconto = desconto === 0 || precoOrig === precoFinal;
+
+    // Descrição do item em aba recolhível (+ tooltips de regra), se houver.
+    // O texto copiável leva nome, preço praticado e os atributos do item.
+    const linhaPreco = semDesconto
+      ? `Preço: T$ ${precoFinal}`
+      : `Preço: T$ ${precoFinal} (de T$ ${precoOrig}${desconto != null ? `, ${desconto > 0 ? '-' : ''}${desconto}%` : ''})`;
+    const descHtml = window.ItensDescricoes
+      ? ItensDescricoes.bloco(item.nome, null, {
+          linhas: [linhaPreco].concat(stats.map(([rot, val]) => `${rot}: ${val}`)),
+        })
+      : '';
     const badge = desconto != null
       ? `<span class="item-badge-desconto">${desconto > 0 ? '-' : ''}${desconto}%</span>`
       : '';
@@ -1105,7 +1115,9 @@
         html += `<div class="especial-vazio">Nenhum encantamento sorteado nesta geração.</div>`;
       } else {
         encants.forEach(e => {
-          const encDesc = window.ItensDescricoes ? ItensDescricoes.bloco(e.name) : '';
+          const encDesc = window.ItensDescricoes
+            ? ItensDescricoes.bloco(e.name, null, { linhas: [e.effect ? `Efeito: ${e.effect}` : ''] })
+            : '';
           html += `
             <div class="especial-encantamento">
               <span class="enc-nome">${e.name}</span>

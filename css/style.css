@@ -1858,6 +1858,45 @@ footer {
   text-align: justify;
 }
 
+/* botão "⧉ Copiar" — leva nome + valor + descrição inteira p/ a área
+   de transferência (fica no rodapé da própria aba de pergaminho) */
+.ga-desc-copiar {
+  display: block;
+  margin: 0.55rem 0 0 auto;
+  padding: 0.24rem 0.55rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+}
+.ga-desc-copiar:hover {
+  opacity: 1;
+  background: var(--rust-dark);
+  color: var(--parchment);
+  border-color: var(--rust-dark);
+}
+.ga-desc-copiar--ok,
+.ga-desc-copiar--ok:hover {
+  opacity: 1;
+  background: #2f5d33;
+  color: var(--parchment);
+  border-color: #2f5d33;
+}
+.ga-desc-copiar--erro,
+.ga-desc-copiar--erro:hover {
+  opacity: 1;
+  background: #8b1020;
+  color: var(--parchment);
+  border-color: #8b1020;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    MESA AO VIVO (📡) — sync-mestre.js / sync-jogador.js / modo-jogador.js
    ═══════════════════════════════════════════════════════════════════ */
