@@ -147,6 +147,9 @@
 .mz-mover:hover:not(:disabled) { opacity: 1; background: rgba(0, 0, 0, 0.14); }
 .mz-mover:disabled { opacity: 0.2; cursor: default; }
 
+/* ⧉ levar a ficha para outra cena / outra sessão (duplicar ou mover) */
+.mz-levar { font-size: 0.88rem; }
+
 /* ── NOMES EDITÁVEIS (cabeçalhos) ─────────────────────────────────── */
 .mz-nome {
   flex: 1 1 auto;
@@ -1095,6 +1098,40 @@
 }
 .mz-cond-chip--simples { padding-top: 0.32rem; padding-bottom: 0.32rem; }
 .mz-cond-chip--simples .mz-cond-nome { font-size: 0.92rem; }
+
+/* ═══ MODAL "⧉ DUPLICAR / MOVER FICHA" ════════════════════════════ */
+/* Reaproveita o corpo do modal de condições; só acrescenta o seletor
+   de modo no topo e o estado desabilitado das cenas de destino.       */
+.mz-lev-modos {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.7rem 0.9rem 0.2rem;
+}
+.mz-lev-modo {
+  flex: 1 1 0;
+  padding: 0.45rem 0.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.mz-lev-modo:hover { background: var(--parchment3); color: var(--ink); }
+.mz-lev-modo.ativo {
+  background: var(--rust-dark);
+  border-color: var(--rust-dark);
+  color: var(--parchment);
+}
+.mz-lev-opcao:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+.mz-lev-opcao:disabled:hover { background: var(--parchment2); }
 
 /* ═══ MODAL DE IMPORTAÇÃO ═════════════════════════════════════════ */
 .mz-imp-modal { max-width: 640px; }

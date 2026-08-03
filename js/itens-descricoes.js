@@ -123,6 +123,12 @@ window.ItensDescricoes = (function () {
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   }
 
+  // Mesma escapada, mas para VALOR DE ATRIBUTO — as quebras de linha viram
+  // entidades, senão o texto copiável perderia a formatação no data-*.
+  function escAttr(s) {
+    return escHtml(s).replace(/\r?\n/g, '&#10;');
+  }
+
   // Marca cada termo de regra (apenas a 1ª ocorrência de cada um) com tooltip.
   function marcar(texto) {
     if (!texto) return '';
@@ -164,11 +170,64 @@ window.ItensDescricoes = (function () {
   }
 
   // Bloco recolhível pronto (aba de pergaminho). Vazio se não houver descrição.
-  function bloco(nome, label) {
+  //  opts.titulo → 1ª linha do texto copiado (padrão: o próprio nome do item)
+  //  opts.linhas → contexto que entra logo abaixo do título, uma por linha
+  //                (ex.: 'Preço: T$ 50', 'Dano: 1d8', 'Fonte: T20, p. 141').
+  // O botão "⧉ Copiar" leva NOME + esse contexto + a descrição inteira.
+  function bloco(nome, label, opts) {
     const h = html(nome);
     if (!h) return '';
+    const o = opts || {};
+    const linhas = (o.linhas || []).map(v => String(v == null ? '' : v).trim()).filter(Boolean);
+    const texto = [String(o.titulo || nome || '').trim()]
+      .concat(linhas, ['', get(nome) || ''])
+      .join('\n').trim();
     return `<details class="ga-desc"><summary>${escHtml(label || 'Descrição')}</summary>`
-         + `<div class="ga-desc-corpo">${h}</div></details>`;
+         + `<div class="ga-desc-corpo">${h}`
+         + `<button type="button" class="ga-desc-copiar" data-ga-copiar="${escAttr(texto)}"`
+         + ` title="Copiar o texto completo (nome, valor e descrição)">⧉ Copiar</button>`
+         + `</div></details>`;
+  }
+
+  // ── Botão "⧉ Copiar" dos blocos de descrição ───────────────────────
+  //  Usa a API de área de transferência quando disponível e cai para o
+  //  velho execCommand('copy') quando o navegador barra (páginas abertas
+  //  direto do disco, por exemplo).
+  function _copiarFallback(texto) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = texto;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:-1000px;left:-1000px;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    } catch (e) { return false; }
+  }
+
+  function _avisarBotao(btn, txt, cls) {
+    if (btn._gaTimer) clearTimeout(btn._gaTimer);
+    if (!btn._gaLabel) btn._gaLabel = btn.textContent;
+    btn.textContent = txt;
+    btn.classList.remove('ga-desc-copiar--ok', 'ga-desc-copiar--erro');
+    btn.classList.add(cls);
+    btn._gaTimer = setTimeout(() => {
+      btn.textContent = btn._gaLabel;
+      btn.classList.remove('ga-desc-copiar--ok', 'ga-desc-copiar--erro');
+    }, 1800);
+  }
+
+  function _copiarTexto(texto, btn) {
+    const ok    = () => _avisarBotao(btn, '✓ Copiado!', 'ga-desc-copiar--ok');
+    const falha = () => _avisarBotao(btn, '✕ Não deu', 'ga-desc-copiar--erro');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto)
+        .then(ok, () => { if (_copiarFallback(texto)) ok(); else falha(); });
+      return;
+    }
+    if (_copiarFallback(texto)) ok(); else falha();
   }
 
   // ── Balão flutuante ("portal") dos termos .ga-tip ──────────────────
@@ -258,6 +317,14 @@ window.ItensDescricoes = (function () {
       const alvo = e.target && e.target.closest ? e.target.closest('.ga-tip') : null;
       if (alvo) _mostrarTip(alvo);
       else if (_tipAtual) _esconderTip();
+    });
+    // botão "⧉ Copiar" dos blocos de descrição (Loja e Recompensas)
+    document.addEventListener('click', e => {
+      const btn = e.target && e.target.closest ? e.target.closest('[data-ga-copiar]') : null;
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      _copiarTexto(btn.getAttribute('data-ga-copiar') || '', btn);
     });
     // clique num termo FIXA a nuvem (de novo no mesmo termo = solta);
     // clique dentro da nuvem fixada não faz nada (selecionar/copiar)

@@ -1808,9 +1808,41 @@ function renderDinheiro(dpRoll, resolved) {
 
 // ── Bloco de equipamento ──────────────────────────────
 // Bloco de descrição recolhível (aba de pergaminho + tooltips de regra).
-function descBlocoItem(nome) {
+function descBlocoItem(nome, linhas) {
   if (!window.ItensDescricoes || !nome) return '';
-  return ItensDescricoes.bloco(nome);
+  return ItensDescricoes.bloco(nome, null, { linhas: linhas || [] });
+}
+
+// Contexto que acompanha o nome no texto do botão "⧉ Copiar": preço,
+// atributos do item (catálogo da Loja), referência de livro e observação.
+function linhasCopiaItem(it) {
+  if (!it) return [];
+  return [
+    (it.preco != null && it.preco !== '') ? `Preço: ${it.preco} T$` : '',
+    statsItemTexto(it.item),
+    it.livro ? `Fonte: ${it.livro}${it.pag ? `, p. ${it.pag}` : ''}` : '',
+    it.obs ? `Obs.: ${it.obs}` : '',
+  ];
+}
+
+// Versão em texto puro de statsItemHTML (para a área de transferência).
+function statsItemTexto(nome) {
+  const st = (typeof LojaCompleta !== 'undefined' && LojaCompleta.statsDeItem)
+    ? LojaCompleta.statsDeItem(nome) : null;
+  if (!st) return '';
+  const partes = [];
+  if (st.kind === 'weapon') {
+    if (st.dano)         partes.push(`Dano ${st.dano}`);
+    if (st.critico)      partes.push(`Crítico ${String(st.critico).replace(/[xX]/g, '×')}`);
+    if (st.tipo)         partes.push(st.tipo);
+    if (st.alcance)      partes.push(st.alcance);
+    if (st.peso != null) partes.push(`${st.peso} esp.`);
+  } else if (st.kind === 'armor') {
+    if (st.bonus != null) partes.push(`Defesa +${st.bonus}`);
+    if (st.penalidade)    partes.push(`Penalidade ${st.penalidade}`);
+    if (st.peso != null)  partes.push(`${st.peso} esp.`);
+  }
+  return partes.length ? partes.join(' · ') : '';
 }
 
 // Faixa de atributos do item (dano/crítico/tipo p/ armas; bônus/penalidade p/
@@ -1854,7 +1886,7 @@ function blockEquip(equip, prefixo='') {
   ${equip.item ? `<div class="sub-indent"><span class="bullet">◇</span>
     <span class="livro-ref">📖 ${equip.item.livro}<span class="pag">p. ${equip.item.pag}</span></span>
   </div>` : ''}
-  ${descBlocoItem(equip.item?.item)}`;
+  ${descBlocoItem(equip.item?.item, linhasCopiaItem(equip.item))}`;
 }
 
 // ── Bloco de poção ────────────────────────────────────
@@ -1878,7 +1910,7 @@ function blockPocao(pocao, idx, total, pct) {
     <span class="bullet">◇</span>
     <span class="livro-ref">📖 ${pocao.item.livro}<span class="pag">p. ${pocao.item.pag}</span></span>
   </div>` : ''}
-  ${descBlocoItem(pocao.item?.item)}`;
+  ${descBlocoItem(pocao.item?.item, linhasCopiaItem(pocao.item))}`;
 }
 
 // ── Bloco de pergaminho (magia engarrafada) ───────────
@@ -1901,7 +1933,10 @@ function blockPergaminho(perg, idx, total) {
     <span class="bullet">◇</span>
     <span class="livro-ref">${meta}</span>
   </div>
-  ${descBlocoItem(perg.nome)}`;
+  ${descBlocoItem(perg.nome, [
+    (perg.precoPergaminho != null) ? `Preço: ${perg.precoPergaminho.toLocaleString('pt-BR')} T$` : '',
+    `Pergaminho — ${meta}`,
+  ])}`;
 }
 
 // ── Bloco de item superior ────────────────────────────
@@ -1921,7 +1956,7 @@ function blockSuperior(sup, prefixo='') {
     ${m.item ? `<div class="sub-indent" style="padding-left:24px"><span class="bullet">◇</span>
       <span class="livro-ref">📖 ${m.item.livro}<span class="pag">p. ${m.item.pag}</span></span>
     </div>` : ''}
-    ${descBlocoItem(m.item?.item)}`;
+    ${descBlocoItem(m.item?.item, linhasCopiaItem(m.item))}`;
   });
   return s;
 }
@@ -1953,7 +1988,7 @@ function blockMagico(mag, prefixo='') {
       <span class="bullet">◇</span>
       <span class="livro-ref">📖 ${e.item.livro}<span class="pag">p. ${e.item.pag}</span></span>
     </div>` : ''}
-    ${descBlocoItem(e.item?.item)}`;
+    ${descBlocoItem(e.item?.item, linhasCopiaItem(e.item))}`;
     return s;
   }
 
@@ -1980,7 +2015,7 @@ function blockMagico(mag, prefixo='') {
         <span class="bullet">◇</span>
         <span class="livro-ref">📖 ${enc.item.livro}<span class="pag">p. ${enc.item.pag}</span></span>
       </div>` : ''}
-      ${descBlocoItem(enc.item?.item)}`;
+      ${descBlocoItem(enc.item?.item, linhasCopiaItem(enc.item))}`;
     });
     return s;
 
@@ -2000,7 +2035,7 @@ function blockMagico(mag, prefixo='') {
       <span class="bullet">◇</span>
       <span class="livro-ref">📖 ${ac.livro}<span class="pag">p. ${ac.pag}</span></span>
     </div>` : ''}
-    ${descBlocoItem(ac?.item)}`;
+    ${descBlocoItem(ac?.item, linhasCopiaItem(ac))}`;
     return s;
   }
 
@@ -2087,7 +2122,7 @@ function renderItens(dpRoll, resolved) {
           <span class="livro-ref">📖 ${item.livro}<span class="pag">p. ${item.pag}</span></span>
         </div>
         ${obsHtml}
-        ${descBlocoItem(item.item)}
+        ${descBlocoItem(item.item, linhasCopiaItem(item))}
       </div>
     </div>`;
 

@@ -1848,6 +1848,8 @@
                   title="${fixada ? 'Tirar do painel de combate' : 'Fixar no painel de combate'}">◫</button>
           <button class="mz-mover" data-acao="subir-criatura" ${ds} ${semSubir} title="Mover para cima">↑</button>
           <button class="mz-mover" data-acao="descer-criatura" ${ds} ${semDescer} title="Mover para baixo">↓</button>
+          <button class="mz-mover mz-levar" data-acao="levar-criatura" ${ds}
+                  title="Duplicar / mover para outra cena (de qualquer sessão)">⧉</button>
           <button class="mz-del" data-acao="del-criatura" ${ds} title="Remover criatura">✕</button>`;
     const toggleHtml = painel
       ? `<button class="mz-toggle" data-acao="toggle-criatura-painel" ${ds} title="Expandir / recolher detalhes">
@@ -1944,6 +1946,8 @@
                   title="${fixada ? 'Tirar do painel de combate' : 'Fixar no painel de combate'}">◫</button>
           <button class="mz-mover" data-acao="subir-perigo" ${ds} ${semSubir} title="Mover para cima">↑</button>
           <button class="mz-mover" data-acao="descer-perigo" ${ds} ${semDescer} title="Mover para baixo">↓</button>
+          <button class="mz-mover mz-levar" data-acao="levar-perigo" ${ds}
+                  title="Duplicar / mover para outra cena (de qualquer sessão)">⧉</button>
           <button class="mz-del" data-acao="del-perigo" ${ds} title="Remover perigo">✕</button>`;
     const toggleHtml = painel
       ? `<button class="mz-toggle" data-acao="toggle-perigo-painel" ${ds} title="Expandir / recolher detalhes">
@@ -2189,6 +2193,15 @@
       if (j < 0 || j >= arr.length) return;
       const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
       salvar(); render(); return;
+    }
+
+    if (acao === 'levar-criatura') {
+      abrirModalLevar('criatura', +alvo.dataset.s, +alvo.dataset.c, +alvo.dataset.cr);
+      return;
+    }
+    if (acao === 'levar-perigo') {
+      abrirModalLevar('perigo', +alvo.dataset.s, +alvo.dataset.c, +alvo.dataset.pg);
+      return;
     }
 
     if (acao === 'subir-perigo' || acao === 'descer-perigo') {
@@ -3648,6 +3661,164 @@
     if (el) el.remove();
     document.removeEventListener('keydown', _impEsc);
     _impAlvo = null;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  MODAL "⧉ Duplicar / mover ficha"
+  //  Leva uma criatura (ou perigo complexo) para QUALQUER cena de
+  //  QUALQUER sessão — não só a que a criou. Duplicar clona a ficha
+  //  com um id novo (a cópia não herda o pino do painel de combate);
+  //  mover leva a mesma ficha, com pino e tudo.
+  // ═══════════════════════════════════════════════════════════════
+  let _levAlvo = null;          // { tipo, s, c, i }
+  let _levModo = 'duplicar';    // 'duplicar' | 'mover'
+
+  // A lista da cena que guarda esse tipo de ficha.
+  function _levLista(tipo, cena) {
+    if (tipo === 'perigo') {
+      if (!Array.isArray(cena.perigos)) cena.perigos = [];
+      return cena.perigos;
+    }
+    if (!Array.isArray(cena.criaturas)) cena.criaturas = [];
+    return cena.criaturas;
+  }
+
+  function _levFicha() {
+    if (!_levAlvo) return null;
+    const s = dados.sessoes[_levAlvo.s];
+    const c = s && s.cenas[_levAlvo.c];
+    return c ? (_levLista(_levAlvo.tipo, c)[_levAlvo.i] || null) : null;
+  }
+
+  function abrirModalLevar(tipo, si, ci, idx) {
+    fecharModalLevar();
+    _levAlvo = { tipo, s: si, c: ci, i: idx };
+    _levModo = 'duplicar';
+    const ficha = _levFicha();
+    if (!ficha) { _levAlvo = null; return; }
+
+    const rotulo = ficha.nome || (tipo === 'perigo' ? 'perigo sem nome' : 'criatura sem nome');
+    const overlay = document.createElement('div');
+    overlay.id = 'mzLevarModal';
+    overlay.className = 'mz-cond-overlay';
+    overlay.innerHTML = `
+      <div class="mz-cond-modal" role="dialog" aria-modal="true">
+        <div class="mz-cond-modal-head">
+          <span>⧉ Levar “${esc(rotulo)}” para outra cena</span>
+          <button class="mz-cond-modal-x" data-lev-fechar title="Fechar">✕</button>
+        </div>
+        <div class="mz-lev-modos">
+          <button class="mz-lev-modo" data-lev-modo="duplicar">⧉ Duplicar</button>
+          <button class="mz-lev-modo" data-lev-modo="mover">➜ Mover</button>
+        </div>
+        <div class="mz-cond-modal-corpo" id="mzLevarLista"></div>
+        <div class="mz-cond-modal-pe" id="mzLevarPe"></div>
+      </div>`;
+    document.body.appendChild(overlay);
+    _levDesenhar();
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay || e.target.closest('[data-lev-fechar]')) { fecharModalLevar(); return; }
+      const modo = e.target.closest('[data-lev-modo]');
+      if (modo) { _levModo = modo.dataset.levModo; _levDesenhar(); return; }
+      const destino = e.target.closest('[data-lev-ir]');
+      if (destino) _levExecutar(+destino.dataset.s2, +destino.dataset.c2);
+    });
+
+    document.addEventListener('keydown', _levEsc);
+  }
+
+  // Redesenha o conteúdo do modal (a lista muda conforme o modo escolhido).
+  function _levDesenhar() {
+    const overlay = document.getElementById('mzLevarModal');
+    if (!overlay || !_levAlvo) return;
+    const duplicando = (_levModo === 'duplicar');
+
+    overlay.querySelectorAll('[data-lev-modo]').forEach(b => {
+      b.classList.toggle('ativo', b.dataset.levModo === _levModo);
+    });
+
+    let html = '';
+    dados.sessoes.forEach((s, si2) => {
+      let linhas = '';
+      s.cenas.forEach((c, ci2) => {
+        const atual = (si2 === _levAlvo.s && ci2 === _levAlvo.c);
+        // mover para a própria cena não faria nada; duplicar, sim (vira uma
+        // segunda ficha logo abaixo da original)
+        const bloqueada = atual && !duplicando;
+        const nCr = (c.criaturas || []).length;
+        const nPg = (c.perigos || []).length;
+        const conteudo = [
+          nCr ? `${nCr} criatura${nCr !== 1 ? 's' : ''}` : '',
+          nPg ? `${nPg} perigo${nPg !== 1 ? 's' : ''}` : '',
+        ].filter(Boolean).join(' · ') || 'vazia';
+        linhas += `
+          <button class="mz-cond-opcao mz-lev-opcao" style="--cor:#5c1a04"
+                  data-lev-ir data-s2="${si2}" data-c2="${ci2}" ${bloqueada ? 'disabled' : ''}>
+            <span class="mz-cond-opcao-cab">
+              <span class="mz-cond-opcao-check">${duplicando ? '⧉' : '➜'}</span>
+              <span class="mz-cond-opcao-nome">${esc(c.nome || 'Cena sem nome')}</span>
+              ${atual ? '<span class="mz-cond-opcao-cat">cena atual</span>' : ''}
+            </span>
+            <span class="mz-cond-opcao-desc">${conteudo}</span>
+          </button>`;
+      });
+      if (!linhas) linhas = '<p class="mz-imp-vazio">Esta sessão ainda não tem cenas.</p>';
+      html += `
+        <div class="mz-cond-grupo" style="--cor:#5c1a04">
+          <div class="mz-cond-grupo-titulo">${esc(s.nome || 'Sessão sem nome')}</div>
+          ${linhas}
+        </div>`;
+    });
+    if (!html) html = '<p class="mz-imp-vazio">Nenhuma sessão criada.</p>';
+    overlay.querySelector('#mzLevarLista').innerHTML = html;
+
+    overlay.querySelector('#mzLevarPe').textContent = duplicando
+      ? 'Clique na cena de destino: uma cópia independente da ficha é criada lá (a original fica onde está). Duplicar na própria cena põe a cópia logo abaixo.'
+      : 'Clique na cena de destino: a ficha sai daqui e vai para lá, com anotações, condições e o pino do painel.';
+  }
+
+  function _levExecutar(si2, ci2) {
+    const a = _levAlvo;
+    if (!a) return;
+    const cenaOrig = dados.sessoes[a.s] && dados.sessoes[a.s].cenas[a.c];
+    const sessDest = dados.sessoes[si2];
+    const cenaDest = sessDest && sessDest.cenas[ci2];
+    const ficha = _levFicha();
+    if (!cenaOrig || !cenaDest || !ficha) { fecharModalLevar(); return; }
+
+    const listaOrig = _levLista(a.tipo, cenaOrig);
+    const listaDest = _levLista(a.tipo, cenaDest);
+    const mesmaCena = (listaDest === listaOrig);
+
+    if (_levModo === 'duplicar') {
+      const copia = JSON.parse(JSON.stringify(ficha));
+      copia.id = uid(a.tipo === 'perigo' ? 'pg' : 'cr');   // id novo → não herda o pino
+      copia.aberto = true;
+      if (a.tipo === 'perigo') normalizarPerigo(copia); else normalizarCriatura(copia);
+      if (mesmaCena) listaDest.splice(a.i + 1, 0, copia);
+      else           listaDest.push(copia);
+    } else {
+      if (mesmaCena) { fecharModalLevar(); return; }
+      listaOrig.splice(a.i, 1);
+      listaDest.push(ficha);
+    }
+    // abre o caminho até o destino para a ficha não "sumir" da vista
+    sessDest.aberto = true;
+    cenaDest.aberto = true;
+
+    salvar();
+    fecharModalLevar();
+    render();
+  }
+
+  function _levEsc(e) { if (e.key === 'Escape') fecharModalLevar(); }
+
+  function fecharModalLevar() {
+    const el = document.getElementById('mzLevarModal');
+    if (el) el.remove();
+    document.removeEventListener('keydown', _levEsc);
+    _levAlvo = null;
   }
 
   // ═══════════════════════════════════════════════════════════════
