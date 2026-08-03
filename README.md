@@ -11,6 +11,14 @@
   _Não precisa instalar nem fazer login — é só abrir o link e usar._
 </div>
 
+<div align="center">
+  <img src="docs/mesa-ao-vivo.gif" width="900"
+       alt="Tela dividida: o mestre gera uma nova loja à esquerda e a edição dos jogadores, à direita, se atualiza sozinha">
+  <br>
+  <sub><strong>Mesa ao vivo</strong> — o mestre gera uma nova loja (à esquerda) e a tela dos
+  jogadores (à direita) se atualiza sozinha, sem recarregar a página.</sub>
+</div>
+
 ---
 
 ## ✨ O que é
