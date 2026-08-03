@@ -16,7 +16,7 @@
        alt="Tela dividida: o mestre gera uma nova loja à esquerda e a edição dos jogadores, à direita, se atualiza sozinha">
   <br>
   <sub><strong>Mesa ao vivo</strong> — o mestre gera uma nova loja (à esquerda) e a tela dos
-  jogadores (à direita) se atualiza sozinha, sem recarregar a página.</sub>
+  jogadores (à direita) se atualiza após eu dar o F5.</sub>
 </div>
 
 ---
