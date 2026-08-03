@@ -207,21 +207,25 @@ window.ItensDescricoes = (function () {
     } catch (e) { return false; }
   }
 
+  // Devolve o botão ao rótulo original (cancelando um aviso em andamento).
+  function _resetBotao(btn) {
+    if (!btn) return;
+    if (btn._gaTimer) { clearTimeout(btn._gaTimer); btn._gaTimer = null; }
+    if (btn._gaLabel) btn.textContent = btn._gaLabel;
+    btn.classList.remove('ga-copia--ok', 'ga-copia--erro');
+  }
+
   function _avisarBotao(btn, txt, cls) {
-    if (btn._gaTimer) clearTimeout(btn._gaTimer);
     if (!btn._gaLabel) btn._gaLabel = btn.textContent;
+    _resetBotao(btn);
     btn.textContent = txt;
-    btn.classList.remove('ga-desc-copiar--ok', 'ga-desc-copiar--erro');
     btn.classList.add(cls);
-    btn._gaTimer = setTimeout(() => {
-      btn.textContent = btn._gaLabel;
-      btn.classList.remove('ga-desc-copiar--ok', 'ga-desc-copiar--erro');
-    }, 1800);
+    btn._gaTimer = setTimeout(() => _resetBotao(btn), 1800);
   }
 
   function _copiarTexto(texto, btn) {
-    const ok    = () => _avisarBotao(btn, '✓ Copiado!', 'ga-desc-copiar--ok');
-    const falha = () => _avisarBotao(btn, '✕ Não deu', 'ga-desc-copiar--erro');
+    const ok    = () => _avisarBotao(btn, '✓ Copiado!', 'ga-copia--ok');
+    const falha = () => _avisarBotao(btn, '✕ Não deu', 'ga-copia--erro');
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(texto)
         .then(ok, () => { if (_copiarFallback(texto)) ok(); else falha(); });
@@ -249,13 +253,23 @@ window.ItensDescricoes = (function () {
     _pop.hidden = true;
     const txt = document.createElement('div');
     txt.className = 'ga-tip-pop-txt';
+    // rodapé — só aparece com a nuvem FIXADA (é quando ela aceita o mouse)
+    const pe = document.createElement('div');
+    pe.className = 'ga-tip-pop-pe';
     const pin = document.createElement('span');
     pin.className = 'ga-tip-pop-pin';
-    pin.textContent = '📌 fixada — clique fora (ou Esc) para soltar';
+    pin.textContent = '📌 clique fora (ou Esc) para soltar';
+    const copiar = document.createElement('button');
+    copiar.type = 'button';
+    copiar.className = 'ga-tip-pop-copiar';
+    copiar.title = 'Copiar o trecho e a descrição inteira';
+    copiar.textContent = '⧉ Copiar';
+    pe.appendChild(pin);
+    pe.appendChild(copiar);
     const seta = document.createElement('span');
     seta.className = 'ga-tip-pop-seta';
     _pop.appendChild(txt);
-    _pop.appendChild(pin);
+    _pop.appendChild(pe);
     _pop.appendChild(seta);
     document.body.appendChild(_pop);
     return _pop;
@@ -269,6 +283,15 @@ window.ItensDescricoes = (function () {
     pop.querySelector('.ga-tip-pop-txt').textContent = def;
     pop.classList.remove('ga-tip-pop--abaixo');
     pop.hidden = false;
+
+    // o botão do rodapé leva o TRECHO grifado (nome do item, da magia…)
+    // junto com a descrição inteira — o mesmo formato dos blocos 📜.
+    const btnCopiar = pop.querySelector('.ga-tip-pop-copiar');
+    if (btnCopiar) {
+      _resetBotao(btnCopiar);
+      const termo = (span.textContent || '').trim();
+      btnCopiar.setAttribute('data-ga-copiar', (termo ? termo + '\n\n' : '') + def);
+    }
 
     // mede no canto (0,0), para o max-width valer sem a borda da janela
     pop.style.left = '0px';

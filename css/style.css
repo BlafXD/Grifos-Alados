@@ -1655,18 +1655,40 @@ footer {
   user-select: text;
   cursor: auto;
 }
-.ga-tip-pop-pin { display: none; }
-.ga-tip-pop--fixado .ga-tip-pop-pin {
-  display: block;
+/* rodapé da nuvem fixada: aviso do 📌 + botão "⧉ Copiar" */
+.ga-tip-pop-pe { display: none; }
+.ga-tip-pop--fixado .ga-tip-pop-pe {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   margin-top: 0.4rem;
   padding-top: 0.3rem;
   border-top: 1px dotted rgba(244, 232, 208, 0.4);
+}
+.ga-tip-pop-pin {
+  flex: 1 1 auto;
   font-family: 'IM Fell English', serif;
   font-style: italic;
   font-size: 0.68rem;
   opacity: 0.75;
   user-select: none;
 }
+.ga-tip-pop-copiar {
+  flex: 0 0 auto;
+  padding: 0.16rem 0.42rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: transparent;
+  border: 1px solid var(--gold);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s, color 0.15s;
+}
+.ga-tip-pop-copiar:hover { background: var(--gold); color: var(--ink); }
 
 /* ── CAMPOS RICOS COM 📖 DESCRIÇÃO (Ramos, Viagem, Bases) ──────────
    O textarea virou contenteditable para aceitar a descrição pendurada
@@ -1882,15 +1904,16 @@ footer {
   color: var(--parchment);
   border-color: var(--rust-dark);
 }
-.ga-desc-copiar--ok,
-.ga-desc-copiar--ok:hover {
+/* aviso pós-clique — vale para os dois botões de cópia (bloco 📜 e nuvem) */
+.ga-copia--ok,
+.ga-copia--ok:hover {
   opacity: 1;
   background: #2f5d33;
   color: var(--parchment);
   border-color: #2f5d33;
 }
-.ga-desc-copiar--erro,
-.ga-desc-copiar--erro:hover {
+.ga-copia--erro,
+.ga-copia--erro:hover {
   opacity: 1;
   background: #8b1020;
   color: var(--parchment);
