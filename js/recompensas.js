@@ -1832,13 +1832,23 @@ function statsDaLoja(nome) {
       || (NOME_NA_LOJA[nome] ? LC.statsDeItem(NOME_NA_LOJA[nome]) : null);
 }
 
-// Preço do item em T$ (formato pt-BR), buscado no catálogo da Loja.
-// Vazio quando o item não está lá ou o livro não lhe dá preço — caso de
-// Bordão, Clava, Funda e Tacape, as armas de custo "—" do T20.
-function precoDaLoja(nome) {
+// Preço do item no catálogo da Loja, como NÚMERO. null quando o item não
+// está lá ou quando o livro não lhe dá preço — caso de Bordão, Clava,
+// Funda e Tacape, as armas de custo "—" do T20.
+function precoNumDaLoja(nome) {
   const st = statsDaLoja(nome);
   const n  = (st && st.preco != null) ? Number(st.preco) : NaN;
-  return isFinite(n) ? n.toLocaleString('pt-BR') : '';
+  return isFinite(n) ? n : null;
+}
+
+// O mesmo preço já formatado em T$ (pt-BR). '' quando não há preço.
+function precoDaLoja(nome) {
+  const n = precoNumDaLoja(nome);
+  return n == null ? '' : fmtT$(n);
+}
+
+function fmtT$(n) {
+  return Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
 }
 
 // Contexto que acompanha o nome no texto do botão "⧉ Copiar": preço,
@@ -1871,6 +1881,10 @@ function statsItemTexto(nome) {
     if (st.bonus != null) partes.push(`Defesa +${st.bonus}`);
     if (st.penalidade)    partes.push(`Penalidade ${st.penalidade}`);
     if (st.peso != null)  partes.push(`${st.peso} esp.`);
+  } else if (st.peso != null) {
+    // Esotéricos, itens diversos e afins: sem atributos de combate, mas o
+    // peso (espaços) interessa a quem vai anotar o item na ficha.
+    partes.push(`${st.peso} esp.`);
   }
   return partes.length ? partes.join(' · ') : '';
 }
@@ -1895,6 +1909,141 @@ function statsItemHTML(nome) {
   if (!partes.length) return '';
   return `<div class="sub-indent rc-stats"><span class="bullet">◇</span>
     <span class="rc-stats-txt">${partes.join('&nbsp;·&nbsp;')}</span></div>`;
+}
+
+/* ═══════════════════════════════════════════════════════
+   5b. PREÇO SOMADO DO ITEM MONTADO (base + melhorias + encantos)
+   ═══════════════════════════════════════════════════════
+   Tabela 3-7 (melhorias) e Tabela 8-7 (encantos) do T20. Os dois
+   acréscimos são CUMULATIVOS pela QUANTIDADE, não por unidade: três
+   encantos custam +T$ 72.000 no total, e não 3 × 18.000. Um item pode ser
+   superior E encantado — aí os dois acréscimos se somam ao preço do item
+   base (o exemplo do livro: espada longa com 4 melhorias e 3 encantos =
+   T$ 15 + 18.000 + 72.000 = T$ 90.015).
+   ═══════════════════════════════════════════════════════ */
+
+// Mesma chave de criacao-itens.js: se o mestre reajustou a tabela de
+// preços por lá ("⚙ Ajustar tabela de preços"), a conta aqui acompanha.
+const CI_TABELA_KEY = 'grifosAlados.criacaoItensTabela';
+
+function tabelaPrecosMontagem() {
+  const D = window.GA_CRIACAO_ITENS;
+  try {
+    const t = JSON.parse(localStorage.getItem(CI_TABELA_KEY) || 'null');
+    if (t && Array.isArray(t.melhorias) && Array.isArray(t.encantos)) return t;
+  } catch (e) { /* tabela ilegível no navegador → cai na padrão */ }
+  return { melhorias: D ? D.MELHORIAS_PADRAO : [], encantos: D ? D.ENCANTOS_PADRAO : [] };
+}
+
+function precoPorQuantidade(linhas, n) {
+  if (!n) return 0;
+  const l = (linhas || []).find(x => Number(x.n) === Number(n));
+  return l ? (Number(l.preco) || 0) : 0;
+}
+
+// Munição é vendida em pacotes de 20 e paga METADE do acréscimo de
+// melhorias e encantos (T20, "Munições — regra especial de preço").
+// As cinco munições da tabela de armas são as únicas entradas com o
+// tamanho do pacote no nome.
+function ehMunicao(nome) { return /\(\s*\d+\s*\)\s*$/.test(String(nome || '')); }
+
+const MELHORIA_MATERIAL = 'Material especial';
+
+// Soma o preço do item montado. Devolve também as parcelas, para o texto
+// poder mostrar de onde veio cada número.
+function precoMontagem(nomeBase, qtdMelhorias, qtdEncantos) {
+  const tab   = tabelaPrecosMontagem();
+  const meia  = ehMunicao(nomeBase) ? 0.5 : 1;
+  const base  = precoNumDaLoja(nomeBase);
+  const mel   = precoPorQuantidade(tab.melhorias, qtdMelhorias) * meia;
+  const enc   = precoPorQuantidade(tab.encantos,  qtdEncantos)  * meia;
+  return { base, mel, enc, municao: meia !== 1, total: (base || 0) + mel + enc };
+}
+
+// "A", "A e B", "A, B e C"
+function listaNatural(arr) {
+  const a = (arr || []).filter(Boolean);
+  if (a.length < 2) return a[0] || '';
+  return a.slice(0, -1).join(', ') + ' e ' + a[a.length - 1];
+}
+
+// Ficha do item inteiro para a área de transferência: cabeçalho com o
+// nome e tudo o que ele recebeu, o preço somado e, embaixo, a descrição
+// de cada parte (item base, cada melhoria e cada encanto).
+function textoItemMontado(base, melhorias, encantos, subtitulo) {
+  const nomeBase = base && base.item ? base.item : '—';
+  const nomesMel = (melhorias || []).map(m => m.item && m.item.item).filter(Boolean);
+  const nomesEnc = (encantos  || []).map(e => e.item && e.item.item).filter(Boolean);
+  const p        = precoMontagem(nomeBase, nomesMel.length, nomesEnc.length);
+  const partes   = nomesMel.concat(nomesEnc);
+
+  const linhas = [
+    nomeBase + (partes.length ? ` (${listaNatural(partes)})` : ''),
+    subtitulo || '',
+  ];
+
+  // Preço somado + de onde veio cada parcela.
+  const det = [];
+  if (p.base != null)  det.push(`${fmtT$(p.base)} do item`);
+  if (p.mel)           det.push(`${fmtT$(p.mel)} por ${nomesMel.length} melhoria${nomesMel.length > 1 ? 's' : ''}`);
+  if (p.enc)           det.push(`${fmtT$(p.enc)} por ${nomesEnc.length} encanto${nomesEnc.length > 1 ? 's' : ''}`);
+  if (p.municao)       det.push('munição: metade do acréscimo');
+  linhas.push(`Preço total: ${fmtT$(p.total)} T$` + (det.length ? ` (${det.join(' + ')})` : ''));
+  if (p.base == null)  linhas.push(`⚠ O item base não tem preço no catálogo — some o valor dele ao total.`);
+  if (nomesMel.includes(MELHORIA_MATERIAL))
+    linhas.push(`⚠ Material especial: escolha o material (Tabela 3-9) e some o preço dele ao total.`);
+
+  // Ficha de cada parte: os mesmos dados do bloco 📜 individual.
+  const secao = (rotulo, it) => {
+    if (!it || !it.item) return '';
+    const desc = window.ItensDescricoes ? (ItensDescricoes.get(it.item) || '') : '';
+    return ['', `── ${rotulo} ──`]
+      .concat(linhasCopiaItem(it).filter(Boolean), desc ? ['', desc] : [])
+      .join('\n');
+  };
+  const corpo = [secao(nomeBase, base)]
+    .concat((melhorias || []).map((m, i) => secao(`Melhoria ${i + 1}: ${m.item && m.item.item || '—'}`, m.item)))
+    .concat((encantos  || []).map((e, i) => secao(`Encanto ${i + 1}: ${e.item && e.item.item || '—'}`, e.item)))
+    .filter(Boolean);
+
+  return linhas.filter(Boolean).join('\n') + '\n' + corpo.join('\n');
+}
+
+// Rodapé do card: preço somado na tela + botão "⧉ Copiar tudo".
+function rodapeItemMontado(base, melhorias, encantos, subtitulo) {
+  if (!base || !base.item) return '';
+  const nomesMel = (melhorias || []).map(m => m.item && m.item.item).filter(Boolean);
+  const nomesEnc = (encantos  || []).map(e => e.item && e.item.item).filter(Boolean);
+  if (!nomesMel.length && !nomesEnc.length) return '';   // item cru: nada a somar
+  const p = precoMontagem(base.item, nomesMel.length, nomesEnc.length);
+
+  const det = [];
+  if (p.base != null) det.push(`${fmtT$(p.base)} do item`);
+  if (p.mel)          det.push(`${fmtT$(p.mel)} de ${nomesMel.length} melhoria${nomesMel.length > 1 ? 's' : ''}`);
+  if (p.enc)          det.push(`${fmtT$(p.enc)} de ${nomesEnc.length} encanto${nomesEnc.length > 1 ? 's' : ''}`);
+  if (p.municao)      det.push('munição paga metade');
+
+  const avisos = [
+    p.base == null ? 'Item base sem preço no catálogo — some o valor dele.' : '',
+    nomesMel.includes(MELHORIA_MATERIAL)
+      ? 'Material especial: escolha o material (Tabela 3-9) e some o preço dele ao total.' : '',
+  ].filter(Boolean).map(a => `<div class="rc-alerta">⚠ ${a}</div>`).join('');
+
+  const texto = textoItemMontado(base, melhorias, encantos, subtitulo);
+  return `${avisos}<div class="rc-total">
+    <span class="rc-total-txt">💰 Total: <strong>${fmtT$(p.total)} T$</strong>${
+      det.length ? `<span class="rc-total-det">${det.join(' + ')}</span>` : ''}</span>
+    <button type="button" class="ga-desc-copiar rc-copiar-tudo" data-ga-copiar="${gaEscAttr(texto)}"
+      title="Copiar o item inteiro: nome, preço somado e a descrição de cada parte">⧉ Copiar tudo</button>
+  </div>`;
+}
+
+// Escapa texto para dentro de um atributo HTML preservando as quebras de
+// linha (o mesmo tratamento que itens-descricoes.js dá ao data-ga-copiar).
+function gaEscAttr(s) {
+  return String(s == null ? '' : s)
+    .replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+    .replace(/\r?\n/g, '&#10;');
 }
 
 function blockEquip(equip, prefixo='') {
@@ -1987,6 +2136,9 @@ function blockSuperior(sup, prefixo='') {
     </div>` : ''}
     ${descBlocoItem(m.item?.item, linhasCopiaItem(m.item))}`;
   });
+  const q = (sup.melhorias || []).length;
+  s += rodapeItemMontado(sup.equip?.item, sup.melhorias, null,
+    `Item Superior — ${sup.equip?.tipo || ''} · ${q} melhoria${q > 1 ? 's' : ''}`);
   return s;
 }
 
@@ -2122,6 +2274,11 @@ function blockMagico(mag, prefixo='') {
       </div>` : ''}
       ${descBlocoItem(m.item?.item, linhasCopiaItem(m.item))}`;
     });
+    const nEnc = (mag.encantos || []).length;
+    const nMel = (mag.melhorias || []).length;
+    s += rodapeItemMontado(mag.itemBase, mag.melhorias, mag.encantos,
+      `Item Mágico ${tn} — ${mag.tipo} · ${nEnc} encanto${nEnc > 1 ? 's' : ''}`
+      + (nMel ? ` + superior (${nMel} melhoria${nMel > 1 ? 's' : ''})` : ''));
   }
   return s;
 }

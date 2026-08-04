@@ -1275,6 +1275,47 @@ footer {
 }
 #recompensas .rc-stats-txt strong { color: var(--ink); font-weight: 700; }
 
+/* ── RODAPÉ DO ITEM MONTADO (preço somado + "⧉ Copiar tudo") ────────
+   Fecha o bloco de um item superior/mágico: o preço do item base com os
+   acréscimos das melhorias e dos encantos já somados, e um botão que leva
+   a ficha inteira (nome, total e a descrição de cada parte). */
+#recompensas .rc-total {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--parchment3);
+}
+#recompensas .rc-total-txt {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  color: var(--rust-dark);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+#recompensas .rc-total-txt strong { color: var(--ink); font-size: 0.88rem; }
+#recompensas .rc-total-det {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ink-faded);
+}
+#recompensas .rc-copiar-tudo { margin: 0 0 0 auto; }
+
+#recompensas .rc-alerta {
+  margin-top: 0.5rem;
+  padding: 0.3rem 0.55rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.84rem;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border-left: 3px solid var(--gold);
+}
+
 /* ── INLINE DICE ─────────────────────────────────────────────────── */
 #recompensas .dice-inline {
   font-family: 'Cinzel', serif;
