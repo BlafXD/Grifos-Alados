@@ -1813,12 +1813,43 @@ function descBlocoItem(nome, linhas) {
   return ItensDescricoes.bloco(nome, null, { linhas: linhas || [] });
 }
 
+// ── Ponte com o catálogo da Loja (atributos + preço) ──────────────────
+// A busca da Loja é por nome EXATO, mas algumas tabelas daqui guardam o
+// item com nome curto (as armaduras-base "Completa" e "Couro") ou sem o
+// complemento entre parênteses ("Estrepes"). Este mapa faz a ponte — o
+// mesmo papel dos ALIASES de itens-descricoes.js para as descrições.
+const NOME_NA_LOJA = {
+  'Completa': 'Armadura completa',
+  'Couro':    'Armadura de couro',
+  'Estrepes': 'Estrepes (bolsa para 3m)',
+};
+
+function statsDaLoja(nome) {
+  if (!nome) return null;
+  const LC = (typeof LojaCompleta !== 'undefined') ? LojaCompleta : window.LojaCompleta;
+  if (!LC || !LC.statsDeItem) return null;
+  return LC.statsDeItem(nome)
+      || (NOME_NA_LOJA[nome] ? LC.statsDeItem(NOME_NA_LOJA[nome]) : null);
+}
+
+// Preço do item em T$ (formato pt-BR), buscado no catálogo da Loja.
+// Vazio quando o item não está lá ou o livro não lhe dá preço — caso de
+// Bordão, Clava, Funda e Tacape, as armas de custo "—" do T20.
+function precoDaLoja(nome) {
+  const st = statsDaLoja(nome);
+  const n  = (st && st.preco != null) ? Number(st.preco) : NaN;
+  return isFinite(n) ? n.toLocaleString('pt-BR') : '';
+}
+
 // Contexto que acompanha o nome no texto do botão "⧉ Copiar": preço,
 // atributos do item (catálogo da Loja), referência de livro e observação.
 function linhasCopiaItem(it) {
   if (!it) return [];
+  // Acessórios mágicos e poções já trazem o preço na própria tabela;
+  // armas, armaduras, esotéricos e itens diversos vêm do catálogo da Loja.
+  const preco = (it.preco != null && it.preco !== '') ? it.preco : precoDaLoja(it.item);
   return [
-    (it.preco != null && it.preco !== '') ? `Preço: ${it.preco} T$` : '',
+    preco ? `Preço: ${preco} T$` : '',
     statsItemTexto(it.item),
     it.livro ? `Fonte: ${it.livro}${it.pag ? `, p. ${it.pag}` : ''}` : '',
     it.obs ? `Obs.: ${it.obs}` : '',
@@ -1827,8 +1858,7 @@ function linhasCopiaItem(it) {
 
 // Versão em texto puro de statsItemHTML (para a área de transferência).
 function statsItemTexto(nome) {
-  const st = (typeof LojaCompleta !== 'undefined' && LojaCompleta.statsDeItem)
-    ? LojaCompleta.statsDeItem(nome) : null;
+  const st = statsDaLoja(nome);
   if (!st) return '';
   const partes = [];
   if (st.kind === 'weapon') {
@@ -1848,8 +1878,7 @@ function statsItemTexto(nome) {
 // Faixa de atributos do item (dano/crítico/tipo p/ armas; bônus/penalidade p/
 // armaduras), buscada no catálogo da Loja. Vazia se o item não tiver stats lá.
 function statsItemHTML(nome) {
-  const st = (typeof LojaCompleta !== 'undefined' && LojaCompleta.statsDeItem)
-    ? LojaCompleta.statsDeItem(nome) : null;
+  const st = statsDaLoja(nome);
   if (!st) return '';
   const partes = [];
   if (st.kind === 'weapon') {
@@ -2055,7 +2084,8 @@ function blockMagico(mag, prefixo='') {
     ${mag.itemBase ? `<div class="sub-indent" style="padding-left:24px">
       <span class="bullet">◇</span>
       <span class="livro-ref">📖 ${mag.itemBase.livro}<span class="pag">p. ${mag.itemBase.pag}</span></span>
-    </div>` : ''}`;
+    </div>` : ''}
+    ${descBlocoItem(mag.itemBase?.item, linhasCopiaItem(mag.itemBase))}`;
     // Encantos
     mag.encantos.forEach((enc, i) => {
       const doisTag = enc.item?.doisEncantos ? `&nbsp;${tag('conta como 2 encantos')}` : '';
@@ -2072,7 +2102,8 @@ function blockMagico(mag, prefixo='') {
       ${enc.item ? `<div class="sub-indent" style="padding-left:24px">
         <span class="bullet">◇</span>
         <span class="livro-ref">📖 ${enc.item.livro}<span class="pag">p. ${enc.item.pag}</span></span>
-      </div>` : ''}`;
+      </div>` : ''}
+      ${descBlocoItem(enc.item?.item, linhasCopiaItem(enc.item))}`;
     });
     // Modo Customizável "Superior + Encantado": melhorias no item mágico.
     (mag.melhorias || []).forEach((m, i) => {
@@ -2088,7 +2119,8 @@ function blockMagico(mag, prefixo='') {
       </div>
       ${m.item ? `<div class="sub-indent" style="padding-left:24px"><span class="bullet">◇</span>
         <span class="livro-ref">📖 ${m.item.livro}<span class="pag">p. ${m.item.pag}</span></span>
-      </div>` : ''}`;
+      </div>` : ''}
+      ${descBlocoItem(m.item?.item, linhasCopiaItem(m.item))}`;
     });
   }
   return s;
