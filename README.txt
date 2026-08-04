@@ -69,8 +69,7 @@ grifos-alados/
 ├── data/
 │   └── noticias.json       ← cópia das notícias em JSON (backup)
 └── backend/
-    ├── server.py           ← servidor local (só para editar Notícias)
-    └── loja_completa.py    ← antigo gerador da loja (não é mais usado)
+    └── server.py           ← servidor local (só para editar Notícias)
 
 ONDE FICAM SALVOS OS DADOS
 ──────────────────────────
