@@ -54,10 +54,29 @@
 
   function moeda(n) { return 'T$ ' + Number(n || 0).toLocaleString('pt-BR'); }
 
+  // Estamos na visão dos jogadores (jogadores.html)? Lá a caixa
+  // "Inventário dos jogadores" é EDITÁVEL (é a exceção que eles podem
+  // escrever); no index.html do mestre ela é só leitura + botão limpar.
+  function ehJogador() { return document.documentElement.classList.contains('ga-jogador'); }
+
+  // "Inventário dos jogadores": espelho compartilhado, à parte de
+  // dados.bases (ver sync-mestre.js / sync-jogador.js). Guardado como
+  // um objeto { [baseId]: texto } numa chave própria do localStorage.
+  const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
+  function invJogadores() {
+    try { return JSON.parse(localStorage.getItem(CHAVE_INV_JOGADORES) || '{}') || {}; }
+    catch (e) { return {}; }
+  }
+  function invJogadoresDe(baseId) {
+    const v = invJogadores()[baseId];
+    return typeof v === 'string' ? v : '';
+  }
+
   function novaBase(n) {
     return {
       id: uid('base'), aberta: true, nome: 'Base ' + n,
       tipo: '', porte: 'minima', sitio: false, segAjuste: 0,
+      visivelJogadores: true,
       residentes: '', residentesHtml: '', inventario: '', inventarioHtml: '',
       comodos: [], mobilias: [],
     };
@@ -67,6 +86,7 @@
     if (!b.id) b.id = uid('base');
     if (typeof b.nome !== 'string') b.nome = 'Base';
     if (typeof b.aberta !== 'boolean') b.aberta = true;
+    if (typeof b.visivelJogadores !== 'boolean') b.visivelJogadores = true;
     if (typeof b.tipo !== 'string' || (b.tipo && !tipoDef(b.tipo))) b.tipo = '';
     if (!PORTES.some(p => p.chave === b.porte)) b.porte = 'minima';
     if (typeof b.sitio !== 'boolean') b.sitio = false;
@@ -143,6 +163,53 @@
   // ═══════════════════════════════════════════════════════════════
   //  RENDERIZAÇÃO
   // ═══════════════════════════════════════════════════════════════
+  // ── CATÁLOGO DE CÔMODOS & MOBÍLIAS (consulta — funciona para jogadores) ──
+  //  Painel único (não repetido por base) para consultar o benefício de
+  //  qualquer cômodo ou mobília, sem precisar adicioná-lo a uma base para
+  //  ver o que ele faz. É um <details>/<summary> de propósito: essa
+  //  interação já é liberada para jogadores.html por modo-jogador.js, sem
+  //  precisar de nenhuma trava nova — só a busca (.bs-catalogo-busca)
+  //  precisou entrar na lista de campos sempre permitidos.
+  function htmlCatalogo() {
+    const linhaComodo = c => `
+      <div class="bs-cat-item" data-busca="${esc(window.GA_semAcento(c.nome + ' ' + c.efeito))}">
+        <div class="bs-cat-item-cab">
+          <span class="bs-cat-item-nome">🚪 ${esc(c.nome)}</span>
+          ${c.seg ? `<span class="bs-tag-seg">🛡 +${c.seg}</span>` : ''}
+        </div>
+        <div class="bs-item-efeito">${esc(c.efeito)}</div>
+        ${(c.prereqComodo && c.prereqComodo.length) ? `<div class="bs-item-prereq">⚠ requer ${c.prereqComodo.map(ch => { const d = comodoDef(ch); return esc(d ? d.nome : ch); }).join(', ')}</div>` : ''}
+      </div>`;
+    const linhaMobilia = m => `
+      <div class="bs-cat-item" data-busca="${esc(window.GA_semAcento(m.nome + ' ' + m.efeito))}">
+        <div class="bs-cat-item-cab">
+          <span class="bs-cat-item-nome">🪑 ${esc(m.nome)}</span>
+          ${m.seg ? `<span class="bs-tag-seg">🛡 +${m.seg}</span>` : ''}
+          <span class="bs-item-custo">${moeda(m.preco)}</span>
+        </div>
+        <div class="bs-item-efeito">${esc(m.efeito)}</div>
+        <div class="bs-item-onde">Instalação: ${esc(m.onde)}</div>
+      </div>`;
+    return `
+      <details class="bs-catalogo">
+        <summary>📖 Ver todos os cômodos e mobílias (benefícios)</summary>
+        <div class="bs-catalogo-corpo">
+          <input type="text" class="bs-catalogo-busca" placeholder="Buscar cômodo ou mobília…" autocomplete="off">
+          <div class="bs-catalogo-colunas">
+            <div class="bs-catalogo-col">
+              <h3 class="bs-bloco-tit">🚪 Cômodos <span class="bs-bloco-cont">${COMODOS.length}</span></h3>
+              ${COMODOS.map(linhaComodo).join('')}
+            </div>
+            <div class="bs-catalogo-col">
+              <h3 class="bs-bloco-tit">🪑 Mobílias <span class="bs-bloco-cont">${MOBILIAS.length}</span></h3>
+              ${MOBILIAS.map(linhaMobilia).join('')}
+            </div>
+          </div>
+          <p class="bs-catalogo-vazio" hidden>Nada encontrado.</p>
+        </div>
+      </details>`;
+  }
+
   function render() {
     const cont = document.getElementById('bases-content');
     if (!cont) return;
@@ -157,7 +224,8 @@
           <button class="bs-backup-btn bs-backup-btn--imp" data-acao="importar-backup" title="Carregar um backup .json">⬆ Importar</button>
           <input type="file" id="bsImportFile" accept=".json,application/json" hidden>
         </div>
-      </div>`;
+      </div>
+      ${htmlCatalogo()}`;
 
     if (dados.bases.length === 0) {
       html += `<p class="bs-vazio">Nenhuma base ainda. Crie a primeira para o grupo ter um lugar para chamar de seu.</p>`;
@@ -167,6 +235,19 @@
     html += `<button class="bs-add bs-add--base" data-acao="add-base">＋ Nova base</button>`;
 
     cont.innerHTML = html;
+
+    const buscaCat = cont.querySelector('.bs-catalogo-busca');
+    if (buscaCat) buscaCat.addEventListener('input', () => {
+      const termo = window.GA_semAcento(buscaCat.value.trim());
+      let algum = false;
+      cont.querySelectorAll('.bs-cat-item').forEach(it => {
+        const bate = !termo || it.dataset.busca.indexOf(termo) >= 0;
+        it.style.display = bate ? '' : 'none';
+        if (bate) algum = true;
+      });
+      const vazio = cont.querySelector('.bs-catalogo-vazio');
+      if (vazio) vazio.hidden = algum || !termo;
+    });
   }
 
   function construirBase(b, bi) {
@@ -179,7 +260,7 @@
 
     if (!b.aberta) {
       return `
-        <div class="bs-base bs-base--fechada">
+        <div class="bs-base bs-base--fechada${b.visivelJogadores ? '' : ' bs-base--oculta'}">
           <div class="bs-base-cab">
             <button class="bs-toggle" data-acao="toggle-base" ${ds} title="Expandir">▸</button>
             <span class="bs-base-nome-ro">${esc(b.nome || '(base sem nome)')}</span>
@@ -187,7 +268,10 @@
             ${td ? `<span class="bs-base-tag bs-base-tag--tipo">${esc(td.nome)}</span>` : ''}
             <span class="bs-base-tag">🚪 ${c.usados}/${c.maxComodos}</span>
             <span class="bs-base-tag">🛡 ${c.seg}</span>
+            ${!b.visivelJogadores ? `<span class="bs-base-tag bs-base-tag--oculta" title="Não é enviada para jogadores.html">🙈 Só o mestre vê</span>` : ''}
             <span class="bs-flex"></span>
+            <button class="bs-mini" data-acao="toggle-visivel" ${ds}
+                    title="${b.visivelJogadores ? 'Visível para os jogadores — clique para esconder (rascunho/futuro)' : 'Escondida dos jogadores — clique para mostrar'}">${b.visivelJogadores ? '👁' : '🙈'}</button>
             <button class="bs-mini" data-acao="subir-base" ${ds} ${semSubir} title="Mover para cima">↑</button>
             <button class="bs-mini" data-acao="descer-base" ${ds} ${semDescer} title="Mover para baixo">↓</button>
             <button class="bs-mini bs-mini--del" data-acao="del-base" ${ds} title="Remover base">✕</button>
@@ -350,16 +434,30 @@
             <button type="button" class="ga-rich-btn" data-rich-desc title="${tipDesc}">📖</button>
           </div>
         </div>
+      </div>
+      <div class="bs-bloco bs-bloco--compartilhado">
+        <h3 class="bs-bloco-tit">📝 Inventário dos jogadores <span class="bs-tag-compart">compartilhado · mesa ao vivo</span></h3>
+        <p class="bs-compart-dica">${ehJogador()
+          ? 'Esta caixa é de vocês — escrevam o que o grupo deixa aqui. Aparece para todos na mesa ao vivo.'
+          : 'Caixa que os jogadores podem escrever em jogadores.html (todos editam juntos). Você vê aqui, mas quem edita são eles.'}</p>
+        <textarea class="bs-textarea bs-compart-area"
+                  data-campo-compart="invjogadores" data-base-id="${esc(b.id)}"
+                  ${ehJogador() ? '' : 'readonly'}
+                  placeholder="${ehJogador() ? 'Ex.: 3 poções de cura, corda élfica, o mapa que achamos…' : '(vazio — os jogadores ainda não escreveram nada)'}">${esc(invJogadoresDe(b.id))}</textarea>
+        ${ehJogador() ? '' : `<button type="button" class="bs-compart-limpar" data-acao="limpar-invjogadores" ${ds} title="Apagar o que os jogadores escreveram nesta base">🗑 Limpar</button>`}
       </div>`;
 
     return `
-      <div class="bs-base">
+      <div class="bs-base${b.visivelJogadores ? '' : ' bs-base--oculta'}">
         <div class="bs-base-cab">
           <button class="bs-toggle" data-acao="toggle-base" ${ds} title="Recolher">▾</button>
           <input class="bs-base-nome" type="text" value="${esc(b.nome)}" data-campo="nome" ${ds} placeholder="Nome da base…">
           <span class="bs-base-tag">${esc(pd.nome)}</span>
           ${b.sitio ? `<span class="bs-base-tag bs-base-tag--sitio">⛩ Sítio</span>` : ''}
+          ${!b.visivelJogadores ? `<span class="bs-base-tag bs-base-tag--oculta" title="Não é enviada para jogadores.html">🙈 Só o mestre vê</span>` : ''}
           <span class="bs-flex"></span>
+          <button class="bs-mini" data-acao="toggle-visivel" ${ds}
+                  title="${b.visivelJogadores ? 'Visível para os jogadores — clique para esconder (rascunho/futuro)' : 'Escondida dos jogadores — clique para mostrar'}">${b.visivelJogadores ? '👁' : '🙈'}</button>
           <button class="bs-mini" data-acao="subir-base" ${ds} ${semSubir} title="Mover para cima">↑</button>
           <button class="bs-mini" data-acao="descer-base" ${ds} ${semDescer} title="Mover para baixo">↓</button>
           <button class="bs-mini bs-mini--del" data-acao="del-base" ${ds} title="Remover base">✕</button>
@@ -397,6 +495,10 @@
       const b = pegarBase(alvo); b.aberta = !b.aberta;
       salvar(); render(); return;
     }
+    if (acao === 'toggle-visivel') {
+      const b = pegarBase(alvo); b.visivelJogadores = !b.visivelJogadores;
+      salvar(); render(); return;
+    }
     if (acao === 'subir-base' || acao === 'descer-base') {
       const i = +alvo.dataset.b;
       const j = (acao === 'subir-base') ? i - 1 : i + 1;
@@ -421,6 +523,17 @@
     }
     if (acao === 'exportar-json') { exportarJSON(); return; }
     if (acao === 'exportar-txt')  { exportarTXT();  return; }
+    if (acao === 'limpar-invjogadores') {
+      const b = pegarBase(alvo);
+      if (!b) return;
+      if (!confirm('Apagar o que os jogadores escreveram no inventário desta base?')) return;
+      const mapa = invJogadores();
+      delete mapa[b.id];
+      try { localStorage.setItem(CHAVE_INV_JOGADORES, JSON.stringify(mapa)); } catch (err) {}
+      try { window.GA_SyncMestre && window.GA_SyncMestre.limparInventarioJogadores &&
+            window.GA_SyncMestre.limparInventarioJogadores(b.id); } catch (err) {}
+      render(); return;
+    }
     if (acao === 'importar-backup') {
       const inp = document.getElementById('bsImportFile');
       if (inp) inp.click();
@@ -431,6 +544,20 @@
   // input — caixas de texto/número (não re-renderiza, mantém o foco)
   function aoEntrada(e) {
     const el = e.target;
+
+    // "Inventário dos jogadores" (só editável na visão dos jogadores):
+    // grava o texto no espelho compartilhado e transmite pela mesa ao
+    // vivo. NÃO toca em dados.bases nem chama salvar() — é um canal à parte.
+    if (el.dataset && el.dataset.campoCompart === 'invjogadores') {
+      const baseId = el.dataset.baseId;
+      const mapa = invJogadores();
+      mapa[baseId] = el.value;
+      try { localStorage.setItem(CHAVE_INV_JOGADORES, JSON.stringify(mapa)); } catch (err) {}
+      try { window.GA_SyncJogador && window.GA_SyncJogador.escreverInventario &&
+            window.GA_SyncJogador.escreverInventario(baseId, el.value); } catch (err) {}
+      return;
+    }
+
     const campo = el.dataset && el.dataset.campo;
     if (!campo || el.dataset.b == null) return;
     const b = pegarBase(el);

@@ -56,6 +56,15 @@
         atualizarBotao();
         if (u) enviarTudo();          // sessão retomada → foto completa
       });
+      // "Inventário dos jogadores" (caixa livre, escrita por eles em
+      // jogadores.html — ver sync-jogador.js) é um espelho à parte, fora
+      // do pacote normal de 'bases': ninguém que não seja o mestre logado
+      // consegue tocar em dados.bases, então isolamos a escrita deles
+      // aqui, e só ESCUTAMOS (leitura é sempre pública nas regras do
+      // banco). Funciona mesmo sem o mestre estar logado.
+      db.ref('mesas/' + sala() + '/jogadores/inventario').on('value', snap => {
+        aplicarInventarioJogadores(snap.val() || {});
+      }, err => console.warn('[sync] leitura de inventário dos jogadores:', err && err.message));
       inicializado = true;
     } catch (e) {
       ultimoErro = e.message;
@@ -63,7 +72,57 @@
     }
   }
 
+  const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
+
+  function aplicarInventarioJogadores(dados) {
+    let atual = null;
+    try { atual = localStorage.getItem(CHAVE_INV_JOGADORES); } catch (e) {}
+    const v = JSON.stringify(dados || {});
+    if (atual === v) return;
+    try { localStorage.setItem(CHAVE_INV_JOGADORES, v); } catch (e) {}
+    // Se o mestre está digitando em algum campo agora, não re-renderiza a
+    // aba (arrancaria o foco). Atualiza só as caixas de leitura no lugar.
+    const focado = document.activeElement;
+    const editando = focado && (focado.tagName === 'INPUT' || focado.tagName === 'TEXTAREA' ||
+                                (focado.getAttribute && focado.getAttribute('contenteditable') === 'true'));
+    if (editando && document.getElementById('bases-content')) {
+      const mapa = dados || {};
+      document.querySelectorAll('[data-campo-compart="invjogadores"]').forEach(area => {
+        const novo = typeof mapa[area.dataset.baseId] === 'string' ? mapa[area.dataset.baseId] : '';
+        if (area.value !== novo) area.value = novo;
+      });
+      return;
+    }
+    try { window.GA_Bases && window.GA_Bases.recarregar && window.GA_Bases.recarregar(); } catch (e) {}
+  }
+
+  // Botão "🗑 Limpar" do lado do mestre (index.html) — o mestre já tem
+  // permissão de escrita em qualquer caminho da sala, então isso funciona
+  // com a mesma conta logada, sem precisar de mais nada.
+  function limparInventarioJogadores(baseId) {
+    if (!db) return;
+    db.ref('mesas/' + sala() + '/jogadores/inventario/' + baseId).remove()
+      .catch(e => console.warn('[sync] não deu para limpar:', e && e.message));
+  }
+  window.GA_SyncMestre = { limparInventarioJogadores: limparInventarioJogadores };
+
   function refDados() { return db.ref('mesas/' + sala() + '/dados'); }
+
+  // Bases marcadas "só o mestre vê" (visivelJogadores: false) NUNCA saem
+  // daqui — filtradas antes mesmo de virar pacote para o Firebase. Não é
+  // só esconder na tela: o jogador não tem como inspecionar o que nunca
+  // chegou até o banco dele.
+  function valorParaEnviar(nome, v) {
+    if (nome !== 'bases' || v == null) return v;
+    try {
+      const dados = JSON.parse(v);
+      if (dados && Array.isArray(dados.bases)) {
+        dados.bases = dados.bases.filter(b => b && b.visivelJogadores !== false);
+        return JSON.stringify(dados);
+      }
+    } catch (e) { console.warn('[sync] não deu para filtrar bases ocultas:', e.message); }
+    return v;
+  }
 
   function enviarPendentes() {
     if (!db || !usuario || !pendentes.size) return;
@@ -71,7 +130,7 @@
     pendentes.forEach(nome => {
       let v = null;
       try { v = localStorage.getItem(CHAVES[nome]); } catch (e) {}
-      pacote[nome] = (v == null) ? null : v;
+      pacote[nome] = (v == null) ? null : valorParaEnviar(nome, v);
     });
     pendentes.clear();
     refDados().update(pacote)

@@ -97,6 +97,13 @@
 }
 .bs-base-tag--tipo { border-color: var(--gold-light); }
 .bs-base-tag--sitio { border-color: var(--gold-light); color: var(--gold-light); }
+.bs-base-tag--oculta { border-color: var(--rust); color: var(--rust); background: rgba(139,44,10,0.18); }
+
+/* base marcada como "só o mestre vê" — borda tracejada rústica, pra ficar
+   claro de relance que ela não vai para jogadores.html */
+.bs-base--oculta { border-style: dashed; border-color: var(--rust); }
+.bs-base--oculta > .bs-base-cab { background: repeating-linear-gradient(
+    135deg, var(--ink), var(--ink) 10px, #241a12 10px, #241a12 20px); }
 
 .bs-mini {
   flex: 0 0 auto; width: 1.7rem; height: 1.7rem; font-size: 0.8rem;
@@ -233,6 +240,69 @@
   text-transform: uppercase; color: var(--ink-faded);
 }
 .bs-item-vinc .bs-select { width: auto; flex: 1 1 auto; max-width: 16rem; }
+
+/* ── CATÁLOGO DE CÔMODOS & MOBÍLIAS (consulta, funciona p/ jogadores) ── */
+.bs-catalogo {
+  margin-bottom: 1.1rem;
+  border: 1px solid var(--gold-dim);
+  background: var(--parchment2);
+}
+.bs-catalogo summary {
+  cursor: pointer; list-style: none; padding: 0.6rem 0.9rem;
+  font-family: 'Cinzel', serif; font-size: 0.82rem; letter-spacing: 0.04em;
+  color: var(--rust-dark); display: flex; align-items: center; gap: 0.4rem;
+  transition: background 0.15s;
+}
+.bs-catalogo summary::-webkit-details-marker { display: none; }
+.bs-catalogo summary::before { content: '▸'; font-size: 0.7rem; }
+.bs-catalogo[open] summary::before { content: '▾'; }
+.bs-catalogo summary:hover { background: var(--parchment3); }
+.bs-catalogo[open] summary { border-bottom: 1px solid var(--gold-dim); }
+.bs-catalogo-corpo { padding: 0.8rem 0.9rem 0.9rem; }
+.bs-catalogo-busca {
+  width: 100%; box-sizing: border-box; padding: 0.45rem 0.6rem; margin-bottom: 0.7rem;
+  font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--ink);
+  background: var(--parchment); border: 1px solid var(--ink-faded);
+}
+.bs-catalogo-busca:focus { outline: 1px solid var(--rust); }
+.bs-catalogo-colunas {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.9rem;
+}
+.bs-catalogo-col { max-height: 420px; overflow-y: auto; padding-right: 0.3rem; }
+.bs-cat-item {
+  background: var(--parchment); border: 1px solid var(--ink-faded);
+  border-left: 3px solid var(--gold-dim); padding: 0.45rem 0.55rem; margin-bottom: 0.4rem;
+}
+.bs-cat-item-cab { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.bs-cat-item-nome { font-family: 'Cinzel', serif; font-size: 0.86rem; font-weight: 700; color: var(--ink); }
+.bs-catalogo-vazio {
+  font-family: 'IM Fell English', serif; font-style: italic; color: var(--ink-faded);
+  text-align: center; padding: 0.6rem 0;
+}
+
+/* ── INVENTÁRIO DOS JOGADORES (caixa compartilhada, mesa ao vivo) ───── */
+.bs-bloco--compartilhado { border-left: 3px solid var(--gold); }
+.bs-tag-compart {
+  font-family: 'Crimson Pro', serif; font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.03em; text-transform: uppercase; color: var(--parchment);
+  background: var(--gold-dim); border-radius: 2px; padding: 0.08rem 0.4rem;
+  margin-left: 0.5rem; vertical-align: middle;
+}
+.bs-compart-dica {
+  font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.84rem;
+  color: var(--ink-faded); margin: 0.1rem 0 0.5rem;
+}
+.bs-compart-area {
+  width: 100%; box-sizing: border-box; min-height: 5rem; resize: vertical;
+}
+.bs-compart-area[readonly] { background: rgba(232,217,188,0.4); color: var(--ink); cursor: default; }
+.bs-compart-limpar {
+  margin-top: 0.5rem; font-family: 'Cinzel', serif; font-size: 0.64rem;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--rust-dark);
+  background: var(--parchment); border: 1px dashed var(--rust); border-radius: 2px;
+  padding: 0.35rem 0.6rem; cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.bs-compart-limpar:hover { background: var(--rust-dark); color: var(--parchment); }
 
 /* ── RESIDENTES & INVENTÁRIO ───────────────────────────────────────── */
 .bs-bloco--duplo { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.9rem; }
