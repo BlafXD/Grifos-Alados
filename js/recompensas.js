@@ -827,8 +827,44 @@ const MELHORIA_ESOTER = [
   {max:100,item:"Vigilante",            livro:"Tormenta20",       pag:166},
 ];
 
+/* ── Munições extras (Heróis de Arton, p. 223) ───────────────────────
+   A tabela oficial de armas tem exatamente 100 entradas — uma por número
+   do d% — e não sobrou espaço para estas quatro munições do suplemento.
+   No modo Customizável o Mestre pode ligá-las (filtro "municoesExtras"):
+   elas entram no fim da tabela e o sorteio de arma passa a usar d104.
+   Preço e peso saem do catálogo da Loja, como nas outras munições. ──── */
+const EQUIP_ARMA_MUNICOES_EXTRA = [
+  {item:"Bola de ferro (1)",         livro:"Heróis de Arton", pag:223},
+  {item:"Flechas assobiadoras (20)", livro:"Heróis de Arton", pag:223},
+  {item:"Flechas pesadas (20)",      livro:"Heróis de Arton", pag:223},
+  {item:"Virotes pesados (20)",      livro:"Heróis de Arton", pag:223},
+];
+
+function municoesExtrasLigadas() {
+  return MODO_RECOMP === 'customizavel' && !!CUSTOM_FILTROS.municoesExtras;
+}
+
+// A tabela de armas em uso e o dado que a sorteia: 100 entradas (d%) ou
+// 104 (d104) quando as munições extras estão ligadas.
+function tabelaArmas() {
+  if (!municoesExtrasLigadas()) return { rows: EQUIP_ARMA, lados: 100, dado: 'd%' };
+  const rows  = EQUIP_ARMA.concat(
+    EQUIP_ARMA_MUNICOES_EXTRA.map((r, i) => Object.assign({ max: EQUIP_ARMA.length + i + 1 }, r)));
+  const lados = rows[rows.length - 1].max;
+  return { rows, lados, dado: 'd' + lados };
+}
+
+// Rola o item base de um equipamento. Só a tabela de armas muda de
+// tamanho; armadura e esotérico seguem sempre no d%.
+function rolarEquip(tipo) {
+  const t   = (tipo === 'Arma') ? tabelaArmas() : null;
+  const dp  = t ? rolarDado(t.lados) : rolarPercent();
+  return { dp, dado: t ? t.dado : 'd%', item: lookupEquip(tipo, dp) };
+}
+
 function lookupEquip(tipo, dp) {
-  const tab = tipo === "Arma" ? EQUIP_ARMA : tipo === "Armadura" ? EQUIP_ARMADURA : EQUIP_ESOTER;
+  const tab = tipo === "Arma" ? tabelaArmas().rows
+            : tipo === "Armadura" ? EQUIP_ARMADURA : EQUIP_ESOTER;
   for (const row of tab) if (dp <= row.max) return row;
   return tab[tab.length - 1];
 }
@@ -1472,9 +1508,8 @@ const TABELAS = {
   equipamento() {
     const d6   = rolarDado(6);
     const tipo = d6 <= 3 ? "Arma" : d6 <= 5 ? "Armadura" : "Esotérico";
-    const dp   = rolarPercent();
-    const item = lookupEquip(tipo, dp);
-    return { tipo, d6, dp, item };
+    const r    = rolarEquip(tipo);
+    return { tipo, d6, dp: r.dp, dado: r.dado, item: r.item };
   },
 
   // ─── Poção ────────────────────────────────────────────
@@ -1534,9 +1569,9 @@ const TABELAS = {
       return { modo, d6, tipo, tier, subTipo: 'especifico', especifico: mg.especifico };
     }
     // Caso contrário: item base mundano + os encantos rolados (faixas 01-90).
-    const dpBase   = rolarPercent();
-    const itemBase = lookupEquip(tipo, dpBase);
-    const out = { modo, d6, tipo, tier, dpBase, itemBase, encantos: mg.encantos };
+    const rb  = rolarEquip(tipo);
+    const out = { modo, d6, tipo, tier, dpBase: rb.dp, dadoBase: rb.dado,
+                  itemBase: rb.item, encantos: mg.encantos };
     // Modo Customizável "Superior + Encantado": o item mágico também recebe
     // melhorias (vira superior E encantado). Quantidade por tier: 1 / 2 / 3.
     if (custom && CUSTOM_FILTROS.superiorEncantado) {
@@ -1866,17 +1901,25 @@ function linhasCopiaItem(it) {
   ];
 }
 
+// No catálogo, munição guarda "-" em dano/crítico/tipo (o pacote não bate
+// em ninguém: quem bate é a arma de disparo). Esses traços não entram na
+// faixa de atributos, senão ela sai como "Dano - · Crítico - · -".
+function temValor(v) {
+  const s = String(v == null ? '' : v).trim();
+  return s !== '' && s !== '-' && s !== '—';
+}
+
 // Versão em texto puro de statsItemHTML (para a área de transferência).
 function statsItemTexto(nome) {
   const st = statsDaLoja(nome);
   if (!st) return '';
   const partes = [];
   if (st.kind === 'weapon') {
-    if (st.dano)         partes.push(`Dano ${st.dano}`);
-    if (st.critico)      partes.push(`Crítico ${String(st.critico).replace(/[xX]/g, '×')}`);
-    if (st.tipo)         partes.push(st.tipo);
-    if (st.alcance)      partes.push(st.alcance);
-    if (st.peso != null) partes.push(`${st.peso} esp.`);
+    if (temValor(st.dano))    partes.push(`Dano ${st.dano}`);
+    if (temValor(st.critico)) partes.push(`Crítico ${String(st.critico).replace(/[xX]/g, '×')}`);
+    if (temValor(st.tipo))    partes.push(st.tipo);
+    if (temValor(st.alcance) && temValor(st.dano)) partes.push(st.alcance);
+    if (st.peso != null)      partes.push(`${st.peso} esp.`);
   } else if (st.kind === 'armor') {
     if (st.bonus != null) partes.push(`Defesa +${st.bonus}`);
     if (st.penalidade)    partes.push(`Penalidade ${st.penalidade}`);
@@ -1896,11 +1939,11 @@ function statsItemHTML(nome) {
   if (!st) return '';
   const partes = [];
   if (st.kind === 'weapon') {
-    if (st.dano)         partes.push(`<strong>Dano</strong> ${st.dano}`);
-    if (st.critico)      partes.push(`<strong>Crítico</strong> ${String(st.critico).replace(/[xX]/g, '×')}`);
-    if (st.tipo)         partes.push(st.tipo);
-    if (st.alcance)      partes.push(st.alcance);
-    if (st.peso != null) partes.push(`${st.peso} esp.`);
+    if (temValor(st.dano))    partes.push(`<strong>Dano</strong> ${st.dano}`);
+    if (temValor(st.critico)) partes.push(`<strong>Crítico</strong> ${String(st.critico).replace(/[xX]/g, '×')}`);
+    if (temValor(st.tipo))    partes.push(st.tipo);
+    if (temValor(st.alcance) && temValor(st.dano)) partes.push(st.alcance);
+    if (st.peso != null)      partes.push(`${st.peso} esp.`);
   } else if (st.kind === 'armor') {
     if (st.bonus != null) partes.push(`<strong>Defesa</strong> +${st.bonus}`);
     if (st.penalidade)    partes.push(`<strong>Penalidade</strong> ${st.penalidade}`);
@@ -2069,7 +2112,7 @@ function blockEquip(equip, prefixo='') {
     ${prefixo ? `<strong>${prefixo}</strong>&nbsp;` : ''}
     ${diceInline('d6')} = ${equip.d6} → <strong>${equip.tipo}</strong>
     &nbsp;·&nbsp;
-    ${diceInline('d%')} = ${equip.dp}
+    ${diceInline(equip.dado || 'd%')} = ${equip.dp}
     &nbsp;→&nbsp;
     <strong style="color:var(--text)">${equip.item?.item ?? '—'}</strong>
     ${obsHtml}
@@ -2242,7 +2285,7 @@ function blockMagico(mag, prefixo='') {
       : '';
     s += `<div class="sub-indent">
       <span class="bullet">◇</span>
-      Item base: ${diceInline('d%')} = ${mag.dpBase}
+      Item base: ${diceInline(mag.dadoBase || 'd%')} = ${mag.dpBase}
       &nbsp;→&nbsp;
       <strong style="color:var(--text)">${mag.itemBase?.item ?? '—'}</strong>
       ${obsBase}
@@ -2425,6 +2468,7 @@ const CUSTOM_FILTROS = {
   pergaminhos:     false,         // Pergaminhos como recompensa
   pergaminhoModo:  'substituir',  // 'substituir' (no slot de Poção) | 'adicional' (bônus)
   superiorEncantado: false,       // item mágico também ganha melhorias (superior + encantado)
+  municoesExtras:  false,         // munições do suplemento que não cabem no d% (vira d104)
 };
 
 const MODO_DESC = {
@@ -2466,7 +2510,11 @@ function atualizarCatalogoFiltros() {
   const custom = (MODO_RECOMP === 'customizavel');
   cat.querySelectorAll('[data-filtro-sec]').forEach(sec => {
     const k = sec.dataset.filtroSec;
-    const off = custom && !CUSTOM_FILTROS[k];
+    // Blocos normais: apagam quando o Mestre DESLIGA a caixa. Blocos
+    // "opt-in": ficam apagados até ele LIGAR (e nunca saem no Padrão).
+    const off = sec.dataset.filtroOptin
+      ? !(custom && CUSTOM_FILTROS[k])
+      : (custom && !CUSTOM_FILTROS[k]);
     sec.classList.toggle('cat-sec--off', off);
   });
 }
@@ -3039,10 +3087,15 @@ function catSecaoHTML(titulo, icone, rows, opts) {
   opts = opts || {};
   rows = rows || [];
   // filtroKey liga o bloco a um filtro do modo Customizável (esmaece se desligado).
-  const filtroAttr  = opts.filtroKey ? ` data-filtro-sec="${opts.filtroKey}"` : '';
+  // optIn inverte a lógica: o bloco fica apagado até o Mestre LIGAR a caixa
+  // (é o caso das munições extras, que não existem na tabela oficial).
+  const filtroAttr  = opts.filtroKey
+    ? ` data-filtro-sec="${opts.filtroKey}"${opts.optIn ? ' data-filtro-optin="1"' : ''}` : '';
   const padraoCls   = opts.filtroKey ? ' cat-sec--filtravel' : '';
   const padraoBadge = opts.filtroKey
-    ? '<span class="cat-badge-padrao" title="Item nomeado — controlado pelos filtros do modo Customizável">filtrável</span>'
+    ? (opts.optIn
+        ? '<span class="cat-badge-padrao" title="Fora da tabela oficial — só sai com a caixa ligada no modo Customizável">só no Customizável</span>'
+        : '<span class="cat-badge-padrao" title="Item nomeado — controlado pelos filtros do modo Customizável">filtrável</span>')
     : '';
   const lis = rows.map(r => {
     const ref   = r.livro ? `<span class="cat-ref">${catEsc(r.livro)}${r.pag ? ' p.' + r.pag : ''}</span>` : '';
@@ -3072,6 +3125,8 @@ function renderCatalogo() {
     catSecaoHTML('Riquezas — faixas de valor', '💰', riquezas),
     catSecaoHTML('Itens Diversos', '🎒', ITEM_DIVERSO_TABLE),
     catSecaoHTML('Equipamentos — Armas', '⚔', EQUIP_ARMA),
+    catSecaoHTML('Equipamentos — Munições extras', '🏹', EQUIP_ARMA_MUNICOES_EXTRA,
+                 { filtroKey: 'municoesExtras', optIn: true }),
     catSecaoHTML('Equipamentos — Armaduras & Escudos', '🛡', EQUIP_ARMADURA),
     catSecaoHTML('Equipamentos — Esotéricos', '🔮', EQUIP_ESOTER),
     catSecaoHTML('Poções', '🧪', POCAO_TABLE),
@@ -3109,6 +3164,16 @@ function _initRecompensas() {
   const bd = document.getElementById('modoPadrao');
   if (bc) bc.onclick = () => selecionarModoRecomp('customizavel');
   if (bd) bd.onclick = () => selecionarModoRecomp('padrao');
+
+  // Lista das munições extras, montada a partir da própria tabela — assim
+  // a caixa de opção nunca desencontra do que realmente pode sair.
+  const listaMun = document.getElementById('municoesExtrasLista');
+  if (listaMun && !listaMun.children.length) {
+    listaMun.innerHTML = EQUIP_ARMA_MUNICOES_EXTRA.map(r => {
+      const preco = precoDaLoja(r.item);
+      return `<li>${r.item}${preco ? ` <span class="custom-filtros-preco">T$ ${preco}</span>` : ''}</li>`;
+    }).join('');
+  }
 
   // Caixas de filtro do modo Customizável
   const painel = document.getElementById('customFiltros');

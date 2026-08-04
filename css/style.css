@@ -779,6 +779,27 @@ footer {
   border-top: 1px dashed var(--parchment3);
 }
 
+/* lista do que uma caixa "opt-in" acrescenta ao sorteio (munições extras) */
+#recompensas .custom-filtros-lista {
+  flex: 1 1 100%;
+  margin: 0.45rem 0 0 1.5rem;
+  padding: 0;
+  list-style: '◇ ';
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: var(--ink-faded);
+}
+#recompensas .custom-filtros-lista li { margin-bottom: 2px; }
+#recompensas .custom-filtros-preco {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  padding: 0.02rem 0.35rem;
+  margin-left: 0.3rem;
+}
+
 /* sub-painel: modo dos pergaminhos (Substituir × Adicional) */
 #recompensas .custom-perg-modo {
   flex: 1 1 100%;
