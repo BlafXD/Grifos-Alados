@@ -59,6 +59,50 @@
     return mods.size > 0;
   }
 
+  // ── "📝 Inventário dos jogadores" — a ÚNICA coisa que jogadores.html
+  //  consegue ESCREVER de volta (ver bases.js e MODO-JOGADOR.md). Um
+  //  espelho à parte de dados.bases — não mexe em nada que é só do
+  //  mestre. Qualquer jogador pode escrever (é uma caixa livre,
+  //  compartilhada por todos que abrirem o link da sala).
+  const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
+  let dbRef = null, timerInv = null, pendenteInv = {};
+
+  function aplicarInventarioJogadores(dados) {
+    let atual = null;
+    try { atual = localStorage.getItem(CHAVE_INV_JOGADORES); } catch (e) {}
+    const v = JSON.stringify(dados || {});
+    if (atual === v) return;   // nada mudou (inclui o "eco" da própria escrita) → não redesenha
+    try { localStorage.setItem(CHAVE_INV_JOGADORES, v); } catch (e) {}
+    // Se o jogador está digitando numa dessas caixas agora, não arranca o
+    // foco dele: atualiza só as OUTRAS caixas no lugar, sem re-render.
+    const focado = document.activeElement;
+    const digitando = focado && focado.dataset && focado.dataset.campoCompart === 'invjogadores';
+    if (digitando) {
+      const mapa = dados || {};
+      document.querySelectorAll('[data-campo-compart="invjogadores"]').forEach(area => {
+        if (area === focado) return;
+        const novo = typeof mapa[area.dataset.baseId] === 'string' ? mapa[area.dataset.baseId] : '';
+        if (area.value !== novo) area.value = novo;
+      });
+      return;
+    }
+    redesenhar('bases');
+  }
+
+  function escreverInventarioJogadores(baseId, texto) {
+    pendenteInv[baseId] = texto;
+    if (timerInv) clearTimeout(timerInv);
+    timerInv = setTimeout(() => {
+      const paraEnviar = pendenteInv; pendenteInv = {};
+      if (!dbRef) return;
+      Object.keys(paraEnviar).forEach(id => {
+        dbRef.child(id).set(paraEnviar[id])
+          .catch(e => console.warn('[sync-jogador] não deu para escrever:', e && e.message));
+      });
+    }, 900);
+  }
+  window.GA_SyncJogador = { escreverInventario: escreverInventarioJogadores };
+
   function init() {
     if (typeof firebase === 'undefined' || !window.GA_FIREBASE || !window.GA_FIREBASE.apiKey) {
       chip('🕯 Mesa ao vivo não configurada — mostrando a última cópia guardada neste aparelho.', 'ga-jog-chip--off');
@@ -81,6 +125,10 @@
       chip('⚠ Sem permissão para ler a sala "' + sala + '" — confira as regras do banco.', 'ga-jog-chip--off');
       console.warn('[sync-jogador]', err && err.message);
     });
+
+    dbRef = db.ref('mesas/' + sala + '/jogadores/inventario');
+    dbRef.on('value', snap => aplicarInventarioJogadores(snap.val() || {}),
+      err => console.warn('[sync-jogador] inventário dos jogadores:', err && err.message));
 
     db.ref('mesas/' + sala + '/meta/atualizadoEm').on('value', snap => {
       const ts = snap.val();

@@ -26,14 +26,22 @@ uma hospedagem para o site (**GitHub Pages**).
        "mesas": {
          "$sala": {
            ".read": true,
-           ".write": "auth != null && auth.token.email === 'SEU-EMAIL@AQUI.com'"
+           ".write": "auth != null && auth.token.email === 'SEU-EMAIL@AQUI.com'",
+           "jogadores": {
+             "inventario": {
+               ".write": true
+             }
+           }
          }
        }
      }
    }
    ```
 
-   → **Publicar**. (Tradução: qualquer um com o link **lê**; só você, logado, **escreve**.)
+   → **Publicar**. (Tradução: qualquer um com o link **lê** tudo; só você, logado,
+   **escreve** na mesa — EXCETO o "Inventário dos jogadores" (`jogadores/inventario`),
+   que qualquer um com o link pode escrever. É o único ponto de escrita liberado
+   para eles, de propósito, para a caixa compartilhada de inventário na aba Bases.)
 5. Menu lateral: **Criação → Authentication** → **Vamos começar** → aba
    **Método de login** → ative **E-mail/senha**. Depois, na aba **Usuários** →
    **Adicionar usuário** → crie o SEU usuário de mestre (e-mail + uma senha boa).
