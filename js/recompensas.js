@@ -1941,23 +1941,35 @@ function precoPorQuantidade(linhas, n) {
   return l ? (Number(l.preco) || 0) : 0;
 }
 
-// Munição é vendida em pacotes de 20 e paga METADE do acréscimo de
-// melhorias e encantos (T20, "Munições — regra especial de preço").
-// As cinco munições da tabela de armas são as únicas entradas com o
-// tamanho do pacote no nome.
+// Munição paga METADE do acréscimo de melhorias e encantos (T20,
+// "Munições — regra especial de preço"). No catálogo, e só nele, munição
+// é o que traz o tamanho do pacote no fim do nome: "Flechas (20)",
+// "Bola de ferro (1)". Nenhum outro item termina assim.
 function ehMunicao(nome) { return /\(\s*\d+\s*\)\s*$/.test(String(nome || '')); }
 
 const MELHORIA_MATERIAL = 'Material especial';
 
 // Soma o preço do item montado. Devolve também as parcelas, para o texto
 // poder mostrar de onde veio cada número.
+//   base         → preço do item (0 quando o livro não cobra por ele)
+//   custoTraco   → o item existe, mas o livro marca o custo como "—"
+//                  (Bordão, Clava, Funda, Tacape): entra como zero
+//   desconhecido → o item nem está no catálogo; aí não dá para somar
 function precoMontagem(nomeBase, qtdMelhorias, qtdEncantos) {
-  const tab   = tabelaPrecosMontagem();
-  const meia  = ehMunicao(nomeBase) ? 0.5 : 1;
-  const base  = precoNumDaLoja(nomeBase);
-  const mel   = precoPorQuantidade(tab.melhorias, qtdMelhorias) * meia;
-  const enc   = precoPorQuantidade(tab.encantos,  qtdEncantos)  * meia;
-  return { base, mel, enc, municao: meia !== 1, total: (base || 0) + mel + enc };
+  const tab  = tabelaPrecosMontagem();
+  const meia = ehMunicao(nomeBase) ? 0.5 : 1;
+  const st   = statsDaLoja(nomeBase);
+  const base = precoNumDaLoja(nomeBase);
+  const mel  = precoPorQuantidade(tab.melhorias, qtdMelhorias) * meia;
+  const enc  = precoPorQuantidade(tab.encantos,  qtdEncantos)  * meia;
+  return {
+    base:         base || 0,
+    custoTraco:   !!st && base == null,
+    desconhecido: !st,
+    mel, enc,
+    municao: meia !== 1,
+    total: (base || 0) + mel + enc,
+  };
 }
 
 // "A", "A e B", "A, B e C"
@@ -1984,12 +1996,13 @@ function textoItemMontado(base, melhorias, encantos, subtitulo) {
 
   // Preço somado + de onde veio cada parcela.
   const det = [];
-  if (p.base != null)  det.push(`${fmtT$(p.base)} do item`);
-  if (p.mel)           det.push(`${fmtT$(p.mel)} por ${nomesMel.length} melhoria${nomesMel.length > 1 ? 's' : ''}`);
-  if (p.enc)           det.push(`${fmtT$(p.enc)} por ${nomesEnc.length} encanto${nomesEnc.length > 1 ? 's' : ''}`);
-  if (p.municao)       det.push('munição: metade do acréscimo');
+  if (p.base)      det.push(`${fmtT$(p.base)} do item`);
+  if (p.custoTraco) det.push('item de custo "—"');
+  if (p.mel)       det.push(`${fmtT$(p.mel)} por ${nomesMel.length} melhoria${nomesMel.length > 1 ? 's' : ''}`);
+  if (p.enc)       det.push(`${fmtT$(p.enc)} por ${nomesEnc.length} encanto${nomesEnc.length > 1 ? 's' : ''}`);
+  if (p.municao)   det.push('munição: metade do acréscimo');
   linhas.push(`Preço total: ${fmtT$(p.total)} T$` + (det.length ? ` (${det.join(' + ')})` : ''));
-  if (p.base == null)  linhas.push(`⚠ O item base não tem preço no catálogo — some o valor dele ao total.`);
+  if (p.desconhecido) linhas.push(`⚠ O item base não está no catálogo — some o preço dele ao total.`);
   if (nomesMel.includes(MELHORIA_MATERIAL))
     linhas.push(`⚠ Material especial: escolha o material (Tabela 3-9) e some o preço dele ao total.`);
 
@@ -2018,13 +2031,14 @@ function rodapeItemMontado(base, melhorias, encantos, subtitulo) {
   const p = precoMontagem(base.item, nomesMel.length, nomesEnc.length);
 
   const det = [];
-  if (p.base != null) det.push(`${fmtT$(p.base)} do item`);
-  if (p.mel)          det.push(`${fmtT$(p.mel)} de ${nomesMel.length} melhoria${nomesMel.length > 1 ? 's' : ''}`);
-  if (p.enc)          det.push(`${fmtT$(p.enc)} de ${nomesEnc.length} encanto${nomesEnc.length > 1 ? 's' : ''}`);
-  if (p.municao)      det.push('munição paga metade');
+  if (p.base)       det.push(`${fmtT$(p.base)} do item`);
+  if (p.custoTraco) det.push('item de custo "—"');
+  if (p.mel)        det.push(`${fmtT$(p.mel)} de ${nomesMel.length} melhoria${nomesMel.length > 1 ? 's' : ''}`);
+  if (p.enc)        det.push(`${fmtT$(p.enc)} de ${nomesEnc.length} encanto${nomesEnc.length > 1 ? 's' : ''}`);
+  if (p.municao)    det.push('munição paga metade');
 
   const avisos = [
-    p.base == null ? 'Item base sem preço no catálogo — some o valor dele.' : '',
+    p.desconhecido ? 'Item base fora do catálogo — some o preço dele ao total.' : '',
     nomesMel.includes(MELHORIA_MATERIAL)
       ? 'Material especial: escolha o material (Tabela 3-9) e some o preço dele ao total.' : '',
   ].filter(Boolean).map(a => `<div class="rc-alerta">⚠ ${a}</div>`).join('');
@@ -2233,6 +2247,7 @@ function blockMagico(mag, prefixo='') {
       <strong style="color:var(--text)">${mag.itemBase?.item ?? '—'}</strong>
       ${obsBase}
     </div>
+    ${statsItemHTML(mag.itemBase?.item)}
     ${mag.itemBase ? `<div class="sub-indent" style="padding-left:24px">
       <span class="bullet">◇</span>
       <span class="livro-ref">📖 ${mag.itemBase.livro}<span class="pag">p. ${mag.itemBase.pag}</span></span>
