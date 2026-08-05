@@ -33,8 +33,10 @@
   ];
 
   // Caixas de texto livre (uma caixa só, para CTRL+C / CTRL+V).
+  // `rico: true` → vira caixa de texto rico (grifos, ▣ caixa, 📖 descrição,
+  // Ctrl+B / Ctrl+I) em vez de textarea. As demais continuam texto simples.
   const CAIXAS = [
-    { chave: 'condicoes',   rotulo: 'Condições especiais',
+    { chave: 'condicoes',   rotulo: 'Condições especiais', rico: true,
       dica: 'Ex: imunidade a dano de luz, redução de dano 10, resistência a magia +3…', linhas: 3 },
     { chave: 'atributos',   rotulo: 'Atributos',
       dica: 'Ex: For 11, Des 1, Con 8, Int 4, Sab 4, Car 4', linhas: 2 },
@@ -42,11 +44,15 @@
       dica: 'Ex: Atletismo +32, Intimidação +15, Misticismo +15', linhas: 2 },
     { chave: 'equipamento', rotulo: 'Equipamento',
       dica: 'Ex: Espada longa, essência de mana', linhas: 2 },
-    { chave: 'recompensas', rotulo: 'Recompensas',
+    { chave: 'recompensas', rotulo: 'Recompensas', rico: true,
       dica: 'Ex: Tesouro… / Perícias para extração…', linhas: 3 },
-    { chave: 'descricao',   rotulo: 'Descrição',
+    { chave: 'descricao',   rotulo: 'Descrição', rico: true,
       dica: 'Texto de descrição/lore da criatura…', linhas: 4 },
   ];
+  // Campos da criatura guardados como texto RICO: cada um tem um espelho
+  // "<campo>Html" (o que a caixa mostra e salva) e o campo antigo em texto
+  // puro (o que exportação, cópia e prévia de importação continuam lendo).
+  const RICOS_CRIATURA = ['tags', 'condicoes', 'recompensas', 'descricao'];
 
   // ── ARMAS NATURAIS & DANO POR TAMANHO (Ameaças de Arton) ─────────
   // Tabela 2-1: tipo de dano padrão de cada arma natural. Alimenta o
@@ -332,17 +338,13 @@
   const esc = window.GA_esc;
 
   // ── ESTILOS DE GRIFO ─────────────────────────────────────────────
-  // Cores de destaque + a "caixa de leitura" (boxed). 'mz-azul' é mantido
-  // para compatibilidade com notas/ataques já grifados. Cada um envolve a
-  // seleção num <span class="…">; "Remover" desembrulha qualquer um deles.
-  const GRIFOS = [
-    { cls: 'mz-azul',     cor: '#bcdcee', nome: 'Azul — lore / falas' },
-    { cls: 'mz-amarelo',  cor: '#f3e3a3', nome: 'Amarelo — ler em voz alta' },
-    { cls: 'mz-vermelho', cor: '#f0c3bb', nome: 'Vermelho — segredo / perigo (só mestre)' },
-    { cls: 'mz-verde',    cor: '#c4e3bd', nome: 'Verde — revelar aos jogadores' },
-  ];
+  // Cores de destaque + a "caixa de leitura" (boxed). A lista mora no
+  // script.js (window.GA_GRIFOS) porque hoje é compartilhada com as outras
+  // abas; aqui ficam só os apelidos. Cada grifo envolve a seleção num
+  // <span class="…">; "Remover" desembrulha qualquer um deles.
+  const GRIFOS = window.GA_GRIFOS;
   // todas as classes que "Remover grifo" deve desembrulhar
-  const GRIFO_SELETOR = GRIFOS.map(g => '.' + g.cls).join(', ') + ', .mz-leitura';
+  const GRIFO_SELETOR = window.GA_GRIFO_SELETOR;
 
   // ── FÁBRICAS DE DADOS ────────────────────────────────────────────
   function novaCriatura() {
@@ -361,6 +363,8 @@
       stats: stats,
       montaria: { chave: '', nivel: 'iniciante' },
       condicoes: '', ataques: '', atributos: '', pericias: '', equipamento: '', recompensas: '',
+      // espelhos em HTML das caixas ricas (ver RICOS_CRIATURA)
+      tagsHtml: '', condicoesHtml: '', recompensasHtml: '', descricaoHtml: '',
     };
   }
   function novaCena(n)   { return { id: uid('c'), aberto: true, nome: 'Cena ' + n, notas: '', notasHtml: '', criaturas: [], perigos: [], ambientes: [], masmorra: novaMasmorra() }; }
@@ -443,6 +447,15 @@
     if (!Array.isArray(cr.habilidades)) cr.habilidades = [];
     if (!Array.isArray(cr.sentidos)) cr.sentidos = [];
     if (typeof cr.devoto !== 'string') cr.devoto = '';   // chave do deus (GA_DEVOTOS)
+    // caixas ricas: espelho HTML + texto puro. Idempotente — fichas antigas
+    // (só texto) ganham o HTML na primeira abertura; fichas importadas do
+    // livro também passam por aqui antes de entrar na cena.
+    RICOS_CRIATURA.forEach(k => {
+      const h = k + 'Html';
+      if (typeof cr[k] !== 'string') cr[k] = '';
+      if (typeof cr[h] === 'string' && cr[h] !== '') cr[h] = window.GA_limparHtml(cr[h]);
+      else cr[h] = window.GA_nl2br(cr[k]);
+    });
     // montaria opcional da criatura (com nível de parceiro)
     if (!cr.montaria || typeof cr.montaria !== 'object') cr.montaria = { chave: '', nivel: 'iniciante' };
     if (typeof cr.montaria.chave !== 'string') cr.montaria.chave = '';
@@ -485,7 +498,14 @@
       salvar(); return;
     }
     const owner = (editor.dataset.pg != null) ? pegarPerigo(editor) : pegarCriatura(editor);
-    if (owner) { owner[campo] = editor.innerHTML; salvar(); }
+    if (!owner) return;
+    // caixas ricas da criatura: HTML no espelho + texto puro no campo antigo
+    if (editor.dataset.pg == null && RICOS_CRIATURA.indexOf(campo) >= 0) {
+      owner[campo + 'Html'] = editor.innerHTML;
+      owner[campo] = htmlParaTexto(editor.innerHTML);
+      salvar(); return;
+    }
+    owner[campo] = editor.innerHTML; salvar();
   }
 
   // Fixa/solta uma ficha (criatura ou perigo) no painel de combate, por id.
@@ -783,19 +803,34 @@
   }
 
   // Barra das caixas de texto rico (grifo + tela cheia). `ds` = data-attrs do
-  // campo. opts.ler acrescenta "📖 Ler" (modo narração — só nas anotações).
+  // campo. opts.ler acrescenta "📖 Ler" (modo narração — só nas anotações);
+  // opts.compacta omite a dica (nas caixas menores, repetir 4x polui a ficha).
   function barraGrifo(ds, opts) {
     opts = opts || {};
     const ler = opts.ler
       ? `<button type="button" class="mz-grifo mz-grifo--ler" data-acao="ler" ${ds} title="Abrir só para ler/narrar, em fonte grande">📖 Ler</button>`
       : '';
+    const dica = opts.compacta
+      ? ''
+      : '<span class="mz-toolbar-dica">selecione · grife ou Ctrl+B / Ctrl+I</span>';
     return `
             <div class="mz-toolbar">
               ${botoesGrifo('data-acao', ds)}
-              <span class="mz-toolbar-dica">selecione · grife ou Ctrl+B / Ctrl+I</span>
+              ${dica}
               ${ler}
               <button type="button" class="mz-grifo mz-grifo--exp" data-acao="expandir" ${ds} title="Editar em tela cheia">⛶ Expandir</button>
             </div>`;
+  }
+
+  // Caixa de texto RICO menor (Tags · sentidos, Condições especiais,
+  // Recompensas, Descrição): mesma caixa das anotações/ataques — grifos,
+  // ▣ caixa, 📖 descrição, Ctrl+B / Ctrl+I, ⛶ expandir — só que baixinha.
+  // `cls` escolhe a altura: 'mz-rich-linha' (uma linha) ou 'mz-rich-mini'.
+  function caixaTextoRica(campo, html, ds, dica, cls) {
+    return `
+            ${barraGrifo(ds, { compacta: true })}
+            <div class="mz-ataques ${cls || 'mz-rich-mini'}" contenteditable="true" spellcheck="true"
+                 data-ph="${esc(dica || '')}" data-campo="${campo}" ${ds}>${html || ''}</div>`;
   }
 
   // Caixa de texto simples (textarea) com botão ⛶ Expandir flutuante.
@@ -1829,10 +1864,13 @@
     let caixasHtml = '';
     CAIXAS.forEach(cx => {
       if (cx.chave === 'condicoes') return; // condições vai antes (ver abaixo)
+      const corpo = cx.rico
+        ? caixaTextoRica(cx.chave, cr[cx.chave + 'Html'], ds, cx.dica)
+        : caixaTextoSimples(cx.chave, cr[cx.chave], ds, cx.linhas, cx.dica);
       caixasHtml += `
         <div class="mz-campo">
           <label class="mz-rotulo">${cx.rotulo}</label>
-          ${caixaTextoSimples(cx.chave, cr[cx.chave], ds, cx.linhas, cx.dica)}
+          ${corpo}
         </div>`;
     });
     const condicoes = CAIXAS.find(c => c.chave === 'condicoes');
@@ -1894,9 +1932,8 @@
 
           <div class="mz-campo">
             <label class="mz-rotulo">Tags · sentidos</label>
-            <input class="mz-input" type="text" value="${esc(cr.tags)}"
-                   placeholder="Ex: percepção às cegas, visão no escuro, faro…"
-                   data-campo="tags" ${ds}>
+            ${caixaTextoRica('tags', cr.tagsHtml, ds,
+                             'Ex: percepção às cegas, visão no escuro, faro…', 'mz-rich-linha')}
           </div>
 
           ${construirBarraSentidos(cr, ds)}
@@ -1909,7 +1946,7 @@
 
           <div class="mz-campo">
             <label class="mz-rotulo">${condicoes.rotulo}</label>
-            ${caixaTextoSimples('condicoes', cr.condicoes, ds, condicoes.linhas, condicoes.dica)}
+            ${caixaTextoRica('condicoes', cr.condicoesHtml, ds, condicoes.dica)}
           </div>
 
           ${construirBarraHabilidades(cr, ds)}
@@ -2462,8 +2499,13 @@
       salvar(); return;
     }
 
-    // demais campos da criatura (nome, tipoTamanho, tags, condicoes,
-    // atributos, pericias, recompensas)
+    // caixas ricas da criatura (tags, condições, recompensas, descrição)
+    if (el.dataset.cr != null && RICOS_CRIATURA.indexOf(campo) >= 0 && el.isContentEditable) {
+      salvarRich(el); return;
+    }
+
+    // demais campos da criatura (nome, tipoTamanho, nd,
+    // atributos, pericias, equipamento)
     if (el.dataset.cr != null) {
       pegarCriatura(el)[campo] = el.value;
       salvar(); return;

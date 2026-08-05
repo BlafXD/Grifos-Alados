@@ -17,10 +17,14 @@
 
   document.documentElement.classList.add('ga-jogador');
 
-  // sempre permitidos, em qualquer aba
+  // sempre permitidos, em qualquer aba. As caixas marcadas com
+  // [data-jog-edita] são as que os jogadores escrevem de propósito (na aba
+  // Bases: Residentes, Inventário da base e o Inventário dos jogadores) —
+  // entram inteiras, com a barra de formatação delas.
   const PERMITIDOS =
     '.nav-link, .cr-subtab, summary, .ga-tip, .ga-tip-pop, ' +
-    '.loja-aba, .loja-busca, .cr-busca, .vg-toggle, .bs-toggle, .vg-regras';
+    '.loja-aba, .loja-busca, .cr-busca, .vg-toggle, .bs-toggle, .vg-regras, ' +
+    '[data-jog-edita]';
 
   function bloquearClique(e) {
     const t = e.target;
@@ -38,15 +42,18 @@
   function bloquearEntrada(e) {
     const t = e.target;
     if (!(t instanceof Element)) return;
-    if (t.closest('.loja-busca, .cr-busca')) return; // buscar pode, sempre
+    if (t.closest('.loja-busca, .cr-busca')) return;   // buscar pode, sempre
+    if (t.closest('[data-jog-edita]')) return;         // as caixas que são deles
     const sec = t.closest('section');
     if (!sec || sec.id === 'perigos') return;
     e.stopPropagation();                             // nenhum handler salva nada
   }
 
-  // as caixas ricas (diário, paradas, residentes…) deixam de ser editáveis
+  // as caixas ricas (diário, paradas…) deixam de ser editáveis — menos as
+  // marcadas com [data-jog-edita], que existem para eles escreverem
   function travarEdicao() {
     document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      if (el.closest('[data-jog-edita]')) return;
       el.setAttribute('contenteditable', 'false');
     });
   }

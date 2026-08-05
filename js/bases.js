@@ -54,23 +54,104 @@
 
   function moeda(n) { return 'T$ ' + Number(n || 0).toLocaleString('pt-BR'); }
 
-  // Estamos na visão dos jogadores (jogadores.html)? Lá a caixa
-  // "Inventário dos jogadores" é EDITÁVEL (é a exceção que eles podem
-  // escrever); no index.html do mestre ela é só leitura + botão limpar.
+  // Estamos na visão dos jogadores (jogadores.html)? Lá alguns campos são
+  // EDITÁVEIS (a exceção que eles podem escrever) — ver CAMPOS_JOGADOR.
   function ehJogador() { return document.documentElement.classList.contains('ga-jogador'); }
 
-  // "Inventário dos jogadores": espelho compartilhado, à parte de
-  // dados.bases (ver sync-mestre.js / sync-jogador.js). Guardado como
-  // um objeto { [baseId]: texto } numa chave própria do localStorage.
+  // Campos da base que os JOGADORES também escrevem (além da caixa só
+  // deles). São campos normais de dados.bases: o mestre continua sendo o
+  // dono do arquivo; o que muda é que a edição deles chega até ele pelo
+  // "caixa de entrada" abaixo.
+  const CAMPOS_JOGADOR = ['residentes', 'inventario'];
+
+  // ── CAIXA DE ENTRADA COMPARTILHADA ───────────────────────────────
+  //  Espelho à parte de dados.bases (ver sync-mestre.js / sync-jogador.js),
+  //  no único caminho do banco em que os jogadores têm permissão de
+  //  escrita. Um objeto { [baseId]: { jogadores, residentes, inventario } }:
+  //    • jogadores  → a caixa "📝 Inventário dos jogadores", que é só deles
+  //                   e mora AQUI (não existe em dados.bases);
+  //    • residentes/inventario → edições PENDENTES feitas por eles nos
+  //                   campos do mestre. Ele absorve para dados.bases e
+  //                   limpa a entrada — daí em diante a fonte é o arquivo
+  //                   dele, transmitido normalmente para todos.
   const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
-  function invJogadores() {
+  function inbox() {
     try { return JSON.parse(localStorage.getItem(CHAVE_INV_JOGADORES) || '{}') || {}; }
     catch (e) { return {}; }
   }
-  function invJogadoresDe(baseId) {
-    const v = invJogadores()[baseId];
-    return typeof v === 'string' ? v : '';
+  // Uma entrada pode ser a string antiga (só a caixa deles) ou o objeto novo.
+  function inboxDe(baseId, mapa) {
+    const v = (mapa || inbox())[baseId];
+    if (typeof v === 'string') return { jogadores: v };
+    return (v && typeof v === 'object') ? v : {};
   }
+  window.GA_basesInboxDe = inboxDe;
+
+  // As caixas viraram texto rico: a entrada passou a guardar HTML. O que foi
+  // escrito ANTES disso é texto puro — reconhece pela ausência de tags e
+  // converte na hora (as quebras de linha viram <br>).
+  window.GA_invJogadoresHtml = function (bruto) {
+    if (!bruto) return '';
+    return /<[a-z][a-z0-9]*[\s/>]/i.test(bruto)
+      ? window.GA_limparHtml(bruto)
+      : window.GA_nl2br(bruto);
+  };
+  function invJogadoresHtmlDe(baseId) {
+    return window.GA_invJogadoresHtml(inboxDe(baseId).jogadores || '');
+  }
+
+  // Grava um campo na caixa de entrada (espelho local + banco).
+  function gravarInbox(baseId, campo, html) {
+    const mapa = inbox();
+    const entrada = inboxDe(baseId, mapa);
+    entrada[campo] = html;
+    mapa[baseId] = entrada;
+    try { localStorage.setItem(CHAVE_INV_JOGADORES, JSON.stringify(mapa)); } catch (err) {}
+    try {
+      if (window.GA_SyncJogador && window.GA_SyncJogador.escreverInbox) {
+        window.GA_SyncJogador.escreverInbox(baseId, campo, html);
+      }
+    } catch (err) {}
+  }
+
+  // Tira um campo da caixa de entrada (só o mestre chega aqui: ele acabou
+  // de absorver a edição para dados.bases, ou está limpando a caixa deles).
+  function limparInbox(baseId, campo) {
+    const mapa = inbox();
+    const entrada = inboxDe(baseId, mapa);
+    if (!(campo in entrada)) return false;
+    delete entrada[campo];
+    if (Object.keys(entrada).length) mapa[baseId] = entrada;
+    else delete mapa[baseId];
+    try { localStorage.setItem(CHAVE_INV_JOGADORES, JSON.stringify(mapa)); } catch (err) {}
+    try { window.GA_SyncMestre && window.GA_SyncMestre.limparInbox &&
+          window.GA_SyncMestre.limparInbox(baseId, campo); } catch (err) {}
+    return true;
+  }
+
+  // Absorve as edições pendentes dos jogadores para dados.bases. Rodada nos
+  // DOIS lados: no mestre (que é o dono do arquivo e por isso também LIMPA a
+  // entrada depois) e nos jogadores (para que a edição de um apareça para os
+  // outros mesmo com o mestre fora do ar). Devolve true se algo mudou.
+  window.GA_basesAbsorverInbox = function (mapa, souODono) {
+    let mudou = false;
+    (dados.bases || []).forEach(b => {
+      const entrada = inboxDe(b.id, mapa);
+      CAMPOS_JOGADOR.forEach(campo => {
+        const html = entrada[campo];
+        if (typeof html !== 'string') return;
+        const limpo = window.GA_limparHtml(html);
+        if (b[campo + 'Html'] !== limpo) {
+          b[campo + 'Html'] = limpo;
+          b[campo] = window.htmlParaTexto(limpo);
+          mudou = true;
+        }
+        if (souODono) limparInbox(b.id, campo);   // já está no arquivo dele
+      });
+    });
+    if (mudou) salvarAgora();
+    return mudou;
+  };
 
   function novaBase(n) {
     return {
@@ -413,26 +494,27 @@
       </div>`;
 
     // ── Residentes & Inventário ──
-    const tipDesc = 'Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar';
+    // Caixas ricas: barra de formatação (grifos, ▣ caixa, 📖 descrição) +
+    // Ctrl+B / Ctrl+I — a mesma da aba Combates, via window.GA_barraRica().
+    // Residentes e Inventário da base são editáveis dos DOIS lados: o
+    // data-jog-edita marca a caixa como "os jogadores também escrevem
+    // aqui" (é o que o modo-jogador.js consulta para não travá-la).
+    const barra = window.GA_barraRica();
+    const caixaRica = (campo, valorHtml, dica) => `
+          <div class="ga-rich-wrap ga-rich-wrap--barra" data-jog-edita>
+            ${barra}
+            <div class="bs-textarea ga-rich" contenteditable="true" spellcheck="true"
+                 data-campo="${campo}" ${ds} data-ph="${esc(dica)}">${valorHtml}</div>
+          </div>`;
     const blocoTextos = `
       <div class="bs-bloco bs-bloco--duplo">
         <div class="bs-meio">
           <h3 class="bs-bloco-tit">🧑‍🤝‍🧑 Residentes</h3>
-          <div class="ga-rich-wrap">
-            <div class="bs-textarea ga-rich" contenteditable="true" spellcheck="true"
-                 data-campo="residentes" ${ds}
-                 data-ph="Quem mora ou se beneficia da base — um por linha…">${b.residentesHtml}</div>
-            <button type="button" class="ga-rich-btn" data-rich-desc title="${tipDesc}">📖</button>
-          </div>
+          ${caixaRica('residentes', b.residentesHtml, 'Quem mora ou se beneficia da base — um por linha…')}
         </div>
         <div class="bs-meio">
           <h3 class="bs-bloco-tit">🎒 Inventário da base</h3>
-          <div class="ga-rich-wrap">
-            <div class="bs-textarea ga-rich" contenteditable="true" spellcheck="true"
-                 data-campo="inventario" ${ds}
-                 data-ph="Itens deixados na base pelos jogadores, suprimentos, tesouros guardados…">${b.inventarioHtml}</div>
-            <button type="button" class="ga-rich-btn" data-rich-desc title="${tipDesc}">📖</button>
-          </div>
+          ${caixaRica('inventario', b.inventarioHtml, 'Itens deixados na base pelos jogadores, suprimentos, tesouros guardados…')}
         </div>
       </div>
       <div class="bs-bloco bs-bloco--compartilhado">
@@ -440,10 +522,13 @@
         <p class="bs-compart-dica">${ehJogador()
           ? 'Esta caixa é de vocês — escrevam o que o grupo deixa aqui. Aparece para todos na mesa ao vivo.'
           : 'Caixa que os jogadores podem escrever em jogadores.html (todos editam juntos). Você vê aqui, mas quem edita são eles.'}</p>
-        <textarea class="bs-textarea bs-compart-area"
-                  data-campo-compart="invjogadores" data-base-id="${esc(b.id)}"
-                  ${ehJogador() ? '' : 'readonly'}
-                  placeholder="${ehJogador() ? 'Ex.: 3 poções de cura, corda élfica, o mapa que achamos…' : '(vazio — os jogadores ainda não escreveram nada)'}">${esc(invJogadoresDe(b.id))}</textarea>
+        <div class="ga-rich-wrap ga-rich-wrap--barra" ${ehJogador() ? 'data-jog-edita' : ''}>
+          ${ehJogador() ? barra : ''}
+          <div class="bs-textarea bs-compart-area ga-rich" spellcheck="true"
+               contenteditable="${ehJogador() ? 'true' : 'false'}"
+               data-campo-compart="invjogadores" data-base-id="${esc(b.id)}"
+               data-ph="${ehJogador() ? 'Ex.: 3 poções de cura, corda élfica, o mapa que achamos…' : '(vazio — os jogadores ainda não escreveram nada)'}">${invJogadoresHtmlDe(b.id)}</div>
+        </div>
         ${ehJogador() ? '' : `<button type="button" class="bs-compart-limpar" data-acao="limpar-invjogadores" ${ds} title="Apagar o que os jogadores escreveram nesta base">🗑 Limpar</button>`}
       </div>`;
 
@@ -527,11 +612,7 @@
       const b = pegarBase(alvo);
       if (!b) return;
       if (!confirm('Apagar o que os jogadores escreveram no inventário desta base?')) return;
-      const mapa = invJogadores();
-      delete mapa[b.id];
-      try { localStorage.setItem(CHAVE_INV_JOGADORES, JSON.stringify(mapa)); } catch (err) {}
-      try { window.GA_SyncMestre && window.GA_SyncMestre.limparInventarioJogadores &&
-            window.GA_SyncMestre.limparInventarioJogadores(b.id); } catch (err) {}
+      limparInbox(b.id, 'jogadores');   // só a caixa deles; não mexe no resto
       render(); return;
     }
     if (acao === 'importar-backup') {
@@ -546,15 +627,10 @@
     const el = e.target;
 
     // "Inventário dos jogadores" (só editável na visão dos jogadores):
-    // grava o texto no espelho compartilhado e transmite pela mesa ao
-    // vivo. NÃO toca em dados.bases nem chama salvar() — é um canal à parte.
+    // mora só na caixa de entrada compartilhada — NÃO toca em dados.bases
+    // nem chama salvar(). É um canal à parte, do começo ao fim.
     if (el.dataset && el.dataset.campoCompart === 'invjogadores') {
-      const baseId = el.dataset.baseId;
-      const mapa = invJogadores();
-      mapa[baseId] = el.value;
-      try { localStorage.setItem(CHAVE_INV_JOGADORES, JSON.stringify(mapa)); } catch (err) {}
-      try { window.GA_SyncJogador && window.GA_SyncJogador.escreverInventario &&
-            window.GA_SyncJogador.escreverInventario(baseId, el.value); } catch (err) {}
+      gravarInbox(el.dataset.baseId, 'jogadores', el.innerHTML);
       return;
     }
 
@@ -564,15 +640,20 @@
     if (!b) return;
 
     if (campo === 'nome')       { b.nome = el.value; salvar(); return; }
-    if (campo === 'residentes') {
-      b.residentesHtml = el.innerHTML;
-      b.residentes = window.htmlParaTexto(el.innerHTML);   // espelho puro (export .txt)
-      salvar(); return;
-    }
-    if (campo === 'inventario') {
-      b.inventarioHtml = el.innerHTML;
-      b.inventario = window.htmlParaTexto(el.innerHTML);
-      salvar(); return;
+    // Residentes e Inventário da base: campos normais do arquivo do mestre,
+    // que os jogadores TAMBÉM editam. Os dois lados gravam em dados.bases
+    // (para a caixa mostrar na hora e o export .txt continuar certo). A
+    // diferença é o que fazem com a caixa de entrada: o jogador põe a
+    // edição lá, para chegar ao mestre; o mestre tira o que houver lá, para
+    // uma edição antiga dos jogadores não voltar por cima da dele depois.
+    if (CAMPOS_JOGADOR.indexOf(campo) >= 0) {
+      const html = el.innerHTML;
+      b[campo + 'Html'] = html;
+      b[campo] = window.htmlParaTexto(html);   // espelho puro (export .txt)
+      salvar();
+      if (ehJogador()) gravarInbox(b.id, campo, html);
+      else             limparInbox(b.id, campo);
+      return;
     }
     if (campo === 'segAjuste')  { b.segAjuste = parseInt(el.value, 10) || 0; salvar(); atualizarSeg(el, b); return; }
   }
@@ -700,7 +781,15 @@
   //  página. Resolve a corrida do 1º carregamento (init lê antes do sync
   //  escrever) e não pisca a tela.
   window.GA_Bases = {
-    recarregar: function () { carregar(); render(); }
+    recarregar: function () { carregar(); render(); },
+    // Chegou algo na caixa de entrada compartilhada. `souODono` = estamos no
+    // index.html do mestre (aí a edição é absorvida para o arquivo dele e a
+    // entrada é esvaziada). Devolve true se a tela precisa ser redesenhada.
+    receberInbox: function (mapa, souODono) {
+      const mudou = window.GA_basesAbsorverInbox(mapa, souODono);
+      if (mudou) render();
+      return mudou;
+    },
   };
 
   // ── INICIALIZAÇÃO ────────────────────────────────────────────────

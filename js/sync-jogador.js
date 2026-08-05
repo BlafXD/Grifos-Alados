@@ -55,7 +55,13 @@
         try { localStorage.setItem(CHAVES[nome], v); mods.add(MODULO[nome]); } catch (e) {}
       }
     });
-    mods.forEach(redesenhar);
+    // o mestre retransmite as bases logo depois de absorver uma edição dos
+    // jogadores — se alguém ainda estiver escrevendo, espera ele sair da
+    // caixa em vez de redesenhar por baixo do cursor
+    mods.forEach(mod => {
+      if (mod === 'bases' && digitando()) adiarRedesenho('bases');
+      else redesenhar(mod);
+    });
     return mods.size > 0;
   }
 
@@ -67,41 +73,78 @@
   const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
   let dbRef = null, timerInv = null, pendenteInv = {};
 
+  // Está com o cursor dentro de alguma caixa que os jogadores editam?
+  // Redesenhar a aba agora arrancaria o foco no meio da digitação.
+  function digitando() {
+    const f = document.activeElement;
+    return !!(f && f.closest && f.closest('[data-jog-edita]'));
+  }
+  // Redesenha assim que a pessoa sair da caixa (uma vez só).
+  let redesenhoAdiado = false;
+  function adiarRedesenho(mod) {
+    if (redesenhoAdiado) return;
+    redesenhoAdiado = true;
+    document.addEventListener('focusout', function sair() {
+      document.removeEventListener('focusout', sair);
+      redesenhoAdiado = false;
+      setTimeout(() => { if (!digitando()) redesenhar(mod); }, 0);
+    });
+  }
+
   function aplicarInventarioJogadores(dados) {
     let atual = null;
     try { atual = localStorage.getItem(CHAVE_INV_JOGADORES); } catch (e) {}
     const v = JSON.stringify(dados || {});
     if (atual === v) return;   // nada mudou (inclui o "eco" da própria escrita) → não redesenha
     try { localStorage.setItem(CHAVE_INV_JOGADORES, v); } catch (e) {}
+
+    // As edições que outro jogador fez em Residentes / Inventário da base
+    // entram no arquivo local (assim aparecem mesmo com o mestre fora do ar).
+    // `false` = não somos o dono, então a caixa de entrada NÃO é esvaziada.
+    let mudouBases = false;
+    try {
+      mudouBases = !!(window.GA_Bases && window.GA_Bases.receberInbox &&
+                      window.GA_Bases.receberInbox(dados || {}, false));
+    } catch (e) { console.warn('[sync-jogador] absorver edições:', e && e.message); }
+
     // Se o jogador está digitando numa dessas caixas agora, não arranca o
     // foco dele: atualiza só as OUTRAS caixas no lugar, sem re-render.
     const focado = document.activeElement;
-    const digitando = focado && focado.dataset && focado.dataset.campoCompart === 'invjogadores';
-    if (digitando) {
+    if (digitando()) {
       const mapa = dados || {};
       document.querySelectorAll('[data-campo-compart="invjogadores"]').forEach(area => {
         if (area === focado) return;
-        const novo = typeof mapa[area.dataset.baseId] === 'string' ? mapa[area.dataset.baseId] : '';
-        if (area.value !== novo) area.value = novo;
+        const entrada = window.GA_basesInboxDe ? window.GA_basesInboxDe(area.dataset.baseId, mapa) : {};
+        const novo = window.GA_invJogadoresHtml
+          ? window.GA_invJogadoresHtml(entrada.jogadores || '') : (entrada.jogadores || '');
+        if (area.innerHTML !== novo) area.innerHTML = novo;
       });
+      if (mudouBases) adiarRedesenho('bases');
       return;
     }
-    redesenhar('bases');
+    if (!mudouBases) redesenhar('bases');   // receberInbox já redesenhou, se mudou
   }
 
-  function escreverInventarioJogadores(baseId, texto) {
-    pendenteInv[baseId] = texto;
+  // Guarda um campo da caixa de entrada no banco. `campo` é 'jogadores' (a
+  // caixa que é só deles) ou 'residentes'/'inventario' (edição que segue
+  // para o mestre absorver). Junta rajadas de digitação em um envio só.
+  function escreverInbox(baseId, campo, html) {
+    (pendenteInv[baseId] || (pendenteInv[baseId] = {}))[campo] = html;
     if (timerInv) clearTimeout(timerInv);
     timerInv = setTimeout(() => {
       const paraEnviar = pendenteInv; pendenteInv = {};
       if (!dbRef) return;
       Object.keys(paraEnviar).forEach(id => {
-        dbRef.child(id).set(paraEnviar[id])
+        dbRef.child(id).update(paraEnviar[id])
           .catch(e => console.warn('[sync-jogador] não deu para escrever:', e && e.message));
       });
     }, 900);
   }
-  window.GA_SyncJogador = { escreverInventario: escreverInventarioJogadores };
+  window.GA_SyncJogador = {
+    escreverInbox: escreverInbox,
+    // nome antigo, mantido para não quebrar chamadas soltas
+    escreverInventario: (baseId, html) => escreverInbox(baseId, 'jogadores', html),
+  };
 
   function init() {
     if (typeof firebase === 'undefined' || !window.GA_FIREBASE || !window.GA_FIREBASE.apiKey) {
