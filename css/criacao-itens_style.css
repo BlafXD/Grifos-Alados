@@ -28,7 +28,7 @@
     var(--parchment2);
   border: 1px solid var(--gold-dim);
   border-left: 4px solid var(--rust);
-  border-radius: 2px;
+  border-radius: var(--raio);
   padding: 0.85rem 0.95rem 0.95rem;
   margin-bottom: 0.9rem;
   transition: box-shadow 0.16s ease, border-color 0.16s ease;
@@ -81,7 +81,7 @@
   color: var(--ink-faded);
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
-  border-radius: 2px;
+  border-radius: var(--raio);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
@@ -96,17 +96,17 @@
   color: var(--ink);
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
-  border-radius: 2px;
+  border-radius: var(--raio);
 }
 .ci-busca-item:focus, .ci-custom-nome:focus, .ci-custom-preco:focus,
-.ci-select:focus, .ci-input:focus { outline: 1px solid var(--rust); }
+.ci-select:focus, .ci-input:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 .ci-item-resultados {
   margin-top: 0.4rem;
   max-height: 220px;
   overflow-y: auto;
   border: 1px solid var(--ink-faded);
-  border-radius: 2px;
+  border-radius: var(--raio);
   background: var(--parchment);
   box-shadow: 0 3px 10px -6px rgba(26,16,8,0.4);
 }
@@ -136,7 +136,7 @@
   background: var(--parchment);
   border: 1px solid var(--parchment3);
   border-left: 3px solid var(--gold);
-  border-radius: 2px;
+  border-radius: var(--raio);
   font-family: 'Crimson Pro', serif;
   font-size: 0.92rem;
   color: var(--ink);
@@ -171,7 +171,7 @@
     var(--parchment);
   border: 1px solid var(--gold-dim);
   border-left: 5px solid var(--gold);
-  border-radius: 2px;
+  border-radius: var(--raio);
   padding: 0.8rem 0.95rem;
   box-shadow: 0 3px 14px -7px rgba(26,16,8,0.4);
 }
@@ -212,9 +212,9 @@
 .ci-res-aviso {
   margin-top: 0.65rem;
   padding: 0.42rem 0.6rem;
-  background: #f0e3c2;
+  background: var(--gold-pale);
   border-left: 3px solid var(--gold-dim);
-  border-radius: 2px;
+  border-radius: var(--raio);
   font-family: 'IM Fell English', serif;
   font-size: 0.84rem;
   color: var(--rust-dark);
@@ -233,7 +233,7 @@
   color: var(--ink-faded);
   background: var(--parchment2);
   border: 1px solid var(--gold-dim);
-  border-radius: 2px;
+  border-radius: var(--raio);
   transition: color 0.15s, background 0.15s;
 }
 .ci-ajustes summary::-webkit-details-marker { display: none; }
@@ -246,7 +246,7 @@
   background: var(--parchment2);
   border: 1px solid var(--gold-dim);
   border-top: none;
-  border-radius: 0 0 2px 2px;
+  border-radius: 0 0 var(--raio) var(--raio);
 }
 .ci-ajustes-nota {
   font-family: 'IM Fell English', serif;
@@ -301,7 +301,7 @@
 }
 .ci-ajustes-tabela tbody tr:last-child td { border-bottom: none; }
 .ci-ajustes-tabela tbody tr:nth-child(even) td { background: rgba(232,217,188,0.5); }
-.ci-ajustes-tabela tbody tr:hover td { background: #e6d6b4; }
+.ci-ajustes-tabela tbody tr:hover td { background: var(--linha-hover); }
 .ci-ajustes-tabela input[type="number"] {
   width: 6.4rem;
   padding: 0.22rem 0.4rem;
@@ -309,9 +309,9 @@
   font-size: 0.92rem;
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
-  border-radius: 2px;
+  border-radius: var(--raio);
 }
-.ci-ajustes-tabela input[type="number"]:focus { outline: 1px solid var(--rust); }
+.ci-ajustes-tabela input[type="number"]:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .ci-ajustes-estimado { color: var(--rust); font-size: 0.72rem; }
 
 .ci-restaurar {
@@ -322,7 +322,7 @@
   color: var(--ink);
   background: var(--parchment);
   border: 1px dashed var(--ink-faded);
-  border-radius: 2px;
+  border-radius: var(--raio);
   padding: 0.4rem 0.65rem;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;

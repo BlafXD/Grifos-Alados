@@ -96,7 +96,7 @@
   border: 1px solid var(--ink-faded);
 }
 .loja-busca::placeholder { color: var(--ink-faded); font-style: italic; }
-.loja-busca:focus { outline: 2px solid var(--rust); }
+.loja-busca:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 /* ── LOADING / ERRO ─────────────────────────────────────────────── */
 .loja-loading {
@@ -156,7 +156,7 @@
   font-family: 'Courier New', monospace;
   background: var(--parchment2);
   padding: 0.1em 0.4em;
-  border-radius: 2px;
+  border-radius: var(--raio);
   font-size: 0.85em;
   color: var(--rust-dark);
 }
@@ -628,7 +628,6 @@
   height: 4px;
   background: var(--parchment3);
   border: 1px solid var(--ink-faded);
-  outline: none;
   cursor: pointer;
 }
 .aj-slider::-webkit-slider-thumb {
@@ -679,7 +678,7 @@
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
 }
-.aj-num:focus { outline: 1px solid var(--rust); }
+.aj-num:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 /* ── total disponível no catálogo (ao lado do nome do tipo) ─────── */
 .aj-total {
@@ -702,7 +701,7 @@
   border: 1px solid var(--ink-faded);
   cursor: pointer;
 }
-.aj-sel:focus { outline: 1px solid var(--rust); }
+.aj-sel:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 .aj-num--qtd { width: 4.4rem; }
 
@@ -781,7 +780,7 @@
 }
 .log-loja-item:last-child { border-bottom: none; }
 .log-loja-item:hover { background: var(--parchment3); }
-.log-loja-item--ativa { background: #efe2c4; cursor: default; }
+.log-loja-item--ativa { background: var(--gold-pale); cursor: default; }
 
 .log-loja-quando {
   font-family: 'Cinzel', serif;
@@ -957,7 +956,7 @@
   border: 1px solid var(--ink-faded);
   cursor: pointer;
 }
-.comun-sel:focus { outline: 2px solid var(--rust); }
+.comun-sel:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 .comun-fogo { margin-left: auto; }
 .comun-fogo input:disabled + span { opacity: 0.45; }

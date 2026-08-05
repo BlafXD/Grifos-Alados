@@ -186,7 +186,7 @@
   background: var(--parchment2);
   border: 1px solid var(--ink-faded);
 }
-.vg-select:focus, .vg-input:focus, .vg-num:focus { outline: 1px solid var(--rust); }
+.vg-select:focus, .vg-input:focus, .vg-num:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 .vg-chks { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-bottom: 0.7rem; }
 .vg-chk {
@@ -303,7 +303,7 @@
   border: 1px solid var(--ink-faded);
   resize: vertical;
 }
-.vg-textarea:focus { outline: 1px solid var(--rust); }
+.vg-textarea:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 /* como caixa rica (contenteditable) a altura vem do conteúdo — os mínimos
    reproduzem os rows="2"/"3" dos textareas antigos */
 .vg-textarea.ga-rich { min-height: 3.4rem; }
@@ -328,7 +328,7 @@
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
 }
-.vg-parada-nome:focus { outline: 1px solid var(--rust); }
+.vg-parada-nome:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 /* ── REGRAS (consulta) ─────────────────────────────────────────────── */
 .vg-regras {
@@ -454,7 +454,7 @@
   padding: 0.3rem; font-family: 'Crimson Pro', serif; font-size: 1rem;
   color: var(--ink); background: var(--parchment); border: 1px solid var(--ink-faded);
 }
-.vg-pv-in:focus { outline: 1px solid var(--rust); }
+.vg-pv-in:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .vg-pv-max { font-family: 'Crimson Pro', serif; color: var(--ink-faded); }
 .vg-pv-full {
   font-family: 'Cinzel', serif; font-size: 0.62rem; cursor: pointer;

@@ -54,7 +54,7 @@
 }
 .tp-bloco-tag {
   font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--parchment); background: var(--gold-dim); padding: 0.1rem 0.4rem; border-radius: 2px;
+  color: var(--parchment); background: var(--gold-dim); padding: 0.1rem 0.4rem; border-radius: var(--raio);
 }
 .tp-bloco-dica {
   font-family: 'Crimson Pro', serif; font-size: 0.9rem; font-style: italic; line-height: 1.4;
@@ -62,8 +62,8 @@
 }
 
 /* cor de borda esquerda por tipo de bloco */
-.tp-busca     { border-left: 4px solid #2f6f9e; }
-.tp-treino    { border-left: 4px solid #1f7a6b; }
+.tp-busca     { border-left: 4px solid var(--azul); }
+.tp-treino    { border-left: 4px solid var(--teal); }
 .tp-custovida { border-left: 4px solid var(--gold-dim); }
 .tp-registro  { border-left: 4px solid #7a3fa6; }
 .tp-ref       { border-left: 4px solid var(--ink-faded); }
@@ -84,7 +84,7 @@
   background: var(--parchment2); border: 1px solid var(--ink-faded);
 }
 .tp-select { cursor: pointer; }
-.tp-input:focus, .tp-select:focus { outline: 1px solid var(--rust); }
+.tp-input:focus, .tp-select:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .tp-input--num { text-align: center; }
 .tp-select--mini { width: auto; font-size: 0.88rem; padding: 0.3rem 0.4rem; }
 
@@ -99,7 +99,7 @@
 .tp-p3 { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .tp-p3-out {
   font-family: 'Crimson Pro', serif; font-size: 0.92rem; color: var(--ink);
-  background: var(--parchment3); border-left: 3px solid #2f6f9e; padding: 0.25rem 0.5rem;
+  background: var(--parchment3); border-left: 3px solid var(--azul); padding: 0.25rem 0.5rem;
 }
 .tp-p3-out strong { color: var(--rust-dark); }
 .tp-p3-vazio { color: var(--ink-faded); }
@@ -149,7 +149,7 @@
   background: var(--parchment2); border: 1px solid var(--ink-faded); padding: 0.5rem 0.65rem;
   display: flex; flex-direction: column; gap: 0.2rem;
 }
-.tp-resultado--recompensa { border-left: 4px solid #1f7a6b; }
+.tp-resultado--recompensa { border-left: 4px solid var(--teal); }
 .tp-resultado--castigo    { border-left: 4px solid var(--rust); }
 .tp-resultado--neutro     { border-left: 4px solid var(--ink-faded); font-style: italic; color: var(--ink-faded); margin-top: 0.7rem; }
 .tp-resultado-rot {
