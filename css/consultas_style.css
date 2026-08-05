@@ -105,9 +105,10 @@
 }
 .cr-busca::placeholder { color: var(--ink-faded); opacity: 0.7; font-style: italic; }
 .cr-busca:focus {
-  outline: none;
+  outline: 2px solid var(--foco);
+  outline-offset: 1px;
   border-color: var(--rust);
-  box-shadow: inset 0 1px 3px rgba(26,16,8,0.12), 0 0 0 2px rgba(139,44,10,0.28);
+  box-shadow: inset 0 1px 3px rgba(26,16,8,0.12);
 }
 
 /* ── grupos e listas ────────────────────────────────────────────── */
@@ -173,7 +174,9 @@
   min-height: 2.5rem;                       /* 1 e 2 linhas ocupam a mesma altura → grade alinhada */
 }
 .vc-card-cab::-webkit-details-marker { display: none; }
-.vc-card-cab:focus-visible { outline: 2px solid var(--rust); outline-offset: -2px; }
+/* anel por dentro: o cabeçalho encosta na borda do cartão e um anel
+   externo seria cortado pelo overflow do card */
+.vc-card-cab:focus-visible { outline: 2px solid var(--foco); outline-offset: -2px; }
 /* selo circular de abrir/fechar (+ / −) no canto superior direito */
 .vc-card-cab::before {
   content: '+';
@@ -323,7 +326,7 @@
   letter-spacing: 0.04em;
   color: var(--parchment);
   background: var(--rust-dark);
-  border-radius: 2px;
+  border-radius: var(--raio);
   padding: 0.12rem 0.4rem;
 }
 .am-badge--desl { background: var(--ink); }
@@ -372,7 +375,7 @@
   background: var(--ink);
   padding: 0.12rem 0.3rem;
   text-align: center;
-  border-radius: 2px;
+  border-radius: var(--raio);
 }
 .am-tier:nth-child(2) .am-tier-rot { background: var(--rust); }
 .am-tier:nth-child(3) .am-tier-rot { background: var(--rust-dark); }
@@ -402,7 +405,7 @@
 .cul-calc {
   background: var(--parchment3);
   border: 1px solid var(--ink-faded);
-  border-radius: 3px;
+  border-radius: var(--raio);
   padding: 0.8rem 0.9rem 0.9rem;
   margin-bottom: 1.3rem;
 }
@@ -430,9 +433,9 @@
   color: var(--ink);
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
-  border-radius: 2px;
+  border-radius: var(--raio);
 }
-.cul-sel:focus { outline: 1px solid var(--rust); }
+.cul-sel:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .cul-tempero {
   display: inline-flex;
   align-items: center;
@@ -448,7 +451,7 @@
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
   border-left: 4px solid var(--gold);
-  border-radius: 2px;
+  border-radius: var(--raio);
   padding: 0.7rem 0.85rem;
 }
 .cul-res-nome {
@@ -506,7 +509,7 @@
   font-size: 0.6rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #7a5a12;
+  color: var(--gold-deep);
   white-space: nowrap;
 }
 .cul-grupo-ing .prog-table { max-width: 24rem; }
@@ -529,7 +532,7 @@
   color: var(--parchment);
   background: var(--rust);
   border: 1px solid var(--rust-dark);
-  border-radius: 2px;
+  border-radius: var(--raio);
   padding: 0.45rem 1rem;
   cursor: pointer;
   transition: background 0.15s;
@@ -672,7 +675,7 @@
   font-family: 'IM Fell English', serif;
   font-style: italic;
   font-size: 0.88rem;
-  color: #3f7a3f;
+  color: var(--verde);
 }
 
 /* ══════════════ 🙏 PODERES CONCEDIDOS (sub-aba Devotos) ══════════════ */

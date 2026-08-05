@@ -79,7 +79,7 @@
 /* ── RAMO (o cartão) ──────────────────────────────────────────────── */
 .an-ramo {
   border: 1px solid var(--ink-faded);
-  border-left: 5px solid var(--cor, #6e6256);
+  border-left: 5px solid var(--cor, var(--neutra));
   background: var(--parchment2);
   margin-bottom: 0.8rem;
 }
@@ -113,13 +113,13 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--cor, #6e6256);
+  color: var(--cor, var(--neutra));
   background: var(--parchment);
-  border: 1px solid var(--cor, #6e6256);
+  border: 1px solid var(--cor, var(--neutra));
   padding: 0.22rem 0.3rem;
   cursor: pointer;
 }
-.an-cat:focus { outline: 1px solid var(--rust); }
+.an-cat:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 .an-titulo {
   flex: 1 1 auto;
@@ -134,7 +134,7 @@
   letter-spacing: 0.04em;
 }
 .an-titulo:hover { border-bottom-color: currentColor; }
-.an-titulo:focus { outline: none; border-bottom-color: currentColor; }
+.an-titulo:focus { outline: 2px solid var(--foco); outline-offset: 2px; border-bottom-color: currentColor; }
 
 .an-contador {
   flex: 0 0 auto;
@@ -178,7 +178,7 @@
   resize: none;
   overflow: hidden;
 }
-.an-texto:focus { outline: 1px solid var(--rust); }
+.an-texto:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 /* ── SUB-RAMOS (a ramificação) ────────────────────────────────────── */
 .an-filhos {

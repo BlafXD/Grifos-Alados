@@ -1,4 +1,5 @@
 :root {
+  /* ── PALETA DA GAZETA ─────────────────────────────────────────── */
   --ink:        #1a1008;
   --ink-faded:  #3d2b1f;
   --parchment:  #f2e8d5;
@@ -9,13 +10,31 @@
   --gold:       #b8972e;
   --gold-light: #d4af37;
   --shadow:     rgba(26,16,8,0.18);
+
+  /* ── ACENTOS SEMÂNTICOS ───────────────────────────────────────────
+     Cores que já circulavam soltas pelos arquivos (o mesmo verde escrito
+     de seis jeitos, o mesmo dourado de quatro). Agora cada intenção tem
+     um nome só — use o nome, não recole o hexadecimal. */
+  --verde:      #2f6f3f;   /* confirmado, ativo, ganho */
+  --verde-dark: #2f5d33;   /* o mesmo verde preenchendo um fundo */
+  --azul:       #2f6f9e;   /* informação, referência de livro */
+  --teal:       #1f7a6b;   /* mesa ao vivo (📡) conectada */
+  --carmim:     #8b1020;   /* remover, erro, perda */
+  --neutra:     #6e6256;   /* item que não escolheu cor — var(--cor, …) */
+  --gold-deep:  #6e5a1a;   /* dourado escuro: legível como texto no pergaminho */
+  --gold-pale:  #f0e3c2;   /* realce quente: linha marcada, painel em foco */
+  --linha-hover:#e6d6b4;   /* zebra de tabela sob o ponteiro */
+
+  /* ── SISTEMA ──────────────────────────────────────────────────── */
+  --raio:       2px;                  /* canto padrão de caixas, selos e chips */
+  --foco:       var(--rust);          /* anel de foco do teclado */
+
   /* aliases herdados do gerador-recompensas.html original */
   --text:      #1a1008;
   --text-mid:  #3d2b1f;
   --text-dim:  #6e5a44;
   --gold-dim:  #8a7320;
   --border:    #d9c9a8;
-  --blue:      #5c1a04;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,6 +57,82 @@ body::before {
   z-index: 9999;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   opacity: 0.35;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BASE COMPARTILHADA — cursor de texto, seleção, foco, barras de
+   rolagem e movimento. Vale para todas as abas; cada arquivo de aba
+   só precisa cuidar do que é seu.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── CURSOR DE TEXTO ───────────────────────────────────────────────
+   O I-beam do sistema é um traço fino: em temas de ponteiro claro ele
+   some no pergaminho (#f2e8d5) — e some justo enquanto se escreve, que
+   é quando mais se precisa dele. Este é desenhado em tinta com halo de
+   pergaminho: o miolo escuro aparece no claro, o halo aparece no
+   escuro. Ponto de mira no meio da haste (6 12). */
+:root {
+  --cursor-texto:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='24'%3E%3Cg fill='none' stroke-linecap='round'%3E%3Cpath d='M6 3v18M3 3h6M3 21h6' stroke='%23f2e8d5' stroke-width='3.6'/%3E%3Cpath d='M6 3v18M3 3h6M3 21h6' stroke='%231a1008' stroke-width='1.5'/%3E%3C/g%3E%3C/svg%3E") 6 12,
+    text;
+}
+
+input[type="text"], input[type="search"], input[type="number"],
+input[type="password"], input[type="url"], input[type="email"],
+input:not([type]), textarea, [contenteditable="true"] {
+  cursor: var(--cursor-texto);
+  caret-color: var(--rust);      /* o traço piscante em ferrugem: acha-se de longe */
+}
+
+/* ── SELEÇÃO ───────────────────────────────────────────────────────
+   O azul do navegador é a única coisa na página que não é de Arton.
+   Ouro chapado com tinta por cima funciona igual sobre pergaminho e
+   sobre as caixas escuras (nuvens de regra, cabeçalhos). */
+::selection { background: var(--gold); color: var(--ink); }
+
+/* ── FOCO DE TECLADO ───────────────────────────────────────────────
+   Um anel só, em toda parte. Também serve de âncora visual: mesmo se o
+   ponteiro se perder, o campo em que se está escrevendo continua óbvio. */
+:where(a, button, summary, select, input[type="range"],
+       input[type="checkbox"], input[type="radio"],
+       [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 1px;
+}
+
+/* Sobre tinta escura a ferrugem some — nestas superfícies o anel vira
+   dourado. Trocando só o token, tudo que estiver dentro acompanha. */
+nav#main-nav,
+footer,
+.ga-tip-pop,
+.bs-base-cab,
+.mz-sessao-cabecalho,
+.mz-cena-cabecalho,
+.prog-table thead { --foco: var(--gold-light); }
+
+/* ── BARRAS DE ROLAGEM ─────────────────────────────────────────────
+   O cinza do sistema era o outro pedaço "branco demais" do site. */
+* { scrollbar-width: thin; scrollbar-color: var(--parchment3) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--parchment3);
+  background-clip: padding-box;      /* a borda transparente vira folga */
+  border: 2px solid transparent;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ── MOVIMENTO ─────────────────────────────────────────────────────
+   Quem pediu menos animação no sistema recebe menos animação aqui. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ── NAV BAR — linha de seções da gazeta (faixa fina, fixa ao rolar) ── */
@@ -214,7 +309,7 @@ section.active { display: flow-root; }
 .news-card {
   padding: 1.2rem 0.8rem 1.4rem;
   border: 1px solid var(--ink-faded);
-  border-radius: 1px;
+  border-radius: var(--raio);
   position: relative;
   background: var(--parchment);
 }
@@ -364,7 +459,7 @@ section.active { display: flow-root; }
 .prog-table tbody tr:last-child td { border-bottom: none; }
 
 .prog-table tbody tr:nth-child(even) td { background: rgba(232,217,188,0.55); }
-.prog-table tbody tr:hover td { background: #e6d6b4; }
+.prog-table tbody tr:hover td { background: var(--linha-hover); }
 
 /* coluna-chave (ex.: "Normal" na Tabela 3-2) — vence a zebra por ordem/especificidade */
 .prog-table thead th.prog-col-key {
@@ -395,11 +490,11 @@ section.active { display: flow-root; }
   letter-spacing: 0.12em;
   padding: 0.15rem 0.6rem;
   border: 1px solid;
-  border-radius: 2px;
+  border-radius: var(--raio);
 }
 .badge-realizada { border-color: var(--rust); color: var(--rust); }
 .badge-pendente  { border-color: var(--gold); color: var(--gold-light); background: rgba(184,151,46,0.08); }
-.badge-cancelada { border-color: #888; color: #888; }
+.badge-cancelada { border-color: var(--neutra); color: var(--neutra); }
 
 /* ── LOJA GENERATOR ── */
 .loja-section {
@@ -429,7 +524,7 @@ section.active { display: flow-root; }
 
 .loja-placeholder {
   border: 2px dashed var(--parchment3);
-  border-radius: 4px;
+  border-radius: var(--raio);
   padding: 4rem 3rem;
   max-width: 600px;
   width: 100%;
@@ -453,7 +548,7 @@ section.active { display: flow-root; }
   font-family: 'Courier New', monospace;
   background: var(--parchment2);
   padding: 0.1em 0.4em;
-  border-radius: 2px;
+  border-radius: var(--raio);
   font-size: 0.88em;
 }
 
@@ -685,7 +780,7 @@ footer {
   color: var(--parchment);
   background: var(--ink);
   padding: 0.05rem 0.4rem;
-  border-radius: 2px;
+  border-radius: var(--raio);
 }
 #recompensas .cat-badge-padrao {
   font-family: 'Cinzel', serif;
@@ -812,7 +907,7 @@ footer {
   padding: 0.4rem 0.7rem;
   background: var(--parchment3);
   border-left: 3px solid var(--gold);
-  border-radius: 2px;
+  border-radius: var(--raio);
 }
 #recompensas .custom-perg-modo[hidden] { display: none; }
 #recompensas .custom-perg-modo-rot {
@@ -927,7 +1022,7 @@ footer {
   line-height: 1;
   padding: 0 0.2rem;
 }
-#recompensas .enc-chip-x:hover { color: var(--rust-dark, #8b1020); }
+#recompensas .enc-chip-x:hover { color: var(--rust-dark); }
 #recompensas .enc-resultado {
   border-top: 1px solid var(--parchment3);
   padding-top: 0.9rem;
@@ -958,7 +1053,7 @@ footer {
   background: var(--ink);
   color: var(--parchment);
 }
-#recompensas .enc-btn--usar:hover { background: var(--rust-dark, #5c1a04); }
+#recompensas .enc-btn--usar:hover { background: var(--rust-dark); }
 #recompensas .enc-nota {
   font-size: 0.78rem;
   color: var(--ink-faded);
@@ -1007,13 +1102,13 @@ footer {
   color: var(--ink);
   background: var(--parchment3);
 }
-#recompensas .cat-selo--dobro  { border-color: #2f6f3f; color: #2f6f3f; }
-#recompensas .cat-selo--metade { border-color: var(--rust-dark, #8b1020); color: var(--rust-dark, #8b1020); }
+#recompensas .cat-selo--dobro  { border-color: var(--verde); color: var(--verde); }
+#recompensas .cat-selo--metade { border-color: var(--rust-dark); color: var(--rust-dark); }
 #recompensas .cat-nota {
   margin-top: 0.6rem;
   padding: 0.5rem 0.7rem;
   background: var(--parchment3);
-  border-left: 3px solid var(--rust-dark, #8b1020);
+  border-left: 3px solid var(--rust-dark);
   font-size: 0.86rem;
   color: var(--ink);
 }
@@ -1783,7 +1878,7 @@ footer {
   line-height: 1;
   background: var(--parchment2);
   border: 1px solid var(--ink-faded);
-  border-radius: 2px;
+  border-radius: var(--raio);
   cursor: pointer;
   opacity: 0.35;
   transition: opacity 0.12s ease, background 0.12s ease;
@@ -1791,7 +1886,7 @@ footer {
 .ga-rich-wrap:hover .ga-rich-btn,
 .ga-rich-btn:hover,
 .ga-rich-btn:focus { opacity: 1; }
-.ga-rich-btn:hover { background: var(--gold-pale, var(--parchment3)); }
+.ga-rich-btn:hover { background: var(--gold-pale); }
 
 /* ── MODAL "📖 Descrição do trecho" (js/descricoes-custom.js) ──────
    Escrever/buscar uma descrição e pendurá-la num trecho selecionado
@@ -1812,7 +1907,7 @@ footer {
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
 }
-.gd-busca:focus { outline: 1px solid var(--rust); }
+.gd-busca:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .gd-resultados {
   max-height: 11rem;
   overflow-y: auto;
@@ -1864,7 +1959,7 @@ footer {
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
 }
-.gd-texto:focus { outline: 1px solid var(--rust); }
+.gd-texto:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .gd-dica {
   font-family: 'IM Fell English', serif;
   font-style: italic;
@@ -1894,10 +1989,10 @@ footer {
 .gd-btn--remover {
   margin-right: auto;
   background: var(--parchment);
-  color: #8b1020;
-  border-color: #8b1020;
+  color: var(--carmim);
+  border-color: var(--carmim);
 }
-.gd-btn--remover:hover { background: #8b1020; color: var(--parchment); }
+.gd-btn--remover:hover { background: var(--carmim); color: var(--parchment); }
 
 /* Bloco de descrição RECOLHÍVEL (aba de pergaminho) — Loja e Recompensas.
    Fechado por padrão; o mestre abre só quando quiser ler. */
@@ -1970,16 +2065,16 @@ footer {
 .ga-copia--ok,
 .ga-copia--ok:hover {
   opacity: 1;
-  background: #2f5d33;
+  background: var(--verde-dark);
   color: var(--parchment);
-  border-color: #2f5d33;
+  border-color: var(--verde-dark);
 }
 .ga-copia--erro,
 .ga-copia--erro:hover {
   opacity: 1;
-  background: #8b1020;
+  background: var(--carmim);
   color: var(--parchment);
-  border-color: #8b1020;
+  border-color: var(--carmim);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -2007,8 +2102,8 @@ footer {
   transition: opacity 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 .ga-sync-btn:hover { opacity: 1; }
-.ga-sync-btn--on   { border-color: #1f7a6b; box-shadow: 0 0 0 2px rgba(31, 122, 107, 0.35); }
-.ga-sync-btn--erro { border-color: #8b1020; box-shadow: 0 0 0 2px rgba(139, 16, 32, 0.35); }
+.ga-sync-btn--on   { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(31, 122, 107, 0.35); }
+.ga-sync-btn--erro { border-color: var(--carmim); box-shadow: 0 0 0 2px rgba(139, 16, 32, 0.35); }
 
 /* modal do 📡 */
 .ga-sync-p { font-family: 'Crimson Pro', serif; font-size: 0.95rem; line-height: 1.5; margin: 0.4rem 0; }
@@ -2035,7 +2130,7 @@ footer {
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
 }
-.ga-sync-campo input:focus { outline: 1px solid var(--rust); }
+.ga-sync-campo input:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .ga-sync-mini {
   display: block;
   margin-top: 0.15rem;
@@ -2049,9 +2144,9 @@ footer {
 .ga-sync-erro {
   font-family: 'Crimson Pro', serif;
   font-size: 0.88rem;
-  color: #8b1020;
+  color: var(--carmim);
   background: rgba(139, 16, 32, 0.07);
-  border-left: 3px solid #8b1020;
+  border-left: 3px solid var(--carmim);
   padding: 0.35rem 0.55rem;
 }
 
@@ -2073,7 +2168,7 @@ footer {
   box-shadow: 0 2px 6px rgba(26, 16, 8, 0.25);
   text-align: center;
 }
-.ga-jog-chip--on  { border-color: #1f7a6b; }
+.ga-jog-chip--on  { border-color: var(--teal); }
 .ga-jog-chip--off { border-color: var(--ink-faded); color: var(--ink-faded); }
 
 /* MODO JOGADOR — esconde os controles de mestre nas abas só-leitura.

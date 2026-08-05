@@ -43,7 +43,7 @@
 .fc-aviso {
   margin-bottom: 1rem;
   padding: 0.55rem 0.8rem;
-  background: #f0e3c2;
+  background: var(--gold-pale);
   border-left: 4px solid var(--gold-dim);
   font-family: 'IM Fell English', serif;
   font-size: 0.9rem;
@@ -119,7 +119,7 @@
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
 }
-.fc-nome:focus { outline: 1px solid var(--rust); }
+.fc-nome:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .fc-tamanho {
   font-family: 'Cinzel', serif;
   font-size: 0.66rem;

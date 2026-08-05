@@ -228,8 +228,9 @@
 .nc-campo input:focus,
 .nc-campo select:focus,
 .nc-campo textarea:focus {
-  outline: none;
-  border-color: var(--ink);
+  outline: 2px solid var(--foco);
+  outline-offset: 1px;
+  border-color: var(--rust);
   background: var(--parchment);
 }
 

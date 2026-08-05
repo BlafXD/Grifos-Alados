@@ -85,7 +85,8 @@
   border-bottom: 1px solid transparent; color: inherit;
   font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.05em;
 }
-.bs-base-nome:hover, .bs-base-nome:focus { outline: none; border-bottom-color: currentColor; }
+.bs-base-nome:hover { border-bottom-color: currentColor; }
+.bs-base-nome:focus { outline: 2px solid var(--foco); outline-offset: 2px; border-bottom-color: currentColor; }
 .bs-base-nome-ro {
   font-family: 'Cinzel', serif; font-size: 1.02rem; font-weight: 700; letter-spacing: 0.05em;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 14rem;
@@ -93,7 +94,7 @@
 .bs-base-tag {
   flex: 0 0 auto; font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.05em;
   text-transform: uppercase; color: var(--parchment); border: 1px solid var(--gold);
-  padding: 0.12rem 0.4rem; border-radius: 2px; white-space: nowrap;
+  padding: 0.12rem 0.4rem; border-radius: var(--raio); white-space: nowrap;
 }
 .bs-base-tag--tipo { border-color: var(--gold-light); }
 .bs-base-tag--sitio { border-color: var(--gold-light); color: var(--gold-light); }
@@ -145,7 +146,7 @@
   font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--ink);
   background: var(--parchment2); border: 1px solid var(--ink-faded); cursor: pointer;
 }
-.bs-select:focus { outline: 1px solid var(--rust); }
+.bs-select:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .bs-select--mini { font-size: 0.85rem; padding: 0.25rem 0.4rem; }
 .bs-add-linha { margin-top: 0.6rem; }
 .bs-add-sel { background: var(--parchment3); font-weight: 600; }
@@ -161,8 +162,8 @@
 }
 .bs-tag-seg {
   display: inline-block; font-family: 'Cinzel', serif; font-size: 0.56rem; font-weight: 700;
-  letter-spacing: 0.04em; color: var(--parchment); background: #3a5a3a;
-  padding: 0.08rem 0.35rem; border-radius: 2px; white-space: nowrap;
+  letter-spacing: 0.04em; color: var(--parchment); background: var(--verde-dark);
+  padding: 0.08rem 0.35rem; border-radius: var(--raio); white-space: nowrap;
 }
 
 .bs-chk {
@@ -172,7 +173,7 @@
 .bs-chk input { cursor: pointer; margin-top: 0.2rem; flex: 0 0 auto; }
 .bs-chk--sitio {
   background: var(--parchment3); border: 1px solid var(--gold-dim);
-  border-left: 4px solid #6e5a1a; padding: 0.45rem 0.6rem;
+  border-left: 4px solid var(--gold-deep); padding: 0.45rem 0.6rem;
 }
 
 /* ── PAINEL DE CÁLCULOS ────────────────────────────────────────────── */
@@ -264,7 +265,7 @@
   font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--ink);
   background: var(--parchment); border: 1px solid var(--ink-faded);
 }
-.bs-catalogo-busca:focus { outline: 1px solid var(--rust); }
+.bs-catalogo-busca:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .bs-catalogo-colunas {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.9rem;
 }
@@ -285,7 +286,7 @@
 .bs-tag-compart {
   font-family: 'Crimson Pro', serif; font-size: 0.62rem; font-weight: 600;
   letter-spacing: 0.03em; text-transform: uppercase; color: var(--parchment);
-  background: var(--gold-dim); border-radius: 2px; padding: 0.08rem 0.4rem;
+  background: var(--gold-dim); border-radius: var(--raio); padding: 0.08rem 0.4rem;
   margin-left: 0.5rem; vertical-align: middle;
 }
 .bs-compart-dica {
@@ -299,7 +300,7 @@
 .bs-compart-limpar {
   margin-top: 0.5rem; font-family: 'Cinzel', serif; font-size: 0.64rem;
   letter-spacing: 0.04em; text-transform: uppercase; color: var(--rust-dark);
-  background: var(--parchment); border: 1px dashed var(--rust); border-radius: 2px;
+  background: var(--parchment); border: 1px dashed var(--rust); border-radius: var(--raio);
   padding: 0.35rem 0.6rem; cursor: pointer; transition: background 0.15s, color 0.15s;
 }
 .bs-compart-limpar:hover { background: var(--rust-dark); color: var(--parchment); }
@@ -313,7 +314,7 @@
   padding: 0.5rem 0.6rem; font-family: 'Crimson Pro', serif; font-size: 0.95rem;
   line-height: 1.45; color: var(--ink); background: var(--parchment2); border: 1px solid var(--ink-faded);
 }
-.bs-textarea:focus { outline: 1px solid var(--rust); }
+.bs-textarea:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 @media (max-width: 560px) {
   .bs-base-tag { display: none; }

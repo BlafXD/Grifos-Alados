@@ -69,9 +69,10 @@
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .pa-busca:focus {
-  outline: none;
+  outline: 2px solid var(--foco);
+  outline-offset: 1px;
   border-color: var(--rust);
-  box-shadow: inset 0 1px 3px rgba(26,16,8,0.12), 0 0 0 2px rgba(139,44,10,0.28);
+  box-shadow: inset 0 1px 3px rgba(26,16,8,0.12);
 }
 .pa-busca::placeholder { color: var(--ink-faded); opacity: 0.75; font-style: italic; }
 
@@ -120,7 +121,7 @@
   font-weight: 700;
   color: var(--parchment);
   background: var(--rust-dark);
-  border-radius: 2px;
+  border-radius: var(--raio);
   padding: 0.1rem 0.45rem;
 }
 .pa-cat-itens {
@@ -177,7 +178,7 @@
   padding: 0.12rem 0.4rem;
   background: var(--rust-dark);
   color: var(--parchment);
-  border-radius: 2px;
+  border-radius: var(--raio);
 }
 .pa-fonte {
   flex: 0 0 auto;

@@ -155,7 +155,7 @@
   width: 210px;
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
-  border-left: 5px solid var(--cor, #6e6256);
+  border-left: 5px solid var(--cor, var(--neutra));
   box-shadow: 0 2px 8px rgba(26,16,8,0.22);
   transition: left 0.34s ease, top 0.34s ease, box-shadow 0.15s;
 }
@@ -204,9 +204,9 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--cor, #6e6256);
+  color: var(--cor, var(--neutra));
   background: var(--parchment);
-  border: 1px solid var(--cor, #6e6256);
+  border: 1px solid var(--cor, var(--neutra));
   padding: 0.18rem 0.26rem;
   cursor: pointer;
 }
@@ -269,11 +269,11 @@
   background: transparent;
   border: none;
   overflow: hidden;
-  cursor: text;
+  cursor: var(--cursor-texto);
   white-space: pre-wrap;
   word-break: break-word;
 }
-.mp-no-texto:focus { outline: none; }
+.mp-no-texto:focus { outline: 2px solid var(--foco); outline-offset: -1px; }
 .mp-no-texto:empty::before {
   content: attr(data-ph);
   color: var(--ink-faded);
@@ -291,7 +291,7 @@
   height: 1.25rem;
   border-radius: 50%;
   border: 2px solid var(--parchment);
-  background: var(--cor, #6e6256);
+  background: var(--cor, var(--neutra));
   color: var(--parchment);
   font-size: 0.72rem;
   line-height: 1;
@@ -347,7 +347,7 @@
   font-size: 0.7rem;
   background: var(--parchment3);
   border: 1px solid var(--gold-dim);
-  border-radius: 2px;
+  border-radius: var(--raio);
   padding: 0.05rem 0.35rem;
 }
 
@@ -382,7 +382,7 @@
   color: var(--ink);
   cursor: pointer;
   padding: 0 0.15rem;
-  border-radius: 2px;
+  border-radius: var(--raio);
 }
 .mp-fmt-btn:hover { background: var(--ink); color: var(--parchment); }
 .mp-fmt-on { background: var(--ink); color: var(--parchment); }
@@ -394,7 +394,7 @@
   width: 1.15rem;
   height: 1.15rem;
   border: 1px solid var(--gold-dim);
-  border-radius: 2px;
+  border-radius: var(--raio);
   overflow: hidden;
   cursor: pointer;
 }
@@ -440,7 +440,7 @@
   color: var(--ink);
   background: var(--parchment);
   border: 1px solid var(--gold-dim);
-  border-radius: 3px;
+  border-radius: var(--raio);
   padding: 0 0.3rem;
   max-width: 11rem;
   white-space: nowrap;
@@ -463,7 +463,7 @@
   background: var(--parchment2);
   color: var(--ink);
 }
-.mp-busca-inp:focus { outline: 2px solid var(--rust); }
+.mp-busca-inp:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 
 /* botão desabilitado (ex.: Agrupar sem 2+ selecionados) */
 .mp-btn:disabled { opacity: 0.4; cursor: default; }
