@@ -94,12 +94,31 @@ window.htmlParaTexto = function (html) {
   return txt.replace(/ /g, ' ').replace(/[ \t]+\n/g, '\n').trim();
 };
 
+// ── GRIFOS (cores + caixa de leitura) — vocabulário compartilhado ────
+// Nasceram na aba Combates (por isso as classes ainda se chamam mz-*) e
+// hoje valem em qualquer campo rico do app. Os nomes de classe NÃO mudam:
+// tudo o que já foi grifado e salvo continua valendo.
+window.GA_GRIFOS = [
+  { cls: 'mz-azul',     cor: '#bcdcee', nome: 'Azul — lore / falas' },
+  { cls: 'mz-amarelo',  cor: '#f3e3a3', nome: 'Amarelo — ler em voz alta' },
+  { cls: 'mz-vermelho', cor: '#f0c3bb', nome: 'Vermelho — segredo / perigo (só mestre)' },
+  { cls: 'mz-verde',    cor: '#c4e3bd', nome: 'Verde — revelar aos jogadores' },
+];
+// classe da "caixa de leitura" (boxed) + seletor de tudo que "✦ Remover" desembrulha
+window.GA_GRIFO_CAIXA   = 'mz-leitura';
+window.GA_GRIFO_SELETOR = window.GA_GRIFOS.map(g => '.' + g.cls).join(', ') + ', .' + window.GA_GRIFO_CAIXA;
+
 // ── TEXTO RICO (contenteditable) — sanitização compartilhada ─────────
 // Mantém só formatação inline segura e preserva as descrições penduradas
-// (📖: span.ga-tip[data-tip]). Vital ao renderizar conteúdo vindo de um
-// backup .json (evita HTML malicioso). Usado pelo Mapa, Ramos, Viagem e Bases.
+// (📖: span.ga-tip[data-tip]) e os grifos (span.mz-*). Vital ao renderizar
+// conteúdo vindo de um backup .json (evita HTML malicioso) ou da caixa que
+// os jogadores escrevem. Usado pelo Mapa, Ramos, Viagem, Bases e Combates.
 window.GA_limparHtml = (function () {
   const TAGS_OK = { B: 1, STRONG: 1, I: 1, EM: 1, U: 1, BR: 1, DIV: 1, P: 1, SPAN: 1 };
+  // únicas classes que sobrevivem à limpeza: as do grifo e a da descrição
+  const CLASSES_OK = { 'ga-tip': 1 };
+  CLASSES_OK[window.GA_GRIFO_CAIXA] = 1;
+  window.GA_GRIFOS.forEach(g => { CLASSES_OK[g.cls] = 1; });
   function filtrarEstilo(s) {
     const ok = [];
     String(s || '').split(';').forEach(par => {
@@ -128,13 +147,16 @@ window.GA_limparHtml = (function () {
           }
           const estilo = filtrarEstilo(n.getAttribute('style') || '');
           // preserva as descrições penduradas (📖): span.ga-tip[data-tip]
-          // — a nuvem é desenhada pelo itens-descricoes.js (texto puro)
-          const ehTip = n.tagName === 'SPAN' && /(^|\s)ga-tip(\s|$)/.test(n.className || '');
+          // — a nuvem é desenhada pelo itens-descricoes.js (texto puro) —
+          // e os grifos/caixas de leitura aplicados pela barra (span.mz-*)
+          const classes = String(n.getAttribute('class') || '')
+            .split(/\s+/).filter(c => CLASSES_OK[c]);
+          const ehTip = classes.indexOf('ga-tip') >= 0;
           const tip = ehTip ? n.getAttribute('data-tip') : null;
           while (n.attributes.length) n.removeAttribute(n.attributes[0].name);
           if (estilo) n.setAttribute('style', estilo);
+          if (classes.length) n.setAttribute('class', classes.join(' '));
           if (ehTip && tip) {
-            n.className = 'ga-tip';
             n.setAttribute('data-tip', tip);
             n.setAttribute('tabindex', '0');
           }
@@ -154,20 +176,102 @@ window.GA_limparHtml = (function () {
 // seção. Ao concluir qualquer mudança, disparam 'input' no campo — o
 // handler de input da aba salva, como numa digitação normal.
 
-// Clique no 📖 flutuante (.ga-rich-btn): mousedown + preventDefault para
-// NÃO perder a seleção (o truque do aoMousedownToolbar do Combate).
+// Envolve a seleção num <span class="…"> ('grifar') ou desembrulha todos
+// os grifos tocados pela seleção ('desgrifar'). Só mexe dentro de `editor`.
+// Retorna true se mudou alguma coisa. Mesma mecânica do Combate.
+window.GA_aplicarGrifo = function (editor, acao, cor) {
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return false;
+  const range = sel.getRangeAt(0);
+  if (!editor.contains(range.commonAncestorContainer)) return false;
+
+  if (acao === 'grifar') {
+    const span = document.createElement('span');
+    span.className = cor || window.GA_GRIFOS[0].cls;
+    try {
+      range.surroundContents(span);
+    } catch (err) {
+      // a seleção atravessa mais de um elemento → extrai e reinsere
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+    }
+  } else {
+    editor.querySelectorAll(window.GA_GRIFO_SELETOR).forEach(span => {
+      if (sel.containsNode(span, true)) {
+        while (span.firstChild) span.parentNode.insertBefore(span.firstChild, span);
+        span.parentNode.removeChild(span);
+      }
+    });
+    editor.normalize();
+  }
+  return true;
+};
+
+// HTML da barra de formatação de um campo rico (cores + caixa de leitura +
+// 📖 descrição + remover). Vai DENTRO do .ga-rich-wrap, antes do editor —
+// é assim que o handler de mousedown acha o campo a que ela pertence.
+window.GA_barraRica = function () {
+  const esc = window.GA_esc;
+  const sw = window.GA_GRIFOS.map(g =>
+    `<button type="button" class="ga-barra-btn ga-barra-btn--sw" data-rich-acao="grifar"
+             data-cor="${g.cls}" style="--sw:${g.cor}"
+             title="Grifar: ${esc(g.nome)}"><span class="ga-barra-sw"></span></button>`).join('');
+  return `
+      <div class="ga-barra">
+        <span class="ga-barra-rot">Grifar</span>${sw}
+        <button type="button" class="ga-barra-btn ga-barra-btn--box" data-rich-acao="grifar" data-cor="${window.GA_GRIFO_CAIXA}"
+                title="Marcar o trecho como caixa de leitura (boxed, estilo livro de aventura)">▣ Caixa</button>
+        <button type="button" class="ga-barra-btn ga-barra-btn--desc" data-rich-acao="descrever"
+                title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖 Descrição</button>
+        <button type="button" class="ga-barra-btn ga-barra-btn--limpa" data-rich-acao="desgrifar"
+                title="Tirar o grifo / a caixa do trecho selecionado">✦ Remover</button>
+        <span class="ga-barra-dica">selecione · grife ou Ctrl+B / Ctrl+I</span>
+      </div>`;
+};
+
+// Clique no 📖 flutuante (.ga-rich-btn) ou em qualquer botão da barra rica:
+// mousedown + preventDefault para NÃO perder a seleção (o truque do
+// aoMousedownToolbar do Combate).
 window.GA_richDescMousedown = function (e) {
-  const btn = e.target.closest('[data-rich-desc]');
+  const btn = e.target.closest('[data-rich-desc], [data-rich-acao]');
   if (!btn) return;
   e.preventDefault();
   const wrap = btn.closest('.ga-rich-wrap');
   const editor = wrap && wrap.querySelector('.ga-rich');
-  if (!editor || !window.GA_Tip) return;
-  const abriu = window.GA_Tip.editarSelecao(editor, () => {
-    editor.dispatchEvent(new Event('input', { bubbles: true }));
-  });
+  if (!editor || !editor.isContentEditable) return;   // campo em modo vitrine
+  const avisar = () => editor.dispatchEvent(new Event('input', { bubbles: true }));
+
+  const acao = btn.dataset.richAcao;
+  if (acao === 'grifar' || acao === 'desgrifar') {
+    if (window.GA_aplicarGrifo(editor, acao, btn.dataset.cor)) avisar();
+    return;
+  }
+  // 📖 Descrição (botão flutuante ou o da barra)
+  if (!window.GA_Tip) return;
+  const abriu = window.GA_Tip.editarSelecao(editor, avisar);
   if (!abriu) editor.focus();   // sem trecho selecionado: devolve o cursor
 };
+
+// Ctrl+B / Ctrl+I. Usa execCommand — depreciado, mas é o jeito universal e
+// estável de formatar um contenteditable. Retorna true se formatou.
+window.GA_richAtalho = function (e) {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey) return false;
+  const k = (e.key || '').toLowerCase();
+  if (k !== 'b' && k !== 'i') return false;
+  e.preventDefault();
+  document.execCommand(k === 'b' ? 'bold' : 'italic', false, null);
+  return true;
+};
+
+// Atalhos valem em TODO campo .ga-rich do app, sem cada aba registrar nada.
+// (o Combate tem os seus próprios, nas caixas .mz-ataques)
+document.addEventListener('keydown', function (e) {
+  const alvo = e.target;
+  if (!alvo || !alvo.closest) return;
+  const editor = alvo.closest('.ga-rich');
+  if (!editor || !editor.isContentEditable) return;
+  if (window.GA_richAtalho(e)) editor.dispatchEvent(new Event('input', { bubbles: true }));
+});
 
 // Colar limpo nos campos ricos: junta as quebras "duras" de PDF e insere
 // como texto puro (sem arrastar HTML de fora).

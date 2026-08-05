@@ -80,31 +80,53 @@
     const v = JSON.stringify(dados || {});
     if (atual === v) return;
     try { localStorage.setItem(CHAVE_INV_JOGADORES, v); } catch (e) {}
+
     // Se o mestre está digitando em algum campo agora, não re-renderiza a
-    // aba (arrancaria o foco). Atualiza só as caixas de leitura no lugar.
+    // aba (arrancaria o foco). Atualiza só as caixas de leitura no lugar e
+    // deixa as edições dos jogadores para a próxima passagem — elas ficam
+    // guardadas na caixa de entrada até serem absorvidas.
     const focado = document.activeElement;
     const editando = focado && (focado.tagName === 'INPUT' || focado.tagName === 'TEXTAREA' ||
                                 (focado.getAttribute && focado.getAttribute('contenteditable') === 'true'));
     if (editando && document.getElementById('bases-content')) {
       const mapa = dados || {};
       document.querySelectorAll('[data-campo-compart="invjogadores"]').forEach(area => {
-        const novo = typeof mapa[area.dataset.baseId] === 'string' ? mapa[area.dataset.baseId] : '';
-        if (area.value !== novo) area.value = novo;
+        const entrada = window.GA_basesInboxDe ? window.GA_basesInboxDe(area.dataset.baseId, mapa) : {};
+        const novo = window.GA_invJogadoresHtml
+          ? window.GA_invJogadoresHtml(entrada.jogadores || '') : (entrada.jogadores || '');
+        if (area.innerHTML !== novo) area.innerHTML = novo;
       });
       return;
     }
+    // Aqui somos o DONO do arquivo: o que os jogadores escreveram em
+    // Residentes / Inventário da base entra em dados.bases e a caixa de
+    // entrada é esvaziada (senão uma edição velha voltaria por cima da
+    // próxima edição do mestre). O salvamento retransmite para todos.
+    try {
+      if (window.GA_Bases && window.GA_Bases.receberInbox) {
+        if (window.GA_Bases.receberInbox(dados || {}, true)) return;   // já redesenhou
+      }
+    } catch (e) { console.warn('[sync] absorver edições dos jogadores:', e && e.message); }
     try { window.GA_Bases && window.GA_Bases.recarregar && window.GA_Bases.recarregar(); } catch (e) {}
   }
 
-  // Botão "🗑 Limpar" do lado do mestre (index.html) — o mestre já tem
-  // permissão de escrita em qualquer caminho da sala, então isso funciona
-  // com a mesma conta logada, sem precisar de mais nada.
-  function limparInventarioJogadores(baseId) {
+  // Apaga um campo da caixa de entrada — o mestre já tem permissão de
+  // escrita em qualquer caminho da sala, então isso funciona com a mesma
+  // conta logada, sem precisar de mais nada.
+  //  update({campo: null}) em vez de remove() no filho: se a entrada ainda
+  //  for a string antiga (formato pré-caixa-de-entrada), remover um filho
+  //  dela não faria nada — já o update troca a string por um objeto sem
+  //  aquele campo, que é exatamente o que queremos.
+  function limparInbox(baseId, campo) {
     if (!db) return;
-    db.ref('mesas/' + sala() + '/jogadores/inventario/' + baseId).remove()
+    const patch = {}; patch[campo] = null;
+    db.ref('mesas/' + sala() + '/jogadores/inventario/' + baseId).update(patch)
       .catch(e => console.warn('[sync] não deu para limpar:', e && e.message));
   }
-  window.GA_SyncMestre = { limparInventarioJogadores: limparInventarioJogadores };
+  window.GA_SyncMestre = {
+    limparInbox: limparInbox,
+    limparInventarioJogadores: baseId => limparInbox(baseId, 'jogadores'),
+  };
 
   function refDados() { return db.ref('mesas/' + sala() + '/dados'); }
 

@@ -1888,6 +1888,84 @@ footer {
 .ga-rich-btn:focus { opacity: 1; }
 .ga-rich-btn:hover { background: var(--gold-pale); }
 
+/* ── BARRA DE FORMATAÇÃO DOS CAMPOS RICOS (js: GA_barraRica) ───────
+   Irmã da .mz-toolbar do Combate, para as abas que usam .ga-rich.
+   Fica DENTRO do .ga-rich-wrap, logo acima do editor. O modificador
+   --barra marca os campos que NÃO têm o 📖 flutuante (ele virou um
+   botão da própria barra), então dispensam a folga à direita. */
+.ga-rich-wrap--barra .ga-rich { padding-right: 0.7rem; }
+.ga-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+}
+.ga-barra-btn {
+  padding: 0.28rem 0.55rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.ga-barra-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.ga-barra-btn--sw { padding: 0.26rem 0.28rem; line-height: 0; }
+.ga-barra-btn--sw .ga-barra-sw {
+  display: block;
+  width: 0.95rem;
+  height: 0.95rem;
+  background: var(--sw);
+  border: 1px solid rgba(26, 16, 8, 0.35);
+  border-radius: var(--raio);
+}
+.ga-barra-btn--sw:hover { border-color: var(--ink); }
+.ga-barra-btn--box:hover,
+.ga-barra-btn--desc:hover { background: var(--gold-deep); color: var(--parchment); border-color: var(--gold-deep); }
+.ga-barra-btn--limpa:hover { background: var(--ink); color: var(--parchment); }
+.ga-barra-dica {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.76rem;
+  color: var(--ink-faded);
+}
+
+/* ── GRIFOS (cores) E CAIXA DE LEITURA ─────────────────────────────
+   Nasceram na aba Combates (por isso os nomes mz-*), mas hoje valem em
+   qualquer campo rico — por isso moraram para cá, o CSS de todo mundo. */
+.mz-azul {
+  background: #bcdcee;
+  color: #0c3a5a;
+  box-shadow: 0 0 0 1px #8fb9d4 inset;
+  padding: 0 1px;
+}
+.mz-amarelo  { background: #f3e3a3; color: #5a4a0c; box-shadow: 0 0 0 1px #d9c25f inset; padding: 0 1px; }
+.mz-vermelho { background: #f0c3bb; color: #6a1d12; box-shadow: 0 0 0 1px #d39086 inset; padding: 0 1px; }
+.mz-verde    { background: #c4e3bd; color: #1d4a12; box-shadow: 0 0 0 1px #86b97e inset; padding: 0 1px; }
+
+/* caixa de leitura (boxed) — narração em destaque, estilo livro de aventura */
+.mz-leitura {
+  display: block;
+  margin: 0.45rem 0;
+  padding: 0.55rem 0.85rem;
+  background: var(--parchment3);
+  border-left: 4px solid var(--gold);
+  box-shadow: 0 1px 0 rgba(26, 16, 8, 0.12);
+  font-style: italic;
+}
+
 /* ── MODAL "📖 Descrição do trecho" (js/descricoes-custom.js) ──────
    Escrever/buscar uma descrição e pendurá-la num trecho selecionado
    (vira <span class="ga-tip" data-tip="…">). Usado pelo Combate, Mapa
@@ -2197,3 +2275,9 @@ footer {
 .ga-jogador section:not(#perigos) input[type="checkbox"],
 .ga-jogador section:not(#perigos) input[type="number"] { pointer-events: none; opacity: 0.75; }
 .ga-jogador section:not(#perigos) .ga-rich { cursor: default; }
+/* exceção: as caixas [data-jog-edita] são DELES (Residentes, Inventário da
+   base e o Inventário dos jogadores) — escrevem e formatam normalmente. Só
+   o 📖 Descrição sai (o modal de descrições não é carregado no
+   jogadores.html). */
+.ga-jogador [data-jog-edita] .ga-rich { cursor: text; }
+.ga-jogador .ga-barra-btn--desc { display: none; }

@@ -39,9 +39,10 @@ uma hospedagem para o site (**GitHub Pages**).
    ```
 
    → **Publicar**. (Tradução: qualquer um com o link **lê** tudo; só você, logado,
-   **escreve** na mesa — EXCETO o "Inventário dos jogadores" (`jogadores/inventario`),
-   que qualquer um com o link pode escrever. É o único ponto de escrita liberado
-   para eles, de propósito, para a caixa compartilhada de inventário na aba Bases.)
+   **escreve** na mesa — EXCETO `jogadores/inventario`, que qualquer um com o link
+   pode escrever. É o único ponto de escrita liberado para eles, de propósito: por
+   ele passam a caixa "📝 Inventário dos jogadores" e as edições que eles fazem em
+   **Residentes** e **Inventário da base** — ver "O que os jogadores editam", abaixo.)
 5. Menu lateral: **Criação → Authentication** → **Vamos começar** → aba
    **Método de login** → ative **E-mail/senha**. Depois, na aba **Usuários** →
    **Adicionar usuário** → crie o SEU usuário de mestre (e-mail + uma senha boa).
@@ -84,11 +85,35 @@ uma hospedagem para o site (**GitHub Pages**).
 |---|---|
 | 🏪 Loja exibida: itens, encantamentos, pergaminhos, caixa e classificação da comunidade | 🎲 Gerar nova loja, ajustes de geração, histórico de lojas |
 | 🐎 Viagens: ritmo, progresso, diário, paradas | Botões de editar/rolar/apagar |
-| 🏰 Bases: porte, cômodos, mobílias, cálculos, residentes, inventário | Backup/importar |
+| 🏰 Bases: porte, cômodos, mobílias, cálculos, residentes, inventário (estes dois eles **editam** — ver abaixo) | Backup/importar |
 | 📚 Consultas completas (regras, guias, culinária…) | 📰 Notícias, ⚔ Combates, 🎁 Recompensas, 📜 Anotações, 📖 Fichas, ⏳ Tempo |
 
 **Atenção**: o que estiver escrito nas Viagens e nas Bases fica visível aos jogadores —
 segredos de mestre é melhor guardar nas Anotações/Combates, que não são transmitidos.
+
+## O que os jogadores editam
+
+Fora estas três caixas da aba **Bases**, a página deles é só de leitura:
+
+| Caixa | Quem escreve | Onde fica guardado |
+|---|---|---|
+| 📝 Inventário dos jogadores | só eles (você vê e pode limpar) | só no `jogadores/inventario` — nunca entra no seu arquivo |
+| 🧑‍🤝‍🧑 Residentes | você **e** eles | o seu arquivo de Bases (backup e export `.txt` inclusos) |
+| 🎒 Inventário da base | você **e** eles | idem |
+
+Nas três eles têm a barra completa de formatação (grifos coloridos, ▣ caixa de
+leitura, **Ctrl+B** / **Ctrl+I**) — só o 📖 Descrição não aparece para eles.
+
+Como funcionam Residentes e Inventário da base: quando um jogador escreve, a
+edição vai para o `jogadores/inventario` e aparece na hora na tela dele e na dos
+outros. Assim que o seu `index.html` estiver aberto e conectado, ele **absorve**
+essa edição para o seu arquivo e reenvia para todos. A partir daí é um campo seu
+como qualquer outro.
+
+> ⚠ **Não há travas nem histórico**: vale o último que escreveu, e eles podem
+> apagar o que você tinha escrito nessas duas caixas. Se você editar uma delas
+> depois, a sua versão vence. Se preferir que uma delas volte a ser só sua, é uma
+> linha em `js/bases.js` (a lista `CAMPOS_JOGADOR`).
 
 ## Problemas comuns
 
