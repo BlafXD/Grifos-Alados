@@ -56,7 +56,7 @@
 
   // Estamos na visão dos jogadores (jogadores.html)? Lá alguns campos são
   // EDITÁVEIS (a exceção que eles podem escrever) — ver CAMPOS_JOGADOR.
-  function ehJogador() { return document.documentElement.classList.contains('ga-jogador'); }
+  const ehJogador = window.GA_ehJogador;
 
   // Campos da base que os JOGADORES também escrevem (além da caixa só
   // deles). São campos normais de dados.bases: o mestre continua sendo o
@@ -65,68 +65,25 @@
   const CAMPOS_JOGADOR = ['residentes', 'inventario'];
 
   // ── CAIXA DE ENTRADA COMPARTILHADA ───────────────────────────────
-  //  Espelho à parte de dados.bases (ver sync-mestre.js / sync-jogador.js),
-  //  no único caminho do banco em que os jogadores têm permissão de
-  //  escrita. Um objeto { [baseId]: { jogadores, residentes, inventario } }:
+  //  Espelho à parte de dados.bases, no único caminho do banco em que os
+  //  jogadores têm permissão de escrita. A mecânica é compartilhada com a
+  //  aba Viagem — mora no GA_Inbox (script.js); aqui ficam só os nomes que
+  //  as entradas de uma base usam: { [baseId]: { jogadores, residentes,
+  //  inventario } }:
   //    • jogadores  → a caixa "📝 Inventário dos jogadores", que é só deles
   //                   e mora AQUI (não existe em dados.bases);
   //    • residentes/inventario → edições PENDENTES feitas por eles nos
   //                   campos do mestre. Ele absorve para dados.bases e
   //                   limpa a entrada — daí em diante a fonte é o arquivo
   //                   dele, transmitido normalmente para todos.
-  const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
-  function inbox() {
-    try { return JSON.parse(localStorage.getItem(CHAVE_INV_JOGADORES) || '{}') || {}; }
-    catch (e) { return {}; }
-  }
-  // Uma entrada pode ser a string antiga (só a caixa deles) ou o objeto novo.
-  function inboxDe(baseId, mapa) {
-    const v = (mapa || inbox())[baseId];
-    if (typeof v === 'string') return { jogadores: v };
-    return (v && typeof v === 'object') ? v : {};
-  }
-  window.GA_basesInboxDe = inboxDe;
+  const inboxDe     = window.GA_Inbox.de;
+  const gravarInbox = window.GA_Inbox.gravar;
+  const limparInbox = window.GA_Inbox.limpar;
+  window.GA_basesInboxDe     = inboxDe;
+  window.GA_invJogadoresHtml = window.GA_Inbox.html;
 
-  // As caixas viraram texto rico: a entrada passou a guardar HTML. O que foi
-  // escrito ANTES disso é texto puro — reconhece pela ausência de tags e
-  // converte na hora (as quebras de linha viram <br>).
-  window.GA_invJogadoresHtml = function (bruto) {
-    if (!bruto) return '';
-    return /<[a-z][a-z0-9]*[\s/>]/i.test(bruto)
-      ? window.GA_limparHtml(bruto)
-      : window.GA_nl2br(bruto);
-  };
   function invJogadoresHtmlDe(baseId) {
-    return window.GA_invJogadoresHtml(inboxDe(baseId).jogadores || '');
-  }
-
-  // Grava um campo na caixa de entrada (espelho local + banco).
-  function gravarInbox(baseId, campo, html) {
-    const mapa = inbox();
-    const entrada = inboxDe(baseId, mapa);
-    entrada[campo] = html;
-    mapa[baseId] = entrada;
-    try { localStorage.setItem(CHAVE_INV_JOGADORES, JSON.stringify(mapa)); } catch (err) {}
-    try {
-      if (window.GA_SyncJogador && window.GA_SyncJogador.escreverInbox) {
-        window.GA_SyncJogador.escreverInbox(baseId, campo, html);
-      }
-    } catch (err) {}
-  }
-
-  // Tira um campo da caixa de entrada (só o mestre chega aqui: ele acabou
-  // de absorver a edição para dados.bases, ou está limpando a caixa deles).
-  function limparInbox(baseId, campo) {
-    const mapa = inbox();
-    const entrada = inboxDe(baseId, mapa);
-    if (!(campo in entrada)) return false;
-    delete entrada[campo];
-    if (Object.keys(entrada).length) mapa[baseId] = entrada;
-    else delete mapa[baseId];
-    try { localStorage.setItem(CHAVE_INV_JOGADORES, JSON.stringify(mapa)); } catch (err) {}
-    try { window.GA_SyncMestre && window.GA_SyncMestre.limparInbox &&
-          window.GA_SyncMestre.limparInbox(baseId, campo); } catch (err) {}
-    return true;
+    return window.GA_Inbox.html(inboxDe(baseId).jogadores || '');
   }
 
   // Absorve as edições pendentes dos jogadores para dados.bases. Rodada nos

@@ -74,6 +74,42 @@
 
   const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
 
+  // Aqui somos o DONO do arquivo: o que os jogadores escreveram em
+  // Residentes / Inventário da base e no diário / nas paradas de uma viagem
+  // entra no arquivo do mestre e a caixa de entrada é esvaziada (senão uma
+  // edição velha voltaria por cima da próxima edição dele). O salvamento
+  // retransmite para todos. Devolve true se alguma aba já se redesenhou.
+  function absorver(mapa) {
+    let redesenhou = false;
+    [window.GA_Bases, window.GA_Viagem].forEach(mod => {
+      try {
+        if (mod && mod.receberInbox && mod.receberInbox(mapa, true)) redesenhou = true;
+      } catch (e) { console.warn('[sync] absorver edições dos jogadores:', e && e.message); }
+    });
+    return redesenhou;
+  }
+
+  // Absorver no meio de uma digitação arrancaria o foco do mestre — espera
+  // ele sair do campo (uma vez só) e absorve o que ficou guardado.
+  let absorcaoAdiada = false;
+  function adiarAbsorcao() {
+    if (absorcaoAdiada) return;
+    absorcaoAdiada = true;
+    document.addEventListener('focusout', function sair() {
+      document.removeEventListener('focusout', sair);
+      absorcaoAdiada = false;
+      setTimeout(() => { if (!digitando()) absorver(inboxLocal()); }, 0);
+    });
+  }
+  function digitando() {
+    const f = document.activeElement;
+    return !!(f && (f.tagName === 'INPUT' || f.tagName === 'TEXTAREA' ||
+                    (f.getAttribute && f.getAttribute('contenteditable') === 'true')));
+  }
+  function inboxLocal() {
+    return window.GA_Inbox ? window.GA_Inbox.mapa() : {};
+  }
+
   function aplicarInventarioJogadores(dados) {
     let atual = null;
     try { atual = localStorage.getItem(CHAVE_INV_JOGADORES); } catch (e) {}
@@ -83,12 +119,9 @@
 
     // Se o mestre está digitando em algum campo agora, não re-renderiza a
     // aba (arrancaria o foco). Atualiza só as caixas de leitura no lugar e
-    // deixa as edições dos jogadores para a próxima passagem — elas ficam
-    // guardadas na caixa de entrada até serem absorvidas.
-    const focado = document.activeElement;
-    const editando = focado && (focado.tagName === 'INPUT' || focado.tagName === 'TEXTAREA' ||
-                                (focado.getAttribute && focado.getAttribute('contenteditable') === 'true'));
-    if (editando && document.getElementById('bases-content')) {
+    // deixa as edições dos jogadores para quando ele sair do campo — elas
+    // ficam guardadas na caixa de entrada até serem absorvidas.
+    if (digitando()) {
       const mapa = dados || {};
       document.querySelectorAll('[data-campo-compart="invjogadores"]').forEach(area => {
         const entrada = window.GA_basesInboxDe ? window.GA_basesInboxDe(area.dataset.baseId, mapa) : {};
@@ -96,17 +129,12 @@
           ? window.GA_invJogadoresHtml(entrada.jogadores || '') : (entrada.jogadores || '');
         if (area.innerHTML !== novo) area.innerHTML = novo;
       });
+      adiarAbsorcao();
       return;
     }
-    // Aqui somos o DONO do arquivo: o que os jogadores escreveram em
-    // Residentes / Inventário da base entra em dados.bases e a caixa de
-    // entrada é esvaziada (senão uma edição velha voltaria por cima da
-    // próxima edição do mestre). O salvamento retransmite para todos.
-    try {
-      if (window.GA_Bases && window.GA_Bases.receberInbox) {
-        if (window.GA_Bases.receberInbox(dados || {}, true)) return;   // já redesenhou
-      }
-    } catch (e) { console.warn('[sync] absorver edições dos jogadores:', e && e.message); }
+    if (absorver(dados || {})) return;   // alguma aba já redesenhou
+    // ninguém mudou de conteúdo, mas a caixa "📝 Inventário dos jogadores"
+    // (que mora só na entrada) pode ter mudado → redesenha as Bases
     try { window.GA_Bases && window.GA_Bases.recarregar && window.GA_Bases.recarregar(); } catch (e) {}
   }
 
@@ -130,19 +158,31 @@
 
   function refDados() { return db.ref('mesas/' + sala() + '/dados'); }
 
-  // Bases marcadas "só o mestre vê" (visivelJogadores: false) NUNCA saem
-  // daqui — filtradas antes mesmo de virar pacote para o Firebase. Não é
-  // só esconder na tela: o jogador não tem como inspecionar o que nunca
-  // chegou até o banco dele.
+  // O que está marcado "só o mestre vê" (visivelJogadores: false) NUNCA sai
+  // daqui — filtrado antes mesmo de virar pacote para o Firebase. Não é só
+  // esconder na tela: o jogador não tem como inspecionar o que nunca chegou
+  // até o banco dele. Vale para bases inteiras, viagens inteiras e, dentro
+  // de uma viagem visível, para cada linha do diário e cada parada.
+  const visivel = x => x && x.visivelJogadores !== false;
+
   function valorParaEnviar(nome, v) {
-    if (nome !== 'bases' || v == null) return v;
+    if (v == null || (nome !== 'bases' && nome !== 'viagens')) return v;
     try {
       const dados = JSON.parse(v);
-      if (dados && Array.isArray(dados.bases)) {
-        dados.bases = dados.bases.filter(b => b && b.visivelJogadores !== false);
+      if (nome === 'bases' && dados && Array.isArray(dados.bases)) {
+        dados.bases = dados.bases.filter(visivel);
         return JSON.stringify(dados);
       }
-    } catch (e) { console.warn('[sync] não deu para filtrar bases ocultas:', e.message); }
+      if (nome === 'viagens' && dados && Array.isArray(dados.viagens)) {
+        dados.viagens = dados.viagens.filter(visivel).map(vg => {
+          const copia = Object.assign({}, vg);
+          copia.diario  = (vg.diario  || []).filter(visivel);
+          copia.paradas = (vg.paradas || []).filter(visivel);
+          return copia;
+        });
+        return JSON.stringify(dados);
+      }
+    } catch (e) { console.warn('[sync] não deu para filtrar o que é só do mestre:', e.message); }
     return v;
   }
 

@@ -94,6 +94,73 @@ window.htmlParaTexto = function (html) {
   return txt.replace(/ /g, ' ').replace(/[ \t]+\n/g, '\n').trim();
 };
 
+// ── CAIXA DE ENTRADA DOS JOGADORES (compartilhada) ───────────────────
+// Estamos na visão dos jogadores (jogadores.html)? Lá quase tudo é só
+// leitura, mas alguns campos são editáveis de propósito.
+window.GA_ehJogador = function () {
+  return document.documentElement.classList.contains('ga-jogador');
+};
+
+// O ÚNICO caminho do banco em que os jogadores têm permissão de escrita é
+// `mesas/<sala>/jogadores/inventario` (ver MODO-JOGADOR.md). Tudo o que
+// eles escrevem passa por aqui: um objeto { [id]: { campo: html } }, com
+// `id` sendo o id da base, da entrada do diário ou da parada — ids são
+// únicos no app inteiro, então as abas convivem no mesmo mapa sem colidir.
+// Quem consome: bases.js e viagem.js (gravar/limpar) e os dois syncs.
+window.GA_Inbox = (function () {
+  const CHAVE = 'grifosAlados.basesJogadoresInventario';
+
+  function mapa() {
+    try { return JSON.parse(localStorage.getItem(CHAVE) || '{}') || {}; }
+    catch (e) { return {}; }
+  }
+  // Uma entrada pode ser a string antiga (a caixa "Inventário dos
+  // jogadores", de quando só ela existia) ou o objeto novo.
+  function de(id, m) {
+    const v = (m || mapa())[id];
+    if (typeof v === 'string') return { jogadores: v };
+    return (v && typeof v === 'object') ? v : {};
+  }
+  // Grava um campo na caixa de entrada (espelho local + banco).
+  function gravar(id, campo, html) {
+    const m = mapa();
+    const entrada = de(id, m);
+    entrada[campo] = html;
+    m[id] = entrada;
+    try { localStorage.setItem(CHAVE, JSON.stringify(m)); } catch (e) {}
+    try {
+      if (window.GA_SyncJogador && window.GA_SyncJogador.escreverInbox) {
+        window.GA_SyncJogador.escreverInbox(id, campo, html);
+      }
+    } catch (e) {}
+  }
+  // Tira um campo da caixa de entrada (só o mestre chega aqui: acabou de
+  // absorver a edição para o arquivo dele, ou está limpando a caixa deles).
+  function limpar(id, campo) {
+    const m = mapa();
+    const entrada = de(id, m);
+    if (!(campo in entrada)) return false;
+    delete entrada[campo];
+    if (Object.keys(entrada).length) m[id] = entrada;
+    else delete m[id];
+    try { localStorage.setItem(CHAVE, JSON.stringify(m)); } catch (e) {}
+    try { window.GA_SyncMestre && window.GA_SyncMestre.limparInbox &&
+          window.GA_SyncMestre.limparInbox(id, campo); } catch (e) {}
+    return true;
+  }
+  // As caixas viraram texto rico: a entrada passou a guardar HTML. O que foi
+  // escrito ANTES disso é texto puro — reconhece pela ausência de tags e
+  // converte na hora (as quebras de linha viram <br>).
+  function html(bruto) {
+    if (!bruto) return '';
+    return /<[a-z][a-z0-9]*[\s/>]/i.test(bruto)
+      ? window.GA_limparHtml(bruto)
+      : window.GA_nl2br(bruto);
+  }
+
+  return { CHAVE: CHAVE, mapa: mapa, de: de, gravar: gravar, limpar: limpar, html: html };
+})();
+
 // ── GRIFOS (cores + caixa de leitura) — vocabulário compartilhado ────
 // Nasceram na aba Combates (por isso as classes ainda se chamam mz-*) e
 // hoje valem em qualquer campo rico do app. Os nomes de classe NÃO mudam:

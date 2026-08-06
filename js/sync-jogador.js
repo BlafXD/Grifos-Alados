@@ -55,23 +55,48 @@
         try { localStorage.setItem(CHAVES[nome], v); mods.add(MODULO[nome]); } catch (e) {}
       }
     });
-    // o mestre retransmite as bases logo depois de absorver uma edição dos
-    // jogadores — se alguém ainda estiver escrevendo, espera ele sair da
-    // caixa em vez de redesenhar por baixo do cursor
+    // o mestre retransmite logo depois de absorver uma edição dos jogadores
+    // — se alguém ainda estiver escrevendo, espera ele sair da caixa em vez
+    // de redesenhar por baixo do cursor
     mods.forEach(mod => {
-      if (mod === 'bases' && digitando()) adiarRedesenho('bases');
-      else redesenhar(mod);
+      if (digitando()) adiarRedesenho(mod);
+      else atualizar(mod);
     });
     return mods.size > 0;
   }
 
-  // ── "📝 Inventário dos jogadores" — a ÚNICA coisa que jogadores.html
-  //  consegue ESCREVER de volta (ver bases.js e MODO-JOGADOR.md). Um
-  //  espelho à parte de dados.bases — não mexe em nada que é só do
-  //  mestre. Qualquer jogador pode escrever (é uma caixa livre,
-  //  compartilhada por todos que abrirem o link da sala).
+  // Redesenha uma aba com os dados do mestre e reaplica por cima o que ainda
+  // está na caixa de entrada — o que um jogador escreveu há pouco e o mestre
+  // ainda não absorveu não pode sumir da tela no meio do caminho.
+  function atualizar(mod) {
+    redesenhar(mod);
+    absorver(inboxLocal());
+  }
+
+  // ── CAIXA DE ENTRADA — o que jogadores.html consegue ESCREVER de volta
+  //  (ver GA_Inbox no script.js e MODO-JOGADOR.md): a caixa "📝 Inventário
+  //  dos jogadores", Residentes e Inventário de uma base, e o diário e as
+  //  paradas VISÍVEIS de uma viagem. Um espelho à parte do arquivo do
+  //  mestre — não mexe em nada que seja só dele. Qualquer jogador escreve
+  //  (são caixas compartilhadas por todos que abrirem o link da sala).
   const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
   let dbRef = null, timerInv = null, pendenteInv = {};
+
+  function inboxLocal() { return window.GA_Inbox ? window.GA_Inbox.mapa() : {}; }
+
+  // Leva as edições da caixa de entrada para o arquivo local (assim a edição
+  // de um jogador aparece para os outros mesmo com o mestre fora do ar).
+  // `false` = não somos o dono, então a entrada NÃO é esvaziada — quem faz
+  // isso é o mestre, ao absorver. Devolve true se alguma aba se redesenhou.
+  function absorver(mapa) {
+    let redesenhou = false;
+    [window.GA_Bases, window.GA_Viagem].forEach(mod => {
+      try {
+        if (mod && mod.receberInbox && mod.receberInbox(mapa, false)) redesenhou = true;
+      } catch (e) { console.warn('[sync-jogador] absorver edições:', e && e.message); }
+    });
+    return redesenhou;
+  }
 
   // Está com o cursor dentro de alguma caixa que os jogadores editam?
   // Redesenhar a aba agora arrancaria o foco no meio da digitação.
@@ -79,17 +104,29 @@
     const f = document.activeElement;
     return !!(f && f.closest && f.closest('[data-jog-edita]'));
   }
-  // Redesenha assim que a pessoa sair da caixa (uma vez só).
-  let redesenhoAdiado = false;
-  function adiarRedesenho(mod) {
-    if (redesenhoAdiado) return;
-    redesenhoAdiado = true;
-    document.addEventListener('focusout', function sair() {
-      document.removeEventListener('focusout', sair);
-      redesenhoAdiado = false;
-      setTimeout(() => { if (!digitando()) redesenhar(mod); }, 0);
-    });
+  // Faz o trabalho adiado assim que a pessoa sair da caixa (uma passagem só,
+  // com tudo o que se acumulou enquanto ela escrevia).
+  const modsAdiados = new Set();
+  let absorcaoAdiada = false, ouvindoSaida = false;
+  function aoSair() {
+    document.removeEventListener('focusout', aoSair);
+    ouvindoSaida = false;
+    setTimeout(() => {
+      if (digitando()) return agendarSaida();   // pulou direto para outra caixa
+      const mods = Array.from(modsAdiados); modsAdiados.clear();
+      const precisa = absorcaoAdiada || mods.length;
+      absorcaoAdiada = false;
+      mods.forEach(mod => redesenhar(mod));
+      if (precisa) absorver(inboxLocal());
+    }, 0);
   }
+  function agendarSaida() {
+    if (ouvindoSaida) return;
+    ouvindoSaida = true;
+    document.addEventListener('focusout', aoSair);
+  }
+  function adiarRedesenho(mod) { modsAdiados.add(mod); agendarSaida(); }
+  function adiarAbsorcao()     { absorcaoAdiada = true; agendarSaida(); }
 
   function aplicarInventarioJogadores(dados) {
     let atual = null;
@@ -98,19 +135,11 @@
     if (atual === v) return;   // nada mudou (inclui o "eco" da própria escrita) → não redesenha
     try { localStorage.setItem(CHAVE_INV_JOGADORES, v); } catch (e) {}
 
-    // As edições que outro jogador fez em Residentes / Inventário da base
-    // entram no arquivo local (assim aparecem mesmo com o mestre fora do ar).
-    // `false` = não somos o dono, então a caixa de entrada NÃO é esvaziada.
-    let mudouBases = false;
-    try {
-      mudouBases = !!(window.GA_Bases && window.GA_Bases.receberInbox &&
-                      window.GA_Bases.receberInbox(dados || {}, false));
-    } catch (e) { console.warn('[sync-jogador] absorver edições:', e && e.message); }
-
     // Se o jogador está digitando numa dessas caixas agora, não arranca o
-    // foco dele: atualiza só as OUTRAS caixas no lugar, sem re-render.
-    const focado = document.activeElement;
+    // foco dele: atualiza só as OUTRAS caixas no lugar, sem re-render, e
+    // deixa a absorção para quando ele sair.
     if (digitando()) {
+      const focado = document.activeElement;
       const mapa = dados || {};
       document.querySelectorAll('[data-campo-compart="invjogadores"]').forEach(area => {
         if (area === focado) return;
@@ -119,10 +148,11 @@
           ? window.GA_invJogadoresHtml(entrada.jogadores || '') : (entrada.jogadores || '');
         if (area.innerHTML !== novo) area.innerHTML = novo;
       });
-      if (mudouBases) adiarRedesenho('bases');
+      adiarAbsorcao();
       return;
     }
-    if (!mudouBases) redesenhar('bases');   // receberInbox já redesenhou, se mudou
+    if (absorver(dados || {})) return;   // alguma aba já redesenhou
+    redesenhar('bases');   // a caixa que mora só na entrada pode ter mudado
   }
 
   // Guarda um campo da caixa de entrada no banco. `campo` é 'jogadores' (a

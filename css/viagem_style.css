@@ -138,6 +138,36 @@
   cursor: pointer; color: inherit; opacity: 0.65; transition: opacity 0.15s, background 0.15s;
 }
 .vg-del:hover { opacity: 1; background: rgba(139, 44, 10, 0.3); }
+/* 👁 / 🙈 — mesmo botãozinho das Bases (.bs-mini) */
+.vg-mini {
+  flex: 0 0 auto;
+  width: 1.7rem; height: 1.7rem;
+  font-size: 0.8rem;
+  background: transparent; border: 1px solid currentColor; cursor: pointer;
+  color: inherit; opacity: 0.6; transition: opacity 0.15s, background 0.15s;
+}
+.vg-mini:hover { opacity: 1; background: rgba(255,255,255,0.14); }
+/* dentro do diário/parada o fundo é pergaminho — o realce escurece */
+.vg-diario-item .vg-mini, .vg-parada .vg-mini { color: var(--rust-dark); opacity: 0.55; }
+.vg-diario-item .vg-mini:hover, .vg-parada .vg-mini:hover { opacity: 1; background: rgba(139, 44, 10, 0.18); }
+
+/* ── "SÓ O MESTRE VÊ" ──────────────────────────────────────────────── */
+/* borda tracejada rústica, pra ficar claro de relance que aquilo não vai
+   para jogadores.html (mesma linguagem visual das Bases ocultas) */
+.vg-tag-oculta {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.05em;
+  text-transform: uppercase; white-space: nowrap;
+  color: var(--rust); border: 1px solid var(--rust); background: rgba(139,44,10,0.18);
+  padding: 0.12rem 0.4rem; border-radius: var(--raio);
+}
+.vg-viagem--oculta { border-style: dashed; border-color: var(--rust); }
+.vg-viagem--oculta > .vg-viagem-cab { background: repeating-linear-gradient(
+    135deg, var(--ink), var(--ink) 10px, #241a12 10px, #241a12 20px); }
+.vg-item--oculto { border-left: 4px solid var(--rust); padding-left: 0.5rem; }
+.vg-item--oculto > .ga-rich-wrap > .vg-textarea,
+.vg-item--oculto > .vg-parada-cab > .vg-parada-nome { border-style: dashed; border-color: var(--rust); }
+.vg-parada.vg-item--oculto { border-left-color: var(--rust); padding-left: 0.6rem; }
 
 /* ── BLOCOS ────────────────────────────────────────────────────────── */
 .vg-grade {
