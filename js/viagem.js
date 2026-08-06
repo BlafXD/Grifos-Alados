@@ -6,6 +6,12 @@
 //    • Progresso — barra km percorrido/total, dias, suprimentos.
 //    • Diário de viagem — registro manual de eventos (chuva, assalto…).
 //    • Paradas narradas — santuários, ruínas, acampamentos…
+//
+//  Cada viagem, cada entrada do diário e cada parada tem um 👁/🙈: o que
+//  está 🙈 NÃO é transmitido para jogadores.html (o filtro é no envio, em
+//  sync-mestre.js — nem chega ao banco deles). O que está 👁 os jogadores
+//  também ESCREVEM: a edição volta pela caixa de entrada compartilhada
+//  (GA_Inbox), o mestre absorve e retransmite. Mesma mecânica das Bases.
 // ═══════════════════════════════════════════════════════════════════
 
 (function () {
@@ -62,9 +68,49 @@
     return Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 2 });
   }
 
+  // Estamos na visão dos jogadores (jogadores.html)? Lá o diário e as
+  // paradas VISÍVEIS continuam editáveis — é a exceção de propósito.
+  const ehJogador = window.GA_ehJogador;
+
+  // ── CAIXA DE ENTRADA COMPARTILHADA ───────────────────────────────
+  //  Ver GA_Inbox (script.js): o único caminho do banco em que os
+  //  jogadores escrevem. Aqui as entradas são { [idDaEntrada]: { texto } },
+  //  com idDaEntrada sendo o id de uma linha do diário ('d_…') ou de uma
+  //  parada ('p_…'). O mestre absorve para dados.viagens, esvazia a
+  //  entrada e retransmite — daí em diante a fonte é o arquivo dele.
+  const inboxDe     = window.GA_Inbox.de;
+  const gravarInbox = window.GA_Inbox.gravar;
+  const limparInbox = window.GA_Inbox.limpar;
+
+  // Absorve as edições pendentes dos jogadores para dados.viagens. Roda nos
+  // DOIS lados: no mestre (dono do arquivo, que por isso também LIMPA a
+  // entrada) e nos jogadores (para a edição de um aparecer para os outros
+  // mesmo com o mestre fora do ar). Devolve true se algo mudou.
+  function absorverInbox(mapa, souODono) {
+    let mudou = false;
+    const aplicar = item => {
+      const html = inboxDe(item.id, mapa).texto;
+      if (typeof html === 'string') {
+        const limpo = window.GA_limparHtml(html);
+        if (item.textoHtml !== limpo) {
+          item.textoHtml = limpo;
+          item.texto = window.htmlParaTexto(limpo);
+          mudou = true;
+        }
+        if (souODono) limparInbox(item.id, 'texto');   // já está no arquivo dele
+      }
+    };
+    (dados.viagens || []).forEach(v => {
+      v.diario.forEach(aplicar);
+      v.paradas.forEach(aplicar);
+    });
+    if (mudou) salvarAgora();
+    return mudou;
+  }
+
   function novaViagem(n) {
     return {
-      id: uid('vg'), aberta: true, nome: 'Viagem ' + n,
+      id: uid('vg'), aberta: true, nome: 'Viagem ' + n, visivelJogadores: true,
       transporte: { tipo: 'pe', chave: '', pvAtual: null, manual: false, deslocManual: '' },
       desloc: '9', deslocManual: '', terrenoDificil: false, climaRuim: false, marcha: false,
       distTotal: '', distFeita: '', dias: 0, suprimentos: '',
@@ -75,6 +121,7 @@
     if (!v.id) v.id = uid('vg');
     if (typeof v.nome !== 'string') v.nome = 'Viagem';
     if (typeof v.aberta !== 'boolean') v.aberta = true;
+    if (typeof v.visivelJogadores !== 'boolean') v.visivelJogadores = true;
     if (typeof v.desloc !== 'string') v.desloc = '9';
     if (typeof v.deslocManual !== 'string') v.deslocManual = '';
     // meio de transporte (a pé / veículo / montaria) — migra dados antigos
@@ -94,6 +141,7 @@
     v.diario.forEach(d => {
       if (!d.id) d.id = uid('d');
       if (typeof d.texto !== 'string') d.texto = '';
+      if (typeof d.visivelJogadores !== 'boolean') d.visivelJogadores = true;
       d.textoHtml = (typeof d.textoHtml === 'string')
         ? window.GA_limparHtml(d.textoHtml) : window.GA_nl2br(d.texto);
     });
@@ -101,6 +149,7 @@
       if (!p.id) p.id = uid('p');
       if (typeof p.nome !== 'string') p.nome = '';
       if (typeof p.texto !== 'string') p.texto = '';
+      if (typeof p.visivelJogadores !== 'boolean') p.visivelJogadores = true;
       p.textoHtml = (typeof p.textoHtml === 'string')
         ? window.GA_limparHtml(p.textoHtml) : window.GA_nl2br(p.texto);
     });
@@ -202,6 +251,18 @@
 
     cont.innerHTML = html;
   }
+
+  // Botão 👁/🙈 de um item (viagem, entrada do diário, parada). Só o mestre
+  // o vê: para os jogadores, o que está oculto simplesmente não chegou.
+  function botaoVisivel(item, acao, ds, oQue) {
+    if (ehJogador()) return '';
+    return `<button class="vg-mini" data-acao="${acao}" ${ds}
+            title="${item.visivelJogadores
+              ? 'Visível para os jogadores — clique para esconder (' + oQue + ')'
+              : 'Escondido dos jogadores — clique para revelar'}">${item.visivelJogadores ? '👁' : '🙈'}</button>`;
+  }
+  const tagOculta = (item, dica) => (!ehJogador() && !item.visivelJogadores)
+    ? `<span class="vg-tag-oculta" title="${esc(dica)}">🙈 Só o mestre vê</span>` : '';
 
   function construirViagem(v, vi) {
     const r = ritmo(v);
@@ -315,18 +376,25 @@
     });
     let diarioItens = '';
     if (v.diario.length === 0) {
-      diarioItens = `<p class="vg-vazio-menor">Nada registrado. Use os atalhos acima para anotar o que acontece na estrada.</p>`;
+      diarioItens = ehJogador()
+        ? `<p class="vg-vazio-menor">Nada registrado ainda nesta viagem.</p>`
+        : `<p class="vg-vazio-menor">Nada registrado. Use os atalhos acima para anotar o que acontece na estrada.</p>`;
     } else {
       v.diario.forEach((d, di) => {
+        // as linhas visíveis são editáveis dos DOIS lados: o data-jog-edita
+        // marca a caixa como "os jogadores também escrevem aqui" (é o que o
+        // modo-jogador.js consulta para não travá-la).
         diarioItens += `
-          <div class="vg-diario-item">
-            <div class="ga-rich-wrap">
+          <div class="vg-diario-item${d.visivelJogadores ? '' : ' vg-item--oculto'}">
+            <div class="ga-rich-wrap" data-jog-edita>
               <div class="vg-textarea ga-rich" contenteditable="true" spellcheck="true"
                    data-campo="diario-texto" data-v="${vi}" data-d="${di}"
                    data-ph="O que aconteceu…">${d.textoHtml}</div>
               <button type="button" class="ga-rich-btn" data-rich-desc
                       title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖</button>
             </div>
+            ${botaoVisivel(d, 'toggle-visivel-diario', `data-v="${vi}" data-d="${di}"`,
+                           'os jogadores não veem esta linha até você revelar')}
             <button class="vg-del" data-acao="del-diario" data-v="${vi}" data-d="${di}" title="Remover">✕</button>
           </div>`;
       });
@@ -334,24 +402,31 @@
     const blocoDiario = `
       <div class="vg-bloco">
         <h3 class="vg-bloco-tit">📜 Diário de viagem</h3>
-        <div class="vg-atalhos">${atalhos}</div>
+        ${ehJogador()
+          ? `<p class="vg-dica">Estas linhas são de vocês também — podem escrever aqui; aparece para todos na mesa ao vivo.</p>`
+          : `<div class="vg-atalhos">${atalhos}</div>`}
         <div class="vg-diario-lista">${diarioItens}</div>
       </div>`;
 
     // ── Paradas narradas ──
     let paradasHtml = '';
     if (v.paradas.length === 0) {
-      paradasHtml = `<p class="vg-vazio-menor">Nenhuma parada. Crie uma para narrar um santuário, ruína, acampamento…</p>`;
+      paradasHtml = ehJogador()
+        ? `<p class="vg-vazio-menor">Nenhuma parada narrada nesta viagem.</p>`
+        : `<p class="vg-vazio-menor">Nenhuma parada. Crie uma para narrar um santuário, ruína, acampamento…</p>`;
     } else {
       v.paradas.forEach((pa, pi) => {
         paradasHtml += `
-          <div class="vg-parada">
+          <div class="vg-parada${pa.visivelJogadores ? '' : ' vg-item--oculto'}">
             <div class="vg-parada-cab">
               <input class="vg-parada-nome" type="text" data-campo="parada-nome" data-v="${vi}" data-p="${pi}"
                      value="${esc(pa.nome)}" placeholder="Nome da parada (ex.: Santuário de Khalmyr)">
+              ${tagOculta(pa, 'Esta parada não é enviada para jogadores.html')}
+              ${botaoVisivel(pa, 'toggle-visivel-parada', `data-v="${vi}" data-p="${pi}"`,
+                             'os jogadores não veem esta parada até você revelar')}
               <button class="vg-del" data-acao="del-parada" data-v="${vi}" data-p="${pi}" title="Remover">✕</button>
             </div>
-            <div class="ga-rich-wrap">
+            <div class="ga-rich-wrap" data-jog-edita>
               <div class="vg-textarea vg-textarea--parada ga-rich" contenteditable="true" spellcheck="true"
                    data-campo="parada-texto" data-v="${vi}" data-p="${pi}"
                    data-ph="Narração / efeito desta parada…">${pa.textoHtml}</div>
@@ -364,15 +439,19 @@
     const blocoParadas = `
       <div class="vg-bloco">
         <h3 class="vg-bloco-tit">⛩ Paradas narradas</h3>
+        ${ehJogador() ? `<p class="vg-dica">Vocês também escrevem nestas caixas — o que anotarem chega ao mestre e aos outros jogadores.</p>` : ''}
         <div class="vg-paradas-lista">${paradasHtml}</div>
-        <button class="vg-add vg-add--parada" data-acao="add-parada" data-v="${vi}">＋ Parada</button>
+        ${ehJogador() ? '' : `<button class="vg-add vg-add--parada" data-acao="add-parada" data-v="${vi}">＋ Parada</button>`}
       </div>`;
 
     return `
-      <div class="vg-viagem ${v.aberta ? 'vg-aberta' : ''}">
+      <div class="vg-viagem ${v.aberta ? 'vg-aberta' : ''}${v.visivelJogadores ? '' : ' vg-viagem--oculta'}">
         <div class="vg-viagem-cab">
           <button class="vg-toggle" data-acao="toggle-viagem" data-v="${vi}" title="Expandir / recolher">${v.aberta ? '▾' : '▸'}</button>
           <input class="vg-nome" type="text" data-campo="nome" data-v="${vi}" value="${esc(v.nome)}" placeholder="Nome da viagem">
+          ${tagOculta(v, 'Esta viagem não é enviada para jogadores.html')}
+          ${botaoVisivel(v, 'toggle-visivel-viagem', `data-v="${vi}"`,
+                         'rascunho / jornada futura que os jogadores ainda não conhecem')}
           <button class="vg-mover" data-acao="subir-viagem" data-v="${vi}" ${semSubir} title="Mover para cima">↑</button>
           <button class="vg-mover" data-acao="descer-viagem" data-v="${vi}" ${semDescer} title="Mover para baixo">↓</button>
           <button class="vg-del" data-acao="del-viagem" data-v="${vi}" title="Remover viagem">✕</button>
@@ -500,11 +579,28 @@
     }
     if (acao === 'del-viagem') {
       if (!confirm('Remover esta viagem e tudo dela?')) return;
-      dados.viagens.splice(+alvo.dataset.v, 1);
+      const fora = dados.viagens.splice(+alvo.dataset.v, 1)[0];
+      if (fora) fora.diario.concat(fora.paradas).forEach(it => limparInbox(it.id, 'texto'));
       salvar(); render(); return;
     }
     if (acao === 'toggle-viagem') {
       const v = pegarViagem(alvo); v.aberta = !v.aberta;
+      salvar(); render(); return;
+    }
+    if (acao === 'toggle-visivel-viagem') {
+      const v = pegarViagem(alvo); v.visivelJogadores = !v.visivelJogadores;
+      salvar(); render(); return;
+    }
+    if (acao === 'toggle-visivel-diario') {
+      const d = pegarViagem(alvo).diario[+alvo.dataset.d];
+      d.visivelJogadores = !d.visivelJogadores;
+      if (!d.visivelJogadores) limparInbox(d.id, 'texto');   // some da vista deles
+      salvar(); render(); return;
+    }
+    if (acao === 'toggle-visivel-parada') {
+      const pa = pegarViagem(alvo).paradas[+alvo.dataset.p];
+      pa.visivelJogadores = !pa.visivelJogadores;
+      if (!pa.visivelJogadores) limparInbox(pa.id, 'texto');
       salvar(); render(); return;
     }
     if (acao === 'subir-viagem' || acao === 'descer-viagem') {
@@ -532,7 +628,7 @@
     if (acao === 'quick-diario') {
       const v = pegarViagem(alvo);
       const prefixo = alvo.dataset.prefixo || '';
-      v.diario.push({ id: uid('d'), texto: prefixo, textoHtml: esc(prefixo) });
+      v.diario.push({ id: uid('d'), texto: prefixo, textoHtml: esc(prefixo), visivelJogadores: true });
       salvar(); render(); return;
     }
     if (acao === 'criar-combate') {
@@ -546,22 +642,26 @@
       const desc = (evento || '').trim();
       window.GA_Monstros.criarCombateViagem(v.nome, desc, v.id);
       const linha = '⚔ Combate — ' + (desc || 'sem descrição') + ' (cena criada na aba Monstros)';
-      v.diario.push({ id: uid('d'), texto: linha, textoHtml: esc(linha) });
+      v.diario.push({ id: uid('d'), texto: linha, textoHtml: esc(linha), visivelJogadores: true });
       salvarAgora();
       const link = document.querySelector('.nav-link[data-section="monstros"]');
       if (link) link.click();        // leva o mestre para a cena recém-criada
       render(); return;
     }
+    // ao remover, a entrada da caixa compartilhada some junto — senão uma
+    // edição pendente de jogador voltaria como uma linha fantasma
     if (acao === 'del-diario') {
-      pegarViagem(alvo).diario.splice(+alvo.dataset.d, 1);
+      const fora = pegarViagem(alvo).diario.splice(+alvo.dataset.d, 1)[0];
+      if (fora) limparInbox(fora.id, 'texto');
       salvar(); render(); return;
     }
     if (acao === 'add-parada') {
-      pegarViagem(alvo).paradas.push({ id: uid('p'), nome: '', texto: '', textoHtml: '' });
+      pegarViagem(alvo).paradas.push({ id: uid('p'), nome: '', texto: '', textoHtml: '', visivelJogadores: true });
       salvar(); render(); return;
     }
     if (acao === 'del-parada') {
-      pegarViagem(alvo).paradas.splice(+alvo.dataset.p, 1);
+      const fora = pegarViagem(alvo).paradas.splice(+alvo.dataset.p, 1)[0];
+      if (fora) limparInbox(fora.id, 'texto');
       salvar(); render(); return;
     }
     if (acao === 'exportar-json') { exportarJSON(); return; }
@@ -590,19 +690,25 @@
     if (campo === 'distTotal' || campo === 'distFeita') {
       v[campo] = el.value; salvar(); atualizarProgresso(el); return;
     }
-    if (campo === 'diario-texto') {
-      const d = v.diario[+el.dataset.d];
-      d.textoHtml = el.innerHTML;
-      d.texto = window.htmlParaTexto(el.innerHTML);   // espelho puro (export .txt)
-      salvar(); return;
-    }
-    if (campo === 'parada-nome')  { v.paradas[+el.dataset.p].nome = el.value; salvar(); return; }
-    if (campo === 'parada-texto') {
-      const pa = v.paradas[+el.dataset.p];
-      pa.textoHtml = el.innerHTML;
-      pa.texto = window.htmlParaTexto(el.innerHTML);
-      salvar(); return;
-    }
+    // Diário e paradas são campos normais do arquivo do mestre que os
+    // JOGADORES também editam. Os dois lados gravam em dados.viagens (para
+    // a caixa mostrar na hora e o export .txt continuar certo). A diferença
+    // é o que fazem com a caixa de entrada: o jogador põe a edição lá, para
+    // chegar ao mestre; o mestre tira o que houver lá, para uma edição
+    // antiga dos jogadores não voltar por cima da dele depois.
+    if (campo === 'diario-texto')  { escreverItem(v.diario[+el.dataset.d], el); return; }
+    if (campo === 'parada-texto')  { escreverItem(v.paradas[+el.dataset.p], el); return; }
+    if (campo === 'parada-nome')   { v.paradas[+el.dataset.p].nome = el.value; salvar(); return; }
+  }
+
+  function escreverItem(item, el) {
+    if (!item) return;
+    const html = el.innerHTML;
+    item.textoHtml = html;
+    item.texto = window.htmlParaTexto(html);   // espelho puro (export .txt)
+    salvar();
+    if (ehJogador()) gravarInbox(item.id, 'texto', html);
+    else             limparInbox(item.id, 'texto');
   }
 
   // change — select de deslocamento e checkboxes (re-renderiza p/ recalcular)
@@ -648,7 +754,8 @@
       const r = ritmo(v), p = progresso(v);
       const mods = [v.terrenoDificil && 'terreno difícil', v.climaRuim && 'clima ruim', v.marcha && 'marcha forçada'].filter(Boolean).join(', ');
       const obj = transporteAtual(v);
-      txt += `\n\n■ ${v.nome || '(viagem sem nome)'}\n${'═'.repeat(46)}`;
+      const oculta = it => it.visivelJogadores === false ? '🙈 ' : '';
+      txt += `\n\n■ ${oculta(v)}${v.nome || '(viagem sem nome)'}\n${'═'.repeat(46)}`;
       txt += `\n  Transporte: ${obj ? obj.nome : 'A pé'}`;
       txt += `\n  Deslocamento: ${deslocEfetivo(v)} m${mods ? ' (' + mods + ')' : ''}`;
       txt += `\n  Ritmo: ${fmt(r.kmH)} km/h · ${fmt(r.kmDia)} km/dia`;
@@ -656,12 +763,12 @@
       if ((v.suprimentos || '').trim()) txt += `\n  Suprimentos: ${v.suprimentos.trim()}`;
       if (v.diario.length) {
         txt += `\n\n  Diário:`;
-        v.diario.forEach(d => { if ((d.texto || '').trim()) txt += `\n   • ${d.texto.trim().replace(/\n/g, ' ')}`; });
+        v.diario.forEach(d => { if ((d.texto || '').trim()) txt += `\n   • ${oculta(d)}${d.texto.trim().replace(/\n/g, ' ')}`; });
       }
       if (v.paradas.length) {
         txt += `\n\n  Paradas:`;
         v.paradas.forEach(pa => {
-          txt += `\n   ⛩ ${pa.nome || '(sem nome)'}`;
+          txt += `\n   ⛩ ${oculta(pa)}${pa.nome || '(sem nome)'}`;
           if ((pa.texto || '').trim()) pa.texto.trim().split('\n').forEach(l => txt += `\n      ${l}`);
         });
       }
@@ -709,7 +816,15 @@
     },
     // edição dos jogadores: sync-jogador relê o localStorage e redesenha
     // as viagens transmitidas pelo mestre, sem recarregar a página.
-    recarregar: function () { carregar(); render(); }
+    recarregar: function () { carregar(); render(); },
+    // Chegou algo na caixa de entrada compartilhada. `souODono` = estamos no
+    // index.html do mestre (aí a edição é absorvida para o arquivo dele e a
+    // entrada é esvaziada). Devolve true se a tela precisou ser redesenhada.
+    receberInbox: function (mapa, souODono) {
+      const mudou = absorverInbox(mapa, souODono);
+      if (mudou) render();
+      return mudou;
+    },
   };
 
   // ── INICIALIZAÇÃO ────────────────────────────────────────────────

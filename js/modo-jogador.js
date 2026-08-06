@@ -7,8 +7,9 @@
 //
 //  Política: Consultas (#perigos) é livre (é tudo material de regra,
 //  incluindo a calculadora de Culinária, que não guarda nada). Loja,
-//  Viagem e Bases ficam só-leitura: liberamos navegação (abas da loja,
-//  busca, recolher/expandir, nuvens ga-tip) e bloqueamos o resto na
+//  Viagem e Bases ficam só-leitura, fora as caixas [data-jog-edita]:
+//  liberamos navegação (abas da loja, busca, recolher/expandir, nuvens
+//  ga-tip) e bloqueamos o resto na
 //  fase de captura — os módulos usam listeners delegados, então o
 //  stopPropagation aqui impede qualquer handler de rodar.
 // ═══════════════════════════════════════════════════════════════════
@@ -19,8 +20,9 @@
 
   // sempre permitidos, em qualquer aba. As caixas marcadas com
   // [data-jog-edita] são as que os jogadores escrevem de propósito (na aba
-  // Bases: Residentes, Inventário da base e o Inventário dos jogadores) —
-  // entram inteiras, com a barra de formatação delas.
+  // Bases: Residentes, Inventário da base e o Inventário dos jogadores; na
+  // Viagem: o diário e as paradas que o mestre revelou) — entram inteiras,
+  // com a barra de formatação delas.
   const PERMITIDOS =
     '.nav-link, .cr-subtab, summary, .ga-tip, .ga-tip-pop, ' +
     '.loja-aba, .loja-busca, .cr-busca, .vg-toggle, .bs-toggle, .vg-regras, ' +
@@ -49,8 +51,8 @@
     e.stopPropagation();                             // nenhum handler salva nada
   }
 
-  // as caixas ricas (diário, paradas…) deixam de ser editáveis — menos as
-  // marcadas com [data-jog-edita], que existem para eles escreverem
+  // as caixas ricas deixam de ser editáveis — menos as marcadas com
+  // [data-jog-edita], que existem para eles escreverem
   function travarEdicao() {
     document.querySelectorAll('[contenteditable="true"]').forEach(el => {
       if (el.closest('[data-jog-edita]')) return;

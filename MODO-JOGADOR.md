@@ -41,8 +41,9 @@ uma hospedagem para o site (**GitHub Pages**).
    → **Publicar**. (Tradução: qualquer um com o link **lê** tudo; só você, logado,
    **escreve** na mesa — EXCETO `jogadores/inventario`, que qualquer um com o link
    pode escrever. É o único ponto de escrita liberado para eles, de propósito: por
-   ele passam a caixa "📝 Inventário dos jogadores" e as edições que eles fazem em
-   **Residentes** e **Inventário da base** — ver "O que os jogadores editam", abaixo.)
+   ele passam a caixa "📝 Inventário dos jogadores", as edições que eles fazem em
+   **Residentes** e **Inventário da base** e as do **diário** e das **paradas** de
+   uma viagem — ver "O que os jogadores editam", abaixo.)
 5. Menu lateral: **Criação → Authentication** → **Vamos começar** → aba
    **Método de login** → ative **E-mail/senha**. Depois, na aba **Usuários** →
    **Adicionar usuário** → crie o SEU usuário de mestre (e-mail + uma senha boa).
@@ -84,36 +85,62 @@ uma hospedagem para o site (**GitHub Pages**).
 | Veem | Não veem |
 |---|---|
 | 🏪 Loja exibida: itens, encantamentos, pergaminhos, caixa e classificação da comunidade | 🎲 Gerar nova loja, ajustes de geração, histórico de lojas |
-| 🐎 Viagens: ritmo, progresso, diário, paradas | Botões de editar/rolar/apagar |
-| 🏰 Bases: porte, cômodos, mobílias, cálculos, residentes, inventário (estes dois eles **editam** — ver abaixo) | Backup/importar |
+| 🐎 Viagens: ritmo, progresso, diário, paradas (o diário e as paradas eles **editam** — ver abaixo) | O que estiver marcado 🙈, botões de editar/rolar/apagar |
+| 🏰 Bases: porte, cômodos, mobílias, cálculos, residentes, inventário (estes dois eles **editam** — ver abaixo) | Bases marcadas 🙈, backup/importar |
 | 📚 Consultas completas (regras, guias, culinária…) | 📰 Notícias, ⚔ Combates, 🎁 Recompensas, 📜 Anotações, 📖 Fichas, ⏳ Tempo |
 
-**Atenção**: o que estiver escrito nas Viagens e nas Bases fica visível aos jogadores —
-segredos de mestre é melhor guardar nas Anotações/Combates, que não são transmitidos.
+## 👁 / 🙈 — o que guardar só para você
+
+Nas abas **Bases** e **Viagem**, cada item tem um botãozinho 👁 no cabeçalho.
+Clicando nele o item vira 🙈 **"Só o mestre vê"**: ganha borda tracejada
+avermelhada na sua tela e **não é transmitido** — não é só sumir do site deles,
+o conteúdo nunca chega ao banco de dados que a página deles lê.
+
+Dá para esconder:
+
+| Aba | O que dá para esconder |
+|---|---|
+| 🏰 Bases | uma base inteira |
+| 🐎 Viagem | uma viagem inteira, **cada linha do diário** e **cada parada narrada**, uma a uma |
+
+Tudo nasce 👁 (visível). É esse detalhe que faz o "prepare antes, revele na
+hora": você escreve `⚔ Assalto — bandidos na ponte` no diário, clica no 👁 para
+deixar a linha 🙈, joga a cena, e quando o combate acontece clica de novo — a
+linha aparece na tela deles em segundos. Uma parada narrada funciona igual:
+deixe o santuário 🙈 até o grupo chegar lá.
+
+**Atenção**: o que estiver 👁 nas Viagens e nas Bases fica visível aos jogadores —
+segredos que você nem quer arriscar é melhor guardar nas Anotações/Combates,
+que não são transmitidos de jeito nenhum.
 
 ## O que os jogadores editam
 
-Fora estas três caixas da aba **Bases**, a página deles é só de leitura:
+Fora estas caixas, a página deles é só de leitura:
 
-| Caixa | Quem escreve | Onde fica guardado |
-|---|---|---|
-| 📝 Inventário dos jogadores | só eles (você vê e pode limpar) | só no `jogadores/inventario` — nunca entra no seu arquivo |
-| 🧑‍🤝‍🧑 Residentes | você **e** eles | o seu arquivo de Bases (backup e export `.txt` inclusos) |
-| 🎒 Inventário da base | você **e** eles | idem |
+| Aba | Caixa | Quem escreve | Onde fica guardado |
+|---|---|---|---|
+| 🏰 Bases | 📝 Inventário dos jogadores | só eles (você vê e pode limpar) | só no `jogadores/inventario` — nunca entra no seu arquivo |
+| 🏰 Bases | 🧑‍🤝‍🧑 Residentes | você **e** eles | o seu arquivo de Bases (backup e export `.txt` inclusos) |
+| 🏰 Bases | 🎒 Inventário da base | você **e** eles | idem |
+| 🐎 Viagem | 📜 cada linha do diário **revelada** | você **e** eles | o seu arquivo de Viagens (backup e export `.txt` inclusos) |
+| 🐎 Viagem | ⛩ o texto de cada parada **revelada** | você **e** eles | idem |
 
-Nas três eles têm a barra completa de formatação (grifos coloridos, ▣ caixa de
-leitura, **Ctrl+B** / **Ctrl+I**) — só o 📖 Descrição não aparece para eles.
+Nas caixas das Bases eles têm a barra completa de formatação (grifos coloridos,
+▣ caixa de leitura, **Ctrl+B** / **Ctrl+I**); nas da Viagem, os mesmos atalhos de
+teclado — só o 📖 Descrição é seu. O **nome** da parada, os atalhos do diário
+(🌧 Chuva, ⚔ Assalto…), o ＋ Parada e os ✕ continuam só seus: eles escrevem
+dentro das caixas que já existem, não criam nem apagam.
 
-Como funcionam Residentes e Inventário da base: quando um jogador escreve, a
-edição vai para o `jogadores/inventario` e aparece na hora na tela dele e na dos
-outros. Assim que o seu `index.html` estiver aberto e conectado, ele **absorve**
-essa edição para o seu arquivo e reenvia para todos. A partir daí é um campo seu
-como qualquer outro.
+Como funciona: quando um jogador escreve, a edição vai para o
+`jogadores/inventario` e aparece na hora na tela dele e na dos outros. Assim que
+o seu `index.html` estiver aberto e conectado, ele **absorve** essa edição para o
+seu arquivo e reenvia para todos. A partir daí é um campo seu como qualquer
+outro. Item 🙈 não aparece para eles, então também não tem como ser escrito.
 
 > ⚠ **Não há travas nem histórico**: vale o último que escreveu, e eles podem
-> apagar o que você tinha escrito nessas duas caixas. Se você editar uma delas
-> depois, a sua versão vence. Se preferir que uma delas volte a ser só sua, é uma
-> linha em `js/bases.js` (a lista `CAMPOS_JOGADOR`).
+> apagar o que você tinha escrito nessas caixas. Se você editar uma delas
+> depois, a sua versão vence. Se preferir que uma das caixas das Bases volte a
+> ser só sua, é uma linha em `js/bases.js` (a lista `CAMPOS_JOGADOR`).
 
 ## Problemas comuns
 
