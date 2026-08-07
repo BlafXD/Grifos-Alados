@@ -887,40 +887,12 @@
 }
 .mag-desc:empty { display: none; }
 
-/* ── texto integral da magia (aba "Descrição completa") ──────────── */
+/* Casca da aba "Descrição completa" no card do pergaminho. O corpo da
+   magia em si (.mag-stats, .mag-aprim…) está em css/style.css, porque a
+   sub-aba "✨ Magias" das Consultas usa o mesmo HTML. */
 .mag-texto { margin-bottom: 0.55rem; }
 .mag-texto .ga-desc-corpo > p { margin: 0 0 0.5rem; }
 .mag-texto .ga-desc-corpo > p:last-of-type { margin-bottom: 0; }
-
-/* linha de Execução/Alcance/Alvo/Duração, como no livro */
-.mag-stats {
-  text-align: left;
-  font-size: 0.8rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px dashed var(--parchment3);
-}
-.mag-stats strong { color: var(--rust-dark); }
-
-.mag-truque strong { color: var(--rust-dark); }
-
-/* aprimoramentos (+N PM) */
-.mag-aprim {
-  margin: 0.5rem 0 0;
-  padding-left: 1.05rem;
-  text-align: left;
-}
-.mag-aprim > li { margin-bottom: 0.32rem; }
-.mag-aprim > li:last-child { margin-bottom: 0; }
-.mag-aprim strong { color: var(--rust-dark); }
-.mag-aprim em     { color: var(--ink-faded); }
-
-/* tabelas dentro de um aprimoramento (tamanhos, elementos…) */
-.mag-aprim-itens {
-  margin: 0.22rem 0 0;
-  padding-left: 1rem;
-  list-style: '– ';
-  font-size: 0.95em;
-}
 
 /* ── controles do painel de ajustes ─────────────────────────────── */
 .mag-switch {

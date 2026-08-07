@@ -565,6 +565,78 @@ const Magias = (function () {
     return Math.max(min, Math.min(max, Math.round(v)));
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  //  APRESENTAÇÃO DO TEXTO INTEGRAL
+  //  Usado pela Loja (aba "Descrição completa" do pergaminho) e pela
+  //  sub-aba "✨ Magias" das Consultas — por isso mora aqui, e não em
+  //  um dos dois consumidores.
+  // ═══════════════════════════════════════════════════════════════
+  function _esc(s) {
+    if (window.GA_esc) return window.GA_esc(s);
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  // Marca termos de regra p/ a nuvem de definição, quando disponível.
+  function _marcar(s) {
+    return window.ItensDescricoes ? window.ItensDescricoes.marcar(s) : _esc(s);
+  }
+
+  // Campos do bloco de estatísticas, na ordem em que o livro os imprime.
+  //  Devolve pares [rótulo, valor], já sem os campos ausentes.
+  function estatisticas(nome) {
+    const t = TEXTO[nome];
+    if (!t) return [];
+    return [
+      ['Execução', t.execucao], ['Alcance', t.alcance],
+      [t.alvoRotulo || 'Alvo', t.alvo], ['Área', t.area], ['Efeito', t.efeito],
+      ['Duração', t.duracao], ['Resistência', t.resistencia],
+    ].filter(function (par) { return par[1]; });
+  }
+
+  function _aprimoramentoTexto(a) {
+    const cab = `+${a.pm} PM${a.condicao ? ` (${a.condicao})` : ''}: ${a.texto}`;
+    return a.itens ? cab + '\n' + a.itens.map(i => `    ${i}`).join('\n') : cab;
+  }
+
+  // HTML do corpo: estatísticas, parágrafos, truque e aprimoramentos.
+  //  Devolve '' quando o texto integral não está carregado.
+  function htmlCorpo(nome) {
+    const t = TEXTO[nome];
+    if (!t) return '';
+
+    let html = '<p class="mag-stats">' + estatisticas(nome)
+      .map(([rot, val]) => `<strong>${_esc(rot)}:</strong> ${_esc(val)}`).join('; ') + '.</p>';
+    html += t.descricao.map(par => `<p>${_marcar(par)}</p>`).join('');
+    if (t.truque) html += `<p class="mag-truque"><strong>Truque:</strong> ${_marcar(t.truque)}</p>`;
+    if (t.aprimoramentos.length) {
+      html += '<ul class="mag-aprim">' + t.aprimoramentos.map(a => {
+        const cond = a.condicao ? ` <em>(${_esc(a.condicao)})</em>` : '';
+        const itens = a.itens
+          ? '<ul class="mag-aprim-itens">' + a.itens.map(i => `<li>${_marcar(i)}</li>`).join('') + '</ul>'
+          : '';
+        return `<li><strong>+${a.pm} PM</strong>${cond}: ${_marcar(a.texto)}${itens}</li>`;
+      }).join('') + '</ul>';
+    }
+    return html;
+  }
+
+  // Versão em texto puro, para o botão "⧉ Copiar".
+  //  `extras` entra logo depois das estatísticas — a Loja usa para os
+  //  preços do pergaminho, a aba de Magias não passa nada.
+  function textoPuro(nome, extras) {
+    const t = TEXTO[nome];
+    if (!t) return '';
+    return [
+      `${t.nome} — ${t.tipo} ${t.circulo} (${t.escola}) · ${t.pm} PM`,
+      estatisticas(nome).map(([rot, val]) => `${rot}: ${val}`).join('; ') + '.',
+    ].concat(extras || [], [
+      '',
+      t.descricao.join('\n'),
+      t.truque ? `\nTruque: ${t.truque}` : '',
+      t.aprimoramentos.length ? '\n' + t.aprimoramentos.map(_aprimoramentoTexto).join('\n') : '',
+    ]).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+
   // ── Preço / custo de aprendizado ──────────────────────────────────
   function pmDe(circulo) { return PM_POR_CIRCULO[circulo] || 0; }
 
@@ -708,6 +780,9 @@ const Magias = (function () {
     TODAS,
     TEXTO,                                 // texto integral por nome (GA_MAGIAS)
     textoDe: (nome) => TEXTO[nome] || null,
+    estatisticas,                          // [[rótulo, valor], …]
+    htmlCorpo,                             // HTML: stats + texto + aprimoramentos
+    textoPuro,                             // mesma coisa em texto puro (copiar)
     precoPergaminho,
     precoAprender,
     montarPergaminho,

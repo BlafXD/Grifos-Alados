@@ -785,7 +785,10 @@
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-.cond-chip:hover { background: var(--parchment3); }
+/* o :not() é necessário: .cond-chip:hover tem especificidade maior que
+   .cond-chip--on e, sem ele, o chip ativo fica claro-sobre-claro
+   enquanto o ponteiro continua em cima dele depois do clique */
+.cond-chip:not(.cond-chip--on):hover { background: var(--parchment3); }
 .cond-chip--on { background: var(--cor, var(--ink)); color: var(--parchment); }
 
 /* coluna "Descrição" da Tabela 4-7 (ingredientes da Culinária) */
@@ -809,3 +812,95 @@
   padding: 0.1rem 0.4rem;
   white-space: nowrap;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Sub-aba "✨ Magias" — compêndio das magias (js/magias-aba.js)
+   O corpo da magia (.mag-stats, .mag-aprim…) vem de css/style.css,
+   compartilhado com o pergaminho da Loja.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* linhas de filtro: rótulo + fileira de chips */
+.mag-filtros { margin-bottom: 0.5rem; }
+.mag-filtro-linha {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+.mag-filtro-rot {
+  flex: 0 0 4.2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+.mag-filtro-linha .cond-chips { margin-bottom: 0.4rem; }
+
+/* contagem de resultados */
+.mag-contagem {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  margin: 0 0 1.1rem;
+}
+.mag-contagem--vazia { color: var(--rust-dark); font-style: normal; }
+
+/* card da magia — a cor da borda diz o tipo, como na Loja */
+.mag-verbete { border-left-color: var(--rust); }
+.mag-verbete--arcana    { border-left-color: #3a2a6b; }
+.mag-verbete--divina    { border-left-color: var(--gold); }
+.mag-verbete--universal { border-left-color: var(--rust-dark); }
+/* aberto, o verbete ocupa a linha toda: o texto do livro é longo */
+.mag-verbete[open] { grid-column: 1 / -1; }
+
+.mag-selo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--rust-dark);
+  padding: 0.08rem 0.36rem;
+  margin-right: 0.3rem;
+  white-space: nowrap;
+}
+.mag-selo--arcana    { background: #3a2a6b; }
+.mag-selo--divina    { background: var(--gold); color: var(--ink); }
+.mag-selo--universal { background: var(--rust-dark); }
+
+/* resumo de uma linha, antes do texto integral */
+.mag-resumo {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  margin: 0.35rem 0 0.5rem;
+}
+
+.mag-verbete .vc-card-corpo > p { margin: 0 0 0.5rem; }
+.mag-verbete .mag-stats { font-size: 0.85rem; }
+
+/* rodapé: preço do pergaminho à esquerda, botão de copiar à direita */
+.mag-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.7rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--parchment3);
+}
+.mag-pergaminho {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+.mag-rodape .ga-desc-copiar { margin: 0; }
