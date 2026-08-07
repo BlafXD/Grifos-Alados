@@ -14,6 +14,11 @@
 //  Dados: cada magia carrega TIPO (arcana | divina), CÍRCULO, ESCOLA e
 //  DESCRIÇÃO. As magias arcanas e divinas são listadas separadamente;
 //  uma mesma magia pode existir nas duas listas (entradas distintas).
+//
+//  O TEXTO INTEGRAL de cada magia (estatísticas, descrição completa,
+//  truque e aprimoramentos) vem de js/magias-data.js (window.GA_MAGIAS),
+//  que deve ser carregado ANTES deste arquivo. É opcional: sem ele o
+//  módulo continua funcionando só com a descrição curta.
 // ═══════════════════════════════════════════════════════════════════
 
 const Magias = (function () {
@@ -507,7 +512,15 @@ const Magias = (function () {
 
   const TIPO_LABEL = { arcana: 'Arcana', divina: 'Divina' };
 
+  // ── Texto integral (js/magias-data.js), indexado por nome ─────────
+  //    Traz estatísticas, descrição completa, truque e aprimoramentos.
+  //    Se o arquivo não estiver carregado, tudo continua funcionando
+  //    apenas com a descrição curta.
+  const TEXTO = {};
+  for (const m of (window.GA_MAGIAS || [])) TEXTO[m.nome] = m;
+
   // ── Lista achatada de registros [{ nome, circulo, escola, tipo, descricao }] ──
+  //    Para o texto integral use Magias.textoDe(nome).
   //    POR_CIRCULO[c] = registros daquele círculo (arcanos + divinos).
   const TODAS = [];
   const POR_CIRCULO = { 1: [], 2: [], 3: [], 4: [], 5: [] };
@@ -567,6 +580,9 @@ const Magias = (function () {
   // Monta o objeto completo de um pergaminho de uma magia.
   //  Aceita um registro { nome, circulo, escola, tipo, descricao } OU
   //  a forma antiga montarPergaminho(nome, circulo).
+  //  O texto integral NÃO entra aqui de propósito: o pergaminho gerado é
+  //  gravado no localStorage e transmitido aos jogadores, então guardamos
+  //  só o nome e buscamos o texto na hora de exibir (Magias.textoDe).
   function montarPergaminho(reg, circuloArg) {
     let nome, circulo, escola = '', tipo = '', descricao = '';
     if (reg && typeof reg === 'object') {
@@ -583,7 +599,7 @@ const Magias = (function () {
       escola,
       tipo,                                // 'arcana' | 'divina'
       tipoLabel:       TIPO_LABEL[tipo] || '',
-      descricao,
+      descricao,                           // resumo de uma linha
       pm,
       peso:            PESO_PERGAMINHO,
       precoPergaminho: compra,             // comprar o pergaminho (30 × PM²)
@@ -690,6 +706,8 @@ const Magias = (function () {
     DADOS,
     POR_CIRCULO,
     TODAS,
+    TEXTO,                                 // texto integral por nome (GA_MAGIAS)
+    textoDe: (nome) => TEXTO[nome] || null,
     precoPergaminho,
     precoAprender,
     montarPergaminho,

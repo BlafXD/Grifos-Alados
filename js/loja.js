@@ -1287,6 +1287,75 @@
     return html;
   }
 
+  // ── Texto integral da magia (window.GA_MAGIAS, via Magias) ─────────
+  //  Monta a linha de estatísticas do livro a partir dos campos soltos,
+  //  na mesma ordem em que o Tormenta20 as imprime.
+  function _statsMagia(t) {
+    return [
+      ['Execução', t.execucao], ['Alcance', t.alcance],
+      [t.alvoRotulo || 'Alvo', t.alvo], ['Área', t.area], ['Efeito', t.efeito],
+      ['Duração', t.duracao], ['Resistência', t.resistencia],
+    ].filter(([, v]) => v);
+  }
+
+  function _aprimoramentoTexto(a) {
+    const cab = `+${a.pm} PM${a.condicao ? ` (${a.condicao})` : ''}: ${a.texto}`;
+    return a.itens ? cab + '\n' + a.itens.map(i => `    ${i}`).join('\n') : cab;
+  }
+
+  // Aba recolhível com estatísticas, descrição, truque e aprimoramentos.
+  //  O texto é buscado pelo nome (o pergaminho salvo guarda só o nome), o
+  //  que também dá descrição às lojas geradas antes de magias-data.js
+  //  existir. Sem o arquivo carregado, cai no resumo de uma linha.
+  function blocoTextoMagia(p) {
+    const t = (typeof Magias !== 'undefined' && Magias.textoDe) ? Magias.textoDe(p.nome) : null;
+    if (!t) return p.descricao ? `<p class="mag-desc">${p.descricao}</p>` : '';
+
+    const marcar = window.ItensDescricoes
+      ? (s => ItensDescricoes.marcar(s))
+      : (s => _escHtml(s));
+    const stats = _statsMagia(t);
+
+    let corpo = `<p class="mag-stats">${stats
+      .map(([rot, val]) => `<strong>${rot}:</strong> ${_escHtml(val)}`).join('; ')}.</p>`;
+    corpo += t.descricao.map(par => `<p>${marcar(par)}</p>`).join('');
+    if (t.truque) corpo += `<p class="mag-truque"><strong>Truque:</strong> ${marcar(t.truque)}</p>`;
+    if (t.aprimoramentos.length) {
+      corpo += '<ul class="mag-aprim">' + t.aprimoramentos.map(a => {
+        const cond = a.condicao ? ` <em>(${_escHtml(a.condicao)})</em>` : '';
+        const itens = a.itens
+          ? '<ul class="mag-aprim-itens">' + a.itens.map(i => `<li>${marcar(i)}</li>`).join('') + '</ul>'
+          : '';
+        return `<li><strong>+${a.pm} PM</strong>${cond}: ${marcar(a.texto)}${itens}</li>`;
+      }).join('') + '</ul>';
+    }
+
+    // versão em texto puro para o botão "⧉ Copiar"
+    const puro = [
+      `${t.nome} — ${t.tipo} ${t.circulo} (${t.escola})`,
+      stats.map(([rot, val]) => `${rot}: ${val}`).join('; ') + '.',
+      '',
+      t.descricao.join('\n'),
+      t.truque ? `\nTruque: ${t.truque}` : '',
+      t.aprimoramentos.length ? '\n' + t.aprimoramentos.map(_aprimoramentoTexto).join('\n') : '',
+    ].join('\n').replace(/\n{3,}/g, '\n\n').trim();
+
+    return `<p class="mag-desc">${p.descricao || ''}</p>`
+         + `<details class="ga-desc mag-texto"><summary>Descrição completa</summary>`
+         + `<div class="ga-desc-corpo">${corpo}`
+         + `<button type="button" class="ga-desc-copiar" data-ga-copiar="${_escAttr(puro)}"`
+         + ` title="Copiar o texto completo da magia">⧉ Copiar</button>`
+         + `</div></details>`;
+  }
+
+  function _escHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function _escAttr(s) {
+    return _escHtml(s).replace(/"/g, '&quot;');
+  }
+
   function construirCardMagia(p) {
     const fmt = n => n.toLocaleString('pt-BR');
     const tipoClasse = p.tipo === 'divina' ? 'mag-tipo-divina' : 'mag-tipo-arcana';
@@ -1302,7 +1371,7 @@
           <span class="mag-tipo-badge ${tipoClasse}">${tipoLabel}</span>
           ${p.escola ? `<span class="mag-escola">${p.escola}</span>` : ''}
         </div>` : ''}
-        ${p.descricao ? `<p class="mag-desc">${p.descricao}</p>` : ''}
+        ${blocoTextoMagia(p)}
         <div class="item-precos">
           <span class="mag-preco-label">Pergaminho</span>
           <span class="item-preco-final">T$ ${fmt(p.precoPergaminho)}</span>
@@ -1467,6 +1536,15 @@
         const tipoLbl = p.tipoLabel || (p.tipo === 'divina' ? 'Divina' : 'Arcana');
         out += `    • ${p.nome} (${tipoLbl} · ${p.escola}) — Pergaminho T$ ${p.precoPergaminho.toLocaleString('pt-BR')}\n`;
         if (p.descricao) out += `        ${p.descricao}\n`;
+        const t = (typeof Magias !== 'undefined' && Magias.textoDe) ? Magias.textoDe(p.nome) : null;
+        if (t) {
+          out += `        ${_statsMagia(t).map(([r, v]) => `${r}: ${v}`).join('; ')}.\n`;
+          t.descricao.forEach(par => { out += `        ${par}\n`; });
+          if (t.truque) out += `        Truque: ${t.truque}\n`;
+          t.aprimoramentos.forEach(a => {
+            out += _aprimoramentoTexto(a).split('\n').map(l => `        ${l}`).join('\n') + '\n';
+          });
+        }
         out += `        Aprender: +T$ ${p.precoAprender.toLocaleString('pt-BR')} (total T$ ${p.precoTotal.toLocaleString('pt-BR')}) · ${p.diasAprender} dia${p.diasAprender !== 1 ? 's' : ''}\n`;
       });
     });
