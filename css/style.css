@@ -2115,6 +2115,41 @@ footer {
   text-align: justify;
 }
 
+/* ── corpo de uma magia (estatísticas, truque, aprimoramentos) ──────
+   HTML montado por Magias.htmlCorpo(); aparece em dois lugares — no
+   pergaminho da Loja e na sub-aba "✨ Magias" das Consultas — por isso
+   o estilo mora aqui, na folha compartilhada. */
+
+/* linha de Execução/Alcance/Alvo/Duração, como no livro */
+.mag-stats {
+  text-align: left;
+  font-size: 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dashed var(--parchment3);
+}
+.mag-stats strong { color: var(--rust-dark); }
+
+.mag-truque strong { color: var(--rust-dark); }
+
+/* aprimoramentos (+N PM) */
+.mag-aprim {
+  margin: 0.5rem 0 0;
+  padding-left: 1.05rem;
+  text-align: left;
+}
+.mag-aprim > li { margin-bottom: 0.32rem; }
+.mag-aprim > li:last-child { margin-bottom: 0; }
+.mag-aprim strong { color: var(--rust-dark); }
+.mag-aprim em     { color: var(--ink-faded); }
+
+/* tabelas dentro de um aprimoramento (tamanhos, elementos…) */
+.mag-aprim-itens {
+  margin: 0.22rem 0 0;
+  padding-left: 1rem;
+  list-style: '– ';
+  font-size: 0.95em;
+}
+
 /* botão "⧉ Copiar" — leva nome + valor + descrição inteira p/ a área
    de transferência (fica no rodapé da própria aba de pergaminho) */
 .ga-desc-copiar {
