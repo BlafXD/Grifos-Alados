@@ -384,7 +384,9 @@ const sections = document.querySelectorAll('section');
 // ── MEMÓRIA DE ROLAGEM POR ABA ───────────────────────────────────────
 // Cada aba lembra onde a câmera estava quando o usuário a deixou. Assim,
 // rolar recompensas e voltar para Combate não "teleporta" mais para o topo.
-const scrollPorSecao = {};
+// Fica em window porque o estado-navegacao.js repovoa este mapa depois de
+// um F5 — senão a memória valeria só para a aba restaurada.
+const scrollPorSecao = window.GA_scrollPorSecao = {};
 
 function secaoAtivaId() {
   const s = document.querySelector('section.active');
