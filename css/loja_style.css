@@ -887,13 +887,6 @@
 }
 .mag-desc:empty { display: none; }
 
-/* Casca da aba "Descrição completa" no card do pergaminho. O corpo da
-   magia em si (.mag-stats, .mag-aprim…) está em css/style.css, porque a
-   sub-aba "✨ Magias" das Consultas usa o mesmo HTML. */
-.mag-texto { margin-bottom: 0.55rem; }
-.mag-texto .ga-desc-corpo > p { margin: 0 0 0.5rem; }
-.mag-texto .ga-desc-corpo > p:last-of-type { margin-bottom: 0; }
-
 /* ── controles do painel de ajustes ─────────────────────────────── */
 .mag-switch {
   display: inline-flex;

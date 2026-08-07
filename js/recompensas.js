@@ -2148,6 +2148,40 @@ function blockPocao(pocao, idx, total, pct) {
   ${descBlocoItem(pocao.item?.item, linhasCopiaItem(pocao.item))}`;
 }
 
+// Linhas de custo do pergaminho, no mesmo formato que a Loja usa.
+function linhasPrecoPergaminho(perg) {
+  const fmt = n => n.toLocaleString('pt-BR');
+  const linhas = [];
+  if (perg.precoPergaminho != null) {
+    linhas.push(`Pergaminho: T$ ${fmt(perg.precoPergaminho)} · Peso: ½ espaço`);
+  }
+  if (perg.precoAprender != null) {
+    const dias = `${perg.diasAprender} dia${perg.diasAprender !== 1 ? 's' : ''}`;
+    linhas.push(`Aprender: +T$ ${fmt(perg.precoAprender)} (total T$ ${fmt(perg.precoTotal)}) · ${dias} de trabalho`);
+  }
+  return linhas;
+}
+
+// Aba recolhível com o TEXTO INTEGRAL da magia — o mesmo corpo que a Loja
+// e a aba "✨ Magias" mostram (montado por magias.js). Sem js/magias-data.js
+// carregado, cai no bloco genérico de descrição (o resumo de uma linha).
+function descBlocoPergaminho(perg, meta) {
+  const M = window.Magias;
+  const temTexto = M && M.textoDe && M.textoDe(perg.nome);
+  if (!temTexto) {
+    return descBlocoItem(perg.nome, [
+      (perg.precoPergaminho != null) ? `Preço: ${perg.precoPergaminho.toLocaleString('pt-BR')} T$` : '',
+      `Pergaminho — ${meta}`,
+    ]);
+  }
+  const puro = M.textoPuro(perg.nome, linhasPrecoPergaminho(perg));
+  return `<details class="ga-desc mag-texto"><summary>Descrição completa</summary>`
+       + `<div class="ga-desc-corpo">${M.htmlCorpo(perg.nome)}`
+       + `<button type="button" class="ga-desc-copiar" data-ga-copiar="${gaEscAttr(puro)}"`
+       + ` title="Copiar o texto completo da magia">⧉ Copiar</button>`
+       + `</div></details>`;
+}
+
 // ── Bloco de pergaminho (magia engarrafada) ───────────
 function blockPergaminho(perg, idx, total) {
   if (!perg) return '';
@@ -2168,10 +2202,7 @@ function blockPergaminho(perg, idx, total) {
     <span class="bullet">◇</span>
     <span class="livro-ref">${meta}</span>
   </div>
-  ${descBlocoItem(perg.nome, [
-    (perg.precoPergaminho != null) ? `Preço: ${perg.precoPergaminho.toLocaleString('pt-BR')} T$` : '',
-    `Pergaminho — ${meta}`,
-  ])}`;
+  ${descBlocoPergaminho(perg, meta)}`;
 }
 
 // ── Bloco de item superior ────────────────────────────
