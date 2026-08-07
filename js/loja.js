@@ -1175,7 +1175,11 @@
             </div>
             <div class="aj-controle aj-c-modo">
               <label class="aj-label" for="mag-modo">Modo</label>
-              <select id="mag-modo" class="aj-sel mag-ctrl">
+              <!-- data-campo="modo" é o que faz aoMudarAjuste atualizar o
+                   data-modo da .aj-linha, que escurece os controles que o
+                   modo escolhido não usa. Sem ele o painel congela no modo
+                   anterior e o controle certo fica com pointer-events: none. -->
+              <select id="mag-modo" class="aj-sel mag-ctrl" data-campo="modo">
                 ${optModo('quantidade', 'Quantidade')}
                 ${optModo('porcentagem', 'Porcentagem')}
                 ${optModo('ambos', 'Ambos')}

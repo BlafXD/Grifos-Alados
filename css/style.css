@@ -2116,9 +2116,15 @@ footer {
 }
 
 /* ── corpo de uma magia (estatísticas, truque, aprimoramentos) ──────
-   HTML montado por Magias.htmlCorpo(); aparece em dois lugares — no
-   pergaminho da Loja e na sub-aba "✨ Magias" das Consultas — por isso
-   o estilo mora aqui, na folha compartilhada. */
+   HTML montado por Magias.htmlCorpo(); aparece no pergaminho da Loja, no
+   pergaminho das Recompensas e na sub-aba "✨ Magias" das Consultas — por
+   isso o estilo mora aqui, na folha compartilhada. */
+
+/* casca da aba "Descrição completa" quando o corpo vem dentro de um
+   .ga-desc (Loja e Recompensas; a aba de Magias usa o card .vc-card) */
+.mag-texto { margin-bottom: 0.55rem; }
+.mag-texto .ga-desc-corpo > p { margin: 0 0 0.5rem; }
+.mag-texto .ga-desc-corpo > p:last-of-type { margin-bottom: 0; }
 
 /* linha de Execução/Alcance/Alvo/Duração, como no livro */
 .mag-stats {
