@@ -52,7 +52,7 @@
   // Campos da criatura guardados como texto RICO: cada um tem um espelho
   // "<campo>Html" (o que a caixa mostra e salva) e o campo antigo em texto
   // puro (o que exportação, cópia e prévia de importação continuam lendo).
-  const RICOS_CRIATURA = ['tags', 'condicoes', 'recompensas', 'descricao'];
+  const RICOS_CRIATURA = ['tags', 'condicoes', 'recompensas', 'descricao', 'magias'];
 
   // ── ARMAS NATURAIS & DANO POR TAMANHO (Ameaças de Arton) ─────────
   // Tabela 2-1: tipo de dano padrão de cada arma natural. Alimenta o
@@ -363,8 +363,10 @@
       stats: stats,
       montaria: { chave: '', nivel: 'iniciante' },
       condicoes: '', ataques: '', atributos: '', pericias: '', equipamento: '', recompensas: '',
+      // bloco de magias (só aparece quando o mestre liga)
+      magiasAtivo: false, magiasCab: '', magias: '',
       // espelhos em HTML das caixas ricas (ver RICOS_CRIATURA)
-      tagsHtml: '', condicoesHtml: '', recompensasHtml: '', descricaoHtml: '',
+      tagsHtml: '', condicoesHtml: '', recompensasHtml: '', descricaoHtml: '', magiasHtml: '',
     };
   }
   function novaCena(n)   { return { id: uid('c'), aberto: true, nome: 'Cena ' + n, notas: '', notasHtml: '', criaturas: [], perigos: [], ambientes: [], masmorra: novaMasmorra() }; }
@@ -447,6 +449,10 @@
     if (!Array.isArray(cr.habilidades)) cr.habilidades = [];
     if (!Array.isArray(cr.sentidos)) cr.sentidos = [];
     if (typeof cr.devoto !== 'string') cr.devoto = '';   // chave do deus (GA_DEVOTOS)
+    // bloco de magias: interruptor + linha de cabeçalho do livro
+    // ("Como um clérigo de 9º nível, CD 30"). O texto em si é caixa rica.
+    if (typeof cr.magiasAtivo !== 'boolean') cr.magiasAtivo = false;
+    if (typeof cr.magiasCab !== 'string') cr.magiasCab = '';
     // caixas ricas: espelho HTML + texto puro. Idempotente — fichas antigas
     // (só texto) ganham o HTML na primeira abertura; fichas importadas do
     // livro também passam por aqui antes de entrar na cena.
@@ -528,6 +534,7 @@
     ambientais: '#5c1a04', clima: '#2f6f9e', terrenos: '#6e5a1a',
     armadilhas: '#6e3a1a', doencas: '#3f7a3f', maldicoes: '#5a2a6a',
     tormenta: '#8b1020', ermos: '#3a5a3a', complexos: '#8b2c0a',
+    livre: '#4a3f6b',
   };
   function corDaCatAmb(cat) { return AMB_CORES[cat] || '#6e6256'; }
 
@@ -562,14 +569,36 @@
   }
   function ambientePorKey(key) { ambienteLib(); return _ambMap[key] || null; }
 
+  // ── AMBIENTE "OUTROS" (escrito pelo mestre) ──────────────────────
+  // Não sai da biblioteca: a própria instância guarda título e texto
+  // (key 'livre|<id>', única por instância — dá para pendurar vários na
+  // mesma cena, ex.: "Magias permanentes na cena" + "Regra da casa").
+  const AMB_LIVRE = 'livre|';
+  function ehAmbienteLivre(key) { return String(key || '').indexOf(AMB_LIVRE) === 0; }
+  function novoAmbienteLivre() { return { key: AMB_LIVRE + uid('amb'), titulo: '', nota: '' }; }
+
+  // Item de exibição de uma instância — da biblioteca ou "Outros".
+  function ambienteDeInstancia(a) {
+    if (!a) return null;
+    if (!ehAmbienteLivre(a.key)) return ambientePorKey(a.key);
+    return {
+      key: a.key, kind: 'livre', cat: 'livre', catNome: 'Outros', icone: '✒',
+      nome: (a.titulo || '').trim() || 'sem título', nd: '', corpo: '',
+    };
+  }
+
   // Normaliza o array de ambientes de uma cena para [{ key, nota }].
   // Aceita o formato antigo (array de strings/keys) e converte.
+  // Os "Outros" carregam também o título escrito pelo mestre.
   function normalizarAmbientes(arr) {
     if (!Array.isArray(arr)) return [];
     return arr.map(a => {
       if (typeof a === 'string') return { key: a, nota: '' };
-      if (a && typeof a === 'object' && typeof a.key === 'string')
-        return { key: a.key, nota: typeof a.nota === 'string' ? a.nota : '' };
+      if (a && typeof a === 'object' && typeof a.key === 'string') {
+        const inst = { key: a.key, nota: typeof a.nota === 'string' ? a.nota : '' };
+        if (ehAmbienteLivre(a.key)) inst.titulo = typeof a.titulo === 'string' ? a.titulo : '';
+        return inst;
+      }
       return null;
     }).filter(Boolean);
   }
@@ -590,7 +619,11 @@
   function ambientesDaCena(si, ci) {
     const c = dados.sessoes[si] && dados.sessoes[si].cenas[ci];
     if (!c) return [];
-    return (c.ambientes || []).map(a => ({ key: a.key, nota: a.nota || '' }));
+    return (c.ambientes || []).map(a => {
+      const copia = { key: a.key, nota: a.nota || '' };
+      if (ehAmbienteLivre(a.key)) copia.titulo = a.titulo || '';
+      return copia;
+    });
   }
 
   // Localiza a cena narrada (por id) → { si, ci } ou null.
@@ -914,13 +947,14 @@
     const arr = Array.isArray(c.ambientes) ? c.ambientes : [];
     let chips = '';
     arr.forEach(a => {
-      const it = ambientePorKey(a.key);
+      const it = ambienteDeInstancia(a);
       if (!it) return;
       const temNota = !!(a.nota && a.nota.trim());
+      const livre = (it.kind === 'livre');
       chips += `
-        <span class="mz-amb-chip ${temNota ? 'mz-amb-chip--nota' : ''}" style="--cor:${corDaCatAmb(it.cat)}">
+        <span class="mz-amb-chip ${temNota ? 'mz-amb-chip--nota' : ''} ${livre ? 'mz-amb-chip--livre' : ''}" style="--cor:${corDaCatAmb(it.cat)}">
           <button class="mz-amb-info" data-acao="ver-ambiente" data-key="${esc(a.key)}" ${ds}
-                  title="Ver regras e editar narração de ${esc(it.nome)}">
+                  title="${livre ? 'Editar o título e o texto desta anotação' : 'Ver regras e editar narração de ' + esc(it.nome)}">
             <span class="mz-amb-cat">${it.icone ? it.icone + ' ' : ''}${esc(it.catNome)}${it.nd ? ' · ND ' + esc(it.nd) : ''}</span>
             <span class="mz-amb-nome">${esc(it.nome)}${temNota ? ' <span class="mz-amb-flag" title="Tem narração personalizada">📝</span>' : ''}</span>
           </button>
@@ -1164,13 +1198,14 @@
     const arr = Array.isArray(dados.painelAmbientes) ? dados.painelAmbientes : [];
     let chips = '';
     arr.forEach(a => {
-      const it = ambientePorKey(a.key);
+      const it = ambienteDeInstancia(a);
       if (!it) return;
       const temNota = !!(a.nota && a.nota.trim());
+      const livre = (it.kind === 'livre');
       chips += `
-        <span class="mz-amb-chip ${temNota ? 'mz-amb-chip--nota' : ''}" style="--cor:${corDaCatAmb(it.cat)}">
+        <span class="mz-amb-chip ${temNota ? 'mz-amb-chip--nota' : ''} ${livre ? 'mz-amb-chip--livre' : ''}" style="--cor:${corDaCatAmb(it.cat)}">
           <button class="mz-amb-info" data-acao="ver-ambiente" data-key="${esc(a.key)}" data-painel="1"
-                  title="Ver regras e editar narração de ${esc(it.nome)}">
+                  title="${livre ? 'Editar o título e o texto desta anotação' : 'Ver regras e editar narração de ' + esc(it.nome)}">
             <span class="mz-amb-cat">${it.icone ? it.icone + ' ' : ''}${esc(it.catNome)}${it.nd ? ' · ND ' + esc(it.nd) : ''}</span>
             <span class="mz-amb-nome">${esc(it.nome)}${temNota ? ' <span class="mz-amb-flag" title="Tem narração personalizada">📝</span>' : ''}</span>
           </button>
@@ -1825,6 +1860,216 @@
     caixa.classList.add('mz-ferr-flash');
   }
 
+  // ── MAGIAS DA CRIATURA (dados de js/magias-data.js) ──────────────
+  // Conjuradores do livro não trazem a magia inteira: trazem uma linha
+  // enxuta "• Nome (Execução, X PM) efeito resumido (Von evita)" — é assim
+  // que o Guia de NPCs escreve o Sacerdote, o Mago, o Arquivista… O custo
+  // fica editável de propósito: aprimoramento sobe o PM da magia.
+  const MAG_EXEC = ['Padrão', 'Movimento', 'Completa', 'Livre', 'Reação'];
+  const MAG_CORES = { Arcana: '#2f4f8e', Divina: '#8a6a10', Universal: '#4a3f6b' };
+
+  let _magPorId = null;
+  function magiaPorId(id) {
+    if (!_magPorId) {
+      _magPorId = {};
+      (window.GA_MAGIAS || []).forEach(m => { _magPorId[m.id] = m; });
+    }
+    return _magPorId[id] || null;
+  }
+
+  // "padrão" → "Padrão"; execuções fora do comum (1 hora, duas rodadas…)
+  // caem em Padrão e o mestre ajusta no seletor.
+  function magExecucaoDe(m) {
+    const e = _semAcento(m && m.execucao);
+    if (e.indexOf('movimento') === 0) return 'Movimento';
+    if (e.indexOf('completa')  === 0) return 'Completa';
+    if (e.indexOf('livre')     === 0) return 'Livre';
+    if (e.indexOf('reacao')    === 0) return 'Reação';
+    return 'Padrão';
+  }
+  // "Reflexos reduz à metade" → "Ref reduz à metade" (abreviação do livro)
+  function magResistencia(m) {
+    const r = ((m && m.resistencia) || '').trim();
+    if (!r || /^(nenhuma|veja|varia)/i.test(r)) return '';
+    return r.replace(/^Fortitude\b/i, 'Fort')
+            .replace(/^Reflexos\b/i,  'Ref')
+            .replace(/^Vontade\b/i,   'Von');
+  }
+  function magSustentada(m) { return /^sustentada/i.test(((m && m.duracao) || '')); }
+
+  // ── MECÂNICA DA MAGIA (o que NÃO pode sumir do resumo) ───────────
+  // O campo `resumo` do compêndio é curto, mas descreve o efeito sem os
+  // números ("causando dano" em vez de "6d6 pontos de dano de fogo").
+  // Numa ficha isso é inútil, então extraímos do texto do livro os fatos
+  // que decidem a rodada — dano, cura, bônus, condições e área — e
+  // penduramos no fim da linha. Assim o resumo continua curto sem perder
+  // o que importa, e não é preciso trocar para o texto completo.
+  const MAG_STOP_FIM = /\s+(?:e|a|o|de|do|da|em|no|na|com|para|por|que|se|ao|à)$/i;
+
+  function magMecanica(m) {
+    const txt = (m.descricao || []).join(' ');
+    const frags = [], vistos = new Set(), dados = new Set();
+    const poe = (f) => {
+      f = String(f || '').trim().replace(/\s+/g, ' ').replace(MAG_STOP_FIM, '');
+      const k = _semAcento(f);
+      if (f && !vistos.has(k)) { vistos.add(k); frags.push(f); }
+    };
+    let mm;
+
+    // 1) dano, cura e mana — "6d6 de dano de fogo", "2d8+2 PV"
+    const reDado = /(\d+d\d+(?:\s*[+\-−–]\s*\d+)?)\s*pontos?\s+de\s+(dano\s+de\s+[a-zà-ÿ]+|dano|vida|mana)/gi;
+    while ((mm = reDado.exec(txt))) {
+      const val = mm[1].replace(/\s+/g, ''), tipo = mm[2].toLowerCase().replace(/\s+/g, ' ');
+      dados.add(val);
+      poe(tipo === 'vida' ? val + ' PV' : tipo === 'mana' ? val + ' PM' : val + ' de ' + tipo);
+    }
+    // 1b) dano alternativo — "(ou 4d12, se forem mortos-vivos)"
+    const reAlt = /\(ou\s+(\d+d\d+(?:\s*[+\-−–]\s*\d+)?)([^)]*)\)/gi;
+    while ((mm = reAlt.exec(txt))) {
+      dados.add(mm[1].replace(/\s+/g, ''));
+      poe('ou ' + mm[1] + mm[2]);
+    }
+    // 2) bônus e penalidades, mantendo a preposição do livro
+    const reBonus = /([+\-−–]\d+)\s+((?:em|na|no|nos|nas)\s+(?:testes?\s+de\s+)?[A-Za-zÀ-ÿ]+(?:\s+[a-zà-ÿ]+)?)/g;
+    while ((mm = reBonus.exec(txt))) poe(mm[1].replace(/^-/, '−') + ' ' + mm[2]);
+    // 3) condições impostas. Magias que REMOVEM condições citam a lista
+    // inteira — nesse caso o resumo já diz isso e os chips virariam ruído.
+    const semAc = _semAcento(txt);
+    const citadas = CONDICOES.filter(c => semAc.indexOf(_semAcento(c.nome)) >= 0);
+    if (citadas.length <= 4) citadas.forEach(c => poe(c.nome.toLowerCase()));
+    // 4) dados que sobraram (duração, quantidade) com o substantivo seguinte
+    const reResto = /(\d+d\d+(?:\s*[+\-−–]\s*\d+)?)\s+([a-zà-ÿ]+)/gi;
+    while ((mm = reResto.exec(txt))) {
+      const val = mm[1].replace(/\s+/g, '');
+      if (!dados.has(val)) { dados.add(val); poe(val + ' ' + mm[2]); }
+    }
+    // 5) rede de segurança: nenhuma rolagem entrou, mas o texto tem dados
+    // (ex.: "dano de impacto igual a 4d6 + sua Força") — entra cru
+    if (!dados.size) {
+      (txt.match(/\d+d\d+(?:\s*[+\-−–]\s*\d+)?/g) || [])
+        .forEach(v => poe(v.replace(/\s+/g, '')));
+    }
+    // 6) área, quando numérica
+    if (m.area && /\d/.test(m.area)) poe(m.area);
+    return frags;
+  }
+
+  // resumo curto + a mecânica que faltava nele
+  function magResumoTexto(m) {
+    const base = (m.resumo || '').trim();
+    const nb = _semAcento(base);
+    const frags = magMecanica(m).filter(f => nb.indexOf(_semAcento(f)) < 0);
+    if (!frags.length) return base;
+    return base.replace(/\.\s*$/, '') + ' — ' + frags.join(', ') + '.';
+  }
+
+  // ── APRIMORAMENTOS ACUMULÁVEIS ("aumenta …") ─────────────────────
+  // Pela regra, um aprimoramento que AUMENTA um valor pode ser comprado
+  // várias vezes: +2 PM "aumenta o dano em +2d6" pago duas vezes custa
+  // 4 PM e vira +4d6. Multiplicamos só o PRIMEIRO valor do texto — os
+  // outros números são referência ("quadrado de 1,5m"), não o incremento.
+  const MAG_APR_MAX = 10;
+  // formas de incremento que sabemos multiplicar, na ordem em que são
+  // tentadas (dado antes de bônus simples, senão "+2d6" viraria "+6d6"…
+  // pelo caminho errado)
+  const MAG_APR_REGRAS = [
+    /\+\s*\d+d\d+/,            // +2d6
+    /\+\s*\d+(?:,\d+)?\s*m\b/, // +1,5m
+    /\+\s*\d+/,                // +1
+    /[–−]\s*\d+/,              // –1
+    /\bem\s+\d+\b/,            // "em 1"
+  ];
+  // "1,5" × 2 -> "3" · "2" × 3 -> "6" (mantém a vírgula decimal do livro)
+  function _magNum(txt, n) {
+    const v = parseFloat(String(txt).replace(',', '.')) * n;
+    return (Math.round(v * 100) / 100).toString().replace('.', ',');
+  }
+  function magAprAcumulavel(a) {
+    const t = String((a && a.texto) || '');
+    if (!/^\s*aumenta\b/i.test(t)) return false;
+    return MAG_APR_REGRAS.some(re => re.test(t));
+  }
+  // Texto do aprimoramento comprado `n` vezes.
+  function magAprTexto(a, n) {
+    const t = String((a && a.texto) || '');
+    if (!(n > 1) || !magAprAcumulavel(a)) return t;
+    // dados: multiplica a quantidade, mantém a face ("+2d6" ×3 = "+6d6")
+    let re = /\+\s*(\d+)(d\d+)/;
+    if (re.test(t)) return t.replace(re, (_, v, d) => '+' + (v * n) + d);
+    re = /\+\s*(\d+(?:,\d+)?)\s*m\b/;
+    if (re.test(t)) return t.replace(re, (_, v) => '+' + _magNum(v, n) + 'm');
+    re = /\+\s*(\d+)/;
+    if (re.test(t)) return t.replace(re, (_, v) => '+' + (v * n));
+    re = /([–−])\s*(\d+)/;
+    if (re.test(t)) return t.replace(re, (_, s, v) => s + (v * n));
+    re = /\bem\s+(\d+)\b/;
+    if (re.test(t)) return t.replace(re, (_, v) => 'em ' + (v * n));
+    return t;
+  }
+
+  // Monta a linha que entra na ficha. `opc` vem do montador do modal:
+  // { pm, execucao, extras: [texto de aprimoramento…], resistencia, fonte }
+  // fonte 'resumo' = a linha bem curta (padrão); 'livro' = o 1º parágrafo
+  // da magia, que já vem com os dados de dano para o mestre só ajustar.
+  function magLinhaTexto(m, opc) {
+    opc = opc || {};
+    const pm = (opc.pm === 0 || opc.pm) ? opc.pm : m.pm;
+    const partes = [opc.execucao || magExecucaoDe(m), pm + ' PM'];
+    if (magSustentada(m)) partes.push('sustentada');
+
+    let efeito = (opc.fonte === 'livro'
+      ? ((m.descricao || [])[0] || m.resumo || '')
+      : magResumoTexto(m)).trim();
+    (opc.extras || []).forEach(t => {
+      let x = String(t || '').trim();
+      if (!x) return;
+      x = x.charAt(0).toUpperCase() + x.slice(1);
+      if (!/[.!?]$/.test(x)) x += '.';
+      efeito += ' ' + x;
+    });
+    const res = (opc.resistencia === false) ? '' : magResistencia(m);
+    if (res) efeito = efeito.replace(/\.\s*$/, '') + ' (' + res + ')';
+    if (efeito && !/[.!?]$/.test(efeito)) efeito += '.';
+
+    return `• ${m.nome} (${partes.join(', ')}) ${efeito}`.trim();
+  }
+
+  // ── BLOCO "✨ MAGIAS" DA FICHA ───────────────────────────────────
+  // Desligado: uma linha discreta com o interruptor (igual ao "Dungeon?"
+  // da cena). Ligado: cabeçalho do livro + caixa de texto rico com as
+  // linhas + o botão que abre o compêndio das 254 magias.
+  function construirBlocoMagias(cr, ds, painel) {
+    if (!cr.magiasAtivo) {
+      return `
+          <div class="mz-ambientes mz-magias">
+            <span class="mz-amb-titulo mz-mas-cab">✨ Adicionar magias?
+              <button class="mz-mas-switch" data-acao="magias-toggle" ${ds}
+                      title="Ligar o bloco de magias desta ficha">○ desligado</button>
+            </span>
+            <span class="mz-amb-nenhum">Escolha do compêndio, ajuste o custo pelos aprimoramentos e edite à vontade — como os conjuradores do Guia de NPCs.</span>
+          </div>`;
+    }
+    const btnDesligar = `
+              <button class="mz-mas-switch mz-mas-switch--on" data-acao="magias-toggle" ${ds}
+                      title="Desligar o bloco (o texto continua guardado)">● ligado</button>`;
+    return `
+          <div class="mz-ambientes mz-magias mz-magias--on">
+            <span class="mz-amb-titulo mz-mas-cab">✨ Magias${btnDesligar}
+              <button class="mz-amb-add mz-magias-add" data-acao="abrir-magias" ${ds}
+                      title="Escolher uma magia do compêndio e inserir na ficha">＋ Magia</button>
+            </span>
+            <input class="mz-input mz-magias-cab" type="text" value="${esc(cr.magiasCab || '')}"
+                   placeholder="Como um clérigo de 9º nível (CD 30)"
+                   title="A linha que o livro põe antes das magias" data-campo="magiasCab" ${ds}>
+            <div class="mz-campo mz-magias-campo">
+              ${barraGrifo(ds, { compacta: true })}
+              <div class="mz-ataques mz-magias-caixa" contenteditable="true" spellcheck="true"
+                   data-ph="• Bola de Fogo (Padrão, 5 PM) Esfera incandescente explode… (Ref reduz à metade)"
+                   data-campo="magias" ${ds}>${cr.magiasHtml || ''}</div>
+            </div>
+          </div>`;
+  }
+
   function construirCriatura(cr, si, ci, cri, total, painel) {
     const ds = `data-s="${si}" data-c="${ci}" data-cr="${cri}"`;
     // No painel a ficha usa um estado próprio (cr.painelAberto), aberto por padrão.
@@ -1957,6 +2202,8 @@
             <div class="mz-ataques" contenteditable="true" spellcheck="false"
                  data-campo="ataques" ${ds}>${cr.ataques || ''}</div>
           </div>
+
+          ${construirBlocoMagias(cr, ds, painel)}
 
           ${painel ? '' : construirFerramentasAtaque(cr, ds) + construirFerramentaDevoto(cr, ds)}
 
@@ -2275,6 +2522,15 @@
       abrirModalLista(+alvo.dataset.s, +alvo.dataset.c, +alvo.dataset.cr, 'tipo');
       return;
     }
+    if (acao === 'magias-toggle') {
+      const cr = pegarCriatura(alvo);
+      cr.magiasAtivo = !cr.magiasAtivo;
+      salvar(); render(); return;
+    }
+    if (acao === 'abrir-magias') {
+      abrirModalMagias(+alvo.dataset.s, +alvo.dataset.c, +alvo.dataset.cr);
+      return;
+    }
     if (acao === 'abrir-habilidade') {
       abrirModalLista(+alvo.dataset.s, +alvo.dataset.c, +alvo.dataset.cr, 'habilidade');
       return;
@@ -2526,6 +2782,8 @@
     const campo = el.dataset.campo;
     if (campo === 'notas-sessao') return '📝 Sessão — ' + (pegarSessao(el).nome || 'Sessão');
     if (campo === 'notas-cena')   return '📝 Cena — '   + (pegarCena(el).nome   || 'Cena');
+    // o bloco de magias fica fora de um .mz-campo com rótulo visível
+    if (campo === 'magias')       return '✨ ' + (pegarCriatura(el).nome || 'Criatura') + ' — Magias';
     const box = el.closest('.mz-campo');
     const rot = box && box.querySelector('.mz-rotulo');
     const rotulo = rot ? rot.textContent.trim() : 'Texto';
@@ -3394,10 +3652,31 @@
     let t = ' ' + bloco.trim();
     t = t.replace(/\s*•\s*/g, '\n• ');                       // marcadores de magia
     t = t.replace(/\s+(Corpo a Corpo|À Distância|Distância)\b/g, '\n$1');
+    // "…aumenta em +2. Magias Como um clérigo de 2º nível (CD 18)." — a
+    // seção de magias começa aqui; sem a quebra ela gruda na habilidade
+    // anterior e _separarMagias() não a acha.
+    t = t.replace(/([.)!?])\s+(Magias\b)/g, '$1\n$2');
     // "Nome Da Habilidade (Livre/Padrão/Reação/…)" -> quebra antes (ancorada em pontuação,
     // para não quebrar no meio de nomes de duas palavras como "Agarrar Aprimorado")
     t = t.replace(/([.)!?])\s+(?=[A-ZÀ-Ý][^.•()\n]{0,44}\((?:Livre|livre|Padr[ãa]o|Rea[çc][ãa]o|Movimento|movimento|Completa|Reativa|\d+\s*PM)\b)/g, '$1\n');
     return t.replace(/\n{2,}/g, '\n').replace(/^\n+/, '').trim();
+  }
+
+  // Separa a seção "Magias …" (cabeçalho + linhas •) do resto das
+  // habilidades — no livro ela é sempre a última coisa antes dos
+  // atributos. Só corta quando há mesmo linhas de magia depois, para
+  // não confundir com uma habilidade que cite a palavra.
+  function _separarMagias(texto) {
+    const linhas = String(texto || '').split('\n');
+    const i = linhas.findIndex(l => /^Magias\b/i.test(l.trim()));
+    if (i < 0 || !linhas.slice(i + 1).some(l => /^\s*•/.test(l))) {
+      return { ataques: texto, cab: '', magias: '' };
+    }
+    return {
+      ataques: linhas.slice(0, i).join('\n').trim(),
+      cab:     linhas[i].trim().replace(/^Magias\s*/i, '').replace(/\s*\.\s*$/, '').trim(),
+      magias:  linhas.slice(i + 1).join('\n').trim(),
+    };
   }
 
   // texto -> HTML (escapado, com <br>). Marca termos de regra (condições
@@ -3550,7 +3829,17 @@
       // próprio — remove o token solto para não sujar a caixa de ataques.
       bloco = bloco.replace(/\bND\s+(?:S\s*\+|\d+\s*\/\s*\d+|\d+)\b/gi, ' ')
                    .replace(/\s{2,}/g, ' ').trim();
-      if (bloco) cr.ataques = _txtParaHtml(_formatarAtaques(bloco));
+      if (bloco) {
+        // conjuradores: a seção "Magias" ganha o bloco próprio da ficha
+        const part = _separarMagias(_formatarAtaques(bloco));
+        if (part.ataques) cr.ataques = _txtParaHtml(part.ataques);
+        if (part.magias) {
+          cr.magiasAtivo = true;
+          cr.magiasCab   = part.cab;
+          cr.magias      = part.magias;
+          cr.magiasHtml  = _txtParaHtml(part.magias);
+        }
+      }
     }
 
     // 9) ATRIBUTOS (vai até Perícias/Equipamento/Tesouro, o que vier antes)
@@ -3676,6 +3965,7 @@
         linha('Equipamento', cr.equipamento) +
         linha('Tesouro', cr.recompensas) +
         (cr.ataques ? `<div class="mz-imp-campo mz-imp-campo--bloco"><span>Ataque e Habilidades</span><div class="mz-imp-bloco">${cr.ataques}</div></div>` : '') +
+        (cr.magiasHtml ? `<div class="mz-imp-campo mz-imp-campo--bloco"><span>✨ Magias${cr.magiasCab ? ' — ' + esc(cr.magiasCab) : ''}</span><div class="mz-imp-bloco">${cr.magiasHtml}</div></div>` : '') +
         (cr.descricao ? `<div class="mz-imp-campo mz-imp-campo--bloco"><span>Descrição</span><div class="mz-imp-bloco">${esc(cr.descricao)}</div></div>` : '') +
         (r.avisos.length ? `<div class="mz-imp-avisos">⚠ ${r.avisos.map(esc).join(' · ')}</div>` : '');
     }
@@ -4341,12 +4631,349 @@
   }
 
   // ═══════════════════════════════════════════════════════════════
+  //  COMPÊNDIO DE MAGIAS DA FICHA (botão "＋ Magia")
+  //  Lista as magias de window.GA_MAGIAS (as mesmas da sub-aba ✨ das
+  //  Consultas). Abrir uma monta a linha enxuta do livro: dá para trocar
+  //  a execução, marcar aprimoramentos (que somam PM) e conferir a
+  //  prévia antes de inserir. Na ficha vira texto rico comum — grifável
+  //  e editável, porque quase nunca a magia entra igualzinha ao livro.
+  // ═══════════════════════════════════════════════════════════════
+  let _magAlvo = null;         // { s, c, cr }
+  let _magEstado = {};         // id -> { pm, execucao, extras: {i:true}, res }
+  const _magFiltro = { circulo: '', tipo: '' };
+
+  function _magCriatura() {
+    if (!_magAlvo) return null;
+    const cena = dados.sessoes[_magAlvo.s] && dados.sessoes[_magAlvo.s].cenas[_magAlvo.c];
+    return (cena && cena.criaturas[_magAlvo.cr]) || null;
+  }
+  function _magEstadoDe(m) {
+    if (!_magEstado[m.id]) {
+      _magEstado[m.id] = { pm: m.pm, execucao: magExecucaoDe(m), extras: {}, res: true, fonte: 'resumo' };
+    }
+    return _magEstado[m.id];
+  }
+  // st.extras[i] = quantas vezes o aprimoramento foi comprado (0 = fora).
+  // Os "aumenta …" podem ir além de 1; os demais só valem 0 ou 1.
+  function _magRecalcPM(m, st) {
+    let pm = m.pm;
+    (m.aprimoramentos || []).forEach((a, i) => { pm += (a.pm || 0) * (st.extras[i] || 0); });
+    st.pm = pm;
+  }
+  function _magExtras(m, st) {
+    const out = [];
+    (m.aprimoramentos || []).forEach((a, i) => {
+      const n = st.extras[i] || 0;
+      if (n) out.push(magAprTexto(a, n));
+    });
+    return out;
+  }
+  // limite de compras de um aprimoramento (1 se não for acumulável)
+  function _magAprMax(a) { return magAprAcumulavel(a) ? MAG_APR_MAX : 1; }
+  function _magOpc(m, st) {
+    return { pm: st.pm, execucao: st.execucao, extras: _magExtras(m, st),
+             resistencia: st.res, fonte: st.fonte };
+  }
+  // sincroniza o campo de PM e a prévia com o estado
+  function _magAtualizar(item) {
+    const m = magiaPorId(item && item.dataset.magId);
+    if (!m) return;
+    const st = _magEstadoDe(m);
+    const pmEl = item.querySelector('.mz-mag-pm');
+    if (pmEl && pmEl.value !== String(st.pm)) pmEl.value = st.pm;
+    const prev = item.querySelector('.mz-mag-previa');
+    if (prev) prev.textContent = magLinhaTexto(m, _magOpc(m, st));
+  }
+
+  // Define quantas vezes o aprimoramento `i` foi comprado e redesenha o
+  // montador (o PM e o texto do próprio aprimoramento mudam com a conta).
+  function _magAprDefinir(item, i, n) {
+    const m = magiaPorId(item && item.dataset.magId);
+    const a = m && (m.aprimoramentos || [])[i];
+    if (!a) return;
+    const st = _magEstadoDe(m);
+    st.extras[i] = Math.max(0, Math.min(n, _magAprMax(a)));
+    _magRecalcPM(m, st);
+    const mont = item.querySelector('.mz-mag-montador');
+    if (mont) mont.innerHTML = _magMontadorHtml(m, st);
+    _magAtualizar(item);
+  }
+
+  function _magMontadorHtml(m, st) {
+    const exec = MAG_EXEC.map(e =>
+      `<option value="${esc(e)}"${e === st.execucao ? ' selected' : ''}>${esc(e)}</option>`).join('');
+    let aprs = '';
+    (m.aprimoramentos || []).forEach((a, i) => {
+      const n = st.extras[i] || 0;
+      const cond = a.condicao ? esc(a.condicao) + ' — ' : '';
+      const acum = magAprAcumulavel(a);
+      // acumulável: mostra o passo (− n× +) para comprar várias vezes
+      const passo = acum ? `
+                  <span class="mz-mag-apr-passo">
+                    <button type="button" class="mz-mag-apr-btn" data-mag-apr-n="${i}" data-delta="-1"
+                            title="Comprar uma vez a menos">−</button>
+                    <span class="mz-mag-apr-n">${n || 0}×</span>
+                    <button type="button" class="mz-mag-apr-btn" data-mag-apr-n="${i}" data-delta="1"
+                            title="Comprar mais uma vez (o custo e o valor sobem)">＋</button>
+                  </span>` : '';
+      aprs += `
+                <div class="mz-mag-apr ${n ? 'mz-mag-apr--on' : ''} ${acum ? 'mz-mag-apr--acum' : ''}">
+                  <button type="button" class="mz-mag-apr-alvo" data-mag-apr="${i}"
+                          title="${acum ? 'Liga/desliga — use − e ＋ para comprar mais de uma vez' : 'Soma o custo e junta o texto ao efeito'}">
+                    <span class="mz-mag-apr-pm">+${a.pm * (n || 1)} PM</span>
+                    <span class="mz-mag-apr-txt">${cond}${esc(magAprTexto(a, n || 1))}</span>
+                  </button>${passo}
+                </div>`;
+    });
+    const res = magResistencia(m);
+    return `
+            <div class="mz-mag-corpo">
+              <div class="mz-ferr-linha">
+                <span class="mz-ferr-lbl">Execução</span>
+                <select class="mz-mag-exec" title="Como a criatura lança">${exec}</select>
+                <span class="mz-mag-pm-rot">Custo</span>
+                <input type="text" class="mz-mag-pm" inputmode="numeric" value="${esc(st.pm)}"
+                       title="PM da magia — os aprimoramentos marcados somam aqui, mas dá para digitar o valor que quiser">
+                <span class="mz-mag-pm-rot">PM</span>
+                ${res ? `<label class="mz-mag-res" title="Incluir o teste de resistência no fim da linha">
+                  <input type="checkbox" class="mz-mag-res-chk"${st.res ? ' checked' : ''}> (${esc(res)})</label>` : ''}
+              </div>
+              <div class="mz-ferr-linha">
+                <span class="mz-ferr-lbl">Efeito</span>
+                <button type="button" class="mz-mas-chip ${st.fonte === 'resumo' ? 'mz-mas-chip--on' : ''}"
+                        data-mag-fonte="resumo" title="Curto como no Guia de NPCs, mas sem perder dano, condições, bônus nem área">Resumo</button>
+                <button type="button" class="mz-mas-chip ${st.fonte === 'livro' ? 'mz-mas-chip--on' : ''}"
+                        data-mag-fonte="livro" title="O parágrafo inteiro da magia — corte o que sobrar direto na ficha">Texto do livro</button>
+              </div>
+              ${aprs ? `<div class="mz-mag-aprs">
+                <span class="mz-ferr-lbl">Aprimorar</span>
+                <div class="mz-mag-aprs-lista">${aprs}</div>
+              </div>` : ''}
+              <div class="mz-mag-previa" title="É isto que entra na ficha — depois é só editar"></div>
+              <div class="mz-mag-acoes">
+                <button type="button" class="mz-ferr-add mz-mag-inserir">＋ Inserir na ficha</button>
+                <span class="mz-mag-ok" hidden>✓ inserida</span>
+              </div>
+            </div>`;
+  }
+
+  // acordeão: abre o montador de uma magia por vez (e o 2º clique fecha)
+  function _magAbrirItem(item, overlay) {
+    if (!item) return;
+    const jaAberto = item.classList.contains('mz-mag-item--aberto');
+    overlay.querySelectorAll('.mz-mag-item--aberto').forEach(o => {
+      o.classList.remove('mz-mag-item--aberto');
+      const mo = o.querySelector('.mz-mag-montador');
+      if (mo) mo.innerHTML = '';
+    });
+    if (jaAberto) return;
+    const m = magiaPorId(item.dataset.magId);
+    if (!m) return;
+    item.classList.add('mz-mag-item--aberto');
+    const mont = item.querySelector('.mz-mag-montador');
+    mont.innerHTML = _magMontadorHtml(m, _magEstadoDe(m));
+    _magAtualizar(item);
+    // magias com muitos aprimoramentos ficam altas — traz a prévia e o
+    // botão de inserir para dentro da janela
+    const acoes = item.querySelector('.mz-mag-acoes');
+    if (acoes) acoes.scrollIntoView({ block: 'nearest' });
+  }
+
+  function _magInserir(item) {
+    const m = magiaPorId(item && item.dataset.magId);
+    const cr = _magCriatura();
+    if (!m || !cr) return;
+    const linha = magLinhaTexto(m, _magOpc(m, _magEstadoDe(m)));
+    cr.magiasAtivo = true;
+    cr.magiasHtml = (cr.magiasHtml || '').trim() + `<div>${_txtParaHtml(linha)}</div>`;
+    cr.magias = htmlParaTexto(cr.magiasHtml);
+    salvar();
+    render();                       // a ficha atrás do modal já mostra a linha
+    const ok = item.querySelector('.mz-mag-ok');
+    if (ok) { ok.hidden = false; setTimeout(() => { ok.hidden = true; }, 1600); }
+  }
+
+  function _magFiltrar(overlay) {
+    const busca = overlay.querySelector('.mz-cond-busca');
+    const termo = _semAcento(busca ? busca.value.trim() : '');
+    overlay.querySelectorAll('.mz-mag-item').forEach(it => {
+      const ok = (!termo || it.dataset.nome.indexOf(termo) >= 0)
+              && (!_magFiltro.circulo || it.dataset.circulo === _magFiltro.circulo)
+              && (!_magFiltro.tipo    || it.dataset.tipo    === _magFiltro.tipo);
+      it.style.display = ok ? '' : 'none';
+    });
+    overlay.querySelectorAll('[data-mag-grupo]').forEach(g => {
+      const algum = Array.from(g.querySelectorAll('.mz-mag-item')).some(i => i.style.display !== 'none');
+      g.style.display = algum ? '' : 'none';
+    });
+  }
+
+  function abrirModalMagias(si, ci, cri) {
+    fecharModalMagias();
+    const lista = window.GA_MAGIAS;
+    if (!Array.isArray(lista) || !lista.length) {
+      alert('O compêndio de magias não carregou (js/magias-data.js).'); return;
+    }
+    _magAlvo = { s: si, c: ci, cr: cri };
+    _magEstado = {};
+    _magFiltro.circulo = ''; _magFiltro.tipo = '';
+    const cr = _magCriatura();
+
+    let grupos = '';
+    [1, 2, 3, 4, 5].forEach(circ => {
+      const itens = lista.filter(m => m.circulo === circ)
+                         .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+      if (!itens.length) return;
+      let linhas = '';
+      itens.forEach(m => {
+        const busca = _semAcento([m.nome, m.tipo, m.escola, m.resumo].join(' '));
+        linhas += `
+            <div class="mz-mag-item" data-mag-id="${esc(m.id)}" data-nome="${esc(busca)}"
+                 data-circulo="${m.circulo}" data-tipo="${esc(m.tipo)}">
+              <button type="button" class="mz-cond-opcao mz-mag-cab" style="--cor:${MAG_CORES[m.tipo] || '#4a3f6b'}">
+                <span class="mz-cond-opcao-cab">
+                  <span class="mz-cond-opcao-check">＋</span>
+                  <span class="mz-cond-opcao-nome">${esc(m.nome)}</span>
+                  <span class="mz-cond-opcao-cat">${esc(m.tipo)} · ${esc(m.escola)} · ${m.pm} PM</span>
+                </span>
+                <span class="mz-cond-opcao-desc">${esc(m.resumo)}</span>
+              </button>
+              <div class="mz-mag-montador"></div>
+            </div>`;
+      });
+      grupos += `
+          <div class="mz-cond-grupo" data-mag-grupo="${circ}">
+            <div class="mz-cond-grupo-titulo" style="--cor:#4a3f6b">${circ}º círculo</div>
+            ${linhas}
+          </div>`;
+    });
+
+    const chipsCirc = [1, 2, 3, 4, 5].map(n =>
+      `<button type="button" class="mz-mas-chip" data-mag-filtro="circulo" data-valor="${n}">${n}º</button>`).join('');
+    const chipsTipo = ['Arcana', 'Divina', 'Universal'].map(t =>
+      `<button type="button" class="mz-mas-chip" data-mag-filtro="tipo" data-valor="${t}">${t}</button>`).join('');
+
+    const overlay = document.createElement('div');
+    overlay.id = 'mzMagModal';
+    overlay.className = 'mz-cond-overlay';
+    overlay.innerHTML = `
+      <div class="mz-cond-modal mz-mag-modal" role="dialog" aria-modal="true">
+        <div class="mz-cond-modal-head">
+          <span>✨ Magias — ${esc((cr && cr.nome) || 'criatura')}</span>
+          <button class="mz-cond-modal-x" data-mag-fechar title="Fechar">✕</button>
+        </div>
+        <input class="mz-cond-busca" type="text" placeholder="Buscar por nome, escola ou efeito…" autocomplete="off">
+        <div class="mz-mag-filtros">
+          <span class="mz-ferr-lbl">Círculo</span>${chipsCirc}
+          <span class="mz-ferr-lbl">Tipo</span>${chipsTipo}
+        </div>
+        <div class="mz-cond-modal-corpo">${grupos}</div>
+        <div class="mz-cond-modal-pe">Clique numa magia para montar a linha. Aprimoramentos que <em>aumentam</em> um valor podem ser comprados várias vezes com − e ＋ — o custo e o efeito sobem junto (+2d6 duas vezes = 4 PM e +4d6).</div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay || e.target.closest('[data-mag-fechar]')) { fecharModalMagias(); return; }
+
+      const fil = e.target.closest('[data-mag-filtro]');
+      if (fil) {
+        const campo = fil.dataset.magFiltro, valor = fil.dataset.valor;
+        _magFiltro[campo] = (_magFiltro[campo] === valor) ? '' : valor;
+        overlay.querySelectorAll(`[data-mag-filtro="${campo}"]`).forEach(b => {
+          b.classList.toggle('mz-mas-chip--on', b.dataset.valor === _magFiltro[campo]);
+        });
+        _magFiltrar(overlay);
+        return;
+      }
+      if (e.target.closest('.mz-mag-inserir')) { _magInserir(e.target.closest('.mz-mag-item')); return; }
+
+      const fonte = e.target.closest('[data-mag-fonte]');
+      if (fonte) {
+        const item = fonte.closest('.mz-mag-item');
+        const m = magiaPorId(item.dataset.magId);
+        if (!m) return;
+        _magEstadoDe(m).fonte = fonte.dataset.magFonte;
+        item.querySelectorAll('[data-mag-fonte]').forEach(b => {
+          b.classList.toggle('mz-mas-chip--on', b === fonte);
+        });
+        _magAtualizar(item);
+        return;
+      }
+
+      const passo = e.target.closest('[data-mag-apr-n]');
+      if (passo) {
+        const item = passo.closest('.mz-mag-item');
+        const m = magiaPorId(item.dataset.magId);
+        if (!m) return;
+        const i = +passo.dataset.magAprN;
+        _magAprDefinir(item, i, (_magEstadoDe(m).extras[i] || 0) + (+passo.dataset.delta));
+        return;
+      }
+
+      const apr = e.target.closest('[data-mag-apr]');
+      if (apr) {
+        const item = apr.closest('.mz-mag-item');
+        const m = magiaPorId(item.dataset.magId);
+        if (!m) return;
+        const i = +apr.dataset.magApr;
+        _magAprDefinir(item, i, _magEstadoDe(m).extras[i] ? 0 : 1);
+        return;
+      }
+
+      const cab = e.target.closest('.mz-mag-cab');
+      if (cab) _magAbrirItem(cab.closest('.mz-mag-item'), overlay);
+    });
+
+    // digitação: busca (fora dos itens) e campo de PM (dentro)
+    overlay.addEventListener('input', e => {
+      const item = e.target.closest('.mz-mag-item');
+      if (!item) {
+        if (e.target.classList.contains('mz-cond-busca')) _magFiltrar(overlay);
+        return;
+      }
+      if (!e.target.classList.contains('mz-mag-pm')) return;
+      const m = magiaPorId(item.dataset.magId);
+      if (!m) return;
+      const st = _magEstadoDe(m);
+      const n = parseInt(String(e.target.value).replace(/[^\d]/g, ''), 10);
+      st.pm = isNaN(n) ? 0 : n;
+      const prev = item.querySelector('.mz-mag-previa');
+      if (prev) prev.textContent = magLinhaTexto(m, _magOpc(m, st));   // sem mexer no campo
+    });
+
+    overlay.addEventListener('change', e => {
+      const item = e.target.closest('.mz-mag-item');
+      if (!item) return;
+      const m = magiaPorId(item.dataset.magId);
+      if (!m) return;
+      const st = _magEstadoDe(m);
+      if (e.target.classList.contains('mz-mag-exec'))    st.execucao = e.target.value;
+      if (e.target.classList.contains('mz-mag-res-chk')) st.res = e.target.checked;
+      _magAtualizar(item);
+    });
+
+    document.addEventListener('keydown', _magEsc);
+    setTimeout(() => { const b = overlay.querySelector('.mz-cond-busca'); if (b) b.focus(); }, 50);
+  }
+
+  function _magEsc(e) { if (e.key === 'Escape') fecharModalMagias(); }
+
+  function fecharModalMagias() {
+    const el = document.getElementById('mzMagModal');
+    if (el) el.remove();
+    document.removeEventListener('keydown', _magEsc);
+    _magAlvo = null;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
   //  AMBIENTE DA CENA — popup de regras + seletor (multi)
   // ═══════════════════════════════════════════════════════════════
 
   // Popup com as regras de um ambiente. Se vier com um alvo (cena ou
   // painel), permite editar a narração/efeito daquela instância.
   function verAmbiente(key, alvo) {
+    // "Outros" não tem regras de livro para mostrar — abre o editor próprio
+    if (ehAmbienteLivre(key)) { editarAmbienteLivre(key, alvo); return; }
     const it = ambientePorKey(key);
     if (!it) return;
     const corpo = esc(it.corpo).replace(/\n/g, '<br>');
@@ -4388,6 +5015,40 @@
     }
   }
 
+  // Editor do ambiente "Outros": o mestre escolhe o TÍTULO (é ele que vira
+  // o nome do chip — ex.: "Magias permanentes na cena") e escreve o texto
+  // livre do que vale ali. Salva a cada tecla; re-renderiza ao sair do campo
+  // para o chip acompanhar o título.
+  function editarAmbienteLivre(key, alvo) {
+    const arr = _ambArrDe(alvo) || [];
+    const inst = arr.find(a => a.key === key);
+    if (!inst) return;
+
+    const overlay = GA_abrirModal(`
+      <div class="mz-amb-pop-cab" style="--cor:${corDaCatAmb('livre')}">
+        <span class="mz-amb-pop-tag">✒ Outros</span>
+        <span class="mz-amb-pop-nome">Anotação da cena — do seu jeito</span>
+        <button class="mz-cond-modal-x" data-ga-fechar title="Fechar">✕</button>
+      </div>
+      <div class="mz-amb-nota-bloco">
+        <label class="mz-rotulo">🏷 Título — é o que aparece no chip</label>
+        <input class="mz-amb-livre-tit" type="text" value="${esc(inst.titulo || '')}"
+               placeholder="Ex: Magias permanentes na cena">
+        <label class="mz-rotulo">📝 O que vale nesta cena</label>
+        <textarea class="mz-amb-nota mz-amb-livre-txt" rows="9"
+          placeholder="Ex: Santuário sobre o altar (Von evita) · Escuridão no corredor leste, raio de 6m…">${esc(inst.nota || '')}</textarea>
+        <span class="mz-amb-nota-dica">Salvo automaticamente. Some da cena pelo ✕ do chip.</span>
+      </div>`);
+
+    const tit = overlay.querySelector('.mz-amb-livre-tit');
+    const ta  = overlay.querySelector('.mz-amb-livre-txt');
+    tit.addEventListener('input', () => { inst.titulo = tit.value; salvar(); });
+    ta .addEventListener('input', () => { inst.nota   = ta.value;  salvar(); });
+    tit.addEventListener('blur',  () => { render(); });
+    ta .addEventListener('blur',  () => { render(); });
+    setTimeout(() => tit.focus(), 50);
+  }
+
   // Seletor de ambientes (terreno/clima/perigos) — multi, agrupado.
   let _ambAlvo = null;   // { s, c }
 
@@ -4406,6 +5067,22 @@
 
     const REF = window.PERIGOS_REFERENCIA || { categorias: [] };
     const ordem = (REF.categorias || []).map(c => c.chave).concat(['complexos']);
+
+    // "Outros" vem PRIMEIRO: o mestre escreve o que quiser, com o título que
+    // quiser. Não é toggle — cada clique cria mais um (dá para ter vários).
+    const grupoLivre = `
+        <div class="mz-cond-grupo">
+          <div class="mz-cond-grupo-titulo" style="--cor:${corDaCatAmb('livre')}">Do seu jeito</div>
+          <button class="mz-cond-opcao mz-cond-opcao--livre" style="--cor:${corDaCatAmb('livre')}"
+                  data-amb-livre="1" data-nome="outros livre personalizado anotacao titulo magias permanentes na cena">
+            <span class="mz-cond-opcao-cab">
+              <span class="mz-cond-opcao-check">✒</span>
+              <span class="mz-cond-opcao-nome">Outros</span>
+              <span class="mz-cond-opcao-cat">título livre</span>
+            </span>
+            <span class="mz-cond-opcao-desc">Escreva o que quiser nesta cena e dê o título que quiser — ex.: “Magias permanentes na cena”. Pode adicionar vários.</span>
+          </button>
+        </div>`;
 
     let grupos = '';
     ordem.forEach(catKey => {
@@ -4444,13 +5121,14 @@
           <button class="mz-cond-modal-x" data-amb-fechar title="Fechar">✕</button>
         </div>
         <input class="mz-cond-busca" type="text" placeholder="Buscar terreno, clima, perigo…" autocomplete="off">
-        <div class="mz-cond-modal-corpo">${grupos}</div>
+        <div class="mz-cond-modal-corpo">${grupoLivre}${grupos}</div>
         <div class="mz-cond-modal-pe">${pe}</div>
       </div>`;
     document.body.appendChild(overlay);
 
     overlay.addEventListener('click', e => {
       if (e.target === overlay || e.target.closest('[data-amb-fechar]')) { fecharModalAmbientes(); return; }
+      if (e.target.closest('[data-amb-livre]')) { criarAmbienteLivre(); return; }
       const opc = e.target.closest('[data-amb-toggle]');
       if (opc) toggleAmbiente(opc.dataset.ambToggle, opc);
     });
@@ -4478,6 +5156,20 @@
     if (el) el.remove();
     document.removeEventListener('keydown', _ambEsc);
     _ambAlvo = null;
+  }
+
+  // Cria um ambiente "Outros" no alvo e já abre o editor para dar o título.
+  function criarAmbienteLivre() {
+    if (!_ambAlvo) return;
+    const alvo = _ambAlvo;                  // fecharModalAmbientes zera _ambAlvo
+    const arr = _ambArrDe(alvo);
+    if (!arr) return;
+    const inst = novoAmbienteLivre();
+    arr.push(inst);
+    salvar();
+    fecharModalAmbientes();
+    render();
+    editarAmbienteLivre(inst.key, alvo);
   }
 
   function toggleAmbiente(key, botaoOpcao) {
@@ -4572,6 +5264,12 @@
     add('Tesouro / Recompensas', cr.recompensas);
     // a caixa de ataques guarda HTML — converte para texto plano
     bloco('Ataques e Habilidades', cr.ataques ? htmlParaTexto(cr.ataques) : '');
+    // só sai no .txt o que a ficha mostra (bloco ligado); o backup .json
+    // continua guardando o texto mesmo com o bloco desligado
+    if (cr.magiasAtivo && (cr.magias || '').trim()) {
+      const cab = (cr.magiasCab || '').trim();
+      bloco('Magias' + (cab ? ' — ' + cab : ''), cr.magias);
+    }
     bloco('Descrição', cr.descricao);
 
     return out.join('\n');
@@ -4616,10 +5314,10 @@
       s.cenas.forEach(c => {
         txt += `\n\n  ▪ ${c.nome || '(cena sem nome)'}\n  ${'─'.repeat(40)}`;
         if (Array.isArray(c.ambientes) && c.ambientes.length) {
-          const nomes = c.ambientes.map(a => { const it = ambientePorKey(a.key); return it ? (it.nome + (it.nd ? ` (ND ${it.nd})` : '')) : null; }).filter(Boolean);
+          const nomes = c.ambientes.map(a => { const it = ambienteDeInstancia(a); return it ? (it.nome + (it.nd ? ` (ND ${it.nd})` : '')) : null; }).filter(Boolean);
           if (nomes.length) txt += `\n  🌪 Ambiente: ${nomes.join(' · ')}`;
           c.ambientes.forEach(a => {
-            const it = ambientePorKey(a.key);
+            const it = ambienteDeInstancia(a);
             if (it && a.nota && a.nota.trim()) txt += `\n     📝 ${it.nome}: ${a.nota.trim().replace(/\n/g, ' ')}`;
           });
         }
