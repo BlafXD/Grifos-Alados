@@ -1804,6 +1804,29 @@
   margin-bottom: 0.3rem;
 }
 
+/* ── AMBIENTE "OUTROS" (título e texto escritos pelo mestre) ─────── */
+/* chip: borda pontilhada para distinguir do que veio do livro */
+.mz-amb-chip--livre { border-style: dashed; border-left-style: solid; }
+.mz-amb-chip--livre .mz-amb-nome { font-style: italic; }
+
+/* opção "Outros" no topo do seletor de ambientes */
+.mz-cond-opcao--livre { border-style: dashed; }
+.mz-cond-opcao--livre .mz-cond-opcao-check { color: var(--cor); }
+
+/* campo de título dentro do editor do "Outros" */
+.mz-amb-livre-tit {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0.3rem 0 0.9rem;
+  padding: 0.45rem 0.6rem;
+  font-family: 'IM Fell English', serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+.mz-amb-livre-tit:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
+
 /* ── EDITOR EM TELA CHEIA DOS CAMPOS (botão ⛶ Expandir) ───────────── */
 .mz-ed-overlay .ga-modal {
   max-width: 880px;
@@ -2447,3 +2470,198 @@
   text-align: center;
 }
 .mz-mas-num:focus, .mz-masp-ctl select:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
+
+/* ══════════════════════════════════════════════════════════════════
+   ✨ MAGIAS DA FICHA — bloco na criatura + compêndio de escolha
+   O bloco reaproveita a moldura de "Ambiente/Dungeon" (.mz-ambientes)
+   e o modal reaproveita o do seletor de condições (.mz-cond-*).
+   ══════════════════════════════════════════════════════════════════ */
+.mz-magias { margin-top: -0.35rem; }
+.mz-magias--on { border-left: 4px solid #4a3f6b; }
+.mz-magias-add { margin-left: auto; }
+
+/* linha do livro: "Como um clérigo de 9º nível (CD 30)" */
+.mz-magias-cab {
+  margin: 0.45rem 0 0.4rem;
+  font-family: 'IM Fell English', serif;
+  font-size: 0.98rem;
+  font-style: italic;
+  background: var(--parchment2);
+}
+.mz-magias-campo { margin-bottom: 0; }
+.mz-magias-caixa {
+  min-height: 4.4rem;
+  font-family: 'Crimson Pro', serif;
+}
+.mz-magias-caixa[data-ph]:empty::before { font-style: italic; }
+
+/* ── modal do compêndio ── */
+.mz-mag-modal { max-width: 780px; }
+.mz-mag-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0 0.9rem 0.5rem;
+  border-bottom: 1px solid var(--parchment3);
+}
+.mz-mag-filtros .mz-ferr-lbl { flex: 0 0 auto; margin-left: 0.4rem; }
+.mz-mag-filtros .mz-ferr-lbl:first-child { margin-left: 0; }
+
+.mz-mag-item { margin-bottom: 0.35rem; }
+.mz-mag-cab { margin-bottom: 0; }
+.mz-mag-item--aberto .mz-mag-cab {
+  background: var(--gold-pale);
+  box-shadow: inset 0 0 0 1px var(--cor, var(--neutra));
+}
+.mz-mag-item--aberto .mz-cond-opcao-check::before { content: '−'; }
+.mz-mag-item--aberto .mz-cond-opcao-check { font-size: 0; }
+.mz-mag-item--aberto .mz-cond-opcao-check::before { font-size: 1rem; }
+
+/* montador: execução, custo e aprimoramentos */
+.mz-mag-corpo {
+  padding: 0.6rem 0.7rem 0.55rem;
+  background: var(--parchment3);
+  border: 1px solid var(--parchment3);
+  border-left: 5px solid var(--cor, #4a3f6b);
+  border-top: none;
+}
+.mz-mag-corpo .mz-ferr-linha { margin-bottom: 0.5rem; }
+.mz-mag-exec {
+  flex: 0 1 9rem;
+  padding: 0.25rem 0.4rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.mz-mag-pm {
+  flex: 0 0 3.4rem;
+  width: 3.4rem;
+  padding: 0.25rem 0.3rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+}
+.mz-mag-exec:focus, .mz-mag-pm:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
+.mz-mag-pm-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.mz-mag-res {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  color: var(--ink-faded);
+  cursor: pointer;
+}
+.mz-mag-res input { cursor: pointer; }
+
+.mz-mag-aprs { margin-bottom: 0.5rem; }
+.mz-mag-aprs-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  margin-top: 0.25rem;
+}
+.mz-mag-apr {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  background: var(--parchment);
+  border: 1px dashed var(--ink-faded);
+  transition: background 0.12s, border-color 0.12s;
+}
+.mz-mag-apr:hover { border-color: var(--rust); }
+.mz-mag-apr--on {
+  background: var(--gold-pale);
+  border-style: solid;
+  border-color: #4a3f6b;
+}
+.mz-mag-apr-alvo {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  text-align: left;
+  padding: 0.28rem 0.45rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+/* passo "− n× ＋" dos aprimoramentos que podem ser comprados várias vezes */
+.mz-mag-apr-passo {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0 0.3rem;
+  border-left: 1px solid var(--parchment3);
+}
+.mz-mag-apr-btn {
+  width: 1.35rem;
+  padding: 0.1rem 0;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #4a3f6b;
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  cursor: pointer;
+}
+.mz-mag-apr-btn:hover { background: #4a3f6b; color: var(--parchment); border-color: #4a3f6b; }
+.mz-mag-apr-n {
+  min-width: 1.6rem;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--ink-faded);
+}
+.mz-mag-apr--on .mz-mag-apr-n { color: #4a3f6b; }
+.mz-mag-apr-pm {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #4a3f6b;
+}
+.mz-mag-apr-txt {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--ink-faded);
+}
+.mz-mag-apr--on .mz-mag-apr-txt { color: var(--ink); }
+
+/* prévia: exatamente a linha que vai para a ficha */
+.mz-mag-previa {
+  padding: 0.45rem 0.55rem;
+  margin-bottom: 0.5rem;
+  background: var(--parchment);
+  border-left: 3px solid var(--gold-dim);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+.mz-mag-acoes { display: flex; align-items: center; gap: 0.6rem; }
+.mz-mag-ok {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: #3f7a3f;
+}
