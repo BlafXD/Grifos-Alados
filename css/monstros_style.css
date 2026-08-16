@@ -2707,3 +2707,134 @@
   letter-spacing: 0.06em;
   color: #3f7a3f;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   🩸 PODERES DA TORMENTA — bloco na ficha da criatura
+   Reaproveita a moldura de "Ambiente/Dungeon" (.mz-ambientes). Cada
+   linha mostra o valor JÁ somado do poder e, embaixo, a conta que
+   levou até ele. A soma vive só aqui — nada entra na Defesa, nos
+   testes de resistência ou nas perícias da ficha.
+   ══════════════════════════════════════════════════════════════════ */
+.mz-torm { margin-top: -0.35rem; }
+.mz-torm--on { border-left: 4px solid #8a1c4a; }
+.mz-torm-cab { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
+.mz-torm-add { margin-left: auto; }
+.mz-torm-conta {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: #8a1c4a;
+  border-radius: 999px;
+  padding: 0.14rem 0.6rem;
+}
+
+/* aviso do Carisma — a única parte que o mestre precisa fazer na mão */
+.mz-torm-aviso {
+  margin-bottom: 0.55rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--parchment);
+  border: 1px dashed #8a1c4a;
+  border-left: 4px solid #8a1c4a;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.mz-torm-lista { display: flex; flex-direction: column; gap: 0.35rem; }
+.mz-torm-item {
+  padding: 0.4rem 0.55rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-left: 4px solid #8a1c4a;
+  border-radius: var(--raio);
+}
+.mz-torm-item-cab {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.mz-torm-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--rust-dark);
+}
+.mz-torm-fonte {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  border: 1px solid var(--parchment3);
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+}
+/* o valor somado — é o que o mestre lê na mesa */
+.mz-torm-valor {
+  flex: 1 1 12rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.mz-torm-item .mz-cond-x { flex: 0 0 auto; align-self: center; }
+.mz-torm-calc {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--ink-faded);
+  margin-top: 0.1rem;
+}
+.mz-torm-falta {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  color: #8a1c4a;
+  margin-top: 0.15rem;
+}
+.mz-torm-prereq {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.8rem;
+  color: var(--ink-faded);
+  margin-top: 0.1rem;
+}
+.mz-torm-det > summary {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  cursor: pointer;
+  margin-top: 0.25rem;
+}
+.mz-torm-det > p {
+  margin: 0.25rem 0 0;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--ink-faded);
+}
+.mz-torm-nota {
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  line-height: 1.35;
+  margin: 0.5rem 0 0;
+}
+
+/* no modal de escolha: o valor que o poder teria se for marcado */
+.mz-torm-opcao-valor {
+  display: block;
+  margin: 0.1rem 0 0.15rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
