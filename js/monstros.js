@@ -361,7 +361,7 @@
       papel: 'lacaio', statusMorte: null,
       critTipo: 'corte', critMult: 'x2', critLocal: '', ultimoCritico: null,
       condicoesAtivas: [],
-      tipoCriatura: '', habilidades: [], sentidos: [],
+      tipoCriatura: '', habilidades: [], sentidos: [], poderesTormenta: [],
       devoto: '',
       stats: stats,
       montaria: { chave: '', nivel: 'iniciante' },
@@ -484,6 +484,8 @@
     if (typeof cr.tipoCriatura !== 'string') cr.tipoCriatura = '';
     if (!Array.isArray(cr.habilidades)) cr.habilidades = [];
     if (!Array.isArray(cr.sentidos)) cr.sentidos = [];
+    // poderes da Tormenta (chaves de GA_TORMENTA) — o bloco soma sozinho
+    if (!Array.isArray(cr.poderesTormenta)) cr.poderesTormenta = [];
     if (typeof cr.devoto !== 'string') cr.devoto = '';   // chave do deus (GA_DEVOTOS)
     // bloco de magias: interruptor + linha de cabeçalho do livro
     // ("Como um clérigo de 9º nível, CD 30"). O texto em si é caixa rica.
@@ -1681,6 +1683,76 @@
       </div>`;
   }
 
+  // ── BLOCO: PODERES DA TORMENTA ───────────────────────────────────
+  // Os poderes da tempestade rubra (GA_TORMENTA) crescem com a QUANTIDADE
+  // de poderes que a ficha tem. O bloco faz essa soma sozinho e mostra o
+  // valor JÁ somado de cada poder, com a conta embaixo.
+  //
+  // O que ele NÃO faz de propósito: encostar na Defesa, em Reflexos, em
+  // Vontade ou em qualquer campo da ficha. A soma vive só aqui dentro —
+  // o mestre lê o valor e usa na mesa. A perda de Carisma também é manual
+  // (o aviso mostra a conta e lembra de ajustar a caixa "Atributos").
+  function construirBlocoTormenta(cr, ds) {
+    const G = window.GA_TORMENTA;
+    if (!G) return '';
+    const arr = Array.isArray(cr.poderesTormenta) ? cr.poderesTormenta : [];
+    const n = arr.length;
+
+    const btnAdd = `<button class="mz-amb-add mz-torm-add" data-acao="abrir-tormenta" ${ds}
+                      title="Escolher poderes da Tormenta — os valores se somam sozinhos">＋ Poder</button>`;
+
+    if (!n) {
+      return `
+          <div class="mz-ambientes mz-torm">
+            <span class="mz-amb-titulo mz-torm-cab">🩸 Poderes da Tormenta${btnAdd}</span>
+            <span class="mz-amb-nenhum">nenhum — ao marcar poderes da tempestade rubra, os valores de todos eles são somados aqui automaticamente conforme a quantidade.</span>
+          </div>`;
+    }
+
+    let linhas = '';
+    arr.forEach(chave => {
+      const p = G.porChave[chave];
+      if (!p) return;
+      const e = p.escala(n) || {};
+      const falta = G.faltando(chave, arr);
+      linhas += `
+              <div class="mz-torm-item">
+                <div class="mz-torm-item-cab">
+                  <span class="mz-torm-nome">${esc(p.nome)}</span>
+                  <span class="mz-torm-fonte">${esc(p.fonte)}</span>
+                  <span class="mz-torm-valor">${esc(e.txt || '')}</span>
+                  <button class="mz-cond-x" data-acao="rem-tormenta" data-chave="${esc(p.chave)}" ${ds}
+                          title="Remover ${esc(p.nome)}">✕</button>
+                </div>
+                <div class="mz-torm-calc">${e.fixo
+                  ? 'valor fixo — este poder não aumenta com a quantidade'
+                  : '= ' + esc(e.calc || '')}</div>
+                ${falta.length ? `<div class="mz-torm-falta">⚠ pré-requisito em falta: ${esc(falta.join(', '))}</div>` : ''}
+                ${p.preReq ? `<div class="mz-torm-prereq">Pré-requisito: ${esc(p.preReq)}</div>` : ''}
+                <details class="mz-torm-det">
+                  <summary>Texto da regra</summary>
+                  <p>${esc(p.desc)}</p>
+                </details>
+              </div>`;
+    });
+
+    const car = G.carismaPerdido(n);
+    return `
+          <div class="mz-ambientes mz-torm mz-torm--on">
+            <span class="mz-amb-titulo mz-torm-cab">🩸 Poderes da Tormenta
+              <span class="mz-torm-conta">${n} poder${n !== 1 ? 'es' : ''} · valores já somados</span>${btnAdd}
+            </span>
+            <div class="mz-torm-aviso">
+              <strong>⚠ Carisma é na mão.</strong> Pela regra, ${n} poder${n !== 1 ? 'es' : ''} da Tormenta
+              custa${n !== 1 ? 'm' : ''} <strong>–${car} de Carisma</strong> (1 pelo primeiro poder, mais 1 a cada dois outros).
+              O sistema <strong>não</strong> aplica isso: ajuste o Car na caixa <em>Atributos</em> desta ficha.
+              Abaixo de Car –5, a criatura vira NPC sob controle do mestre.
+            </div>
+            <div class="mz-torm-lista">${linhas}</div>
+            <p class="mz-torm-nota">Os valores acima já contam todos os ${n} poderes da ficha — marcar ou remover um poder recalcula todos os outros. Eles ficam só neste bloco: nada é somado na Defesa, nos testes de resistência ou nas perícias da ficha.</p>
+          </div>`;
+  }
+
   // Bloco "🐎 Montaria" da criatura: escolhe uma montaria (de window.MONTARIAS,
   // agrupada por fonte) e o nível (iniciante/veterano/mestre), mostrando o
   // benefício correspondente. Ex.: um necromante num Cavalo Esqueleto.
@@ -2268,6 +2340,8 @@
 
           ${construirBarraHabilidades(cr, ds)}
 
+          ${construirBlocoTormenta(cr, ds)}
+
           <div class="mz-campo">
             <label class="mz-rotulo">Ataque e Habilidades</label>
             ${barraGrifo(ds)}
@@ -2656,6 +2730,16 @@
     if (acao === 'abrir-sentido') {
       abrirModalLista(+alvo.dataset.s, +alvo.dataset.c, +alvo.dataset.cr, 'sentido');
       return;
+    }
+    if (acao === 'abrir-tormenta') {
+      abrirModalLista(+alvo.dataset.s, +alvo.dataset.c, +alvo.dataset.cr, 'tormenta');
+      return;
+    }
+    if (acao === 'rem-tormenta') {
+      const cr = pegarCriatura(alvo);
+      const i = cr.poderesTormenta.indexOf(alvo.dataset.chave);
+      if (i >= 0) cr.poderesTormenta.splice(i, 1);
+      salvar(); render(); return;   // os outros poderes recalculam no render
     }
     if (acao === 'rem-tipo') {
       pegarCriatura(alvo).tipoCriatura = '';
@@ -3645,6 +3729,10 @@
       : (tipo === 'sentido')
       ? { campo:'sentidos',     multi:true,  itens:SENTIDOS,           cor:'#1f7a6b',
           titulo:'Sentidos', dica:'Clique para marcar/desmarcar os sentidos da criatura.' }
+      : (tipo === 'tormenta')
+      ? { campo:'poderesTormenta', multi:true, itens:(window.GA_TORMENTA || {}).PODERES || [], cor:'#8a1c4a',
+          titulo:'Poderes da Tormenta', tormenta:true,
+          dica:'Clique para marcar/desmarcar. Os valores se somam sozinhos conforme a quantidade de poderes — só a perda de Carisma é na mão.' }
       : { campo:'habilidades',  multi:true,  itens:HABILIDADES_GERAIS, cor:'#6e5a44',
           titulo:'Habilidades gerais', dica:'Clique para marcar/desmarcar as habilidades que a criatura tem.' };
     _listaAlvo = Object.assign({ s:si, c:ci, cr:cri }, cfg);
@@ -3689,19 +3777,31 @@
   function _listaRowsHtml() {
     const a = _listaAlvo;
     const cr = dados.sessoes[a.s].cenas[a.c].criaturas[a.cr];
+    // nos poderes da Tormenta cada linha mostra quanto o poder valeria com
+    // ele na ficha (marcado: o total atual; desmarcado: o total + 1)
+    const nAtual = a.tormenta ? (cr.poderesTormenta || []).length : 0;
     let linhas = '';
     a.itens.forEach(item => {
       const ativo = a.multi
         ? cr[a.campo].indexOf(item.chave) >= 0
         : cr[a.campo] === item.chave;
+      let extra = '';
+      if (a.tormenta) {
+        const e = item.escala(ativo ? nAtual : nAtual + 1) || {};
+        extra = `<span class="mz-cond-opcao-cat mz-torm-opcao-valor">${
+          ativo ? 'na ficha' : 'se marcar'}: ${esc(e.txt || '')}</span>`;
+      }
       linhas += `
         <button class="mz-cond-opcao ${ativo ? 'ativo' : ''}" style="--cor:${a.cor}"
                 data-lista-toggle="${item.chave}" data-nome="${esc(item.nome).toLowerCase()}">
           <span class="mz-cond-opcao-cab">
             <span class="mz-cond-opcao-check">${ativo ? '✓' : '＋'}</span>
             <span class="mz-cond-opcao-nome">${esc(item.nome)}</span>
+            ${a.tormenta ? `<span class="mz-cond-opcao-cat">${esc(item.fonte)}</span>` : ''}
           </span>
-          <span class="mz-cond-opcao-desc">${esc(item.desc)}</span>
+          ${extra}
+          <span class="mz-cond-opcao-desc">${esc(item.desc)}${
+            a.tormenta && item.preReq ? ' <em>Pré-requisito: ' + esc(item.preReq) + '.</em>' : ''}</span>
         </button>`;
     });
     return linhas;
@@ -3733,6 +3833,19 @@
     // atualiza o visual das opções no modal (preserva a busca)
     const overlay = document.getElementById('mzListaModal');
     if (!overlay) return;
+    // Tormenta: o valor de TODOS os poderes muda a cada marcação — redesenha
+    // a lista inteira e reaplica o filtro de busca que estiver escrito.
+    if (a.tormenta) {
+      overlay.querySelector('.mz-cond-modal-corpo').innerHTML = _listaRowsHtml();
+      const busca = overlay.querySelector('.mz-cond-busca');
+      const termo = busca ? busca.value.trim().toLowerCase() : '';
+      if (termo) {
+        overlay.querySelectorAll('.mz-cond-opcao').forEach(o => {
+          o.style.display = o.dataset.nome.indexOf(termo) >= 0 ? '' : 'none';
+        });
+      }
+      return;
+    }
     overlay.querySelectorAll('[data-lista-toggle]').forEach(row => {
       const on = a.multi
         ? cr[a.campo].indexOf(row.dataset.listaToggle) >= 0
@@ -5380,6 +5493,19 @@
     add('Perícias', cr.pericias);
     add('Equipamento', cr.equipamento);
     add('Tesouro / Recompensas', cr.recompensas);
+    // poderes da Tormenta: sai o valor JÁ somado de cada um (é o que
+    // interessa na mesa) + o lembrete da perda de Carisma manual
+    const _GT = window.GA_TORMENTA;
+    const _pods = (cr.poderesTormenta || []).filter(k => _GT && _GT.porChave[k]);
+    if (_pods.length) {
+      const linhas = _pods.map(k => {
+        const p = _GT.porChave[k];
+        return `${p.nome}: ${(p.escala(_pods.length) || {}).txt || ''}`;
+      });
+      linhas.push(`(Carisma NÃO é automático — pela regra, ${_pods.length} poderes custam ` +
+                  `–${_GT.carismaPerdido(_pods.length)} de Car; ajuste em Atributos.)`);
+      bloco(`Poderes da Tormenta (${_pods.length}, valores já somados)`, linhas.join('\n'));
+    }
     // a caixa de ataques guarda HTML — converte para texto plano
     bloco('Ataques e Habilidades', cr.ataques ? htmlParaTexto(cr.ataques) : '');
     // só sai no .txt o que a ficha mostra (bloco ligado); o backup .json
