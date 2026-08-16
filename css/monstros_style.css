@@ -634,6 +634,48 @@
   content: 'Anotações — descreva a cena, ganchos, leituras em voz alta… (selecione um trecho e grife para destacar)';
 }
 
+/* ── ANOTAÇÕES MINIMIZADAS (sessão / cena) ─────────────────────────
+   Escrita longa vira uma tira de uma linha: some a barra de grifos e a
+   caixa, fica só o botão ▸ 📝 Anotações + o começo do texto. */
+.mz-notas-cab {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+  min-width: 0;
+}
+.mz-notas-min {
+  flex: 0 0 auto;
+  padding: 0.22rem 0.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid var(--ink-faded);
+  background: var(--parchment3);
+  color: var(--ink);
+  opacity: 0.8;
+  transition: opacity 0.15s, background 0.15s;
+}
+.mz-notas-min:hover { opacity: 1; background: var(--parchment2); }
+.mz-notas-seta { font-size: 0.7rem; }
+.mz-notas-resumo {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--ink-faded);
+}
+.mz-notas-campo--min .mz-toolbar,
+.mz-notas-campo--min .mz-notas-rich { display: none; }
+.mz-notas-campo--min .mz-notas-cab { margin-bottom: 0; }
+
 /* Caixas ricas menores (Tags · sentidos, Condições especiais, Recompensas,
    Descrição): mesma mecânica da caixa de ataques, só que baixinhas e com
    texto-guia próprio via data-ph. Também depois de .mz-ataques. */

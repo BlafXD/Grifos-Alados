@@ -297,10 +297,13 @@
       // sendo o espelho em texto puro (usado no export .txt). Migração
       // idempotente: nota antiga (só texto) vira HTML escapado uma vez.
       if (typeof s.notasHtml !== 'string') s.notasHtml = esc(s.notas || '');
+      // notasMin = anotações minimizadas (viram uma tira de uma linha)
+      if (typeof s.notasMin !== 'boolean') s.notasMin = false;
       s.cenas.forEach(c => {
         if (!Array.isArray(c.criaturas)) c.criaturas = [];
         if (typeof c.notas !== 'string') c.notas = '';
         if (typeof c.notasHtml !== 'string') c.notasHtml = esc(c.notas || '');
+        if (typeof c.notasMin !== 'boolean') c.notasMin = false;
         c.criaturas.forEach(normalizarCriatura);
         if (!Array.isArray(c.perigos)) c.perigos = [];
         c.perigos.forEach(normalizarPerigo);
@@ -369,8 +372,41 @@
       tagsHtml: '', condicoesHtml: '', recompensasHtml: '', descricaoHtml: '', magiasHtml: '',
     };
   }
-  function novaCena(n)   { return { id: uid('c'), aberto: true, nome: 'Cena ' + n, notas: '', notasHtml: '', criaturas: [], perigos: [], ambientes: [], masmorra: novaMasmorra() }; }
-  function novaSessao(n) { return { id: uid('s'), aberto: true, nome: 'Sessão ' + n, notas: '', notasHtml: '', cenas: [] }; }
+  function novaCena(n)   { return { id: uid('c'), aberto: true, nome: 'Cena ' + n, notas: '', notasHtml: '', notasMin: false, criaturas: [], perigos: [], ambientes: [], masmorra: novaMasmorra() }; }
+  function novaSessao(n) { return { id: uid('s'), aberto: true, nome: 'Sessão ' + n, notas: '', notasHtml: '', notasMin: false, cenas: [] }; }
+
+  // ── DUPLICAR SESSÃO / CENA ───────────────────────────────────────
+  // Cópia INDEPENDENTE: clona tudo (notas, ambientes, masmorra, fichas)
+  // e troca todos os ids. Id novo = a cópia não herda o pino do painel
+  // de combate nem o rótulo de "cena narrada" da original.
+  function clonarCena(c) {
+    const copia = JSON.parse(JSON.stringify(c));
+    copia.id = uid('c');
+    copia.aberto = true;
+    (Array.isArray(copia.criaturas) ? copia.criaturas : []).forEach(cr => {
+      cr.id = uid('cr'); normalizarCriatura(cr);
+    });
+    (Array.isArray(copia.perigos) ? copia.perigos : []).forEach(pg => {
+      pg.id = uid('pg'); normalizarPerigo(pg);
+    });
+    copia.ambientes = normalizarAmbientes(copia.ambientes);
+    normalizarMasmorra(copia);
+    return copia;
+  }
+  function clonarSessao(s) {
+    const copia = JSON.parse(JSON.stringify(s));
+    copia.id = uid('s');
+    copia.aberto = true;
+    copia.cenas = (Array.isArray(s.cenas) ? s.cenas : []).map(clonarCena);
+    return copia;
+  }
+  // "Cena 3" → "Cena 3 (cópia)" → "Cena 3 (cópia 2)" → …
+  function nomeCopia(nome) {
+    const base = String(nome || '').trim();
+    const m = base.match(/^(.*?)\s*\(cópia(?:\s+(\d+))?\)$/);
+    if (m) return `${m[1]} (cópia ${(parseInt(m[2], 10) || 1) + 1})`;
+    return (base || 'Sem nome') + ' (cópia)';
+  }
 
   // Masmorra ("Dungeon?") da cena — estado das ferramentas de exploração
   // (T20 p. 263 + Heróis de Arton; regras em window.GA_MASMORRA).
@@ -866,6 +902,39 @@
                  data-ph="${esc(dica || '')}" data-campo="${campo}" ${ds}>${html || ''}</div>`;
   }
 
+  // ── ANOTAÇÕES DE SESSÃO / CENA (com minimizar) ───────────────────
+  // Mestre que escreve muito acaba rolando páginas inteiras só para chegar
+  // na próxima cena. O botão ▾/▸ MINIMIZA a caixa: ela vira uma tira de
+  // uma linha com o começo do texto (nada é apagado). O estado (notasMin)
+  // é por sessão/cena e fica salvo junto com o resto.
+  function resumoNotas(owner) {
+    const puro = (owner.notas && owner.notas.trim())
+      ? owner.notas
+      : (owner.notasHtml ? window.htmlParaTexto(owner.notasHtml) : '');
+    const linhas = puro.split('\n').filter(l => l.trim()).length;
+    const corrido = puro.replace(/\s+/g, ' ').trim();
+    if (!corrido) return 'vazio — clique para escrever';
+    const corte = corrido.length > 90 ? corrido.slice(0, 90).trim() + '…' : corrido;
+    return `${linhas} linha${linhas !== 1 ? 's' : ''} · ${corte}`;
+  }
+
+  function campoNotas(owner, campo, ds) {
+    const min = owner.notasMin === true;
+    return `
+          <div class="mz-campo mz-notas-campo ${min ? 'mz-notas-campo--min' : ''}">
+            <div class="mz-notas-cab">
+              <button type="button" class="mz-notas-min" data-acao="min-notas" ${ds}
+                      title="Minimizar / expandir estas anotações — o texto continua salvo">
+                <span class="mz-notas-seta">${min ? '▸' : '▾'}</span> 📝 Anotações
+              </button>
+              <span class="mz-notas-resumo">${min ? esc(resumoNotas(owner)) : ''}</span>
+            </div>
+            ${barraGrifo(ds, { ler: true })}
+            <div class="mz-ataques mz-notas-rich" contenteditable="true" spellcheck="true"
+                 data-campo="${campo}" ${ds}>${owner.notasHtml || ''}</div>
+          </div>`;
+  }
+
   // Caixa de texto simples (textarea) com botão ⛶ Expandir flutuante.
   // Cresce sozinha com o conteúdo (autoCrescer) e ainda dá para arrastar a
   // borda para cima/baixo. `ds` = data-attrs do campo.
@@ -894,10 +963,17 @@
       });
       indice = `<div class="mz-indice">${grupos}</div>`;
     }
+    // ▤ Anotações: um clique minimiza TODAS as escritas (sessões e cenas);
+    // com todas já minimizadas, o mesmo botão devolve todas.
+    const algumaNotaAberta = dados.sessoes.some(s => !s.notasMin || s.cenas.some(c => !c.notasMin));
     return `
       <div class="mz-nav">
         <button class="mz-nav-btn" data-acao="expandir-tudo" title="Abrir todas as sessões e cenas">▾ Expandir tudo</button>
         <button class="mz-nav-btn" data-acao="recolher-tudo" title="Fechar todas as sessões e cenas">▸ Recolher tudo</button>
+        <button class="mz-nav-btn" data-acao="min-notas-tudo"
+                title="${algumaNotaAberta
+                  ? 'Minimizar as anotações de todas as sessões e cenas (o texto continua salvo)'
+                  : 'Mostrar de novo as anotações de todas as sessões e cenas'}">▤ ${algumaNotaAberta ? 'Minimizar anotações' : 'Mostrar anotações'}</button>
         <button class="mz-nav-btn ${indiceAberto ? 'mz-nav-btn--ativo' : ''}" data-acao="toggle-indice" title="Lista de cenas — clique para pular direto">🗺 Índice</button>
       </div>
       ${indice}`;
@@ -928,14 +1004,12 @@
           <span class="mz-contador">${s.cenas.length} cena${s.cenas.length !== 1 ? 's' : ''}</span>
           <button class="mz-mover" data-acao="subir-sessao" data-s="${si}" ${semSubir} title="Mover para cima">↑</button>
           <button class="mz-mover" data-acao="descer-sessao" data-s="${si}" ${semDescer} title="Mover para baixo">↓</button>
+          <button class="mz-mover mz-levar" data-acao="dup-sessao" data-s="${si}"
+                  title="Duplicar esta sessão — cria uma cópia logo abaixo, com todas as cenas e fichas">⧉</button>
           <button class="mz-del" data-acao="del-sessao" data-s="${si}" title="Remover sessão">✕</button>
         </div>
         <div class="mz-sessao-corpo">
-          <div class="mz-campo mz-notas-campo">
-            ${barraGrifo(`data-s="${si}"`, { ler: true })}
-            <div class="mz-ataques mz-notas-rich" contenteditable="true" spellcheck="true"
-                 data-campo="notas-sessao" data-s="${si}">${s.notasHtml || ''}</div>
-          </div>
+          ${campoNotas(s, 'notas-sessao', `data-s="${si}"`)}
           ${cenasHtml}
           ${btnCena}
         </div>
@@ -1392,16 +1466,14 @@
           <span class="mz-contador">${c.criaturas.length} criatura${c.criaturas.length !== 1 ? 's' : ''}</span>
           <button class="mz-mover" data-acao="subir-cena" data-s="${si}" data-c="${ci}" ${semSubir} title="Mover para cima">↑</button>
           <button class="mz-mover" data-acao="descer-cena" data-s="${si}" data-c="${ci}" ${semDescer} title="Mover para baixo">↓</button>
+          <button class="mz-mover mz-levar" data-acao="dup-cena" data-s="${si}" data-c="${ci}"
+                  title="Duplicar esta cena — cria uma cópia logo abaixo, com criaturas, perigos e ambientes">⧉</button>
           <button class="mz-del" data-acao="del-cena" data-s="${si}" data-c="${ci}" title="Remover cena">✕</button>
         </div>
         <div class="mz-cena-corpo">
           ${construirBarraAmbientes(c, si, ci)}
           ${construirMasmorra(c, si, ci)}
-          <div class="mz-campo mz-notas-campo">
-            ${barraGrifo(`data-s="${si}" data-c="${ci}"`, { ler: true })}
-            <div class="mz-ataques mz-notas-rich" contenteditable="true" spellcheck="true"
-                 data-campo="notas-cena" data-s="${si}" data-c="${ci}">${c.notasHtml || ''}</div>
-          </div>
+          ${campoNotas(c, 'notas-cena', `data-s="${si}" data-c="${ci}"`)}
           ${critHtml}
           ${perigosHtml}
           <div class="mz-cena-acoes">
@@ -2303,6 +2375,16 @@
       dados.sessoes.forEach(s => { s.aberto = v; s.cenas.forEach(c => { c.aberto = v; }); });
       salvar(); render(); return;
     }
+    if (acao === 'min-notas-tudo') {
+      // se ainda há alguma anotação aberta, minimiza todas; se todas já
+      // estão minimizadas, devolve todas
+      const minimizar = dados.sessoes.some(s => !s.notasMin || s.cenas.some(c => !c.notasMin));
+      dados.sessoes.forEach(s => {
+        s.notasMin = minimizar;
+        s.cenas.forEach(c => { c.notasMin = minimizar; });
+      });
+      salvar(); render(); return;
+    }
     if (acao === 'toggle-indice') {
       indiceAberto = !indiceAberto;
       render(); return;   // estado efêmero — não precisa salvar
@@ -2349,6 +2431,42 @@
     if (acao === 'add-criatura') {
       pegarCena(alvo).criaturas.push(novaCriatura());
       salvar(); render(); return;
+    }
+    if (acao === 'dup-sessao') {
+      const i = +alvo.dataset.s;
+      const s = dados.sessoes[i];
+      if (!s) return;
+      const copia = clonarSessao(s);
+      copia.nome = nomeCopia(s.nome);
+      dados.sessoes.splice(i + 1, 0, copia);
+      salvar(); render(); return;
+    }
+    if (acao === 'dup-cena') {
+      const s = pegarSessao(alvo);
+      const i = +alvo.dataset.c;
+      const c = s && s.cenas[i];
+      if (!c) return;
+      const copia = clonarCena(c);
+      copia.nome = nomeCopia(c.nome);
+      s.cenas.splice(i + 1, 0, copia);
+      s.aberto = true;
+      salvar(); render(); return;
+    }
+    // minimizar/expandir as anotações de UMA sessão ou cena — troca só as
+    // classes do bloco (sem re-render: a página não pula de lugar)
+    if (acao === 'min-notas') {
+      const owner = (alvo.dataset.c != null) ? pegarCena(alvo) : pegarSessao(alvo);
+      if (!owner) return;
+      owner.notasMin = !owner.notasMin;
+      const bloco = alvo.closest('.mz-notas-campo');
+      if (bloco) {
+        bloco.classList.toggle('mz-notas-campo--min', owner.notasMin);
+        const seta = bloco.querySelector('.mz-notas-seta');
+        if (seta) seta.textContent = owner.notasMin ? '▸' : '▾';
+        const resumo = bloco.querySelector('.mz-notas-resumo');
+        if (resumo) resumo.textContent = owner.notasMin ? resumoNotas(owner) : '';
+      }
+      salvar(); return;
     }
     if (acao === 'importar-ficha') {
       abrirModalImportar(+alvo.dataset.s, +alvo.dataset.c);
@@ -5345,6 +5463,7 @@
       nome: typeof s.nome === 'string' ? s.nome : 'Sessão',
       notas: typeof s.notas === 'string' ? s.notas : '',
       notasHtml: typeof s.notasHtml === 'string' ? s.notasHtml : esc(typeof s.notas === 'string' ? s.notas : ''),
+      notasMin: s.notasMin === true,
       cenas: [],
     };
     (Array.isArray(s.cenas) ? s.cenas : []).forEach(c => {
@@ -5355,6 +5474,7 @@
         nome: typeof c.nome === 'string' ? c.nome : 'Cena',
         notas: typeof c.notas === 'string' ? c.notas : '',
         notasHtml: typeof c.notasHtml === 'string' ? c.notasHtml : esc(typeof c.notas === 'string' ? c.notas : ''),
+        notasMin: c.notasMin === true,
         criaturas: [],
         perigos: [],
         ambientes: normalizarAmbientes(c.ambientes),
