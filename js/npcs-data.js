@@ -9,8 +9,12 @@
 //  parsearFicha() do monstros.js (o mesmo do "📋 Importar do livro").
 //
 //  Consumidores:
-//    • monstros.js — botão "👤 Guia de NPCs" da cena (modal de inserção)
-//    • npcs.js     — sub-aba "👤 Guia de NPCs" das Consultas rápidas
+//    • fichas-prontas.js — sub-aba "👤 Guia de NPCs" da aba 📕 Fichas
+//                          Prontas (mestre), ao lado dos bestiários
+//    • monstros.js       — botão "📕 Fichas prontas" da cena (modal de
+//                          inserção, com as regras de raça/truque/devoto)
+//    • npcs.js           — sub-aba "👤 Guia de NPCs" das Consultas
+//                          rápidas, que hoje só existe no jogadores.html
 //
 //  Campos de cada ficha:
 //    chave   — id estável (não mudar; as duas telas usam)

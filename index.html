@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="css/fichas_style.css">
   <link rel="stylesheet" href="css/bases_style.css">
   <link rel="stylesheet" href="css/tempo_style.css">
+  <link rel="stylesheet" href="css/fichas-prontas_style.css">
 </head>
 <body>
 
@@ -46,6 +47,7 @@
     <a href="#" class="nav-link" data-section="recompensas">🎁 Recompensas</a>
     <a href="#" class="nav-link" data-section="loja">🏪 Loja</a>
     <a href="#" class="nav-link" data-section="monstros">⚔ Combates</a>
+    <a href="#" class="nav-link" data-section="fichas-prontas">📕 Fichas Prontas</a>
     <a href="#" class="nav-link" data-section="perigos">📚 Consultas</a>
     <a href="#" class="nav-link" data-section="viagem">🐎 Viagem</a>
     <a href="#" class="nav-link" data-section="anotacoes">📜 Anotações</a>
@@ -227,6 +229,17 @@
   </div>
 </section>
 
+<!-- ══════════════════ FICHAS PRONTAS (só do mestre) ══════════════════
+     Bestiários e galerias de NPCs dos livros. Esta seção NÃO existe no
+     jogadores.html — é a trava para os jogadores não espiarem as fichas. -->
+<section id="fichas-prontas">
+  <div class="wrapper">
+    <div id="fichas-prontas-content">
+      <!-- Populado pelo fichas-prontas.js -->
+    </div>
+  </div>
+</section>
+
 <!-- ══════════════════ CONSULTAS RÁPIDAS ══════════════════ -->
 <section id="perigos">
   <div class="wrapper">
@@ -234,7 +247,6 @@
       <button type="button" class="cr-subtab cr-subtab--ativa" data-cr-tab="perigos">🌪 Perigos &amp; Ambientes</button>
       <button type="button" class="cr-subtab" data-cr-tab="veiculos">🚗 Veículos</button>
       <button type="button" class="cr-subtab" data-cr-tab="animais">🐎 Animais &amp; Montarias</button>
-      <button type="button" class="cr-subtab" data-cr-tab="npcs">👤 Guia de NPCs</button>
       <button type="button" class="cr-subtab" data-cr-tab="devotos">🙏 Poderes Concedidos</button>
       <button type="button" class="cr-subtab" data-cr-tab="arsenal">⚔ Arsenal &amp; Regras</button>
       <button type="button" class="cr-subtab" data-cr-tab="acoes">🎬 Ações &amp; Combate</button>
@@ -254,9 +266,6 @@
     </div>
     <div id="animais-content" data-cr-panel="animais" hidden>
       <!-- Populado pelo animais.js -->
-    </div>
-    <div id="npcs-content" data-cr-panel="npcs" hidden>
-      <!-- Populado pelo npcs.js -->
     </div>
     <div id="devotos-content" data-cr-panel="devotos" hidden>
       <!-- Populado pelo devotos.js -->
@@ -350,6 +359,7 @@
 
 <!-- script.js primeiro: define utilitários globais (GA_esc, GA_abrirModal…) usados pelos demais -->
 <script src="js/script.js" defer></script>
+<script src="js/statblock.js" defer></script>
 <script src="js/noticias-data.js" defer></script>
 <script src="js/noticias.js" defer></script>
 <script src="js/loja_completa.js" defer></script>
@@ -368,11 +378,12 @@
 <script src="js/criticos-data.js" defer></script>
 <script src="js/masmorra-data.js" defer></script>
 <script src="js/tormenta-data.js" defer></script>
+<script src="js/fichas-t20-data.js" defer></script>
+<script src="js/fichas-prontas.js" defer></script>
 <script src="js/monstros.js" defer></script>
 <script src="js/perigos.js" defer></script>
 <script src="js/veiculos.js" defer></script>
 <script src="js/animais.js" defer></script>
-<script src="js/npcs.js" defer></script>
 <script src="js/devotos.js" defer></script>
 <script src="js/regras-itens-data.js" defer></script>
 <script src="js/regras-itens.js" defer></script>
