@@ -1,9 +1,17 @@
 // ═══════════════════════════════════════════════════════════════════
 //  NPCS.JS — Sub-aba "👤 Guia de NPCs" (consulta rápida)
 //  Lê window.GUIA_NPCS (js/npcs-data.js): fichas genéricas do livro
-//  Guia de NPCs, por categoria, com busca global. Cada ficha tem um
-//  botão que envia uma cópia para o combate (GA_Monstros.inserirNPC —
-//  entra na cena narrada ou, sem cena narrada, numa sessão própria).
+//  Guia de NPCs, por categoria, com busca global.
+//
+//  Hoje esta sub-aba só existe no jogadores.html: na página do mestre o
+//  Guia mora na aba 📕 Fichas Prontas (js/fichas-prontas.js), junto com
+//  os bestiários e com as regras de raça / truque / devoto. Onde a aba
+//  ⚔ Combates estiver carregada, cada ficha ganha um botão que envia uma
+//  cópia para lá (GA_Monstros.inserirNPC — entra na cena narrada ou, sem
+//  cena narrada, numa sessão própria).
+//
+//  O desenho do statblock mora em js/statblock.js, compartilhado com a
+//  aba 📕 Fichas Prontas do mestre.
 // ═══════════════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -11,76 +19,24 @@
   const esc = window.GA_esc;
   const nl2br = window.GA_nl2br;
   const semAcento = window.GA_semAcento;
+  const SB = window.GA_Statblock;
 
-  // rótulos padrão do statblock — abrem a linha e viram negrito
-  const RE_ROTULO = /^(Iniciativa|Defesa|Pontos de Vida|Pontos de Mana|Deslocamento|Corpo a Corpo|À Distância|Perícias|Equipamento|Magias|Tesouro|Parceiro)\b/;
-  // linha de atributos (For, Des, Con, Int, Sab, Car)
-  const RE_ATRIBUTOS = /^For\s+[+\-–−]?(?:\d|[—–−-])/;
-  // "Nome da Habilidade (Ação[, X PM])" — negrita o nome com a execução
-  const RE_HABILIDADE = /^([A-ZÀ-Ý"“…][^.•]{0,64}?\((?:Livre|Padrão|Reação|Movimento|Completa|Reativa|1 hora)[^)]*\))/;
-  // linha de tipo e tamanho ("Humanoide (humano) Médio", "Animal Grande"…)
-  const RE_TIPO = /^(Humanoide|Animal|Animais|Construto|Esp[íi]rito|Morto[- ]?vivo|Monstro)\b/i;
+  const blocoHtml = f => SB.bloco(f.texto);
 
-  // texto → HTML escapado; marca termos de regra com tooltip se possível
-  function marcar(txt) {
-    return window.ItensDescricoes ? window.ItensDescricoes.marcar(txt) : esc(txt);
-  }
-
-  // Uma linha do statblock → HTML formatado
-  function linhaHtml(linha) {
-    const l = linha.trim();
-    if (!l) return '';
-
-    // marcador de magia
-    if (l.startsWith('•')) {
-      let h = marcar(l.replace(/^•\s*/, ''));
-      // negrita "Nome da Magia (Ação, X PM)" no começo do marcador
-      h = h.replace(/^([^(<]{2,48}?\([^)]*\))/, '<strong>$1</strong>');
-      return `<div class="npc-linha npc-linha--magia">• ${h}</div>`;
-    }
-    // linha de tipo e tamanho
-    if (RE_TIPO.test(l)) {
-      return `<div class="npc-linha npc-linha--tipo">${esc(l)}</div>`;
-    }
-    // linha de atributos
-    if (RE_ATRIBUTOS.test(l)) {
-      return `<div class="npc-linha npc-linha--atrib">${esc(l)}</div>`;
-    }
-
-    let html = marcar(l);
-    const mRot = l.match(RE_ROTULO);
-    if (mRot && html.indexOf(mRot[1]) === 0) {
-      html = '<strong>' + mRot[1] + '</strong>' + html.slice(mRot[1].length);
-      // a linha de Equipamento carrega o Tesouro junto (formato do livro)
-      if (mRot[1] === 'Equipamento') html = html.replace(/\bTesouro\b/, '<strong>Tesouro</strong>');
-      return `<div class="npc-linha">${html}</div>`;
-    }
-    const mHab = l.match(RE_HABILIDADE);
-    if (mHab && html.indexOf('<') !== 0) {
-      // recomeça do texto puro para não cortar um tooltip no meio
-      html = '<strong>' + esc(mHab[1]) + '</strong>' + marcar(l.slice(mHab[1].length));
-      return `<div class="npc-linha npc-linha--hab">${html}</div>`;
-    }
-    return `<div class="npc-linha npc-linha--hab">${html}</div>`;
-  }
-
-  // Statblock completo (sem a 1ª linha, que vira o cabeçalho do card)
-  function blocoHtml(f) {
-    const linhas = f.texto.split('\n').slice(1);
-    let html = '', emDescricao = true;
-    linhas.forEach(l => {
-      // tudo antes da linha de tipo é descrição/lore — itálico de gazeta
-      if (emDescricao) {
-        if (RE_TIPO.test(l.trim())) emDescricao = false;
-        else { html += `<p class="npc-desc">${marcar(l.trim())}</p>`; return; }
-      }
-      html += linhaHtml(l);
-    });
-    return html;
-  }
+  // Esta sub-aba hoje só existe no jogadores.html — no index.html o Guia
+  // mora na aba 📕 Fichas Prontas, ao lado dos bestiários. Sem a aba de
+  // Combates carregada não há para onde enviar ficha, então o botão nem
+  // aparece (se o mestre trouxer a sub-aba de volta, ele volta junto).
+  const temCombate = () => !!(window.GA_Monstros && window.GA_Monstros.inserirNPC);
 
   function cardFicha(f, cat) {
     const busca = semAcento([f.nome, 'nd ' + f.nd, f.tipo, f.resumo, cat.nome, f.texto].join(' '));
+    const acoes = temCombate() ? `
+          <div class="npc-acoes">
+            <button type="button" class="npc-enviar" data-npc-enviar="${f.chave}"
+                    title="Insere uma cópia editável desta ficha na cena narrada (ou numa sessão própria) da aba ⚔ Combates">⚔ Enviar para o combate</button>
+            <span class="npc-envio-info" hidden></span>
+          </div>` : '';
     return `
       <details class="vc-card npc-card" data-busca="${esc(busca)}" style="--cor:${cat.cor || '#6e6256'}">
         <summary class="vc-card-cab">
@@ -88,12 +44,7 @@
           <span class="vc-card-meta">${esc(f.tipo || '')}</span>
         </summary>
         <div class="vc-card-corpo">
-          <div class="npc-block">${blocoHtml(f)}</div>
-          <div class="npc-acoes">
-            <button type="button" class="npc-enviar" data-npc-enviar="${f.chave}"
-                    title="Insere uma cópia editável desta ficha na cena narrada (ou numa sessão própria) da aba ⚔ Combates">⚔ Enviar para o combate</button>
-            <span class="npc-envio-info" hidden></span>
-          </div>
+          <div class="npc-block">${blocoHtml(f)}</div>${acoes}
         </div>
       </details>`;
   }
@@ -151,9 +102,11 @@
     cont.innerHTML = `
       <div class="cr-cabecalho">
         <h1>👤 Guia de NPCs</h1>
-        <p class="cr-sub">Fichas genéricas do povo de Arton — plebe, templo, lei, crime, corte e mercenários.
-        O botão <strong>⚔ Enviar para o combate</strong> insere uma cópia editável na cena narrada da aba ⚔ Combates
-        (sem cena narrada, cria a sessão "👤 NPCs do Guia"). Na própria cena também há o botão 👤 Guia de NPCs.</p>
+        <p class="cr-sub">Fichas genéricas do povo de Arton — plebe, templo, lei, crime, corte e mercenários.${
+          temCombate()
+            ? ` O botão <strong>⚔ Enviar para o combate</strong> insere uma cópia editável na cena narrada da aba ⚔ Combates
+        (sem cena narrada, cria a sessão "👤 NPCs do Guia").`
+            : ''}</p>
       </div>
       <input class="cr-busca" type="text" placeholder="Buscar NPC (acólito, guarda, ND 2, nezumi, peçonha…)" autocomplete="off">
       ${grupos}

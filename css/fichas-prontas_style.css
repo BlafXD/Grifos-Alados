@@ -1,0 +1,228 @@
+/* ════════════════════════════════════════════════════════════════════
+   FICHAS-PRONTAS_STYLE.CSS — aba "📕 Fichas Prontas" (só do mestre)
+   Localização: /grifos-alados/css/fichas-prontas_style.css
+
+   Os cards de ficha reaproveitam as classes das Consultas rápidas
+   (.vc-card, .npc-linha, .npc-desc…) para que os dois lugares mostrem
+   um statblock igualzinho. Aqui ficam só as peças próprias da aba:
+   a estante de livros, os chips de categoria e a faixa de busca.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── ESTANTE DE LIVROS (sub-abas) ──────────────────────────────────── */
+.fp-livros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 2px solid var(--gold-dim);
+}
+.fp-livro {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-bottom: 3px solid var(--cor, var(--rust));
+  color: var(--ink);
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  transition: background 0.12s, color 0.12s;
+}
+.fp-livro:hover { background: var(--parchment); }
+.fp-livro--ativo,
+.fp-livro--ativo:hover {
+  background: var(--cor, var(--rust));
+  border-color: var(--cor, var(--rust));
+  color: var(--parchment);
+}
+.fp-livro--vazio { opacity: 0.62; font-style: italic; }
+.fp-livro-ico  { font-size: 1rem; line-height: 1; }
+.fp-livro-nome { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.fp-livro-qtd {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  background: rgba(0, 0, 0, 0.14);
+  border-radius: 2px;
+}
+.fp-livro--ativo .fp-livro-qtd { background: rgba(255, 255, 255, 0.2); }
+
+/* ── SELO DE ABA PRIVADA ───────────────────────────────────────────── */
+.fp-selo {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.45rem;
+  background: var(--ink);
+  color: var(--gold-light);
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.fp-livro-sub {
+  margin: 0 0 0.7rem;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--ink-faded);
+}
+
+/* ── BUSCA ─────────────────────────────────────────────────────────── */
+.fp-busca-nota {
+  margin: -0.5rem 0 1rem;
+  font-size: 0.78rem;
+  color: var(--ink-faded);
+}
+.fp-ir-livro {
+  margin-left: 0.3rem;
+  padding: 0.12rem 0.45rem;
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  color: var(--rust-dark);
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.fp-ir-livro:hover { background: var(--rust); border-color: var(--rust); color: var(--parchment); }
+
+/* ── CHIPS DE CATEGORIA ────────────────────────────────────────────── */
+.fp-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 1.3rem;
+}
+.fp-cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.26rem 0.6rem;
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.fp-cat:hover { border-color: var(--cor, var(--rust)); color: var(--cor, var(--rust)); }
+.fp-cat--ativa,
+.fp-cat--ativa:hover {
+  background: var(--cor, var(--ink));
+  border-color: var(--cor, var(--ink));
+  color: var(--parchment);
+}
+.fp-cat-qtd { font-size: 0.55rem; opacity: 0.78; }
+
+/* ── AVISO DE HABILIDADES COMUNS DO GRUPO ──────────────────────────── */
+.fp-comuns {
+  margin: 0 0 0.9rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--gold-pale);
+  border-left: 3px solid var(--gold-dim);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ink-faded);
+}
+.fp-comuns em { opacity: 0.85; }
+
+/* ── CARD DE FICHA ─────────────────────────────────────────────────── */
+.fp-sub {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  color: var(--gold-deep);
+}
+.fp-sub-intro {
+  padding-left: 0.7rem;
+  border-left: 2px solid var(--gold-dim);
+}
+.fp-papel {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  color: var(--rust-dark);
+  border-bottom: 1px dotted var(--gold-dim);
+  cursor: help;
+}
+.fp-acoes { flex-wrap: wrap; }
+.fp-copiar {
+  padding: 0.3rem 0.7rem;
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  color: var(--ink);
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+.fp-copiar:hover { background: var(--ink); border-color: var(--ink); color: var(--parchment); }
+
+/* ── LIVRO AINDA NÃO CARREGADO ─────────────────────────────────────── */
+.fp-embreve { line-height: 1.6; }
+.fp-embreve p { margin: 0.5rem 0 0; }
+.fp-embreve-como { font-size: 0.8rem; color: var(--ink-faded); }
+.fp-embreve code {
+  font-family: monospace;
+  background: var(--parchment3);
+  padding: 0.05rem 0.3rem;
+}
+
+/* ── ESTANTE DE LIVROS DENTRO DO MODAL DO BESTIÁRIO ────────────────── */
+.mz-npc-livros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 0.55rem 0.9rem 0.4rem;
+  border-bottom: 1px solid var(--gold-dim);
+}
+.mz-npc-livro {
+  padding: 0.26rem 0.6rem;
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-bottom: 2px solid var(--cor, var(--rust));
+  color: var(--ink);
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.mz-npc-livro:hover { background: var(--parchment); }
+.mz-npc-livro.ativo {
+  background: var(--cor, var(--ink));
+  border-color: var(--cor, var(--ink));
+  color: var(--parchment);
+}
+.mz-npc-livro-atual {
+  margin-left: 0.4rem;
+  font-size: 0.72rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+.mz-npc-comuns {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-bottom: 1px solid var(--gold-dim);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--ink-faded);
+  cursor: pointer;
+}
+.mz-npc-comuns input { margin-top: 0.2rem; accent-color: var(--rust); }
+.mz-npc-comuns em { opacity: 0.85; }
+
+@media (max-width: 620px) {
+  .fp-livro-nome { font-size: 0.64rem; }
+  .fp-livro { padding: 0.4rem 0.6rem; }
+}

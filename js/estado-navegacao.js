@@ -17,8 +17,9 @@
   'use strict';
 
   const CHAVE = 'grifosAlados.navegacao';
-  // os três sistemas de sub-aba do app: Consultas, Anotações e Loja
-  const ATTRS_SUBABA = ['data-cr-tab', 'data-an-tab', 'data-painel'];
+  // os sistemas de sub-aba do app: Consultas, Anotações, Loja e a estante
+  // de livros das Fichas Prontas
+  const ATTRS_SUBABA = ['data-cr-tab', 'data-an-tab', 'data-painel', 'data-fp-livro-aba'];
   const SEL_SUBABA = ATTRS_SUBABA.map(a => '[' + a + ']').join(', ');
 
   let estado;

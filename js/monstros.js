@@ -1484,7 +1484,8 @@
             <button class="mz-add mz-add--perigo" data-acao="abrir-perigos"
                     data-s="${si}" data-c="${ci}">⚠ Perigos complexos</button>
             <button class="mz-add mz-add--npc" data-acao="abrir-npcs"
-                    data-s="${si}" data-c="${ci}">👤 Guia de NPCs</button>
+                    data-s="${si}" data-c="${ci}"
+                    title="Bestiários e galerias de NPCs dos livros — busque e insira aqui mesmo">📕 Fichas prontas</button>
             <button class="mz-add mz-add--importar" data-acao="importar-ficha"
                     data-s="${si}" data-c="${ci}">📋 Importar do livro</button>
           </div>
@@ -3897,15 +3898,53 @@
   // habilidades — no livro ela é sempre a última coisa antes dos
   // atributos. Só corta quando há mesmo linhas de magia depois, para
   // não confundir com uma habilidade que cite a palavra.
+  //
+  // Nem todo conjurador do livro abre o bloco com "Magias": os dragões
+  // escrevem "Magia O dragão adulto lança magias como…" e o cavaleiro do
+  // Leopardo põe as magias dentro da habilidade "Cavaleiro Místico". Por
+  // isso vale como cabeçalho qualquer linha que diga "lança magias como",
+  // desde que venha logo antes dos marcadores •.
+  const RE_CAB_MAGIAS = /^Magias\b/i;
+  const RE_CAB_CONJURA = /\blan[çc]a magias como\b/i;
+
+  // A frase de conjuração costuma vir grudada nas habilidades anteriores
+  // ("…(veja quadro ao lado). Magia O dragão lança magias como…"), porque
+  // não tem execução entre parênteses para o _formatarAtaques quebrar.
+  // Corta na última fronteira de frase antes de "lança magias como".
+  function _cortarCabMagias(linha) {
+    const m = RE_CAB_CONJURA.exec(linha);
+    if (!m) return { antes: '', cab: linha };
+    const trecho = linha.slice(0, m.index);
+    const re = /[.!?]\)?\s+/g;
+    let corte = 0, mm;
+    while ((mm = re.exec(trecho)) !== null) corte = mm.index + mm[0].length;
+    return { antes: linha.slice(0, corte).trim(), cab: linha.slice(corte).trim() };
+  }
+
   function _separarMagias(texto) {
     const linhas = String(texto || '').split('\n');
-    const i = linhas.findIndex(l => /^Magias\b/i.test(l.trim()));
-    if (i < 0 || !linhas.slice(i + 1).some(l => /^\s*•/.test(l))) {
+    const temBullet = (arr) => arr.some(l => /^\s*•/.test(l));
+    let i = linhas.findIndex(l => RE_CAB_MAGIAS.test(l.trim()));
+    let antes = '';
+    if (i < 0 || !temBullet(linhas.slice(i + 1))) {
+      // sem "Magias": procura a linha de conjuração imediatamente anterior
+      // ao primeiro marcador de magia
+      const b = linhas.findIndex(l => /^\s*•/.test(l));
+      if (b > 0 && RE_CAB_CONJURA.test(linhas[b - 1])) {
+        i = b - 1;
+        const corte = _cortarCabMagias(linhas[i]);
+        antes = corte.antes;
+        linhas[i] = corte.cab;
+      } else {
+        i = -1;
+      }
+    }
+    if (i < 0 || !temBullet(linhas.slice(i + 1))) {
       return { ataques: texto, cab: '', magias: '' };
     }
     return {
-      ataques: linhas.slice(0, i).join('\n').trim(),
-      cab:     linhas[i].trim().replace(/^Magias\s*/i, '').replace(/\s*\.\s*$/, '').trim(),
+      ataques: linhas.slice(0, i).concat(antes ? [antes] : []).join('\n').trim(),
+      cab:     linhas[i].trim().replace(RE_CAB_MAGIAS, '').replace(/\s*\.\s*$/, '').trim(),
       magias:  linhas.slice(i + 1).join('\n').trim(),
     };
   }
@@ -4685,10 +4724,100 @@
     return { cr: cr, aplicado: aplicado };
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  //  BIBLIOTECAS DE FICHAS PRONTAS (aba 📕 Fichas Prontas)
+  //  O registro dos livros mora em js/fichas-prontas.js; aqui só
+  //  transformamos uma ficha de lá em criatura da cena. O Guia de NPCs
+  //  continua tendo caminho próprio (inserirNPCNaCena), porque só ele
+  //  tem as regras de raça / truque / devoto.
+  // ═══════════════════════════════════════════════════════════════
+  function _bibl() { return window.GA_FichasProntas || null; }
+
+  // Monta a criatura a partir de uma ficha da biblioteca. `ref` é o
+  // { livro, cat, def } devolvido por GA_FichasProntas.ficha().
+  function criaturaDeFichaPronta(ref) {
+    const r = parsearFicha(ref.def.texto);
+    if (!r || !r.cr) return null;
+    const cr = r.cr;
+    (ref.def.habilidadesExtra || []).forEach(k => {
+      if (HAB_POR_CHAVE[k] && cr.habilidades.indexOf(k) < 0) cr.habilidades.push(k);
+    });
+    // papel de combate: no livro é um ícone, então nem toda biblioteca
+    // consegue trazê-lo. Sem ele, a ficha nasce como "lacaio" (padrão do
+    // bestiário) e o mestre troca no cabeçalho da criatura.
+    if (['solo', 'lacaio', 'especial'].indexOf(ref.def.papel) >= 0) cr.papel = ref.def.papel;
+    normalizarCriatura(cr);
+    return cr;
+  }
+
+  // Insere uma ficha de biblioteca na cena. opcoes.comuns !== false anexa
+  // o quadro de habilidades que o livro manda aplicar a todo o grupo
+  // (Ódio Puro, Habilidades Dracônicas, Habilidades Lefeu…).
+  function inserirFichaNaCena(livroChave, chave, si, ci, opcoes) {
+    opcoes = opcoes || {};
+    if (livroChave === 'npcs') return inserirNPCNaCena(chave, si, ci, opcoes);
+
+    const B = _bibl();
+    const ref = B && B.ficha(livroChave, chave);
+    const sessao = dados.sessoes[si];
+    const cena = sessao && sessao.cenas[ci];
+    if (!ref || !cena) return null;
+    const cr = criaturaDeFichaPronta(ref);
+    if (!cr) return null;
+
+    const aplicado = [];
+    if (opcoes.comuns !== false) {
+      const com = B.comunsDe(ref);
+      if (com) {
+        cr.ataques = (cr.ataques || '') +
+          `<div><strong>${esc(com.titulo)} — vale para todo o grupo ${esc(ref.cat.nome)}:</strong> ` +
+          _txtParaHtml(com.texto) + '</div>';
+        aplicado.push(com.titulo);
+      }
+    }
+    cr.nome = _nomeUnicoNaCena(cena, cr.nome || ref.def.nome);
+    cr.aberto = false;
+    cena.criaturas.push(cr);
+    salvar();
+    render();
+    return {
+      cr: cr, aplicado: aplicado,
+      // false = o livro não trouxe o papel de combate (é ícone no PDF) e a
+      // ficha nasceu como "lacaio"; quem chama avisa o mestre para conferir
+      papelDoLivro: ['solo', 'lacaio', 'especial'].indexOf(ref.def.papel) >= 0,
+    };
+  }
+
+  // ── MODAL "📕 Fichas prontas" (uma cena, todos os livros) ─────────
+  // Livro ativo entre aberturas do modal — o mestre costuma inserir
+  // várias fichas do mesmo bestiário seguidas.
+  let _fichaLivro = 't20';
+
+  function _livrosModal() {
+    const B = _bibl();
+    if (!B) return [];
+    return B.livros().filter(l => l.disponivel);
+  }
+
   function abrirModalNPCs(si, ci) {
     fecharModalNPCs();
     _npcAlvo = { s: si, c: ci };
-    const cats = _guiaNPCCategorias();
+
+    const B = _bibl();
+    const livros = _livrosModal();
+    if (!livros.length) {
+      // sem js/fichas-prontas.js (ou sem nenhum livro carregado): cai no
+      // Guia de NPCs puro, que é o que sempre existiu aqui
+      _fichaLivro = 'npcs';
+    } else if (!livros.some(l => l.chave === _fichaLivro)) {
+      _fichaLivro = livros[0].chave;
+    }
+
+    const ehNPC = (_fichaLivro === 'npcs');
+    const cats = livros.length
+      ? (B.livro(_fichaLivro) ? B.categoriasDe(B.livro(_fichaLivro)) : [])
+      : _guiaNPCCategorias();
+    const temComuns = cats.some(c => c.comuns);
 
     let grupos = '';
     cats.forEach(cat => {
@@ -4696,40 +4825,57 @@
         .sort((a, b) => _ndValor(a.nd) - _ndValor(b.nd) || a.nome.localeCompare(b.nome, 'pt'));
       let linhas = '';
       fichas.forEach(f => {
-        const busca = _semAcento([f.nome, 'nd ' + f.nd, f.tipo, f.resumo, cat.nome].join(' '));
+        const busca = _semAcento([f.nome, 'nd ' + f.nd, f.tipo, f.subgrupo, f.resumo, cat.nome].join(' '));
         linhas += `
           <button class="mz-cond-opcao mz-npc-opcao" style="--cor:${cat.cor || '#6e6256'}"
-                  data-npc-inserir="${f.chave}" data-busca="${esc(busca)}">
+                  data-npc-inserir="${esc(f.chave)}" data-busca="${esc(busca)}">
             <span class="mz-cond-opcao-cab">
               <span class="mz-cond-opcao-check">＋</span>
               <span class="mz-cond-opcao-nome">${esc(f.nome)}</span>
               <span class="mz-perigo-nd">ND ${esc(f.nd)}</span>
-              <span class="mz-cond-opcao-cat">${esc(f.tipo || '')}</span>
+              <span class="mz-cond-opcao-cat">${f.subgrupo ? esc(f.subgrupo) + ' · ' : ''}${esc(f.tipo || '')}</span>
             </span>
             <span class="mz-cond-opcao-desc">${esc(f.resumo || '')}</span>
           </button>`;
       });
       grupos += `
-        <div class="mz-npc-grupo" data-npc-grupo="${cat.chave}">
+        <div class="mz-npc-grupo" data-npc-grupo="${esc(cat.chave)}">
           <div class="mz-npc-grupo-titulo" style="--cor:${cat.cor || '#6e6256'}">${esc(cat.icone || '')} ${esc(cat.nome)}</div>
           ${linhas}
         </div>`;
     });
-    if (!grupos) grupos = '<p class="mz-imp-vazio">Nenhum NPC na biblioteca (npcs-data.js não carregou).</p>';
+    if (!grupos) grupos = '<p class="mz-imp-vazio">Nenhuma ficha nesta biblioteca (o arquivo de dados não carregou).</p>';
+
+    // barra de livros (só quando há mais de um carregado)
+    let barraLivros = '';
+    if (livros.length > 1) {
+      barraLivros = '<div class="mz-npc-livros">' + livros.map(l =>
+        `<button class="mz-npc-livro ${l.chave === _fichaLivro ? 'ativo' : ''}" data-npc-livro="${esc(l.chave)}"
+                 style="--cor:${l.cor}" title="${esc(l.nome)}">${l.icone} ${esc(l.curto)}</button>`).join('') + '</div>';
+    }
 
     let chips = '<button class="mz-npc-cat ativo" data-npc-cat="">Todas</button>';
     cats.forEach(cat => {
-      chips += `<button class="mz-npc-cat" data-npc-cat="${cat.chave}" style="--cor:${cat.cor || '#6e6256'}">${esc(cat.icone || '')} ${esc(cat.nome)}</button>`;
+      chips += `<button class="mz-npc-cat" data-npc-cat="${esc(cat.chave)}" style="--cor:${cat.cor || '#6e6256'}">${esc(cat.icone || '')} ${esc(cat.nome)}</button>`;
     });
 
+    // quadro de habilidades comuns do grupo (Ódio Puro, Habilidades
+    // Dracônicas…): entra junto na ficha, salvo se o mestre desligar
+    const barraComuns = temComuns ? `
+        <label class="mz-npc-comuns">
+          <input type="checkbox" data-npc-comuns checked>
+          <span>Anexar o quadro de habilidades comuns do grupo à ficha inserida
+            <em>(Ódio Puro, Habilidades Dracônicas, Habilidades Lefeu… — só nos grupos que têm)</em></span>
+        </label>` : '';
+
     // barra "⚙ Regras especiais": raça (NPCs de Outras Raças), truque
-    // mercenário e devoto + poder concedido (regra d'O Templo). O que
-    // estiver escolhido aqui é aplicado a CADA ficha inserida.
+    // mercenário e devoto + poder concedido (regra d'O Templo). Só faz
+    // sentido no Guia de NPCs — os bestiários não usam nada disso.
     const RACAS = (window.GUIA_NPCS && window.GUIA_NPCS.racas) || [];
     const TRUQUES = (window.GUIA_NPCS && window.GUIA_NPCS.truques) || [];
     const DEV = window.GA_DEVOTOS;
     let regrasBar = '';
-    if (RACAS.length || TRUQUES.length || DEV) {
+    if (ehNPC && (RACAS.length || TRUQUES.length || DEV)) {
       const optR = ['<option value="">Humano — ficha original</option>']
         .concat(RACAS.map(r =>
           `<option value="${r.chave}" title="${esc(r.auto + (r.linha ? ' · ' + r.linha : ''))}">${esc(r.nome)}</option>`)).join('');
@@ -4757,20 +4903,26 @@
         </details>`;
     }
 
+    const nomeLivro = livros.length
+      ? (B.livro(_fichaLivro) || {}).nome
+      : 'Guia de NPCs';
+
     const overlay = document.createElement('div');
     overlay.id = 'mzNPCModal';
     overlay.className = 'mz-cond-overlay';
     overlay.innerHTML = `
       <div class="mz-cond-modal mz-npc-modal" role="dialog" aria-modal="true">
         <div class="mz-cond-modal-head">
-          <span>👤 Guia de NPCs — inserir na cena</span>
+          <span>📕 Fichas prontas — inserir na cena <em class="mz-npc-livro-atual">${esc(nomeLivro || '')}</em></span>
           <button class="mz-cond-modal-x" data-npc-fechar title="Fechar">✕</button>
         </div>
-        <input class="mz-cond-busca" type="text" placeholder="Buscar NPC (guarda, acólito, ND 2…)" autocomplete="off">
+        ${barraLivros}
+        <input class="mz-cond-busca" type="text" placeholder="Buscar ficha (orc, dragão, guarda, ND 2…)" autocomplete="off">
         <div class="mz-npc-cats">${chips}</div>
+        ${barraComuns}
         ${regrasBar}
         <div class="mz-cond-modal-corpo">${grupos}</div>
-        <div class="mz-cond-modal-pe" data-npc-pe>Clique em um NPC para adicioná-lo à cena — o modal continua aberto, dá para montar o encontro inteiro. As fichas entram recolhidas e editáveis.</div>
+        <div class="mz-cond-modal-pe" data-npc-pe>Clique em uma ficha para adicioná-la à cena — o modal continua aberto, dá para montar o encontro inteiro. As fichas entram recolhidas e editáveis.</div>
       </div>`;
     document.body.appendChild(overlay);
 
@@ -4784,10 +4936,12 @@
         }
       }
     });
-    // o que está escolhido na barra de regras especiais agora
+    // o que está escolhido nas barras de opções agora
     function _opcoesEspeciais() {
       const val = sel => { const el = overlay.querySelector(sel); return (el && el.value) || ''; };
+      const chk = overlay.querySelector('[data-npc-comuns]');
       return {
+        comuns: !chk || chk.checked,
         raca: val('[data-npc-raca]'),
         truque: val('[data-npc-truque]'),
         deus: val('[data-npc-deus]'),
@@ -4814,6 +4968,13 @@
 
     overlay.addEventListener('click', e => {
       if (e.target === overlay || e.target.closest('[data-npc-fechar]')) { fecharModalNPCs(); return; }
+      const liv = e.target.closest('[data-npc-livro]');
+      if (liv) {                       // troca de livro: remonta o modal
+        _fichaLivro = liv.dataset.npcLivro;
+        const alvo = _npcAlvo;
+        abrirModalNPCs(alvo.s, alvo.c);
+        return;
+      }
       const chip = e.target.closest('[data-npc-cat]');
       if (chip) {
         catAtiva = chip.dataset.npcCat;
@@ -4825,7 +4986,7 @@
       const opc = e.target.closest('[data-npc-inserir]');
       if (opc && _npcAlvo) {
         const opcoes = _opcoesEspeciais();
-        const res = inserirNPCNaCena(opc.dataset.npcInserir, _npcAlvo.s, _npcAlvo.c, opcoes);
+        const res = inserirFichaNaCena(_fichaLivro, opc.dataset.npcInserir, _npcAlvo.s, _npcAlvo.c, opcoes);
         if (!res) return;
         // feedback sem fechar o modal: ✓ na linha + aviso no rodapé
         opc.classList.add('mz-npc-ok');
@@ -4839,10 +5000,15 @@
         if (pe) {
           const extras = res.aplicado.length ? ' — ' + esc(res.aplicado.join(' · ')) : '';
           // fichas d'O Templo são devotas por regra — lembra o mestre
-          const dicaTemplo = (!opcoes.deus && _guiaNPCCatDe(opc.dataset.npcInserir) === 'templo')
+          const dicaTemplo = (ehNPC && !opcoes.deus && _guiaNPCCatDe(opc.dataset.npcInserir) === 'templo')
             ? '<br>💡 Fichas d\'O Templo são devotas por regra: escolha um deus e um poder concedido em "⚙ Regras especiais".'
             : '';
-          pe.innerHTML = `✓ <strong>${esc(res.cr.nome)}</strong> adicionado à cena${extras}.${dicaTemplo}`;
+          // o papel de combate (solo/lacaio/especial) é um ícone no livro e
+          // não vem no texto: a ficha nasce como lacaio até o mestre trocar
+          const dicaPapel = (!ehNPC && !res.papelDoLivro)
+            ? '<br>⚑ Confira o <strong>papel de combate</strong> no cabeçalho da ficha (solo / lacaio / especial) — o livro marca isso com um ícone, que não vem no texto.'
+            : '';
+          pe.innerHTML = `✓ <strong>${esc(res.cr.nome)}</strong> adicionado à cena${extras}.${dicaTemplo}${dicaPapel}`;
         }
       }
     });
@@ -5724,6 +5890,51 @@
         cena: dados.sessoes[si].cenas[ci].nome,
         nome: res.cr.nome,
         narrada: narrada,
+        aplicado: res.aplicado,
+      };
+    },
+
+    // Insere uma ficha de QUALQUER biblioteca (js/fichas-prontas.js) na
+    // cena narrada; sem cena narrada, agrupa numa sessão própria por livro.
+    // Usado pela aba "📕 Fichas Prontas".
+    // opcoes (opcional) = { comuns: false } para não anexar o quadro de
+    // habilidades comuns do grupo; para o livro 'npcs' valem também as
+    // regras especiais { raca, truque, deus, poder }.
+    // Devolve { sessao, cena, nome, narrada, aplicado, papelDoLivro } ou null.
+    inserirFichaPronta: function (livroChave, chave, opcoes) {
+      if (livroChave === 'npcs') {
+        const r = this.inserirNPC(chave, opcoes);
+        return r ? Object.assign(r, { papelDoLivro: true }) : null;
+      }
+      const B = _bibl();
+      const ref = B && B.ficha(livroChave, chave);
+      if (!ref) return null;
+
+      let si = -1, ci = -1;
+      if (dados.cenaNarrada) {
+        dados.sessoes.forEach((s, i) => s.cenas.forEach((c, j) => {
+          if (c.id === dados.cenaNarrada) { si = i; ci = j; }
+        }));
+      }
+      const narrada = si >= 0;
+      if (!narrada) {
+        const NOME = '📕 ' + (ref.livro.curto || 'Fichas prontas');
+        let s = dados.sessoes.find(x => x.nome === NOME);
+        if (!s) { s = novaSessao(dados.sessoes.length + 1); s.nome = NOME; dados.sessoes.push(s); }
+        s.aberto = true;
+        if (!s.cenas.length) { const c = novaCena(1); c.nome = 'Fichas avulsas'; s.cenas.push(c); }
+        si = dados.sessoes.indexOf(s);
+        ci = s.cenas.length - 1;
+      }
+      const res = inserirFichaNaCena(livroChave, chave, si, ci, opcoes);
+      if (!res) return null;
+      return {
+        sessao: dados.sessoes[si].nome,
+        cena: dados.sessoes[si].cenas[ci].nome,
+        nome: res.cr.nome,
+        narrada: narrada,
+        aplicado: res.aplicado,
+        papelDoLivro: res.papelDoLivro,
       };
     },
 
