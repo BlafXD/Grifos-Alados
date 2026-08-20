@@ -4825,7 +4825,7 @@
         .sort((a, b) => _ndValor(a.nd) - _ndValor(b.nd) || a.nome.localeCompare(b.nome, 'pt'));
       let linhas = '';
       fichas.forEach(f => {
-        const busca = _semAcento([f.nome, 'nd ' + f.nd, f.tipo, f.subgrupo, f.resumo, cat.nome].join(' '));
+        const busca = _semAcento([f.nome, f.alias, 'nd ' + f.nd, f.tipo, f.subgrupo, f.resumo, cat.nome].join(' '));
         linhas += `
           <button class="mz-cond-opcao mz-npc-opcao" style="--cor:${cat.cor || '#6e6256'}"
                   data-npc-inserir="${esc(f.chave)}" data-busca="${esc(busca)}">
