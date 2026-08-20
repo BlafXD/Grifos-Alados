@@ -23,6 +23,14 @@
 //    texto   — statblock completo; PRIMEIRA linha = "Nome ND X", depois
 //              descrição, linha de tipo, e o bloco do livro.
 //
+//  ⚠ O texto NÃO é cópia literal: o gerador conserta os deslizes de
+//  digitação do livro que atrapalhavam a leitura da ficha — vírgula que
+//  falta na linha de atributos, rótulo com ponto ("Equipamento."), "Nd"
+//  em vez de "ND", "Magia" no singular abrindo o bloco de magias, ponto
+//  final faltando ou sobrando, e o deslocamento sem os quadrados (1q =
+//  1,5m). Cada conserto sai listado no relatório do gerador; nenhum
+//  número de regra foi tocado.
+//
 //  Cada categoria traz ainda:
 //    intro   — a abertura do grupo no livro
 //    regras  — quadros laterais e aberturas de subgrupo (Orcs, Ódio Puro,
@@ -264,7 +272,7 @@ Iniciativa +4, Percepção +1
 Defesa 13, Fort +1, Ref +3, Von –1
 Pontos de Vida 6
 Deslocamento 9m (6q)
-Corpo a Corpo Clava +7 (1d6+3)
+Corpo a Corpo Clava +7 (1d6+3).
 For 1, Des 2, Con 1, Int 0, Sab –1, Car 0
 Perícias Furtividade +5.
 Equipamento Clava. Tesouro Metade.`
@@ -280,7 +288,7 @@ Humanoide (humano) Médio
 Iniciativa +4, Percepção +2
 Defesa 16, Fort +5, Ref +8, Von +3
 Pontos de Vida 30
-Deslocamento 9m
+Deslocamento 9m (6q)
 Corpo a Corpo Espada curta +9 (1d6+5, 19).
 À Distância Adaga +7 (1d4+3, 19).
 Ataque Furtivo Uma vez por rodada, o chefe bandido causa +2d6 pontos de dano com ataques corpo a corpo, ou à distância em alcance curto, contra alvos desprevenidos ou que esteja flanqueando.
@@ -360,7 +368,7 @@ Corpo a Corpo Tacape +9 (1d12+5) e cascos +9 (1d8+5).
 Investida Poderosa Quando faz uma investida com seu tacape, o centauro causa +1d12 pontos de dano.
 Medo de Altura Se estiver adjacente a uma queda de 3m ou mais de altura, o centauro fica abalado.
 For 5, Des 2, Con 3, Int –2, Sab 1, Car –2
-Perícias Sobrevivência +5
+Perícias Sobrevivência +5.
 Equipamento Arco longo aumentado, flechas x20, tacape aumentado. Tesouro Metade.`
         },
         {
@@ -508,7 +516,7 @@ Monstro Grande
 Iniciativa +9, Percepção +7, visão no escuro
 Defesa 19, Fort +9, Ref +15, Von +4, imunidade a medo
 Pontos de Vida 110
-Deslocamento 12m, voo 24m
+Deslocamento 12m (8q), voo 24m (16q)
 Corpo a Corpo Mordida +14 (2d6+5) e duas garras +14 (1d6+5).
 Bote (Completa) O grifo faz uma investida e ataca com sua mordida e suas duas garras. Os três ataques recebem o bônus de +2 da investida, mas devem ser feitos contra o mesmo alvo.
 For 5, Des 4, Con 3, Int –4, Sab 2, Car –1
@@ -707,6 +715,7 @@ Equipamento Armadura completa reforçada, escudo pesado reforçado, espada longa
         {
           chave: "cavaleiroDoLeopardoSangrento", nome: "Cavaleiro do Leopardo Sangrento", nd: "9", tipo: "Humanoide (humano) Médio",
           papel: '',
+          alias: "Cavaleiro do Leopardo",   // grafia da Tabela 7-1
           resumo: "Considerados “puristas entre os puristas”, os cavaleiros da Ordem do Leopardo Sangrento são os mais fanáticos combatentes da Supremacia.",
           texto:
 `Cavaleiro do Leopardo Sangrento ND 9
@@ -811,7 +820,7 @@ Defesa 19, Fort +3, Ref +7, Von +12, redução de corte, frio e perfuração 5
 Pontos de Vida 14
 Deslocamento 9m (6q)
 Corpo a Corpo Espada longa +14 (2d8+12, 19).
-For 5, Des 3, Con 0, Int —, Sab 0, Car –5.
+For 5, Des 3, Con 0, Int —, Sab 0, Car –5
 Equipamento Escudo pesado, espada longa. Tesouro Nenhum.`
         },
         {
@@ -841,7 +850,7 @@ Morto-vivo (bando) Grande
 Iniciativa +12, Percepção +6, visão no escuro
 Defesa 25, Fort +6, Ref +12, Von +18, redução de corte, frio e perfuração 5
 Pontos de Vida 300
-Deslocamento 6m
+Deslocamento 6m (4q)
 Corpo a Corpo [Bando] Espada longa +28 (4d8+30, 19, mais 4d8 trevas).
 Bando A falange é formada por um grupo de esqueletos. Se um ataque da falange exceder a Defesa do inimigo por 10 ou mais, ele causa o dobro do dano. Se um ataque da falange errar, ele ainda assim causa metade do dano. A falange é imune a manobras de combate e efeitos que afetam apenas uma criatura e não causam dano, mas sofre 50% a mais de dano de efeitos de área, como Bola de Fogo. Um personagem com o poder Trespassar que acerte a falange pode usá-lo para fazer um ataque adicional contra ela (mas apenas uma vez por turno).
 For 6, Des 4, Con 2, Int —, Sab 0, Car –5
@@ -1238,7 +1247,7 @@ Defesa 29, Fort +7, Ref +14, Von +20, resistência a veneno +5
 Pontos de Vida 160
 Deslocamento 9m (6q)
 Pontos de Mana 40
-Corpo a Corpo Adaga +22 (1d4+4, 19, mais veneno)
+Corpo a Corpo Adaga +22 (1d4+4, 19, mais veneno).
 Ataque Furtivo Uma vez por rodada, a cultista de Sszzaas causa +5d6 pontos de dano com ataques corpo a corpo, ou à distância em alcance curto, contra alvos desprevenidos ou que ela esteja flanqueando.
 Magias A cultista lança magias como uma clériga de Sszzaas de 7º nível (CD 26). 1º — Arma Mágica, Comando, Curar Ferimentos, Escuridão; 2º — Enxame de Pestes, Miasma Mefítico.
 Olhar Atordoante (Movimento) Uma criatura em alcance curto fica atordoada por uma rodada (apenas uma vez por cena; Fort CD 26 evita).
@@ -1329,6 +1338,7 @@ Tesouro Padrão.`
         {
           chave: "finntrollFeitor", nome: "Finntroll Feitor", nd: "6", tipo: "Monstro (finntroll) Médio",
           papel: '',
+          alias: "Fintroll feitor",   // grafia da Tabela 7-1
           subgrupo: "Finntroll",
           resumo: "Finntroll — Arrogantes e indolentes, finntroll raramente deixam seu império subterrâneo — e quando o fazem, sempre têm um propósito cruel, como caçar es",
           texto:
@@ -1506,7 +1516,7 @@ Deslocamento 12m (8q), voo 24m (16q)
 Pontos de Mana 70
 Corpo a Corpo Mordida +35 (4d10+25, 18) e duas garras +35 (3d10+25, 18).
 Aura Aterradora Vontade CD 31 evita (veja quadro ao lado).
-Magia O dragão adulto lança magias como um conjurador arcano de 11º nível (CD 32).
+Magias O dragão adulto lança magias como um conjurador arcano de 11º nível (CD 32).
 • Campo de Força (Reação, 4 PM) Quando sofre dano, o dragão recebe redução de dano 30 contra este dano.
 • Curar Ferimentos (Padrão, 11 PM) Uma criatura adjacente cura 12d8+12 PV.
 • Dissipar Magia (Padrão, 3 PM) O dragão escolhe uma criatura, objeto ou esfera de 3m em alcance médio e faz um teste de Misticismo. Todas as magias no alvo escolhido com CD menor que o resultado do teste são dissipadas.
@@ -1537,7 +1547,7 @@ Corpo a Corpo Mordida +44 (4d12+40, 17) e duas garras +44 (3d12+40, 17).
 Aura Aterradora Vontade CD 40 evita (veja o quadro na página 311).
 Fluxo de Mana O dragão venerável pode manter duas magias sustentadas simultaneamente com apenas uma ação livre (mas pagando o custo de cada uma).
 Magia Acelerada (livre, 4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, o dragão muda a execução dela para livre.
-Magia O dragão venerável lança magias como um conjurador arcano de 15º nível (CD 40).
+Magias O dragão venerável lança magias como um conjurador arcano de 15º nível (CD 40).
 • Campo de Força (Reação, 7 PM) Quando sofre dano, o dragão recebe redução de dano 50 contra este dano.
 • Controlar a Gravidade (Padrão, 10 PM, sustentada) O dragão controla os efeitos da gravidade em um cubo de 12m de lado em alcance médio (veja página 186).
 • Curar Ferimentos (Padrão, 15 PM) Uma criatura adjacente cura 16d8+16 PV.
@@ -1570,7 +1580,7 @@ Aura Aterradora Vontade CD 50 evita (veja o quadro na página 311).
 Escamas Supremas O Dragão-Rei sofre apenas metade do dano de fontes mundanas.
 Fluxo de Mana O Dragão-Rei pode manter duas magias sustentadas simultaneamente com apenas uma ação livre (mas pagando o custo de cada uma).
 Magia Acelerada (livre, 4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, o Dragão-Rei muda a execução dela para livre.
-Magia O Dragão-Rei lança magias como um conjurador arcano de 20º nível (CD 50).
+Magias O Dragão-Rei lança magias como um conjurador arcano de 20º nível (CD 50).
 • Campo de Força (Reação, 7 PM) Quando sofre dano, o dragão recebe redução de dano 50 contra este dano.
 • Controlar a Gravidade (Padrão, 10 PM, sustentada) O dragão controla os efeitos da gravidade em um cubo de 12m de lado em alcance médio (veja página 186).
 • Controlar o Tempo (Padrão, 15 PM) O dragão controla o tempo ao seu redor (veja página 187).

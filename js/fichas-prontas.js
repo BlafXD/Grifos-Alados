@@ -142,7 +142,7 @@ window.GA_FichasProntas = (function () {
 
   function cardFicha(ref) {
     const f = ref.def, cat = ref.cat, l = ref.livro;
-    const busca = semAcento([f.nome, 'nd ' + f.nd, f.tipo, f.subgrupo, f.resumo, cat.nome, l.nome, f.texto].join(' '));
+    const busca = semAcento([f.nome, f.alias, 'nd ' + f.nd, f.tipo, f.subgrupo, f.resumo, cat.nome, l.nome, f.texto].join(' '));
     const papel = PAPEIS[f.papel];
     // subgrupo: as 29 fichas que o livro deixou sem texto próprio vivem sob
     // uma abertura comum ("Orcs", "Cobras", "Dragões") — vale mostrar
@@ -312,7 +312,7 @@ window.GA_FichasProntas = (function () {
     const fora = {};
     todas().forEach(ref => {
       if (ref.livro.chave === livroAtivo) return;
-      const b = semAcento([ref.def.nome, 'nd ' + ref.def.nd, ref.def.tipo, ref.def.resumo, ref.cat.nome, ref.def.texto].join(' '));
+      const b = semAcento([ref.def.nome, ref.def.alias, 'nd ' + ref.def.nd, ref.def.tipo, ref.def.resumo, ref.cat.nome, ref.def.texto].join(' '));
       if (b.indexOf(t) >= 0) fora[ref.livro.chave] = (fora[ref.livro.chave] || 0) + 1;
     });
     const outros = Object.keys(fora).map(k => {
