@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/monstros_style.css">
   <link rel="stylesheet" href="css/perigos_style.css">
   <link rel="stylesheet" href="css/consultas_style.css">
+  <link rel="stylesheet" href="css/deuses_style.css">
   <link rel="stylesheet" href="css/criacao-itens_style.css">
   <link rel="stylesheet" href="css/viagem_style.css">
   <link rel="stylesheet" href="css/anotacoes_style.css">
@@ -247,6 +248,7 @@
       <button type="button" class="cr-subtab cr-subtab--ativa" data-cr-tab="perigos">🌪 Perigos &amp; Ambientes</button>
       <button type="button" class="cr-subtab" data-cr-tab="veiculos">🚗 Veículos</button>
       <button type="button" class="cr-subtab" data-cr-tab="animais">🐎 Animais &amp; Montarias</button>
+      <button type="button" class="cr-subtab" data-cr-tab="deuses">⛩ Deuses de Arton</button>
       <button type="button" class="cr-subtab" data-cr-tab="devotos">🙏 Poderes Concedidos</button>
       <button type="button" class="cr-subtab" data-cr-tab="arsenal">⚔ Arsenal &amp; Regras</button>
       <button type="button" class="cr-subtab" data-cr-tab="acoes">🎬 Ações &amp; Combate</button>
@@ -266,6 +268,9 @@
     </div>
     <div id="animais-content" data-cr-panel="animais" hidden>
       <!-- Populado pelo animais.js -->
+    </div>
+    <div id="deuses-content" data-cr-panel="deuses" hidden>
+      <!-- Populado pelo deuses.js -->
     </div>
     <div id="devotos-content" data-cr-panel="devotos" hidden>
       <!-- Populado pelo devotos.js -->
@@ -377,6 +382,7 @@
 <!-- só do mestre: o fecho do Guia de NPCs (deuses menores e lendas).
      Acrescenta uma categoria ao GUIA_NPCS, então vem logo depois dele. -->
 <script src="js/npcs-lendas-data.js" defer></script>
+<script src="js/deuses-artigos-data.js" defer></script>
 <script src="js/devotos-data.js" defer></script>
 <script src="js/criticos-data.js" defer></script>
 <script src="js/masmorra-data.js" defer></script>
@@ -389,6 +395,7 @@
 <script src="js/veiculos.js" defer></script>
 <script src="js/animais.js" defer></script>
 <script src="js/devotos.js" defer></script>
+<script src="js/deuses.js" defer></script>
 <script src="js/regras-itens-data.js" defer></script>
 <script src="js/regras-itens.js" defer></script>
 <script src="js/acoes-data.js" defer></script>

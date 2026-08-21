@@ -1,0 +1,120 @@
+/* ════════════════════════════════════════════════════════════════════
+   DEUSES_STYLE.CSS — sub-aba "⛩ Deuses de Arton" (aba 📚 Consultas)
+   Localização: /grifos-alados/css/deuses_style.css
+
+   O verbete de cada divindade reaproveita os cards das Consultas
+   rápidas (.vc-card / .vc-lista). Aqui ficam só as peças próprias:
+   a fileira de atalhos, o quadro de dados do deus e as seções de
+   texto do livro.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── ATALHOS PARA CADA DEUS ────────────────────────────────────────── */
+.dv-atalhos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 0.9rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--gold-dim);
+}
+.dv-atalho {
+  padding: 0.25rem 0.6rem;
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  transition: background 0.12s, color 0.12s;
+}
+.dv-atalho:hover {
+  background: var(--gold-deep, var(--rust));
+  border-color: var(--gold-deep, var(--rust));
+  color: var(--parchment);
+}
+.dv-atalho[hidden] { display: none; }
+
+/* ── VERBETE ───────────────────────────────────────────────────────── */
+/* Fechados, os vinte verbetes se arrumam em colunas e funcionam como um
+   índice do Panteão. Aberto, o verbete ocupa a largura inteira — é
+   artigo longo, e coluna estreita com texto justificado fica com buracos
+   entre as palavras. */
+.dv-lista > .dv-card[open] { grid-column: 1 / -1; }
+.dv-card { --cor: #8a6a1f; }
+.dv-card > .vc-card-cab .vc-card-nome { letter-spacing: 0.06em; }
+.dv-card > .vc-card-cab .vc-card-meta {
+  font-style: italic;
+  text-transform: none;
+}
+
+/* quadro de dados da divindade */
+.dv-dados {
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--parchment2);
+  border-left: 3px solid var(--gold-deep, var(--rust));
+}
+.dv-dado { margin: 0 0 0.35rem; }
+.dv-dado:last-child { margin-bottom: 0; }
+.dv-dado dt {
+  display: inline;
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.dv-dado dt::after { content: '.'; }
+.dv-dado dd {
+  display: inline;
+  margin: 0 0 0 0.3rem;
+  font-size: 0.86rem;
+}
+
+/* texto do livro — largura de leitura, não a largura da tela */
+.dv-abertura,
+.dv-secao { max-width: 62ch; }
+.dv-abertura p,
+.dv-secao p {
+  margin: 0 0 0.7rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  text-align: justify;
+}
+.dv-abertura p:first-child::first-letter {
+  float: left;
+  margin: 0.08em 0.12em 0 0;
+  font-family: 'Cinzel', serif;
+  font-size: 2.9em;
+  line-height: 0.82;
+  color: var(--gold-deep, var(--rust));
+}
+.dv-secao { margin-top: 1.1rem; }
+.dv-secao-titulo {
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--gold-dim);
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-deep, var(--rust));
+}
+
+/* rodapé com o ponteiro para a ficha do avatar (só na edição do mestre) */
+.dv-ficha {
+  margin: 1.1rem 0 0;
+  padding: 0.5rem 0.7rem;
+  background: var(--parchment2);
+  border: 1px dashed var(--gold-dim);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .dv-abertura p,
+  .dv-secao p { text-align: left; }
+  .dv-abertura p:first-child::first-letter { font-size: 2.2em; }
+}

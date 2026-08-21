@@ -39,14 +39,19 @@
 //  anulada onde a magia não funciona. No livro é um ícone; na cópia do
 //  PDF sobrou como um "e" solto no fim do parágrafo.
 //
-//  ⚠ ND DEDUZIDO — o cabeçalho destes três avatares não traz "ND x" em
-//  lugar nenhum do texto copiado. O valor abaixo é dedução, não é o
-//  livro; confira e corrija aqui e no gerador se estiver errado:
-//    Avatar de Lin-Wu → ND 19          (Centelha Divina de 19º nível (CD 48))
-//    Avatar de Thyatis → ND 19         (Centelha Divina de 19º nível (CD 47))
-//    Avatar de Azgher → ND S           (2.752 PV e CD 52, no patamar dos outros ND S)
+//  ⚠ ND ANOTADO À MÃO — o cabeçalho destes três avatares não traz
+//  "ND x" em lugar nenhum do texto copiado. Conferidos no livro
+//  (2026-08-21) e anotados no gerador:
+//    Avatar de Lin-Wu → ND 19          (conferido no livro)
+//    Avatar de Thyatis → ND 19         (conferido no livro)
+//    Avatar de Azgher → ND S           (conferido no livro)
 //  (O Avatar de Khalmyr também vinha sem ND no statblock, mas ali o
 //  número não se perdeu: subiu para o título da seção, "Avatar ND S".)
+//
+//  ⚠ QUADRADOS DO DESLOCAMENTO — o livro erra a conta em cinco fichas
+//  (Allihanna, Kallyadranoch, Sszzaas, Tenebra e Wynna). O padrão são
+//  os METROS, então o gerador recalcula os "q" a partir deles
+//  (1q = 1,5m). Cada recálculo sai no relatório.
 // ════════════════════════════════════════════════════════════════════
 window.FICHAS_DEUSES_ARTON = {
 
@@ -69,7 +74,8 @@ window.FICHAS_DEUSES_ARTON = {
           resumo: "O avatar mais comum de Aharadak é uma monstruosidade do tamanho de um castelo, coberta de carapaça, pedaços de carne esponjosa e bocarras…",
           texto:
 `Avatar de Aharadak ND S
-O avatar mais comum de Aharadak é uma monstruosidade do tamanho de um castelo, coberta de carapaça, pedaços de carne esponjosa e bocarras cheias de dentes afiados. Em meio a esse caos, um único e imenso olho vermelho. No entanto, correm boatos de que Aharadak possui outros avatares — um guerreiro trajado em couraça vermelha, um feiticeiro sem rosto, uma barda com a boca costurada. Também já teria assumido formas inofensivas, até mesmo nascido em uma família humana humilde, crescendo como uma criança-prodígio da degradação. Nenhuma tática é perversa demais para o Devorador.
+O avatar mais comum de Aharadak é uma monstruosidade do tamanho de um castelo, coberta de carapaça, pedaços de carne esponjosa e bocarras cheias de dentes afiados. Em meio a esse caos, um único e imenso olho vermelho.
+No entanto, correm boatos de que Aharadak possui outros avatares — um guerreiro trajado em couraça vermelha, um feiticeiro sem rosto, uma barda com a boca costurada. Também já teria assumido formas inofensivas, até mesmo nascido em uma família humana humilde, crescendo como uma criança-prodígio da degradação. Nenhuma tática é perversa demais para o Devorador.
 Monstro (lekael) Colossal
 Iniciativa +22, Percepção +31, percepção às cegas (longo)
 Defesa 73, Fort +37, Ref +27, Von +31, imunidade a efeitos mentais e medo, maior que a morte, redução de dano 20
@@ -94,12 +100,14 @@ Tesouro 2d6 peças rubras (CD 35 para extrair, cada peça vale T$ 1.500 para fab
           resumo: "Allihanna talvez seja a divindade mais variada em sua forma de avatar.",
           texto:
 `Avatar de Allihanna ND 20
-Allihanna talvez seja a divindade mais variada em sua forma de avatar. Ainda que mais conhecida como uma fera quimérica de muitas cabeças (sua forma preferida quando espera entrar em combate), ela pode se manifestar como qualquer animal natural — sempre em versão maior e mais majestosa, embora também consiga passar despercebida como um espécime comum. A deusa também costuma surgir como uma dama trajada em vestes rústicas, campestres, com cabeça de animal. Dizem que o tipo de animal é escolhido conforme seu estado de espírito: um cervo quando está tranquila, um búfalo ou leão quando zangada, um pássaro ou macaco quando curiosa e assim por diante. Também há relatos sobre Allihanna se manifestar como uma dríade ou um sátiro, principalmente ao lidar com aventureiros. Em quase todos os casos, Allihanna prefere se comunicar através de uma linguagem especial sem palavras, usando apenas sons e cheiros da natureza.
+Allihanna talvez seja a divindade mais variada em sua forma de avatar. Ainda que mais conhecida como uma fera quimérica de muitas cabeças (sua forma preferida quando espera entrar em combate), ela pode se manifestar como qualquer animal natural — sempre em versão maior e mais majestosa, embora também consiga passar despercebida como um espécime comum.
+A deusa também costuma surgir como uma dama trajada em vestes rústicas, campestres, com cabeça de animal. Dizem que o tipo de animal é escolhido conforme seu estado de espírito: um cervo quando está tranquila, um búfalo ou leão quando zangada, um pássaro ou macaco quando curiosa e assim por diante. Também há relatos sobre Allihanna se manifestar como uma dríade ou um sátiro, principalmente ao lidar com aventureiros.
+Em quase todos os casos, Allihanna prefere se comunicar através de uma linguagem especial sem palavras, usando apenas sons e cheiros da natureza.
 Espírito Enorme
 Iniciativa +26, Percepção +32, faro, visão no escuro
 Defesa 61, Fort +20, Ref +34, Von +28, não pode ser flanqueado, maior que a morte, redução de dano 20, resistência a magia +5
 Pontos de Vida 1.200
-Deslocamento 15m (10q), escalada 15m (6q), escavação 15m (10q), natação 15m (10q), voo 15m (10q), sem redução por terreno difícil natural
+Deslocamento 15m (10q), escalada 15m (10q), escavação 15m (10q), natação 15m (10q), voo 15m (10q), sem redução por terreno difícil natural
 Corpo a Corpo Arsenal natural x4 +54 (especial).
 Arsenal Natural Quando faz cada um de seus ataques de Arsenal Natural, o Avatar de Allihanna escolhe uma das armas naturais a seguir. Ele pode escolher a mesma arma múltiplas vezes.
 • Cauda. Dano 8d12+29, alcance 6m.
@@ -146,7 +154,9 @@ Equipamento Armadura de Arsenal, Holy Avenger (veja p. 247), Martelo dos Trovõe
           resumo: "Viajantes planares experientes afirmam que o astro-rei visto nos céus de Arton não é realmente Azgher, mas seu reino divino, Solaris…",
           texto:
 `Avatar de Azgher ND S
-Viajantes planares experientes afirmam que o astro-rei visto nos céus de Arton não é realmente Azgher, mas seu reino divino, Solaris, distante no firmamento. A maioria dos devotos, contudo, não acredita existir diferença. Eventos que façam Azgher manifestar um avatar em Arton são mais frequentes do que se pensa — grandes festivais em sua honra podem fazê-lo se sentir obrigado a enviar um representante. Ele costuma usar a aparência tradicional de um guerreiro do deserto, sempre trazendo sua espada ou outro item flamejante nas mãos. Também usa algum tipo de máscara, para proteger os mortais de sua luz intensa. Em outros sentidos, lembra muito um beduíno comum, não se furtando de comer e beber durante as festividades. Não há notícias de que Azgher tenha se manifestado com qualquer outra aparência; encobrir-se com disfarces é contra a sua natureza. Ainda assim, existem lendas sobre uma feiticeira qareen tão radiante e poderosa que não poderia ser qualquer outra coisa, exceto um avatar do Deus-Sol.
+Viajantes planares experientes afirmam que o astro-rei visto nos céus de Arton não é realmente Azgher, mas seu reino divino, Solaris, distante no firmamento. A maioria dos devotos, contudo, não acredita existir diferença. Eventos que façam Azgher manifestar um avatar em Arton são mais frequentes do que se pensa — grandes festivais em sua honra podem fazê-lo se sentir obrigado a enviar um representante.
+Ele costuma usar a aparência tradicional de um guerreiro do deserto, sempre trazendo sua espada ou outro item flamejante nas mãos. Também usa algum tipo de máscara, para proteger os mortais de sua luz intensa. Em outros sentidos, lembra muito um beduíno comum, não se furtando de comer e beber durante as festividades.
+Não há notícias de que Azgher tenha se manifestado com qualquer outra aparência; encobrir-se com disfarces é contra a sua natureza. Ainda assim, existem lendas sobre uma feiticeira qareen tão radiante e poderosa que não poderia ser qualquer outra coisa, exceto um avatar do Deus-Sol.
 Espírito Médio
 Iniciativa +25, Percepção +40, percepção às cegas (ilimitado)
 Defesa 58, Fort +36, Ref +25, Von +33, evasão aprimorada, imunidade a dano de luz, fogo e trevas, maior que a morte, redução de dano 20, resistência a magia +5
@@ -171,7 +181,8 @@ Equipamento Labareda, Mensageiro do Deserto e Raio de Sol. Tesouro Nenhum.`
           resumo: "A forma mundana de Hyninn varia dependendo da missão a ser confiada e da peça a ser pregada.",
           texto:
 `Avatar de Hyninn ND 19
-A forma mundana de Hyninn varia dependendo da missão a ser confiada e da peça a ser pregada. Suas formas preferidas, entretanto, são um ladrão hynne, um bobo da corte humano e um macaco falante. Dizem que qualquer mortal muito fraco ou aparentemente indefeso encontrado na estrada pode ser um avatar de Hyninn testando aventureiros poderosos. E aqueles que abusam desses pobres-coitados muitas vezes se veem vítimas de décadas infindáveis de peças, truques, mentiras e trapaças, tudo obra de alguém oculto nas sombras...
+A forma mundana de Hyninn varia dependendo da missão a ser confiada e da peça a ser pregada. Suas formas preferidas, entretanto, são um ladrão hynne, um bobo da corte humano e um macaco falante.
+Dizem que qualquer mortal muito fraco ou aparentemente indefeso encontrado na estrada pode ser um avatar de Hyninn testando aventureiros poderosos. E aqueles que abusam desses pobres-coitados muitas vezes se veem vítimas de décadas infindáveis de peças, truques, mentiras e trapaças, tudo obra de alguém oculto nas sombras...
 Espírito Médio
 Iniciativa +35, Percepção +23
 Defesa 57, Fort +19, Ref +32, Von +26, evasão aprimorada, maior que a morte, não pode ser flanqueado ou surpreendido
@@ -198,12 +209,14 @@ Equipamento Falso Amigo. Tesouro Nenhum.`
           resumo: "Mesmo enquanto prisioneiro em um corpo mortal élfico, Kallyadranoch voltou a ser um deus maior, membro do Panteão.",
           texto:
 `Avatar de Kallyadranoch ND 20
-Mesmo enquanto prisioneiro em um corpo mortal élfico, Kallyadranoch voltou a ser um deus maior, membro do Panteão. Como tal, podia manifestar uma forma de avatar. Essa criatura, possivelmente o dragão mais poderoso de Arton, foi mantida como guardiã em seu covil pessoal no reino divino de Drashantyr, protegendo seus tesouros incalculáveis. Diz-se que, na ausência oportuna do Deus dos Dragões, muitos aventureiros empreenderam expedições em busca de tais riquezas. Todos foram dizimados pelo avatar dracônico — até ele mesmo ser abatido por Mestre Arsenal, em sua jornada planar rumo à divindade. Hoje, embora ainda escolha a forma dracônica quando lhe convém, Kallyadranoch adota o aspecto de um humano atraente, esguio, com garras e presas afiadas. Seu cabelo pende em longas tranças, uma para cada cor dos dragões originais. Ostenta muitas joias mágicas, cada uma um artefato de valor inimaginável.
+Mesmo enquanto prisioneiro em um corpo mortal élfico, Kallyadranoch voltou a ser um deus maior, membro do Panteão. Como tal, podia manifestar uma forma de avatar.
+Essa criatura, possivelmente o dragão mais poderoso de Arton, foi mantida como guardiã em seu covil pessoal no reino divino de Drashantyr, protegendo seus tesouros incalculáveis. Diz-se que, na ausência oportuna do Deus dos Dragões, muitos aventureiros empreenderam expedições em busca de tais riquezas. Todos foram dizimados pelo avatar dracônico — até ele mesmo ser abatido por Mestre Arsenal, em sua jornada planar rumo à divindade.
+Hoje, embora ainda escolha a forma dracônica quando lhe convém, Kallyadranoch adota o aspecto de um humano atraente, esguio, com garras e presas afiadas. Seu cabelo pende em longas tranças, uma para cada cor dos dragões originais. Ostenta muitas joias mágicas, cada uma um artefato de valor inimaginável.
 Espírito (dragão) Médio
 Iniciativa +20, Percepção +18, percepção às cegas, visão no escuro
 Defesa 50, Fort +20, Ref +28, Von +35, imunidade a ácido, atordoamento, cansaço, dano de luz, eletricidade, essência, fogo, frio, metamorfose, paralisia, trevas e veneno, redução de dano 50, resistência a magia +5
 Pontos de Vida 1.405
-Deslocamento 9m (6q), voo 18m (16q)
+Deslocamento 9m (6q), voo 18m (12q)
 Corpo a Corpo Mordida +52 (5d12+50, 17/x3) e duas garras +50 (4d10+35, 19/x2).
 ✦ Ajoelhem-se Perante Mim (Padrão) O Avatar de Kallyadranoch emite um comando de subserviência. Criaturas à escolha dele em alcance curto ficam caídas e não podem executar ações hostis contra ele por 1 rodada (Fort CD 50 evita a condição e reduz o efeito para penalidade de –5 em testes contra o Avatar por 1 rodada).
 Aura Aterradora Vontade CD 50 evita (Tormenta20, p. 311).
@@ -274,7 +287,10 @@ Tesouro Nenhum.`
           resumo: "No Império de Jade, Lin-Wu costuma assumir uma entre duas aparências: um imenso dragão celestial, serpenteando nos céus em cores…",
           texto:
 `Avatar de Lin-Wu ND 19
-No Império de Jade, Lin-Wu costuma assumir uma entre duas aparências: um imenso dragão celestial, serpenteando nos céus em cores brilhantes, belo e colorido como as quatro estações; ou um poderoso samurai em armadura cerimonial escarlate, empunhando uma katana faiscante de relâmpagos (dizem ser ele o mais perigoso espadachim entre os deuses). Muitos questionam por qual razão essas formas tão combativas não foram empregadas para proteger Tamu-ra da Tormenta. Seus devotos afirmam que, sendo algo honrado, Lin-Wu com certeza o faria. A honra traz mistérios que apenas os deuses conhecem. O grande samurai e o dragão celestial são figuras familiares aos tamuranianos; eles não as temem. Poderiam, no entanto, intimidar o povo do Reinado. Quando visita essas terras, por gentileza e cortesia, LinWu recorre a uma aparência bem mais aprazível — um galante meio-dragão de Tamu-ra, ou ryuujin, em vestes de seda esvoaçantes. Suas habilidades de combate, no entanto, seguem idênticas à versão samurai.
+No Império de Jade, Lin-Wu costuma assumir uma entre duas aparências: um imenso dragão celestial, serpenteando nos céus em cores brilhantes, belo e colorido como as quatro estações; ou um poderoso samurai em armadura cerimonial escarlate, empunhando uma katana faiscante de relâmpagos (dizem ser ele o mais perigoso espadachim entre os deuses). Muitos questionam por qual razão essas formas tão combativas não foram empregadas para proteger Tamu-ra da Tormenta. Seus devotos afirmam que, sendo algo honrado, Lin-Wu com certeza o faria. A honra traz mistérios que apenas os deuses conhecem.
+O grande samurai e o dragão celestial são figuras familiares aos tamuranianos; eles não as temem.
+Poderiam, no entanto, intimidar o povo do Reinado.
+Quando visita essas terras, por gentileza e cortesia, Lin-Wu recorre a uma aparência bem mais aprazível — um galante meio-dragão de Tamu-ra, ou ryuujin, em vestes de seda esvoaçantes. Suas habilidades de combate, no entanto, seguem idênticas à versão samurai.
 Espírito (dragão) Enorme
 Iniciativa +29, Percepção +35, visão no escuro
 Defesa 56, Fort +19, Ref +27, Von +33, imunidade a atordoamento, efeitos de metabolismo, eletricidade, ilusão, medo, metamorfose e paralisia, redução de dano 30, resistência a magia +5
@@ -322,7 +338,9 @@ Tesouro Nenhum.`
           resumo: "Devido à relativa facilidade em enfurecer este deus, o avatar de Megalokk pode às vezes ser invocado por seus clérigos e outros…",
           texto:
 `Avatar de Megalokk ND 20
-Devido à relativa facilidade em enfurecer este deus, o avatar de Megalokk pode às vezes ser invocado por seus clérigos e outros conjuradores contra inimigos — ainda que sem qualquer controle, podendo inclusive atacar seus próprios invocadores. Apenas aqueles com extrema habilidade diplomática, ou outros meios para lidar com feras sanguinárias, conseguem dissuadir a criatura de matar à primeira vista. Em outras ocasiões, Megalokk pode surgir na forma de algum monstro híbrido, como uma esfinge, quimera ou mantícora, para lidar com heróis. Ele aprecia atraí-los até covis de monstros, por acreditar que suas crias serão sempre vitoriosas. Quando esse plano falha, contudo, já houve vezes em que ele próprio ressurgiu cheio de ódio, dizimando os aventureiros já combalidos. Sua forma mais conhecida e poderosa tem corpo humanoide alado robusto e várias cabeças de monstros, diferentes em cada manifestação.
+Devido à relativa facilidade em enfurecer este deus, o avatar de Megalokk pode às vezes ser invocado por seus clérigos e outros conjuradores contra inimigos — ainda que sem qualquer controle, podendo inclusive atacar seus próprios invocadores. Apenas aqueles com extrema habilidade diplomática, ou outros meios para lidar com feras sanguinárias, conseguem dissuadir a criatura de matar à primeira vista.
+Em outras ocasiões, Megalokk pode surgir na forma de algum monstro híbrido, como uma esfinge, quimera ou mantícora, para lidar com heróis. Ele aprecia atraí-los até covis de monstros, por acreditar que suas crias serão sempre vitoriosas. Quando esse plano falha, contudo, já houve vezes em que ele próprio ressurgiu cheio de ódio, dizimando os aventureiros já combalidos.
+Sua forma mais conhecida e poderosa tem corpo humanoide alado robusto e várias cabeças de monstros, diferentes em cada manifestação.
 Monstro (kaiju) Colossal
 Iniciativa +26, Percepção +27, visão no escuro, faro
 Defesa 57, Fort +40, Ref +29, Von +18, cura acelerada 100/kaiju, imunidade a efeitos de metabolismo e mentais, medo, metamorfose, paralisia e veneno, maior que a morte, redução de dano 50
@@ -352,7 +370,8 @@ Tesouro Nenhum.`
           resumo: "Nimb raramente se manifesta da mesma forma duas vezes.",
           texto:
 `Avatar de Nimb ND S+
-Nimb raramente se manifesta da mesma forma duas vezes. Suas aparições podem variar de um velho viajante louco a uma fada lutadora, um anão arcanista ou um gato laranja sem rabo. Quando deseja ser reconhecido, contudo, adota a forma icônica de um homem esquálido com olhos esbugalhados, cartola e brincos. Ele é frequentemente visto brincando com dados que trazem símbolos sem sentido. Para os seguidores de Nimb, a aparição de seu avatar é um presságio de boa sorte ou desastre iminente. O que ele traz consigo — sorte, azar ou caos puro — será impossível prever. Sua presença pode alterar o curso de batalhas, lançar dúvidas sobre vitórias certas ou surpreender até os mais sábios entre os deuses.
+Nimb raramente se manifesta da mesma forma duas vezes. Suas aparições podem variar de um velho viajante louco a uma fada lutadora, um anão arcanista ou um gato laranja sem rabo. Quando deseja ser reconhecido, contudo, adota a forma icônica de um homem esquálido com olhos esbugalhados, cartola e brincos. Ele é frequentemente visto brincando com dados que trazem símbolos sem sentido.
+Para os seguidores de Nimb, a aparição de seu avatar é um presságio de boa sorte ou desastre iminente. O que ele traz consigo — sorte, azar ou caos puro — será impossível prever. Sua presença pode alterar o curso de batalhas, lançar dúvidas sobre vitórias certas ou surpreender até os mais sábios entre os deuses.
 Espírito (Nimb) Médio
 Iniciativa +31, Percepção 1d20+21
 Defesa 61, Fort +27, Ref +33, Von +39, imunidade a efeitos de adivinhação, encantamento, metamorfose e mentais, maior que a morte, redução de dano 21
@@ -385,7 +404,9 @@ Tesouro Padrão.`
           resumo: "Quando ainda decidia visitar o mundo material, Oceano adotava a aparência de um galante elfo-do-mar, ricamente ornamentado com tesouros de…",
           texto:
 `Avatar do Oceano ND S
-Quando ainda decidia visitar o mundo material, Oceano adotava a aparência de um galante elfo-do-mar, ricamente ornamentado com tesouros de naufrágios — dizem, como forma de ostentar que riquezas perdidas em seus domínios jamais serão retornadas. Para aqueles dispostos a desafiá-lo, exibia o tridente imenso, uma das armas mais impressionantes entre aquelas portadas pelos deuses. Conta-se também que, por vezes, Oceano se manifestou como um velho pirata cujo único olho refletia o infinito das profundezas. Ou como um imenso leão-marinho prateado. Ou ainda uma gigantesca água-viva com tentáculos de dezenas de quilômetros, capazes de envolver ilhas inteiras. Desde seu dramático sumiço, contudo, o avatar do Oceano ainda não voltou a ser visto. Caso isso aconteça, dependendo de suas motivações, talvez o deus decida eliminar quaisquer testemunhas para preservar seu segredo...
+Quando ainda decidia visitar o mundo material, Oceano adotava a aparência de um galante elfo-do-mar, ricamente ornamentado com tesouros de naufrágios — dizem, como forma de ostentar que riquezas perdidas em seus domínios jamais serão retornadas. Para aqueles dispostos a desafiá-lo, exibia o tridente imenso, uma das armas mais impressionantes entre aquelas portadas pelos deuses.
+Conta-se também que, por vezes, Oceano se manifestou como um velho pirata cujo único olho refletia o infinito das profundezas. Ou como um imenso leão-marinho prateado. Ou ainda uma gigantesca água-viva com tentáculos de dezenas de quilômetros, capazes de envolver ilhas inteiras.
+Desde seu dramático sumiço, contudo, o avatar do Oceano ainda não voltou a ser visto. Caso isso aconteça, dependendo de suas motivações, talvez o deus decida eliminar quaisquer testemunhas para preservar seu segredo...
 Espírito Médio
 Iniciativa +34, Percepção +28, percepção às cegas (longo)
 Defesa 65, Fort +36, Ref +30, Von +22, imunidade a acertos críticos, fogo, frio, queda e precipitações (Tormenta20, p. 267), redução de dano 20
@@ -416,7 +437,7 @@ Espírito Médio
 Iniciativa +34, Percepção +30, visão no escuro
 Defesa 59, Fort +26, Ref +30, Von +33, evasão aprimorada, imunidade a veneno, maior que a morte, não pode ser flanqueado ou surpreendido, redução de dano 10
 Pontos de Vida 1.007
-Deslocamento 12m (9q)
+Deslocamento 12m (8q)
 Corpo a Corpo Inoculadora +52 (1d4+31, 15/x4, mais veneno).
 Ataque Furtivo +10d8.
 Centelha Divina O Avatar de Sszzaas pode lançar qualquer magia divina, ou magia arcana de ilusão, como um clérigo de 19º nível sem gastar PM (CD 49, limite de PM 20) usando apenas concentração (veja Magia Discreta em Tormenta20, p. 131). Outros personagens só percebem que ele lançou uma magia se passarem num teste de Misticismo (CD 40).
@@ -466,7 +487,7 @@ Morto-vivo Médio
 Iniciativa +30, Percepção +28, visão no escuro
 Defesa 63, Fort +22, Ref +30, Von +36, cura acelerada 50, imunidade a efeitos de sentidos, encantamento, escuridão e dano de luz e trevas, maior que a morte, redução de dano 20, resistência a magia +5
 Pontos de Vida 1.750
-Deslocamento 18m (8q), voo 24m (16q)
+Deslocamento 18m (12q), voo 24m (16q)
 Corpo a Corpo Mordida +55 (3d8+35, x4, mais 2d12 trevas) e garra x4 +52 (3d10+30, 18, mais 2d12 trevas).
 Centelha Divina O Avatar de Tenebra pode lançar qualquer magia como um clérigo de 20º nível sem gastar PM (CD 51, limite de PM 20). Para magias de necromancia, o Avatar recebe +4 na CD e no limite de PM.
 Deusa das Trevas Todo dano de trevas causado pelo Avatar ignora redução de dano e, contra criaturas imunes a trevas, ainda causa metade do dano.
@@ -546,7 +567,9 @@ Tesouro Pena flamejante (se o portador da pena morrer, ela é automaticamente co
           resumo: "Exceto talvez por Nimb, nenhuma outra divindade usa aparências tão variadas quanto Valkaria.",
           texto:
 `Avatar de Valkaria ND S+
-Exceto talvez por Nimb, nenhuma outra divindade usa aparências tão variadas quanto Valkaria. Quando visita o mundo mortal (o que ela faz muito mais vezes do que seria prudente), a deusa pode surgir como alguém alta ou baixa, esbelta ou robusta, de qualquer etnia. Como única constante, será uma mulher humana. Mas a deusa tem algumas personas favoritas. Algumas vezes surge como a célebre estátua, invocando a imagem da dama em apuros, inspirando heróis a salvá-la. Em outras, será uma barda jovial ou uma guerreira mercenária (como fez muitas vezes quando estava em cativeiro, exclusivamente nos limites da cidade). Ou, quando deseja ser reconhecida, usa sua forma esplendorosa em armadura resplandecente, como líder do Panteão. Valkaria quase nunca entra em combate como avatar — porque isso significa roubar de seus amados heróis uma oportunidade de vitória. Mas houve a ocasião em que enfrentou seus próprios Libertadores, como a última guardiã no Labirinto de Valkaria, com toda a sua força.
+Exceto talvez por Nimb, nenhuma outra divindade usa aparências tão variadas quanto Valkaria. Quando visita o mundo mortal (o que ela faz muito mais vezes do que seria prudente), a deusa pode surgir como alguém alta ou baixa, esbelta ou robusta, de qualquer etnia. Como única constante, será uma mulher humana. Mas a deusa tem algumas personas favoritas.
+Algumas vezes surge como a célebre estátua, invocando a imagem da dama em apuros, inspirando heróis a salvá-la. Em outras, será uma barda jovial ou uma guerreira mercenária (como fez muitas vezes quando estava em cativeiro, exclusivamente nos limites da cidade). Ou, quando deseja ser reconhecida, usa sua forma esplendorosa em armadura resplandecente, como líder do Panteão.
+Valkaria quase nunca entra em combate como avatar — porque isso significa roubar de seus amados heróis uma oportunidade de vitória. Mas houve a ocasião em que enfrentou seus próprios Libertadores, como a última guardiã no Labirinto de Valkaria, com toda a sua força.
 Espírito (humano) Médio
 Iniciativa +32, Percepção +24
 Defesa 68, Fort +33, Ref +25, Von +38, imunidade a efeitos mentais e de movimento e a medo, maior que a morte, redução de dano 20, resistência a magia +5
@@ -577,12 +600,13 @@ Equipamento Valkaria costumava empregar como arma pessoal o Desbravador, um mang
           resumo: "Wynna visita Arton com razoável frequência.",
           texto:
 `Avatar de Wynna ND S
-Wynna visita Arton com razoável frequência. Ela pode ser vista em cerimônias e eventos especiais na Academia Arcana, nas maiores cidades de Wynlla e também na capital Valkaria — onde tem seu próprio camarote na luxuriosa casa de espetáculos Canção das Deusas. A Deusa da Magia se manifesta como uma maga exuberante de cabelo esverdeado e olhos brilhantes de cores variadas, diferentes a cada vez que são observados. Muitas vezes era representada trajando fitas coloridas unidas por anéis metálicos, que adornam escassamente seu corpo, mas tem sido mais comum vê-la em vestidos elaborados. Por sua vaidade, é raro que Wynna utilize outra aparência. Quando deseja passar despercebida, contudo, surge como uma bruxa em sua vassoura, um humano ilusionista gordo e bonachão, um jovem mago de chapéu pontudo ou outro conjurador arquetípico. Também houve vezes em que tomou emprestada a forma de Nielendorane de Lenórienn, arquimaga élfica lendária hoje residindo em seu reino divino.
+Wynna visita Arton com razoável frequência. Ela pode ser vista em cerimônias e eventos especiais na Academia Arcana, nas maiores cidades de Wynlla e também na capital Valkaria — onde tem seu próprio camarote na luxuriosa casa de espetáculos Canção das Deusas. A Deusa da Magia se manifesta como uma maga exuberante de cabelo esverdeado e olhos brilhantes de cores variadas, diferentes a cada vez que são observados. Muitas vezes era representada trajando fitas coloridas unidas por anéis metálicos, que adornam escassamente seu corpo, mas tem sido mais comum vê-la em vestidos elaborados.
+Por sua vaidade, é raro que Wynna utilize outra aparência. Quando deseja passar despercebida, contudo, surge como uma bruxa em sua vassoura, um humano ilusionista gordo e bonachão, um jovem mago de chapéu pontudo ou outro conjurador arquetípico. Também houve vezes em que tomou emprestada a forma de Nielendorane de Lenórienn, arquimaga élfica lendária hoje residindo em seu reino divino.
 Espírito Médio
 Iniciativa +26, Percepção +24
 Defesa 63, Fort +22, Ref +36, Von +30, imunidade a efeitos mentais e itens mundanos, maior que a morte, redução de dano 10, resistência a magia +5
 Pontos de Vida 1.800
-Deslocamento 9m (6q), voo 12m (9q)
+Deslocamento 9m (6q), voo 12m (8q)
 Corpo a Corpo Belo Presente +54 (1d4+11).
 ✦ Carícia Mágica (Padrão) O Avatar de Wynna pode abençoar uma criatura em alcance curto. A criatura aprende e pode lançar uma magia qualquer de 1º círculo, à escolha do Avatar (atributo-chave escolhido pela criatura entre Inteligência e Carisma).
 Centelha Divina O Avatar pode lançar qualquer magia como um conjurador de 20º nível sem gastar PM (CD 55, limite de PM 30).

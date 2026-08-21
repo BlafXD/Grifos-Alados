@@ -4221,10 +4221,12 @@
         const p = parte.trim();
         if (!p) return;
         let m;
-        if      (m = p.match(/^vo(?:o|ar)\s+(.+)/i))            setStat('desVoo',       m[1]);
-        else if (m = p.match(/^(?:nata[çc][ãa]o|nad\w+)\s+(.+)/i)) setStat('desNatacao',   m[1]);
-        else if (m = p.match(/^escal\w*\s+(.+)/i))              setStat('desEscalada',  m[1]);
-        else if (m = p.match(/^escav\w*\s+(.+)/i))              setStat('desEscavacao', m[1]);
+        // \w não pega letra acentuada: sem o [a-zà-ÿ], "escavação" e
+        // "natação" escapavam e o deslocamento sumia da ficha.
+        if      (m = p.match(/^vo(?:o|ar)\s+(.+)/i))              setStat('desVoo',       m[1]);
+        else if (m = p.match(/^(?:nata[çc][ãa]o|nad[a-zà-ÿ]*)\s+(.+)/i)) setStat('desNatacao', m[1]);
+        else if (m = p.match(/^escal[a-zà-ÿ]*\s+(.+)/i))         setStat('desEscalada',  m[1]);
+        else if (m = p.match(/^escav[a-zà-ÿ]*\s+(.+)/i))         setStat('desEscavacao', m[1]);
         else if (k === 0)                                       setStat('deslocamento', p);
       });
     }
