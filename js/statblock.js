@@ -36,10 +36,27 @@ window.GA_Statblock = (function () {
     return window.ItensDescricoes ? window.ItensDescricoes.marcar(txt) : esc(txt);
   }
 
+  // ── SELO DE HABILIDADE MÁGICA ────────────────────────────────────
+  // No livro é um ícone ao lado do nome da habilidade; nas bibliotecas
+  // ele vive como um "✦" no começo da linha. Importa em jogo: só uma
+  // habilidade MÁGICA pode ser alvo de Dissipar Magia (e de contramágica,
+  // dissipar como reação) e é ela que cai dentro de uma área de anulação.
+  const MARCA_MAGICA = '✦';
+  const DICA_MAGICA = 'Habilidade mágica — pode ser alvo de Dissipar Magia (inclusive como contramágica) e é anulada onde a magia não funciona.';
+  const seloMagico = '<span class="sb-magica" title="' + DICA_MAGICA + '" aria-label="habilidade mágica">' +
+                     MARCA_MAGICA + '<span class="sb-magica-rot">mágica</span></span> ';
+
   // Uma linha do statblock → HTML formatado
   function linha(l) {
     l = String(l || '').trim();
     if (!l) return '';
+
+    // habilidade mágica: tira o ✦ do texto e devolve como selo
+    if (l.indexOf(MARCA_MAGICA) === 0) {
+      const resto = linha(l.slice(MARCA_MAGICA.length).trim());
+      return resto.replace(/^(<div class="[^"]*)"/, '$1 npc-linha--magica"')
+                  .replace(/^(<div[^>]*>)/, '$1' + seloMagico);
+    }
 
     // marcador de magia / engenhoca
     if (l.startsWith('•')) {
@@ -87,5 +104,16 @@ window.GA_Statblock = (function () {
     return html;
   }
 
-  return { linha: linha, bloco: bloco, marcar: marcar, RE_TIPO: RE_TIPO };
+  // Texto solto (quadros de regra) → HTML com o selo mágico nas linhas
+  // que começam com ✦. Mesma marca dos statblocks, para "Metamorfose
+  // Dracônica" no quadro dos dragões aparecer igual às das fichas.
+  function textoComSelo(txt) {
+    return String(txt || '').split('\n').map(l => {
+      const t = l.trim();
+      if (t.indexOf(MARCA_MAGICA) !== 0) return esc(t);
+      return seloMagico + esc(t.slice(MARCA_MAGICA.length).trim());
+    }).join('<br>');
+  }
+
+  return { linha: linha, bloco: bloco, marcar: marcar, textoComSelo: textoComSelo, RE_TIPO: RE_TIPO };
 })();

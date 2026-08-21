@@ -390,7 +390,7 @@ Magias O centauro xamã lança magias como um clérigo de Allihanna de 3º níve
 • Controlar Plantas (Padrão, 2 PM) Uma área quadrada de 9m de lado de vegetação em alcance curto se torna terreno difícil. Criaturas na área quando a magia é lançada ou no início de seus próprios turnos ficam enredadas e imóveis (Fortitude evita). Uma vítima pode se libertar com uma ação padrão e um teste de Acrobacia ou Atletismo.
 • Curar Ferimentos (Padrão, 3 PM) Uma criatura adjacente cura 4d8+4 PV.
 Medo de Altura Se estiver adjacente a uma queda de 3m ou mais de altura, o centauro fica abalado.
-Voz da Natureza O centauro está sempre sob efeito da magia Voz Divina, apenas para falar com animais.
+✦ Voz da Natureza O centauro está sempre sob efeito da magia Voz Divina, apenas para falar com animais.
 For 4, Des 1, Con 3, Int –1, Sab 4, Car 0
 Perícias Religião +8, Sobrevivência +10.
 Equipamento Bordão aumentado, símbolo sagrado de Allihanna. Tesouro Metade.`
@@ -553,7 +553,8 @@ Defesa 23, Fort +16, Ref +10, Von +0
 Pontos de Vida 130
 Deslocamento 9m (6q)
 Corpo a Corpo Tacape +16 (1d12+18).
-Burro Demais... O ogro sofre –5 em testes de Intuição e Vontade (já contabilizados na ficha). ...Para Morrer! Todo o dano de corte, impacto e perfuração que o ogro sofre é reduzido à metade.
+Burro Demais... O ogro sofre –5 em testes de Intuição e Vontade (já contabilizados na ficha).
+...Para Morrer! Todo o dano de corte, impacto e perfuração que o ogro sofre é reduzido à metade.
 For 7, Des 0, Con 4, Int –3, Sab –2, Car –2
 Perícias Atletismo +12, Intuição –5.
 Equipamento Tacape aumentado. Tesouro Padrão.`
@@ -887,7 +888,7 @@ Pontos de Vida 180
 Deslocamento 12m (8q)
 Pontos de Mana 55
 Corpo a Corpo Adaga +22 (1d4, 19, mais 1d8 trevas).
-Ergam-se! (Completa, 5 PM) O necromante conjura seis mortos-vivos em espaços desocupados em alcance curto. Eles agem a partir da próxima rodada do necromante, têm deslocamento 9m e podem gastar uma ação padrão para causar 2d8 pontos de dano de trevas em uma criatura adjacente. Os mortos-vivos têm For 3, Des 3, Defesa 25, 1 PV e as habilidades de mortos-vivos (veja página 284), falham automaticamente em qualquer teste oposto e desaparecem quando mortos ou ao fim da cena.
+✦ Ergam-se! (Completa, 5 PM) O necromante conjura seis mortos-vivos em espaços desocupados em alcance curto. Eles agem a partir da próxima rodada do necromante, têm deslocamento 9m e podem gastar uma ação padrão para causar 2d8 pontos de dano de trevas em uma criatura adjacente. Os mortos-vivos têm For 3, Des 3, Defesa 25, 1 PV e as habilidades de mortos-vivos (veja página 284), falham automaticamente em qualquer teste oposto e desaparecem quando mortos ou ao fim da cena.
 Sacrificar Servo (Reação) Uma vez por rodada, quando sofre dano, o necromante sacrifica um de seus mortos-vivos conjurados para reduzir esse dano a 0.
 Magias O necromante lança magias como um mago de 7º nível (CD 26, 28 para necromancia*).
 • Amedrontar* (Padrão, 7 PM) Animais e humanoides a escolha do necromante em alcance curto ficam apavorados por 1d4+1 rodadas e depois abalados (Vontade reduz para abalado).
@@ -911,9 +912,9 @@ Pontos de Vida 550
 Defesa 45, Fort +12, Ref +26, Von +20, cura acelerada 10, redução de dano 10/luz.
 Deslocamento 18m (12q), escalar 18m (12q)
 Corpo a Corpo Espada longa x2 +36 (2d8+5, 17, mais 2d10 trevas) e garra +36 (2d6+25 mais 2d10 trevas).
-Dominação Vampírica (Padrão) O vampiro sussurra palavras de controle para um humanoide em alcance curto. A vítima fica confusa, enfeitiçada ou fascinada até o final da cena ou perde suas memórias da última hora, a escolha do vampiro (Von CD 29 evita). Uma criatura só pode ser alvo desta habilidade uma vez por cena.
+✦ Dominação Vampírica (Padrão) O vampiro sussurra palavras de controle para um humanoide em alcance curto. A vítima fica confusa, enfeitiçada ou fascinada até o final da cena ou perde suas memórias da última hora, a escolha do vampiro (Von CD 29 evita). Uma criatura só pode ser alvo desta habilidade uma vez por cena.
 Drenar Sangue (Padrão) O vampiro drena sangue de uma criatura viva que esteja agarrando; ele causa 6d6 pontos de dano de perfuração e recupera a mesma quantidade de PV. Uma criatura morta pelo vampiro desta forma se erguerá como um vampiro na próxima noite e deverá vencer um teste de Vontade oposto contra o vampiro ou ficará sob o controle dele até que ele a liberte ou seja destruído.
-Forma de Morcego (Padrão) O vampiro se transforma em um morcego. Ele se torna Minúsculo (+5 em Furtividade e –5 em testes de manobra) e recebe deslocamento de voo 12m. Seu equipamento é absorvido (retornando quando ele volta ao normal) e suas outras estatísticas não são alteradas. A transformação dura quanto tempo ele desejar, mas termina caso faça um ataque, lance uma magia ou sofra dano.
+✦ Forma de Morcego (Padrão) O vampiro se transforma em um morcego. Ele se torna Minúsculo (+5 em Furtividade e –5 em testes de manobra) e recebe deslocamento de voo 12m. Seu equipamento é absorvido (retornando quando ele volta ao normal) e suas outras estatísticas não são alteradas. A transformação dura quanto tempo ele desejar, mas termina caso faça um ataque, lance uma magia ou sofra dano.
 Presença Majestosa (Reação) Quando uma criatura ataca o vampiro, deve passar em um teste de Vontade (CD 29) ou não conseguirá machucá-lo e perderá a ação. Uma criatura que passe no teste de Vontade não é mais afetada por esta habilidade até o fim da cena.
 Sensibilidade ao Sol Quando exposto a luz solar direta, o vampiro fica ofuscado e perde 6d6 PV por rodada.
 For 6, Des 5, Con 5, Int 3, Sab 3, Car 6
@@ -1630,7 +1631,7 @@ Equipamento Armadura completa de adamante, machado de batalha de adamante atroz.
 Aura Aterradora. A simples visão de um dragão adulto ou mais velho amedronta o mais valente dos aventureiros. Uma criatura que comece seu turno em alcance longo do dragão fica apavorada (se tiver 4 níveis ou menos) ou abalada (se tiver 5 níveis ou mais) até o fim da cena (Vontade evita). Uma criatura que passe no teste de resistência fica imune a esta habilidade por um dia.
 Imunidades. Dragões são imunes a efeitos de atordoamento, cansaço, dano do tipo de seu sopro, metamorfose e paralisia.
 Magia Dracônica. Dragões adultos ou mais velhos podem lançar magias sem palavras mágicas, gestos ou concentração.
-Metamorfose Dracônica (Completa). Dragões jovens ou mais velhos podem se transformar em outras criaturas, como a magia Metamorfose (mas sem limitação para tamanhos menores que o seu). Eles costumam usar esta habilidade para se infiltrar em sociedades humanoides, aprender sobre seus costumes ou apenas quando não querem ser reconhecidos. Um dragão morto reverte à sua forma original.
+✦ Metamorfose Dracônica (Completa). Dragões jovens ou mais velhos podem se transformar em outras criaturas, como a magia Metamorfose (mas sem limitação para tamanhos menores que o seu). Eles costumam usar esta habilidade para se infiltrar em sociedades humanoides, aprender sobre seus costumes ou apenas quando não querem ser reconhecidos. Um dragão morto reverte à sua forma original.
 Resistência a Magia. Dragões filhotes têm resistência a magia +1. Esse bônus aumenta em +1 para cada categoria de idade acima de filhote.
 Sopro (Padrão). O dragão cospe energia em uma área. A área do sopro, o tipo de energia e o dano dependem do dragão. Recarga (movimento).` },
         { titulo: "Couro de Dragão",

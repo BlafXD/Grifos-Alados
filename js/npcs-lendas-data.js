@@ -174,12 +174,12 @@ Perícias Atletismo +10, Diplomacia +13, Guerra +9, Intuição +8, Nobreza +11, 
 Equipamento Cota de malha reforçada, escudo pesado reforçado de madeira Tollon, machado de batalha pungente maciço, tabardo aprimorado. Tesouro Padrão.`
       },
       {
-        chave: "dok", nome: "Dok", nd: "–", tipo: "Humanoide (goblin) Pequeno",
+        chave: "dok", nome: "Dok", nd: "12", tipo: "Humanoide (goblin) Pequeno",
         papel: '',
         fontes: "Crônicas da Tormenta Vol. 2, A Joia da Alma, A Deusa no Labirinto",
         resumo: "Muito se fala sobre o martírio dos elfos com a queda de Lenórienn, mas quando guerras explodem, o sofrimento se faz presente em todos os lados.",
         texto:
-`Dok ND –
+`Dok ND 12
 Muito se fala sobre o martírio dos elfos com a queda de Lenórienn, mas quando guerras explodem, o sofrimento se faz presente em todos os lados. Dok começou sua vida como salteador no continente sul, transformando sucata em apetrechos para uso do bando. O barulho das geringonças, contudo, sempre alertava as vítimas e os ataques fracassavam. Expulso, o goblin passou a mendigar nas estradas. Um dia, acordou à base de pontapés. Estava sendo “recrutado” para a Aliança Negra. Tornou-se um dos milhares de goblins com limitado treinamento militar a inchar as fileiras da horda de Thwor. Sua inventividade foi a única coisa capaz de mantê-lo vivo em meio a constantes batalhas, e por fim ofereceu meios para que fugisse do conflito. Depois da deserção, conheceu sua companheira Mushna, com quem teve seu único filho e desfrutou de um pouco de felicidade em meio a uma vida de infortúnios. A guerra, porém, ainda tinha assuntos com ele. Teve sua caverna queimada por goblinoides e foi capturado por elfos, escapando em meio à queda de Lenórienn para o continente norte junto com a elfa Gwendolynn, que se tornaria sua melhor amiga. Atualmente, Dok é um dos maiores inventores de Arton, transformando qualquer coisa em engenhocas barulhentas, mas estranhamente eficientes. Se seu antigo bando pudesse vê-lo agora…
 Humanoide (goblin) Pequeno
 Iniciativa +11, Percepção +11, visão no escuro
@@ -223,7 +223,7 @@ Rei das Ilusões Fiz-grin pode lançar qualquer magia de ilusão, arcana ou divi
 Roubar Magia (Reação) Uma vez por rodada, quando vê outra criatura em alcance curto sendo alvo de uma magia, Fiz-grin pode roubar o efeito dessa magia. O alvo da magia deve fazer um teste de Vontade (CD 37); se falhar, Fiz-grin recebe o efeito da magia em seu lugar.
 Sentidos Onipresentes Fiz-grin sabe de tudo que acontece em seu bosque, sem necessidade de testes.
 Sopro Iridescente (Padrão) Fiz-grin sopra pó iridescente em um cone de 9m. Criaturas na área ficam atordoadas por 1 rodada (apenas uma vez por cena, Von CD 37 evita) e ofuscadas (criaturas cegas não sofrem essas condições) e são cobertas por uma aura brilhante que impede que recebam camuflagem por escuridão ou invisibilidade até o fim da cena. Ilusão. Recarga (movimento).
-Visão Feérica Fiz-grin está permanentemente sob efeito da magia Visão Mística. Dentro de seu bosque, ele recebe o aprimoramento que permite enxergar criaturas e objetos invisíveis.
+✦ Visão Feérica Fiz-grin está permanentemente sob efeito da magia Visão Mística. Dentro de seu bosque, ele recebe o aprimoramento que permite enxergar criaturas e objetos invisíveis.
 For 0, Des 4, Con 1, Int 4, Sab 3, Car 5
 Perícias Conhecimento +14, Diplomacia +15, Enganação +20, Furtividade +16 (+26 em seu bosque), Jogatina +17, Ladinagem +16, Intuição +13, Misticismo +16, Sobrevivência +15.
 Tesouro Padrão.`
@@ -243,11 +243,11 @@ Pontos de Vida 240
 Deslocamento 9m (6q), escalar 9m (6q)
 Pontos de Mana 29
 Corpo a Corpo Espada curta x2 +26 (1d6+20 não letal, 19).
-Aura Sagrada (Livre, 1 PM, sustentada) O Goblin Herói gera uma aura de luz com 9m de raio. Ela e seus aliados dentro da aura recebem +5 em testes de resistência e curam 11 PV no início de seus turnos.
+✦ Aura Sagrada (Livre, 1 PM, sustentada) O Goblin Herói gera uma aura de luz com 9m de raio. Ela e seus aliados dentro da aura recebem +5 em testes de resistência e curam 11 PV no início de seus turnos.
 Camuflagem Urbana Em ambientes urbanos, o Goblin Herói pode se esconder mesmo sem camuflagem ou cobertura disponível.
-Cura pelas Mãos (Movimento, 2 PM) O Goblin Herói cura 4d6+13 pontos de vida de uma criatura em alcance curto. Quando usa esta habilidade, ela pode gastar +1 PM para anular uma condição do alvo entre abalado, apavorado, atordoado, cego, doente, exausto, fatigado ou surdo.
+✦ Cura pelas Mãos (Movimento, 2 PM) O Goblin Herói cura 4d6+13 pontos de vida de uma criatura em alcance curto. Quando usa esta habilidade, ela pode gastar +1 PM para anular uma condição do alvo entre abalado, apavorado, atordoado, cego, doente, exausto, fatigado ou surdo.
 Devota de Lena Efeitos de cura usados pelo Goblin Herói e seus aliados em um raio de 9m recuperam +1 PV por dado, e o Goblin Herói soma o próprio Carisma aos PV restaurados por seus efeitos mágicos de cura (já contabilizado). Entretanto, como uma paladina da Deusa da Vida, ela segue as Obrigações & Restrições de Lena e o Código do Herói (veja Tormenta20, pp. 82 e 100).
-Golpe Divino (Livre, 3 PM) Quando faz um ataque corpo a corpo, o Goblin Herói soma o Carisma no teste de ataque e +2d8 na rolagem de dano.
+✦ Golpe Divino (Livre, 3 PM) Quando faz um ataque corpo a corpo, o Goblin Herói soma o Carisma no teste de ataque e +2d8 na rolagem de dano.
 Lobo Fiel O Goblin Herói cavalga um corajoso lobo veterano (veja Tormenta20, p. 262). Enquanto ela estiver montada seu deslocamento normal se torna 15m e ela recebe +1d6 em rolagens de dano corpo a corpo.
 For 1, Des 4, Con 1, Int 2, Sab 1, Car 5
 Perícias Adestramento +13, Atletismo +9, Cavalgar +12, Cura +15, Furtividade +11 (+9 montada), Investigação +10, Religião +9.
@@ -270,11 +270,11 @@ Deslocamento 6m (4q)
 Pontos de Mana 39
 Corpo a Corpo Espada bastarda x3 +36 (2d10+30 não letal, 17).
 Anular a Si Como um paladino devoto de Thyatis, Gregor segue o Código do Herói e as Obrigações & Restrições do Deus da Ressurreição (veja Tormenta20, pp. 82 e 104). Entretanto, quando justificado por sua própria insanidade, ele pode violar ambos sem penalidades.
-Aura Sagrada (Livre, 1 PM, sustentada) Gregor Vahn gera uma aura de luz com 9m de raio. Ele e seus aliados dentro da aura recebem +3 em testes de resistência.
-Cura pelas Mãos (Movimento, 3 PM) Gregor cura 3d8+3 pontos de vida de uma criatura adjacente. Quando usa esta habilidade, ele pode gastar +1 PM para anular uma condição do alvo entre abalado, apavorado, atordoado, cego, doente, exausto, fatigado ou surdo.
-Dom da Imortalidade Gregor é imortal. Sempre que morre, não importando o motivo, ele volta à vida após 3d6 dias.
+✦ Aura Sagrada (Livre, 1 PM, sustentada) Gregor Vahn gera uma aura de luz com 9m de raio. Ele e seus aliados dentro da aura recebem +3 em testes de resistência.
+✦ Cura pelas Mãos (Movimento, 3 PM) Gregor cura 3d8+3 pontos de vida de uma criatura adjacente. Quando usa esta habilidade, ele pode gastar +1 PM para anular uma condição do alvo entre abalado, apavorado, atordoado, cego, doente, exausto, fatigado ou surdo.
+✦ Dom da Imortalidade Gregor é imortal. Sempre que morre, não importando o motivo, ele volta à vida após 3d6 dias.
 Duro de Matar (Reação) Uma vez por cena, se sofrer dano que fosse reduzir seus PV a 0 menos, em vez disso Gregor fica com 1 PV.
-Golpe Divino (Livre, 4 PM) Quando faz um ataque corpo a corpo, Gregor soma o Carisma no teste de ataque e +3d8 na rolagem de dano. Quando usa esta habilidade, Gregor ofusca todos os inimigos em um raio de 9m até o início do próximo turno dele.
+✦ Golpe Divino (Livre, 4 PM) Quando faz um ataque corpo a corpo, Gregor soma o Carisma no teste de ataque e +3d8 na rolagem de dano. Quando usa esta habilidade, Gregor ofusca todos os inimigos em um raio de 9m até o início do próximo turno dele.
 Orar Gregor pode lançar as seguintes magias divinas (CD 33).
 • Arma Mágica (Padrão, 3 PM) Até o fim da cena, uma arma adjacente se torna mágica, fornecendo +1 nos testes de ataque e rolagens de dano e +1d6 pontos de dano de fogo.
 • Escudo da Fé (Reação, 3 PM) Quando uma criatura em alcance curto sofre um ataque, ela recebe +3 na Defesa por 1 turno.
@@ -298,11 +298,11 @@ Deslocamento 9m (6q)
 Pontos de Mana 91
 Corpo a Corpo Cajado da destruição x2 +41 (2d6+10 mais 4d12 essência).
 Colecionadora Arcana Quando encontrada pela primeira vez, Haggenfar possui 2d6 pergaminhos contendo magias adequadas à situação.
-Escudo Místico Quando Haggenfar lança uma magia, ela recebe 5 PV temporários para cada PM gasto nessa magia.
+✦ Escudo Místico Quando Haggenfar lança uma magia, ela recebe 5 PV temporários para cada PM gasto nessa magia.
 Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, Haggenfar muda a execução dela para livre.
 Magia Ampliada (Livre, +2 PM) Quando lança uma magia, Haggenfar pode aumentar seu alcance em um passo (de curto para médio, de médio para longo) ou dobrar sua área de efeito.
 Magia Discreta (Livre, +2 PM) Quando lança uma magia, Haggenfar não precisa gesticular ou falar, e pode lançar a magia com as mãos presas, amordaçada etc. Perceber que ela lançou uma magia exige passar em um teste de Misticismo (CD 20).
-Visão Mística Permanente Haggenfar está permanentemente sob efeito da magia Visão Mística com o aprimoramento que permite enxergar criaturas e objetos invisíveis.
+✦ Visão Mística Permanente Haggenfar está permanentemente sob efeito da magia Visão Mística com o aprimoramento que permite enxergar criaturas e objetos invisíveis.
 Magias Como uma feiticeira de 15º nível (CD 42, limite de PM 20). Haggenfar pode lançar tanto magias arcanas quanto divinas.
 • Campo de Força (Reação, 10 PM) Quando sofre dano, Gwen recebe redução de dano 70 contra esse dano.
 • Curar Ferimentos (Padrão, 19 PM) Uma criatura adjacente cura 20d8+20 PV ou criaturas escolhidas em alcance curto curam 15d8+15.
@@ -331,7 +331,7 @@ Pontos de Vida 710
 Deslocamento 12m (8q), ignora terreno difícil
 Pontos de Mana 220
 Corpo a Corpo Cajado de batalha x3 +47 (4d8+25 mais 4d10 luz).
-Canalizar Energia Positiva (Padrão, 1 PM+) Gwen libera uma onda de energia positiva que afeta criaturas a sua escolha em alcance curto. Para cada PM gasto, as criaturas escolhidas curam 1d6 PV ou, se forem mortos-vivos, sofrem 1d6 pontos de dano de luz (Von CD 46 reduz à metade).
+✦ Canalizar Energia Positiva (Padrão, 1 PM+) Gwen libera uma onda de energia positiva que afeta criaturas a sua escolha em alcance curto. Para cada PM gasto, as criaturas escolhidas curam 1d6 PV ou, se forem mortos-vivos, sofrem 1d6 pontos de dano de luz (Von CD 46 reduz à metade).
 Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, Gwen muda a execução dela para livre.
 Prece de Combate (+2 PM) Quando lança uma magia divina com tempo de conjuração de uma ação padrão em si mesma, Gwen pode lançá-la como uma ação de movimento.
 Romper os Grilhões (Movimento) Gwen encerra todas as condições mentais e de medo, metamorfose e movimento em qualquer número de criaturas a sua escolha em alcance médio.
@@ -413,7 +413,7 @@ Deslocamento 24m (16q), ignora terreno difícil
 Corpo a Corpo Cascos x2 +46 (4d8+36). Os cascos de Hippion são armas mágicas.
 Atropelamento (Completa) Hippion percorre até o dobro do seu deslocamento. Ele pode passar pelo espaço ocupado de quaisquer inimigos menores que ele, mas não pode passar duas vezes pelo mesmo espaço. Criaturas atropeladas desta forma sofrem 4d8+18 pontos de dano de impacto e ficam caídas (Ref CD 42 reduz à metade e evita a condição).
 Recarga (movimento).
-Velocidade do Vento (Livre) Até o fim da cena, Hippion pode executar uma ação padrão adicional por turno, que não pode ser usada para lançar magias. Este efeito se encerra se Hippion passar uma rodada sem percorrer pelo menos 15m e só pode ser ativado uma vez por cena.
+✦ Velocidade do Vento (Livre) Até o fim da cena, Hippion pode executar uma ação padrão adicional por turno, que não pode ser usada para lançar magias. Este efeito se encerra se Hippion passar uma rodada sem percorrer pelo menos 15m e só pode ser ativado uma vez por cena.
 For 10, Des 4, Con 5, Int 1, Sab 5, Car 3
 Perícias Atletismo +29 (+39 para corrida e saltar), Intuição +19, Sobrevivência +19.
 Tesouro Nenhum.
@@ -545,12 +545,12 @@ Pontos de Vida 390
 Deslocamento 9m (6q)
 Pontos de Mana 96
 Corpo a Corpo Punhal escarlate +35 (1d4+5, 19, mais 1d6 essência e veneno).
-Aura de Medo (Livre, 2 PM) A irmã da Nova Escama gera uma aura de medo de 9m de raio que dura até o fim da cena. Todos os inimigos que entram na aura ficam abalados até o fim da cena (Von CD 37 evita e a criatura fica imune a esta habilidade por um dia).
+✦ Aura de Medo (Livre, 2 PM) A irmã da Nova Escama gera uma aura de medo de 9m de raio que dura até o fim da cena. Todos os inimigos que entram na aura ficam abalados até o fim da cena (Von CD 37 evita e a criatura fica imune a esta habilidade por um dia).
 Linhagem Dracônica Cada irmã herdou afinidade com um tipo de energia (fogo para Hemera, ácido para Acteia e eletricidade para Ilítia). Cada irmã tem imunidade a dano desse tipo e suas magias que causam dano desse tipo custam –1 PM e causam +1 ponto de dano por dado. Por fim, sempre que reduz um ou mais inimigos a 0 PV ou menos com uma magia do tipo escolhido, a irmã recebe uma quantidade de PM temporários igual ao círculo da magia.
 Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, a irmã muda a execução dela para livre.
 Olhar Atordoante (Movimento) Uma criatura em alcance curto fica atordoada por 1 rodada (apenas uma vez por cena; Fort CD 37 evita).
 Serpentes Dracônicas (Livre, +1 PM) Quando usa seu Sopro ou lança uma magia que causa dano do tipo de sua linhagem dracônica, a irmã aumenta o dano dessa habilidade em +1d12.
-Servos do Dragão (Completa, 2 PM) A irmã invoca 2d4+1 kobolds em espaços desocupados em alcance curto. Eles agem a partir da próxima rodada da irmã, têm deslocamento 9m e podem gastar uma ação padrão para causar 1d6-1 pontos de dano de corte em uma criatura adjacente. Os kobolds têm For –1, Des 4, Defesa 12 e 1 PV, falham automaticamente em qualquer teste oposto ou de resistência e desaparecem quando mortos ou ao fim da cena.
+✦ Servos do Dragão (Completa, 2 PM) A irmã invoca 2d4+1 kobolds em espaços desocupados em alcance curto. Eles agem a partir da próxima rodada da irmã, têm deslocamento 9m e podem gastar uma ação padrão para causar 1d6-1 pontos de dano de corte em uma criatura adjacente. Os kobolds têm For –1, Des 4, Defesa 12 e 1 PV, falham automaticamente em qualquer teste oposto ou de resistência e desaparecem quando mortos ou ao fim da cena.
 Sopro (Padrão) Todas as criaturas em um cone de 9m sofrem 4d12 pontos de dano de um tipo conforme a Linhagem Dracônica da irmã e ficam ofuscadas por 1d4 rodadas (se o dano for de eletricidade), em chamas (se o dano for de fogo) ou vulneráveis por 1d4 rodadas (se o dano for de ácido) (Ref CD 37 reduz à metade e evita a condição).
 Recarga (movimento).
 Veneno Perde 1d12 pontos de vida.
@@ -606,9 +606,9 @@ Defesa 28, Fort +15, Ref +9, Von +21, imunidade a fogo, proteção divina, redu�
 Pontos de Vida 232
 Deslocamento 9m (6q)
 Pontos de Mana 150 Almejar o Impossível Quando Khorr’benn faz um teste de perícia, um resultado de 19 ou mais no dado sempre é um sucesso.
-Dom da Imortalidade Khorr’benn é imortal. Sempre que morre, não importando o motivo, volta à vida após 3d6 dias.
-Previsões Astrológicas Khorr’benn pode gastar 1 hora para vislumbrar o futuro de uma criatura em alcance curto. A criatura recebe 6d6 que duram até serem usados ou até o fim da aventura. Sempre que for realizar um teste de perícia, ela pode gastar até 2d6 e adicionar o resultado como um bônus no teste.
-Protetores Duyshidakk (Completa, 2 PM) Khorr’benn invoca 2d4 guardiões goblinoides em espaços desocupados em alcance médio. Eles agem a partir da próxima rodada de Khorr’benn, têm deslocamento 9m e podem gastar uma ação padrão para causar 2d4+3 pontos de dano de corte em uma criatura adjacente. Os goblinoides têm For 1, Des 1, Defesa 21, 1 PV e falham automaticamente em qualquer teste de resistência ou oposto. Eles desaparecem quando morrem ou no fim da cena.
+✦ Dom da Imortalidade Khorr’benn é imortal. Sempre que morre, não importando o motivo, volta à vida após 3d6 dias.
+✦ Previsões Astrológicas Khorr’benn pode gastar 1 hora para vislumbrar o futuro de uma criatura em alcance curto. A criatura recebe 6d6 que duram até serem usados ou até o fim da aventura. Sempre que for realizar um teste de perícia, ela pode gastar até 2d6 e adicionar o resultado como um bônus no teste.
+✦ Protetores Duyshidakk (Completa, 2 PM) Khorr’benn invoca 2d4 guardiões goblinoides em espaços desocupados em alcance médio. Eles agem a partir da próxima rodada de Khorr’benn, têm deslocamento 9m e podem gastar uma ação padrão para causar 2d4+3 pontos de dano de corte em uma criatura adjacente. Os goblinoides têm For 1, Des 1, Defesa 21, 1 PV e falham automaticamente em qualquer teste de resistência ou oposto. Eles desaparecem quando morrem ou no fim da cena.
 Punição Divina (Padrão) Von CD 30 evita.
 Magias Como um clérigo de Thwor de 9º nível (CD 30, limite de PM 14).
 • Amedrontar (Padrão, 3 PM) Um animal ou humanoide em alcance curto fica apavorado por 1d4+1 rodadas e depois abalado (Von reduz para abalado por 1d4 rodadas).
@@ -685,12 +685,11 @@ Deslocamento 9m (6q), voo 12m (8q), ignora terreno difícil natural
 Pontos de Mana 98
 Corpo a Corpo Espada bastarda x2 +55 (2d12+30, 17) e gavinhas x4 +55 (3d8+30 impacto, alcance 3m).
 Chuva de Estacas (Movimento, 4 PM) Lisandra evoca uma chuva de estacas sobre uma área de 9m de raio em alcance médio. Criaturas na área sofrem 10d12 pontos de dano de corte e ficam sangrando (Ref CD 40 reduz à metade e evita a condição).
-Criar Toscos (Movimento, 2 PM) Lisandra invoca 2d4+1 toscos capangas em espaços desocupados em alcance curto. Eles agem a partir da próxima rodada de Lisandra, têm
-deslocamento 9m e podem gastar uma ação padrão para causar 2d6+2 pontos de dano de corte em uma criatura adjacente. Os toscos têm For 4, Des 4, Defesa 55 e 1 PV, falham automaticamente em qualquer teste oposto ou de resistência e desaparecem quando mortos ou ao fim da cena.
+✦ Criar Toscos (Movimento, 2 PM) Lisandra invoca 2d4+1 toscos capangas em espaços desocupados em alcance curto. Eles agem a partir da próxima rodada de Lisandra, têm deslocamento 9m e podem gastar uma ação padrão para causar 2d6+2 pontos de dano de corte em uma criatura adjacente. Os toscos têm For 4, Des 4, Defesa 55 e 1 PV, falham automaticamente em qualquer teste oposto ou de resistência e desaparecem quando mortos ou ao fim da cena.
 Empatia Selvagem Lisandra pode se comunicar com animais por meio de linguagem corporal e vocalizações. Ela pode usar Adestramento para mudar atitude e pedir favores de animais.
 Fluxo de Mana Lisandra pode manter dois efeitos sustentados simultaneamente com apenas uma ação livre (mas pagando o custo de cada um).
 Força da Natureza O custo de todas as magias de Lisandra é reduzido em –2 PM e a CD para resistir a elas aumenta em +2 (já contabilizado). Esses bônus dobram (–4 PM e +4 na CD) se ela estiver em terrenos naturais.
-Forma de Madeira (Movimento) Uma camada de matéria vegetal cobre Lisandra até o fim da cena, formando uma armadura e dando a ela asas e gavinhas fortes e resistentes. Lisandra recebe +15 na Defesa, deslocamento de voo 12m (8q) e quatro ataques corpo a corpo com suas gavinhas. Ela também cria uma arma corpo a corpo qualquer, feita de madeira, ameaçadora e magnífica. As estatísticas da ficha consideram que esta habilidade está ativa.
+✦ Forma de Madeira (Movimento) Uma camada de matéria vegetal cobre Lisandra até o fim da cena, formando uma armadura e dando a ela asas e gavinhas fortes e resistentes. Lisandra recebe +15 na Defesa, deslocamento de voo 12m (8q) e quatro ataques corpo a corpo com suas gavinhas. Ela também cria uma arma corpo a corpo qualquer, feita de madeira, ameaçadora e magnífica. As estatísticas da ficha consideram que esta habilidade está ativa.
 Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, Lisandra muda a execução dela para livre.
 Punição Divina (Padrão) Von CD 55 evita.
 Magias Como uma druida de Allihanna de 20º nível (CD 55, limite de PM 28). Lisandra conhece todas as magias divinas, bem como todas as magias arcanas de convocação, evocação e transmutação.
@@ -733,12 +732,12 @@ Perícias Conhecimento +20, Cura +12, Diplomacia +12, Furtividade +15, Intuiçã
 Equipamento Ácido x2, balas de adamante x20, bálsamo restaurador x2, bomba x2, cimitarra discreta pungente precisa energética, couraça sob medida de mitral, gazua aprimorada, pistola precisa pungente com mira telescópica ameaçadora, três instrumentos de Ofício (alquimista, armeiro e engenhoqueiro) aprimorados. A CD para resistir aos preparados de Niebling é 37. Tesouro Padrão.`
       },
       {
-        chave: "lordeVectorius", nome: "Lorde Vectorius", nd: "–", tipo: "Humanoide (humano) Médio",
+        chave: "lordeVectorius", nome: "Lorde Vectorius", nd: "S", tipo: "Humanoide (humano) Médio",
         papel: '',
         fontes: "Holy Avenger, O Terceiro Deus",
         resumo: "Vectorius é um dos dois maiores conjuradores de Arton, com poder comparável apenas a Talude, antigo reitor da Academia Arcana — e seu maior rival.",
         texto:
-`Lorde Vectorius ND –
+`Lorde Vectorius ND S
 Vectorius é um dos dois maiores conjuradores de Arton, com poder comparável apenas a Talude, antigo reitor da Academia Arcana — e seu maior rival. Ao contrário de Talude, nunca enxergou a magia como uma arte a ser venerada em um templo ou academia, mas sim como uma ferramenta que deve ser constantemente posta em prática — e que pode ser perigosa nas mãos erradas. Irritado com a postura do rival, prometeu realizar um feito mágico superior à sua academia. Ao ouvir queixas de mercadores sobre as longas viagens que lhes privavam da companhia da família, teve uma ideia. Fez uma montanha inteira levitar, inverteu-a e a transformou na gigantesca ilha voadora que se tornaria sua maior criação: Vectora, o Mercado nas Nuvens. Sem pertencer a nenhum reino, a cidade comercial voa pelos céus do Reinado e além, conectando regiões e povos. Vectorius é seu protetor e governante, um comerciante astuto que já escapou ileso de muitas tentativas de assassinato. O mesmo não se pode dizer de sua cidade, que sofreu danos terríveis contra o Dragão da Tormenta. O arquimago, no entanto, a reergueu ainda mais poderosa, ostentando suas cicatrizes em ouro, como marcas orgulhosas de sua força.
 Humanoide (humano) Médio
 Iniciativa +20, Percepção +18, visão no escuro
@@ -748,13 +747,13 @@ Deslocamento 9m (6q)
 Pontos de Mana 400 Arcano de Batalha Vectorius soma sua Inteligência nas rolagens de dano quando lança magias ou usa seu Raio Arcano (já contabilizado).
 Contingência Arcana (Reação) Uma vez por cena, quando é alvo de um efeito hostil, Vectorius lança uma magia arcana a sua escolha.
 Contramágica Aprimorada (Reação) Uma vez por rodada, Vectorius faz uma contramágica.
-Escudo Místico (Reação) Quando lança uma magia, para cada PM gasto Vectorius recebe 5 PV temporários cumulativos.
+✦ Escudo Místico (Reação) Quando lança uma magia, para cada PM gasto Vectorius recebe 5 PV temporários cumulativos.
 Fluxo de Mana Vectorius pode manter dois efeitos sustentados simultaneamente com apenas 1 ação livre (mas pagando o custo de cada um).
 Magia Amplificada (Livre, +2 PM) Quando lança uma magia, Vectorius aumenta seu alcance em um passo (de toque para curto, de curto para médio, de médio para longo) ou triplica sua área de efeito.
 Magia Discreta (Livre, +2 PM) Quando lança uma magia, Vectorius não precisa gesticular ou falar, e pode lançar a magia com as mãos presas, amordaçado etc. Perceber que ele lançou uma magia exige passar em um teste de Misticismo (CD 30).
 Magias Aceleradas (Livre, +4 PM) Até duas vezes por rodada, quando lança uma magia com execução de ação completa ou menor, Vectorius muda a execução dela para livre. Se a magia for de 1º ou 2º círculo, ele não precisa pagar o custo adicional desta habilidade.
-Magias Permanentes Vectorius está permanentemente sob efeito das magias Compreensão, com o aprimoramento para alcance curto, e Visão Mística, com os aprimoramentos de visão no escuro e enxergar criaturas e objetos invisíveis.
-Raio Arcano (Movimento) Uma criatura em alcance médio sofre 5d12+14 pontos de dano de essência (Ref CD 55 reduz à metade).
+✦ Magias Permanentes Vectorius está permanentemente sob efeito das magias Compreensão, com o aprimoramento para alcance curto, e Visão Mística, com os aprimoramentos de visão no escuro e enxergar criaturas e objetos invisíveis.
+✦ Raio Arcano (Movimento) Uma criatura em alcance médio sofre 5d12+14 pontos de dano de essência (Ref CD 55 reduz à metade).
 Separação Mental Vectorius pode executar uma ação padrão adicional por rodada. Essa ação pode se originar de qualquer ponto em alcance médio para o qual ele tenha linha de visão (como se ele estivesse em dois lugares ao mesmo tempo).
 Magias Vectorius lança qualquer magia arcana como um mago de 20º nível (CD 55, limite de PM 34).
 For 1, Des 2, Con 3, Int 14, Sab 2, Car 4
@@ -856,7 +855,7 @@ Pontos de Mana 32
 Corpo a Corpo Bordão x2 +14 (1d6+6).
 Atraente Niala recebe +2 em testes de perícias baseadas em Carisma contra criaturas que possam se sentir fisicamente atraídas por ela.
 Desejos Se Niala lançar uma magia que alguém tenha pedido desde seu último turno, o custo da magia diminui em –1 PM.
-Escudo Mágico Quando lança uma magia, Niala recebe um bônus na Defesa igual ao círculo da magia lançada, até o início do seu próximo turno.
+✦ Escudo Mágico Quando lança uma magia, Niala recebe um bônus na Defesa igual ao círculo da magia lançada, até o início do seu próximo turno.
 Inspiração (Padrão, 2 PM) Niala e todos os seus aliados em alcance curto recebem +1 em testes de perícia até o fim da cena.
 Tatuagem Divina A tatuagem especial de Niala permite que ela lance qualquer magia, arcana ou divina, de até 3º círculo, como uma clériga de Wynna de 9º nível (CD 20, limite de PM 15).
 For 0, Des 3, Con 2, Int 3, Sab 3, Car 6
@@ -904,9 +903,9 @@ Pontos de Vida 115
 Deslocamento 9m (6q)
 Pontos de Mana 16
 Corpo a Corpo Espada longa +16 (1d8+14, 19).
-Aura Sagrada (Livre, 1 PM, sustentada) Paladina gera uma aura de luz com 9m de raio. Ela e seus aliados dentro da aura recebem +4 em testes de resistência.
-Cura pelas Mãos (Movimento, 1 PM) Paladina cura 1d8+1 pontos de vida de uma criatura adjacente.
-Golpe Divino (Livre, 2 PM) Quando faz um ataque corpo a corpo, Paladina soma o Carisma no teste de ataque e +1d12 na rolagem de dano.
+✦ Aura Sagrada (Livre, 1 PM, sustentada) Paladina gera uma aura de luz com 9m de raio. Ela e seus aliados dentro da aura recebem +4 em testes de resistência.
+✦ Cura pelas Mãos (Movimento, 1 PM) Paladina cura 1d8+1 pontos de vida de uma criatura adjacente.
+✦ Golpe Divino (Livre, 2 PM) Quando faz um ataque corpo a corpo, Paladina soma o Carisma no teste de ataque e +1d12 na rolagem de dano.
 Código do Herói Paladina sempre mantém sua palavra e nunca pode recusar um pedido de ajuda de alguém inocente. Além disso, nunca pode mentir, trapacear ou roubar. Se violar o código, ela perde todos os seus PM e só pode recuperá-los a partir do próximo dia.
 For 7, Des 0, Con 2, Int 0, Sab 1, Car 4
 Perícias Atletismo +11, Diplomacia +8, Religião +5.
@@ -1019,13 +1018,13 @@ Defesa 52, Fort +17, Ref +30, Von +24, cura acelerada 5, esquiva sobrenatural, e
 Pontos de Vida 560
 Deslocamento 6m (4q)
 Corpo a Corpo Adaga +41 (1d4+17, 18).
-Armadilhas Divinas (Padrão) Combinando sua genialidade com as bênçãos de Hyninn, Rodleck prepara uma das armadilhas a seguir. A CD dos testes para encontrar, desarmar e resistir às armadilhas é 46.
+✦ Armadilhas Divinas (Padrão) Combinando sua genialidade com as bênçãos de Hyninn, Rodleck prepara uma das armadilhas a seguir. A CD dos testes para encontrar, desarmar e resistir às armadilhas é 46.
 • Arapucas Invisíveis. Rodleck conjura 2d4+1 arapucas que se espalham em um raio de 18m ao redor dele e constantemente mudam de posição dentro da área. Sempre que um inimigo de Rodleck se mover nessa área, deve rolar 1d20. Se o resultado for igual ou menor que o número de quadrados percorridos, a criatura ativa uma arapuca ao final do movimento; a vítima sofre 18d8 pontos de dano de um tipo à escolha de Rodleck e fica paralisada por 1 rodada (Ref reduz o dano à metade e evita a condição). Cada arapuca permanece na área até ser ativada ou até o fim da cena. Recarga (todas as arapucas serem ativadas).
 • Alçapão Dimensional. Rodleck prepara um alçapão dimensional que o acompanha até o fim da cena ou até ser ativado. Quando uma criatura erra um ataque corpo a corpo contra Rodleck, ele pode ativar o alçapão para enviá-la a um semiplano protegido contra teletransporte e viagens planares (Von evita). A criatura permanece nessa dimensão até o fim da cena ou até escapar; fazer isso requer gastar uma ação padrão e passar em um teste de Inteligência (CD 20). Se passar, a criatura retorna para seu espaço original ou, se isso não for possível, para um espaço adjacente desocupado. Uma criatura só pode ser afetada por esta habilidade uma vez por cena. Minotauros são imunes ao alçapão.
 • Artimanha Mística. Rodleck prepara uma armadilha pessoal, contendo uma magia divina ou de ilusão de até 5º círculo, que permanece até o fim da cena ou até ser ativada. Quando um inimigo em alcance curto falha em um teste de perícia, Rodleck pode ativar a armadilha para lançar a magia instantaneamente, como um clérigo de Hyninn de 17º nível, sem gastar PM (limite de PM 22).
 • Gerador de Ilusões. Rodleck cria uma ilusão que ocupa um cubo de 90m com duração sustentada. Quando a armadilha é ativada, cada criatura na área deve fazer um teste de Vontade; se falhar, acredita que a ilusão é real e sofre 12d6 pontos de dano psíquico não letal. Cada criatura que começar seu turno dentro da área e acreditar na ilusão deve repetir o teste de Vontade.
 Ataque Furtivo +6d6.
-Forma de Macaco (Completa) Uma vez por cena, Rodleck se transforma em um macaco. Ele adquire tamanho Minúsculo (+5 em Furtividade e –5 em testes de manobra) e recebe deslocamento de escalada 9m. Seu equipamento desaparece (e ele perde seus benefícios) até ele voltar ao normal, mas suas outras estatísticas não são alteradas. A transformação dura indefinidamente, mas termina caso ele faça um ataque, lance uma magia ou sofra dano.
+✦ Forma de Macaco (Completa) Uma vez por cena, Rodleck se transforma em um macaco. Ele adquire tamanho Minúsculo (+5 em Furtividade e –5 em testes de manobra) e recebe deslocamento de escalada 9m. Seu equipamento desaparece (e ele perde seus benefícios) até ele voltar ao normal, mas suas outras estatísticas não são alteradas. A transformação dura indefinidamente, mas termina caso ele faça um ataque, lance uma magia ou sofra dano.
 Manto do Trapaceiro Rodleck ignora todos os efeitos de qualquer ataque contra ele em que o resultado do d20 de ataque seja um valor ímpar.
 Punição Divina (Padrão) Vont CD 46 evita.
 Sorte Salvadora (Reação) Uma vez por rodada, Rodleck pode rolar novamente um teste de resistência.
@@ -1034,12 +1033,12 @@ Perícias Acrobacia +18, Diplomacia +17, Enganação +26, Furtividade +20, Intim
 Equipamento Adaga precisa dançarina formidável, anel da regeneração, anel do escudo mental, bola de cristal, dois instrumentos de Ofício (alquimista e armadilheiro) aprimorados, gazua aprimorada, símbolo sagrado de Hyninn. Tesouro Triplo.`
       },
       {
-        chave: "senhorPorrada", nome: "Senhor Porrada", nd: "–", tipo: "Humanoide (meio-orc) Médio",
+        chave: "senhorPorrada", nome: "Senhor Porrada", nd: "11", tipo: "Humanoide (meio-orc) Médio",
         papel: '',
         fontes: "Guilda do Macaco, Legado do Ódio",
         resumo: "Criado num bando orc, Syphos nunca conheceu seus pais.",
         texto:
-`Senhor Porrada ND –
+`Senhor Porrada ND 11
 Criado num bando orc, Syphos nunca conheceu seus pais. Tudo que lembra é que, assim que teve idade para erguer uma picareta, foi atirado para trabalhar nas galerias de uma mina. Sua força física fez com que subisse na hierarquia de seu bando: de minerador, tornou-se guerreiro. Mas o destino lhe reservava mais. Em um ataque a uma cidade do Reinado, foi capturado por um fánatico de Keenn. O homem viu potencial no jovem meio-orc e, em vez de matá-lo, resolveu doutriná-lo no caminho do antigo Deus da Guerra. O que não necessariamente foi uma opção melhor. Certo dia, o acólito ficou de saco cheio com os abusos do mestre e finalmente o matou. Mas a essa altura, já era um devoto. Sozinho, vagou pelos reinos até chegar onde hoje é a Supremacia Purista. Numa nação guerreira, achou que seria bem recebido, mas não contava com o ódio dos humanos. Segregado, ergueu sozinho uma capela ao seu deus nos ermos. Lá teria ficado, não fosse um encontro fortuito com os Campeões de Svalas, heróis cujo caminho cruzou algumas vezes. Juntos, recuperaram uma poderosa — e perigosa — arma. Para evitar que o item caísse em mãos erradas, Syphos ficou com ele e vagou para os confins da civilização. Desde então, o deus de Syphos foi morto e substituído por outro. Apesar disso, o clérigo não se deu ao trabalho de mudar suas preces. Pois, ao longo da vida, aprendeu uma coisa: quem precisa de deuses franzinhos quando você pode resolver seus problemas com… PORRADA?
 Humanoide (meio-orc) Médio
 Iniciativa +9, Percepção +11 (+13 em subterrâneo), visão no escuro
@@ -1056,12 +1055,12 @@ Perícias Atletismo +15, Intimidação +15.
 Equipamento Armadura completa reforçada, Artefato de Cross, martelo de guerra maciço de adamante, símbolo sagrado de Keenn. Tesouro Nenhum.`
       },
       {
-        chave: "senhoraDosEspinhos", nome: "Senhora dos Espinhos", nd: "–", tipo: "Humanoide (humana) Média",
+        chave: "senhoraDosEspinhos", nome: "Senhora dos Espinhos", nd: "12", tipo: "Humanoide (humana) Média",
         papel: '',
         fontes: "Atlas de arton",
         resumo: "Aigrah Vento Leste fazia parte da Ordem do Bosque de Allihanna, o principal círculo druídico do reino de Tollon.",
         texto:
-`Senhora dos Espinhos ND –
+`Senhora dos Espinhos ND 12
 Aigrah Vento Leste fazia parte da Ordem do Bosque de Allihanna, o principal círculo druídico do reino de Tollon. Tendo viajado por boa parte do Reinado, ganhou o epíteto ainda muito jovem. Ao voltar, encontrou o bosque sob ataque do Império de Tauron. Viu o pai — líder da ordem — ser morto pelos legionários. Trespassada por uma lança, arrastou-se até o Coração de Allihanna, o artefato que os druidas protegiam, e fez uma última súplica à deusa. O item fez o próprio bosque se voltar contra os minotauros, derrotando-os. Nascia uma nova ordem, abraçando a brutalidade da natureza: a Ordem dos Espinhos. Aigrah, agora a Senhora dos Espinhos, jurou devolver a Floresta de Tollon aos dias antigos, custe o que custar.
 Humanoide (humana) Média
 Iniciativa +7, Percepção +15, visão na penumbra
@@ -1070,7 +1069,7 @@ Pontos de Vida 385
 Deslocamento 9m (6q), ignora terreno difícil natural
 Pontos de Mana 77
 Corpo a Corpo Duas garras do bosque +34 (2d8+18 corte, mais sangramento).
-Coração de Allihanna O coração na Senhora dos Espinhos é uma fonte de poder primal e instável. A cada rodada de combate, Aigrah recebe 1 ponto de ferocidade. No início de cada turno dela, há 10% de chance por ponto de ferocidade de ocorrer uma manifestação do Coração (as manifestações são cumulativas, ocorrem em ordem e não afetam Aigrah).
+✦ Coração de Allihanna O coração na Senhora dos Espinhos é uma fonte de poder primal e instável. A cada rodada de combate, Aigrah recebe 1 ponto de ferocidade. No início de cada turno dela, há 10% de chance por ponto de ferocidade de ocorrer uma manifestação do Coração (as manifestações são cumulativas, ocorrem em ordem e não afetam Aigrah).
 • Primeira Manifestação. O Coração passa a emitir uma aura de crescimento vegetal com 30m de raio. Dentro dela o terreno se torna difícil, e criaturas em seu interior ficam enredadas e imóveis (Ref CD 35 evita). Uma vítima pode se libertar com uma ação padrão e um teste de Acrobacia ou Atletismo.
 • Segunda Manifestação. A aura gera pulsos de energia primal. Cada criatura que começa seu turno dentro da aura é atingida por um desses pulsos, que pode curar 6d6 pontos de vida ou causar 6d6 pontos de dano de fogo (50% de chance cada; Ref CD 35 reduz à metade).
 • Terceira Manifestação. Os efeitos se intensificam. A vegetação se torna espinhosa; deslocar-se dentro da área causa 1d4 pontos de dano de perfuração por quadrado percorrido. Além disso, descargas elétricas passam a se formar dentro da área; cada criatura que comece seu turno dentro da aura sofre 8d6 pontos de dano de eletricidade e fica ofuscada por 1 rodada (Ref CD 35 reduz à metade e evita a condição).
@@ -1188,7 +1187,7 @@ Deslocamento 9m (6q)
 Pontos de Mana 95
 Corpo a Corpo Avir +41 (3d6+32, 19/x3, mais 1d8 trevas).
 Sacrificar Servo (Reação) Uma vez por rodada, quando sofre dano, Narsogg sacrifica um de seus retornados para reduzir esse dano a 0.
-Separar a Alma (Livre) Quando acerta um ataque com Avir, Narsogg separa a alma do corpo da vítima (Fort CD 42 evita). A vítima fica incorpórea, lenta e não pode afetar o mundo material. Seu corpo permanece inconsciente e caído no mesmo espaço em que estava. Se estiver adjacente a seu corpo, a vítima pode gastar uma ação completa para retornar a ele, encerrando esses efeitos.
+✦ Separar a Alma (Livre) Quando acerta um ataque com Avir, Narsogg separa a alma do corpo da vítima (Fort CD 42 evita). A vítima fica incorpórea, lenta e não pode afetar o mundo material. Seu corpo permanece inconsciente e caído no mesmo espaço em que estava. Se estiver adjacente a seu corpo, a vítima pode gastar uma ação completa para retornar a ele, encerrando esses efeitos.
 Séquito Macabro Sislach Narsogg está sempre acompanhado de doze retornados. Eles agem na mesma iniciativa de Narsogg, têm deslocamento 9m e podem gastar uma ação padrão para causar 2d6+3 pontos de dano de corte em uma criatura adjacente. Os retornados têm For 3, Des 1, Defesa 25 e 1 PV, são mortos-vivos e usam os valores de Narsogg com –5 para qualquer teste oposto ou de resistência. Enquanto Narsogg estiver vivo, no início de cada um de seus turnos um retornado destruído é reanimado automaticamente.
 Mestre em Necromancia As magias de necromancia* de Narsogg custam –1 PM (já contabilizado) e a CD para resistir a elas aumenta em +2.
 Vontade de Ferren Enquanto está em Aslothia, Narsogg pode realizar uma ação padrão adicional a cada rodada.
@@ -1247,9 +1246,9 @@ Deslocamento 12m (8q), sem redução por se deslocar furtivamente
 Corpo a Corpo Adaga x2 +37 (2d4+30, 16, mais 6d6 trevas, sangramento e veneno).
 Assassinar (Movimento) Sislach Vissanzi analisa uma criatura em alcance curto. Até o fim de seu próximo turno, ela dobra os dados de dano extras por Ataque Furtivo em seu primeiro Ataque Furtivo que causar dano contra essa criatura.
 Ataque Furtivo +7d8.
-Disfarce Místico (Padrão) Vissanzi muda sua própria aparência, e a de seu equipamento, até o fim da cena, como o efeito básico da magia Disfarce Ilusório (CD 40).
-Forma de Abutre (Completa) Vissanzi se transforma em um abutre humanoide. Ela adquire tamanho Grande (–2 em Furtividade e +2 em testes de manobra), recebe deslocamento de voo 12m e seus ataques mudam para corpo a corpo: mordida +37 (1d4+30 mais 6d6 trevas) e duas garras +37 (1d4+30 mais veneno). Seu equipamento desaparece até ela voltar ao normal, mas suas outras estatísticas não são alteradas. Ela pode encerrar a transformação com uma ação de movimento e reverte à forma humana caso morra ou fique inconsciente.
-Mil Olhos Vissanzi está permanentemente sob efeito da magia Visão Mística com o aprimoramento que permite enxergar criaturas e objetos invisíveis.
+✦ Disfarce Místico (Padrão) Vissanzi muda sua própria aparência, e a de seu equipamento, até o fim da cena, como o efeito básico da magia Disfarce Ilusório (CD 40).
+✦ Forma de Abutre (Completa) Vissanzi se transforma em um abutre humanoide. Ela adquire tamanho Grande (–2 em Furtividade e +2 em testes de manobra), recebe deslocamento de voo 12m e seus ataques mudam para corpo a corpo: mordida +37 (1d4+30 mais 6d6 trevas) e duas garras +37 (1d4+30 mais veneno). Seu equipamento desaparece até ela voltar ao normal, mas suas outras estatísticas não são alteradas. Ela pode encerrar a transformação com uma ação de movimento e reverte à forma humana caso morra ou fique inconsciente.
+✦ Mil Olhos Vissanzi está permanentemente sob efeito da magia Visão Mística com o aprimoramento que permite enxergar criaturas e objetos invisíveis.
 Oportunista (Reação) Uma vez por rodada, quando um inimigo adjacente sofre dano de um dos aliados de Vissanzi, ela faz um ataque corpo a corpo contra esse inimigo.
 Veneno Peçonha potente (perde 2d12 PV por rodada durante 3 rodadas, Fort CD 40 reduz para 1 rodada).
 Vontade de Ferren Enquanto está em Aslothia, Vissanzi pode realizar uma ação padrão adicional a cada rodada.
@@ -1315,7 +1314,7 @@ Deslocamento 9m (6q), voo 24m (16q)
 Pontos de Mana 500
 Corpo a Corpo Tapa +50 (1d4+5).
 Beleza Inquietante Um humanoide que veja Thantalla fica fascinado, enfeitiçado e abalado (Von CD 50 evita). Uma mesma criatura só pode ser afetada por esta habilidade uma vez por dia.
-Capricho (Movimento) Thantalla toca uma criatura adjacente e profere uma ordem. A criatura tocada deve fazer um teste de Vontade (CD 50). Se falhar, em seu próximo turno deve obedecer à ordem cegamente, mesmo que vá contra seus princípios ou seja uma ordem suicida! Uma mesma criatura só pode ser afetada por esta habilidade uma vez por dia. Encantamento.
+✦ Capricho (Movimento) Thantalla toca uma criatura adjacente e profere uma ordem. A criatura tocada deve fazer um teste de Vontade (CD 50). Se falhar, em seu próximo turno deve obedecer à ordem cegamente, mesmo que vá contra seus princípios ou seja uma ordem suicida! Uma mesma criatura só pode ser afetada por esta habilidade uma vez por dia. Encantamento.
 Primeira de Wynna Thantalla lança magias como uma conjuradora arcana de 20º nível (CD 50, limite de PM 35), conhece todas as magias arcanas, pode lançar duas magias por ação padrão e pode manter dois efeitos sustentados simultaneamente com apenas uma ação livre (mas pagando o custo de cada um).
 • Campo de Força (Reação, 11 PM) Quando sofre dano, Thantalla recebe redução de dano 70 contra esse dano.
 • Chuva de Meteoros (Completa, 25 PM) Meteoros caem em um quadrado de 18m em alcance longo. Criaturas na área sofrem 25d6 pontos de dano de impacto e 25d6 pontos de dano de fogo, e ficam caídas e presas (agarradas) sob os escombros (Ref reduz à metade e evita a condição).
@@ -1324,9 +1323,8 @@ Primeira de Wynna Thantalla lança magias como uma conjuradora arcana de 20º n�
 • Miragem (Padrão, 10 PM) Muda a aparência do terreno e de todas as criaturas em um cubo de 90m de lado.
 • Muralha Elemental (Padrão, 10 PM, sustentada) Cria um muro de até 30m de comprimento e 3m de altura (ou o contrário) ou uma cúpula de 3m de raio. O muro ou cúpula é feito de essência invisível e indestrutível.
 • Sombra Assassina (Padrão, 25 PM) Cria duplicatas ilusórias de quaisquer criaturas escolhidas em alcance curto. Sempre que um dos alvos faz uma ação hostil, sua duplicata realiza a mesma ação contra o alvo, usando as mesmas estatísticas e rolagens. As duplicatas podem ser atacadas, têm as mesmas estatísticas das criaturas originais e são destruídas quando chegam a 0 PV. Os alvos têm direito a um teste de Vontade. Se um alvo passar, sua duplicata desaparece no final do turno do alvo, depois de copiar sua ação dessa rodada.
-Rajada Prismática (Movimento) Thantalla dispara uma rajada prismática da ponta de seus dedos em uma criatura qualquer em alcance longo. A vítima sofre dois dos efeitos a seguir (role 1d8 para cada efeito): 1) 100 pontos de dano de fogo (Ref reduz à metade). 2) 200 pontos de dano de frio (Ref reduz à metade). 3) 300 pontos de dano de eletricidade (Ref reduz à metade). 4) Envelhece muitos anos, ficando alquebrada, debilitada e lenta (Fort evita). 5) Encolhe até o tamanho de um inseto, ficando com tamanho Minúsculo, Força –5 e deslocamento padrão reduzido a 3m (Fort evita). 6) Enlouquece, ficando confusa (Von evita). 7) Vira uma flor, ficando com tamanho Minúsculo e paralisada (Von evita). 8) Atingida por dois efeitos (role mais duas vezes, ignorando resultados “8”).
-A CD dos testes de resistência é 50 e todas as condições são permanentes (embora possam ser removidas por efeitos capazes de fazer isso).
-Visão Feérica Thantalla está permanentemente sob efeito da magia Visão Mística com o aprimoramento que permite enxergar criaturas e objetos invisíveis.
+✦ Rajada Prismática (Movimento) Thantalla dispara uma rajada prismática da ponta de seus dedos em uma criatura qualquer em alcance longo. A vítima sofre dois dos efeitos a seguir (role 1d8 para cada efeito): 1) 100 pontos de dano de fogo (Ref reduz à metade). 2) 200 pontos de dano de frio (Ref reduz à metade). 3) 300 pontos de dano de eletricidade (Ref reduz à metade). 4) Envelhece muitos anos, ficando alquebrada, debilitada e lenta (Fort evita). 5) Encolhe até o tamanho de um inseto, ficando com tamanho Minúsculo, Força –5 e deslocamento padrão reduzido a 3m (Fort evita). 6) Enlouquece, ficando confusa (Von evita). 7) Vira uma flor, ficando com tamanho Minúsculo e paralisada (Von evita). 8) Atingida por dois efeitos (role mais duas vezes, ignorando resultados “8”). A CD dos testes de resistência é 50 e todas as condições são permanentes (embora possam ser removidas por efeitos capazes de fazer isso).
+✦ Visão Feérica Thantalla está permanentemente sob efeito da magia Visão Mística com o aprimoramento que permite enxergar criaturas e objetos invisíveis.
 For 5, Des 7, Con 7, Int 10, Sab 5, Car 19
 Perícias Atuação +35, Conhecimento +26, Diplomacia +35, Enganação +35, Intuição +21, Jogatina +35, Misticismo +31, Nobreza +26.
 Equipamento Gemas Eternas . Tesouro Triplo.`
@@ -1428,7 +1426,7 @@ Pontos de Mana 125
 Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando usa Raio Arcano ou lança uma magia com execução de ação completa ou menor, Vlad muda a execução dessa ação para livre.
 Magia Registrada Como criador da magia Crânio Voador dele Mesmo, para Vlad o custo total em PM dessa magia é reduzido à metade (após aplicar aprimoramentos e quaisquer outros efeitos que reduzam seu custo; já contabilizado). Além disso, sempre que causa dano com essa magia, ele recupera uma quantidade de pontos de vida igual à metade do dano causado em cada alvo.
 Professor de Necromancia Vlad conhece todas as magias arcanas de necromancia*. Para ele, essas magias custam –1 PM (já contabilizado) e a CD para resistir a elas aumenta em +2.
-Raio Arcano (Padrão, 1 PM) Uma criatura em alcance médio sofre 5d12 pontos de dano de trevas e não pode recuperar PV por 1 rodada (Ref CD 46 reduz à metade e evita a restrição de cura).
+✦ Raio Arcano (Padrão, 1 PM) Uma criatura em alcance médio sofre 5d12 pontos de dano de trevas e não pode recuperar PV por 1 rodada (Ref CD 46 reduz à metade e evita a restrição de cura).
 Magias Como um mago de 17º nível (CD 46, limite de PM 23).
 • Campo de Força (Reação, 7 PM) Quando sofre dano, Vlad recebe redução de dano 50 contra esse dano.
 • Crânio Voador de Vladislav* (Padrão, 11 PM) Um crânio de energia negativa causa 13d8+13 pontos de dano de trevas em duas criaturas em alcance médio e deixa os alvos e todas as criaturas a 3m deles abaladas (Fort reduz à metade e evita a condição).
@@ -1536,8 +1534,7 @@ Arma Exótica • Corpo a Corpo Uma Mão • T$ – • Dano 1d6 • Crítico x2
 `Rodleck possui controle absoluto sobre a famigerada masmorra conhecida como Catacumbas de Leverick. Dentro dela ele é considerado um rei da arena (veja Ameaças de Arton, p. 368). Além dos benefícios por ser um chefe final, ele não pode ser surpreendido, suas magias custam –2 PM (cumulativo com outras reduções) e ele soma sua Sabedoria na Defesa e nos testes de resistência, Enganação, Ladinagem, Misticismo e Religião.` },
     { chave: "oArtefatoDeCross", cat: 'lendas', titulo: "O Artefato de Cross",
       texto:
-`Esta arma única é um item puramente mundano e tecnológico, inventado e forjado pelas mentes geniais e doentias de demônios. Ela é composta por diversos canos de mosquete, que giram por meio de engrenagens quando o usuário puxa uma alavanca. O artefato é pesado e desajeitado, mas quando acionado, dispara todos os seus canos, banhando os alvos com uma chuva de chumbo.
-O Artefato de Cross é uma arma de fogo de duas mãos (dano 2d12, crítico 19/x3, alcance médio, perfuração) que fornece +10 nos testes de ataque e, em caso de acerto, causa +1d12 pontos de dano para cada 2 pontos pelos quais o resultado do ataque passar a Defesa do alvo. Recarregá-lo é uma ação padrão.
+`Esta arma única é um item puramente mundano e tecnológico, inventado e forjado pelas mentes geniais e doentias de demônios. Ela é composta por diversos canos de mosquete, que giram por meio de engrenagens quando o usuário puxa uma alavanca. O artefato é pesado e desajeitado, mas quando acionado, dispara todos os seus canos, banhando os alvos com uma chuva de chumbo. O Artefato de Cross é uma arma de fogo de duas mãos (dano 2d12, crítico 19/x3, alcance médio, perfuração) que fornece +10 nos testes de ataque e, em caso de acerto, causa +1d12 pontos de dano para cada 2 pontos pelos quais o resultado do ataque passar a Defesa do alvo. Recarregá-lo é uma ação padrão.
 Atualmente, o Artefato de Cross está em posse do Senhor Porrada. O meio-orc vaga pelos ermos para manter a arma longe da civilização. Mas, claro, pode acabar sendo encontrado por um grupo de aventureiros. Nesse caso, será melhor para eles que o encontro seja amistoso…` },
     { chave: "estruturaDaTormenta", cat: 'lendas', titulo: "Estrutura da Tormenta",
       texto:

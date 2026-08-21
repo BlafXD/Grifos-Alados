@@ -873,11 +873,28 @@
             <button type="button" class="mz-grifo mz-grifo--limpa" ${attr}="desgrifar" ${ds}>✦ Remover</button>`;
   }
 
+  // ── SELO DE HABILIDADE MÁGICA (✦) ────────────────────────────────
+  // No livro é um ícone ao lado do nome; nas bibliotecas de fichas prontas
+  // vira um "✦" no começo da linha. Importa em jogo porque só habilidade
+  // MÁGICA pode ser alvo de Dissipar Magia (inclusive como contramágica) e
+  // é ela que para de funcionar onde a magia é anulada. O mestre liga e
+  // desliga a marca pelo botão "✦ Mágica" da barra.
+  const MARCA_MAGICA = '✦';
+  const DICA_MAGICA = 'Só uma habilidade mágica pode ser alvo de Dissipar Magia (inclusive usada como contramágica) e é ela que deixa de funcionar onde a magia é anulada.';
+  const LEGENDA_MAGICA =
+    `<span class="mz-legenda-magica" data-legenda-magica title="${DICA_MAGICA}">✦ = habilidade mágica</span>`;
+  const legendaSe = html => (/✦/.test(html || '') ? ' ' + LEGENDA_MAGICA : '');
+
   // Barra das caixas de texto rico (grifo + tela cheia). `ds` = data-attrs do
   // campo. opts.ler acrescenta "📖 Ler" (modo narração — só nas anotações);
-  // opts.compacta omite a dica (nas caixas menores, repetir 4x polui a ficha).
+  // opts.compacta omite a dica (nas caixas menores, repetir 4x polui a ficha);
+  // opts.magica acrescenta o botão do selo ✦ (só nas caixas de habilidade).
   function barraGrifo(ds, opts) {
     opts = opts || {};
+    const magica = opts.magica
+      ? `<button type="button" class="mz-grifo mz-grifo--magica" data-acao="magica" ${ds}
+                 title="Marcar / desmarcar a habilidade onde está o cursor como MÁGICA (✦). ${DICA_MAGICA} Selecione várias linhas para marcar todas de uma vez.">✦ Mágica</button>`
+      : '';
     const ler = opts.ler
       ? `<button type="button" class="mz-grifo mz-grifo--ler" data-acao="ler" ${ds} title="Abrir só para ler/narrar, em fonte grande">📖 Ler</button>`
       : '';
@@ -887,6 +904,7 @@
     return `
             <div class="mz-toolbar">
               ${botoesGrifo('data-acao', ds)}
+              ${magica}
               ${dica}
               ${ler}
               <button type="button" class="mz-grifo mz-grifo--exp" data-acao="expandir" ${ds} title="Editar em tela cheia">⛶ Expandir</button>
@@ -2199,7 +2217,7 @@
                       title="Desligar o bloco (o texto continua guardado)">● ligado</button>`;
     return `
           <div class="mz-ambientes mz-magias mz-magias--on">
-            <span class="mz-amb-titulo mz-mas-cab">✨ Magias${btnDesligar}
+            <span class="mz-amb-titulo mz-mas-cab">✨ Magias${btnDesligar}${legendaSe(cr.magiasHtml)}
               <button class="mz-amb-add mz-magias-add" data-acao="abrir-magias" ${ds}
                       title="Escolher uma magia do compêndio e inserir na ficha">＋ Magia</button>
             </span>
@@ -2207,7 +2225,7 @@
                    placeholder="Como um clérigo de 9º nível (CD 30)"
                    title="A linha que o livro põe antes das magias" data-campo="magiasCab" ${ds}>
             <div class="mz-campo mz-magias-campo">
-              ${barraGrifo(ds, { compacta: true })}
+              ${barraGrifo(ds, { compacta: true, magica: true })}
               <div class="mz-ataques mz-magias-caixa" contenteditable="true" spellcheck="true"
                    data-ph="• Bola de Fogo (Padrão, 5 PM) Esfera incandescente explode… (Ref reduz à metade)"
                    data-campo="magias" ${ds}>${cr.magiasHtml || ''}</div>
@@ -2344,8 +2362,8 @@
           ${construirBlocoTormenta(cr, ds)}
 
           <div class="mz-campo">
-            <label class="mz-rotulo">Ataque e Habilidades</label>
-            ${barraGrifo(ds)}
+            <label class="mz-rotulo">Ataque e Habilidades${legendaSe(cr.ataques)}</label>
+            ${barraGrifo(ds, { magica: true })}
             <div class="mz-ataques" contenteditable="true" spellcheck="false"
                  data-campo="ataques" ${ds}>${cr.ataques || ''}</div>
           </div>
@@ -3007,6 +3025,10 @@
     const toolbar = rico
       ? `<div class="mz-toolbar mz-ed-toolbar">
            ${botoesGrifo('data-grifo')}
+           ${/^(ataques|magias)$/.test(campoEl.dataset.campo || '')
+             ? `<button type="button" class="mz-grifo mz-grifo--magica" data-grifo="magica"
+                        title="Marcar / desmarcar a habilidade onde está o cursor como MÁGICA (✦). ${DICA_MAGICA}">✦ Mágica</button>`
+             : ''}
            <span class="mz-toolbar-dica">selecione · grife ou Ctrl+B / Ctrl+I</span>
          </div>`
       : '';
@@ -3043,6 +3065,13 @@
         e.preventDefault();                       // mantém a seleção viva
         if (btn.dataset.grifo === 'descrever') {
           if (window.GA_Tip) window.GA_Tip.editarSelecao(ed, sincronizar);
+          return;
+        }
+        if (btn.dataset.grifo === 'magica') {
+          // marca a habilidade aqui dentro e leva a mudança para a caixa
+          // da ficha; a legenda do rótulo acompanha
+          if (alternarMagica(ed)) { sincronizar(); atualizarLegendaMagica(campoEl); }
+          else avisarSemCursor(btn);
           return;
         }
         if (aplicarGrifo(ed, btn.dataset.grifo, btn.dataset.cor)) sincronizar();
@@ -3186,8 +3215,71 @@
     return true;
   }
 
+  // ── LIGAR / DESLIGAR O SELO ✦ NA LINHA DO CURSOR ─────────────────
+  // A caixa guarda as habilidades separadas por <br>, então "linha" aqui é
+  // um pedaço entre dois <br>. Marca todas as linhas que a seleção toca;
+  // se TODAS já estiverem marcadas, desmarca (alterna, como um grifo).
+  function alternarMagica(editor) {
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount || !editor.contains(sel.anchorNode)) return false;
+
+    // onde a seleção começa e termina, contando só o texto da caixa
+    const r = sel.getRangeAt(0);
+    const medida = document.createRange();
+    medida.selectNodeContents(editor);
+    medida.setEnd(r.startContainer, r.startOffset);
+    const ini = medida.toString().length;
+    medida.setEnd(r.endContainer, r.endOffset);
+    const fim = medida.toString().length;
+
+    // separa mantendo os <br> (índices ímpares) para remontar igualzinho
+    const partes = editor.innerHTML.split(/(<br\s*\/?>)/i);
+    const molde = document.createElement('div');
+    const textoDe = html => { molde.innerHTML = html; return molde.textContent || ''; };
+
+    const alvos = [];
+    let pos = 0;
+    for (let i = 0; i < partes.length; i += 2) {
+      const len = textoDe(partes[i]).length;
+      // a linha entra se a seleção passa por ela (cursor solto conta como
+      // "está nesta linha" mesmo no limite entre duas)
+      if (ini <= pos + len && fim >= pos) alvos.push(i);
+      pos += len;
+    }
+    if (!alvos.length) return false;
+
+    const marcada = i => textoDe(partes[i]).trim().indexOf(MARCA_MAGICA) === 0;
+    const desmarcar = alvos.every(marcada);
+    alvos.forEach(i => {
+      if (desmarcar) partes[i] = partes[i].replace(/✦(?:\s|&nbsp;)*/, '');
+      else if (!marcada(i)) partes[i] = MARCA_MAGICA + ' ' + partes[i];
+    });
+
+    editor.innerHTML = partes.join('');
+    return true;
+  }
+
+  // A legenda do ✦ mora ao lado do rótulo da caixa e só aparece quando há
+  // alguma habilidade marcada. Como marcar/desmarcar não re-renderiza a
+  // ficha inteira (perderia o lugar da rolagem), ela é acertada na mão.
+  function atualizarLegendaMagica(editor) {
+    const dono = editor.closest('.mz-magias') || editor.closest('.mz-campo');
+    if (!dono) return;
+    const rotulo = dono.querySelector('.mz-rotulo, .mz-amb-titulo');
+    if (!rotulo) return;
+    const atual = rotulo.querySelector('[data-legenda-magica]');
+    const precisa = /✦/.test(editor.innerHTML);
+    if (precisa && !atual) {
+      // depois do texto do rótulo, mas antes dos botões que moram nele
+      // (o "＋ Magia" do bloco de magias) — igual ao que o render monta
+      const botao = rotulo.querySelector('button');
+      if (botao) botao.insertAdjacentHTML('beforebegin', LEGENDA_MAGICA + ' ');
+      else rotulo.insertAdjacentHTML('beforeend', ' ' + LEGENDA_MAGICA);
+    } else if (!precisa && atual) atual.remove();
+  }
+
   function aoMousedownToolbar(e) {
-    const btn = e.target.closest('[data-acao="grifar"], [data-acao="desgrifar"], [data-acao="descrever"]');
+    const btn = e.target.closest('[data-acao="grifar"], [data-acao="desgrifar"], [data-acao="descrever"], [data-acao="magica"]');
     if (!btn) return;
     e.preventDefault(); // mantém a seleção viva
     const editor = btn.closest('.mz-campo').querySelector('.mz-ataques');
@@ -3198,7 +3290,21 @@
       if (window.GA_Tip) window.GA_Tip.editarSelecao(editor, () => salvarRich(editor));
       return;
     }
+    if (btn.dataset.acao === 'magica') {
+      if (alternarMagica(editor)) { salvarRich(editor); atualizarLegendaMagica(editor); }
+      else avisarSemCursor(btn);
+      return;
+    }
     if (aplicarGrifo(editor, btn.dataset.acao, btn.dataset.cor)) salvarRich(editor);
+  }
+
+  // Sem cursor dentro da caixa não dá para saber qual habilidade marcar —
+  // o botão pisca a dica em vez de não fazer nada em silêncio.
+  function avisarSemCursor(btn) {
+    const antes = btn.textContent;
+    btn.classList.add('mz-grifo--aviso');
+    btn.textContent = '↑ clique na habilidade';
+    setTimeout(() => { btn.classList.remove('mz-grifo--aviso'); btn.textContent = antes; }, 1800);
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -3883,6 +3989,10 @@
   function _formatarAtaques(bloco) {
     let t = ' ' + bloco.trim();
     t = t.replace(/\s*•\s*/g, '\n• ');                       // marcadores de magia
+    // ✦ = habilidade mágica (selo das bibliotecas de fichas prontas):
+    // sempre abre linha, para o mestre bater o olho e saber o que pode
+    // levar Dissipar Magia
+    t = t.replace(/\s*✦\s*/g, '\n✦ ');
     t = t.replace(/\s+(Corpo a Corpo|À Distância|Distância)\b/g, '\n$1');
     // "…aumenta em +2. Magias Como um clérigo de 2º nível (CD 18)." — a
     // seção de magias começa aqui; sem a quebra ela gruda na habilidade
@@ -3891,6 +4001,18 @@
     // "Nome Da Habilidade (Livre/Padrão/Reação/…)" -> quebra antes (ancorada em pontuação,
     // para não quebrar no meio de nomes de duas palavras como "Agarrar Aprimorado")
     t = t.replace(/([.)!?])\s+(?=[A-ZÀ-Ý][^.•()\n]{0,44}\((?:Livre|livre|Padr[ãa]o|Rea[çc][ãa]o|Movimento|movimento|Completa|Reativa|\d+\s*PM)\b)/g, '$1\n');
+    // "…até o fim da cena. Sensibilidade ao Sol Quando exposto…" — nem toda
+    // habilidade traz a execução entre parênteses. Nome de habilidade é
+    // Título Em Maiúsculas (duas palavras ou mais, ligadas por de/a/com…);
+    // frase comum começa com artigo ou pronome em minúscula logo depois
+    // ("Uma criatura que…"), e por isso não quebra. O artigo de uma letra
+    // fica de fora porque "A vítima fica…" é continuação, não habilidade.
+    t = t.replace(
+      /([.)!?])\s+(?=(?!A\s|O\s|E\s)[A-ZÀ-Ý][^\s.•()]*(?:\s+(?:d[aeoi]s?|[ao]s?|à|ao|aos|e|com|em|no|na|nos|nas|por|para))*\s+[A-ZÀ-Ý])/g,
+      '$1\n');
+    // habilidade que abre com reticências: "…Para Morrer!" é o par da
+    // piada "Burro Demais…" do ogro, e é habilidade separada
+    t = t.replace(/([.!?])\s+(?=(?:\.\.\.|…)\s*[A-ZÀ-Ý])/g, '$1\n');
     return t.replace(/\n{2,}/g, '\n').replace(/^\n+/, '').trim();
   }
 

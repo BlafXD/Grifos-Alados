@@ -2838,3 +2838,34 @@
   text-transform: none;
   color: var(--ink);
 }
+
+/* ── LEGENDA DO ✦ (habilidade mágica) ────────────────────────────── */
+/* Só aparece nas fichas que trazem habilidade mágica marcada. O ✦ em si
+   é um caractere no texto da caixa (e não HTML), para sobreviver à
+   edição à mão, à cópia e ao backup. */
+.mz-legenda-magica {
+  margin-left: 0.5rem;
+  padding: 0.04rem 0.34rem;
+  background: #7a4a9e;
+  color: var(--parchment);
+  border-radius: 2px;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  white-space: nowrap;
+  cursor: help;
+}
+
+/* botão que liga/desliga o selo ✦ numa habilidade */
+.mz-grifo--magica {
+  border-color: #7a4a9e;
+  color: #5d3579;
+  font-weight: 700;
+}
+.mz-grifo--magica:hover { background: #7a4a9e; color: var(--parchment); border-color: #7a4a9e; }
+.mz-grifo--magica.mz-grifo--aviso {
+  background: var(--rust);
+  border-color: var(--rust);
+  color: var(--parchment);
+}

@@ -174,10 +174,13 @@ window.GA_FichasProntas = (function () {
 
   function cardRegra(r) {
     const busca = semAcento([r.titulo, r.texto].join(' '));
+    // textoComSelo (e não nl2br) porque um quadro pode trazer habilidade
+    // mágica marcada — é o caso de Metamorfose Dracônica, em "Habilidades
+    // Dracônicas", que vale para todos os dragões jovens ou mais velhos.
     return `
       <details class="vc-card vc-card--regra" data-busca="${esc(busca)}">
         <summary class="vc-card-cab"><span class="vc-card-nome">📖 ${esc(r.titulo)}</span></summary>
-        <div class="vc-card-corpo"><div class="vc-regras">${nl2br(r.texto)}</div></div>
+        <div class="vc-card-corpo"><div class="vc-regras">${SB.textoComSelo(r.texto)}</div></div>
       </details>`;
   }
 

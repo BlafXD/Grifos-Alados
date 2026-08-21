@@ -904,3 +904,31 @@
   color: var(--rust-dark);
 }
 .mag-rodape .ga-desc-copiar { margin: 0; }
+/* ── SELO DE HABILIDADE MÁGICA ─────────────────────────────────────── */
+/* Marca as habilidades que o livro assinala como mágicas: são as únicas
+   que podem levar Dissipar Magia / contramágica. Desenhado por
+   js/statblock.js, então vale nas Fichas Prontas e no Guia de NPCs. */
+.npc-linha--magica {
+  padding-left: 0.6rem;
+  border-left: 2px solid #7a4a9e;
+  background: linear-gradient(90deg, rgba(122, 74, 158, 0.07), transparent 60%);
+}
+.sb-magica {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-right: 0.25rem;
+  padding: 0.02rem 0.3rem;
+  background: #7a4a9e;
+  color: var(--parchment);
+  border-radius: 2px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: help;
+  vertical-align: 0.08em;
+}
+.sb-magica-rot { font-size: 0.54rem; }
