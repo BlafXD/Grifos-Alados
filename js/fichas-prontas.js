@@ -53,7 +53,7 @@ window.GA_FichasProntas = (function () {
     { chave: 'deusesArton',  icone: '⛩', cor: '#8a6a1f',
       nome: 'Deuses de Arton', curto: 'Deuses de Arton',
       fonte: 'FICHAS_DEUSES_ARTON',
-      sub: 'Avatares, servos e campeões do Panteão.' },
+      sub: 'Como o Panteão pisa em Arton: os avatares dos vinte Deuses Maiores, cada um com o quadro de dados da divindade dentro do card.' },
     { chave: 'npcs',         icone: '👤', cor: '#4a5a7a',
       nome: 'Guia de NPCs', curto: 'Guia de NPCs',
       fonte: 'GUIA_NPCS',
@@ -140,12 +140,33 @@ window.GA_FichasProntas = (function () {
   function subIntroHtml(ref) {
     const r = subIntro(ref);
     if (!r) return '';
-    return `<p class="npc-desc fp-sub-intro"><strong>${esc(r.titulo)}.</strong> ${nl2br(r.texto)}</p>`;
+    // Quadro em forma de ficha de dados ("Símbolo Sagrado. Um sol dourado.")
+    // ganha o rótulo em negrito, linha por linha — é o formato do quadro das
+    // divindades em Deuses de Arton. Quadro em prosa não bate na regra
+    // (não tem ponto nos primeiros 30 caracteres) e sai inteiro.
+    const corpo = nl2br(r.texto).split('<br>')
+      .map(l => l.replace(/^([A-ZÀ-Ý][^.<]{2,28})\./, '<strong>$1.</strong>'))
+      .join('<br>');
+    return `<p class="npc-desc fp-sub-intro"><strong>${esc(r.titulo)}.</strong> ${corpo}</p>`;
+  }
+
+  // Quadro que já aparece INTEIRO dentro do card de uma ficha (via
+  // `subgrupo`) e é de uma ficha só não ganha card próprio na lista — seria
+  // a mesma caixa duas vezes. É o caso do quadro de dados de cada divindade
+  // em Deuses de Arton. Quando várias fichas dividem o quadro ("Orcs",
+  // "Dragões", "Cobras"), o card avulso continua sendo o lugar canônico.
+  function jaMostradoNaFicha(cat, r) {
+    return (cat.fichas || []).filter(f => f.subgrupo === r.titulo).length === 1;
   }
 
   function cardFicha(ref) {
     const f = ref.def, cat = ref.cat, l = ref.livro;
-    const busca = semAcento([f.nome, f.alias, 'nd ' + f.nd, f.tipo, f.subgrupo, f.resumo, cat.nome, l.nome, f.texto].join(' '));
+    // o quadro do subgrupo entra na busca junto com a ficha: é lá que moram
+    // a arma preferida e a canalização de cada deus, e a abertura dos grupos
+    // do Tormenta 20 ("Orcs", "Dragões")
+    const quadro = subIntro(ref);
+    const busca = semAcento([f.nome, f.alias, 'nd ' + f.nd, f.tipo, f.subgrupo, f.resumo,
+                             cat.nome, l.nome, f.texto, quadro ? quadro.texto : ''].join(' '));
     const papel = PAPEIS[f.papel];
     // subgrupo: as 29 fichas que o livro deixou sem texto próprio vivem sob
     // uma abertura comum ("Orcs", "Cobras", "Dragões") — vale mostrar
@@ -245,7 +266,7 @@ window.GA_FichasProntas = (function () {
       const fichas = (cat.fichas || []).slice()
         .sort((a, b) => ndValor(a.nd) - ndValor(b.nd) || a.nome.localeCompare(b.nome, 'pt'));
       const cards = fichas.map(f => cardFicha({ livro: l, cat: cat, def: f })).join('');
-      const caixas = (cat.regras || []).map(cardRegra).join('') +
+      const caixas = (cat.regras || []).filter(r => !jaMostradoNaFicha(cat, r)).map(cardRegra).join('') +
                      regrasSoltas.filter(r => r.cat === cat.chave).map(cardRegra).join('');
       const comuns = cat.comuns
         ? `<p class="fp-comuns">⚑ <strong>${esc(cat.comuns.titulo)}</strong> vale para as fichas deste grupo — ao enviar para o combate, o quadro entra junto na ficha. <em>${esc(cat.comuns.nota || '')}</em></p>`
@@ -318,7 +339,9 @@ window.GA_FichasProntas = (function () {
     const fora = {};
     todas().forEach(ref => {
       if (ref.livro.chave === livroAtivo) return;
-      const b = semAcento([ref.def.nome, ref.def.alias, 'nd ' + ref.def.nd, ref.def.tipo, ref.def.resumo, ref.cat.nome, ref.def.texto].join(' '));
+      const q = subIntro(ref);
+      const b = semAcento([ref.def.nome, ref.def.alias, 'nd ' + ref.def.nd, ref.def.tipo, ref.def.resumo,
+                           ref.cat.nome, ref.def.texto, q ? q.texto : ''].join(' '));
       if (b.indexOf(t) >= 0) fora[ref.livro.chave] = (fora[ref.livro.chave] || 0) + 1;
     });
     const outros = Object.keys(fora).map(k => {

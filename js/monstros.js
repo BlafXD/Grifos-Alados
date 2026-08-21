@@ -4109,7 +4109,9 @@
     let   iAtk  = _idx(t, /\b(?:Corpo a Corpo|À Dist[âa]ncia)\s+[A-ZÀ-Ý[]/);
     // Atributos: exige a linha COMPLETA (For, Des, Con, Int, Sab, Car), assim
     // não casa com menções parciais tipo "For –1, Des 2" dentro de habilidades.
-    const _vAtr = '(?:[+\\-–−]?\\d+|[—–−-])';
+    // O valor pode ser um DADO em vez de um número: o Avatar de Nimb, o Deus
+    // do Caos, tem "Sab 1d20" (e "Percepção 1d20+21" lá em cima).
+    const _vAtr = '(?:[+\\-–−]?\\d*d\\d+(?:\\s*[+\\-–−]\\s*\\d+)?|[+\\-–−]?\\d+|[—–−-])';
     const reAtr = new RegExp(
       '\\bFor\\s+'+_vAtr+'\\s*,\\s*Des\\s+'+_vAtr+'\\s*,\\s*Con\\s+'+_vAtr +
       '\\s*,\\s*Int\\s+'+_vAtr+'\\s*,\\s*Sab\\s+'+_vAtr+'\\s*,\\s*Car\\b', 'i');
@@ -4171,10 +4173,12 @@
     // 4) SENTIDOS (linha da Iniciativa): Iniciativa, Percepção + texto de sentidos
     if (iIni >= 0) {
       const segSent = t.slice(iIni, fim(iIni, [iDef, iPV, iDesl, iPM, iAtk, iAtr]));
+      // a Percepção pode ser um dado ("Percepção 1d20+21", do Avatar de Nimb)
+      const _vSent = '(?:[+\\-–]?\\d*d\\d+(?:\\s*[+\\-–]\\s*\\d+)?|[+\\-–]?\\d+)';
       setStat('iniciativa', num(/Iniciativa\s*([+\-–]?\d+)/i, segSent));
-      setStat('percepcao',  num(/Percep[çc][ãa]o\s*([+\-–]?\d+)/i, segSent));
+      setStat('percepcao',  num(new RegExp('Percep[çc][ãa]o\\s*(' + _vSent + ')', 'i'), segSent));
       // texto extra de sentidos (após o número da Percepção) -> campo Tags
-      const mP = segSent.match(/Percep[çc][ãa]o\s*[+\-–]?\d+\s*,?\s*(.*)$/i);
+      const mP = segSent.match(new RegExp('Percep[çc][ãa]o\\s*' + _vSent + '\\s*,?\\s*(.*)$', 'i'));
       if (mP && mP[1].trim()) cr.tags = mP[1].trim().replace(/[.;]\s*$/, '');
     } else {
       avisos.push('Linha de Iniciativa/Percepção não encontrada.');
@@ -4205,11 +4209,15 @@
       // Captura SÓ essas entradas — assim, quando não há âncora de PM/ataque
       // depois (criaturas só com habilidades, ex.: Enxame Infernal), não engole
       // o texto das habilidades para dentro de "voo/natação/...".
-      const mDesl = t.slice(iDesl).match(/^Deslocamento\s+((?:[^,]*?\d+\s*m\s*\(\s*\d+\s*q\s*\)\s*,?\s*)+)/i);
+      // A distância pode ter decimal ("13,5m") e os parênteses podem trazer
+      // mais que os quadrados ("(9q; veja Sorrelfliflo Galunflante)") — as
+      // duas coisas acontecem no Deslocamento do Avatar de Nimb.
+      const mDesl = t.slice(iDesl).match(/^Deslocamento\s+((?:[^,]*?\d+(?:[.,]\d+)?\s*m\s*\([^)]*\)\s*,?\s*)+)/i);
       const segDesl = mDesl
         ? mDesl[1]
         : t.slice(iDesl, fim(iDesl, [iPM, iAtk, iAtr])).replace(/^Deslocamento\s*/i, '');
-      segDesl.split(',').forEach((parte, k) => {
+      // separa as entradas pela vírgula, menos a que é casa decimal ("13,5m")
+      segDesl.split(/,(?!\d)/).forEach((parte, k) => {
         const p = parte.trim();
         if (!p) return;
         let m;
