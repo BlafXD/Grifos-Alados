@@ -104,6 +104,9 @@ window.GA_FichasProntas = (function () {
   // ND em número, para ordenar ("1/4" → 0.25; ilegível vai pro fim)
   function ndValor(nd) {
     const s = String(nd || '').trim();
+    if (/^[–—-]$/.test(s)) return -1;          // ficha de apoio, sem ND
+    if (/^S\s*\+$/i.test(s)) return 901;       // patamar S+ (acima de tudo)
+    if (/^S$/i.test(s)) return 900;            // patamar S
     const fr = s.match(/^(\d+)\s*\/\s*(\d+)$/);
     if (fr) return (+fr[1]) / (+fr[2]);
     const n = parseFloat(s.replace(',', '.'));

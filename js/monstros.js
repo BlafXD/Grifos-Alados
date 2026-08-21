@@ -3868,7 +3868,7 @@
 
   // tipos de criatura reconhecidos no texto -> chave do chip
   const _TIPO_TEXTO = [
-    { re: /morto[- ]?vivo|mortos[- ]?vivos/i, chave: 'mortosVivos' },
+    { re: /mort[oa][- ]?viv[oa]|mort[oa]s[- ]?viv[oa]s/i, chave: 'mortosVivos' },
     { re: /constru(to|tos|ct)/i,              chave: 'construtos' },
     { re: /esp[ií]rito/i,                     chave: 'espiritos' },
     { re: /humanoide/i,                       chave: 'humanoides' },
@@ -3970,12 +3970,21 @@
     if (!t) return { cr: null, avisos: ['Cole o texto da ficha primeiro.'] };
 
     // 2) localiza as âncoras
-    const iIni  = _idx(t, /\bIniciativa\b/i);
-    const iDef  = _idx(t, /\bDefesa\b/i);
-    const iPV   = _idx(t, /\bPontos?\s+de\s+Vida\b/i);
-    const iDesl = _idx(t, /\bDeslocamento\b/i);
-    const iPM   = _idx(t, /\bPontos?\s+de\s+Mana\b/i);
-    let   iAtk  = _idx(t, /\b(Corpo a Corpo|À Distância)\b/i);
+    // Cada âncora exige o FORMATO da linha do statblock, não só a palavra:
+    // nas fichas com muito texto de lore antes do bloco (é o caso do Guia
+    // de NPCs), uma menção solta a "iniciativa" ou "defesa" no meio da
+    // história cortava a ficha no lugar errado.
+    const iIni  = _idx(t, /\bIniciativa\s*[+\-–−]\s*\d/i);
+    const iDef  = _idx(t, /\bDefesa\s+\d+\s*(?:\([^)]*\))?\s*,\s*Fort/i);
+    const iPV   = _idx(t, /\bPontos?\s+de\s+Vida\s+[\d.]/i);
+    // "Deslocamento 9m…" e também "Deslocamento Voo 18m…" (a Aparição não
+    // anda, só voa, e o livro abre a linha pelo tipo de deslocamento)
+    const iDesl = _idx(t, /\bDeslocamento\s+(?:\d|[A-Za-zÀ-ÿ]+\s+\d)/i);
+    const iPM   = _idx(t, /\bPontos?\s+de\s+Mana\s+[\d.]/i);
+    // "corpo a corpo" em minúsculas aparece muito no texto das habilidades;
+    // a linha de ataque começa com o nome da arma em maiúscula (ou com o
+    // marcador [Bando] das criaturas em bando).
+    let   iAtk  = _idx(t, /\b(?:Corpo a Corpo|À Dist[âa]ncia)\s+[A-ZÀ-Ý[]/);
     // Atributos: exige a linha COMPLETA (For, Des, Con, Int, Sab, Car), assim
     // não casa com menções parciais tipo "For –1, Des 2" dentro de habilidades.
     const _vAtr = '(?:[+\\-–−]?\\d+|[—–−-])';
@@ -3983,9 +3992,9 @@
       '\\bFor\\s+'+_vAtr+'\\s*,\\s*Des\\s+'+_vAtr+'\\s*,\\s*Con\\s+'+_vAtr +
       '\\s*,\\s*Int\\s+'+_vAtr+'\\s*,\\s*Sab\\s+'+_vAtr+'\\s*,\\s*Car\\b', 'i');
     const iAtr  = _idx(t, reAtr);
-    const iPer  = _idx(t, /\bPer[íi]cias\b/i);
-    const iEquip= _idx(t, /\bEquipamento\b/i);
-    const iTes  = _idx(t, /\bTesouro\b/i);
+    const iPer  = _idx(t, /\bPer[íi]cias\s+[A-ZÀ-Ý]/);
+    const iEquip= _idx(t, /\bEquipamento\s+[A-ZÀ-Ý]/);
+    const iTes  = _idx(t, /\bTesouro\s+[A-ZÀ-Ý\d]/);
 
     // menor índice válido a partir de um ponto — para achar o "fim" de um trecho
     const fim = (apos, candidatos) => {
@@ -4004,7 +4013,8 @@
     // 3) CABEÇALHO: nome + [ND] + [descrição] + tipo e tamanho
     //    Estrutura do livro: "Nome [ND x] [parágrafo de descrição] Tipo (raça) Tamanho"
     const cab = (iIni > 0 ? t.slice(0, iIni) : t).trim();
-    const reTipo = /\b(Monstro|Morto[- ]?vivo|Mortos[- ]?vivos|Constru\w+|Esp[ií]rito|Humanoide|Animal|Animais)\b/gi;
+    // o Guia de NPCs escreve o tipo no feminino quando a criatura é ("Morta-viva (osteon) Média")
+    const reTipo = /\b(Monstro|Mort[oa][- ]?viv[oa]|Mort[oa]s[- ]?viv[oa]s|Constru\w+|Esp[ií]rito|Humanoide|Animal|Animais)\b/gi;
     let mTipoUltimo = null, mm;
     while ((mm = reTipo.exec(cab)) !== null) mTipoUltimo = mm;   // pega a ÚLTIMA ocorrência (a linha de tipo fica logo antes da Iniciativa)
     let tipoTam = '', resto = cab;
@@ -4016,7 +4026,9 @@
     }
     // ND e descrição: o ND separa o nome do texto de descrição.
     // Aceita número, fração (1/4) ou "S+" (desafios especiais).
-    const reND = /\bND\s+(S\s*\+|\d+\s*\/\s*\d+|\d+)/i;
+    // Aceita número, fração (1/4), os patamares "S" e "S+" (Guia de NPCs)
+    // e o travessão que o livro usa em ficha de apoio sem ND próprio.
+    const reND = /\bND\s+(S\s*\+|S\b|\d+\s*\/\s*\d+|\d+|[–—-])/i;
     const mND = resto.match(reND);
     if (mND) {
       cr.nd = mND[1].replace(/\s+/g, '');
@@ -4533,9 +4545,14 @@
     }));
     return achada;
   }
-  // ND em número, para ordenar ("1/4" -> 0.25; "S+" e vazios vão pro fim)
+  // ND em número, para ordenar: "1/4" → 0,25; "10*" → 10; os patamares
+  // "S" e "S+" ficam acima de qualquer número, nessa ordem; a ficha de
+  // apoio sem ND ("–") vai para o começo; o que sobrar vai pro fim.
   function _ndValor(nd) {
     const s = String(nd || '').trim();
+    if (/^[–—-]$/.test(s)) return -1;
+    if (/^S\s*\+$/i.test(s)) return 901;
+    if (/^S$/i.test(s)) return 900;
     const fr = s.match(/^(\d+)\s*\/\s*(\d+)$/);
     if (fr) return (+fr[1]) / (+fr[2]);
     const n = parseFloat(s.replace(',', '.'));
