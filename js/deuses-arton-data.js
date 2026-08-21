@@ -56,7 +56,7 @@
 window.FICHAS_DEUSES_ARTON = {
 
   livro: 'Deuses de Arton — v1.1',
-  fonte: 'Deuses Maiores',
+  fonte: 'Deuses Maiores e seus servos',
 
   categorias: [
 
