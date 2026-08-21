@@ -53,7 +53,7 @@ window.GA_FichasProntas = (function () {
     { chave: 'deusesArton',  icone: '⛩', cor: '#8a6a1f',
       nome: 'Deuses de Arton', curto: 'Deuses de Arton',
       fonte: 'FICHAS_DEUSES_ARTON',
-      sub: 'Como o Panteão pisa em Arton: os avatares dos vinte Deuses Maiores, cada um com o quadro de dados da divindade dentro do card.' },
+      sub: 'Como o Panteão pisa em Arton: os avatares dos vinte Deuses Maiores, cada um com o quadro de dados da divindade dentro do card — e quem os deuses mandam quando um avatar seria demais (aspectos, celestiais, fadas, gênios e gigantes).' },
     { chave: 'npcs',         icone: '👤', cor: '#4a5a7a',
       nome: 'Guia de NPCs', curto: 'Guia de NPCs',
       fonte: 'GUIA_NPCS',
