@@ -4236,8 +4236,13 @@
       const inicioAtk = (iAtk >= 0 && iAtk < iAtr) ? iAtk
                        : (iPM >= 0 && iPM < iAtr ? iPM : (iDesl >= 0 ? iDesl : iPV));
       let bloco = t.slice(inicioAtk, iAtr).trim();
-      // se começou no Deslocamento/PM, remove esse trechinho inicial já usado
-      bloco = bloco.replace(/^Deslocamento[^]*?(?=(Corpo a Corpo|À Distância|[A-ZÀ-Ý]))/i, '')
+      // se começou no Deslocamento/PM, remove esse trechinho inicial já usado.
+      // SEM o /i: a intenção é parar na primeira MAIÚSCULA (onde começa o
+      // ataque ou a habilidade). Com o /i, "[A-ZÀ-Ý]" casava minúscula
+      // também e o corte parava no "m" de "12m", deixando "m (8q) À
+      // Distância…" na caixa de ataques das fichas sem linha de ataque
+      // (Enxame Larval, Arqueiro Escravo, Kobold-Mãe, Corgann…).
+      bloco = bloco.replace(/^Deslocamento[^]*?(?=Corpo a Corpo|À Dist[âa]ncia|[A-ZÀ-Ý])/, '')
                    .replace(/^Pontos?\s+de\s+Mana\s*\d+\s*/i, '');
       // o ND, quando aparece no meio do bloco, já foi extraído para o campo
       // próprio — remove o token solto para não sujar a caixa de ataques.
