@@ -6,7 +6,7 @@
 //    "Inútil/Regras - Ameaças de Arton.txt". Dá para editar à mão — mas
 //    rodar o gerador de novo sobrescreve tudo.
 //
-//  As 178 criaturas do Capítulo 1 (Ameaças), nas seis seções
+//  As 223 criaturas do Capítulo 1 (Ameaças), nas 17 seções
 //  temáticas do livro. Cada ficha guarda o TEXTO LIMPO do statblock, no
 //  formato do livro — quem o transforma em criatura do bestiário é o
 //  parser parsearFicha() do monstros.js (o mesmo do "📋 Importar do
@@ -44,6 +44,11 @@
 //  que o dump colou no Sacerdote de Hyninn era do Alto Sacerdote — o
 //  Sacerdote é ND 2. (O Goblin-Bomba também veio sem ND no statblock,
 //  mas o "ND 3" estava no título da entrada e o gerador o recuperou.)
+//
+//  ⚠⚠ 2 NDs AINDA NÃO CONFERIDOS NO LIVRO — Arqueiro Escravo (5) e Kobold Xamã (3).
+//  Vieram sem ND na cópia do PDF e o número aqui é dedução do gerador;
+//  o raciocínio de cada um está no relatório. Se o livro disser outra
+//  coisa, troque na tabela ND_FALTANDO do gerador e rode de novo.
 //
 //  ⚠ O "✦" no começo de uma linha é o selo de HABILIDADE MÁGICA (no
 //  livro é um ícone ao lado do nome; na cópia do PDF sobrou como um "e"
@@ -258,7 +263,7 @@ Tesouro Nenhum.`
         {
           chave: "lefeuHurobakk", nome: "Lefeu, Hurobakk", nd: "8", tipo: "Monstro (lefeu) Grande",
           papel: '',
-          resumo: "O demônio lembra um inseto quadrúpede, com um segundo tronco ereto emergindo do primeiro, de forma similar a um centauro, mas com quatro bra",
+          resumo: "O demônio lembra um inseto quadrúpede, com um segundo tronco ereto emergindo do primeiro, de forma similar a um centauro, mas com quatro…",
           texto:
 `Lefeu, Hurobakk ND 8
 O demônio lembra um inseto quadrúpede, com um segundo tronco ereto emergindo do primeiro, de forma similar a um centauro, mas com quatro braços adicionais e cabeçorra insetoide. Seus braços anteriores têm a forma de imensas garras de lagosta, que parecem capazes de dilacerar aço. Criaturas de poder de combate impressionante, os hurobakk são guerreiros de elite que fornecem suporte e força de ataque devastadora aos batalhões lefeu.
@@ -321,7 +326,7 @@ Tesouro Nenhum.`
         {
           chave: "lefeuEzzayn", nome: "Lefeu, Ezzayn", nd: "17", tipo: "Monstro (lefeu) Enorme",
           papel: '',
-          resumo: "Este tipo de enxame lefeu foi confrontado pela primeira vez durante a campanha que ficaria conhecida como “Coração de Rubi” — quando campeõe",
+          resumo: "Este tipo de enxame lefeu foi confrontado pela primeira vez durante a campanha que ficaria conhecida como “Coração de Rubi” — quando…",
           texto:
 `Lefeu, Ezzayn ND 17
 Este tipo de enxame lefeu foi confrontado pela primeira vez durante a campanha que ficaria conhecida como “Coração de Rubi” — quando campeões de Arton, após uma espetacular série de batalhas, conseguiram dissipar a área de Tormenta de Zakharov. Um ezzayn é composto por numerosos lefeu menores, emaranhados em quantidade impossível de estimar — de fato, seus números reais mudam constantemente, desafiando até vidências divinas. Além disso, as criaturas que o compõem não parecem completas ou íntegras; partes segmentadas se misturam freneticamente, cobertas de larvas e vertendo sangue purulento. Além de uktril e geraktril, o enxame também pode conter outras espécies — possivelmente para aumentar sua eficiência em cada missão, ou por razões que a mente racional não compreenderia. Assim, grupos de patrulha contam com apoio aéreo veridak, enquanto tropas de choque são reforçadas por cavalaria hurobakk. Não importa sua composição, um ezzayn está entre os mais perigosos lefeu conhecidos.
@@ -1059,7 +1064,7 @@ Equipamento Bandana, couro batido, espada curta certeira, espada longa. Tesouro 
           chave: "sacerdoteDeHyninn", nome: "Sacerdote de Hyninn", nd: "2", tipo: "Humanoide (goblin) Pequeno",
           papel: '',
           subgrupo: "Clérigo de Hyninn",
-          resumo: "Clérigo de Hyninn — Em seu manto puído, o goblin tem o aspecto de um ladrão maltrapilho comum, até dizer sutilmente algo como “fazei-me mais esperto que os mais",
+          resumo: "Clérigo de Hyninn — Em seu manto puído, o goblin tem o aspecto de um ladrão maltrapilho comum, até dizer sutilmente algo como “fazei-me mais esperto que os…",
           texto:
 `Sacerdote de Hyninn ND 2
 Humanoide (goblin) Pequeno
@@ -1084,7 +1089,7 @@ Equipamento Adaga, gazua, símbolo sagrado de Hyninn. Tesouro Padrão.`
           chave: "altoSacerdoteDeHyninn", nome: "Alto Sacerdote de Hyninn", nd: "8", tipo: "Humanoide (humano) Médio",
           papel: '',
           subgrupo: "Clérigo de Hyninn",
-          resumo: "Clérigo de Hyninn — Em seu manto puído, o goblin tem o aspecto de um ladrão maltrapilho comum, até dizer sutilmente algo como “fazei-me mais esperto que os mais",
+          resumo: "Clérigo de Hyninn — Em seu manto puído, o goblin tem o aspecto de um ladrão maltrapilho comum, até dizer sutilmente algo como “fazei-me mais esperto que os…",
           texto:
 `Alto Sacerdote de Hyninn ND 8
 Humanoide (humano) Médio
@@ -1504,7 +1509,7 @@ Tesouro Nenhum.`
         {
           chave: "avatarDeAharadak", nome: "Avatar de Aharadak", nd: "S", tipo: "Monstro (lefeu) Colossal",
           papel: '',
-          resumo: "Grande como um castelo, a monstruosidade parece formada por incontáveis camadas de gordura e crostas vermelhas, rasgadas por fístulas que re",
+          resumo: "Grande como um castelo, a monstruosidade parece formada por incontáveis camadas de gordura e crostas vermelhas, rasgadas por fístulas que…",
           texto:
 `Avatar de Aharadak ND S
 “Contemplem! O bem maior só pode ser alcançado através do maior poder.”
@@ -2004,7 +2009,7 @@ Equipamento Gibão de peles, machado de guerra aumentado cruel. Tesouro Metade.`
         {
           chave: "bruxaGoblin", nome: "Bruxa Goblin", nd: "11", tipo: "Humanoide (goblin) Pequeno",
           papel: '',
-          resumo: "A gargalhada macabra vem antes que vocês vejam a criatura pequena e horrenda, o enorme chapéu pontudo e o manto esfarrapado não conseguindo",
+          resumo: "A gargalhada macabra vem antes que vocês vejam a criatura pequena e horrenda, o enorme chapéu pontudo e o manto esfarrapado não conseguindo…",
           texto:
 `Bruxa Goblin ND 11
 “Acham que é ‘apenas uma goblin’? Parvos ignorantes! Como acham que EU acabei assim?”
@@ -2434,7 +2439,7 @@ Tesouro 1d4 doses de éter elemental (fogo) (CD 23 para extrair).`
         {
           chave: "serpentaar", nome: "Serpentaar", nd: "14", tipo: "Espírito (elemental) Enorme",
           papel: '',
-          resumo: "O primeiro pensamento evocado pelo monstro é uma imensa e gorda serpente feita de piche, com chamas furiosas explodindo de bolhas formadas a",
+          resumo: "O primeiro pensamento evocado pelo monstro é uma imensa e gorda serpente feita de piche, com chamas furiosas explodindo de bolhas formadas…",
           texto:
 `Serpentaar ND 14
 O primeiro pensamento evocado pelo monstro é uma imensa e gorda serpente feita de piche, com chamas furiosas explodindo de bolhas formadas ao longo do corpanzil. Uma análise mais atenta, contudo, revela vários pares de patas muito pequenas e atrofiadas — a criatura parece ser, na verdade, alguma salamandra gigante e bizarra. Serpentaar estão entre os maiores elementais do fogo existentes em Arton. Muito embora, comparativamente falando, sejam menores que os grandes elementais de outros tipos. Diz a lenda que filhotes de serpentaar nascem nas lareiras dos castelos, como pequenas salamandras, escapando das chamas para se refugiar nos ermos. Escondem-se então em pântanos e fossos de piche, onde fazem tocaias e com o tempo atingem seu tamanho imenso. Estudiosos, no entanto, afirmam que isso é tolice: não há provas de que elementais tenham estágios de crescimento. Eles não nascem, apenas se formam. Seja como for, embora a criatura tenha patas, estas são muito curtas, inúteis para movimentação; o serpentaar rasteja como uma cobra, embora também consiga deslizar sobre o próprio ar fervente produzido pelo contato com seu corpo. O calor emanado pelo serpentaar é tão intenso que criaturas desprotegidas podem acabar calcinadas apenas por chegar muito perto. Atacá-lo em combate corpo a corpo requer alguma forma de proteção especial, e armas convencionais podem acabar destruídas. Manter distância, contudo, não é garantia de segurança: as constantes explosões de chamas em sua superfície podem ser direcionadas contra alvos afastados.
@@ -3237,7 +3242,7 @@ O bando de canídeos robustos, de orelhas arredondadas e focinhos enegrecidos, e
           chave: "gargula", nome: "Gárgula", nd: "2", tipo: "Construto Médio",
           papel: '',
           subgrupo: "Gárgula",
-          resumo: "Gárgula — clériga de Hyninn A criatura parece a estátua de um humanoide grotesco e alado, com chifres, cauda e garras.",
+          resumo: "Gárgula — A criatura parece a estátua de um humanoide grotesco e alado, com chifres, cauda e garras.",
           texto:
 `Gárgula ND 2
 Construto Médio
@@ -3254,7 +3259,7 @@ Tesouro Padrão.`
           chave: "gargulaAssassina", nome: "Gárgula Assassina", nd: "4", tipo: "Construto Médio",
           papel: '',
           subgrupo: "Gárgula",
-          resumo: "Gárgula — clériga de Hyninn A criatura parece a estátua de um humanoide grotesco e alado, com chifres, cauda e garras.",
+          resumo: "Gárgula — A criatura parece a estátua de um humanoide grotesco e alado, com chifres, cauda e garras.",
           texto:
 `Gárgula Assassina ND 4
 Construto Médio
@@ -3394,7 +3399,7 @@ Tesouro Nenhum.`
         {
           chave: "golemDeMateriaVermelha", nome: "Golem de Matéria Vermelha", nd: "18", tipo: "Construto (lefeu) Enorme",
           papel: '',
-          resumo: "O grande construto humanoide sem feições parece ter sido feito com algo que vocês não conseguem identificar — ou melhor, algo que não conseg",
+          resumo: "O grande construto humanoide sem feições parece ter sido feito com algo que vocês não conseguem identificar — ou melhor, algo que não…",
           texto:
 `Golem de Matéria Vermelha ND 18
 “Forjar um construto com o abjeto material da Anticriação! Que maldito ousou isso?”
@@ -3482,8 +3487,8 @@ Equipamento Besta pesada, lança, virotes x20. Tesouro Pilha de sucata (vale T$ 
         { titulo: "Gárgula",
           texto:
 `“Por que fazem essas coisas parecidas com demônios? Acho que aquela ali se mexeu…”
-— Thalina Asa-de-Cristal, sílfide
-clériga de Hyninn A criatura parece a estátua de um humanoide grotesco e alado, com chifres, cauda e garras. Gárgulas são construtos de aspecto demoníaco, construídos para proteger templos, castelos ou masmorras, disfarçadas como ornamentos. Quando estão imóveis em suas posições de vigília, é quase impossível diferenciá-las de estátuas; até mesmo adquirem a mesma resistência do granito. Contudo, talvez como influência de seu aspecto (ou por intervenção de deuses ou demônios), gárgulas são propensas a ganhar vida e fugir ao controle de seus criadores. Tornam-se predadores urbanos, escondidas à vista de todos enquanto perscrutam as ruas, escolhendo suas vítimas. Gárgulas permanecem imóveis até o momento de mergulhar sobre suas vítimas, então atacando com ferocidade, mordendo e rasgando com suas garras. Embora não precisem de comida, gárgulas selvagens devoram inimigos abatidos por pura crueldade. Apreciam especialmente a carne de crianças e filhotes. Adoram vangloriar-se de sua esperteza, paciência e furtividade para outras gárgulas, e uma dupla competindo pode ser o terror de qualquer cidade. Gárgulas conscientes que escolham outros modos de vida são raras, mas existem.` },
+— Thalina Asa-de-Cristal, sílfide clériga de Hyninn
+A criatura parece a estátua de um humanoide grotesco e alado, com chifres, cauda e garras. Gárgulas são construtos de aspecto demoníaco, construídos para proteger templos, castelos ou masmorras, disfarçadas como ornamentos. Quando estão imóveis em suas posições de vigília, é quase impossível diferenciá-las de estátuas; até mesmo adquirem a mesma resistência do granito. Contudo, talvez como influência de seu aspecto (ou por intervenção de deuses ou demônios), gárgulas são propensas a ganhar vida e fugir ao controle de seus criadores. Tornam-se predadores urbanos, escondidas à vista de todos enquanto perscrutam as ruas, escolhendo suas vítimas. Gárgulas permanecem imóveis até o momento de mergulhar sobre suas vítimas, então atacando com ferocidade, mordendo e rasgando com suas garras. Embora não precisem de comida, gárgulas selvagens devoram inimigos abatidos por pura crueldade. Apreciam especialmente a carne de crianças e filhotes. Adoram vangloriar-se de sua esperteza, paciência e furtividade para outras gárgulas, e uma dupla competindo pode ser o terror de qualquer cidade. Gárgulas conscientes que escolham outros modos de vida são raras, mas existem.` },
         { titulo: "Golem de Ferro",
           texto:
 `“Não se preocupem, eu tenho um plano!”
@@ -3523,7 +3528,7 @@ Magias Como um clérigo de Arsenal de 10º nível (CD 32).
 • Soco de Arsenal (Padrão, 9 PM) O coletor causa 7d6+5 pontos de dano de impacto em uma criatura em alcance médio, que é empurrada 3m na direção oposta (Fort reduz à metade e evita o empurrão).
 • Visão Mística (Padrão, 3 PM) Durante 1 dia, o coletor detecta todas as auras mágicas em alcance médio e recebe todas as informações sobre elas sem gastar ações. Além disso, ele pode gastar uma ação de movimento para descobrir se uma criatura que possa perceber em alcance médio é capaz de lançar magias e qual a aura gerada pelas magias de círculo mais alto que ela pode lançar.
 For 5, Des 1, Con 3, Int 2, Sab 4, Car 0
-Perícias Guerra + 15, Misticismo +16, Religião +18.
+Perícias Guerra +15, Misticismo +16, Religião +18.
 Equipamento Armadura completa abascanta, chicote, martelo de guerra formidável, símbolo sagrado de Arsenal.
 Tesouro Padrão.`
         },
@@ -3656,7 +3661,7 @@ Magias Como um clérigo de Arsenal de 9ª nível (CD 28, limite de PM 9).
 • Soco de Arsenal (Padrão, 7 PM) Uma criatura em alcance médio sofre 6d6+3 pontos de dano de impacto e é empurrada 3m na direção oposta (Fort reduz à metade e evita o empurrão).
 • Sopro da Salvação (Padrão, 8 PM) O bispo sopra um cone de 9m que cura 3d8+3 PV e remove uma das seguintes condições dos aliados na área: abalado, atordoado, apavorado, alquebrado, cego, confuso, debilitado, enfeitiçado, enjoado, esmorecido, exausto, fascinado, fatigado, fraco, frustrado, lento, paralisado, pasmo e surdo.
 For 3, Des 0, Con 4, Int 2, Sab 6, Car 1
-Perícias Guerra + 16, Misticismo +12, Religião +16.
+Perícias Guerra +16, Misticismo +12, Religião +16.
 Equipamento Armadura completa ajustada reforçada, escudo leve reforçado, martelo de guerra, símbolo sagrado de Arsenal, poção de Velocidade. Tesouro Padrão.`
         },
         {
@@ -3823,18 +3828,18 @@ Magias Como um clérigo de Kallyadranoch de 13º nível (CD 37).
 • Potência Divina (Padrão, 6 PM, sustentada) O tamanho do alto clérigo aumenta uma categoria e ele recebe Força +4 e RD 10. Ele não pode lançar magias enquanto estiver sob efeito de Potência Divina.
 • Proteção Divina (Reação, 3 PM) Uma criatura em alcance curto recebe +5 no próximo teste de resistência que fizer até o fim da cena.
 For 2, Des 0, Con 3, Int 1, Sab 7, Car 3
-Perícias Intimidação +15, Intuição + 17, Misticismo +11, Religião +19.
+Perícias Intimidação +15, Intuição +17, Misticismo +11, Religião +19.
 Equipamento Lança de arremesso, meia armadura, símbolo sagrado de Kallyadranoch. Tesouro Padrão.`
         },
         {
           chave: "corcelDeKally", nome: "Corcel de Kally", nd: "2", tipo: "Monstro Grande",
           papel: '',
-          resumo: "devoto de Kallyadranoch A criatura tem o tamanho e forma de um cavalo, mas claramente não é.",
+          resumo: "A criatura tem o tamanho e forma de um cavalo, mas claramente não é.",
           texto:
 `Corcel de Kally ND 2
 “Cavalgar um dragão? Seu tolo abismal! Você não é digno. Ninguém é.”
-— Laxann Helataxx, meio-elfo guerreiro
-devoto de Kallyadranoch A criatura tem o tamanho e forma de um cavalo, mas claramente não é. O corpo escamado, a longa cauda, as grandes asas coriáceas, as mandíbulas com dentes afiados de onde pingam chamas — tudo isso deixa pouca dúvida sobre sua real natureza. O corcel de Kally não existe em estado natural. Este animal mágico é uma montaria sagrada de Kallyadranoch, uma recompensa para seus devotos mais merecedores — e ao mesmo tempo um aviso: dragões verdadeiros não existem para ser cavalgados! Apesar de seu aspecto, um corcel de Kally é apenas um pouco mais inteligente que um cavalo comum. Como montaria, ele se comporta de forma parecida com um cavalo de guerra, obedecendo aos comandos do cavaleiro e não se assustando em situações de combate. Sua baforada de chamas, limitada a poucos usos, normalmente é reservada para proteger o cavaleiro caso este se encontre indefeso. Em voo, o corcel é capaz de velocidade e manobras impressionantes, quase igualando um grifo. Embora possam ser vistos protegendo locais sagrados de Kallyadranoch, estes corcéis são mais comumente encontrados como montarias de clérigos, cavaleiros de Kally, dracomantes e tiranos do Terceiro. Alguns aventureiros devotos de Kally também recebem esta dádiva.
+— Laxann Helataxx, meio-elfo guerreiro devoto de Kallyadranoch
+A criatura tem o tamanho e forma de um cavalo, mas claramente não é. O corpo escamado, a longa cauda, as grandes asas coriáceas, as mandíbulas com dentes afiados de onde pingam chamas — tudo isso deixa pouca dúvida sobre sua real natureza. O corcel de Kally não existe em estado natural. Este animal mágico é uma montaria sagrada de Kallyadranoch, uma recompensa para seus devotos mais merecedores — e ao mesmo tempo um aviso: dragões verdadeiros não existem para ser cavalgados! Apesar de seu aspecto, um corcel de Kally é apenas um pouco mais inteligente que um cavalo comum. Como montaria, ele se comporta de forma parecida com um cavalo de guerra, obedecendo aos comandos do cavaleiro e não se assustando em situações de combate. Sua baforada de chamas, limitada a poucos usos, normalmente é reservada para proteger o cavaleiro caso este se encontre indefeso. Em voo, o corcel é capaz de velocidade e manobras impressionantes, quase igualando um grifo. Embora possam ser vistos protegendo locais sagrados de Kallyadranoch, estes corcéis são mais comumente encontrados como montarias de clérigos, cavaleiros de Kally, dracomantes e tiranos do Terceiro. Alguns aventureiros devotos de Kally também recebem esta dádiva.
 Monstro Grande
 Iniciativa +6, Percepção +5, faro, visão no escuro
 Defesa 20, Fort +11, Ref +9, Von +2, imunidade a fogo
@@ -4159,7 +4164,7 @@ Equipamento Dardos x20, espada curta certeira, essência de sombra x1d4, gazua, 
           chave: "kappaBrigao", nome: "Kappa Brigão", nd: "1", tipo: "Espírito (kappa) Médio",
           papel: '',
           subgrupo: "Kappa",
-          resumo: "Kappa — Os estranhos seres aquáticos têm o aspecto de tartarugas bípedes, com faces reptilianas, olhos redondos e vermelhos, escamas verde-amarelada",
+          resumo: "Kappa — Os estranhos seres aquáticos têm o aspecto de tartarugas bípedes, com faces reptilianas, olhos redondos e vermelhos, escamas…",
           texto:
 `Kappa Brigão ND 1
 Espírito (kappa) Médio
@@ -4179,7 +4184,7 @@ Tesouro Nenhum.`
           chave: "kappaYokozuna", nome: "Kappa Yokozuna", nd: "3", tipo: "Espírito (kappa) Médio",
           papel: '',
           subgrupo: "Kappa",
-          resumo: "Kappa — Os estranhos seres aquáticos têm o aspecto de tartarugas bípedes, com faces reptilianas, olhos redondos e vermelhos, escamas verde-amarelada",
+          resumo: "Kappa — Os estranhos seres aquáticos têm o aspecto de tartarugas bípedes, com faces reptilianas, olhos redondos e vermelhos, escamas…",
           texto:
 `Kappa Yokozuna ND 3
 Espírito (kappa) Médio
@@ -4517,6 +4522,1102 @@ A grande forma escamada e colorida lembra um dragão — e realmente é, mas tam
 • Magia Celestial. Podem lançar magias sem palavras mágicas, gestos, concentração ou componentes materiais.
 • Metamorfose Celestial (Completa). Podem se transformar em outras criaturas, como a magia Metamorfose (mas sem limitação para tamanhos menores que o seu). Dragões curiosos usam esta habilidade para se misturar nas sociedades humanoides e aprender sobre seus costumes. Um dragão morto reverte à sua forma original.
 • Presença Celestial. A mera visão de um dragão celestial adulto ou mais velho pode fascinar ou amedrontar. Uma criatura que comece seu turno em alcance longo do dragão fica apavorada (se tiver 4 níveis ou menos) ou abalada (se tiver 5 níveis ou mais) até o fim da cena. Criaturas com um código de conduta (como cavaleiros e paladinos) ou devotos de Khalmyr ou Lin-Wu em vez disso ficam fascinados, independente de seu nível (Von evita em todos os casos). Uma criatura que passe no teste de resistência fica imune a esta habilidade por um dia.` },
+      ],
+    },
+
+    // ── 🐂 IMPÉRIO DE TAURON ───────────────────────────
+    {
+      chave: "tauron", nome: "Império de Tauron", icone: "🐂", cor: "#6a3a2f",
+      intro: "Após a morte de sua divindade maior, o outrora glorioso império dos minotauros está destroçado, decadente. Boa parte da soberania conquistada durante as Guerras Táuricas se foi. Jazendo em meio à capital, o cadáver descomunal de Tauron impede que a Tormenta destrua Tapista, mas é também uma lembrança trágica para seu povo. Um golpe em seu orgulho e uma lição de humildade para todo o sempre. É verdade que muitos minotauros mudaram seus modos. Outros, contudo, seguem apegados ao deplorável passado de tirania e escravidão. Em meio à turbulência do império fragmentado, governadores corruptos e déspotas cruéis fazem as próprias leis em seus feudos. O tráfico escravista segue ativo, clandestino. Gladiadores sem glória ganham a vida como mercenários. Legionários enlouquecidos pela Tormenta vagam pelas estradas arruinadas, atacando tudo que encontram. Não bastasse o caos em seu próprio território, a tragédia dos minotauros se derrama sobre o restante de Arton — onde vítimas são capturadas como novos escravos para os tiranos, e desertores rondam os ermos saqueando e pilhando como bandidos comuns.",
+      fichas: [
+        {
+          chave: "arqueiroEscravo", nome: "Arqueiro Escravo", nd: "5", tipo: "Humanoide (elfo) Médio",
+          papel: '',
+          resumo: "É uma visão estranha, perturbadora.",
+          texto:
+`Arqueiro Escravo ND 5
+“Vocês são a mais absoluta vergonha para Lenórienn! E agora vão pagar!”
+— Valhaha, elfo caçador
+É uma visão estranha, perturbadora. Uma elfa trajando a armadura segmentada tapistana. Ela não traz o olhar derrotado dos escravos; em vez disso, parece resoluta em servir às legiões enquanto coloca uma nova flecha no arco.
+Quando a Deusa dos Elfos se entregou como escrava a Tauron, buscando sua proteção, muitos elfos sobreviventes à queda de Lenórienn seguiram seu exemplo. Procurando a melhor forma de servir a seus novos mestres, aprenderam logo que minotauros acham desonrado usar quaisquer armas de ataque à distância. Assim, os elfos tomaram para si mesmos esse fardo “indigno”, ao mesmo tempo preservando suas próprias tradições de arquearia. Acabariam se tornando uma espécie de força de elite dentro das legiões — isto é, até onde guerreiros escravizados podiam ser considerados dessa forma. A traição de sua antiga deusa sobre Tauron reforçou a convicção dos arqueiros escravos — quase como se também fossem responsáveis pela deslealdade de Glórienn. Tornaram-se fanáticos, dispostos a dedicar e sacrificar suas vidas para pagar essa dívida de honra. Sem muita surpresa, esses arqueiros são considerados traidores pelos demais elfos. Restam poucos destes arqueiros no Império. São designados para acompanhar legionários em missões importantes, provendo suporte à infantaria.
+Humanoide (elfo) Médio
+Iniciativa +12, Percepção +7, visão na penumbra
+Defesa 24, Fort +6, Ref +16, Von +11
+Pontos de Vida 36
+Deslocamento 12m (8q)
+À Distância Arco longo x2 +21 (2d6+15, x3).
+Disparo Preciso O arqueiro escravo faz ataques à distância contra oponentes envolvidos em combate corpo a corpo sem sofrer a penalidade de –5 no teste de ataque.
+Flecha Amiga (Reação) Uma vez por rodada, quando um aliado em alcance médio ataca um inimigo, o arqueiro escravo faz um ataque de arco longo contra esse mesmo inimigo.
+Minha Vida Pela Legião (Reação) Uma vez por rodada, quando um aliado adjacente ao arqueiro escravo é atingido por um efeito que causa dano, o arqueiro sofre esse dano no lugar do aliado.
+For –1, Des 5, Con 1, Int 2, Sab 0, Car –1
+Equipamento Arco longo, couraça, flechas x20. Tesouro Nenhum.`
+        },
+        {
+          chave: "centuriao", nome: "Centurião", nd: "3", tipo: "Humanoide (minotauro) Médio",
+          papel: '',
+          subgrupo: "Centurião",
+          resumo: "Centurião — Ainda que as legiões pareçam formadas por soldados absolutamente iguais, com as mesmas armaduras, lanças e escudos, um deles se adianta.",
+          texto:
+`Centurião ND 3
+Humanoide (minotauro) Médio
+Iniciativa +4, Percepção +2, faro
+Defesa 23, Fort +15, Ref +4, Von +8
+Pontos de Vida 100
+Deslocamento 6m (4q)
+Corpo a Corpo Gládio +14 (1d6+5, 19/x3) e chifres +14 (1d6+5).
+À Distância Azagaia +10 (1d6+5).
+Coordenar Ataque (Movimento) O centurião coordena os ataques de uma falange da qual esteja participando. Até o próximo turno do centurião, sempre que um participante da falange fizer um ataque, pode rolar dois dados e usar o melhor resultado.
+Falange (Movimento) Se o centurião estiver usando um escudo e adjacente a um aliado com esta habilidade, pode formar uma falange com esse aliado. Enquanto estiverem adjacentes um ao outro, os participantes da falange recebem +2 na Defesa e em testes de resistência.
+Ordens (Movimento) O centurião grita ordens para seus aliados em alcance médio. Eles recebem +2 em testes de perícia até o fim da cena.
+For 5, Des 0, Con 4, Int 2, Sab 0, Car 0
+Perícias Atletismo +10, Guerra +7.
+Equipamento Azagaia x3, escudo pesado, gládio certeiro, loriga segmentada. Tesouro Padrão.`
+        },
+        {
+          chave: "centuriaoDeElite", nome: "Centurião de Elite", nd: "7", tipo: "Humanoide (minotauro) Médio",
+          papel: '',
+          subgrupo: "Centurião",
+          resumo: "Centurião — Ainda que as legiões pareçam formadas por soldados absolutamente iguais, com as mesmas armaduras, lanças e escudos, um deles se adianta.",
+          texto:
+`Centurião de Elite ND 7
+Humanoide (minotauro) Médio
+Iniciativa +9, Percepção +9, faro
+Defesa 32, Fort +20, Ref +8, Von +13, imunidade a encantamento, redução de dano 5
+Pontos de Vida 250
+Deslocamento 6m (4q)
+Corpo a Corpo Gládio +23 (2d8+16, 19/x3) e chifres +23 (2d6+16).
+À Distância Azagaia +23 (1d6+14).
+Coordenar Ataque (Movimento) O centurião de elite coordena os ataques de uma falange da qual esteja participando. Até o próximo turno do centurião, sempre que um participante da falange fizer um ataque, pode rolar dois dados e usar o melhor resultado.
+É Proibido Morrer Aliados em alcance médio do centurião recebem RD 5.
+Falange (Movimento) Se o centurião estiver usando um escudo e adjacente a um aliado com esta habilidade, pode formar uma falange com esse aliado. Enquanto estiverem adjacentes um ao outro, os participantes da falange recebem +2 na Defesa e em testes de resistência.
+Ordens (Movimento) O centurião grita ordens para seus aliados em alcance médio. Eles recebem +2 em testes de perícia até o fim da cena.
+For 6, Des 0, Con 5, Int 3, Sab 0, Car 1
+Perícias Atletismo +15, Guerra +12.
+Equipamento Azagaia x3, escudo pesado, gládio certeiro, loriga segmentada reforçada. Tesouro Dobro.`
+        },
+        {
+          chave: "furiaDeTauron", nome: "Fúria de Tauron", nd: "4", tipo: "Morto-vivo Pequeno",
+          papel: '',
+          subgrupo: "Fúria de Tauron",
+          resumo: "Fúria de Tauron — A aparição flutuante tem o aspecto de um crânio bovino envolto em chamas macabras, espectrais.",
+          texto:
+`Fúria de Tauron ND 4
+Morto-vivo Pequeno
+Iniciativa +14, Percepção +5, visão no escuro
+Defesa 20, Fort +8, Ref +15, Von +4, incorpóreo, vulnerabilidade a frio
+Pontos de Vida 30
+Deslocamento voo 12m (8q)
+Corpo a Corpo Chifres espectrais +15 (2d8+7 fogo mais 2d8+7 trevas).
+Chamas Espectrais Os chifres espectrais da fúria de Tauron contam como uma arma mágica. Além disso, uma criatura viva atingida pelos chifres fica desprevenida por 1 rodada e em chamas (Fort CD 20 evita).
+Debandada Flamejante (Completa) A fúria percorre até o dobro do seu deslocamento em linha reta, golpeando todas as criaturas em seu caminho. Ela faz um único teste de ataque de seus chifres espectrais e compara com a Defesa de cada criatura nos espaços por onde passou.
+Apagar a Chama Quando sofre dano de frio, a fúria fica debilitada e lenta por 1 rodada.
+For –, Des 5, Con 2, Int –1, Sab 1, Car 3
+Tesouro Nenhum.`
+        },
+        {
+          chave: "estouroDeFuriasDeTauron", nome: "Estouro de Fúrias de Tauron", nd: "8", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Fúria de Tauron",
+          resumo: "Fúria de Tauron — A aparição flutuante tem o aspecto de um crânio bovino envolto em chamas macabras, espectrais.",
+          texto:
+`Estouro de Fúrias de Tauron ND 8
+Morto-vivo Médio
+Iniciativa +16, Percepção +7, visão no escuro
+Defesa 30, Fort +15, Ref +19, Von +10, incorpóreo, vulnerabilidade a frio
+Pontos de Vida 76
+Deslocamento voo 12m (8q)
+Corpo a Corpo [Bando] Chifres espectrais +27 (4d8+14 fogo mais 4d8+14 trevas).
+Chamas Espectrais Os chifres espectrais do estouro de fúrias de Tauron contam como uma arma mágica. Além disso, uma criatura viva atingida pelos chifres fica desprevenida por 1 rodada e em chamas (Fort CD 28 evita).
+Debandada Flamejante (Completa) O estouro percorre até o dobro do seu deslocamento em linha reta, golpeando todas as criaturas em seu caminho. Ele faz um único teste de ataque de seus chifres espectrais e compara com a Defesa de cada criatura nos espaços por onde passou.
+Apagar a Chama Quando sofre dano de frio, o estouro fica debilitado e lento por 1 rodada.
+For –, Des 5, Con 2, Int –1, Sab 1, Car 3
+Tesouro Nenhum.`
+        },
+        {
+          chave: "gladiadorTaurico", nome: "Gladiador Táurico", nd: "10", tipo: "Humanoide (minotauro) Médio",
+          papel: '',
+          resumo: "É um guerreiro minotauro, mas claramente não um legionário.",
+          texto:
+`Gladiador Táurico ND 10
+“Meu braço? Amputado? Bobagem, foi só um golpe de sorte e um arranhão!”
+— Firion Liantar, elfo bucaneiro
+É um guerreiro minotauro, mas claramente não um legionário. A armadura é elegante, mas sumária, exibindo muito da musculatura oleada. O elmo fechado e ornamentado deixa expostos apenas os chifres. Traz um tridente dourado em uma mão e uma rede na outra. Combates de arena são entretenimento popular em quase todas as grandes cidades de Arton, mas nenhum povo levou esse esporte a patamares tão elevados quanto os minotauros. Mesmo após a destruição da capital, o Coliseu de Tiberus permanece até hoje como o maior anfiteatro de jogos no mundo conhecido. Com a nação tapistana arruinada, imersa em miséria e pesadelo, entreter as massas é mais importante do que nunca. Lutador profissional de elite, o gladiador é um artista, mas também um duelista de habilidade extrema. Ainda que muitos combates de arena sejam encenações, ele é um mestre das acrobacias, esquivas e fintas. Sabe manejar suas armas para causar ferimentos superficiais ou profundos. Em vez das espadas e lanças comuns das legiões, escolhe as armas mais impressionantes e exóticas. Nem todos os gladiadores são minotauros, e nem todos aqueles de outras raças são escravos. Para manter o interesse do público, agenciadores de Tiberus vasculham o Reinado em busca de combatentes hábeis e exóticos, com propostas lucrativas (ou, em casos extremos, sua captura). O oposto também ocorre — muitos gladiadores abandonaram a decadente Tapista para atuar em outras arenas, ou como guerreiros de aluguel.
+Humanoide (minotauro) Médio
+Iniciativa +12, Percepção +9, faro
+Defesa 34, Fort +20, Ref +16, Von +12, imunidade a medo, redução de dano 5
+Pontos de Vida 390
+Deslocamento 9m (6q)
+Corpo a Corpo Tridente +29 (2d8+18), chifres +29 (2d6+18).
+À Distância Rede +29 (enredar, veja Tormenta20, p. 150).
+Agitar a Torcida (Movimento) O gladiador táurico faz um teste de Atuação e recebe uma quantidade de PV temporários igual ao resultado. Recarga (usar Estilo Espetacular e Sangue e Areia contra o mesmo inimigo).
+Estilo Espetacular (Completa) O gladiador ataca uma criatura com o tridente, o chifre e a rede. Se acertar o ataque de rede e enredar o alvo, pode fazer um ataque adicional de tridente contra ele.
+Sangue e Areia Quando acerta um ataque de tridente em um inimigo enredado por sua rede, o gladiador deixa a vítima sangrando.
+For 4, Des 1, Con 3, Int 0, Sab 0, Car 4
+Perícias Atletismo +15, Atuação +15, Intimidação +15.
+Equipamento Couraça, rede, tridente cruel e equilibrado. Tesouro Padrão.`
+        },
+        {
+          chave: "legionario", nome: "Legionário", nd: "1", tipo: "Humanoide (minotauro) Médio",
+          papel: '',
+          subgrupo: "Legionário",
+          resumo: "Legionário — Alto e sólido como um muro, envergando uma orgulhosa loriga segmentada, o soldado minotauro avança empunhando lança e escudo.",
+          texto:
+`Legionário ND 1
+Humanoide (minotauro) Médio
+Iniciativa +3, Percepção +1, faro
+Defesa 19, Fort +10, Ref +2, Von +4
+Pontos de Vida 12
+Deslocamento 6m (4q)
+Corpo a Corpo Gládio +10 (1d6+5, 19/x3) e chifres +10 (1d6+5).
+À Distância Azagaia +10 (1d6+5).
+Falange (Movimento) Se o legionário estiver usando um escudo e adjacente a um aliado com esta habilidade, pode formar uma falange com esse aliado. Enquanto estiverem adjacentes um ao outro, os participantes da falange recebem +2 na Defesa e em testes de resistência.
+Medo de Altura Se estiver adjacente a uma queda de 3m ou mais de altura (como um buraco ou penhasco), o legionário fica abalado.
+For 4, Des 0, Con 3, Int 1, Sab –1, Car 0
+Equipamento Azagaia x3, escudo pesado, gládio, loriga segmentada. Tesouro Metade.`
+        },
+        {
+          chave: "decuria", nome: "Decúria", nd: "5", tipo: "Humanoide (minotauro) Grande",
+          papel: '',
+          subgrupo: "Legionário",
+          resumo: "Legionário — Alto e sólido como um muro, envergando uma orgulhosa loriga segmentada, o soldado minotauro avança empunhando lança e escudo.",
+          texto:
+`Decúria ND 5
+Humanoide (minotauro) Grande
+Iniciativa +5, Percepção +3, faro
+Defesa 22, Fort +12, Ref +4, Von +6
+Pontos de Vida 60
+Deslocamento 6m (4q)
+Corpo a Corpo [Bando] Gládio +20 (2d6+10, 19/x3) e chifres +20 (2d6+10).
+À Distância [Bando] Azagaia +20 (2d6+10).
+Disciplina Militar Quando usa a ação agredir sob efeito da habilidade Ordens (veja Centurião), a decúria pode fazer um ataque adicional de gládio.
+Falange (Movimento) A decúria assume uma formação defensiva. Enquanto tiver pelo menos metade de seus PV, ela recebe +2 na Defesa e em testes de resistência.
+Medo de Altura Se estiver adjacente a uma queda de 3m ou mais de altura (como um buraco ou penhasco), a decúria fica abalada.
+For 4, Des 0, Con 3, Int 1, Sab –1, Car 0
+Equipamento Azagaia x3, escudo pesado, gládio, loriga segmentada (1d10 de cada). Tesouro Metade.`
+        },
+        {
+          chave: "legionarioInsano", nome: "Legionário Insano", nd: "8", tipo: "Humanoide (minotauro) Médio",
+          papel: '',
+          resumo: "Parece apenas mais uma patrulha de legionários, como tantas outras nas estradas imperiais.",
+          texto:
+`Legionário Insano ND 8
+“Vamos acabar logo com esses malucos, quero voltar para minha cervejaria!”
+— Werner Brahmorim, anão inventor
+Parece apenas mais uma patrulha de legionários, como tantas outras nas estradas imperiais. No entanto, mesmo à distância, vocês percebem algo errado. Os minotauros movem-se trôpegos, cambaleantes. Rosnam palavras e maldições ininteligíveis. E quando erguem a cabeça, na escuridão dos elmos, os olhos brilham como brasas vermelhas.
+Quando a Tormenta se derramou sobre Tiberus, milhares de legionários avançaram para proteger o Império. Para um número incontável destes, bastou um vislumbre do inferno aberrante para despedaçar toda e qualquer sanidade. Em apenas um momento, soldados fortes e metódicos tornaram-se loucos assassinos. Legionários insanos são comuns nas terras do Império e além — surgem de súbito em qualquer lugar, podendo até mesmo emergir de algum beco em plena capital! Convertidos em monstros pela loucura da Tormenta, não passam de matadores sanguinários, levados a “patrulhar” estradas e lutar juntos por algum resquício da antiga disciplina militar. Casos de vilas destruídas por estes maníacos têm sido cada vez mais numerosos, muitas vezes levando governadores e regentes a contratar aventureiros para caçá-los.
+Humanoide (minotauro) Médio
+Iniciativa +10, Percepção +7, faro
+Defesa 30, Fort +20, Ref +16, Von +7, imunidade a medo, resistência a magia +5
+Pontos de Vida 80
+Deslocamento 6m (4q)
+Corpo a Corpo Gládio x2 +27 (1d8+16, 19/x3) e chifres +27 (1d6+14).
+Desapego à Vida O legionário insano não fica inconsciente quando é reduzido a 0 PV ou menos e só morre quando é reduzido a -40 PV.
+Olhar Desesperador (Livre) Uma vez por rodada, o legionário encara um inimigo em alcance curto, que fica apavorado por 1 rodada e então abalado (Von CD 26 reduz para abalado por 1 rodada e o alvo fica imune a esta habilidade até o fim da cena).
+Retribuição Ensandecida (Reação) Uma vez por rodada, quando sofre dano de um inimigo adjacente, o legionário pode usar uma ação agredir contra essa criatura.
+For 7, Des 2, Con 6, Int –1, Sab –1, Car –3
+Equipamento Gládio, loriga segmentada. Tesouro Metade.`
+        },
+        {
+          chave: "minauroArcanista", nome: "Minauro Arcanista", nd: "3", tipo: "Humanoide (minauro) Médio",
+          papel: '',
+          subgrupo: "Minauro",
+          resumo: "Minauro — Ela lembra uma humana robusta, como a maioria dos minotauros.",
+          texto:
+`Minauro Arcanista ND 3
+Humanoide (minauro) Médio
+Iniciativa +5, Percepção +6, faro
+Defesa 17, Fort +9, Ref +4, Von +15
+Pontos de Vida 64
+Deslocamento 9m (6q)
+Pontos de Mana 34
+Corpo a Corpo Espada curta +7 (1d6+2, 19).
+Magias Como um mago de 5º nível (CD 20, limite de PM 5).
+• Armadura Arcana (Reação, 2 PM) O minauro recebe +5 na Defesa contra o próximo ataque que sofrer.
+• Bola de Fogo (Padrão, 5 PM) O minauro causa 8d6 pontos de dano de fogo em todas as criaturas em um raio de 6m em alcance médio (Ref reduz à metade).
+• Explosão de Chamas (Padrão, 3 PM) Criaturas em um cone de 6m sofrem 3d6 pontos de dano de fogo e ficam em chamas (Ref reduz dano à metade e evita a condição).
+• Primor Atlético (Padrão, 4 PM) Até o fim da cena, o deslocamento do minauro muda para 18m, ele recebe +10 em Atletismo e quando faz testes de perícias baseadas em Força, Destreza e Constituição (exceto testes de ataque e resistência) rola dois dados e usa o melhor.
+For 2, Des 0, Con 2, Int 4, Sab 1, Car 0
+Perícias Atletismo +5, Conhecimento +9, Diplomacia +5, Investigação +11, Misticismo +9.
+Equipamento Essência de mana, espada curta, varinha arcana. Tesouro Padrão.`
+        },
+        {
+          chave: "minauroLadino", nome: "Minauro Ladino", nd: "6", tipo: "Humanoide (minauro) Médio",
+          papel: '',
+          subgrupo: "Minauro",
+          resumo: "Minauro — Ela lembra uma humana robusta, como a maioria dos minotauros.",
+          texto:
+`Minauro Ladino ND 6
+Humanoide (minauro) Médio
+Iniciativa +11, Percepção +5, faro
+Defesa 25, Fort +8, Ref +18, Von +10, evasão aprimorada
+Pontos de Vida 147
+Deslocamento 9m (6q)
+Corpo a Corpo Espada curta 2x +18 (2d6+15, 19).
+Ataque Furtivo +3d6.
+Bombardeiro Veloz (Padrão) O minauro ladino saca uma de suas bombas e a arremessa em alcance curto. Uma bomba de fumaça gera fumaça espessa em um raio de 6m até o fim da cena (veja a página 396) e uma bomba causa 6d6 pontos de dano de impacto em todas as criaturas em um raio de 3m (Ref CD 24 reduz à metade).
+Fuga Formidável (Completa) Até o fim da cena, o minauro ladino recebe +3m em seu deslocamento, +5 em Acrobacia e Atletismo e ignora penalidades em movimento por terreno difícil. Ele perde esses benefícios se fizer uma ação que não seja diretamente relacionada a fugir.
+Mãos Leves O minauro ladino faz testes de Ladinagem como uma ação livre. Além disso, ele não sofre penalidade em testes de Furtividade por se mover ao seu deslocamento normal e reduz a penalidade por atacar e fazer outras ações chamativas para –10.
+Pirueta Defensiva (Reação) Uma vez por rodada, quando sofre dano de um ataque, o minauro reduz esse dano à metade.
+For 2, Des 4, Con 2, Int 3, Sab 0, Car –1
+Perícias Acrobacia +11, Atletismo +7, Diplomacia +6, Furtividade +11, Investigação +10, Jogatina +6, Ladinagem +11.
+Equipamento Bomba x3, bomba de fumaça x3, espada curta, gazua. Tesouro Padrão.`
+        },
+        {
+          chave: "governadorCorrupto", nome: "Governador Corrupto", nd: "6", tipo: "Humanoide (minotauro) Médio",
+          papel: '',
+          resumo: "A figura obesa em toga elegante, transportada em uma liteira carregada por escravos, acena um comando para que se detenham.",
+          texto:
+`Governador Corrupto ND 6
+“Seu harém? Tentador, mas devo declinar do convite. Prefiro beijar um otyugh.”
+— Alicia Niamm, medusa bucaneira
+A figura obesa em toga elegante, transportada em uma liteira carregada por escravos, acena um comando para que se detenham. Enquanto mastiga ruidosamente as uvas recebidas de uma esposa, o minotauro leva uma mão enorme ao queixo empapado e observa vocês com interesse. Com o governo central fragilizado, enfraquecido, muitos senadores ambiciosos — que buscavam apenas aumentar seu próprio poder e riqueza — decidiram que não havia mais nada a ganhar ali. Reuniram suas posses e servos e estabeleceram províncias próprias em áreas rurais afastadas, onde governam sem qualquer lealdade ao Triunvirato. Seguem com as antigas práticas hoje condenadas pelo Império, mantendo escravos e haréns, bem como uma guarda pessoal de ex-legionários e outros capangas. Governadores raramente são vistos longe de suas mansões, mas pode ocorrer que façam viagens breves para inspecionar suas propriedades ou negociar escravos em mercados clandestinos. Originários de famílias ricas, muitos receberam bom treino de combate na juventude — mas é normal que hoje estejam fora de forma, preferindo que sua escolta lute por eles. Os anos passados em debates no senado, contudo, tornaram sua mente e língua afiadas; são mestres da negociação e intimidação, praticamente capazes de enfeitiçar com suas palavras.
+Humanoide (minotauro) Médio
+Iniciativa +5, Percepção +7, faro
+Defesa 18, Fort +12, Ref +6, Von +18
+Pontos de Vida 122
+Deslocamento 9m (6q)
+Corpo a Corpo Adaga +19 (1d4+12, 19) e chifres +18 (1d6+12).
+Como Ousa? (Reação) Uma vez por rodada, quando um inimigo tenta usar uma ação hostil contra o governador corrupto, o governador faz um teste de Intimidação oposto à Vontade do agressor. Se o governador vencer o teste oposto, o inimigo perde a ação.
+Deliberação Desnorteante (Completa) Uma vez por cena, o governador faz um discurso elaborado que deixa todos os inimigos em alcance curto pasmos por 1 rodada e desprevenidos pela cena (Von CD 24 anula).
+Guarda Pessoal O governador está sempre acompanhado de quatro legionários (veja a página 172), que não contam para o cálculo de XP e tesouro do encontro.
+Incitar (Padrão) O governador ordena (ou xinga, ou chicoteia…) seus subordinados para que sejam mais cruéis e eficazes. Todos os aliados do governador em alcance médio recebem +5 em testes de perícia e +1d10 em rolagens de dano por 1 rodada.
+Proteja-me! (Reação) Uma vez por rodada, quando sofre um ataque, o governador corrupto escolhe um aliado adjacente para se tornar o alvo desse ataque.
+Medo de Altura Se estiver adjacente a uma queda de 3m ou mais de altura (como um buraco ou penhasco), o governador fica abalado.
+For 1, Des 0, Con 3, Int 3, Sab 2, Car 5
+Perícias Conhecimento +8, Diplomacia +14, Guerra +8, Intimidação +17, Intuição +9, Nobreza +18.
+Equipamento Adaga certeira, tabardo aprimorado, traje da corte. Tesouro Dobro.`
+        },
+      ],
+      regras: [
+        { titulo: "Centurião",
+          texto:
+`“O exército mais poderoso de Arton? Esses dias são coisa distante, amigão!”
+— Selginn Lan’ze, osteon bardo
+Ainda que as legiões pareçam formadas por soldados absolutamente iguais, com as mesmas armaduras, lanças e escudos, um deles se adianta. Um minotauro ainda maior e mais orgulhoso, ostentando um manto tinto sobre os ombros largos e uma crista emplumada no elmo de bronze. Quando ergue o gládio para ordenar o ataque, fica claro que não pretende apenas liderar, mas também lutar. O centurião é um comandante de legionários, mas também um valoroso guerreiro de elite, que luta nas linhas de frente. Embora se beneficie das táticas tapistanas de combate em equipe, é também um lutador solo habilidoso. Astuto e experiente, logo reconhece o adversário mais perigoso, orientando os companheiros para neutralizá-lo — ou tomando a tarefa para si mesmo. Diferente de muitos legionários, quase nenhum centurião abandonou sua pátria. Atuam em posições importantes, como capitães ou guarda-costas, gozando de privilégios e (quase sempre) fazendo por merecê-los. Será raro encontrá-los longe das terras imperiais, exceto liderando equipes em missões de grande importância.` },
+        { titulo: "Medo de Altura",
+          texto:
+`Todos os minotauros possuem um temor instintivo de alturas. Enquanto estiver adjacente a uma queda de 3m ou mais de altura (como um buraco ou penhasco), o minotauro fica abalado.` },
+        { titulo: "Fúria de Tauron",
+          texto:
+`“Aquilo que ele está conjurando se parece com… não, não pode ser! Ele morreu!”
+— Nymme Ergech, qareen paladina de Tanna-Toh
+A aparição flutuante tem o aspecto de um crânio bovino envolto em chamas macabras, espectrais. Impossível não notar a semelhança com o próprio Deus da Força. Óbvio: a presença do cadáver gigantesco de um deus, em pleno coração do Império, não poderia deixar de ter consequências sobrenaturais. “Fúrias de Tauron” é como são chamados estes estranhos mortos-vivos, surgidos logo após a morte do deus minotauro. Embora sejam muito mais comuns nas proximidades do cadáver titânico, também passariam a surgir em outras regiões de Arton — pois não há evento relacionado a um deus maior que não afete o mundo inteiro. Sozinhos ou em pequenos bandos, podem assombrar antigos templos de Tauron ou perseguir ex-escravos. Após estudos muito recentes, alguns arcanistas e clérigos encontraram formas de invocar estes espíritos para uso em combate.` },
+        { titulo: "Legionário",
+          texto:
+`“Ei, você, minotauro! Agora você me vê, agora não vê mais!”
+— Zayronn, hynne ladino
+Alto e sólido como um muro, envergando uma orgulhosa loriga segmentada, o soldado minotauro avança empunhando lança e escudo. Apesar da face animalesca, bovina, pode-se notar em seus olhos uma mente astuta e disciplinada. Até tempos recentes, não havia em Arton força militar mais temida que as legiões de Tapista. Mesmo hoje, após a queda de Tauron e a ascensão da Supremacia Purista, estrategistas ainda julgam difícil dizer qual seria o exército mais poderoso. Os legionários do Império são guerreiros — mas, acima de tudo, soldados — altamente treinados para combater em grandes números. Lutam de forma mais eficaz com um companheiro ao lado, cada um usando o escudo para proteger o outro, avançando sobre o inimigo como uma muralha de aço. Mesmo em pequenos grupos, ainda conseguem realizar manobras que multiplicam sua força, em vez de apenas somá-la. Milhares de legionários ainda servem ao Império de Tauron com lealdade inabalável, seja obedecendo ao poder central do Triunvirato, seja sob jugo dos inúmeros governadores e déspotas. Mas também é verdade que, frente à devastação e corrupção de sua pátria, muitos desertaram. Vagam pelo Reinado em pequenos grupos, aceitando contratos como mercenários, guarda-costas ou — o fundo do poço para estes outrora orgulhosos combatentes — reduzidos a assaltantes de beira de estrada.` },
+        { titulo: "Minauro",
+          texto:
+`“Fui embora daquele reino maldito porque sou minaura. Achavam que eu era a mais fraca, mas agora vamos ver!”
+— Minara Minostini, minaura guerreira
+Ela lembra uma humana robusta, como a maioria dos minotauros. Também tem cabeça bovina, mas com olhos grandes e expressivos, focinho curto e chifres menores que aqueles vistos em minotauros. Tem pés humanos calçando sandálias. Veste armadura de couro e empunha algo que, se não fosse absurdo, poderia ser um canhão. Minotauros precisam de fêmeas humanas, élficas ou qareen para se reproduzir — pois, apesar de existirem minotauras mulheres, não existem minotauros fêmeas. Filhos do sexo masculino são minotauros. Filhas do sexo feminino são humanas, elfas ou qareen. No entanto, em raras ocasiões, uma criatura totalmente nova vem à luz. Os meios-minotauros, ou minauros, lembram humanos com traços táuricos. Não demonstram a grande força da raça de Tauron, mas também estão livres de suas fraquezas. E, diferente destes, podem ter qualquer sexo. Já foram considerados aberrações, “coisas que não deveriam existir” — preconceito que ficou no passado, exceto para os mais intolerantes. Quando nascidos e criados no Império de Tauron, meios-minotauros agem e se comportam como seus pais, demonstrando disciplina, honra e orgulho. No entanto, talvez por sua força física inferior, sentem mais necessidade de demonstrar suas capacidades, competindo com minotauros “puros” o tempo todo. Sua parte humana também pode levar a uma curiosidade imprudente por assuntos “proibidos” para o povo táurico, como armas de longo alcance, magia arcana ou talentos ladinos. De fato, minauros tendem a mostrar comportamento mais diverso, desenvolvem gostos e aversões imprevisíveis. Minauros e minotauros não se relacionam bem. Mesmo o minotauro mais nobre e generoso não consegue disfarçar a mágoa, considerando os minauros inferiores, dignos de pena. Minauros são tratados como doentes, inválidos ou “irmãozinhos” pequenos — o que eles detestam! Por isso preferem deixar o convívio com minotauros para viver entre outras raças, onde sua força acima da média é respeitada e bem-vinda. Se resolvem ser aventureiros, minauros ficam muito à vontade em grupos formados por pessoas diversas. Entendem que sua grande força é importante para a equipe, adotando classes combativas, mas também podem “nadar contra a corrente” e seguir carreiras totalmente contrárias à raça dos pais, como arcanistas, bardos, inventores e ladinos.` },
+      ],
+    },
+
+    // ── 🐕 KOBOLDS ─────────────────────────────────────
+    {
+      chave: "kobolds", nome: "Kobolds", icone: "🐕", cor: "#6a7a3a",
+      intro: "Kobolds são uma praga persistente em todos os pontos de Arton — especialmente após o retorno de Kallyadranoch ao Panteão. Podem ser encontrados em pequenos bandos, espreitando e saqueando nos ermos, ou povoando grandes comunidades nas profundezas de alguma masmorra. Entre aventureiros, kobolds são tidos como os adversários mais fáceis de todos. Inimigos de heróis novatos, pequenos monstros que podem ser derrotados sem grande risco. Frequentemente são os primeiros adversários de grupos recém-formados, ainda explorando sua primeira masmorra, ainda vivendo sua primeira aventura. Mesmo aqueles que estudam kobolds acabam por tratá-los como pestes. Um kobold sozinho dificilmente representa ameaça — não é mais esperto que um glop. Contudo, de alguma forma, seu comportamento e táticas se aprimoram quando estão em maior número. Matilhas de kobolds agem e lutam em harmonia, como se fossem uma só criatura. Empunham armas. Fabricam armadilhas. Armam emboscadas. Falam o idioma dracônico. Seguem ordens de mestres, que podem ser dragões ou devotos de Kallyadranoch. Apesar de sua fama como “pragas menores”, subestimar os kobolds é um erro que custa vidas de aventureiros todos os anos. Seus números são intermináveis. Suas variações são inesperadas e mortais. Mais importante ainda, sua simples presença pode ser sinal de que um grande dragão ronda por perto.",
+      fichas: [
+        {
+          chave: "caoDeKally", nome: "Cão de Kally", nd: "2", tipo: "Monstro Médio",
+          papel: '',
+          resumo: "Quando o bando de humanoides-cães-lagartos raivosos emerge da vegetação, algo maior toma a dianteira.",
+          texto:
+`Cão de Kally ND 2
+“Aqueles kobolds… tem algo maior andando entre eles. E parece que acaba de abocanhar um!!”
+— Arthur Kaendros, humano clérigo de Wynna
+Quando o bando de humanoides-cães-lagartos raivosos emerge da vegetação, algo maior toma a dianteira. Uma fera semelhante aos kobolds no aspecto canino e reptiliano, mas quadrúpede e muito maior. Lembra um lobo escamado, com chifres de kobold na cabeça e no pescoço. Quando arreganha a bocarra, além de presas enormes, exibe também o temido brilho flamejante de outro monstro bem conhecido… Por existirem em lugares habitados por dragões, é comum que kobolds acabem aliados a outras criaturas de origem parecida — seres transmutados pela emanação dracônica ambiental. Assim, patrulhas kobolds podem às vezes ser acompanhadas por um lobo meio-dragão. Os cães de Kally podem ser encontrados sozinhos, em pequenas matilhas ou como animais de caça e guarda em tribos kobolds. Essa relação é funcional, embora não muito harmoniosa: quando sente fome, o cão simplesmente abocanha o kobold mais próximo. O bando, contudo, considera esse um preço baixo a pagar por sua aliança com uma fera tão poderosa.
+Cães de Kally são cobiçados como animais de guarda por aqueles não muito preocupados com a segurança de intrusos; rumores dizem que eles rondam em grandes matilhas nas Catacumbas de Leverick. Sabe-se também que alguns aventureiros conseguiram domá-los.
+Monstro Médio
+Iniciativa +5, Percepção +6, faro, visão no escuro
+Defesa 18, Fort +13, Ref +7, Von +2
+Pontos de Vida 21
+Deslocamento 15m (10q)
+Corpo a Corpo Mordida +14 (1d6+8) e garras +14 (1d4+8).
+Derrubar (Livre) Mordida (teste +14).
+Sopro (Padrão) O cão de Kally cospe fogo em um cone de 9m. Criaturas na área sofrem 2d8+4 pontos de dano de fogo e ficam em chamas (Ref CD 15 reduz à metade e evita a condição). Recarga (movimento).
+For 4, Des 2, Con 5, Int –3, Sab 1, Car –1
+Tesouro Nenhum.
+Parceiro Embora seja difícil de treinar, um cão de Kally é um parceiro especial (fortão) que fornece os benefícios a seguir. Iniciante: uma vez por rodada, uma de suas rolagens de dano corpo a corpo causa +1d6 pontos de dano de fogo. Veterano: muda para +2d6. Mestre: além do normal, uma vez por rodada, você pode gastar 2 PM para causar 4d6 pontos de dano de fogo em um cone de 6m.`
+        },
+        {
+          chave: "enxameLarval", nome: "Enxame Larval", nd: "1", tipo: "Monstro (kobold) Médio",
+          papel: '',
+          resumo: "O poder elemental sangra das paredes, escorrendo e gotejando como fogo líquido.",
+          texto:
+`Enxame Larval ND 1
+“As paredes! Essas malditas coisas estão saindo das paredes! Saindo dos ovos!”
+— Hadger Lacke, elfo ladino
+O poder elemental sangra das paredes, escorrendo e gotejando como fogo líquido. Em cada canto, cada fresta, dúzias de formas esféricas de couro pulsam com vida profana: são ovos de kobolds, brotando como fungos. Com a aproximação de vocês, os ovos liberam sua carga horrenda: grandes bandos compactos de criaturas larvais que lembram lagartos revestidos de gosma e muco. Entre os poucos dispostos a discorrer sobre o assunto, existe dúvida quanto a kobolds serem de fato seres vivos. Eles não se reproduzem como outras criaturas, eles se formam. São um subproduto do poder elemental dos dragões. Nascem de ovos viscosos, repelentes, que brotam em lugares onde os grandes répteis permanecem por muito tempo. Em lugares com grande concentração desses ovos, a aproximação de criaturas não dracônicas pode fazê-los eclodir rapidamente. As dezenas de larvas formam enxames que avançam contra o invasor. Atravessar a área com cautela, contudo, evita que as criaturas apareçam.
+Monstro (kobold) Médio
+Iniciativa +7, Percepção +3, sensibilidade a luz, visão no escuro
+Defesa 16, Fort +5, Ref +11, Von +0, imunidade a corte e perfuração
+Pontos de Vida 30
+Deslocamento 6m (4q), escavação 6m (4q)
+Enxame 3d4 perfuração.
+Distração Uma criatura que comece seu turno dentro do espaço do enxame não pode fazer ações que exijam concentração (como lançar magias) e sofre –2 em perícias (Fort CD 15 evita ambos). Estes efeitos duram até ela sair da área do enxame e se livrar dos kobolds (veja abaixo).
+Entrar nas Roupas Quando uma criatura sai do espaço do enxame, algumas larvas ficam dentro de suas roupas. Se falhou no teste de resistência, a criatura continua sofrendo os efeitos de Distração até gastar uma ação padrão para se livrar das larvas.
+For –1, Des 2, Con 0, Int –4, Sab –1, Car –3
+Tesouro Nenhum.`
+        },
+        {
+          chave: "koboldPatrulheiro", nome: "Kobold Patrulheiro", nd: "1/2", tipo: "Monstro (kobold) Pequeno",
+          papel: '',
+          subgrupo: "Kobold",
+          resumo: "Kobold — São pouco mais de uma dúzia.",
+          texto:
+`Kobold Patrulheiro ND 1/2
+Monstro (kobold) Pequeno
+Iniciativa +4, Percepção +0, sensibilidade a luz, visão no escuro
+Defesa 14, Fort +3, Ref +5, Von +0
+Pontos de Vida 6
+Deslocamento 9m (6q)
+Corpo a Corpo Lança +9 (1d6+1).
+À Distância Funda +9 (1d4+6).
+Peste Oportunista Os ataques do kobold patrulheiro causam +1d4 pontos de dano contra inimigos que já sofreram dano na rodada.
+For 1, Des 2, Con 0, Int –1, Sab 0, Car –1
+Perícias Furtividade +8.
+Equipamento Funda, lança, pedras x20. Tesouro Metade.`
+        },
+        {
+          chave: "koboldVeterano", nome: "Kobold Veterano", nd: "2", tipo: "Monstro (kobold) Pequeno",
+          papel: '',
+          subgrupo: "Kobold",
+          resumo: "Kobold — São pouco mais de uma dúzia.",
+          texto:
+`Kobold Veterano ND 2
+Monstro (kobold) Pequeno
+Iniciativa +5, Percepção +1, sensibilidade a luz, visão no escuro
+Defesa 19, Fort +7, Ref +12, Von +3
+Pontos de Vida 13
+Deslocamento 9m (6q)
+Corpo a Corpo Lança +14 x2 (1d6+6).
+À Distância Funda +14 (2d4+12).
+Muito Já Apanhei O kobold veterano ignora todo o dano do primeiro ataque que sofre em cada cena.
+Peste Oportunista Os ataques do kobold causam +1d4 pontos de dano contra inimigos que já sofreram dano na rodada.
+For 1, Des 2, Con 0, Int –1, Sab 0, Car –1
+Perícias Furtividade +9.
+Equipamento Armadura de couro, funda, lança, pedras x20.
+Tesouro Metade.`
+        },
+        {
+          chave: "patrulhaKobold", nome: "Patrulha Kobold", nd: "4", tipo: "Monstro (kobold) Médio",
+          papel: '',
+          subgrupo: "Kobold",
+          resumo: "Kobold — São pouco mais de uma dúzia.",
+          texto:
+`Patrulha Kobold ND 4
+Monstro (kobold) Médio
+Iniciativa +6, Percepção +2, sensibilidade a luz, visão no escuro
+Defesa 23, Fort +10, Ref +15, Von +5
+Pontos de Vida 30
+Deslocamento 9m (6q)
+Corpo a Corpo [Bando] Lança +17 (1d6+1).
+À Distância [Bando] Funda +17 (1d4+6).
+Peste Oportunista Os ataques da patrulha kobold causam +1d4 pontos de dano contra inimigos que já sofreram dano na rodada.
+For 1, Des 2, Con 0, Int –1, Sab 0, Car –1
+Perícias Furtividade +8.
+Equipamento Funda, lança, pedras x20 (1d8 de cada).
+Tesouro Metade.`
+        },
+        {
+          chave: "koboldBruto", nome: "Kobold Bruto", nd: "4", tipo: "Monstro (kobold) Grande",
+          papel: '',
+          resumo: "São seres do tamanho de ogros, grandes e fortes, mas com cabeças diminutas de kobolds.",
+          texto:
+`Kobold Bruto ND 4
+“Não tenho a menor ideia! Acho que parece um kobold muito bem alimentado!”
+— Maryam Hajitea, hynne caçadora
+São seres do tamanho de ogros, grandes e fortes, mas com cabeças diminutas de kobolds. Não parecem mais espertos que qualquer um deles. Mas as clavas imensas devem ser bem capazes de esmagar crânios. O kobold bruto não era conhecido até recentemente. Talvez nem existisse. Muitos acreditam que seu surgimento deve ter relação com o retorno de Kally — especialmente porque vários devotos do Deus dos Dragões são recompensados com estes gigantes monstruosos, como guardas e soldados. Isso inclui xamãs kobolds, que utilizam os brutos como força de combate em suas tribos. Kobolds brutos também podem surgir de ovos normais, formados em covis dracônicos. Ou, ainda, podem nascer a partir de uma kobold-mãe, atuando como sua “guarda real”; um bom número deles pode ser encontrado em sua presença.
+Monstro (kobold) Grande
+Iniciativa +5, Percepção +2, sensibilidade a luz, visão no escuro
+Defesa 23, Fort +16, Ref +10, Von +2
+Pontos de Vida 120
+Deslocamento 9m (6q)
+Corpo a Corpo Tacape +16 (1d12+18).
+Escamas de Kally Todo dano que o kobold bruto sofre é reduzido à metade.
+Peste Oportunista Os ataques do kobold causam +1d4 pontos de dano contra inimigos que já sofreram dano na rodada.
+Cabecinha A habilidade Escamas de Kally não se aplica a acertos críticos e ataques contra a cabeça diminuta do kobold (Defesa 33).
+For 6, Des 1, Con 4, Int –3, Sab –2, Car –2
+Perícias Atletismo +10.
+Equipamento Tacape aumentado. Tesouro Metade.`
+        },
+        {
+          chave: "koboldExplosivo", nome: "Kobold Explosivo", nd: "1", tipo: "Monstro (kobold) Pequeno",
+          papel: '',
+          resumo: "A criatura estridente recebe seu ataque certeiro, sua lâmina o atravessa sem deixar qualquer vida.",
+          texto:
+`Kobold Explosivo ND 1
+“Sem problemas. Tenho a técnica e a magia certas para lidar com essas pestes.”
+— Tovac, meio-elfo mago-guerreiro
+A criatura estridente recebe seu ataque certeiro, sua lâmina o atravessa sem deixar qualquer vida. Contudo, algo estranho acontece. Rachaduras de fogo correm velozes no corpo diminuto, o brilho aumenta muito rápido. Parece que vai… Existem casos de kobolds especialmente fortes que, por habitar o covil de algum dragão muito antigo e poderoso, acabam absorvendo parte da energia arcana.
+Infelizmente (para eles e todos à volta), esse poder não aprimora quaisquer habilidades; é liberado apenas quando a criatura morre, fazendo-a explodir. Assim, em lugares onde vivem — ou viveram — grandes dragões, existe uma chance elevada de que qualquer kobold abatido resulte em uma explosão elemental imensa. Pior ainda, pode causar uma reação em cadeia detonando outros kobolds dentro do alcance. Muitos aventureiros encontraram seu fim enfrentando o que acreditavam ser monstros fracos, mas na verdade eram campos minados ambulantes!
+Monstro (kobold) Pequeno
+Iniciativa +4, Percepção +0, sensibilidade a luz, visão no escuro
+Defesa 15, Fort +5, Ref +10, Von +1
+Pontos de Vida 9
+Deslocamento 9m (6q)
+Corpo a Corpo Lança +11 (1d6+9).
+À Distância Funda +11 (1d4+9).
+Detonação Final Quando o kobold é reduzido a 0 PV, role 1d6: com um resultado 1 ou 2, ocorre uma explosão. Todas as criaturas a até 3m sofrem 4d6 pontos de dano de impacto (Ref CD 14 reduz à metade).
+Peste Oportunista Os ataques do kobold explosivo causam +1d4 pontos de dano contra inimigos que já sofreram dano na rodada.
+For 1, Des 2, Con 0, Int –1, Sab 0, Car –1
+Equipamento Funda, lança, pedras x20. Tesouro Metade.`
+        },
+        {
+          chave: "koboldXama", nome: "Kobold Xamã", nd: "3", tipo: "Monstro (kobold) Pequeno",
+          papel: '',
+          resumo: "Súbito, os kobolds abrem passagem para alguém diferente.",
+          texto:
+`Kobold Xamã ND 3
+“Mim Auk. Auk xamã. O que querer com Auk?”
+— Auk, xamã kobold
+Súbito, os kobolds abrem passagem para alguém diferente. Um kobold trajando mantos esfarrapados e empunhando um cajado rústico. Na extremidade do cajado, um emaranhado tosco de galhos e barbante, imitando a cabeça de um dragão. Não há líderes entre os kobolds. É consenso geral que eles não funcionam como indivíduos, não desenvolvem talentos diferenciados. Contudo, certos relatos sugerem o contrário. Alguns aventureiros descrevem encontros com kobolds liderados por um xamã — um kobold não apenas inteligente, mas também devoto de Kallyadranoch. Este suposto clérigo seria capaz de falar o idioma valkar e até negociar com outros povos. Algo assim teria ocorrido próximo à velha Malpetrim, quando o ladino Sandro Galtran e a elfa Nielendorane de Lenórienn negociaram com kobolds a posse de um Rubi da Virtude. Tais acordos pacíficos, contudo, são raros. Mais comum é que o xamã apenas ajude seus iguais durante emboscadas e pilhagens. Xamãs especialmente poderosos (e malignos) lideram as maiores comunidades; diz-se que conduzem cerimônias a Kally, pregando seu tão aguardado momento de supremacia, sua vez de governar os outros povos ao lado dos dragões. Ataques kobolds têm aumentado, em tentativas de capturar vítimas para sacrifícios rituais ao Deus do Poder.
+Monstro (kobold) Pequeno
+Iniciativa +5, Percepção +6, sensibilidade a luz, visão no escuro
+Defesa 20, Fort +3, Ref +9, Von +15, resistência a magia +1
+Pontos de Vida 69
+Deslocamento 9m (6q)
+Pontos de Mana 15
+Corpo a Corpo Gadanho +12 (2d4+3, x4) e mordida +12 (1d4+3).
+À Distância Funda +12 (1d6+3).
+✦ Aura de Medo (Livre, 2 PM) O xamã gera uma aura de medo de 9m de raio e duração cena. Todos os inimigos que entram na aura ficam abalados até o fim da cena (Von CD 19 evita) e a criatura não pode mais ser abalada por esta habilidade por um dia.
+Peste Oportunista Os ataques do xamã causam +1d4 pontos de dano contra inimigos que já sofreram dano na rodada.
+✦ Símbolo Sagrado Energizado (Movimento, 1 PM) O xamã energiza seu símbolo sagrado. Até o fim da cena, ele emite uma luz avermelhada que ilumina como uma tocha e, enquanto estiver sendo empunhado pelo xamã, reduz o custo de magias divinas em –1 PM.
+Magias Como um clérigo de Kallyadranoch de 3º nível (CD 19).
+• Curar Ferimentos (Padrão, 3 PM) Uma criatura adjacente cura 4d8+4 PV.
+• Escudo da Fé (Reação, 1 PM) Quando uma criatura em alcance curto sofre um ataque, ela recebe +2 na Defesa até seu próximo turno.
+• Perdição (Padrão, 1 PM) Criaturas escolhidas em alcance curto sofrem –1 em testes de ataque e rolagens de dano até o fim da cena.
+For 0, Des 2, Con 1, Int –1, Sab 3, Car –1
+Perícias Cura +6, Furtividade +9, Misticismo +2, Religião +6.
+Equipamento Andrajos, bálsamo restaurador, funda, gadanho, pedras x20, símbolo sagrado de Kallyadranoch. Tesouro Metade.`
+        },
+        {
+          chave: "koboldMae", nome: "Kobold-Mãe", nd: "12", tipo: "Monstro (kobold) Grande",
+          papel: '',
+          resumo: "Na vasta caverna de paredes viscosas, pululando com uma população de kobolds, há uma criatura diferente.",
+          texto:
+`Kobold-Mãe ND 12
+“Esperem, essa coisa é uma mãe. Tem família. Será que devemos mesmo fazer isso?”
+— Magic Glautered, guerreiro-mago
+Na vasta caverna de paredes viscosas, pululando com uma população de kobolds, há uma criatura diferente. Imensa, imóvel, inchada. No abdome descomunal e translúcido, massas de ovos gelatinosos, pulsantes. Algum tipo de rainha-mãe. Talvez isso explique seus números assombrosos naquele lugar. No reino divino de Kallyadranoch, kobolds existem em abundância. Onde houver vida naquele mundo, será possível encontrá-los — ou mesmo onde não houver vida alguma! Por seus números tão vastos, se fossem mesmo seres inteligentes, já teriam erguido seu próprio império. Há, no entanto, uma lenda sobre uma criatura mítica — algo equivalente aos Dragões-Reais de Arton, um suposto “representante máximo da espécie”. Seria o maior e mais poderoso kobold na Criação, regente de algum vasto império secreto. Isto é, assim dizem as canções dos bardos. Se existe mesmo o “Kobold-Rei” que governa todos os outros, ninguém foi capaz de confirmar. Mas existem kobolds-mães; monstruosidades dracônicas inteligentes e astutas, capazes de botar ovos em quantidades imensuráveis. Seriam elas as responsáveis pela ocorrência dos vagalhões em Drashantyr. Quando confrontadas, conseguem até mesmo produzir kobolds de forma quase espontânea. Até hoje, nenhuma kobold-mãe foi vista em Arton. Caso um vagalhão aconteça, encontrar e destruir esta criatura será o único modo de deter a calamidade.
+Monstro (kobold) Grande
+Iniciativa +9, Percepção +15, visão no escuro
+Defesa 41, Fort +26, Ref +15, Von +12, imunidade a efeitos de movimento
+Pontos de Vida 550
+Deslocamento 0m (0q)
+Canção de Ninar (Padrão) Todos os kobolds em uma esfera de 30m ao redor da kobold-mãe perdem quaisquer condições de medo. Demais criaturas na área sofrem 12d6 pontos de dano psíquico e ficam atordoadas por 1 rodada (Von CD 35 reduz à metade, evita a condição e a criatura não pode mais ser atordoada por esta habilidade até o fim da cena). Recarga (usar Queridinho da Mamãe).
+Mãe É Sagrado Kobolds que estejam em alcance curto da kobold-mãe recebem +2 em testes de perícia e rolagens de dano. Cada vez que ela sofre um ataque ou é alvo de uma habilidade, esses bônus aumentam em +1 até o fim da cena.
+Ovos (Movimento) A kobold-mãe invoca 1d8+2 ninhadas de kobolds que surgem em espaços desocupados em alcance curto. Elas agem a partir da próxima rodada da mamãe, têm deslocamento 12m (normal e de escalada) e a habilidade enxame (3d6+15, perfuração). As ninhadas são Médias, têm For –1, Des 4, Defesa 35 e 1 PV, falham automaticamente em qualquer teste oposto ou de resistência e desaparecem quando mortas ou ao fim da cena. Recarga (movimento).
+Protejam a Mamãe (Reação) Uma vez por rodada, quando a kobold-mãe sofre dano, um kobold em alcance curto se sacrifica por ela. O kobold morre, mas o dano que a mãe sofreria é reduzido a 0.
+Queridinho da Mamãe (Padrão) A kobold-mãe aponta para outro kobold em alcance curto. Por 1 rodada, esse kobold fica imune a efeitos de movimento e recebe +5 em testes de perícia e rolagens de dano.
+For 2, Des –3, Con 7, Int –2, Sab 3, Car –1
+Tesouro Padrão.`
+        },
+      ],
+      regras: [
+        { titulo: "Armadilhas Kobolds",
+          texto:
+`“Essa é a pior armadilha que eu já — AHHHHH!”
+— Theikos, paladino de Valkaria
+Enquanto percorre a trilha na floresta, apesar de sua atenção, um detalhe importante acaba escapando. O chão desaba sob seus pés, você despenca em um fosso não muito profundo. Sofre alguns ferimentos e prepara-se para sair, quando escuta latidos por perto. Onde há kobolds, há armadilhas. Seus engenhos são ardilosos, mas também rústicos; com sorte e perícia, um ladino iniciante pode encontrá-los a tempo. Convém lembrar, contudo, que a presença de uma armadilha é quase garantia de que kobolds espreitam nas redondezas. Ainda, a ativação ruidosa de uma armadilha também pode atrair outros predadores que estejam rondando por perto.
+Andrajos Flamejantes Uma área repleta de trapos, aparentemente inofensivos, embebidos em combustível que se inflama quando a armadilha é acionada. Criaturas em um raio de 3m sofrem 2d6 pontos de dano de fogo e ficam em chamas. Reflexos CD 17 reduz o dano à metade e evita a condição; Investigação CD 15; Ladinagem CD 20; ND ¼.
+Sinos Alarmantes Barbantes camuflados conectados a sinos, em latas cheias de pedras ou nas partes íntimas de um bode produzem um som estridente quando acionados. Todas as criaturas em alcance longo são alertadas pelo dispositivo e, até o fim da cena, nenhum kobold nessa área pode ser surpreendido; Reflexos CD 15 evita; Investigação/Ladinagem CD 15; ND ¼.
+Geringonça Retardante Um complexo mecanismo equilibra recipientes cheios de lama pegajosa, que é derramada sobre os passantes. Criaturas em um raio de 3m ficam enredadas até remover a lama; fazer isso demora 1 minuto.
+Reflexos CD 17 evita; Investigação CD 17; Ladinagem CD 20; ND ¼.
+Barril de Bugulentos Um barril repleto de “bugulentos” (para os kobolds, qualquer tipo de inseto venenoso) se derrama sobre uma criatura. A vítima perde 1d12 pontos de vida por veneno quando a armadilha é acionada e no início de cada um de seus turnos, até se livrar dos bugulentos, o que exige uma ação completa e passar em um teste de Destreza (CD 10). Os bugulentos também são eliminados se a vítima ficar em chamas. Reflexos CD 20 evita; Investigação/Ladinagem CD 20; ND ½.
+Besunte Galinificador Essencialmente um barril cheio de um líquido viscoso misturado a penas de galinha, que se derrama sobre uma criatura. Uma armadilha extremamente humilhante, faz com que os kobolds se encham de coragem para enfrentar a vítima. Todos os kobolds recebem +2 em testes de perícia e rolagens de dano contra a vítima enquanto ela estiver coberta pelas penas (removê-las demora 1 minuto). Surpreendentemente, deixar a vítima em chamas também resolve. Reflexos CD 20 evita, Investigação/Ladinagem CD 20; ND ½.
+Tronco de Árvore Simples e prática, é um atestado da “genialidade” kobold. Um tronco desce como um aríete atingindo uma linha de 6m. Criaturas nessa área sofrem 4d6 pontos de dano de impacto e ficam caídas. Reflexos CD 20 reduz o dano à metade e evita a condição; Investigação/Ladinagem CD 20; ND 1.
+Virote Ardido Um virote lambuzado com uma pasta corrosiva atinge um dos personagens. A vítima sofre 2d6 pontos de dano de perfuração mais 2d6 pontos de dano de ácido; Reflexos CD 25 evita; Investigação CD 25; Ladinagem CD 20; ND 1. Além das apresentadas aqui, kobolds usam as armadilhas fosso camuflado, rede e fosso profundo (veja Tormenta20, p. 317).` },
+        { titulo: "Kobold",
+          texto:
+`“Está enganado. Kobolds são incapazes de pensamento individual. Alguém os controla.”
+— Domenika, golem clériga de Tanna-Toh
+São pouco mais de uma dúzia. Nenhum dos pequenos monstros chega a mais de um metro. Cabeça alongada, focinho proeminente, meio lagarto, meio cão. Pele escamada, variando entre o verde e vermelho. Orelhas minúsculas, pontudas. Pequenos chifres. Caudas curtas. Pouca ou nenhuma roupa. Barulhentos, frenéticos, latindo seu idioma estranho. Um kobold mediano é muito menor e mais fraco que um humano; mesmo um camponês armado com uma ferramenta agrícola pode derrotar um deles. No entanto, assim como acontece com lobos, é muito raro encontrar um kobold solitário. Eles sempre andam em grupos. Um típico grupo kobold é composto por seis ou mais indivíduos. Kobolds fazem suas emboscadas em florestas fechadas e outros lugares escuros, pois odeiam a luz do dia. Ele não “caçam” no sentido mais conhecido — são covardes demais para isso. Sua estratégia típica é preparar armadilhas em pontos de passagem e então aguardar de tocaia por toda a volta. Assim que uma vítima cai na armadilha, eles atacam. Começam a luta atirando com suas fundas, chegando mais perto apenas quando os inimigos estão enfraquecidos. Se percebem a qualquer momento que não estão mais em larga vantagem, os restantes fogem.
+Clérigos de Kallyadranoch costumam invocar kobolds em seu auxílio, ou mantê-los como guardas. Alguns dragões, especialmente os jovens, usam kobolds como servos; os adultos apenas permitem que eles rondem seu covil, eliminando ameaças menores. Há ainda quem adote um kobold como aliado.` },
+        { titulo: "Quem Não Tem Cão Caça com Kobold",
+          texto:
+`Embora kobolds sejam normalmente considerados pestes, sob as circunstâncias certas um kobold solitário pode ser convencido a ajudar um aventureiro. Tal kobold pode servir como um parceiro especial (combatente) que fornece os benefícios a seguir. Iniciante: você recebe +1 em testes de ataque e rolagens de dano contra inimigos que esteja flanqueando (para um total de +3 de ataque). Veterano: os bônus acima aumentam para +2. Mestre: você pode flanquear mesmo criaturas que não podem ser flanqueadas.` },
+        { titulo: "Qualquer Kobold Pode Explodir",
+          texto:
+`O kobold explosivo descrito aqui é apenas um exemplo de kobold que acumulou energia arcana suficiente para se tornar uma bomba ambulante. Mas, na prática, qualquer dessas criaturinhas pode ser explosiva. Você pode transformar qualquer ficha de kobold em sua versão explosiva concedendo a habilidade Detonação Final. Se fizer isso, o ND da criatura aumenta em +1 (apenas para efeitos de experiência).
+Detonação Final Quando o kobold é reduzido a 0 PV, role 1d6: com um resultado 1 ou 2, ocorre uma explosão. Todas as criaturas a até 3m sofrem 4d6 pontos de dano de impacto, +2d6 para cada patamar acima de iniciante do kobold (Ref CD baseada no ND reduz à metade, veja a página 383).` },
+        { titulo: "Vagalhão Kobold",
+          texto:
+`“Estão vindo de todos os lados! Não acabam! Khalmyr e Tenebra, os malditos nunca acabam!”
+— Germound Vandillimm, anão cavaleiro
+Então eles surgem. Preenchem tudo à volta, correm entre os cactos como uma inundação, chovem das alturas, brotam do próprio solo seco. Massas compactas de criaturas, quase indiscerníveis, quase compondo um único monstro rastejante e infinito. Enxames de pequenos humanoides de faces canídeas, em frenesi selvagem que nenhum ser racional poderia imitar. Um vagalhão kobold não é uma criatura, nem mesmo um enxame, mas um evento. Uma onda gigantesca, formada por números incalculáveis de kobolds. Capaz de preencher totalmente um aposento de masmorra, ou mesmo um mapa inteiro, não importando quão grande. Embora atue como um único e poderoso monstro, não se pode “combater” um vagalhão kobold, assim como não se combate uma tempestade, um terremoto ou uma erupção vulcânica. Aqueles engolfados pelo dilúvio de monstros podem apenas tentar sair do caminho ou fazer seu melhor para resistir. Conforme a lógica de que kobolds são mais astutos em grandes números, o vagalhão também é inteligente. Sabe usar seus melhores poderes e manobras contra os alvos mais vulneráveis. Ainda, tentará tomar de suas vítimas os itens mágicos mais poderosos; mesmo um aventureiro épico pode ter sua melhor arma mágica arrancada de suas mãos pela correnteza de criaturas. Vagalhões ocorrem com frequência apenas em algumas regiões de Drashantyr, o Reino de Kallyadranoch. Originam-se a partir de uma kobold-mãe. Nenhum vagalhão aconteceu em Arton… ainda. O grupo enfrenta uma onda gigantesca, formada por uma infinidade de kobolds.
+Objetivo. Sobreviver ao frenesi selvagem. A passagem do vagalhão dura 1d8+6 rodadas; após esse período, os kobolds se dispersam e retornam para o ninho com o que quer que tenham conseguido.
+Efeito. No início de seu turno, cada personagem deve fazer um teste de Fortitude para evitar ser engolfado pelo vagalhão (se estiver caído, falha automaticamente). Se falhar, sofre 12d12 pontos de dano de corte. Se falhar por 5 ou mais, sofre o dano e fica caído. A CD é 40+1d10 (role uma vez no início de cada rodada e aplique a mesma CD para todos os personagens). Criaturas que sofram dano do vagalhão têm sua armadura avariada. Se o alvo não usa armadura, em vez disso sofre +2d12 pontos de dano. No fim de cada rodada, role 1d6 para cada item mágico vestido ou empunhado por cada personagem (ou 1d4 se o personagem estiver caído). Num resultado 1, o item é roubado pelo vagalhão. O item pode ser encontrado após o vagalhão se dispersar com um teste de Sobrevivência (CD 35 + a duração do vagalhão em rodadas). Contudo, há 25% de chance de estar destruído.
+O vagalhão conta como um enxame (é imune a manobras de combate e efeitos que afetam apenas uma criatura e não causam dano, sofre apenas metade do dano de ataques com armas e tem vulnerabilidade a dano de área). Se ele sofrer 600 pontos de dano ou mais na mesma rodada, sua duração é reduzida em 1 rodada e, na próxima rodada, seu dano é reduzido à metade e ele não avaria nem rouba itens. Os personagens têm direito a um teste de Percepção (CD 35) para notar a aproximação do vagalhão. Quem passar pode realizar uma ação adicional em sua primeira rodada.
+Atacar. O personagem usa uma ação agredir contra o vagalhão (Defesa 50). O personagem sofre –5 em testes de ataque à distância e, para cada ataque corpo a corpo que errar, sofre 4d12 pontos de dano de corte. Conjurar (Vontade CD 35 + custo em PM da magia). O personagem tenta lançar uma magia. Se falhar no teste, a magia não funciona, mas os PM são gastos da mesma forma.
+Esconder Item (Ladinagem CD 35). O personagem se concentra em proteger seus itens. No fim da rodada, ele rola 1d10, em vez do dado normal, para determinar se um item é roubado.
+Latir (Atuação ou Enganação CD 35). O personagem tenta se passar por um kobold. Se passar no teste, na próxima rodada não sofre dano e seus itens não são danificados nem roubados, mas é gradualmente envolvido pelo vagalhão, sofrendo uma penalidade cumulativa de –1 em todos os testes de perícia.
+Levantar-se (Atletismo ou Acrobacia CD 35). Um personagem caído tenta se livrar da massa de kobolds em cima dele. Se passar, se levanta.
+Proteger-se (Nenhum teste). O personagem se defende e recebe +5 no próximo teste de Fortitude contra o vagalhão.
+Ajudar (Varia). O personagem faz um teste para ajudar (veja Tormenta20, p. 221) um aliado. O jogador pode usar qualquer perícia que conseguir justificar — Atletismo para proteger um aliado, Percepção para ver qual a melhor direção para atacar etc.` },
+      ],
+    },
+
+    // ── 🐾 MASCOTES & FAMILIARES ───────────────────────
+    {
+      chave: "mascotes", nome: "Mascotes & Familiares", icone: "🐾", cor: "#2f7a7a",
+      intro: "Seja durante viagens por terras estranhas, seja em visita a bazares extraordinários, ou ainda como recompensa por uma missão, não é raro que heróis acabem adotando mascotes tão peculiares quanto eles próprios. Seres que normalmente causariam estranheza, mas que pouco incomodam um aventureiro já habituado a uma vida cheia de experiências únicas. Muitos desses bichos podem ser horrendos, até perigosos, mas também úteis. Conjuradores os adotam como familiares — animais mágicos que amplificam poderes arcanos ou oferecem outras habilidades. Caçadores aproveitam seus sentidos aguçados para localizar suas presas, ladinos os utilizam como mensageiros e espiões, bucaneiros gostam do colorido que emprestam a seus navios. Arton é povoada por um sem-número de criaturinhas prestativas que, no pior dos casos, fazem companhia ao herói entediado que monta guarda no acampamento enquanto os colegas dormem. Embora todas as criaturas a seguir possam se aliar a aventureiros, lembre-se que também podem ser adversários — existindo em estado selvagem, em grandes números ou a serviço de inimigos.",
+      fichas: [
+        {
+          chave: "bogum", nome: "Bogum", nd: "1/2", tipo: "Construto Minúsculo",
+          papel: '',
+          resumo: "O que parecia apenas um pequeno amontoado de folhas subitamente se move.",
+          texto:
+`Bogum ND 1/2
+“Sim, eu mesma o fiz. Com presentes da deusa. Não, ele não morde, deixa de ser besta!”
+— Rosalinda de Allihanna, dahllan druida
+O que parecia apenas um pequeno amontoado de folhas subitamente se move. Ergue-se sobre duas perninhas de galhos, distende dois bracinhos de gravetos. Olhinhos brilham sob a concha de caramujo que lhe serve de cabeça. O bogum é um pequeno construto feito de materiais naturais como gravetos, cascas, conchas e ossos. Após ser fabricado por um druida, este faz preces adequadas para Allihanna; caso a Deusa da Natureza atenda, a criatura ganha vida, tornando-se um servo leal a seu mestre. O bogum não fala, mas entende seu criador. É fraco em combate, sendo mais utilizado para entregar mensagens, espionar, vigiar uma área ou seguir furtivamente um alvo. Por ser pequeno e feito de matéria natural, é muito difícil percebê-lo em meio à vegetação. É usado por druidas para espionar a uma distância segura; em grupos de aventureiros, usar o bogum como batedor pode ser prudente, apesar do risco para o pequenino. Se forçado a lutar, o bogum expele um veneno urticante que causa ardência, ou mesmo cegueira caso atinja os olhos.
+Construto Minúsculo
+Iniciativa +2, Percepção +5, visão no escuro
+Defesa 11, Fort –1, Ref +5, Von +2, natureza vegetal
+Pontos de Vida 5
+Deslocamento 6m (4q)
+Corpo a Corpo Galho +7 (1d3+2 impacto).
+À Distância Cuspe venenoso +9 (1d4+7 ácido mais veneno, alcance curto).
+Veneno Veneno urticante (cego e vulnerável por 1 rodada, Fort CD 13 evita).
+For –3, Des 2, Con 0, Int –4, Sab 1, Car –3
+Perícias Furtividade +9, Sobrevivência +7.
+Tesouro Nenhum.
+Parceiro O bogum é um parceiro especial (companheiro animal), exclusivo de druidas, que fornece os benefícios a seguir. Iniciante: você forma um elo mental com o bogum (semelhante ao de um arcanista com seu familiar) e recebe +2 em Percepção e Sobrevivência. Veterano: uma vez por rodada, você recebe +1d6 de ácido em uma rolagem de dano. Mestre: o bogum fornece também o benefício de um dedo de ente (veja Tormenta20, p. 160).`
+        },
+        {
+          chave: "escudeiro", nome: "Escudeiro", nd: "1/2", tipo: "Animal Pequeno",
+          papel: '',
+          resumo: "Os elfos-do-mar erguem-se das águas e avançam como guerreiros furiosos.",
+          texto:
+`Escudeiro ND 1/2
+“Viu aquele escudo no braço do elfo-do-mar? Pois digo que não é um escudo!”
+— Burwenna de Deheon, humana guerreira
+Os elfos-do-mar erguem-se das águas e avançam como guerreiros furiosos. Empunham estranhos escudos feitos de carapaça, com lanças que lembram ferrões. Olhando melhor, seus escudos são na verdade um tipo de grande crustáceo agarrado ao braço! Sereias e tritões dizem que este animal foi um presente do deus Oceano para seus melhores guerreiros. Isso pode ser verdade, uma vez que os estudiosos não conseguem encontrar nenhuma outra explicação para a existência de tão estranha criatura. O escudeiro é um grande crustáceo de forma achatada, similar a um caranguejo, do tamanho de um escudo médio. Tem duas pinças, quatro patas e uma longa cauda segmentada, com dentes e uma ponta afiada em forma de lança. Sozinho, o animal é quase inofensivo — ataca apenas em defesa própria, chicoteando com a cauda. A criatura mostra seu verdadeiro potencial quando domesticada: a um comando do dono, agarra-se a seu braço como um escudo vivo. Além disso, a cauda enrijece e pode ser usada como lança curta. Um lutador habilidoso pode usá-lo para atacar e se defender ao mesmo tempo. Quando não é empunhado em combate, o escudeiro por vezes pendura-se às costas do mestre quando em terra, ou nada a seu lado na água. Quando afastado da água por muitos dias, o animal entra em hibernação e não pode mais ser usado como arma-escudo, revivendo apenas após mergulhar.
+Animal Pequeno
+Iniciativa +3, Percepção +3, visão na penumbra
+Defesa 15, Fort +6, Ref +3, Von –1
+Pontos de Vida 14
+Deslocamento 9m (6q), natação 9m (6q)
+Corpo a Corpo Cauda +9 (1d6+7, x3).
+For 0, Des 1, Con 1, Int –3, Sab 1, Car –3
+Tesouro Carapaça óssea (CD 15 para extrair; vale T$ 50 para fabricar um escudo superior).
+Parceiro O escudeiro é um parceiro especial (fortão) que fornece os benefícios a seguir. Iniciante: você pode empunhar o escudeiro como uma lança e um escudo pesado na mesma mão; você pode atacar com a lança sem perder o bônus na Defesa com o escudo, mas não pode atacar com ela e o escudo na mesma rodada. Veterano: o escudeiro recebe uma melhoria de arma ou de escudo (exceto material especial). Mestre: o escudeiro recebe uma segunda melhoria de arma ou de escudo (exceto material especial).`
+        },
+        {
+          chave: "fofo", nome: "Fofo", nd: "1/2", tipo: "Monstro Minúsculo",
+          papel: '',
+          resumo: "O bicho lembra uma massa de pão, tanto na consistência quanto na cor.",
+          texto:
+`Fofo ND 1/2
+“Mas onde foi que guardei a engenhoca? Ora, ora…”
+— Zimbro, goblin inventor
+O bicho lembra uma massa de pão, tanto na consistência quanto na cor. É quente e macio ao toque. Não tem olhos ou feições reconhecíveis, mas muda continuamente de forma, representando figuras familiares; parece estar tentando se comunicar! Aventureiros experientes sabem temer certas criaturas amorfas, gelatinosas, que rastejam pelas masmorras devorando tudo em seu caminho. Existe, contudo, uma variedade inofensiva e facilmente domesticável destes seres. Estudiosos preferem chamá-lo de “plasmoide doméstico”, mas o nome popular é bem mais adequado: fofo. Um fofo pode produzir tentáculos para manipular objetos ou moldar seu corpo em formas variadas: uma tenda, travesseiro, saco de dormir, chapéu — qualquer objeto que não seja muito rígido, como ferramentas ou armas. Tem movimentos rápidos e, com sua elasticidade, pode se esquivar de quase qualquer coisa. Mesmo quando atingido, sua resistência e consistência evitam grande parte do dano. Por tudo isso, o fofo consegue às vezes proteger o dono de ataques especialmente cruéis. Fofos são muito afetuosos, apreciam o toque e calor do corpo humano. À noite podem se esgueirar para a cama do dono, enfiando-se sob o cobertor (ou substituindo-o). Produzem um ruído característico, parecido com “brl-brl-brl”.
+Monstro Minúsculo
+Iniciativa +4, Percepção +5, percepção às cegas
+Defesa 10, Fort +7, Ref +2, Von +0, redução de dano 10
+Pontos de Vida 8
+Deslocamento 6m (4q)
+Corpo a Corpo Pancada x2 +7 (1d4+4).
+For 0, Des 2, Con 5, Int –4, Sab 2, Car –1
+Tesouro Nenhum.
+Parceiro O fofo é um parceiro especial (guardião) que fornece os benefícios a seguir. Iniciante: você recebe redução de dano 1. Veterano: a RD aumenta para 2 e você pode vestir um item que ocupe 1 espaço ou menos sem contar em seu limite de itens vestidos. Mestre: a RD aumenta para 3.`
+        },
+        {
+          chave: "gamba", nome: "Gambá", nd: "1/2", tipo: "Animal Minúsculo",
+          papel: '',
+          resumo: "O pequeno animal é pouco maior que um gato, com pelagem manchada de preto e branco, e uma cauda longa e escamosa.",
+          texto:
+`Gambá ND 1/2
+“Amigos, enfim consegui um bichinho! Amigos? Cadê todo mundo?”
+— Cynebold, golem bárbaro
+O pequeno animal é pouco maior que um gato, com pelagem manchada de preto e branco, e uma cauda longa e escamosa. Quando você se aproxima, ele dá as costas para apontar o traseiro em sua direção e ergue a cauda… O gambá é um pequeno mamífero que se alimenta de frutinhas e insetos. Nunca ataca criaturas maiores, exceto se ameaçado. Neste caso, volta sua traseira para o alvo e levanta a cauda em sinal de aviso. Caso isso não funcione, expele um jato fétido, que é ainda mais insuportável para criaturas de olfato aguçado. Quando não utiliza sua famosa arma química, um gambá não cheira de modo especial. São marsupiais — a mãe carrega os filhotes em uma bolsa. A cauda preênsil serve para ajudar na escalada de árvores e se agarrar em galhos, permitindo ao animal se pendurar de cabeça para baixo enquanto vigia os arredores. Alguns aventureiros adotam o gambá como parceiro, especialmente os mais reclusos. Ou trogs.
+Animal Minúsculo
+Iniciativa +2, Percepção +7, faro, visão na penumbra
+Defesa 10, Fort +3, Ref +5, Von +0
+Pontos de Vida 8
+Deslocamento 9m (6q), escalada 9m (6q)
+Corpo a Corpo Mordida +8 (1d4+6).
+Almíscar Fedorento (Padrão) O gambá expele um jato de almíscar contra uma criatura em alcance curto, que fica enjoada por 1d4 rodadas (Fort CD 13 evita; criaturas com Faro ou Sentidos Aguçados sofrem –5 nesse teste).
+For 0, Des 2, Con 2, Int –4, Sab 3, Car –2
+Tesouro Nenhum.
+Parceiro O gambá é um parceiro especial (vigilante) que fornece os benefícios a seguir. Iniciante: você recebe +2 em Iniciativa e Percepção. Veterano: você pode gastar uma ação de movimento e 1 PM para deixar uma criatura em alcance curto enjoada por 1d4 rodadas (Fort CD Sab evita). Mestre: os bônus em perícias aumentam para +5.`
+        },
+        {
+          chave: "homunculo", nome: "Homúnculo", nd: "1", tipo: "Construto Minúsculo",
+          papel: '',
+          resumo: "Você desperta a tempo de ver algo próximo de seu travesseiro algo pequeno e demoníaco.",
+          texto:
+`Homúnculo ND 1
+“Estou dizendo, o maldito documento estava bem ali! Ninguém poderia ter entrado!”
+— Rewald Darvelore, humano mercador de Vectora
+Você desperta a tempo de ver algo próximo de seu travesseiro algo pequeno e demoníaco. Lembra uma estatueta grotesca, feita de ônix ou outro mineral escuro. Tem a aparência de um demônio diminuto, com asas de morcego e gemas amarelas nos olhos. Na ponta da cauda longa há um ferrão gotejando algo que exala filetes de vapor. Homúnculos são pequenos golens de natureza abissal. São utilizados por conjuradores como espiões, mensageiros ou mesmo assassinos — a criatura possui um ferrão venenoso, tipicamente usado em vítimas adormecidas. Embora o aspecto de gárgula ou demônio seja mais comum, um homúnculo pode ter qualquer aparência. Alguns parecem humanos, anões, hynne ou fadas, enquanto outros lembram animais ou monstros. Podem ser figuras graciosas, como uma boneca ou um bichinho fofo ou, ainda, ter a forma de objetos comuns, como uma taça, candelabro ou caixinha — com braços e pernas que se manifestam apenas quando utilizados. Qualquer que seja sua forma, todos podem voar. Quando descoberto, um homúnculo evita o combate e tenta fugir para seu mestre, exceto quando é ordenado a lutar. Nesse caso ele ataca à distância, expelindo dardos envenenados. Homúnculos não sabem falar, nem pensar, apenas seguindo ordens de seu controlador. Os materiais para construí-los são ainda mais raros e estranhos que aqueles necessários para um golem normal, incluindo alguns existentes apenas nos reinos dos deuses. Apesar de sua origem demoníaca, conjuradores heroicos também os utilizam como ajudantes ou familiares.
+Construto Minúsculo
+Iniciativa +6, Percepção +4, visão no escuro
+Defesa 14, Fort +8, Ref +5, Von +3
+Pontos de Vida 11
+Deslocamento 9m (6q), voo 9m (6q)
+Corpo a Corpo Ferrão venenoso +11 (1d4+6 corte mais veneno).
+À Distância Dardo venenoso +11 (1d3+4 perfuração mais veneno, alcance curto).
+Veneno Peçonha comum (perde 1d12 pontos de vida, Fort CD 16 evita).
+For –1, Des 2, Con 2, Int –, Sab 0, Car –1
+Perícias Furtividade +9, Ladinagem +6.
+Tesouro 1d4 doses de peçonha comum (CD 16 para extrair).
+Familiar O homúnculo fornece +1 PM para gastar em aprimoramentos sempre que você lança uma magia de transmutação ou veneno.
+Parceiro O homúnculo é um parceiro especial (ajudante) que fornece os benefícios a seguir. Iniciante: seus venenos causam a perda de +1 PV por dado. Veterano: uma vez por rodada, quando faz um ataque, você pode gastar 1 PM. Se acertar o ataque, causa a perda de 1d12 PV por veneno. Mestre: a perda de PV aumenta para +2 por dado.`
+        },
+        {
+          chave: "killBone", nome: "Kill’Bone", nd: "1/2", tipo: "Animal Médio",
+          papel: '',
+          resumo: "O animal parece um cão selvagem, mas com algum tipo de armadura óssea revestida de espinhos e uma longa cauda também espinhosa.",
+          texto:
+`Kill’Bone ND 1/2
+“Viajar pelos túneis dos finntroll sem levar um destes é a marca do completo imbecil.”
+— Laissara Modorimm, anã paladina de Khalmyr
+O animal parece um cão selvagem, mas com algum tipo de armadura óssea revestida de espinhos e uma longa cauda também espinhosa. A cabeça ossuda lembra mais um crânio, os olhos pouco visíveis através de orifícios que lembram órbitas vazias. Este canídeo subterrâneo blindado é menor que um lobo comum, mas tão perigoso quanto. Pode atacar normalmente com a mordida ou rolar sobre o inimigo com seus espinhos. O animal é popular em Doherimm, onde acompanha grupos de patrulha nos túneis de acesso ao reino secreto, ajudando a farejar e atacar invasores. Kill’bones odeiam trolls, começam a rosnar furiosamente quando sentem seu cheiro, sendo mais uma razão para que os anões apreciem muito estes bichos. Em estado selvagem, kill’bones vivem em matilhas que caçam em masmorras e outros ambientes subterrâneos. Jamais atacam anões, podendo até ser amansados por estes com certa facilidade, mas são agressivos com outras criaturas.
+Animal Médio
+Iniciativa +5, Percepção +5 (+10 contra trolls), faro, visão no escuro
+Defesa 14, Fort +5, Ref +3, Von +0
+Pontos de Vida 8
+Deslocamento 15m (10q)
+Corpo a Corpo Mordida +8 (1d6+4).
+Rolamento Ofensivo (Completa) O kill’bone se enrola em uma bola espinhosa e percorre até o dobro do seu deslocamento, passando por qualquer criatura no caminho (ele não pode passar duas vezes pelo mesmo espaço). Criaturas atropeladas dessa forma sofrem 2d6+4 pontos de dano de perfuração (Ref CD 13 reduz à metade). Recarga (movimento).
+For 2, Des 3, Con 2, Int –4, Sab 3, Car –2
+Perícias Sobrevivência +5 (+10 contra trolls).
+Tesouro Nenhum.
+Parceiro O kill’bone é um parceiro especial (perseguidor) que fornece os benefícios a seguir. Iniciante: você recebe faro e, uma vez por rodada, +1d6 em uma rolagem de dano corpo a corpo (o dano extra é dobrado contra finntroll e trolls). Veterano: o bônus em rolagens de dano muda para +1d8 e você recebe +2 em testes de perícia contra finntroll e trolls. Mestre: o bônus em rolagens de dano muda para +1d10 e você não pode ser flanqueado.`
+        },
+        {
+          chave: "tentacute", nome: "Tentacute", nd: "1/2", tipo: "Animal Minúsculo",
+          papel: '',
+          subgrupo: "Tentacute",
+          resumo: "Tentacute — O pequeno animal tem o mesmo tamanho e corpo felino de um gato comum.",
+          texto:
+`Tentacute ND 1/2
+Animal Minúsculo
+Iniciativa +9, Percepção +11, faro, visão na penumbra
+Defesa 14, Fort +3, Ref +7, Von +0
+Pontos de Vida 8
+Deslocamento 9m (6q), escalada 9m (6q)
+Corpo a Corpo Mordida +8 (1d4+4).
+Curiosidade Larápia O tentacute pode fazer testes de Furtividade no lugar de Ladinagem para ocultar e punga.
+Serelepe O tentacute pode fazer uma ação de movimento adicional por rodada, mas somente para se deslocar.
+For –1, Des 5, Con 1, Int –3, Sab 4, Car –2
+Perícias Furtividade +14.
+Tesouro Nenhum.
+Familiar Um tentacute familiar pode ser usado, uma vez por rodada, para sacar ou guardar um item, ou para pegar um item solto Pequeno ou menor (1 espaço ou menos) em alcance curto e que ele consiga alcançar.
+Parceiro O tentacute é um parceiro especial (vigilante) que fornece os benefícios a seguir. Iniciante: você recebe +2 em Percepção e, quando faz um teste de Ladinagem para punga, pode rolar dois dados e usar o melhor resultado. Veterano: uma vez por rodada, você pode gastar uma ação de movimento e 1 PM para fazer um teste de Ladinagem para punga contra um alvo em alcance curto que possa ser alcançado pelo tentacute. Mestre: o bônus em Percepção se torna +4 e o alcance da punga muda para médio.`
+        },
+        {
+          chave: "tropaDeTentacutes", nome: "Tropa de Tentacutes", nd: "2", tipo: "Animal Médio",
+          papel: '',
+          subgrupo: "Tentacute",
+          resumo: "Tentacute — O pequeno animal tem o mesmo tamanho e corpo felino de um gato comum.",
+          texto:
+`Tropa de Tentacutes ND 2
+Animal Médio
+Iniciativa +10, Percepção +12, faro, visão na penumbra
+Defesa 19, Fort +7, Ref +14, Von +3
+Pontos de Vida 17
+Deslocamento 9m (6q), escalada 9m (6q)
+Corpo a Corpo [Bando] Mordida +13 (1d4+4).
+Cacofonia Criaturas em alcance curto da tropa de tentacutes sofrem –2 em testes de perícias e são consideradas em condição ruim para lançar magias. Sentidos.
+Curiosidade Larápia A tropa pode fazer testes de Furtividade no lugar de Ladinagem para ocultar e punga.
+Mãozinhas Marotas (Padrão) A tropa faz 1d6 testes de punga contra criaturas adjacentes (ela pode fazer mais de um teste contra a mesma criatura, para objetos diferentes).
+Serelepe A tropa pode fazer uma ação de movimento adicional por rodada, mas somente para se deslocar.
+For 0, Des 5, Con 1, Int –3, Sab 4, Car –2
+Perícias Furtividade +10.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "verilemur", nome: "Verilêmur", nd: "1/2", tipo: "Animal Minúsculo",
+          papel: '',
+          subgrupo: "Verilêmur & Malafex",
+          resumo: "Verilêmur & Malafex — O que parece um corvo com manchas brancas crocita furiosamente contra outro pequeno animal que lembra um macaco, mas com focinho de raposa…",
+          texto:
+`Verilêmur ND 1/2
+Animal Minúsculo
+Iniciativa +4, Percepção +7, faro, visão na penumbra
+Defesa 13, Fort +0, Ref +3, Von +5
+Pontos de Vida 12
+Deslocamento 9m (6q)
+Corpo a Corpo Mordida +7 (1d4+6).
+✦ Aura de Ordem O verilêmur emana uma aura de ordem com 9m de raio. Criaturas que comecem seu turno dentro da aura sofrem –10 em Acrobacia, Enganação, Furtividade e Ladinagem, não podem mentir deliberadamente e seus efeitos de encantamento, ilusão e transmutação são dissipados (Von CD 15 reduz a penalidade para –5, permite mentir e não dissipa os efeitos).
+For 0, Des 2, Con 1, Int –4, Sab 3, Car –1
+Perícias Intuição +10.
+Tesouro Nenhum.
+Parceiro (apenas devotos de Khalmyr) O verilêmur é um parceiro especial (vigilante) que fornece os benefícios a seguir. Iniciante: você pode lançar a magia Círculo da Justiça (atributo-chave Sabedoria); se aprender essa magia, seu custo diminui em –1 PM. Veterano: quando falha em um teste de resistência contra uma magia, você pode gastar 2 PM para rolar novamente esse teste (apenas uma vez por teste). Mestre: a CD para resistir à sua magia Círculo da Justiça aumenta em +5.`
+        },
+        {
+          chave: "malafex", nome: "Malafex", nd: "1/2", tipo: "Animal Minúsculo",
+          papel: '',
+          subgrupo: "Verilêmur & Malafex",
+          resumo: "Verilêmur & Malafex — O que parece um corvo com manchas brancas crocita furiosamente contra outro pequeno animal que lembra um macaco, mas com focinho de raposa…",
+          texto:
+`Malafex ND 1/2
+Animal Minúsculo
+Iniciativa +6, Percepção +7, visão na penumbra
+Defesa 13, Fort +2, Ref +6, Von +2
+Pontos de Vida 13
+Deslocamento 3m (2q), voo 18m (12q)
+Corpo a Corpo Garras +5 (1d4+6, 18).
+Inverter Sorte Sempre que outra criatura, exceto devotos de Nimb, em alcance médio do malafex faz um teste, se o d20 rolar um valor par, o resultado do teste será o contrário do obtido: um sucesso será uma falha e uma falha será um sucesso. O malafex pode desativar essa habilidade à vontade e não há como saber se ela está ativa ou não antes de fazer o teste.
+Mergulho Quando faz uma investida alada, o malafex pode continuar se movendo depois do ataque. Ele deve se mover em linha reta e seu movimento máximo ainda é limitado ao dobro do seu deslocamento.
+For –2, Des 3, Con 1, Int –4, Sab 3, Car 2
+Perícias Furtividade +10, Sobrevivência +5.
+Tesouro Nenhum.
+Parceiro (apenas devotos de Nimb) O malafex é um parceiro especial (ajudante) que fornece os benefícios a seguir. Iniciante: você pode usar Sorte dos Loucos. Se já tiver esse poder, a perda de PM é reduzida para 1d4. Veterano: você pode usar Sorte dos Loucos em aliados voluntários em alcance curto (caso falhe, o aliado perde os PM). Mestre: quando um inimigo em alcance curto faz um teste, você pode gastar 2 PM para forçá-lo a rolar novamente o dado. Se ainda assim ele passar, você perde 1d6 PM (ou 1d4 se tiver Sorte dos Loucos).`
+        },
+      ],
+      regras: [
+        { titulo: "Aprimorando Escudeiros",
+          texto:
+`Embora possam ser empunhados como armas, escudeiros são criaturas vivas e não objetos que podem ser modificados por meio de artesanato. Assim, as melhorias que um parceiro escudeiro recebe representam seu aprendizado e sua experiência, não mudanças em sua anatomia. Entretanto, a critério do mestre, um escudeiro poderoso o suficiente pode ser aprimorado magicamente. Em termos de regras, um escudeiro mestre pode receber os benefícios de um encanto de arma ou de escudo. Para isso, o personagem precisa encontrar alguém capaz de encantar itens desses tipos, ou obter os benefícios de um encanto como pagamento de uma entidade poderosa ou recompensa de uma aventura ou missão.` },
+        { titulo: "Homúnculos e Inventores",
+          texto:
+`Um inventor com o poder Homúnculo aprende a criar uma versão alquímica desses seres, que atua como um parceiro ajudante iniciante. Entretanto, a critério do mestre, o inventor pode substituir o tipo ajudante pela habilidade de parceiro iniciante do homúnculo descrito aqui. Demais habilidades da criatura permanecem como descrito no poder Homúnculo (veja Tormenta20, p. 69).` },
+        { titulo: "Tentacute",
+          texto:
+`“Não é o bichinho mais lindo neste mundo? Não, claro que não vamos comê-lo, ora essa!”
+— Soraya Sheppard, qareen arcanista
+O pequeno animal tem o mesmo tamanho e corpo felino de um gato comum. As maiores diferenças são os olhos telescópicos, como olhos de caracol; a concha em forma de capacete sobre a cabeça, e a cauda longa em forma de tentáculo de polvo, com ventosas e tudo. Nas florestas que habita, o tentacute ocupa o mesmo nicho dos esquilos: passa o dia colhendo nozes, avelãs e outros frutos secos para guardar em sua toca. Ele não teme seres inteligentes — pelo contrário, gosta de observá-los de perto. Infelizmente, pode ser atraído por objetos pequenos e brilhantes, como moedas ou gemas preciosas, que ele rouba e esconde na toca (quase sempre no alto de uma árvore). Graças a sua grande agilidade e velocidade nas árvores, bem como a cauda que auxilia em escaladas, é muito difícil perseguir um tentacute. Por sua visão muito aguçada, druidas e caçadores o apreciam como animal de guarda.` },
+        { titulo: "Tentacutes me Mordam!",
+          texto:
+`Tentacutes possuem diversas similaridades com micos, saguis e outros pequenos primatas. Assim, suas estatísticas podem ser usadas para representar essas pequenas criaturas, tanto como ameaças quanto como parceiros.` },
+        { titulo: "Verilêmur & Malafex",
+          texto:
+`“Mas essa moeda PRECISA cair com a outra face para cima ALGUM DIA!”
+— Aldrida Cynwise, sílfide bucaneira
+O que parece um corvo com manchas brancas crocita furiosamente contra outro pequeno animal que lembra um macaco, mas com focinho de raposa e uma longa cauda. O confronto dos bichinhos poderia ser uma cena divertida. Mas, para o observador atento, algo assombroso está ocorrendo — uma batalha entre os próprios deuses, entre as forças da Ordem e do Caos! Entre as bênçãos oferecidas pelos deuses a seus devotos mais leais, não é incomum que estes sejam presenteados com animais mágicos sagrados — uma honra e também uma responsabilidade enorme. Quando se trata de Khalmyr e Nimb, estes pequenos companheiros são também forças vivas da Ordem e do Caos. O verilêmur, também conhecido como “protetor da Ordem”, é um pequeno mamífero de hábitos noturnos que se alimenta de frutas e insetos. Animal sagrado de Khalmyr, emana uma aura de ordem que afeta as chances ao seu redor, diminuindo a instabilidade, a desordem e a mentira. Dentro dessa área será mais difícil para qualquer criatura mentir ou usar qualquer poder ou magia de ilusão, invisibilidade, influência ou controle da mente. Dentro da aura de ordem, uma criatura magicamente transformada reverte à forma verdadeira. Magias e poderes de teletransporte, transporte planar e alteração da realidade também podem falhar. Quanto mais animais presentes, menores a chances de que estes efeitos ocorram; um grande bando pode, de fato, torná-los impossíveis exceto para deuses. Verilêmures podem ser mantidos em áreas de acesso restrito (para revelar intrusos disfarçados), tribunais e salas de interrogatório (para evitar mentiras) ou prisões (para evitar fugas por teletransporte). Certos vilões também os empregam para evitar que heróis usem seus poderes. Matar um destes animais atrai a ira de Khalmyr: pelo resto da vida o criminoso não será capaz de mentir, nem usar quaisquer dos poderes anulados pelo animal. Seu inimigo natural, como esperado, é um animal sagrado de Nimb — o malafex, ou “pássaro do Caos”. Devotos dizem que estas aves são puras manifestações do acaso, da sorte e do azar, trazendo consigo o imprevisível e o inesperado. A presença de um ou mais deles distorce as leis naturais da área, trocando a sorte pelo azar. Coisas que deveriam dar certo dão errado e vice-versa. Assim, um combatente extremamente habilidoso errará a maioria de seus golpes, enquanto um novato incompetente acertará o tempo inteiro! Sabe-se de grupos de aventureiros que pereceram em batalhas quase ganhas, simplesmente porque um malafex surgiu de repente e virou a maré da sorte. Devotos de Nimb parecem ser os únicos imunes a esse poder, sendo comum adotarem uma destas aves como mascote. A domesticação diminui drasticamente essa habilidade, mas mesmo assim será algo inconveniente para eventuais companheiros… Da mesma forma que seu rival, malafex são protegidos por Nimb. Matar um deles, mesmo por acidente, atrai sobre o criminoso uma maldição — que mudará a cada vez. Sabe-se de uma vítima que, todas as manhãs, despertava apaixonada por uma criatura diferente.` },
+        { titulo: "Novo Perigo: Lágrimas de Hyninn",
+          texto:
+`Uma praga que por vezes recai sobre mentirosos, traidores e aqueles que maltratam os animais sagrados de Khalmyr. Aquele que é afligido por essa maldição não pode mais mentir e se torna desajeitado, tendo dificuldade em executar ações que dependam de subterfúgio; a vítima sofre –10 em Acrobacia, Enganação, Furtividade e Ladinagem. A única forma de remover essa maldição é através de um Rito de Penitência (veja Religião, em Tormenta20, p. 122) executado por um clérigo de Khalmyr. Esse rito, entretanto, só é realizado mediante uma prova de que o amaldiçoado se arrependeu de suas mentiras e trapaças.` },
+        { titulo: "Novo Perigo: Maldição do Caos",
+          texto:
+`O malafex é uma criatura sagrada, protegida por Nimb. Matar um deles, mesmo por acidente, atrai sobre o infrator uma maldição terrível — de resultados imprevisíveis. A vítima é afetada por um efeito aleatório da magia Rogar Maldição, sem direito a teste de resistência. Role 1d4 para determinar o efeito da maldição: 1) debilidade, 2) doença, 3) fraqueza e 4) isolamento (veja Tormenta20, p. 204). No início de cada aventura em que a maldição persistir, role novamente seu efeito. A única forma de remover essa maldição é com um rito de penitência (veja Religião, em Tormenta20, p. 122) executado por um clérigo de Nimb. Ou não.` },
+      ],
+    },
+
+    // ── 🏚 MASMORRAS ───────────────────────────────────
+    {
+      chave: "masmorras", nome: "Masmorras", icone: "🏚", cor: "#4a4a5a",
+      intro: "Masmorra. Talvez nenhuma palavra em Arton tenha significados tão diversos. Masmorras são muito mais que calabouços ou redes de túneis e câmaras: são lugares de assombro, perigo e oportunidades. Redutos misteriosos, mágicos, que nem sempre seguem as mesmas regras do mundo exterior. Onde rondam monstros cuja própria existência é um insulto ao bom senso, um desafio à vontade dos deuses. Masmorras existem em todos os tamanhos e formas. Algumas são comuns, como uma mina abandonada servindo de esconderijo a goblins ou um templo em ruínas assombrado por zumbis. Outras têm origens fabulosas, como o gigantesco cadáver fossilizado de um monstro antigo, as entranhas de alguma máquina colossal ou uma construção erguida por seres de além-mundo. Tais antros acabam tomados como covis por criaturas perigosas, de aberrações bizarras a dragões majestosos. Arton tem masmorras célebres em abundância. A Velha Malpetrim. As Catacumbas de Leverick. Os caminhos para Doherimm. Os subterrâneos de Vectora. O Labirinto de Tapista. Até mesmo as vinte masmorras planares forjadas pelos deuses para a Libertação de Valkaria, ainda existentes e acessíveis por meios misteriosos. Para cada ruína famosa, há cem outras ainda por encontrar, anônimas, inexploradas, jamais pisadas por aventureiros. Mas certamente habitadas.",
+      fichas: [
+        {
+          chave: "asaAssassina", nome: "Asa-Assassina", nd: "1", tipo: "Animal Minúsculo",
+          papel: '',
+          resumo: "As criaturas têm o aspecto de mariposas, mas são grandes como pássaros.",
+          texto:
+`Asa-Assassina ND 1
+“Parecem mariposas grandes. Não temos tempo a perder. Ignorem.”
+— Hyakunen, o Imortal (decapitado)
+As criaturas têm o aspecto de mariposas, mas são grandes como pássaros. As asas abertas, de cores metálicas, produzem brilhos e sons afiados enquanto o bando voeja em sua direção. Estes perigosos insetos têm asas finas, mas cortantes, ainda mais afiadas que as melhores lâminas élficas. Mesmo o mais leve roçar causa talhos profundos, enquanto um golpe certeiro pode decapitar uma pessoa. Asas-assassinas se alimentam de frutas e insetos, refugiando-se em masmorras quando não estão procurando alimento. Atacam qualquer criatura que entre em seu território, voando em bandos ao redor da vítima, golpeando e sangrando-a até matar. Suas asas supostamente podem ser usadas na fabricação de armas superiores, ou como auxílio à conjuração de certas magias. Ainda, alguns conjuradores tomam estes animais como familiar.
+Animal Minúsculo
+Iniciativa +8, Percepção +4, visão na penumbra
+Defesa 15, Fort +3, Ref +10, Von +3
+Pontos de Vida 10
+Deslocamento 3m (2q), voo 12m (8q)
+Corpo a Corpo Asa afiada +10 (2d4+6 corte, 17/x3).
+Asas Mortais Quando faz um acerto crítico em uma criatura, a asa-assassina tenta decepar a cabeça dela. A vítima fica inconsciente e sangrando (Fort CD 16 evita ambos). Este sangramento é cumulativo com aquele causado por ser reduzido a 0 PV ou menos; trate cada um separadamente. A critério do mestre, algumas criaturas, como certos construtos, mortos-vivos ou monstros com nenhuma ou várias cabeças, podem ser imunes a esta habilidade.
+Mergulho Quando faz uma investida alada, a asa-assassina pode continuar se movendo depois do ataque. Ela deve se mover em linha reta e seu movimento máximo ainda é o dobro do seu deslocamento.
+For –3, Des 4, Con 1, Int –4, Sab 2, Car –4
+Tesouro Asas afiadas (CD 16 para extrair, vale T$ 100 para fabricar uma arma de corte superior).
+Familiar Uma asa-assassina permite que você gaste 1 PM quando causa dano de corte ou perfuração a uma criatura para deixá-la sangrando.
+Parceiro Uma asa-assassina é um parceiro especial (assassino) que fornece os benefícios a seguir. Iniciante: uma vez por rodada, quando causa dano com um ataque, você pode deixar a vítima sangrando. Veterano: a perda de PV pelo sangramento aumenta para 1d8. Mestre: a perda de PV aumenta para 2d8.`
+        },
+        {
+          chave: "cocatriz", nome: "Cocatriz", nd: "3", tipo: "Monstro Pequeno",
+          papel: '',
+          subgrupo: "Cocatriz",
+          resumo: "Cocatriz — O bicho parece um galo grande e muito feio, mas com duas caudas (ou três, difícil dizer) escamadas de serpente.",
+          texto:
+`Cocatriz ND 3
+Monstro Pequeno
+Iniciativa +10, Percepção +4, visão no escuro
+Defesa 22, Fort +9, Ref +13, Von +5, evasão
+Pontos de Vida 98
+Deslocamento 6m (4q), voo 12m (8q)
+Corpo a Corpo Bicada +14 (2d4+8 perfuração).
+Bicada Petrificante Uma criatura que sofra dano da bicada da cocatriz fica lenta (Fort CD 19 evita). Se já estiver lenta, fica petrificada permanentemente. Efeitos que removem paralisia revertem a petrificação.
+Voo de Galinha A cocatriz só consegue percorrer curtas distâncias voando; ela sempre termina seu movimento sobre o chão ou outra superfície firme.
+For 0, Des 5, Con 1, Int –5, Sab 1, Car –2
+Tesouro 1d4-1 ovos de cocatriz (cada ovo permite preparar uma refeição coc-au-triz).
+Parceiro A cocatriz é um parceiro especial (adepto) que fornece os benefícios a seguir. Iniciante: suas habilidades mágicas que causam condições de movimento têm o custo reduzido em –1 PM. Veterano: a CD para resistir a essas habilidades aumenta em +2. Mestre: a redução de custo se torna cumulativa com outras reduções.`
+        },
+        {
+          chave: "cocatrizReal", nome: "Cocatriz-Real", nd: "7", tipo: "Monstro Grande",
+          papel: '',
+          subgrupo: "Cocatriz",
+          resumo: "Cocatriz — O bicho parece um galo grande e muito feio, mas com duas caudas (ou três, difícil dizer) escamadas de serpente.",
+          texto:
+`Cocatriz-Real ND 7
+Monstro Grande
+Iniciativa +17, Percepção +8, visão no escuro
+Defesa 32, Fort +20, Ref +12, Von +7, evasão
+Pontos de Vida 250
+Deslocamento 6m (4q), voo 12m (8q)
+Corpo a Corpo Bicada +24 (2d8+12 perfuração) e cauda de serpente +20 (1d8+10 impacto).
+Bicada Petrificante Uma criatura que sofra dano da bicada da cocatriz-real fica lenta (Fort CD 26 evita). Se já estiver lenta, fica petrificada permanentemente. Efeitos que removem paralisia revertem a petrificação.
+Voo de Galinha A cocatriz só consegue percorrer curtas distâncias voando; ela sempre termina seu movimento sobre o chão ou outra superfície firme.
+For 2, Des 7, Con 3, Int –5, Sab 1, Car –2
+Tesouro 1 dose de lágrima pétrea (CD 22 para extrair) e 1d4 ovos de cocatriz (cada ovo permite preparar uma refeição coc-au-triz).
+Parceiro A cocatriz-real é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você ignora terreno difícil. Veterano: uma vez por rodada, quando acerta um ataque corpo a corpo, você pode fazer com que a vítima fique lenta (Fort CD For evita). Mestre: seu deslocamento muda para 12m (normal e de voo). Entretanto, quando voa, você deve terminar seu movimento sobre o chão ou outra superfície firme.`
+        },
+        {
+          chave: "harpiaSaqueadora", nome: "Harpia saqueadora", nd: "4", tipo: "Monstro (harpia) Médio",
+          papel: '',
+          resumo: "O monstro lembra uma mulher humana, velha e sinistra como uma bruxa, com cabelo emaranhado e sujo de sangue.",
+          texto:
+`Harpia saqueadora ND 4
+“Estamos sendo observados. Não, não é nenhuma sensação. Estão bem ali!”
+— Allysen Naviere, humana inventora
+O monstro lembra uma mulher humana, velha e sinistra como uma bruxa, com cabelo emaranhado e sujo de sangue. Tem a parte inferior do corpo, pernas e asas de um pássaro enorme, com penas marrons e imundas. A face feroz e a voz estridente chegam a amedrontá-los. Harpias são criaturas sádicas e malignas, que caçam não apenas para se alimentar, mas pelo regozijo de causar sofrimento e morte. São encontradas em masmorras, mas também espreitam comunidades humanas em busca de novas vítimas — especialmente crianças, que gostam de atormentar na presença dos pais. Não se sabe sobre a existência de harpias machos, nem se estes monstros têm formas naturais de procriação. Como outros seres mágicos, talvez seu nascimento seja alguma ocorrência sobrenatural ou simples desejo dos deuses. Também existe a teoria de que harpias machos são pequenos e fracos, mantidos confinados em cavernas secretas apenas como reprodutores. Harpias não usam roupas ou armadura, mas às vezes empunham armas com os pés. Preferem arcos e bestas, atacando à distância enquanto voam. No entanto, quando as vítimas já estão muito feridas, muitas vezes não resistem ao impulso assassino de mergulhar e acabar de matá-las com as próprias garras. Também é comum que capturem vítimas para torturá-las durante horas, ou mesmo dias, antes da refeição. Apesar de sua ferocidade incontrolável, harpias às vezes podem ser encontradas atuando como guardas ou capangas para vilões, sobretudo devotos de Megalokk. Dizem existir harpias heroicas, que acabam se reunindo a grupos de aventureiros — mas estas são incrivelmente raras.
+Monstro (harpia) Médio
+Iniciativa +13, Percepção +7, visão no escuro
+Defesa 18, Fort +10, Ref +15, Von +5
+Pontos de Vida 32
+Deslocamento 9m (6q), voo 12m (8q)
+Corpo a Corpo Maça +20 (1d8+11) e garra +20 (1d6+11) ou duas garras +20 (1d6+11).
+Grito Aterrorizante (Padrão) A harpia saqueadora emite um grito estridente e apavorante. Criaturas em alcance curto ficam abaladas (Von CD 18 evita e a criatura não pode mais ser abalada por esta habilidade até o fim da cena).
+Rasante (Completa) A harpia faz uma investida e ataca com sua maça e uma garra (ou com as duas garras, se estiver desarmada). Os dois ataques recebem o bônus de +2 da investida, mas devem ser feitos contra o mesmo alvo. Após o ataque, a harpia pode continuar seu movimento, até o limite de seu deslocamento.
+For 1, Des 4, Con 2, Int –1, Sab 3, Car 2
+Perícias Intimidação +8, Sobrevivência +9.
+Equipamento Maça. Tesouro Nenhum.`
+        },
+        {
+          chave: "glop", nome: "Glop", nd: "1/4", tipo: "Monstro Pequeno",
+          papel: '',
+          resumo: "A coisinha pulsante é pouco maior que um pão.",
+          texto:
+`Glop ND 1/4
+A coisinha pulsante é pouco maior que um pão. Tem um estranho formato de gota d’água, e uma cor esverdeada, tóxica. Move-se aos saltos, deixando manchas de corrosão nos lugares que toca. O glop perambula em bandos nos subterrâneos, em busca de comida — que eles ingerem expelindo um forte ácido digestivo, para então absorvê-la. Qualquer matéria orgânica servirá, como animais mortos, alimentos estocados, aventureiros adormecidos… Glops são muitas vezes deixados em masmorras, para mantê-las limpas de detritos e também como proteção contra invasores. Arcanistas que adotam essa prática normalmente são imunes a ácido ou tratam logo de adquirir essa proteção.
+Monstro Pequeno
+Iniciativa +0, Percepção +0, percepção às cegas
+Defesa 10, Fort +0, Ref +2, Von –5, imunidade a ácido
+Pontos de Vida 10
+Deslocamento 9m (6q)
+Corpo a Corpo Pancada +7 (1d4 mais 1d4 ácido).
+For 0, Des 0, Con 0, Int —, Sab –5, Car –5
+Tesouro Nenhum.`
+        },
+        {
+          chave: "glooop", nome: "Glooop", nd: "2", tipo: "Monstro Grande",
+          papel: '',
+          resumo: "A criatura poderia lembrar uma grande saca de grãos — isto é, uma que tenha sido esquecida e deixada apodrecer até ganhar uma camada de…",
+          texto:
+`Glooop ND 2
+A criatura poderia lembrar uma grande saca de grãos — isto é, uma que tenha sido esquecida e deixada apodrecer até ganhar uma camada de gosma nauseante. Apesar da ausência de olhos, percebe a presença de vocês e rasteja em sua direção com um chiado ácido. O glop comum se reproduz ingerindo comida suficiente até se dividir em dois ou mais seres. Alguns, contudo, jamais realizam a separação, apenas comendo e crescendo até atingir tamanhos surpreendentes. Por devorar praticamente toda a comida disponível, um glooop logo é abandonado pelo bando, levando uma vida solitária. Sinais de infestação glop, quando mal-interpretados, podem levar a um confronto com este ser sempre faminto — surpreendendo aventureiros novatos que esperavam uma luta fácil. Em compensação, por seu grande tamanho, glooops às vezes trazem tesouros em seu interior — formados por itens metálicos que seu ácido não afeta.
+Monstro Grande
+Iniciativa +0, Percepção –5, percepção às cegas
+Defesa 19, Fort +13, Ref +7, Von +2, imunidade a ácido
+Pontos de Vida 68
+Deslocamento 9m (6q)
+Corpo a Corpo Pancada +12 (2d6+3 mais 2d6 ácido).
+Agarrar Aprimorado (Livre) Pancada (teste +14).
+Engolir (Padrão) No início de cada um dos turnos do glooop, a criatura engolida sofre 2d6+3 pontos de dano de impacto mais 2d6 pontos de dano de ácido. Ela pode escapar causando um total de 10 pontos de dano a ele (Defesa 10).
+For 3, Des –1, Con 2, Int —, Sab –5, Car –5
+Tesouro Padrão.`
+        },
+        {
+          chave: "mamaeGlop", nome: "Mamãe Glop", nd: "2", tipo: "Monstro Grande",
+          papel: '',
+          resumo: "Como um glop normal, a criatura também lembra uma gosma esverdeada em formato de gota.",
+          texto:
+`Mamãe Glop ND 2
+Como um glop normal, a criatura também lembra uma gosma esverdeada em formato de gota. Porém, tem tonalidade mais escura e o tamanho de uma carroça! Aquilo que leva ao surgimento de uma mamãe glop até hoje permanece um enigma. Alguns especulam ser apenas uma forma avançada de glooop, crescida ainda mais e de alguma forma recuperando a capacidade reprodutiva. Para outros, a criatura se origina de forma oposta — pela fusão de centenas de glops, produzindo um novo ser. Outros ainda sugerem ser um produto acidental de laboratórios alquímicos. Como sugere o nome, uma mamãe glop tem a habilidade de expelir glops comuns — um processo destinado não apenas à reprodução, mas também à proteção, pois os pequenos monstros são mantidos por perto para lutar em defesa da “mãe”. A mamãe glop não adota a vida errante comum à sua espécie. A criatura estabelece um ninho, de onde bandos de glops exploram a região ao redor. Uma vez alimentados, retornam à mãe para serem reabsorvidos, assim provendo seu sustento. Novos glops famintos são expelidos para recomeçar a exploração e o ciclo se mantém. O ninho da mamãe glop pode conter pertences não digeridos de antigas vítimas, embora jamais de tamanho superior a uma bolsa ou adaga.
+Monstro Grande
+Iniciativa +2, Percepção –1, percepção às cegas
+Defesa 17, Fort +13, Ref +7, Von +2, imunidade a ácido
+Pontos de Vida 70
+Deslocamento 9m (6q)
+Corpo a Corpo Pancada +12 (2d6+2 mais 2d6 ácido).
+Glops Filhinhos A mamãe glop está sempre acompanhada por 1d4 glops, que a protegem instintivamente. Esses glops, assim como aqueles gerados pela Meiose Glópica, não rendem pontos de experiência.
+Meiose Glópica (Livre) Quando ameaçada, a mamãe pode gerar outros glops filhinhos para protegê-la. No início de cada turno da mamãe, role um dado. Em um resultado par, um glop surge num espaço adjacente a ela. Ele age normalmente, no turno da mamãe, a partir da próxima rodada.
+For 2, Des –1, Con 2, Int —, Sab –3, Car –3
+Tesouro Padrão.`
+        },
+        {
+          chave: "mantor", nome: "Mantor", nd: "5", tipo: "Monstro Grande",
+          papel: '',
+          resumo: "A estranha criatura parece uma grande capa negra, como uma arraia ondulando no ar.",
+          texto:
+`Mantor ND 5
+“Quem deixaria um ótimo manto de mago largado por aí? Não será desperdiçado!”
+— Arneld Pol’Thar, humano arcanista
+A estranha criatura parece uma grande capa negra, como uma arraia ondulando no ar. Não há cabeça separada do corpo, apenas dois olhos vermelhos e uma bocarra ventral com dentes pontiagudos. Uma cauda longa termina em um longo ferrão espinhoso, em formato de adaga. O mantor costuma se manter fixo ao teto de cavernas e outras estruturas, esperando pela passagem de presas — e então cai sobre elas, atacando de surpresa. O corpo achatado e maleável envolve a vítima, imobilizando-a enquanto desfere mordidas ferozes. Mantor são inteligentes, mas também cruéis e agressivos, rejeitando qualquer tentativa de diálogo. Usam a esperteza apenas para “brincar” com suas presas, imaginando todo tipo de chamariz ou armadilha. Alguns usam o corpo achatado para esconder passagens, buracos ou precipícios. Outros apagam tochas e lampiões para deixar as vítimas na escuridão. Há ainda aqueles que se penduram em alguma mobília, fingindo ser uma capa ou outra peça de roupa, esperando para atacar quando alguém tenta “vesti-lo”.
+Monstro Grande
+Iniciativa +11, Percepção +8, percepção às cegas, visão no escuro
+Defesa 24, Fort +11, Ref +17, Von +5, redução de trevas 5
+Pontos de Vida 200
+Deslocamento voo 18m (12q)
+Corpo a Corpo Aguilhão +17 (1d10+8 perfuração, x3, alcance 4,5m) e mordida +17 (1d10+8).
+Emantar (Padrão) O mantor se joga sobre uma criatura adjacente Enorme ou menor e usa a manobra agarrar (teste +22). Enquanto estiver agarrada, a criatura fica cega, sofre metade de todo dano sofrido pelo mantor e, no início de cada turno do mantor, sofre 2d10+8 pontos de dano de perfuração. O mantor só pode manter uma criatura agarrada por vez e não pode usar sua mordida nesta situação.
+Imobilidade Um mantor pode permanecer completamente imóvel. Se ele estiver assim, um personagem deve passar num teste de Percepção (CD 35) para perceber que ele é uma criatura e não um pedaço de tecido.
+Manto de Tenebra Em escuridão total, o mantor recebe camuflagem total, mesmo contra criaturas que vejam no escuro.
+For 4, Des 5, Con 2, Int –1, Sab 2, Car 0
+Perícias Furtividade +11 (+21 no escuro).
+Tesouro Metade, mais couro de mantor (CD 20 para extrair, vale T$ 150 para fabricar um manto do mantor).`
+        },
+        {
+          chave: "mimico", nome: "Mímico", nd: "6", tipo: "Monstro Médio",
+          papel: '',
+          resumo: "O baú está aberto, revelando uma quantidade incrível de ouro, gemas, joias e objetos de arte.",
+          texto:
+`Mímico ND 6
+“Por que está rosnando, Kitana? É apenas um velho baú, vejamos o que contém.”
+— Pivas, humano clérigo de Allihanna
+O baú está aberto, revelando uma quantidade incrível de ouro, gemas, joias e objetos de arte. Assim que você tenta tocá-las, contudo, longas presas brotam nas bordas e na tampa da arca, que se fecha como uma mandíbula cruel em seu braço. Um mímico é uma criatura com a exata aparência de uma arca de tesouro, relicário, suporte de armas, estante de tomos arcanos, porta de caixa-forte ou outra peça de mobília destinada a armazenar itens de valor. Pode se manter imóvel por longos períodos, mesmo meses ou anos, até a aproximação de uma vítima incauta que tente afanar seu “conteúdo”. Quando isso acontece, o monstro ataca, revelando uma bocarra repleta de presas e tentáculos. Não se pode perceber a diferença entre um mímico e um objeto real apenas com o olhar. Mesmo a magia Visão da Verdade é ineficaz, porque a forma de um baú é a forma verdadeira do monstro. Mímicos são inteligentes e ardilosos; sabem encontrar lugares de tocaia onde sua presença não pareça estranha. Além disso, embora poucos aventureiros saibam, estes seres são capazes de falar: são famosas as histórias de mímicos que alegam ser uma espada mágica poderosa, pedindo que o “escolhido” venha recolhê-la… Alguns dizem que este monstro é obra de Hyninn para testar os ladinos de Arton; outros afirmam que Khalmyr os criou para puni-los. Seja como for, mímicos são quase sempre encontrados em masmorras, embora nobres e vilões também os mantenham em suas câmaras de tesouro como armadilhas contra ladrões.
+Monstro Médio
+Iniciativa +9, Percepção +8, visão no escuro
+Defesa 26, Fort +18, Ref +12, Von +6, imunidade a ácido, redução de dano 5/frio
+Pontos de Vida 220
+Deslocamento 6m (4q)
+Corpo a Corpo Dois tentáculos +20 (2d8+15).
+Abocanhar (Livre) Se o mímico começar seu turno agarrando uma criatura Média ou menor, poderá fazer um teste de agarrar contra ela. Se vencer, abocanha a criatura. Uma criatura abocanhada continua agarrada e sofre 4d8+25 pontos de dano de corte no início de cada turno do mímico. O mímico pode manter uma criatura abocanhada por vez, e pode atacar com seus tentáculos normalmente enquanto faz isso. Uma criatura abocanhada pode escapar vencendo uma manobra agarrar contra o mímico.
+Agarrar Aprimorado (Livre) Tentáculo (teste +20).
+Ataque Furtivo +3d6.
+Cuspe Material (Padrão) O mímico cospe parte de seu conteúdo, como moedas e outros objetos diminutos, em um cone de 6m. Criaturas nessa área sofrem 6d4+6 pontos de perfuração (Ref CD 22 reduz à metade; uma criatura abocanhada falha automaticamente nesse teste).
+Imobilidade Um mímico pode permanecer completamente imóvel. Se ele estiver assim, um personagem deve passar num teste de Percepção (CD 40) para perceber que ele é uma criatura e não um objeto.
+For 2, Des 4, Con 3, Int –2, Sab 3, Car 0
+Perícias Enganação +15, Furtividade +2.
+Tesouro Padrão.`
+        },
+        {
+          chave: "quimera", nome: "Quimera", nd: "8", tipo: "Monstro Grande",
+          papel: '',
+          resumo: "O monstro tem o corpo poderoso de um imenso leão, com asas coriáceas dracônicas e uma cauda escamada de crocodilo.",
+          texto:
+`Quimera ND 8
+“Como uma hidra! Mas… com cabeças de animais. Diferentes.”
+— Barossa Arareber, estudiosa de hidras
+O monstro tem o corpo poderoso de um imenso leão, com asas coriáceas dracônicas e uma cauda escamada de crocodilo. Mas aquilo que chama sua atenção imediata são as três cabeçorras: leão de juba negra no centro, dragão de bocarra flamejante à direita, algum caprino demoníaco de chifres retorcidos à esquerda. Quimeras são monstros mágicos feitos com partes de várias criaturas diferentes. Não ocorrem naturalmente: são criadas por conjuradores — sobretudo devotos de Nimb ou Megalokk — poderosos e loucos o bastante para trazer ao mundo estes seres grotescos. A variedade das quimeras é limitada apenas pela imaginação doentia de seus criadores. Existe, contudo, um método para a criação de quimeras — um conhecimento extremamente especializado. Todas seguem um padrão anatômico básico: três cabeças de animais ou monstros diferentes, corpanzil de um grande quadrúpede e asas de dragão ou pássaro gigante. A fórmula pode ser derivada da “quimera clássica”, com cabeças de bode, leão e dragão. Quimeras não podem ser controladas, nem mesmo por aqueles que as criaram. São bestas sempre furiosas e enlouquecidas, mantidas presas com grossas correntes nos lugares que foram feitas para proteger, ou apenas expostas em jaulas para deleite de seus criadores insanos. Costumam ser encontradas em masmorras, como obstáculo no caminho de câmaras de tesouros e em outros lugares importantes.
+Monstro Grande
+Iniciativa +7, Percepção +10, faro, visão no escuro
+Defesa 33, Fort +21, Ref +15, Von +8
+Pontos de Vida 333
+Deslocamento 9m (6q), voo 12m (8q)
+Corpo a Corpo Três mordidas +26 (3d8+7) e duas garras +24 (2d6+10).
+Mente Tripla Quando faz um teste de Percepção ou Vontade, a quimera joga três dados e usa o melhor resultado.
+Três Cabeças Uma quimera tem três cabeças distintas que concedem habilidades especiais, escolhidas entre as descritas a seguir.
+• Águia. Quando faz uma investida, a quimera pode atacar com esta cabeça e suas duas garras. Os três ataques recebem o bônus de +2 da investida, mas devem ser feitos contra o mesmo alvo.
+• Bode. Uma das mordidas da quimera muda para marrada e causa dano de impacto. Quando faz uma investida com esta cabeça e acerta o ataque, a quimera arremessa a vítima 1d6 x 1,5m em uma direção à escolha dela (Fort CD 26 evita). A vítima fica caída e, se atingir algum obstáculo, sofre 1d6 pontos de dano de impacto para cada 1,5m que foi arremessada.
+• Dragão. A quimera pode gastar uma ação padrão para cuspir fogo em um cone de 6m. Criaturas na área sofrem 10d6+20 pontos de dano de fogo (Ref CD 26 reduz à metade). Recarga (movimento).
+• Gorlogg. Se acertar um ataque de mordida com esta cabeça, a quimera pode usar a manobra derrubar como ação livre (teste +28).
+• Hidra. A quimera ganha cura acelerada 20/ácido ou fogo.
+• Leão. Quando acerta um ataque de mordida com esta cabeça, a quimera pode usar a manobra agarrar como ação livre (teste+28).
+• Javali. Se sofrer dano, a quimera recebe +5 em testes de ataque e rolagens de dano até o fim de seu próximo turno.
+• Serpente. Uma criatura atingida por uma mordida desta cabeça perde 2d12 pontos de vida durante 3 rodadas (Fort CD 26 reduz para 1 rodada). Veneno.
+• Tigre. Se acertar os dois ataques de garra em uma mesma criatura na mesma rodada, a quimera causa mais 4d6+20 pontos de dano.
+• Tubarão. A quimera ganha deslocamento de natação 9m. Além disso, uma criatura atingida por uma mordida desta cabeça fica sangrando (Fort CD 26 evita).
+For 6, Des 3, Con 4, Int 0, Sab 1, Car –2
+Tesouro Coração de quimera (CD 23 para extrair, vale T$ 300 para fabricar três doses de elixir quimérico).`
+        },
+        {
+          chave: "slark", nome: "Slark", nd: "1", tipo: "Humanoide (slark) Médio",
+          papel: '',
+          resumo: "São vários seres humanoides, mas de aspecto truculento e ameaçador, com faces horrendas de lagarto e três dedos em cada mão.",
+          texto:
+`Slark ND 1
+“Se querem me deter, filhos das trevas, não será sem luta!”
+— Lisandra de Galrasia, dahllan druida
+São vários seres humanoides, mas de aspecto truculento e ameaçador, com faces horrendas de lagarto e três dedos em cada mão. Vestem apenas trapos e cintas, provavelmente tomados de vítimas anteriores. Alguns emergem da escuridão à frente, enquanto vários outros descem pelas paredes em volta. Terrores das masmorras por toda Arton, slarks são habitantes de ruínas e cavernas, que temem o sol e nunca são vistos à luz do dia. Rondam em bandos variando entre dez e trinta indivíduos. Detalhes sobre sua origem e hábitos são desconhecidos, até nulos; é quase como se não existissem até o momento em que são encontrados. Há quem acredite que estes seres são simples fruto dos caprichos de Valkaria, para evitar que incursões de aventureiros novatos sejam tediosas. Embora hostis, slarks são também lentos e fracos. Para subjugar suas presas, confiam na escuridão e vantagem numérica, assim como emboscadas proporcionadas por sua habilidade de escalada. Uma tática favorita é esperar de tocaia no teto de túneis e corredores; quando intrusos passam, os slarks despejam jatos certeiros de saliva grossa e gosmenta para cegar, sufocar ou apagar tochas. Então, quando acreditam estar em vantagem, deixam-se cair e lutam.
+Humanoide (slark) Médio
+Iniciativa +7, Percepção +4, sensibilidade a luz, visão no escuro
+Defesa 12, Fort +8, Ref +1, Von +4, redução de ácido 5
+Pontos de Vida 15
+Deslocamento 6m (4q), escalada 6m (4q)
+Corpo a Corpo Garras +10 (1d6+9, 19/x3).
+Queda Livre (Completa) Se estiver em terreno elevado, o slark cai sobre uma criatura e faz um ataque de garras. Ele recebe o bônus por terreno elevado (+2 no teste de ataque) e, se a criatura estiver surpreendida, causa +2d6 pontos de dano.
+Saliva (Padrão) O slark cospe em uma criatura em alcance curto. A criatura fica cega por 1 rodada e qualquer fonte de iluminação mundana que esteja empunhando se apaga (Ref CD 14 evita ambos os efeitos).
+For –1, Des 3, Con 2, Int –1, Sab 1, Car –2
+Perícias Furtividade +8.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "tigreDeHyninn", nome: "Tigre-de-Hyninn", nd: "5", tipo: "Monstro Grande",
+          papel: '',
+          subgrupo: "Tigre-de-Hyninn",
+          resumo: "Tigre-de-Hyninn — O que surge no túnel à frente não pode ser descrito — é como um borrão no vazio, sem forma, sem cor, mas com movimento.",
+          texto:
+`Tigre-de-Hyninn ND 5
+Monstro Grande
+Iniciativa +10, Percepção +7, faro, visão no escuro
+Defesa 25, Fort +8, Ref +20, Von +5, imunidade a confuso e metamorfose, resistência a devotos de Khalmyr +5
+Pontos de Vida 165
+Deslocamento 12m (8q)
+Corpo a Corpo Duas garras +17 (1d8+3), 1d3 mordidas +17 (1d6+3) e 1d4+1 tentáculos +17 (1d6+3).
+Borrão O tigre-de-Hyninn tem 25% de chance de ignorar ataques e efeitos (incluindo de área) contra ele. Esta habilidade permanece ativa mesmo que ele morra.
+✦ Entre Planos (Movimento) Até o próximo turno do tigre, a chance de falha de seu Borrão aumenta para 50%.
+Profusão de Partes Cada tigre tem 1d3 cabeças e 1d4+1 tentáculos. Isso determina quantos ataques de mordida (um por cabeça) e de tentáculos ele tem.
+For 3, Des 4, Con 2, Int –1, Sab 1, Car –1
+Perícias Furtividade +16.
+Tesouro Resíduos (CD 20 para extrair, valem T$ 150 para fabricar poções e pergaminhos contendo magias de ilusão).`
+        },
+        {
+          chave: "tigreDeHyninnPrimordial", nome: "Tigre-de-Hyninn Primordial", nd: "11", tipo: "Monstro Grande",
+          papel: '',
+          subgrupo: "Tigre-de-Hyninn",
+          resumo: "Tigre-de-Hyninn — O que surge no túnel à frente não pode ser descrito — é como um borrão no vazio, sem forma, sem cor, mas com movimento.",
+          texto:
+`Tigre-de-Hyninn Primordial ND 11
+Monstro Grande
+Iniciativa +17, Percepção +12, faro, visão no escuro
+Defesa 42, Fort +14, Ref +29, Von +10, imunidade a confuso e metamorfose, resistência a devotos de Khalmyr +5
+Pontos de Vida 480
+Deslocamento 12m (8q)
+Corpo a Corpo Duas garras +34 (2d8+12), 1d3 mordidas +34 (2d6+12) e 1d4+1 tentáculos +34 (2d6+12).
+Borrão O tigre-de-Hyninn tem 25% de chance de ignorar ataques e efeitos (incluindo de área) contra ele. Esta habilidade permanece ativa mesmo que ele morra.
+✦ Entre Planos (Movimento) Até o próximo turno do tigre, a chance de falha de seu Borrão aumenta para 50%.
+Não Está Mais Aqui! (Padrão) Uma vez por cena, o tigre pode se teleportar para qualquer lugar a sua escolha a até 500m, desde que conheça o local de destino.
+Profusão de Partes Cada tigre tem 1d3 cabeças e 1d4+1 tentáculos. Isso determina quantos ataques de mordida (um por cabeça) e de tentáculos ele tem.
+Sopro (Padrão) O tigre sopra energia caótica em um cone de 6m. Criaturas na área sofrem 6d8 pontos de dano mental e ficam confusas por 1d3 rodadas (Von CD 31 reduz à metade e evita a condição). Recarga (no início de cada rodada do tigre, jogue um dado; recarrega com um resultado par).
+For 4, Des 6, Con 3, Int –1, Sab 1, Car –1
+Perícias Furtividade +25.
+Tesouro Resíduos (CD 26 para extrair, valem T$ 300 para fabricar poções e pergaminhos contendo magias de ilusão).`
+        },
+        {
+          chave: "brawar", nome: "Brawar", nd: "14", tipo: "Construto Enorme",
+          papel: '',
+          resumo: "Com um estrondo metálico, o que parecia a imensa estátua de um guerreiro anão lentamente se afasta da parede.",
+          texto:
+`Brawar ND 14
+“Não consigo nem arranhar! Essa coisa é toda feita de adamante!”
+— Mateo Dasinus, humano não aventureiro
+Com um estrondo metálico, o que parecia a imensa estátua de um guerreiro anão lentamente se afasta da parede. Luzes brancas se acendem como olhos sob o elmo, enquanto mãos poderosas empunham uma picareta que parece capaz de rachar a maior das muralhas. Talvez uma das maiores façanhas de engenharia do povo anão, brawar são gigantescos golens de ferro construídos para proteger suas grandes cidades e locais sagrados. Quando os anões abandonaram o mundo da superfície, atendendo ao chamado do profeta Wordarion Thondarim, muitos destes construtos foram deixados como sentinelas em suas antigas edificações para expulsar saqueadores. Outros se encontram protegendo vários pontos do caminho para Doherimm. Feitos com alguma liga de adamante, brawar são quase invulneráveis a armas comuns, e também resistentes a muitas formas de magia. Derrotá-los em combate é façanha difícil mesmo para heróis poderosos. Dizem que falar com eles em idioma anão pode fazê-los hesitar, recuar ou seguir ordens breves — desde que sejam palavras acompanhadas de honrarias a figuras e eventos ilustres do passado. Embora sejam encontrados tipicamente sozinhos, há lugares protegidos por dois ou até quatro brawar. Houve inúmeras tentativas de sucatear os corpos dos brawar para extrair seu valioso adamante. Infelizmente, por ter sido forjado com técnicas ancestrais secretas, o metal em sua fabricação não pode ser reutilizado. Algumas de suas peças, no entanto, têm formato próprio para servir como clavas e maças sem necessidade de reforja.
+Construto Enorme
+Iniciativa +6, Percepção +14, visão no escuro
+Defesa 46, Fort +28, Ref +22, Von +14, redução de dano 25
+Pontos de Vida 700
+Deslocamento 6m (4q)
+Corpo a Corpo Picareta +40 x2 (2d12+30, 19/x4).
+Fale Amigo e Passe Um anão pode gastar uma ação padrão para fazer um teste de Diplomacia (CD 38) contra o brawar. Se passar, deixa-o pasmo por 1 rodada; se falhar, o brawar não pode mais ser pasmo desta forma nesta cena. Se o brawar estiver pasmo desta forma, um anão pode gastar uma ação padrão para fazer um teste de Conhecimento ou Nobreza (CD 38). Se passar nesse segundo teste, o brawar para de lutar.
+Imunidade a Magia O brawar é imune a efeitos mágicos, com a seguinte exceção. Efeitos mágicos de fogo concedem a ele uma ação padrão adicional em seu próximo turno e curam PV em quantidade igual à metade do dano que causariam.
+Picareta Destruidora Os ataques de picareta do brawar ignoram 10 pontos da RD de objetos.
+Pisotear (Movimento) O brawar pisoteia o chão, gerando uma onda de choque em uma área de 9m ao seu redor. Criaturas nessa área sofrem 15d10 pontos de dano de impacto e ficam caídas (Ref CD 38 reduz o dano à metade e evita a condição).
+For 14, Des –1, Con 12, Int —, Sab 1, Car –5
+Equipamento Picareta aumentada maciça de adamante.
+Tesouro Padrão.`
+        },
+      ],
+      regras: [
+        { titulo: "Cocatriz",
+          texto:
+`“Estão com medo daquilo? Mas é um frango! Certo, um frango muuuito feio…”
+— JoBren Barbarax, humano bardo-lutador
+O bicho parece um galo grande e muito feio, mas com duas caudas (ou três, difícil dizer) escamadas de serpente. Apesar do aspecto cômico, os olhos brilham sinistros e avermelhados. Seja pela feiura ou por sua semelhança com um galináceo comum, a cocatriz é muitas vezes subestimada por aventureiros incautos. Qualquer herói experiente, contudo, sabe se tratar de um monstro mágico perigoso, por sua habilidade de transformar as vítimas em pedra com uma simples bicada. Como a pequena fera ganhou tal habilidade temível, ninguém sabe. Há quem tente encontrar alguma relação entre cocatrizes e medusas, o que apenas insulta e enfurece estas últimas. Os estudiosos arriscam as teorias habituais: um animal nativo de outro Plano, um experimento arcano fracassado, uma brincadeira de Nimb. A habilidade nem sequer parece muito útil ao monstro, que não pode se alimentar de vítimas petrificadas (usa apenas as garras para matar os insetos de que se alimenta). Assim, a bicada mortal acaba reservada a inimigos maiores, que o bicho ataca furioso como um literal galo de briga. Como as galinhas, cocatrizes não voam realmente, mas são capazes de saltos e voos curtos para superar obstáculos (e atacar inimigos maiores). Há cocatrizes machos e fêmeas, de aparência e hábitos semelhantes a suas contrapartes naturais: organizam-se em haréns compostos por um macho protetor e várias fêmeas responsáveis por ninhos contendo um ou dois ovos. Estes são ingredientes mágicos valiosos, que atingem altos preços em Vectora e outros mercados. Desnecessário dizer, um covil de cocatrizes muitas vezes é cercado de estátuas sujas e semidestruídas daqueles que tentaram roubar seus ovos. Dizem existir uma versão gigante desta criatura, a cocatriz-real. Do tamanho de um avestruz, a criatura lendária comanda e protege várias famílias de cocatrizes normais. Não há relatos sobre bandos de cocatrizes-reais, embora isso não seja impossível. Sabe-se da existência de alguns raras cocatrizes domadas, atuando como familiares (ou até montarias, no caso das reais), mas a criatura perde boa parte da habilidade de petrificação quando domesticada.` },
+        { titulo: "Glop",
+          texto:
+`“Espere, não o mate ainda! Preciso de uma amostra para estudo!”
+— Selussa Faerondalan, meia-elfa arcanista
+Com seus aposentos e corredores imundos, contaminados com dejetos e detritos alquímicos, masmorras produzem criaturas rastejantes e disformes classificadas como “gosmas”. Seres primitivos, que vivem apenas para se alimentar e reproduzir. Embora gosmas existam em infinitas variedades, glops são as mais simples e comuns. São uma praga constante não apenas em túneis e labirintos, mas também em esgotos, porões ou adegas — livrar-se deles é trabalho comum para aventureiros iniciantes. Pensava-se que glops existiam apenas em tamanhos diminutos. Contudo, versões maiores e mais perigosas têm sido reveladas, sugerindo até que estes seres talvez tenham alguma forma de sociedade.` },
+        { titulo: "Tigre-de-Hyninn",
+          texto:
+`“Um rugido, e então estavam todos mortos. Como sobrevivi? Que pergunta idiota é essa?”
+— Samantha de Bielefeld, osteon caçadora
+O que surge no túnel à frente não pode ser descrito — é como um borrão no vazio, sem forma, sem cor, mas com movimento. Até mesmo seu tamanho parece difícil de estimar, pode ser grande como um cavalo ou alto como um ogro. A única coisa que vocês conseguem perceber com clareza é seu rugido, lembrando um grande felino. O tigre-de-Hyninn é assim chamado apenas devido à semelhança entre seu som e o rugido de um tigre. Certamente não é um animal, talvez nem seja uma criatura de qualquer tipo — e sim um fenômeno bizarro, uma deformação anormal da realidade. A aparição desfocada, contudo, parece movida pelo impulso de atacar tudo que encontra, então “tigre” acaba servindo como um nome adequado. Embora a coisa nem pareça existir, seus ataques produzem ferimentos muitos reais, como aqueles causados por garras e presas de feras mundanas. Ainda, devido ao número de ataques que consegue executar, especula-se que o tigre tenha numerosas cabeças/patas/tentáculos, ou talvez mude de anatomia à vontade. Sua verdadeira forma não se revela nem mesmo após a morte, pois a criatura não deixa cadáver — simplesmente desaparece, deixando uns poucos resíduos, considerados valiosíssimos como ingredientes alquímicos. Alguns estudos da Academia Arcana e da Igreja de Tanna-Toh teorizam que o tigre-de-Hyninn se originou em Lamnor, séculos antes da Grande Batalha, onde teria sido conjurado em rituais ao Deus da Trapaça. A coisa então se espalhou pelo continente, sendo temida até mesmo pelos duyshidakk. Hoje, suas manifestações podem ocorrer em qualquer ponto de Arton, mas principalmente em masmorras e florestas escuras.` },
       ],
     },
   ],
