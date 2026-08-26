@@ -49,7 +49,7 @@ window.GA_FichasProntas = (function () {
     { chave: 'ameacasArton', icone: '👹', cor: '#8f2f2f',
       nome: 'Ameaças de Arton', curto: 'Ameaças de Arton',
       fonte: 'FICHAS_AMEACAS_ARTON',
-      sub: 'O bestiário grande de Arton, nas seções do livro: as criaturas das áreas de Tormenta, os povos brutos, o crime organizado, o culto de Aharadak, os dragões, os duyshidakk, os elementais, os monstros dos ermos, os gnolls, os golens, as igrejas de Arsenal e de Kallyadranoch, os impérios de Jade e de Tauron, os kobolds, os mascotes e familiares e os monstros de masmorra. Traz junto o capítulo de regras de ameaças (tipos, tamanho, papel de combate e as habilidades gerais) e os simbiontes do Devorador.' },
+      sub: 'O bestiário grande de Arton, nas seções do livro: as criaturas das áreas de Tormenta, os povos brutos, o crime organizado, o culto de Aharadak, os dragões, os duyshidakk, os elementais, os monstros dos ermos, os gnolls, os golens, as igrejas de Arsenal e de Kallyadranoch, os impérios de Jade e de Tauron, os kobolds, os mascotes e familiares, os monstros de masmorra, as montarias, os mortos-vivos, as feras de Galrasia, os piratas e pistoleiros e os povos-trovão. Traz junto o capítulo de regras de ameaças (tipos, tamanho, papel de combate e as habilidades gerais), os simbiontes do Devorador e os tesouros arrancados das feras do mundo perdido.' },
     { chave: 'deusesArton',  icone: '⛩', cor: '#8a6a1f',
       nome: 'Deuses de Arton', curto: 'Deuses de Arton',
       fonte: 'FICHAS_DEUSES_ARTON',

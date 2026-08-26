@@ -6,7 +6,7 @@
 //    "Inútil/Regras - Ameaças de Arton.txt". Dá para editar à mão — mas
 //    rodar o gerador de novo sobrescreve tudo.
 //
-//  As 223 criaturas do Capítulo 1 (Ameaças), nas 17 seções
+//  As 320 criaturas do Capítulo 1 (Ameaças), nas 22 seções
 //  temáticas do livro. Cada ficha guarda o TEXTO LIMPO do statblock, no
 //  formato do livro — quem o transforma em criatura do bestiário é o
 //  parser parsearFicha() do monstros.js (o mesmo do "📋 Importar do
@@ -36,14 +36,16 @@
 //  conserto sai listado no relatório do gerador; nenhum número de regra
 //  foi tocado.
 //
-//  ⚠ Doze NDs vieram errados da cópia do PDF e foram conferidos no livro:
-//  Lefeu, Burodron (11), Lefeu, Ezzayn (17), Aspecto de Aharadak (10),
-//  Alto Sacerdote de Hyninn (8), Hobgoblin Atirador (5), Namasqall (13),
-//  Ber-baram (8), Gnoll Xamã de Allihanna (2), Gnoll Xamã de Marah (6),
-//  Instrumento Divino (7) e Tengu Bandoleiro (6) vieram SEM ND; o "ND 8"
-//  que o dump colou no Sacerdote de Hyninn era do Alto Sacerdote — o
-//  Sacerdote é ND 2. (O Goblin-Bomba também veio sem ND no statblock,
-//  mas o "ND 3" estava no título da entrada e o gerador o recuperou.)
+//  ⚠ Dezessete NDs vieram errados da cópia do PDF e foram conferidos no
+//  livro: Lefeu, Burodron (11), Lefeu, Ezzayn (17), Aspecto de Aharadak
+//  (10), Alto Sacerdote de Hyninn (8), Hobgoblin Atirador (5), Namasqall
+//  (13), Ber-baram (8), Gnoll Xamã de Allihanna (2), Gnoll Xamã de Marah
+//  (6), Instrumento Divino (7), Tengu Bandoleiro (6), Cavalo Glacial (2),
+//  Rinoceronte (4), Urso Pardo (3), Gigante Esqueleto (5) e Senhor das
+//  Múmias (15) vieram SEM ND; o "ND 8" que o dump colou no Sacerdote de
+//  Hyninn era do Alto Sacerdote — o Sacerdote é ND 2. (O Goblin-Bomba e o
+//  Urso das Cavernas também vieram sem ND no statblock, mas o número
+//  estava no título da entrada e o gerador o recuperou.)
 //
 //  ⚠⚠ 2 NDs AINDA NÃO CONFERIDOS NO LIVRO — Arqueiro Escravo (5) e Kobold Xamã (3).
 //  Vieram sem ND na cópia do PDF e o número aqui é dedução do gerador;
@@ -5620,6 +5622,2225 @@ Com seus aposentos e corredores imundos, contaminados com dejetos e detritos alq
 O que surge no túnel à frente não pode ser descrito — é como um borrão no vazio, sem forma, sem cor, mas com movimento. Até mesmo seu tamanho parece difícil de estimar, pode ser grande como um cavalo ou alto como um ogro. A única coisa que vocês conseguem perceber com clareza é seu rugido, lembrando um grande felino. O tigre-de-Hyninn é assim chamado apenas devido à semelhança entre seu som e o rugido de um tigre. Certamente não é um animal, talvez nem seja uma criatura de qualquer tipo — e sim um fenômeno bizarro, uma deformação anormal da realidade. A aparição desfocada, contudo, parece movida pelo impulso de atacar tudo que encontra, então “tigre” acaba servindo como um nome adequado. Embora a coisa nem pareça existir, seus ataques produzem ferimentos muitos reais, como aqueles causados por garras e presas de feras mundanas. Ainda, devido ao número de ataques que consegue executar, especula-se que o tigre tenha numerosas cabeças/patas/tentáculos, ou talvez mude de anatomia à vontade. Sua verdadeira forma não se revela nem mesmo após a morte, pois a criatura não deixa cadáver — simplesmente desaparece, deixando uns poucos resíduos, considerados valiosíssimos como ingredientes alquímicos. Alguns estudos da Academia Arcana e da Igreja de Tanna-Toh teorizam que o tigre-de-Hyninn se originou em Lamnor, séculos antes da Grande Batalha, onde teria sido conjurado em rituais ao Deus da Trapaça. A coisa então se espalhou pelo continente, sendo temida até mesmo pelos duyshidakk. Hoje, suas manifestações podem ocorrer em qualquer ponto de Arton, mas principalmente em masmorras e florestas escuras.` },
       ],
     },
+
+    // ── 🐎 MONTARIAS ───────────────────────────────────
+    {
+      chave: "montarias", nome: "Montarias", icone: "🐎", cor: "#8a6a3a",
+      intro: "Muitos aventureiros são também cavaleiros, mas o cavalo comum está longe de ser a única montaria disponível em Arton. Em vez de abater uma besta perigosa, um herói muitas vezes escolhe domá-la como sua montaria. Outras podem ser conquistadas de formas variadas, como recompensas dos deuses por grandes serviços prestados ou presentes de regentes agradecidos, ou simplesmente comprando-as em certos mercados. Cavalgar um animal ou monstro poderoso muitas vezes atrai sobre o cavaleiro grande prestígio — ou temor, conforme o caso. Há ocasiões em que um aventureiro acaba mais conhecido por sua montaria que por suas próprias habilidades. Mais que apenas um veículo, uma montaria especial por vezes também será um valioso companheiro de batalha, quase um irmão. Embora alguns aventureiros consigam cavalgar mamutes das Uivantes ou lagartos-trovão de Galrasia — visões sem dúvida impressionantes —, convém lembrar que montarias de tamanhos extremos podem ser inconvenientes para viajar em navios ou explorar masmorras estreitas. Mesmo aquelas não maiores que cavalos às vezes precisam esperar do lado de fora. Nesses casos, uma magia Alterar Tamanho pode ser bem conveniente… Muitas criaturas apresentadas a seguir existem em estado selvagem, sendo bem capazes de atacar aventureiros nos ermos.",
+      fichas: [
+        {
+          chave: "baleote", nome: "Baleote", nd: "3", tipo: "Animal Grande",
+          papel: '',
+          resumo: "O grande animal tem aspecto de golfinho ou baleia, mas está “nadando” nas alturas como que por mágica.",
+          texto:
+`Baleote ND 3
+“Não é um peixe voador? Muito bem, espertalhão, então diga o que é!”
+— Eldon de Tyrondir, humano bucaneiro
+O grande animal tem aspecto de golfinho ou baleia, mas está “nadando” nas alturas como que por mágica. Tem couro branco-azulado e grandes barbatanas peitorais que quase lembram asas. Traz no dorso um cavaleiro que, por sua indumentária, deve pertencer à Milícia de Vectora. Durante uma das muitas passagens de Vectora através de outros Planos, seus habitantes fizeram contato com estes bichos estranhos: lembram pequenas baleias (ou grandes golfinhos) capazes de “nadar” nos céus. Atraídos pela grande estrutura flutuante, pequenos bandos destes animais passaram a acompanhar a cidade voadora. Muito mais dóceis e fáceis de treinar que os grifos, os baleotes foram logo adotados como montarias voadoras pela Guarda de Vectora, formando a assim chamada Patrulha Celeste, além de domesticados para fins comerciais. Alguns escaparam para o continente e estão procriando, já podendo ser encontrados em vários pontos de Arton — mas o lugar mais fácil de adquirir um deles ainda é o Mercado nas Nuvens. Em estado selvagem, baleotes vivem em manadas formadas por uma fêmea dominante, suas seguidoras e os filhotes de todas elas. Os machos adultos costumam deixar a manada, vagando sozinhos ou se unindo a outra matriarca. A forma exata como se alimentam ainda é um mistério: eles “pastam” nas nuvens, absorvendo delas a água e a nutrição de que precisam. Contra predadores, usam uma descarga elétrica emitida pelo focinho.
+Animal Grande
+Iniciativa +3, Percepção +7, visão na penumbra
+Defesa 21, Fort +13, Ref +9, Von +5, imunidade a eletricidade
+Pontos de Vida 110
+Deslocamento 9m (6q), voo 15m (10q)
+Corpo a Corpo Cauda +14 (2d8+12).
+Descarga Elétrica (Padrão) O baleote projeta um raio elétrico que atinge uma linha de 9m. Criaturas nessa área sofrem 3d6 pontos de dano de eletricidade (Ref CD 17 reduz à metade). Recarga (movimento).
+For 3, Des 0, Con 3, Int –4, Sab 1, Car 1
+Tesouro Nenhum.
+Parceiro O baleote é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: você pode gastar 1 PM para causar 2d6 pontos de dano de eletricidade em uma linha de 9m (um baleote iniciante é muito jovem para ser usado como montaria). Veterano: pode ser usado como montaria, mudando seu deslocamento para 9m (voo 12m). Mestre: seu deslocamento de voo muda para 15m e você também pode gastar 4 PM para causar 6d6 pontos de dano de eletricidade em uma linha de 9m.`
+        },
+        {
+          chave: "capivara", nome: "Capivara", nd: "1", tipo: "Animal Médio",
+          papel: '',
+          resumo: "O animal lembra um rato ou coelho, mas muito maior e mais robusto, provavelmente pesando o mesmo que um humano.",
+          texto:
+`Capivara ND 1
+“Um goblin cavalgando um rato!? Não, eu não vi. Você também não.”
+— Gabriella Thorp, lefou clériga de Arsenal
+O animal lembra um rato ou coelho, mas muito maior e mais robusto, provavelmente pesando o mesmo que um humano. Sua pelagem é áspera e marrom, bastante suja de lama. Tem pescoço muito curto, pequenas orelhas redondas e dentes salientes de roedor. Capivaras são grandes roedores aquáticos, que vivem às margens de rios e lagos. São excelentes nadadoras, mas passam a maior parte do tempo rolando na lama, como porcos. São tipicamente calmas e inofensivas, mas também territoriais, atacando aqueles que se aproximam muito do bando. Há aventureiros que juram, por todos os deuses, ter sido quase mortos por “aqueles demônios!”. Pequenas demais para humanos, capivaras são algumas vezes escolhidas como montarias por goblins, hynne e outras raças de baixa estatura; estes adotam o curioso título de “capivaleiros”. Seu rápido deslocamento na água pode ser decisivo em algumas situações de emergência, proporcionando fugas incríveis.
+Animal Médio
+Iniciativa +1, Percepção +5, faro, visão na penumbra
+Defesa 16, Fort +11, Ref +5, Von +0
+Pontos de Vida 35
+Deslocamento 9m (6q), natação 12m (8q)
+Corpo a Corpo Mordida +11 (1d8+12).
+Aparência Inofensiva A primeira criatura inteligente (Int –3 ou maior) que atacar a capivara em uma cena deve fazer um teste de Vontade (CD 14). Se falhar, perderá sua ação.
+Fedorentina (Padrão) Uma vez por cena, a capivara secreta um odor fétido. Criaturas em alcance curto ficam enjoadas por 1d4 rodadas (Fort CD 14 evita).
+For 3, Des 1, Con 3, Int –3, Sab 1, Car 5
+Tesouro Nenhum.
+Parceiro A capivara é um parceiro montaria (Médio) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 9m (natação 12m) e você recebe uma ação de movimento extra por turno (apenas para se deslocar). Veterano: você pode usar Aparência Inofensiva (se já possuir esse poder, a CD para resistir a ele aumenta em +2). Mestre: uma vez por rodada, você recebe +1d6 em uma rolagem de dano corpo a corpo.`
+        },
+        {
+          chave: "cavaloDeCarga", nome: "Cavalo de Carga", nd: "1/2", tipo: "Animal Grande",
+          papel: '',
+          resumo: "Mais lento, mas também mais forte, este animal robusto é próprio para puxar arados, transportar alforjes cheios no lombo ou mover carroças pesadas.",
+          texto:
+`Cavalo de Carga ND 1/2
+Mais lento, mas também mais forte, este animal robusto é próprio para puxar arados, transportar alforjes cheios no lombo ou mover carroças pesadas. Seja a galope ou em viagens longas, tem a mesma velocidade média de um humano.
+Animal Grande
+Iniciativa +2, Percepção +5, faro, visão na penumbra
+Defesa 12, Fort +6, Ref +0, Von +3
+Pontos de Vida 27
+Deslocamento 9m (6q)
+Corpo a Corpo Cascos +7 (2d4+5).
+For 5, Des 0, Con 3, Int –4, Sab 1, Car –2
+Perícias Atletismo +9.
+Tesouro Nenhum.
+Parceiro O cavalo de carga é um parceiro besta de carga (veja a página 416).`
+        },
+        {
+          chave: "cavaloDeMontaria", nome: "Cavalo de Montaria", nd: "1/2", tipo: "Animal Grande",
+          papel: '',
+          resumo: "Animal próprio para transportar um cavaleiro por grandes distâncias — o “veículo pessoal” mais comum em Arton.",
+          texto:
+`Cavalo de Montaria ND 1/2
+Animal próprio para transportar um cavaleiro por grandes distâncias — o “veículo pessoal” mais comum em Arton. Tem velocidade normal de 10 km/h (o dobro de um humano), ou cerca de 50km por dia, incluindo pausas para descansar e se alimentar.
+Animal Grande
+Iniciativa +3, Percepção +5, faro, visão na penumbra
+Defesa 13, Fort +6, Ref +3, Von +0
+Pontos de Vida 25
+Deslocamento 15m (10q)
+Corpo a Corpo Cascos +7 (2d4+5).
+For 5, Des 1, Con 2, Int –4, Sab 1, Car –2
+Perícias Atletismo +9.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "cavaloDeGuerra", nome: "Cavalo de Guerra", nd: "1", tipo: "Animal Grande",
+          papel: '',
+          resumo: "Trata-se de um cavalo de montaria treinado e equipado para combate.",
+          texto:
+`Cavalo de Guerra ND 1
+Trata-se de um cavalo de montaria treinado e equipado para combate. Quase todos usam armaduras. São também mais corajosos, não se assustando tão facilmente com predadores, monstros ou inimigos, diferente de um cavalo comum.
+Animal Grande
+Iniciativa +3, Percepção +5, faro, visão na penumbra
+Defesa 14, Fort +6, Ref +5, Von +3
+Pontos de Vida 33
+Deslocamento 15m (10q)
+Corpo a Corpo Cascos +9 (2d6+5).
+For 5, Des 1, Con 2, Int –4, Sab 1, Car –2
+Perícias Atletismo +9.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "cavaloDeNamalkah", nome: "Cavalo de Namalkah", nd: "2", tipo: "Animal Grande",
+          papel: '',
+          resumo: "O reino de Namalkah é conhecido por criar os mais extraordinários cavalos de Arton.",
+          texto:
+`Cavalo de Namalkah ND 2
+O reino de Namalkah é conhecido por criar os mais extraordinários cavalos de Arton. Seus cavalos de montaria são mais rápidos, seus cavalos de carga são mais fortes e seus cavalos de guerra são mais poderosos.
+Animal Grande
+Iniciativa +7, Percepção +6, faro, visão na penumbra
+Defesa 18, Fort +11, Ref +7, Von +4, resistência a medo +2
+Pontos de Vida 60
+Deslocamento 15m (10q)
+Corpo a Corpo Cascos +9 (2d8+6).
+For 6, Des 2, Con 3, Int –4, Sab 1, Car 0
+Perícias Atletismo +11.
+Tesouro Nenhum.
+Parceiro O cavalo de Namalkah é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 15m e você recebe uma ação de movimento extra por turno (apenas para se deslocar). Veterano: seu deslocamento muda para 18m e você recebe +2 em ataques corpo a corpo. Mestre: você recebe uma segunda ação de movimento extra por turno (novamente, apenas para se deslocar) e, uma vez por rodada, +2d6 em uma rolagem de dano corpo a corpo. Esses cavalos raramente são encontrados à venda fora de Namalkah. Mesmo no reino, conquistar um deles requer mais que dinheiro — requer merecimento. Obtê-los, mesmo por meio de uma habilidade, exige algum tipo de missão ou aventura para se provar digno.`
+        },
+        {
+          chave: "cavaloGlacial", nome: "Cavalo Glacial", nd: "2", tipo: "Animal Grande",
+          papel: '',
+          resumo: "O estranho animal quadrúpede até lembra um cavalo, tem o mesmo tamanho, mas claramente não é.",
+          texto:
+`Cavalo Glacial ND 2
+“Sim, uma adaptação evolucional prodigiosa. Deuses? Não me venha com tal despautério!”
+— Zebediah Nash, humano médico de Salistick
+O estranho animal quadrúpede até lembra um cavalo, tem o mesmo tamanho, mas claramente não é. Em vez de pelagem, tem um couro liso e manchado de preto e branco. Em vez de crina, uma grande barbatana atrás da cabeça. A cauda é longa e também achatada como uma nadadeira. E a boca, que parecia pequena como a de um cavalo, arreganha-se, imensa, com fileiras de presas amareladas. Conhecido pelos estudiosos como “hipo-orca”, este curioso animal vive em lagos nas Montanhas Uivantes e outros pontos gelados de Arton. Lembra um cavalo com traços de uma baleia assassina. O cavalo glacial pode galopar em terra firme como um cavalo ou nadar como um peixe — impulsionando o corpo com a cauda musculosa e controlando o nado com a barbatana na cabeça. É um mamífero, necessitando de oxigênio do ar, mas pode prender o fôlego por longos períodos. Carnívoro, alimenta-se de peixe; a abertura de sua mandíbula é muito maior que a dos cavalos comuns, muitas vezes assustando aqueles que observam sua boca aberta pela primeira vez. Sob seu couro há uma espessa camada de gordura para suportar os rigores do frio extremo; quando estão em regiões mais quentes, precisam mergulhar com frequência para se refrescar. Cavalos glaciais são ferozes e agressivos, mas também muito inteligentes, tornando-se dóceis em cativeiro. São montarias favoritas entre nativos das Uivantes e também ao longo do Rio dos Deuses.
+Animal Grande
+Iniciativa +4, Percepção +6, percepção às cegas, visão na penumbra
+Defesa 19, Fort +14, Ref +7, Von +2, redução de frio 5
+Pontos de Vida 60
+Deslocamento 9m (6q), natação 12m (8q)
+Corpo a Corpo Mordida +12 (1d8+9).
+Esguicho (Padrão) O cavalo glacial dispara um jato de água gelada pelo respiro em sua cabeça. Criaturas num cone de 6m sofrem 4d6 pontos de dano de frio e ficam lentas por 1d4 rodadas (Fort CD 16 reduz à metade e evita a condição). Recarga (passar 1 rodada submerso em água).
+For 2, Des 1, Con 3, Int –4, Sab 1, Car –2
+Perícias Atletismo +7.
+Tesouro 1 dose de éter elemental (frio) (CD 17 para extrair).
+Parceiro O cavalo glacial é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 9m (natação 12m) e você recebe redução de frio 5. Veterano: uma vez por rodada, quando faz um ataque corpo a corpo, você pode gastar 1 PM. Se fizer isso e acertar o ataque, você causa +2d6 pontos de dano de frio. Mestre: muda a redução de frio para 10 e você recebe uma ação de movimento extra (apenas para se deslocar).`
+        },
+        {
+          chave: "corcelDoDeserto", nome: "Corcel do Deserto", nd: "2", tipo: "Monstro Grande",
+          papel: '',
+          resumo: "Visto de longe, o guerreiro Sar-Allan parecia estar cavalgando um cavalo comum.",
+          texto:
+`Corcel do Deserto ND 2
+“Um generoso presente do Vigilante, por certo. Perdão? Sua aparência? O que quer dizer?”
+— Khalid Mallikah, humano clérigo de Azgher
+Visto de longe, o guerreiro Sar-Allan parecia estar cavalgando um cavalo comum. Quando se aproxima, no entanto, vocês percebem que a criatura nem mesmo é um mamífero; tem as mesmas quatro patas, o mesmo tronco horizonta e a mesma cabeça alongada de um cavalo, mas tudo coberto de carapaça quitinosa. É algum tipo de inseto enorme. Por que esta criatura insetoide acabou tão parecida com um cavalo, impossível dizer. Evolução paralela, dizem os acadêmicos. Generosidade dos deuses, dizem os religiosos. Qualquer que seja a verdade, o animal até mesmo age e se comporta como um equino comum. O corcel é uma montaria muito apreciada pelos viajantes do deserto, pelo simples fato de que nunca bebe água em toda a vida adulta. Estudiosos suspeitam de que ele absorva umidade do próprio ar, através das numerosas aberturas em seu corpo. Além disso, a mandíbula poderosa pode morder e mastigar os mais duros cactos, extraindo deles a umidade necessária. Em estado selvagem, o corcel também pode ser encontrado em manadas, como cavalos selvagens — existindo não apenas em desertos, mas também planícies quentes como a Grande Savana. Caçar e domar um deles é considerado um rito de maturidade entre várias comunidades do deserto.
+Monstro Grande
+Iniciativa +5, Percepção +7, percepção às cegas
+Defesa 21, Fort +13, Ref +7, Von +2, redução de fogo 5
+Pontos de Vida 55
+Deslocamento 15m (10q)
+Corpo a Corpo Cascos +12 (2d8+9).
+Substância Urticante A carapaça do corcel é coberta por uma substância que causa uma coceira debilitante. Uma criatura que acerte um ataque corpo a corpo no corcel é acometida por uma urticária terrível que a impede de fazer ações, exceto reações, por 1d4 rodadas (Fort CD 16 evita). Uma criatura só pode ser afetada por esta habilidade uma vez por cena.
+For 2, Des 2, Con 4, Int –3, Sab 1, Car –1
+Perícias Atletismo +8.
+Tesouro 1d6 doses de ácido (CD 17 para extrair).
+Parceiro O corcel do deserto é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você ignora terreno difícil natural. Veterano: uma vez por rodada, você pode gastar 1 PM para causar 2d6 pontos de dano de impacto em uma criatura adjacente. Mestre: seu deslocamento muda para 15m e você recebe +5 em testes para resistir a efeitos de clima, calor e frio (veja Tormenta20, p. 267).`
+        },
+        {
+          chave: "dromedario", nome: "Dromedário", nd: "1", tipo: "Animal Grande",
+          papel: '',
+          resumo: "O animal até lembra um cavalo, mas bem maior e mais robusto.",
+          texto:
+`Dromedário ND 1
+“Me solta! Aquele bicho desgraçado cuspiu em mim! Vou matar, vou matar!”
+— Leofred de Sambúrdia, hynne guerreiro
+O animal até lembra um cavalo, mas bem maior e mais robusto. A pelagem é densa, em tons de marrom. Pernas longas terminam em patas achatadas de dois dedos, próprias para solo instável. Tem cabeça triangular, com olhos e orelhas proeminentes, encimando um pescoço longo e flexível. Mais interessante é a grande corcova nas costas. Embora o corcel do deserto seja preferido por caçadores e outros aventureiros, a dificuldade em domá-lo leva outros habitantes das dunas a preferir uma montaria mais calma. Dromedários são tipicamente empregados em caravanas que cruzam áreas de terreno difícil, como desertos e montanhas. A corcova, ou giba, atua como depósito de gordura para períodos de escassez — ela diminui de tamanho quando o animal passa por privações prolongadas. Além disso, quando têm acesso a água, conseguem beber enormes quantidades por vez, para suportar longas jornadas. Embora sejam conhecidos por habitar regiões quentes, dromedários também podem ser encontrados em climas muito frios, como as estepes nas Uivantes. Mesmo domesticados, dromedários costumam ser geniosos; quando não gostam de alguém, podem atingir a vítima com uma cusparada malcheirosa. Em estado selvagem, formam bandos chamados cáfilas, liderados por um macho dominante.
+Animal Grande
+Iniciativa +7, Percepção +2, faro, visão na penumbra
+Defesa 15, Fort +11, Ref +5, Von +1, resistência a efeitos metabólicos e de clima +5
+Pontos de Vida 36
+Deslocamento 12m (8q)
+Corpo a Corpo Mordida +9 (2d4+7).
+Cusparada (padrão) Uma criatura em alcance curto sofre 1d4+3 pontos de dano de impacto e fica enjoada pela rodada (Ref CD 14 evita o dano e a condição).
+Patas do Deserto O deslocamento do dromedário não é reduzido por terreno difícil natural em desertos e superfícies similares.
+For 3, Des 1, Con 4, Int –2, Sab 2, Car 0
+Tesouro Nenhum.
+Parceiro O dromedário é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e ignora terreno difícil natural em desertos e terrenos similares. Veterano: você recebe +2 em Percepção e Sobrevivência (este bônus é dobrado em desertos) e, uma vez por rodada, pode gastar 1 PM para causar 1d4+3 pontos de dano de impacto em uma criatura em alcance curto. Mestre: você recebe uma ação de movimento extra por turno (apenas para se deslocar) e +5 em testes para resistir a efeitos de clima.`
+        },
+        {
+          chave: "elefante", nome: "Elefante", nd: "7", tipo: "Animal Enorme",
+          papel: '',
+          resumo: "O imenso e estranho animal tem pele grossa, rugosa e com pelos espaçados, em tom variando do cinza ao marrom.",
+          texto:
+`Elefante ND 7
+“Klunc feliz. Mas amigos de Klunc, vão comer o quê?”
+— Klunc, o Bárbaro
+O imenso e estranho animal tem pele grossa, rugosa e com pelos espaçados, em tom variando do cinza ao marrom. As pernas são grossas e cilíndricas como colunas de templos, com pés redondos. A cabeçorra tem grandes orelhas e um nariz longo, forte e musculoso como um tentáculo. Da boca emergem duas presas muito longas, que parecem armas perigosas. Elefantes são animais pouco conhecidos em Arton, com uma aparência que consegue ser estranha mesmo neste mundo de feras fantásticas. São às vezes capturados e transportados por grandes distâncias, vendidos em mercados como animais de circo ou mascotes para nobres excêntricos. Alguns povos também os utilizam como animais de carga e montaria. Em vários períodos da história de Arton foram usados como bestas de guerra, embora quase nenhum exército os utilize hoje em dia. Ainda que inteligentes e dóceis, elefantes são muito perigosos quando enfurecidos. Em combate, cada parte de seu corpo é uma arma mortal: podem golpear e esmagar com a tromba, atropelar com as patas ou estraçalhar com as presas. Dizem que o elefante tem uma excelente memória, aprendendo coisas novas rapidamente e jamais se esquecendo de nada; ele será capaz de reconhecer, anos depois, um caçador que tenha tentado matá-lo. Eles também têm um medo terrível de ratos; alguns criadores dizem que os ratos-de-Tenebra costumam entrar pelos ouvidos do elefante e matar o animal, devorando seu cérebro, sendo essa a razão (muito justificada) de sua fobia. Em estado selvagem, elefantes são encontrados mais frequentemente na Grande Savana e em outras planícies quentes.
+Animal Enorme
+Iniciativa +6, Percepção +10, faro, visão na penumbra
+Defesa 32, Fort +23, Ref +7, Von +11, redução de dano 5
+Pontos de Vida 260
+Deslocamento 12m (8q)
+Corpo a Corpo Presas +24 (2d8+26, x3) e tromba +24 (2d6+22 impacto).
+Arremessar (Movimento) Se começar seu turno agarrando uma criatura Média ou menor, o elefante arremessa a vítima 1d6 x 1,5m em uma direção à escolha dele. A vítima sofre 2d6 pontos de dano de impacto, fica caída e, se atingir algum obstáculo, sofre +2d6 pontos de dano (Reflexo CD 24 reduz à metade e evita a condição caído).
+Atropelamento (Completa) O elefante percorre até o dobro de seu deslocamento. Ele pode passar pelo espaço ocupado de quaisquer inimigos menores que ele, mas não pode passar duas vezes pelo mesmo espaço. Criaturas atropeladas desta forma sofrem 2d8+26 pontos de dano de impacto e ficam caídas (Ref CD 24 reduz à metade e evita a condição). Recarga (movimento).
+Pisotear (Padrão) Uma criatura que o elefante esteja agarrando, ou que esteja caída adjacente a ele, sofre 4d8+52 pontos de dano de impacto e fica fraca por 1 rodada (Fort CD 24 reduz à metade e evita a condição).
+Prender (Livre) Se o elefante acerta um ataque de tromba, pode fazer a manobra agarrar ou derrubar (teste +29).
+For 4, Des –1, Con 4, Int –4, Sab 1, Car 0
+Tesouro Nenhum.
+Parceiro O elefante é um parceiro montaria (Enorme) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e ignora terreno difícil. Veterano: uma vez por rodada, você pode sacar um item ou pegar um objeto solto em alcance de 4,5m como ação livre. Mestre: Você recebe +5 em testes de manobra para atropelar e, uma vez por rodada, se vencer o teste para atropelar uma criatura, pode pagar 1 PM para fazer um ataque contra ela.`
+        },
+        {
+          chave: "gorlogg", nome: "Gorlogg", nd: "1", tipo: "Animal Grande",
+          papel: '',
+          subgrupo: "Gorlogg",
+          resumo: "Gorlogg — A besta quadrúpede lembra um lagarto, mas também um lobo ou pantera, combinando patas robustas com garras felinas e uma cabeça estreita e…",
+          texto:
+`Gorlogg ND 1
+Animal Grande
+Iniciativa +4, Percepção +3, visão na penumbra
+Defesa 16, Fort +8, Ref +5, Von +3
+Pontos de Vida 36
+Deslocamento 12m (8q)
+Corpo a Corpo Mordida +9 (2d6+8, x3).
+Agarrar Aprimorado (Livre) Mordida (teste +13).
+For 5, Des 2, Con 5, Int –4, Sab 1, Car –4
+Perícias Atletismo +9.
+Tesouro Nenhum.
+Parceiro O gorlogg é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e, uma vez por rodada, você recebe +1d6 em uma rolagem de dano corpo a corpo. Veterano: o bônus em rolagens de dano corpo a corpo muda para +1d10. Mestre: seu deslocamento muda para 15m e o bônus em rolagens de dano corpo a corpo muda para +2d8.`
+        },
+        {
+          chave: "gorloggAlfa", nome: "Gorlogg Alfa", nd: "5", tipo: "Animal Grande",
+          papel: '',
+          subgrupo: "Gorlogg",
+          resumo: "Gorlogg — A besta quadrúpede lembra um lagarto, mas também um lobo ou pantera, combinando patas robustas com garras felinas e uma cabeça estreita e…",
+          texto:
+`Gorlogg Alfa ND 5
+Animal Grande
+Iniciativa +5, Percepção +4, visão na penumbra
+Defesa 24, Fort +13, Ref +9, Von +6
+Pontos de Vida 206
+Deslocamento 12m (8q)
+Corpo a Corpo Mordida +18 (4d8+16, x4).
+Agarrar Aprimorado (Livre) Mordida (teste +22).
+Mordida Dilaceradora Se um ataque do gorlogg alfa exceder a Defesa do inimigo por 5 ou mais, a vítima fica sangrando.
+For 6, Des 5, Con 6, Int –4, Sab 1, Car –2
+Perícias Atletismo +12.
+Tesouro Nenhum.
+Parceiro O gorlogg alfa é um parceiro montaria (Grande) com as mesmas estatísticas de um gorlogg.`
+        },
+        {
+          chave: "leao", nome: "Leão", nd: "2", tipo: "Animal Grande",
+          papel: '',
+          resumo: "Maior e mais forte entre os felinos, seu porte médio é o mesmo de um cavalo pequeno, mas alguns são bem maiores, tão grandes quanto ursos —…",
+          texto:
+`Leão ND 2
+Maior e mais forte entre os felinos, seu porte médio é o mesmo de um cavalo pequeno, mas alguns são bem maiores, tão grandes quanto ursos — ou até mais. Leões são mais comuns no continente de Lamnor, mas também formam grandes bandos na Grande Savana, onde caçam seguindo estratégias elaboradas — alguns distraem a presa enquanto outros aguardam de tocaia no lado oposto. Também existem leões-das-cavernas nas Sanguinárias, em Galrasia e em outros pontos remotos.
+Animal Grande
+Iniciativa +8, Percepção +9, faro, visão na penumbra
+Defesa 17, Fort +9, Ref +10, Von +4
+Pontos de Vida 68
+Deslocamento 15m (10q)
+Corpo a Corpo Mordida +12 (1d8+5) e duas garras +12 (1d6+5).
+Agarrar Aprimorado (Livre) Mordida (teste +14).
+Bote (Completa) O leão faz uma investida e ataca com sua mordida e suas garras. Os três ataques recebem o bônus de +2 da investida, mas devem ser feitos contra a mesma criatura.
+For 5, Des 3, Con 3, Int –4, Sab 1, Car –2
+Perícias Atletismo +10, Furtividade +8.
+Tesouro Nenhum.
+Parceiro O leão é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e, uma vez por rodada, você recebe +1d6 em rolagens de dano corpo a corpo. Veterano: quando faz uma investida, o bônus em rolagens de dano corpo a corpo dobra. Mestre: seu deslocamento muda para 15m e o bônus em rolagens de dano corpo a corpo muda para +1d10.`
+        },
+        {
+          chave: "pantera", nome: "Pantera", nd: "2", tipo: "Animal Médio",
+          papel: '',
+          resumo: "Este caçador solitário prefere atacar em selvas e florestas escuras, preferencialmente à noite, matando a presa e depois levando-a para ser…",
+          texto:
+`Pantera ND 2
+Este caçador solitário prefere atacar em selvas e florestas escuras, preferencialmente à noite, matando a presa e depois levando-a para ser devorada no alto de uma árvore. O leopardo, espécie com pelo amarelo e manchas escuras, existe em Lamnor, onde disputa caça com os leões. Outra espécie, o leopardo-das-neves, habita as Uivantes.
+Animal Médio
+Iniciativa +7, Percepção +4, faro, visão na penumbra
+Defesa 16, Fort +5, Ref +11, Von +0
+Pontos de Vida 55
+Deslocamento 18m (12q), escalada 9m (6q)
+Corpo a Corpo Mordida +12 (1d8+4) e duas garras +12 (1d6+4).
+Agarrar Aprimorado (Livre) Mordida (teste +14).
+Sufocar (Livre) No início de cada um de seus turnos, a pantera causa 1d8+4 pontos de dano de perfuração na criatura que estiver agarrando. Enquanto estiver agarrada desta forma, a criatura não poderá falar nem respirar (veja “Sufocamento”, em Tormenta20, p. 319).
+For 2, Des 6, Con 3, Int –3, Sab 1, Car –2
+Perícias Atletismo +7, Furtividade +11.
+Tesouro Nenhum.
+Parceiro A pantera é um parceiro especial (assassino) que fornece os benefícios a seguir. Iniciante: uma vez por rodada, quando causa dano com um ataque corpo a corpo, você pode deixar o alvo sangrando. Veterano: a CD dos testes para remover um sangramento que você provoca aumenta em +2. Mestre: os sangramentos que você provoca exigem dois sucessos em testes para serem removidos.`
+        },
+        {
+          chave: "tigre", nome: "Tigre", nd: "3", tipo: "Animal Grande",
+          papel: '',
+          resumo: "Quase não existem mais tigres em estado selvagem; seu habitat natural, a ilha de Tamu-ra, foi devastado pela Tormenta — levando o animal à…",
+          texto:
+`Tigre ND 3
+Quase não existem mais tigres em estado selvagem; seu habitat natural, a ilha de Tamu-ra, foi devastado pela Tormenta — levando o animal à beira da extinção. Hoje são extremamente raros, vistos apenas em espetáculos como o Circo dos Irmãos Thiannate, demonstrações de arenas e alguns palácios de Nitamu-ra. Considerados sagrados pelos tamuranianos, hoje a Igreja de Lin-Wu exerce esforços para repovoar a ilha com exemplares adquiridos ou capturados no continente.
+Animal Grande
+Iniciativa +12, Percepção +9, faro, visão na penumbra
+Defesa 18, Fort +10, Ref +16, Von +4
+Pontos de Vida 95
+Deslocamento 15m (10q)
+Corpo a Corpo Mordida +14 (1d8+6) e duas garras +14 (1d6+6).
+Bote (Completa) O tigre faz uma investida e ataca com sua mordida e suas garras. Os três ataques recebem o bônus de +2 da investida, mas devem ser feitos contra a mesma criatura.
+Ímpeto Destrutivo O tigre recebe +2 em testes de ataque e rolagens de dano em seu primeiro turno de combate.
+Rugido Paralisante (Movimento) Criaturas em alcance curto ficam imóveis por 1 rodada (Fort CD 17 evita). Uma criatura só pode ser alvo desta habilidade uma vez por cena.
+For 5, Des 4, Con 3, Int –4, Sab 1, Car –2
+Perícias Atletismo +10, Furtividade +9 (+14 em florestas).
+Tesouro Nenhum.
+Parceiro O tigre é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe +5 em Iniciativa. Veterano: na primeira rodada de combate, você recebe +5 em testes de ataque e rolagens de dano com armas. Mestre: seu deslocamento muda para 15m e você recebe uma ação de movimento extra por turno (apenas para se deslocar).`
+        },
+        {
+          chave: "rinoceronte", nome: "Rinoceronte", nd: "4", tipo: "Animal Grande",
+          papel: '',
+          subgrupo: "Rinoceronte",
+          resumo: "Rinoceronte — O imenso animal de couro grosso poderia ser confundido com um porco imenso, mas com uma cabeçorra volumosa e um enorme chifre no focinho.",
+          texto:
+`Rinoceronte ND 4
+Animal Grande
+Iniciativa +4, Percepção +5, faro, visão na penumbra
+Defesa 23, Fort +16, Ref +4, Von +10, redução de dano 5
+Pontos de Vida 130
+Deslocamento 12m (8q)
+Corpo a Corpo Chifre +16 (1d8+10).
+Investida Avassaladora (Completa) O rinoceronte faz uma investida e ataca com seu chifre. Se acertar o ataque, causa +2d8 pontos de dano e a vítima é arremessada 1d6 x 1,5m na direção oposta.
+For 6, Des 0, Con 4, Int –4, Sab 1, Car –3
+Perícias Atletismo +10.
+Tesouro Nenhum.
+Parceiro O rinoceronte é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe +2 em testes de ataque quando faz investidas. Veterano: você pode usar Carga de Cavalaria. Caso possua esse poder, o bônus no dano em investida aumenta em +1d8. Mestre: quando faz uma investida você ignora 10 pontos de redução de dano do alvo.`
+        },
+        {
+          chave: "rinoceronteLanoso", nome: "Rinoceronte Lanoso", nd: "6", tipo: "Animal Grande",
+          papel: '',
+          subgrupo: "Rinoceronte",
+          resumo: "Rinoceronte — O imenso animal de couro grosso poderia ser confundido com um porco imenso, mas com uma cabeçorra volumosa e um enorme chifre no focinho.",
+          texto:
+`Rinoceronte Lanoso ND 6
+Animal Grande
+Iniciativa +6, Percepção +8, faro, visão na penumbra
+Defesa 24, Fort +18, Ref +6, Von +12, redução de dano 5, redução de frio 5
+Pontos de Vida 260
+Deslocamento 12m (8q)
+Corpo a Corpo Chifre +20 (2d8+25).
+Habitante da Tundra O deslocamento do rinoceronte lanoso não é afetado por gelo ou neve.
+Investida Avassaladora (Completa) O rinoceronte faz uma investida com seu chifre. Se acertar o ataque, causa +3d8 pontos de dano e a vítima é arremessada 1d6 x 1,5m na direção oposta.
+For 7, Des 0, Con 4, Int –4, Sab 1, Car –3
+Perícias Atletismo +12.
+Tesouro Nenhum.
+Parceiro O rinoceronte lanoso é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe +2 em testes de ataque quando faz investidas. Veterano: você pode usar Carga de Cavalaria. Se possui esse poder, o bônus no dano em investida aumenta em +1d8. Mestre: seu deslocamento não é afetado por gelo ou neve.`
+        },
+        {
+          chave: "brontoterio", nome: "Brontotério", nd: "8", tipo: "Animal Enorme",
+          papel: '',
+          subgrupo: "Rinoceronte",
+          resumo: "Rinoceronte — O imenso animal de couro grosso poderia ser confundido com um porco imenso, mas com uma cabeçorra volumosa e um enorme chifre no focinho.",
+          texto:
+`Brontotério ND 8
+Animal Enorme
+Iniciativa +8, Percepção +10, faro, visão na penumbra
+Defesa 34, Fort +20, Ref +7, Von +15, redução de dano 5
+Pontos de Vida 310
+Deslocamento 12m (8q)
+Corpo a Corpo Chifre +26 (4d8+25).
+Besta Trovão (Movimento) O brontotério bate suas patas dianteiras no chão, fazendo o barulho de um trovão. Todas as criaturas em alcance curto ficam surdas por 1d4 rodadas (Fort CD 26 evita). Recarga (movimento).
+Bloqueio com Chifre (Reação) Uma vez por rodada, quando é atingido por um ataque corpo a corpo, o brontotério pode fazer um teste de ataque de chifre e subtrair o resultado desta rolagem do dano causado pelo ataque.
+Investida Avassaladora (Completa) O brontotério faz uma investida com seu chifre. Se acertar o ataque, causa +4d8 pontos de dano e a vítima é arremessada 1d6 x 1,5m na direção oposta.
+For 8, Des 0, Con 5, Int –4, Sab 1, Car –3
+Perícias Atletismo +18.
+Tesouro Nenhum.
+Parceiro O brontotério é um parceiro montaria (Enorme) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe +1 na Defesa. Veterano: o bônus na Defesa muda para +2 e você recebe uma ação de movimento extra por turno (apenas para se deslocar). Mestre: você recebe redução de dano 5.`
+        },
+        {
+          chave: "tatuMontanha", nome: "Tatu-Montanha", nd: "4", tipo: "Monstro Enorme",
+          papel: '',
+          resumo: "O imenso monstro não é realmente um tatu, mas sim uma variedade gigante de molusco — lembrando mais algum tipo de tartaruga monstruosa.",
+          texto:
+`Tatu-Montanha ND 4
+“Ele é lento, muito lento mesmo. Mas quero ver esses malditos gorloggs tentarem algo!”
+— Hallvard de Namalkah, humano mercador
+O imenso monstro não é realmente um tatu, mas sim uma variedade gigante de molusco — lembrando mais algum tipo de tartaruga monstruosa. O corpo é blindado com uma concha seca e marrom, grande como um celeiro. Sob a carapaça não há patas, mas uma barriga rastejante de caramujo. A cabeça sai de uma abertura, encimando um pescoço curto e apresentando uma massa de tentáculos com protuberâncias redondas nas pontas. Possui uma longa e musculosa cauda, trazendo na ponta uma esfera massivamente revestida de espinhos, à semelhança de uma maça. Tatus-montanhas podem ser encontrados em manadas, pastando em pântanos — eles filtram a água para reter matéria orgânica e micro-organismos. Quando atacados, recolhem-se sob as conchas e tentam atingir o agressor com a cauda. Além de fortíssima contra qualquer ataque físico, a concha do tatu-montanha é imune a qualquer ácido. Tatus-montanha podem ser domesticados como animais de montaria e carga. São especialmente úteis na travessia de terrenos pantanosos ou alagados, que percorrem sem dificuldade. A concha enorme, quando vazia, costuma ser usada por certos povos como cabanas — são fortes, duráveis e algumas têm espaço para abrigar famílias inteiras. Conchas de exemplares menores podem ser usadas como depósitos de água e caldeirões; por serem invulneráveis a ácido, essas conchas também são cobiçadas por magos como reservatórios de substâncias corrosivas.
+Monstro Enorme
+Iniciativa +4, Percepção +7, visão no escuro
+Defesa 25, Fort +16, Ref +10, Von +4, imunidade a ácido, redução de corte, impacto e perfuração 5
+Pontos de Vida 125
+Deslocamento 9m (6q), natação 9m (6q)
+Corpo a Corpo Cauda +16 (2d6+18 perfuração, x3).
+Retrair (Reação) Uma vez por rodada, quando sofre um ataque corpo a corpo, o tatu se retrai para sua concha. Ele recebe +5 na Defesa contra esse ataque e, se o ataque errar, o agressor sofre 1d6+9 pontos de dano de perfuração.
+Varrer Ameaças (Padrão) O tatu-montanha golpeia com sua cauda em um cone de 4,5m. Criaturas na área sofrem 2d6+9 pontos de dano de perfuração e ficam caídas (Ref CD 18 reduz à metade e evita a condição). Recarga (movimento).
+For 3, Des 0, Con 4, Int –3, Sab 1, Car –2
+Tesouro Casco de tatu (CD 19 para extrair, vale T$ 100 para fabricar um escudo ou uma armadura superior).
+Parceiro O tatu-montanha é um parceiro montaria (Enorme) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 9m (normal e de natação) e você recebe uma ação de movimento extra por turno (apenas para se deslocar). Veterano: você recebe +1 na Defesa e redução de ácido 5. Mestre: muda o bônus na Defesa para +2 e a redução de ácido para 10.`
+        },
+        {
+          chave: "trobo", nome: "Trobo", nd: "1", tipo: "Animal Grande",
+          papel: '',
+          resumo: "A grande ave sem asas é mais alta que um humano adulto e robusta como um búfalo.",
+          texto:
+`Trobo ND 1
+“Tem certeza? Isto é, são bichos de fazenda. Vai mesmo levar para uma aventura?”
+— Aldreda Tannar, kliren arcanista
+A grande ave sem asas é mais alta que um humano adulto e robusta como um búfalo. Tem chifres, couro escuro e cascos bovinos. Há tufos de penas em pontos isolados, aparentemente como ornamentos. Seus olhos são grandes como pires e muito curiosos. Também chamados pássaros-bois, trobos são apreciados nas fazendas de Arton como animais de carga e tração — especialmente em lugares onde há crianças. Um trobo domesticado pode ser muito mais forte que um touro comum, mas menos perigoso. São bichos muito dóceis que apreciam a companhia de humanoides; casos de ataques de trobos a pessoas são ainda mais raros que ataques de bois. Por outro lado, são vigilantes e protetores com sua “família” adotiva, sendo comuns histórias de trobos atacarem bandidos ou monstros que ameaçam seus donos. Esses grandes animais têm hábitos alimentares combinados de pássaros e ruminantes. Consomem vários tipos de grama e vegetais, mas completam a dieta com pequenos insetos (“pequenos” significando menores que coelhos) e larvas. Trobos selvagens caçam insetos gigantes, que matam a bicadas. É comum ver trobos engolindo pequenas pedras: elas ajudam a triturar os alimentos no estômago, uma vez que o animal não tem dentes para mastigar. Graças a seu tronco largo e volumoso e vários depósitos de gordura, é muito confortável cavalgar um trobo. São mais lentos que cavalos, mas demoram dez vezes mais para se cansar. Trobos jovens, contudo, são rápidos e costumam ser usados para corridas, com cavaleiros de raças pequenas como goblins e hynne. Anões não gostam muito dos trobos, um sentimento que as aves retribuem: quando um anão tenta cavalgar um trobo, o resultado não é muito agradável… Por seus olhos grandes, é comum que ganhem nomes como Azgherino, Corujão, Xereta…
+Animal Grande
+Iniciativa +4, Percepção +5, visão na penumbra
+Defesa 14, Fort +5, Ref +8, Von +3, resistência a magia +5
+Pontos de Vida 15
+Deslocamento 15m (10q)
+Corpo a Corpo Mordida +11 (2d4+8).
+For 4, Des 2, Con 1, Int –4, Sab 1, Car –2
+Tesouro Nenhum.
+Parceiro O trobo pode ser usado como um parceiro besta de carga (veja página 416) ou como uma montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 9m e você recebe uma ação de movimento extra por turno (apenas para se deslocar) e +1 em testes de resistência. Veterano: seu deslocamento muda para 12m e o bônus em testes de resistência muda para +2. Mestre: o bônus em testes de resistência muda para +5.`
+        },
+        {
+          chave: "tumarkhan", nome: "Tumarkhân", nd: "4", tipo: "Animal Enorme",
+          papel: '',
+          resumo: "O animal enorme e robusto parece um elefante, com as mesmas patas poderosas mantendo o corpo muito acima do chão e as mesmas presas…",
+          texto:
+`Tumarkhân ND 4
+“Que lástima. Conseguiriam preços excelentes por eles nas fazendas de Sambúrdia.”
+— Salini Alan, qareen mercador
+O animal enorme e robusto parece um elefante, com as mesmas patas poderosas mantendo o corpo muito acima do chão e as mesmas presas proeminentes — mas as semelhanças terminam aí. Olhando melhor, trata-se de um lagarto, o couro coberto de padrões verdes e castanhos. Tem uma cauda curta, que mal chega ao chão. Os olhos são pequenos e bovinos. Este lagarto imenso é encontrado apenas no arquipélago de Khubar, onde os nativos aprenderam a domesticá-lo como animal de montaria, carga e tração. É do tamanho de um elefante e utilizado para as mesmas tarefas. Duas grandes presas de marfim se projetam da boca, usadas como defesa e para derrubar árvores, cujas folhas e frutos alimentam o animal. Embora não seja tão inteligente quanto o elefante, o tumarkhân é muito dócil e fácil de domesticar. Mesmo aqueles que vivem em estado selvagem podem, com algum cuidado, ser amansados e cavalgados. Só lutam quando se sentem ameaçados, golpeando com as perigosas presas. Ao contrário do que ocorre com a maioria dos grandes animais, as fêmeas tumarkhân sempre têm ninhadas de dois ou até três filhotes, em vez de apenas um. O parto costuma ser longo e difícil; os khubarianos ajudam a mãe nessas ocasiões.
+Animal Enorme
+Iniciativa +2, Percepção +5, visão na penumbra
+Defesa 25, Fort +16, Ref +10, Von +2
+Pontos de Vida 130
+Deslocamento 12m (8q)
+Corpo a Corpo Mordida +15 (2d10+12).
+Atropelamento (Completa) O tumarkhân percorre até o dobro de seu deslocamento. Ele pode passar pelo espaço ocupado de quaisquer inimigos menores que ele, mas não pode passar duas vezes pelo mesmo espaço. Criaturas atropeladas desta forma sofrem 2d10+12 pontos de dano de impacto e ficam caídas (Ref CD 18 reduz à metade e evita a condição). Recarga (movimento).
+For 10, Des 0, Con 5, Int –5, Sab 1, Car –1
+Perícias Atletismo +14.
+Tesouro Nenhum.
+Parceiro O tumarkhân é um parceiro montaria (Enorme) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e seu limite de carga aumenta em 5 espaços. Veterano: você recebe uma ação de movimento extra por turno (apenas para se deslocar) e, uma vez por rodada, recebe +1d8 em uma rolagem de dano corpo a corpo. Mestre: o bônus no limite de carga muda para 10 espaços e, quando faz um teste de Força ou de perícia baseada em Força, você pode gastar 2 PM para rolar dois dados e usar o melhor resultado.`
+        },
+        {
+          chave: "ursoPanda", nome: "Urso Panda", nd: "1", tipo: "Animal Médio",
+          papel: '',
+          resumo: "Menor e relativamente inofensivo, alimenta-se de brotos de bambu e luta apenas em defesa própria.",
+          texto:
+`Urso Panda ND 1
+Menor e relativamente inofensivo, alimenta-se de brotos de bambu e luta apenas em defesa própria. Era nativo de Tamu-ra: hoje está quase extinto, sendo um dos animais mais raros e valiosos de Arton. Alguns dos únicos exemplares vivos conhecidos vivem hoje no palácio do Imperador Tekametsu, na nova capital de Tamu-ra.
+Animal Médio
+Iniciativa +3, Percepção +3, faro, visão na penumbra
+Defesa 15, Fort +9, Ref +5, Von +2
+Pontos de Vida 28
+Deslocamento 9m (6q)
+Corpo a Corpo Mordida +9 (1d6+4) e garras +9 (2d4+4).
+Rolamento Defensivo(Reação) Uma vez por rodada, quando sofre dano, o urso panda reduz esse dano à metade e fica caído.
+For 4, Des 3, Con 3, Int –4, Sab 1, Car 1
+Perícias Atletismo +6.
+Tesouro Nenhum.
+Parceiro O panda é um parceiro montaria (Médio) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 9m e você recebe +2 em Diplomacia e uma ação de movimento extra por turno (apenas para se deslocar). Veterano: você pode usar Rolamento Defensivo. Caso possua esse poder, em vez disso o custo para usá-lo diminui em –1 PM. Mestre: você pode usar Aparência Inofensiva. Se possuir esse poder, a CD para resistir a ele aumenta em +2.`
+        },
+        {
+          chave: "ursoPardo", nome: "Urso Pardo", nd: "3", tipo: "Animal Grande",
+          papel: '',
+          resumo: "O tipo mais comum, encontrado em florestas frias, de clima temperado — especialmente nas proximidades das Uivantes.",
+          texto:
+`Urso Pardo ND 3
+O tipo mais comum, encontrado em florestas frias, de clima temperado — especialmente nas proximidades das Uivantes. Um parente próximo, o urso marrom, habita florestas mais quentes.
+Animal Grande
+Iniciativa +4, Percepção +7, faro, visão na penumbra
+Defesa 19, Fort +13, Ref +10, Von +4
+Pontos de Vida 95
+Deslocamento 12m (8q)
+Corpo a Corpo Mordida +14 (1d8+4) e duas garras +14 (1d6+4).
+Agarrar Aprimorado (Livre) Mordida (teste +16).
+For 6, Des 1, Con 5, Int –4, Sab 1, Car –2
+Perícias Atletismo +11.
+Tesouro Nenhum.
+Parceiro O urso pardo é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e, uma vez por rodada, você recebe +1d6 em uma rolagem de dano corpo a corpo. Veterano: uma vez por rodada, quando acerta um ataque corpo a corpo, você pode fazer a manobra agarrar como uma ação livre. Essa manobra não deixa sua mão ocupada, mas você só pode manter um inimigo agarrado por vez. Mestre: muda o bônus em rolagens de dano corpo a corpo para +1d10.`
+        },
+        {
+          chave: "ursoDasCavernas", nome: "Urso das Cavernas", nd: "8", tipo: "Animal Enorme",
+          papel: '',
+          resumo: "Versão maior e mais antiga do urso comum, encontrado em Galrasia e nas Sanguinárias.",
+          texto:
+`Urso das Cavernas ND 8
+Versão maior e mais antiga do urso comum, encontrado em Galrasia e nas Sanguinárias. Agressivo, é o único urso que ataca seres inteligentes sem hesitar.
+Animal Enorme
+Iniciativa +9, Percepção +10, faro, visão na penumbra
+Defesa 31, Fort +20, Ref +15, Von +9, redução de dano 5
+Pontos de Vida 300
+Deslocamento 12m (8q)
+Corpo a Corpo Mordida +27 (2d10+15) e duas garras +27 (2d8+15, 19).
+Abraço de Urso (Livre) No início de cada um de seus turnos, o urso das cavernas causa 3d8+15 pontos de dano de impacto em uma criatura Grande ou menor que esteja agarrando.
+Agarrar Aprimorado (Livre) Mordida (teste +32).
+Garras Destruidoras Quando causa dano com suas garras, o urso pode rolar novamente qualquer resultado 1 ou 2 na rolagem de dano.
+For 7, Des 1, Con 6, Int –4, Sab 2, Car –2
+Perícias Atletismo +15.
+Tesouro Nenhum.
+Parceiro O urso das cavernas é um parceiro montaria (Enorme) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe redução de dano 2. Veterano: uma vez por rodada, quando acerta um ataque corpo a corpo, você pode fazer a manobra agarrar como uma ação livre. Essa manobra não deixa sua mão ocupada, mas você só pode manter um inimigo agarrado desta forma. Mestre: muda a redução de dano para 5.`
+        },
+        {
+          chave: "warg", nome: "Warg", nd: "3", tipo: "Monstro Grande",
+          papel: '',
+          resumo: "Ragnar? Repita isso, desgraçado!” A criatura é quadrúpede e musculosa, grande como um urso e negra como a noite, apenas as presas grandes e…",
+          texto:
+`Warg ND 3
+“Presentes de Thwor para seus campeões, é claro. Quem?
+Ragnar? Repita isso, desgraçado!”
+— Hudaxx, cavaleiro bugbear
+A criatura é quadrúpede e musculosa, grande como um urso e negra como a noite, apenas as presas grandes e brilhantes visíveis contra a pelagem escura. Lembra um lobo imenso, mas com cabeça larga, focinho achatado e mandíbulas grossas. Apesar da aparência bestial, uma inteligência feroz brilha nos olhos vermelhos. Estas feras quase sobrenaturais são amplamente utilizadas pelos duyshidakk como montarias, guardas ou bestas de caça. Após a ascensão de Thwor, passaram a ser considerados animais sagrados, muitas vezes presenteados aos devotos mais merecedores. Ainda que pareçam e se comportem como animais, wargs são argutos e inteligentes, a ponto de compreender o idioma goblinoide. Em estado selvagem, vivem e caçam em matilhas, sendo encontrados por todo Lamnor e em vários pontos de Arton, sobretudo suas áreas mais selvagens (como as Sanguinárias). São agressivos e impacientes; embora prefiram devorar filhotes e animais velhos ou feridos, não hesitam em atacar humanoides. Guiados por Thwor, também podem ser encontrados protegendo comunidades duyshidakk ou lugares sagrados do culto.
+Monstro Grande
+Iniciativa +6, Percepção +10, faro, visão no escuro
+Defesa 21, Fort +9, Ref +13, Von +5
+Pontos de Vida 110
+Deslocamento 12m (8q)
+Corpo a Corpo Mordida +15 (2d6+12).
+Ataque Furtivo +2d6.
+Derrubar (Livre) Mordida (teste +17).
+Predador Oculto O warg pode se mover com seu deslocamento normal enquanto se esconde ou rastreia sem penalidades nos testes de Furtividade ou Sobrevivência. Além disso, sofre apenas –5 de penalidade em testes de Furtividade para esconder-se após atacar ou fazer uma ação chamativa (em vez de –20).
+For 6, Des 3, Con 4, Int –2, Sab 2, Car –1
+Perícias Furtividade +11 (+16 em ambientes escuros), Sobrevivência +10.
+Tesouro Metade.
+Parceiro O warg é um parceiro montaria (Grande) que não causa penalidades em Furtividade por seu tamanho e fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe uma ação de movimento extra por turno (apenas para se deslocar). Veterano: você recebe +2 em Furtividade e pode usar a habilidade Ataque Furtivo +2d6 (se já possui Ataque Furtivo, o bônus de dano se acumula). Mestre: uma vez por rodada, quando acerta um ataque corpo a corpo, você pode fazer a manobra derrubar como uma ação livre.`
+        },
+        {
+          chave: "unicornio", nome: "Unicórnio", nd: "4", tipo: "Espírito Grande",
+          papel: '',
+          resumo: "O animal tem a aparência de um grande e magnífico cavalo branco, com um único chifre dourado e espiralado na fronte.",
+          texto:
+`Unicórnio ND 4
+“Não, ele não aceita qualquer cavaleiro. Pureza? Virgindade? Ele também não se importa com sua opinião a respeito.”
+— Lorianne de Lamnor, meia-elfa gladiadora
+O animal tem a aparência de um grande e magnífico cavalo branco, com um único chifre dourado e espiralado na fronte. Está bebendo de um córrego cristalino, mas, mesmo que vocês não façam nenhum ruído, ele percebe sua presença. E desaparece em um brilho mágico. O unicórnio é uma das criaturas mais nobres e puras de Arton. Muito raros, podem ser encontrados apenas em bosques e florestas remotas. Uma lenda diz que ver um bando destes animais pode purificar totalmente a alma, talvez até remover uma maldição. Unicórnios são muito ariscos, sendo praticamente impossível capturar ou mesmo se aproximar de um deles. Seus sentidos muito aguçados percebem a aproximação de qualquer caçador. Mas são também seres de bom coração, podendo socorrer pessoas necessitadas com seu poder de cura ou teletransporte. Um unicórnio nunca vai se envolver em combates; qualquer sinal mínimo de agressão faz a criatura fugir. Unicórnios aceitam ser cavalgados apenas por seres que considerem dignos. O precioso chifre do unicórnio é a fonte de seus poderes, sendo extremamente cobiçado como ingrediente para poções e itens mágicos. Sua remoção do animal, mesmo sem matá-lo imediatamente, causa seu enfraquecimento gradual até a morte. Matar um unicórnio é um dos piores crimes que se pode cometer contra a natureza, atraindo a fúria da deusa Allihanna: o criminoso recebe uma maldição, passando a ser atacado todos os dias por bandos de animais selvagens quaisquer, que surgem sem explicação.
+Espírito Grande
+Iniciativa +12, Percepção +15, faro, visão no escuro
+Defesa 21, Fort +4, Ref +10, Von +16, imunidade a encantamento
+Pontos de Vida 99
+Deslocamento 15m (10q)
+Corpo a Corpo Chifre +14 (1d8+6, x3) e cascos +14 (2d8+6).
+✦ Chifre Mágico (Padrão) O unicórnio toca uma criatura adjacente com seu chifre e usa um dos efeitos a seguir.
+• Curar. A criatura recupera 8d8+8 pontos de vida.
+• Purificar. Uma condição negativa ou maldição da criatura é removida.
+• Reviver. A criatura é revivida, desde que tenha morrido há no máximo uma semana.
+Paz Encarnada Um espírito de bondade e pureza, o unicórnio nunca ataca outros seres. Ele pode, entretanto, fazer testes de ataque para se defender de manobras de combate. Se atacar, ele perde sua essência e se torna um espírito amaldiçoado.
+Presciência (Reação) O unicórnio pressente automaticamente perigos nas proximidades. Quando está em alcance médio de uma criatura hostil ou de uma armadilha, ele faz um teste de Intuição (CD 20). Se passar, conhece a direção e a distância do perigo, além de saber se é uma criatura ou uma armadilha. Se falhar, sabe apenas que existe um perigo na área.
+✦ Sumir (Padrão) O unicórnio se teletransporta para um ponto qualquer em alcance médio. Ele não precisa ver o destino para usar essa habilidade.
+For 2, Des 3, Con 4, Int –2, Sab 6, Car 3
+Perícias Intuição +15.
+Tesouro Chifre de unicórnio (CD 19 para extrair).
+Parceiro O unicórnio é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe uma ação de movimento extra por turno (apenas para se deslocar). Veterano: seu deslocamento muda para 15m e você pode lançar Purificação. Se aprender essa magia, seu custo é reduzido em –1 PM. Mestre: cada dado de seus efeitos mágicos de cura aumenta em um passo (até o máximo de d12). Unicórnios só aceitam ser cavalgados por pessoas que considerem dignas e seus critérios nem sempre são transparentes. O mestre tem a palavra final sobre se um personagem é digno de cavalgar um unicórnio.`
+        },
+      ],
+      regras: [
+        { titulo: "Treinando Montarias Selvagens",
+          texto:
+`As duas formas mais comuns para um personagem obter uma montaria é por meio de uma habilidade, como Companheiro Animal e Montaria Sagrada, ou usando tibares para comprar um cavalo, trobo ou outra das montarias comumente disponíveis nos mercados de Arton. Entretanto, existe outra maneira: treinar uma criatura selvagem. O primeiro passo para treinar uma criatura é domá-la. Para isso, você precisa capturar a criatura (por meio de uma armadilha, magia etc.) ou derrotá-la em combate. Após isso, deve fazer um teste de Adestramento (CD 15 + ND da criatura). Se passar, você doma a criatura e pode começar a treiná-la. Se falhar, a criatura é muito selvagem para ser treinada. Uma vez que a criatura seja domada, é hora de começar seu treinamento. Isso é um teste estendido de Adestramento (CD 15 + ND da criatura), no qual é necessário um total de sucessos igual a 3 + ND da criatura antes de 3 falhas. Cada teste representa um dia de trabalho e você recebe um bônus cumulativo de +1 para cada sucesso consecutivo. Se passar no teste estendido, transforma a criatura em um parceiro montaria iniciante. Se falhar, precisa começar o treinamento do início. Treinar uma criatura selvagem exige tempo e dedicação. O treinador se torna responsável pela criatura e deve cuidar de sua alimentação, saúde e segurança. Além disso, precisa passar tempo suficiente a seu lado para que ela se acostume com sua presença. Por isso, durante o período de treinamento, você sofre uma penalidade de –2 em testes de perícia e sua recuperação de PM por descanso diminui em um nível. A critério do mestre, estas regras também podem ser usadas para treinar outros tipos de parceiros irracionais (como um animal perseguidor ou vigilante).` },
+        { titulo: "Montarias para Cavaleiros e Paladinos",
+          texto:
+`A critério do mestre, quando um personagem recebe uma montaria específica (como o cavalo de guerra concedido por Caminho do Cavaleiro), pode escolher outro tipo de montaria. Se permitir essa opção, o mestre pode limitar os tipos de montarias disponíveis para cada habilidade ou pedir que o personagem cumpra algum requisito adicional para receber a montaria, como viajar até uma região específica ou encontrar um filhote e treiná-lo desde jovem.` },
+        { titulo: "Cavalo",
+          texto:
+`“Assim, é como um centauro, mas sem a parte gente. Bem doido, né?”
+— Maya, a Dama do Chapéu Maluco
+Bom… Hmm… Ele é grande, tem quatro patas com cascos, pelo castanho, crina e cauda cor de palha… Enfim, é um cavalo. Apesar da grande variedade de montarias surpreendentes disponíveis para aventureiros, o cavalo comum ainda é a escolha mais tradicional no Reinado. São principalmente usados por humanos; outras raças humanoides têm, cada uma, seus motivos para rejeitar cavalos. Anões têm dificuldade para alcançar a sela (mas nunca diga isso a eles), minotauros acham indigno andar sem usar os próprios pés, lefou os deixam assustadiços e irritados, hynne preferem bichos menores e assim por diante. Elfos e dahllan, por outro lado, embora não tenham tradições de montaria, podem se afeiçoar facilmente a cavalos e vice-versa. Embora existam numerosas raças, cavalos se dividem nas categorias básicas a seguir.` },
+        { titulo: "A Montaria Mais Comum do Reinado",
+          texto:
+`As estatísticas de parceiro para cavalos (Tormenta20, p. 262) se aplicam tanto a cavalos de montaria quanto a de guerra. Cavalos de montaria são mais baratos, mas, por não serem treinados para uso em batalhas, se assustam facilmente. Assim, para permanecer montado em um cavalo de montaria durante um combate, o personagem precisa passar em um teste de Cavalgar (CD 20) no início de cada turno.` },
+        { titulo: "Gorlogg",
+          texto:
+`“Feras do mundo perdido, rondando estradas do Reinado. Espere até minha mulher saber!”
+— Sandro Galtran, humano ladino
+A besta quadrúpede lembra um lagarto, mas também um lobo ou pantera, combinando patas robustas com garras felinas e uma cabeça estreita e alongada de mandíbula imensa, com dentes caninos do tamanho de adagas. O animal é grande o bastante para ser cavalgado, embora seja difícil imaginar quem consiga fazê-lo. Gorloggs pertencem a um grupo de animais primitivos que combinam traços de répteis e mamíferos: põem ovos e não amamentam os filhotes, mas têm dentes diferenciados e sangue quente. Como seria esperado, são nativos de Galrasia — onde formam alcateias ferozes, capazes de abater até os maiores lagartos-trovão com seus dentes de sabre. No passado recente, muitos gorloggs foram capturados e trazidos para o Reinado, buscando sua domesticação e reprodução em cativeiro como bestas de guarda e guerra. Tiranos deixam gorloggs soltos em seus castelos como cães de guarda. Em muitos casos, contudo, as feras se mostraram indomáveis; mataram seus “donos”, destruíram suas contenções e fugiram para a natureza, ocupando o topo da cadeia alimentar em várias regiões. Hoje, rondam vários pontos do Reinado em bandos perigosos, atacando viajantes em emboscadas ou cerceando aldeias. Lidar com essas alcateias acabaria entre as missões mais comuns para aventureiros novatos. Apesar do fracasso em subjugá-los, druidas e outros aventureiros abençoados por Allihanna às vezes são aceitos por gorloggs como cavaleiros. Uma vez conquistada, sua lealdade ao tutor é feroz e inabalável — ele será capaz de sacrificar a própria vida por sua proteção.` },
+        { titulo: "Grandes Felinos",
+          texto:
+`“Trago paz. Mesmo que seja pelas garras e presas de meus companheiros.”
+— Renji Cifer Kenpachi, dahllan druida de Allihanna
+O leão de corpo poderoso e esguio se aproxima rugindo, o sol brilhando no pelo alaranjado, a juba farta como uma coroa. Parece a ponto de atacar, mas então se detém. O ataque não vem do Rei dos Animais — chega pelas costas, nas garras e presas das várias leoas, que chegaram sorrateiras enquanto o líder do bando distraía vocês. Quando existem gorloggs, grifos, gafanhotos-tigres, lagartos-terror e outras ameaças selvagens, animais “normais” como leões e tigres parecem quase inofensivos! Contudo, eles existem em espécies variadas e podem levar aventureiros desatentos à morte…` },
+        { titulo: "Rinoceronte",
+          texto:
+`“Então os antigos mestres anões montavam nestas coisas? Certo, vamos tentar…”
+— Ramaonn Themminn, anão bárbaro
+O imenso animal de couro grosso poderia ser confundido com um porco imenso, mas com uma cabeçorra volumosa e um enorme chifre no focinho. As pernas são curtas, mas muito fortes — e mais rápidas do que parecem. Rinocerontes são grandes herbívoros, muito mal-humorados e agressivos. Atacam qualquer criatura que se aproxime demais. Vivem nas mesmas regiões habitadas por elefantes, muitas vezes formando bandos mistos. No passado, quando os anões ainda habitavam a superfície, rinocerontes eram criados como gado, provendo carne, leite e couro, assim como as vacas para humanos. Também foram usados como bestas de carga e guerra — um regimento de cavaleiros anões em armaduras pesadas, no dorso de seus rinocerontes, era uma visão impressionante e assustadora. Quando os anões se refugiaram em Doherimm, não puderam levar seus companheiros, pois rinocerontes não sobreviveriam no subterrâneo. Assim terminou uma amizade de séculos. Fato ou lenda, é verdade que um rinoceronte jamais ataca um anão, e que alguns anões aventureiros adotam estas bestas como montarias. Além do rinoceronte comum dos campos e savanas, existe o rinoceronte lanoso das Uivantes e o brontotério — variedade gigante com chifre em forma de “Y”, encontrada em Galrasia.` },
+        { titulo: "Urso",
+          texto:
+`“Quando você quer ser deixada em paz, nada melhor que virar urso e passar alguns meses numa caverna...”
+— Lavendara, dahllan druida
+Como uma montanha peluda de músculos e gordura, o animal emerge da floresta ao longe, urrando furioso. Está muito distante, vocês acreditam estar seguros — até que, em uma explosão muscular, a fera vence em poucos segundos a distância que os separava. Ursos são predadores muito fortes e, apesar da aparência desajeitada, muito rápidos — um humano não poderia vencê-los em uma corrida. Em geral eles evitam as pessoas, mas podem ser atraídos por acampamentos de aventureiros para roubar sua comida. Ursos são companheiros tradicionais dos druidas, alguns de seus melhores amigos. Quando um druida está em dificuldade, ursos parecem ser sempre os primeiros a chegar em seu auxílio. Eles são também uma escolha constante quando o druida assume uma forma selvagem. Nas tavernas de Arton conta-se a história de uma esperta druida que, quando capturada por bandidos e beijada pelo líder do bando, simplesmente fingiu aceitar o beijo. E virou urso. Ursos acabam se tornando, também, montarias preferidas por druidas e outros aventureiros ligados à natureza.` },
+      ],
+    },
+
+    // ── 💀 MORTOS-VIVOS ────────────────────────────────
+    {
+      chave: "mortosvivos", nome: "Mortos-Vivos", icone: "💀", cor: "#6a5a7a",
+      intro: "Se antes eram encontrados apenas em sítios malditos ou sob comando estrito de necromantes — nobres ou nocivos —, hoje os mortos-vivos abundam em Arton. Não faltaram eventos notáveis para promover essa propagação. Desde a perturbação cósmica causada pela destruição do antigo Deus da Morte até a recente ascensão do Conde Ferren Asloth como o lich mais poderoso do mundo, regente supremo dos não vivos. Ainda, tivemos o estranho surgimento da “raça” conhecida como osteon, formada por esqueletos inteligentes e conscientes, com almas verdadeiras e — talvez — até mesmo “vida” como não ainda entendemos. Muito mudou, mas a maior parte desses seres é — e talvez sempre seja — um mal antigo com muitas formas. Espreitam nas masmorras escuras, vagando sem mente, atacando tudo que ainda traga o sopro da vida. Rondam tumbas e castelos assombrados, o que resta de suas memórias ainda prendendo-os a missões e obsessões passadas. São invocados por arcanistas ou clérigos, sobretudo devotos de Tenebra, deusa de generosidade e gentileza questionáveis. Para muitos aventureiros, destruir esses seres não é apenas uma necessidade, mas um ato de piedade, uma missão sagrada. São o oposto da vida, não deveriam existir! Merecem ser enviados para o descanso final.\nVerdadeiro? Muitos diriam que não, sobretudo os vários osteon heroicos, que lutam para proteger este mundo de ameaças muito piores. Existe redenção para os mortos? Existem novas chances? O eterno debate persiste.",
+      fichas: [
+        {
+          chave: "carnical", nome: "Carniçal", nd: "1", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Carniçal",
+          resumo: "Carniçal — Parece haver um sobrevivente em meio aos cadáveres, mas… algo está errado.",
+          texto:
+`Carniçal ND 1
+Morto-vivo Médio
+Iniciativa +6, Percepção +1, faro, visão no escuro
+Defesa 15, Fort +1, Ref +5, Von +10
+Pontos de Vida 33
+Deslocamento 9m (6q)
+Corpo a Corpo Mordida +9 (1d6+3 mais doença) e duas garras +9 (1d4+3).
+Doença Uma criatura mordida por um carniçal é exposta a doença febre do carniçal (veja a página 359).
+Paralisia Uma criatura atingida pela mordida do carniçal fica paralisada por 1d4 rodadas (Fort CD 16 evita e a criatura não pode mais ser paralisada por esta habilidade até o fim da cena).
+For 2, Des 3, Con 0, Int –2, Sab 1, Car 0
+Perícias Atletismo +6, Furtividade +7.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "lacedon", nome: "Lacedon", nd: "2", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Carniçal",
+          resumo: "Carniçal — Parece haver um sobrevivente em meio aos cadáveres, mas… algo está errado.",
+          texto:
+`Lacedon ND 2
+Morto-vivo Médio
+Iniciativa +6, Percepção +2, faro, visão no escuro
+Defesa 18, Fort +3, Ref +7, Von +12
+Pontos de Vida 65
+Deslocamento 9m (6q), natação 9m (6q)
+Corpo a Corpo Mordida +12 (1d6+4 mais doença) e duas garras +12 (1d4+4).
+Doença Uma criatura mordida por um lacedon é exposta a doença febre do carniçal (veja p. 359).
+Lamento dos Afogados (Reação) Quando morre, o lacedon emite um último lamento. Criaturas em alcance médio perdem 1 PM (Von CD 17 evita).
+Paralisia Uma criatura atingida pela mordida do lacedon fica paralisada por 1d4 rodadas (Fort CD 17 evita e a criatura não pode mais ser paralisada por esta habilidade até o fim da cena).
+For 2, Des 3, Con 0, Int –2, Sab 1, Car 0
+Perícias Atletismo +7, Furtividade +8.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "cavaloEsqueleto", nome: "Cavalo Esqueleto", nd: "1", tipo: "Morto-vivo Grande",
+          papel: '',
+          subgrupo: "Esqueleto",
+          resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
+          texto:
+`Cavalo Esqueleto ND 1
+Morto-vivo Grande
+Iniciativa +3, Percepção +5, visão no escuro
+Defesa 16, Fort +11, Ref +5, Von +0, redução de corte, frio e perfuração 5
+Pontos de Vida 30
+Deslocamento 15m (10q)
+Corpo a Corpo Cascos +9 (2d6+5).
+Pavor Equestre Uma criatura que comece seu turno vendo um cavalo esqueleto fica abalada por 1d4 rodadas (Von CD 14 evita e a criatura não pode mais ser abalada por esta habilidade até o fim da cena).
+For 5, Des 1, Con 0, Int —, Sab 1, Car –5
+Perícias Atletismo +9.
+Tesouro Nenhum.
+Parceiro O cavalo esqueleto é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe uma ação de movimento extra por turno (apenas para se deslocar). Veterano: você recebe +2 em Intimidação e na CD de efeitos de medo. Mestre: você recebe uma segunda ação de movimento extra por turno (novamente, apenas para se deslocar) e o alcance de seus efeitos de medo aumenta em um passo (de curto para médio, de médio para longo).`
+        },
+        {
+          chave: "ogroEsqueleto", nome: "Ogro Esqueleto", nd: "3", tipo: "Morto-vivo Grande",
+          papel: '',
+          subgrupo: "Esqueleto",
+          resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
+          texto:
+`Ogro Esqueleto ND 3
+Morto-vivo Grande
+Iniciativa +3, Percepção +0, visão no escuro
+Defesa 19, Fort +15, Ref +3, Von +4, redução de corte, frio e perfuração 5
+Pontos de Vida 99
+Deslocamento 9m (6q)
+Corpo a Corpo Tacape +14 (1d12+15).
+Morto Demais… (Movimento) Uma vez por cena, se for desarmado, o ogro esqueleto retira um de seus próprios ossos para utilizar de arma, com as mesmas estatísticas de seu tacape.
+…Para Morrer Novamente! Todo dano de corte, frio e perfuração que o ogro sofre é reduzido à metade (antes de aplicar a redução de dano).
+For 4, Des 1, Con 3, Int —, Sab –1, Car –1
+Equipamento Tacape aumentado. Tesouro Nenhum.`
+        },
+        {
+          chave: "ursoPardoEsqueleto", nome: "Urso Pardo Esqueleto", nd: "4", tipo: "Morto-vivo Grande",
+          papel: '',
+          subgrupo: "Esqueleto",
+          resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
+          texto:
+`Urso Pardo Esqueleto ND 4
+Morto-vivo Grande
+Iniciativa +4, Percepção +3, visão no escuro
+Defesa 20, Fort +4, Ref +16, Von +10, redução de corte, frio e perfuração 5
+Pontos de Vida 180
+Deslocamento 9m (6q)
+Corpo a Corpo Mordida +15 (1d8+4) e duas garras +15 (1d6+4).
+Agarrar Aprimorado (Livre)
+Mordida (teste +17).
+Garras Destruidoras Quando causa dano com suas garras, o urso pardo esqueleto pode rolar novamente qualquer resultado 1 ou 2 na rolagem de dano.
+Ossos Pontiagudos No início de cada um de seus turnos, o urso causa 2d6+7 pontos de dano de perfuração em uma criatura Média ou menor que esteja agarrando. Se a criatura sofrer dano desta forma, ela fica sangrando (Fort CD 18 evita o sangramento).
+For 5, Des –1, Con 4, Int –4, Sab –1, Car –3
+Perícias Atletismo +9.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "giganteEsqueleto", nome: "Gigante Esqueleto", nd: "5", tipo: "Morto-vivo Enorme",
+          papel: '',
+          subgrupo: "Esqueleto",
+          resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
+          texto:
+`Gigante Esqueleto ND 5
+Morto-vivo Enorme
+Iniciativa +4, Percepção +4, visão no escuro
+Defesa 24, Fort +17, Ref +5, Von +11, redução de corte, frio e perfuração 5
+Pontos de Vida 210
+Deslocamento 12m (8q)
+Corpo a Corpo Tacape x2 +17 (2d6+14, x3).
+Arremessar Rochas (Completa) O gigante esqueleto arremessa rochas em um quadrado de 3m em alcance curto. Criaturas nessa área sofrem 2d6+14 pontos de dano (Ref CD 20 reduz à metade).
+Monte de Ossos Quando sofre um acerto crítico, o gigante se desfaz em uma pilha de ossos. Ele fica caído e vulnerável, falha automaticamente em testes de Reflexos e precisa gastar uma ação de movimento para se remontar e encerrar estes efeitos.
+For 6, Des –1, Con 4, Int –2, Sab 0, Car –1
+Equipamento Tacape aumentado. Tesouro Nenhum.`
+        },
+        {
+          chave: "mamuteEsqueleto", nome: "Mamute Esqueleto", nd: "8", tipo: "Morto-vivo Enorme",
+          papel: '',
+          subgrupo: "Esqueleto",
+          resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
+          texto:
+`Mamute Esqueleto ND 8
+Morto-vivo Enorme
+Iniciativa +10, Percepção +9, visão no escuro
+Defesa 33, Fort +21, Ref +8, Von +15, redução de corte, frio e perfuração 5
+Pontos de Vida 340
+Deslocamento 12m (8q)
+Corpo a Corpo Presas +26 (2d8+26, 19) e duas pancadas +26 (1d6+19).
+Atropelamento (Completa) O mamute esqueleto percorre até o dobro de seu deslocamento. Ele pode passar pelo espaço ocupado de quaisquer inimigos menores que ele, mas não pode passar duas vezes pelo mesmo espaço. Criaturas atropeladas desta forma sofrem 2d8+26 pontos de dano de impacto e ficam caídas (Ref CD 26 reduz à metade e evita a condição). Recarga (movimento).
+Monte de Ossos Quando sofre um acerto crítico, o mamute se desfaz em uma pilha de ossos. Ele fica caído e vulnerável, falha automaticamente em testes de Reflexos e precisa gastar uma ação de movimento para se remontar e encerrar estes efeitos.
+For 6, Des 0, Con 4, Int –4, Sab 1, Car –1
+Tesouro Nenhum.`
+        },
+        {
+          chave: "hidraEsqueleto", nome: "Hidra Esqueleto", nd: "11", tipo: "Morto-vivo Enorme",
+          papel: '',
+          subgrupo: "Esqueleto",
+          resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
+          texto:
+`Hidra Esqueleto ND 11
+Morto-vivo Enorme
+Iniciativa +9, Percepção +9, visão no escuro
+Defesa 39, Fort +24, Ref +18, Von +9, cura acelerada 100, redução de corte, frio e perfuração 10
+Pontos de Vida 550
+Deslocamento 9m (6q), natação 9m (6q)
+Corpo a Corpo Cinco mordidas +34 (3d6+16).
+Quebra-Ossos As cabeças da hidra são seu ponto fraco e é possível atacá-las diretamente (Defesa 41). Se o ataque acertar e causar pelo menos 25 pontos de dano de impacto, a cabeça é decepada e a hidra perde um ataque de mordida. Entretanto, 1d4 rodadas após a cabeça ser decepada, duas novas nascem em seu lugar (a hidra pode ter até dez cabeças). Para impedir o nascimento de novas cabeças é necessário purificar o pescoço. Isso exige causar 25 pontos de dano de luz. Se todas as cabeças da hidra forem decepadas e todos seus pescoços forem purificados, ela morre.
+For 10, Des 0, Con 10, Int —, Sab –1, Car –5
+Perícias Furtividade +4 (+14 em pântanos).
+Tesouro Padrão.`
+        },
+        {
+          chave: "reiTiranoEsqueleto", nome: "Rei-Tirano Esqueleto", nd: "12", tipo: "Morto-vivo Enorme",
+          papel: '',
+          subgrupo: "Esqueleto",
+          resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
+          texto:
+`Rei-Tirano Esqueleto ND 12
+Morto-vivo Enorme
+Iniciativa +10, Percepção +9, visão no escuro
+Defesa 43, Fort +26, Ref +20, Von +12, redução de corte, frio e perfuração 10
+Pontos de Vida 625
+Deslocamento 12m (8q)
+Corpo a Corpo Mordida +37 (6d10+31) e cauda +37 (6d6+26).
+Agarrar Aprimorado (Livre) Mordida (teste +42).
+Cauda Avassaladora (Livre) Quando acerta um ataque de cauda, o rei-tirano esqueleto, arremessa a vítima 1d8 x 1,5m em uma direção à escolha dele (Fort CD 35 evita). A vítima fica caída e, se atingir algum obstáculo, sofre 1d8 pontos de dano de impacto para cada 1,5m que foi arremessada.
+Engolir (Padrão) No início de cada um dos turnos do rei-tirano, a criatura engolida sofre 6d6+16 pontos de dano de corte mais 6d6+16 pontos de dano de trevas. Ela pode escapar causando um total de 50 pontos de dano a ele (Defesa 15) ou, se for Minúscula, gastando uma ação de movimento. A criatura engolida não fica cega nem tem cobertura contra efeitos do lado de fora (e vice-versa).
+Monte de Ossos Quando sofre um acerto crítico, o rei-tirano se desfaz em uma pilha de ossos. Ele fica caído e vulnerável, falha automaticamente em testes de Reflexos e precisa gastar uma ação de movimento para se remontar e encerrar estes efeitos.
+Visão Baseada em Movimento O rei-tirano sofre –10 em testes de Percepção para encontrar criaturas que não estejam se movendo (em termos de jogo, criaturas que tenham feito apenas ações mentais em seu turno anterior).
+For 10, Des 0, Con 4, Int —, Sab –1, Car –4
+Tesouro Dentes do rei-tirano (CD 27 para extrair, valem T$ 1.500 para fabricar armas superiores).`
+        },
+        {
+          chave: "fantasma", nome: "Fantasma", nd: "7", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Fantasma",
+          resumo: "Fantasma — A garota tem a mesma aparência de sua descrição, mas translúcida e embaçada, com uma aura luminosa ao redor.",
+          texto:
+`Fantasma ND 7
+Morto-vivo Médio
+Iniciativa +10, Percepção +9, visão no escuro
+Defesa 29, Fort +7, Ref +14, Von +20, incorpóreo
+Pontos de Vida 190
+Deslocamento voo 12m (8q)
+Corpo a Corpo Toque drenante +23 (6d8+20 trevas).
+Assustar (Livre) O fantasma se revela subitamente, saindo de um esconderijo ou de dentro de um objeto, como um armário ou parede. Ele só pode usar esta habilidade se estiver escondido, e apenas uma vez por cena. Cada criatura em alcance curto capaz de ver o fantasma fica abalada (Von CD 24 evita). Se falhar no teste de Vontade por 5 ou mais, a criatura fica apavorada e, se falhar por 10 ou mais, também envelhece 2d4 anos. Medo.
+Drenar Vida Uma criatura atingida pelo toque drenante do fantasma tem seus PV máximos reduzidos em 10 por 1 dia, cumulativamente (Fort CD 24 evita). Caso os PV máximos da criatura sejam reduzidos a 0 desta forma, ela fica inconsciente até que eles sejam restabelecidos.
+Memento Um fantasma reduzido a 0 PV desaparece e ressurge 1d4 dias depois. Para derrotá-lo permanentemente é necessário confrontá-lo com aquilo que ainda o prende a este mundo. Quando isso acontece, o fantasma pode ser destruído normalmente.
+For —, Des 3, Con 0, Int 1, Sab 2, Car 4
+Perícias Furtividade +15, Intimidação +13.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "fantasmaAncestral", nome: "Fantasma Ancestral", nd: "14", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Fantasma",
+          resumo: "Fantasma — A garota tem a mesma aparência de sua descrição, mas translúcida e embaçada, com uma aura luminosa ao redor.",
+          texto:
+`Fantasma Ancestral ND 14
+Morto-vivo Médio
+Iniciativa +18, Percepção +15, visão no escuro
+Defesa 40, Fort +12, Ref +18, Von +23, incorpóreo
+Pontos de Vida 410
+Deslocamento voo 15m (10q)
+Corpo a Corpo Toque drenante x2 +33 (6d8+41 trevas).
+Assustar (Livre) O fantasma ancestral se revela subitamente, saindo de um esconderijo ou de dentro de um objeto, como um armário ou parede. Ele só pode usar esta habilidade se estiver escondido, e apenas uma vez por cena. Cada criatura em alcance curto capaz de ver o fantasma fica abalada (Von CD 33 evita). Se falhar no teste de Vontade por 5 ou mais, a criatura fica apavorada e, se falhar por 10 ou mais, também envelhece 2d4 anos. Medo.
+Drenar Vida Uma criatura atingida pelo toque drenante do fantasma tem seus PV máximos reduzidos em 20 por 1 dia, cumulativamente (Fort CD 33 evita). Caso os PV máximos da criatura sejam reduzidos a 0 desta forma, ela fica inconsciente até que eles sejam restabelecidos.
+Face Sombria da Morte Criaturas imunes a dano de trevas sofrem metade do dano de trevas do fantasma, e mortos-vivos não recuperam pontos de vida com esse dano.
+Lamento dos Mortos (Reação) Quando os pontos de vida do fantasma são reduzidos a 205 ou menos, ele passa a emitir uma violenta aura de energia negativa com 9m de raio. Cada criatura que comece seu turno nesta área sofre 20d6 pontos de dano de trevas e fica debilitada e esmorecida (Von CD 38 reduz para fraca e frustrada).
+Memento Um fantasma reduzido a 0 PV desaparece e ressurge 1d4 dias depois. Para derrotá-lo permanentemente é necessário confrontá-lo com aquilo que ainda o prende a este mundo. Quando isso acontece, o fantasma perde sua habilidade Face Sombria da Morte e pode ser destruído normalmente.
+For —, Des 5, Con 0, Int 1, Sab 2, Car 6
+Perícias Furtividade +22, Intimidação +19.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "garraZumbi", nome: "Garra-Zumbi", nd: "1/4", tipo: "Morto-vivo Minúsculo",
+          papel: '',
+          subgrupo: "Garra-Zumbi",
+          resumo: "Garra-Zumbi — Você se aproxima para descobrir que o achado parece ser parte de um cadáver enterrado, apenas a mão direita apodrecida assomando fora da terra.",
+          texto:
+`Garra-Zumbi ND 1/4
+Morto-vivo Minúsculo
+Iniciativa +4, Percepção +1, percepção às cegas
+Defesa 10, Fort +0, Ref +2, Von –1, imunidade a efeitos de sentidos
+Pontos de Vida 5
+Deslocamento 6m (4q), voo 9m (6q)
+Corpo a Corpo Pancada +7 (1d6+5).
+Agarrar Aprimorado (Livre) Pancada (criatura Média ou menor, teste +12).
+Estrangular (Livre) No início de cada um de seus turnos, a garra-zumbi causa 2d6+2 pontos de dano de impacto na criatura que estiver agarrando. Uma criatura agarrada desta forma não pode falar.
+For 1, Des 2, Con 1, Int —, Sab –1, Car —
+Perícias Furtividade +11.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "garraZumbiOgro", nome: "Garra-Zumbi Ogro", nd: "2", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Garra-Zumbi",
+          resumo: "Garra-Zumbi — Você se aproxima para descobrir que o achado parece ser parte de um cadáver enterrado, apenas a mão direita apodrecida assomando fora da terra.",
+          texto:
+`Garra-Zumbi Ogro ND 2
+Morto-vivo Médio
+Iniciativa +4, Percepção –3, percepção às cegas
+Defesa 16, Fort +0, Ref +2, Von –3, imunidade a efeitos de sentidos
+Pontos de Vida 35
+Deslocamento 9m (6q), voo 12m (8q)
+Corpo a Corpo Pancada +14 (2d6+10).
+Agarrar Aprimorado (Livre) Pancada (criatura Grande ou menor, teste +19).
+Forte Demais... (Livre) No início de cada um de seus turnos, a garra-zumbi ogro causa 4d6+10 pontos de dano de impacto na criatura que estiver agarrando. Uma criatura agarrada desta forma não pode falar.
+…Para Morrer de Novo! Todo dano de corte, impacto e perfuração que a garra-zumbi sofre é reduzido à metade.
+For 5, Des 1, Con 3, Int —, Sab –3, Car —
+Tesouro Nenhum.`
+        },
+        {
+          chave: "garraZumbiEnxame", nome: "Garra-Zumbi Enxame", nd: "3", tipo: "Morto-vivo Grande",
+          papel: '',
+          subgrupo: "Garra-Zumbi",
+          resumo: "Garra-Zumbi — Você se aproxima para descobrir que o achado parece ser parte de um cadáver enterrado, apenas a mão direita apodrecida assomando fora da terra.",
+          texto:
+`Garra-Zumbi Enxame ND 3
+Morto-vivo Grande
+Iniciativa +6, Percepção +1, percepção às cegas
+Defesa 19, Fort +9, Ref +14, Von +4, imunidade a efeitos de sentidos
+Pontos de Vida 40
+Deslocamento 6m (4q), voo 9m (6q)
+Enxame 6d6 pontos de dano de impacto (ou 8d6 contra criaturas agarradas).
+Maré Estranguladora (Livre) No fim do seu turno, o enxame faz uma manobra agarrar contra todas as criaturas em seu espaço (teste +16). Enquanto estiver agarrada dessa forma, uma criatura fica caída e não pode falar.
+For 3, Des 4, Con 3, Int —, Sab –3, Car —
+Tesouro Nenhum.`
+        },
+        {
+          chave: "garraZumbiGigante", nome: "Garra-Zumbi Gigante", nd: "5", tipo: "Morto-vivo Grande",
+          papel: '',
+          subgrupo: "Garra-Zumbi",
+          resumo: "Garra-Zumbi — Você se aproxima para descobrir que o achado parece ser parte de um cadáver enterrado, apenas a mão direita apodrecida assomando fora da terra.",
+          texto:
+`Garra-Zumbi Gigante ND 5
+Morto-vivo Grande
+Iniciativa +4, Percepção –3, percepção às cegas
+Defesa 25, Fort +17, Ref +11, Von +5, imunidade a efeitos de sentidos
+Pontos de Vida 200
+Deslocamento 9m (6q), voo 12m (8q)
+Corpo a Corpo Pancada +17 (2d8+18).
+Agarrar Aprimorado (Livre) Pancada (criatura Enorme ou menor, teste +24).
+Estrangular (Livre) No início de cada um de seus turnos, a garra-zumbi gigante causa 4d8+12 pontos de dano de impacto na criatura que estiver agarrando. Uma criatura agarrada desta forma não pode falar.
+Mestre de Manobras A garra-zumbi recebe +5 em testes de manobras (já contabilizado).
+For 8, Des 0, Con 5, Int —, Sab –3, Car —
+Tesouro Nenhum.`
+        },
+        {
+          chave: "livido", nome: "Lívido", nd: "3", tipo: "Morto-vivo Médio",
+          papel: '',
+          resumo: "A criatura cadavérica lembra os carniçais que vocês enfrentaram tempos atrás.",
+          texto:
+`Lívido ND 3
+“Emboscada? Não vem com essa merda, são zumbis sem mente! Não fazem planos!”
+— Karrk, trog caçador
+A criatura cadavérica lembra os carniçais que vocês enfrentaram tempos atrás. A mesma pele esticada sobre ossos protuberantes, a mesma bocarra com dentes longos, numerosos e inumanos. Ainda assim, em vez de simplesmente atacar, ele parece estar apenas estudando vocês… O lívido é um tipo de carniçal avançado, mais poderoso e muito mais sagaz. Não se sabe exatamente como ele surge: talvez seja apenas um carniçal mais experiente, ou então alguém que cometeu crimes ainda mais terríveis em vida. Seja como for, diferente de seus primos mais fracos, um lívido não se deixa guiar simplesmente pela fome; é capaz de elaborar planos e atacar alvos com a guarda baixa, como quando estão distraídos ou adormecidos. Por ser capaz de falar, pode também tentar atrair curiosos com falsas promessas ou pedidos de ajuda. Exceto pela astúcia em seu olhar, um lívido não pode ser visualmente diferenciado de um carniçal comum. Quando uma criatura viva se aproxima demais, contudo, a diferença se torna clara: o lívido emana um odor intenso, nauseante, de podridão e corrupção. Um fedor ainda mais pungente e venenoso que o gás dos trogs. Alguns imaginam que o lívido comanda carniçais, mas isso não é totalmente verdadeiro; exceto por meios necromânticos, carniçais não podem ser controlados. Ainda assim, um lívido pode manipular bandos de carniçais com iscas e truques, fazendo-os rumar para onde deseja, ou atacar quem ele deseja. Misturar-se a carniçais para apanhar aventureiros desprevenidos é sua estratégia favorita, usando seu odor para deixar as vítimas mais vulneráveis.
+Morto-vivo Médio
+Iniciativa +3, Percepção +4, faro, visão no escuro
+Defesa 19, Fort +3, Ref +9, Von +15, vulnerabilidade a luz
+Pontos de Vida 70
+Deslocamento 9m (6q)
+Corpo a Corpo Mordida +12 (1d6+6 mais doença) e duas garras +12 (1d4+3).
+Doença Uma criatura mordida por um lívido é exposta à doença febre do carniçal (veja a página 359).
+Odor Pungente Criaturas que comecem seus turnos em alcance curto do lívido ficam enjoadas por 1 rodada e perdem 1d6 PV (Fort CD 20 evita). Veneno.
+Paralisia Uma criatura atingida pela mordida do lívido fica paralisada por 1d4 rodadas (Fort CD 20 evita e a criatura não pode mais ser paralisada por esta habilidade até o fim da cena).
+Trapaceiro do Além (Padrão) O lívido arremessa uma isca putrefata que contamina uma criatura em alcance médio (Ref CD 20 evita). Até o fim da cena, todos os mortos-vivos recebem +1d6 em suas rolagens de dano contra a criatura contaminada e seus ataques contra ela causam sangramento. Recarga (movimento).
+For 2, Des 3, Con 0, Int 1, Sab 1, Car 0
+Perícias Enganação +8, Furtividade +8.
+Tesouro 1d4-1 doses de isca putrefata (CD 18 para extrair).`
+        },
+        {
+          chave: "mortalha", nome: "Mortalha", nd: "11", tipo: "Morto-vivo Médio",
+          papel: '',
+          resumo: "Vocês são recebidos por uma figura sinistra, envolta em uma aura espectral, coberta da cabeça aos pés com um manto de escuridão esvoaçante.",
+          texto:
+`Mortalha ND 11
+“Vamos, chegue mais perto! Tenho certeza de que posso curar sua maldição.”
+— Merthy, anã clériga de Tenebra
+Vocês são recebidos por uma figura sinistra, envolta em uma aura espectral, coberta da cabeça aos pés com um manto de escuridão esvoaçante. Seu único traço visível são os olhos, faiscando nas trevas com um brilho escarlate. Estas criaturas provam que, contrariando as convicções de muitos devotos, Tenebra não é exatamente uma deusa bondosa. Mortalhas são como aparições, mas ainda mais poderosas e intensas, feitas de puro ódio e treva concentrados. Assassinas cruéis de tudo que respira, mortalhas podem liderar bandos de aparições, perseguindo especialmente os vivos que protegem a vida e a luz, como devotos de Azgher, Lena e outros. Assim como as aparições, mortalhas são seres incorpóreos, formados a partir de rancor e escuridão. Desprezam todos os seres vivos e também a luz que os conforta. Diz-se que mortalhas são sombras que pertenciam a pessoas poderosas. Ressentem-se dos vivos por seus tempos de cativeiro, vivendo escravizadas sob seus pés, forçadas a imitá-los, ao mesmo tempo se esquivando da maldita luz. Mortalhas são inteligentes e podem falar, embora raramente o façam, exceto para amaldiçoar os vivos. Preferem se manter de tocaia na escuridão, atacando furtivamente quando é mais oportuno — diferente de outros mortos-vivos, suas emboscadas são inteligentes e calculadas. Em combate, usam seu toque mortal para enfraquecer os oponentes, concentrando-se em um único alvo de cada vez. Qualquer humanoide morto por uma mortalha retorna como uma aparição sob seu controle. Destruir a mortalha original é a única forma de libertar a alma prisioneira, possibilitando sua viagem para os reinos dos deuses, ou sua ressurreição.
+Morto-vivo Médio
+Iniciativa +19, Percepção +13, visão no escuro
+Defesa 38, Fort +11, Ref +24, Von +18, incorpóreo
+Pontos de Vida 475
+Deslocamento voo 18m (12q)
+Corpo a Corpo Toque drenante 2x +34 (3d10+24 trevas).
+Cria Tumular Uma criatura viva reduzida a 0 PV ou menos pelo toque drenante da mortalha ressurge no início da próxima rodada como uma aparição (veja Tormenta20, p. 298) e não pode mais ser revivida. Quando a mortalha é destruída, as aparições que ela criou se desfazem e suas almas retornam aos corpos originais (caso ainda estejam vivos), que despertam com 1 PV.
+Drenar Vitalidade Uma criatura viva atingida pelo toque drenante da mortalha deve fazer um teste de Fortitude (CD 31). Se falhar, fica fraca e a mortalha recebe 30 PV temporários cumulativos.
+✦ Maldição Mortuária (Padrão) A mortalha profere uma maldição mortuária contra uma criatura em alcance médio (Fort CD 31 evita).
+Fraqueza Solar Enquanto estiver exposta à luz solar natural, a mortalha fica debilitada.
+For —, Des 8, Con 0, Int 3, Sab 2, Car 3
+Perícias Furtividade +22.
+Tesouro Manto da mortalha (CD 26 para extrair, vale T$ 6.000 e 1 PM para fabricar um item com os encantos fantasmagórico ou tumular).`
+        },
+        {
+          chave: "mumia", nome: "Múmia", nd: "5", tipo: "Morto-vivo Médio",
+          papel: '',
+          resumo: "A criatura parece um cadáver ressequido, envolto em bandagens cerimoniais.",
+          texto:
+`Múmia ND 5
+“Eu avisei para não tocar em nada! Especialmente o sarcófago!”
+— Aurora de Tanna-Toh, humana clériga
+A criatura parece um cadáver ressequido, envolto em bandagens cerimoniais. Avança de forma pesada, como que suportando o peso das eras, cambaleando de mãos estendidas, enquanto murmura lamentos raivosos sobre a perturbação de seu sono eterno. Múmias são cadáveres especialmente embalsamados, preparados para resistir à passagem dos séculos e garantir à alma uma viagem tranquila aos reinos dos deuses. Essa prática é comum entre povos do Deserto da Perdição, mas também existia entre os elfos de Lenórienn, os gigantes das Lannestull e diversos outros povos. Infelizmente, algum tipo de maldição às vezes impede que o espírito deixe este mundo, resultando em um tipo de morto-vivo poderoso. Múmias habitam catacumbas enormes ou grandes complexos de templos, mantendo vigília eterna como guardiãs e protetoras de tumbas, tesouros e segredos de reis, nobres, sacerdotes e tudo aquilo enterrado com eles — de animais de estimação a itens mágicos poderosos. Não são poucos os restos de pretensos saqueadores em lugares protegidos por uma ou mais múmias. Embora algumas múmias usem armas, as mais perigosas são aquelas que lutam de mãos vazias, pois seu toque pútrido transmite uma doença perigosa. Múmias sabem falar, mas raramente tentam alertar ou se comunicar com intrusos, atacando sem piedade. São impiedosas e implacáveis, nunca recuando, mesmo ao confrontar clérigos capazes de expulsar outros mortos-vivos. Há histórias de múmias que chegam a perseguir aqueles que invadiram suas tumbas por longas distâncias, não descansando até a destruição dos profanadores, ou sua própria.
+Morto-vivo Médio
+Iniciativa +3, Percepção +8, visão no escuro
+Defesa 22, Fort +11, Ref +5, Von +17, redução de dano 5, vulnerabilidade a fogo
+Pontos de Vida 192
+Deslocamento 6m (4q)
+Corpo a Corpo Duas pancadas +17 (2d10+10 mais doença).
+Desespero Uma criatura que comece seu turno vendo uma múmia fica apavorada (Von CD 20 evita e a criatura não pode mais ser apavorada por esta habilidade até o fim da cena).
+Doença Uma criatura atingida por uma pancada da múmia é exposta à doença podridão da múmia.
+For 3, Des 1, Con 2, Int 0, Sab 3, Car 2
+Perícias Furtividade +10.
+Tesouro Padrão.`
+        },
+        {
+          chave: "senhorDasMumias", nome: "Senhor das Múmias", nd: "15", tipo: "Morto-vivo Médio",
+          papel: '',
+          resumo: "Aquele que lidera as múmias também lembra um cadáver seco e coberto de bandagens, mas de postura claramente orgulhosa, trajando um manto…",
+          texto:
+`Senhor das Múmias ND 15
+“Serei clemente com sua descortesia. Receberá apenas seis chicotadas.”
+— Setesh Raiah, múmia nobre de Aslothia
+Aquele que lidera as múmias também lembra um cadáver seco e coberto de bandagens, mas de postura claramente orgulhosa, trajando um manto soberbo e portando joias impressionantes. Também empunha um cetro mágico faiscante de grande poder. Indivíduos poderosos que tenham sido embalsamados às vezes se erguem como algo ainda mais perigoso que “simples” múmias. Em vida, senhores das múmias eram arcanistas ou clérigos de renome, que ainda preservam sua inteligência e capacidades de conjuração. Senhores das múmias costumam ser encontrados em grandes templos, complexos funerários, necrópoles ocultas e — dizem — como membros da nobreza de Aslothia. Estabelecem seu covil junto a sarcófagos, tronos, tesouros e até mesmo mausoléus de seus familiares. Alguns foram escolhidos pelos deuses para proteger lugares sagrados, enquanto outros estão sendo simplesmente punidos por crimes cometidos em vida, proibidos de adentrar os reinos dos deuses. Há aqueles que receberam punição ainda mais severa, trancados em seus sarcófagos pela eternidade (isto é, até que algum aventureiro incauto venha libertá-los). Senhores das múmias às vezes usam magia ilusória para recuperar a antiga aparência, circulando secretamente entre os vivos. Em combate, empregam as mesmas armas e magias que dominavam em vida, somadas à resistência extrema dos mortos-vivos antigos.
+Morto-vivo Médio
+Iniciativa +14, Percepção +20, visão no escuro
+Defesa 48, Fort +22, Ref +15, Von +28, redução de dano 10, resistência a efeitos divinos +5
+Pontos de Vida 532
+Deslocamento 9m (6q)
+Pontos de Mana 95
+Corpo a Corpo Ankh solar +41 (1d6+25, 19) e pancada +41 (3d10+25 mais doença).
+Desespero Superior Uma criatura que comece seu turno vendo uma múmia fica apavorada (Von CD 42 evita e a criatura não pode mais ser apavorada por esta habilidade até o fim da cena).
+Doença Uma criatura atingida por uma pancada do senhor das múmias é exposta à doença podridão da múmia. A força da maldição do senhor das múmias faz com que a CD para resistir a essa doença seja 42.
+Maldição da Múmia Uma criatura que falhe em um teste de resistência contra uma magia do senhor das múmias não pode recuperar pontos de vida por 1 rodada.
+Magias Como um clérigo de 15º nível (CD 42).
+• Disfarce Ilusório (Padrão, 3 PM) Até o fim da cena, o senhor das múmias muda a própria aparência, incluindo seu equipamento, e ainda os odores e as sensações que transmite. Isso afeta altura, peso, tom de pele, cor de cabelo, timbre de voz etc. Ele recebe +20 em testes de Enganação para disfarce (Von desacredita).
+• Enxame de Pestes (Completa, 15 PM, sustentada) Dois enxames de gafanhotos de fogo surgem em alcance médio e ocupam um quadrado de 1,5m cada. No fim de cada um dos turnos do senhor das múmias, cada enxame causa 5d12 pontos de dano de fogo a qualquer criatura em seu espaço (Ref reduz à metade). O senhor das múmias pode gastar uma ação de movimento para mover cada enxame 12m.
+• Infligir Ferimentos (Padrão, 10 PM) Como parte da execução da magia, o senhor das múmias faz um ataque corpo a corpo. Se acertar, além do dano normal, causa 5d8+5 pontos de dano de trevas e deixa o alvo fraco até o fim da cena.
+• Perdição (Padrão, 7 PM) Criaturas escolhidas em alcance curto sofrem –4 em testes de ataque e rolagens de dano até o fim da cena.
+• Poeira da Podridão (Padrão, 14 PM) Criaturas em uma nuvem de 6m de raio em alcance médio começam a definhar e apodrecer. Quando a magia é lançada, e no início de seus turnos até o fim da cena, criaturas na área sofrem 6d8+24 pontos de dano de trevas e não podem recuperar PV por uma rodada (Fort reduz à metade e evita a restrição de cura).
+For 4, Des 2, Con 3, Int 2, Sab 5, Car 7
+Perícias Diplomacia +22, Enganação +20, Furtividade +15, Intuição +18.
+Equipamento Ankh solar harmonizado, símbolo sagrado, traje de seda banhado a ouro. Tesouro Padrão.`
+        },
+        {
+          chave: "necrodracoEsqueleto", nome: "Necrodraco Esqueleto", nd: "12", tipo: "Morto-vivo Enorme",
+          papel: '',
+          subgrupo: "Necrodraco",
+          resumo: "Necrodraco — O monstro só poderia ser descrito como o gigantesco cadáver de um dragão — exceto que ele se move!",
+          texto:
+`Necrodraco Esqueleto ND 12
+Morto-vivo Enorme
+Iniciativa +13, Percepção +18, percepção às cegas, visão no escuro
+Defesa 44, Fort +24, Ref +11, Von +18, imunidade a atordoado, metamorfose e paralisia, redução de corte, frio e perfuração 10, redução de dano 10/luz
+Pontos de Vida 610
+Deslocamento 12m (8q), voo 24m (16q)
+Corpo a Corpo Mordida +36 (4d10+30, 18) e duas garras +36 (3d10+30, 18).
+Sopro (Padrão) Criaturas em um cone de 15m sofrem 12d12 pontos de dano de trevas e não podem recuperar pontos de vida por 1 rodada (Ref CD 34 reduz à metade e evita a restrição de cura). Recarga (movimento).
+Varrer (Livre) Uma vez por rodada, quando o necrodraco esqueleto faz um ataque corpo a corpo e reduz os pontos de vida do alvo a 0 ou menos, pode realizar um ataque adicional contra outra criatura dentro do seu alcance.
+For 10, Des 1, Con 8, Int 5, Sab 6, Car 0
+Perícias Atletismo +20.
+Tesouro Padrão e 1d6 doses de terra de cemitério (CD 27 para extrair).`
+        },
+        {
+          chave: "necrodracoZumbi", nome: "Necrodraco Zumbi", nd: "14", tipo: "Morto-vivo Enorme",
+          papel: '',
+          subgrupo: "Necrodraco",
+          resumo: "Necrodraco — O monstro só poderia ser descrito como o gigantesco cadáver de um dragão — exceto que ele se move!",
+          texto:
+`Necrodraco Zumbi ND 14
+Morto-vivo Enorme
+Iniciativa +14, Percepção +19, percepção às cegas, visão no escuro
+Defesa 47, Fort +28, Ref +13, Von +22, imunidade a atordoado, metamorfose e paralisia, redução de dano 15/luz
+Pontos de Vida 720
+Deslocamento 12m (8q), voo 24m (16q)
+Corpo a Corpo Mordida +36 (4d12+35, 17) e duas garras +36 (3d12+35, 17).
+Aura de Podridão Uma criatura que comece seu turno em um raio de 30m do necrodraco zumbi é exposta à doença calafrio diabólico (veja Tormenta20, p. 318). Devido à virulência do necrodraco, a CD para resistir a essa doença é 38.
+Sopro (Padrão) Cada criatura em um cone de 15m sofre 15d12 pontos de dano de trevas e fica debilitada e esmorecida (Ref CD 38 reduz à metade e diminui para fraca e frustrada). Recarga (movimento).
+Varrer (Livre) Uma vez por rodada, quando o necrodraco faz um ataque corpo a corpo e reduz os pontos de vida do alvo a 0 ou menos, pode realizar um ataque adicional contra outra criatura dentro do seu alcance.
+Fraqueza Zumbi O necrodraco sofre o dobro de dano de acertos críticos ou de ataques feitos contra seu cérebro (Defesa 57).
+For 12, Des 1, Con 9, Int 6, Sab 6, Car 0
+Perícias Atletismo +23.
+Tesouro Padrão e 2d4 doses de terra de cemitério (CD 29 para extrair).`
+        },
+        {
+          chave: "necrodracoLich", nome: "Necrodraco Lich", nd: "20", tipo: "Morto-vivo (dragão) Colossal",
+          papel: '',
+          subgrupo: "Necrodraco",
+          resumo: "Necrodraco — O monstro só poderia ser descrito como o gigantesco cadáver de um dragão — exceto que ele se move!",
+          texto:
+`Necrodraco Lich ND 20
+Morto-vivo (dragão) Colossal
+Iniciativa +16, Percepção +20, percepção às cegas (médio), visão no escuro
+Defesa 63, Fort +34, Ref +24, Von +30, imunidade a atordoado, metamorfose e paralisia, redução de dano 20/luz, resistência a magia +5, vulnerabilidade a luz
+Pontos de Vida 1.400
+Deslocamento 12m (8q), voo 36m (24q)
+Pontos de Mana 133
+Corpo a Corpo Mordida +55 (4d20+50, 16, mais 1d20 trevas) e duas garras +50 (4d20+50, 16, mais 1d20 trevas).
+Aura Aterradora Vontade CD 53 evita.
+Couro Necromântico O couro do necrodraco reduz todo dano de corte, impacto e perfuração que ele sofre à metade. Se ele passar num teste de resistência contra uma magia que o tenha como alvo, ela é revertida contra o conjurador.
+Filactério Caso o necrodraco seja morto, ele retorna completamente recuperado em 1d10 dias. A única forma de derrotá-lo permanentemente é destruir seu filactério (veja a página 292).
+Fluxo de Mana O necrodraco pode manter dois efeitos sustentados simultaneamente com apenas uma ação livre (mas pagando o custo de cada um).
+Magia Acelerada (livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, o necrodraco muda a execução dela para livre.
+Sopro Tenebroso (Padrão) Todas as criaturas em um cone de 18m sofrem 20d12 pontos de dano de trevas e, por 1 rodada, não podem recuperar pontos de vida de nenhuma forma (Fort CD 53 reduz à metade e evita a restrição de cura). O necrodraco recupera PV igual à metade do dano do sopro. Recarga (movimento).
+Varrer (Livre) Uma vez por rodada, quando o necrodraco faz um ataque corpo a corpo e reduz os pontos de vida do alvo a 0 ou menos, pode realizar um ataque adicional contra outra criatura dentro do seu alcance.
+Magias Como um conjurador arcano de 20º nível (CD 53, limite de PM 25).
+• Campo de Força (Reação, 11 PM) Quando sofre dano, o necrodraco recebe redução de dano 70 contra esse dano.
+• Controlar o Tempo (Padrão, 15 PM) O necrodraco controla o tempo ao seu redor (veja Tormenta20, p. 187).
+• Dissipar Magia (Padrão, 3 PM) O necrodraco escolhe uma criatura, objeto ou esfera de 3m em alcance médio e faz um teste de Misticismo. Todas as magias nesse alvo com CD igual ou menor que o resultado do teste são dissipadas.
+• Enfeitiçar (Padrão, 1 PM) Um humanoide em alcance curto fica enfeitiçado (Von evita).
+• Tentáculos de Trevas (Padrão, 18 PM) Até o fim da cena, tentáculos surgem em uma esfera de 12m em alcance médio. Ao lançar a magia e no início de cada um de seus turnos, o necrodraco faz um teste da manobra agarrar (usando Misticismo) contra cada criatura na área. Se ele passar, a criatura é agarrada; se a vítima já está agarrada, é esmagada, sofrendo 12d6 pontos de dano de trevas. A área conta como terreno difícil. Os tentáculos são imunes a dano.
+• Toque da Morte (Padrão, 25 PM) Inimigos em alcance curto sofrem 10d8+18 pontos de dano de trevas. Um inimigo com menos da metade de seus PV em vez disso deve fazer um teste de Fortitude. Se passar, sofre o dano normal. Se falhar, seus PV são reduzidos a –10.
+• Toque Vampírico (Padrão, 19 PM) O necrodraco faz um ataque corpo a corpo. Se acertar, além do dano normal, causa 20d6 pontos de dano de trevas e recupera pontos de vida em valor igual à metade desse dano de trevas.
+• Velocidade (Padrão, 10 PM, sustentada) O necrodraco pode executar uma ação padrão adicional por turno.
+For 12, Des 0, Con 8, Int 12, Sab 4, Car 5
+Perícias Conhecimento +28, Cura +20, Enganação +21, Intimidação +21, Intuição +20, Misticismo +28, Ofício (alquimista) +28, Religião +20.
+Tesouro Dobro e fragmento de filactério.`
+        },
+        {
+          chave: "tarsoDragaoReiDosMortos", nome: "Tarso, Dragão-Rei dos Mortos", nd: "S+", tipo: "Morto-vivo (dragão) Colossal",
+          papel: '',
+          resumo: "A criatura conhecida apenas como Tarso não é ninguém menos que o Dragão-Rei dos Mortos.",
+          texto:
+`Tarso, Dragão-Rei dos Mortos ND S+
+“Você não sabe quem é o Tarsinho de verdade?”
+— Nielendorane de Lenórienn, elfa barda
+A criatura conhecida apenas como Tarso não é ninguém menos que o Dragão-Rei dos Mortos. Não apenas o mais poderoso dos Dragões-Reais, mas possivelmente o ser mais poderoso de Arton, exceto pelos próprios deuses. Muitos fatos sobre a origem de Tarso permanecem misteriosos, até mesmo para Vladislav Tpish, que por algum tempo teve o dracolich como “servo”. A julgar pelas inscrições encontradas em seu local de descanso quando foi despertado pelo necromante, Tarso já existia durante a Era de Megalokk, quando dragões e monstros dominavam o mundo. Ele seria, na ocasião, um dragão das trevas. Tarso era provavelmente tão maligno quanto os outros representantes de sua espécie, talvez o maior flagelo na pré-história de Arton. É possível ter sido ele a arrancar as asas do atual Dragão-Rei das Trevas, ainda em tempos imemoriais. Estudiosos também lhe atribuem a própria invenção do ritual capaz de transformar um mago em morto-vivo, gerando assim um lich. Outros dizem ainda que ele teria sido na verdade transformado por um dos deuses maiores — provavelmente Tenebra. De qualquer forma, quase todos concordam que deve ter sido o primeiro dragão-lich do mundo. O que levou Tarso a abandonar sua antiga vilania para adotar a forma de um pequeno e simpático esqueleto quando circula entre os mortais? Os registros em seu templo dizem apenas que ele estaria aborrecido com a época de monstros em que vivia. É possível que tanto poder e selvageria o tenham cansado. Talvez Tarso quisesse viver em um mundo como a Arton atual. Um mundo de coisas para ver, pessoas a conhecer, sorvetes e brinquedos a experimentar! “Se ele é tão forte, por que não destrói os vilões de Arton?”, alguém logo se apressará em perguntar. Tarso não é exatamente um benfeitor. Ele se comporta mais como um observador, um andarilho curioso, reagindo apenas quando incomodado (e pouca coisa consegue incomodá-lo), realizando pequenos favores para aqueles por quem ocasionalmente se afeiçoa. O Dragão-Rei dos Mortos pode dominar Arton no momento em que desejar! Sumo-sacerdotes, Dragões-Reais, talvez até mesmo Lordes da Tormenta… nenhum deles seria adversário. Talvez seja justamente a razão de sua postura tão passiva, segura e sossegada. Tarso pode conquistar (ou destruir) o mundo quando quiser. Até se tornar um deus maior. Mas ele não quer. Simples assim.
+Morto-vivo (dragão) Colossal
+Iniciativa +23, Percepção +25, percepção às cegas (longo), visão no escuro
+Defesa 70, Fort +38, Ref +25, Von +33, imunidade a medo, redução de dano 30/luz, resistência a magia +10, vulnerabilidade a luz
+Pontos de Vida 3.800
+Deslocamento 24m (16q), voo 45m (30q)
+Corpo a Corpo Mordida +65 (5d20+50, 16, mais 1d20 trevas) e duas garras +65 (5d20+50, 16, mais 1d20 trevas).
+Arcano de Batalha Tarso soma sua Inteligência nas rolagens de dano quando lança magias (já contabilizado).
+Aura Aterradora Vontade CD 55 evita (se falhar por 10 ou mais, a criatura morre automaticamente). A aura afeta apenas criaturas escolhidas. Medo.
+Conjuração Cadavérica Uma criatura que falhe na resistência contra uma das magias de Tarso sofre 2d20 pontos de dano de trevas e fica enjoada.
+Couro Necromântico O dano de fontes mundanas que Tarso sofre é reduzido à metade. Se ele passar num teste de resistência contra uma magia que o tem como alvo, ela é revertida contra o conjurador.
+Dilacerar Se Tarso acertar dois ataques de garra em uma mesma criatura no mesmo turno, causa mais 5d20+50 pontos de dano.
+Filactério Caso Tarso seja morto, ele retorna completamente recuperado em 1d10 dias. A única forma de derrotá-lo permanentemente é destruir seu filactério (veja a p. 292).
+Fluxo de Mana Tarso pode manter dois efeitos sustentados simultaneamente com apenas uma ação livre (mas pagando o custo de cada um).
+Metamorfose Dracônica (Completa) Tarso costuma assumir a forma de um pequeno esqueleto de aparência amigável.
+Necromante Ancestral Tarso lança qualquer magia, arcana ou divina, como um conjurador arcano de 20º nível sem gastar PM (CD 55, 57 para necromancia, limite 38 PM). Uma vez por rodada, ele pode lançar uma dessas magias como ação livre.
+Sopro Tenebroso (Padrão) Criaturas em um cone de 30m sofrem 30d12 pontos de dano de ácido, frio ou trevas, à escolha de Tarso, e, por 1 rodada, não podem recuperar PV de nenhuma forma (Fort CD 55 reduz o dano à metade e evita a restrição de cura). Tarso recupera PV igual à metade do dano total do sopro. Recarga (movimento).
+Protegido Indefeso Tarso pode escolher até uma criatura como seu protegido por vez. Ele sempre sabe a localização e condição exatas do protegido, e pode usar a magia Teletransporte para a localização dele como uma ação livre, sem necessidade de teste de Misticismo.
+Trevas Profundas Todo dano de trevas causado por Tarso ignora redução de dano e, contra criaturas imunes a trevas, ainda causa metade do dano.
+Varrer (Livre) Uma vez por rodada, quando Tarso faz um ataque corpo a corpo e reduz os PV do alvo a 0 ou menos, pode realizar um ataque adicional contra outra criatura dentro do seu alcance.
+For 15, Des 5, Con 10, Int 18, Sab 7, Car 8
+Perícias Conhecimento +36, Cura +25, Diplomacia +26, Enganação +26, Intimidação +26, Intuição +25, Misticismo +36, Nobreza +36, Ofício (alquimista) +36, Religião +25.
+Tesouro Padrão, fragmento de filactério e um sorvete.`
+        },
+      ],
+      regras: [
+        { titulo: "Carniçal",
+          texto:
+`“Vou reerguer seus parentes mortos para a luta que salvará sua cidade.”
+— Lothor Aranlië, elfo mago necromante
+Parece haver um sobrevivente em meio aos cadáveres, mas… algo está errado. Ele os está comendo! Podem ver agora se tratar de um humanoide repulsivo, muito magro, os ossos salientes sob a pele seca e apodrecida. Não tem cabelo ou pelos, mas a boca apresenta dentes proeminentes, afiados e ameaçadores. Carniçais são como zumbis, mas ainda mais agressivos. Surgem em cemitérios, campos de batalha, áreas de antigos desastres — enfim, lugares onde existem cadáveres, de que se alimentam. Consomem animais, mas preferem humanoides inteligentes. Dizem que carniçais surgem com a morte de alguém que praticou o canibalismo. Outros acreditam que a gula em excesso leva a seu aparecimento. De qualquer forma, quando não encontram cadáveres para consumir — ou quando interrompidos durante a refeição — carniçais avançam sobre quaisquer criaturas vivas à vista. Carniçais são mais rápidos e ágeis que zumbis, avançando aos saltos, buscando paralisar a vítima com sua mordida terrível. Mesmo quem sobrevive pode contrair a terrível febre do carniçal, que não apenas mata, mas faz a vítima se reerguer como um destes monstros. Existe também uma forma aquática de carniçal, o lacedon, que ronda naufrágios e masmorras inundadas.` },
+        { titulo: "Esqueleto",
+          texto:
+`“Pois que tragam mais progresso ao mundo na morte do que fizeram em vida.”
+— Dokubek, arcanista humano
+Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso. Não há alívio quando a figura se revela como a ossada agourenta de um elefante imenso, semienterrada no chão congelado. Quando examinam de perto, no entanto, a coisa começa a se mover… O esqueleto humano (ou elfo, ou anão…) está entre os mortos-vivos mais enfrentados por aventureiros, aquele mais frequentemente encontrado vagando em masmorras, ruínas, castelos e cemitérios malditos. São também eles que atuam como soldados nas tropas de Aslothia e como servos para conjuradores variados. Convém lembrar, no entanto, que qualquer humanoide, animal ou monstro vertebrado tem esqueleto. Estes também podem ser animados, resultando em criaturas muito maiores e mais perigosas. Como o esqueleto comum, estes também podem surgir naturalmente em lugares malditos, ou intencionalmente por ação de necromantes.` },
+        { titulo: "Fantasma",
+          texto:
+`“Meu dever é proteger a vida. Mas aquilo é oposto à vida, é a antivida! Lena, o que fazer?”
+— Lori Sepulcri, dahllan clériga de Lena
+A garota tem a mesma aparência de sua descrição, mas translúcida e embaçada, com uma aura luminosa ao redor. Ela mostra, também, um ferimento profundo no peito — do tipo que nenhuma pessoa poderia suportar e continuar viva. Fantasmas estão entre os mortos-vivos mais comuns e temidos. Restos sobrenaturais de seres inteligentes que, por alguma razão, não conseguiram encontrar o descanso eterno após a morte — por isso seguem assombrando o mundo dos vivos. Em muitos casos, isso acontece quando alguém morre com “assuntos inacabados”, presos a um desejo poderoso de concluir suas obras ou missões. Em outros, por grande apego a algo ou alguém, como uma fortuna obtida com grande sacrifício ou um amor conquistado a muito custo. Outros, ainda, são seres por algum motivo proibidos de realizar a jornada para os reinos dos deuses, porque as próprias divindades assim ordenaram. Fantasmas costumam assombrar o local onde morreram, ou seu antigo lar, ou outros lugares que tenham sido importantes em sua vida. Há relatos de fantasmas que acompanham gerações inteiras de uma mesma família. Alguns apenas rondam sem mente, murmurando coisas desconexas, enquanto outros guardam inteligência e as lembranças perfeitas de quando viviam. Há aqueles que repetem antigos hábitos e rituais sem descanso, indiferentes a tudo em volta, enquanto outros apenas aguardam de tocaia para aterrorizar vítimas. Ainda, enquanto a maioria dos fantasmas é amargurada e odeia os vivos, há aqueles que protegem famílias ou entes queridos, como espíritos guardiões. Quando escolhem ser hostis, contudo, fantasmas são terríveis — são a própria manifestação do medo, capazes de apavorar unicamente com sua aparência e urros. Com um susto apenas, podem deixar sequelas permanentes como cabelos brancos ou tiques nervosos, ou até roubar anos de vida! Muitos fantasmas não podem ser destruídos por meios normais; quando derrotados, apenas ressurgem algumas noites mais tarde. Livrar-se deles em definitivo envolve solucionar algum mistério a respeito daquilo que os prende neste mundo. Investigar esses assuntos, contudo, tende a enfurecer o fantasma ainda mais.` },
+        { titulo: "Mementos Fantasmagóricos",
+          texto:
+`Cada fantasma tem uma ligação ou um assunto inacabado que o prende ao mundo material. Essa conexão é representada por um memento, um objeto ou lugar diretamente relacionado ao vínculo do fantasma com o mundo dos vivos. Isso pode ser qualquer coisa, desde a aliança de alguém que morreu após trair seu grande amor até o estandarte de um cavaleiro que caiu em uma batalha desesperada. O memento de alguém executado por um crime que não cometeu pode ser o próprio cenário de sua execução. Cada fantasma tem um memento, tão único quanto a tragédia que o gerou. O mestre é livre para criar o memento de cada fantasma. Um bom memento possui uma relação clara com a história da criatura e, ao mesmo tempo, é um mistério que precisa ser desvendado pelos personagens. Investigar e descobrir um memento é uma parte importante, e divertida, das histórias de fantasmas.` },
+        { titulo: "Garra-Zumbi",
+          texto:
+`“Garras-zumbi! Eu ACHO que estudei isso. (Matava muita aula de necromancia…)”
+— Paladina de Khalmyr
+Você se aproxima para descobrir que o achado parece ser parte de um cadáver enterrado, apenas a mão direita apodrecida assomando fora da terra. Um pouco grande demais para um humano, talvez pertença a um orc ou ogro. Contudo, enquanto esses pensamentos o ocupam, a mão subitamente salta e agarra sua garganta. Uma garra-zumbi é uma mão decepada e animada por magia necromântica. Pode correr pelo chão como uma aranha, mas também voar livremente por curtos períodos. Por sua natureza incomum, garras-zumbi não ocorrem espontaneamente; são sempre fabricadas ou invocadas por conjuradores. Exercem as mesmas funções destinadas a esqueletos e zumbis, como guardiões em seus laboratórios e santuários — mas conseguem fazê-lo de formas mais furtivas, ocultas em armários, gavetas, recipientes, sob móveis e em outros esconderijos. Por vezes são mantidas disfarçadas em frascos de vidro, como amostras inofensivas de algum estudo anatômico. Garras-zumbi atacam com socos ou estrangulando a vítima. Quando em maior número, algumas tentam agarrar e imobilizar o alvo, enquanto outras golpeiam ou atacam a garganta para sufocar. Garras sob controle direto de conjuradores podem tentar táticas ainda mais elaboradas, como derrubar mobília sobre a vítima, cobrir seus olhos para cegá-la, tapar sua boca para impedir conjurações, puxar tapetes sob seus pés ou ativar armadilhas próximas. Também podem empunhar armas, caso estas estejam disponíveis. Embora aquelas de tamanho humano sejam mais comuns, garras-zumbi podem existir em tamanhos bem maiores, até feitas com mãos de gigantes!` },
+        { titulo: "Necrodraco",
+          texto:
+`“Veja bem, matar um dragão não significa necessariamente o fim de todos os problemas.”
+— Vladislav Tpish, reitor da Academia Arcana
+O monstro só poderia ser descrito como o gigantesco cadáver de um dragão — exceto que ele se move! Mais que isso, voa inacreditável nos céus, mesmo sem restar qualquer couro nas asas. Apesar da distância, vocês podem ver luzes intensas e gélidas nas órbitas vazias do crânio. E de algum modo, sabem que a criatura olha diretamente para vocês. Humanoides não são os únicos seres com almas que podem morrer e acabar impedidos de viajar aos reinos dos deuses; o mesmo pode acontecer com dragões. O resultado de tal evento é a criatura conhecida como necrodraco, ou dragão morto-vivo. A transformação em morto-vivo, no entanto, mudará um dragão por completo; grande parte de suas habilidades, especialmente o sopro e imunidades elementais, só poderiam existir em criaturas vivas. De modo geral, tornam-se mais fracos. Independente de seu tipo quando vivo, todo necrodraco passa a expelir um sopro de energia negativa. Ainda podem voar, mesmo aqueles com asas esqueléticas, agora por meios mágicos. Quase todos os necrodracos surgiram enquanto Kallyadranoch estava ausente do Panteão — nesse período não havia sequer um reino divino para recebê-los. Ainda preservando grande parte da inteligência, alguns perseguiram os aventureiros responsáveis por suas mortes, buscando vingança ou a destruição final. Outros ainda aguardam para ser descobertos em esconderijos remotos. Há quem acredite que eles nem existem mais. Pode ser verdade. Ou não. Necrodracos podem ser esqueletos, zumbis ou liches — sendo estes últimos os mais poderosos, também conhecidos como dracoliches. De fato, exceto pelos próprios deuses, o ser mais poderoso de Arton nos dias de hoje talvez seja Tarso, Dragão-Rei dos Mortos.` },
+      ],
+    },
+
+    // ── 🦕 MUNDO PERDIDO ───────────────────────────────
+    {
+      chave: "perdido", nome: "Mundo Perdido", icone: "🦕", cor: "#5a8a2f",
+      intro: "A maior ilha de Arton é mais extensa que qualquer nação. É quase um continente, quase um mundo próprio. Ainda que próxima à costa artoniana, hoje mais ativamente navegada que no passado, Galrasia se mantém selvagem, primitiva, domínio absoluto das feras. Suas florestas chuvosas de árvores impossíveis e treva absoluta são território de caça para os letais povos-trovão, os sanguinários lagartos-terror e uma infinidade de animais e plantas famintos por presas. Ainda assim, esta terra indomada é um magneto para aventureiros à caça de monstros exóticos ou tesouros antigos em suas ruínas misteriosas. Tudo é maior, mais feroz, mais vivo. Sua emanação mágica de energia positiva não apenas preservou bestas do passado, como também fez crescer animais modernos, criou versões atrozes muito mais perigosas. Ao olhar estrangeiro, pode parecer apenas território de monstros disformes, como as Sanguinárias — um domínio de Megalokk. Mas, para verdadeiros devotos de Allihanna, a diferença é clara: o Grande Ciclo se encontra preservado, a luta pela sobrevivência segue eterna. Aqui é onde a deusa reina suprema, onde podemos ver seu lado mais feroz, soberano e inclemente. Galrasia é onde a natureza não pode ser desafiada. Diferente do que ocorre em outros nichos, é muito raro encontrar fauna nativa de Galrasia em outras regiões de Arton — exceto animais capturados e levados dali. Muitas de suas feras acabariam populares como bestas de guerra, montarias exóticas ou adversários para gladiadores em arenas. Entre estas, houve casos de criaturas fugitivas que acabariam por se multiplicar e espalhar, como os gorloggs, resultando em novas ameaças aos reinos.",
+      fichas: [
+        {
+          chave: "arvoreMatilha", nome: "Árvore-Matilha", nd: "13", tipo: "Construto Enorme",
+          papel: '',
+          resumo: "O horror tem o aspecto de uma árvore macabra, mas com inúmeras cabeças lupinas encimando pescoços longos e musculosos, cada uma…",
+          texto:
+`Árvore-Matilha ND 13
+“Mas isso… isso é algum tipo de… hidra de madeira??”
+— Barossa Arareber, estudiosa de hidras
+O horror tem o aspecto de uma árvore macabra, mas com inúmeras cabeças lupinas encimando pescoços longos e musculosos, cada uma arreganhando mandíbulas salivantes de seiva. Rosnam e uivam como cães do inferno, fazendo gelar o sangue. Uma das mais horrendas criaturas arbóreas existentes, a árvore-matilha se parece com um imenso e monstruoso tronco retorcido que rasteja sobre patas disformes. Em vez de galhos, exibe numerosas cabeças sem olhos e com mandíbulas de lobo. Histórias antigas dizem que este e outros seres-planta (como o galhada e o espada-da-floresta, vistos mais adiante) não seriam obra de Allihanna, mas um experimento do lendário Galron — o druida louco supostamente responsável pelo próprio surgimento de Galrasia. Existindo em uma variedade de formas e tamanhos, podem ser encontrados protegendo ruínas antigas do povo mítico eiradaan, nas partes mais profundas da selva.
+Construto Enorme
+Iniciativa +7, Percepção +15, faro, visão no escuro
+Defesa 44, Fort +26, Ref +20, Von +13, imunidade a efeitos de sentidos, natureza vegetal, redução de dano 10, resistência a magia +5, vulnerabilidade a fogo
+Pontos de Vida 700
+Deslocamento 12m (8q)
+Corpo a Corpo Seis mordidas +37 (2d6+20).
+Descarregar Raiva (Reação) Uma vez por rodada, se os PV da árvore-matilha forem reduzidos abaixo de um valor múltiplo de 100 (600, 500 etc.), ela libera sua raiva atacando tudo ao seu redor. Ela faz um ataque de mordida e compara o resultado com a Defesa de cada criatura ao seu alcance. Mesmo que erre uma criatura, ainda assim ela causa metade do dano a ela.
+Uivo Aterrador (Padrão) Criaturas em alcance médio ficam apavoradas (Von CD 35 reduz para abalado e a criatura não pode ser apavorada por esta habilidade nesta cena).
+For 9, Des 1, Con 3, Int —, Sab 0, Car –2
+Perícias Furtividade +6 (+16 em florestas).
+Tesouro Padrão.`
+        },
+        {
+          chave: "burafonte", nome: "Burafonte", nd: "4", tipo: "Animal Enorme",
+          papel: '',
+          subgrupo: "Burafonte",
+          resumo: "Burafonte — O animal reptiliano tem as dimensões de um elefante, com o mesmo couro rugoso, mas decorado com listras verdes e lilases.",
+          texto:
+`Burafonte ND 4
+Animal Enorme
+Iniciativa +3, Percepção +4, faro, visão na penumbra
+Defesa 25, Fort +18, Ref +8, Von +4
+Pontos de Vida 120
+Deslocamento 9m (6q)
+Corpo a Corpo Cauda +13 (1d10+12, x3).
+Cauda Espinhosa Quando faz um acerto crítico em uma criatura com sua cauda, o burafonte deixa a vítima sangrando.
+For 8, Des 1, Con 4, Int –4, Sab –2, Car –1
+Tesouro Protuberâncias ósseas (CD 19 para extrair, valem T$ 100 para fabricar armas corpo a corpo superiores).`
+        },
+        {
+          chave: "armentoDeBurafontes", nome: "Armento de Burafontes", nd: "8", tipo: "Animal Colossal",
+          papel: '',
+          subgrupo: "Burafonte",
+          resumo: "Burafonte — O animal reptiliano tem as dimensões de um elefante, com o mesmo couro rugoso, mas decorado com listras verdes e lilases.",
+          texto:
+`Armento de Burafontes ND 8
+Animal Colossal
+Iniciativa +5, Percepção +6, faro, visão na penumbra
+Defesa 35, Fort +21, Ref +15, Von +8
+Pontos de Vida 310
+Deslocamento 9m (6q)
+Corpo a Corpo [Bando] Cauda +26 (2d10+24, x3).
+Cauda Espinhosa Quando faz um acerto crítico em uma criatura com sua cauda, o armento de burafontes deixa a vítima sangrando.
+Postura Protetora (Movimento) O armento forma um círculo para proteger seus filhotes, mantendo suas caudas voltadas para fora. Enquanto essa postura estiver ativa, o armento não pode se deslocar, mas pode golpear todas as criaturas ao seu redor. Ele faz um único ataque de cauda e compara o resultado com a Defesa de cada criatura ao seu alcance.
+For 8, Des 1, Con 4, Int –4, Sab –2, Car –1
+Tesouro 2d4 protuberâncias ósseas (CD 23 para extrair, cada protuberância vale T$ 100 para fabricar armas corpo a corpo superiores).`
+        },
+        {
+          chave: "deinonico", nome: "Deinonico", nd: "4", tipo: "Animal Médio",
+          papel: '',
+          subgrupo: "Deinonico",
+          resumo: "Deinonico — O animal é um lagarto bípede do tamanho de um cavalo, coberto de plumagem muito colorida, como um pássaro tropical.",
+          texto:
+`Deinonico ND 4
+Animal Médio
+Iniciativa +7, Percepção +6, faro, visão na penumbra
+Defesa 23, Fort +16, Ref +10, Von +5
+Pontos de Vida 140
+Deslocamento 15m (10q)
+Corpo a Corpo Mordida +16 (2d4+4) e duas garras +16 (1d6+8, 18).
+Investida Terrível (Completa) O deinonico faz uma investida e ataca com sua mordida e suas garras. Os três ataques recebem o bônus de +2 da investida, mas devem ser feitos contra o mesmo alvo, e os dois ataques de garra recebem +2 na margem de ameaça e no multiplicador de crítico.
+For 4, Des 3, Con 3, Int –4, Sab 2, Car 0
+Perícias Atletismo +7 (+12 para saltar).
+Tesouro Duas garras terríveis (CD 19 para extrair, cada garra vale T$ 100 para fabricar uma arma de corte superior leve ou de uma mão).
+Parceiro O deinonico é um parceiro montaria (Média) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e sua margem de ameaça com armas corpo a corpo aumenta em +1. Veterano: você recebe +5 em testes de Atletismo para saltar e uma ação de movimento adicional por turno (apenas para se deslocar). Mestre: seu deslocamento muda para 15m e o bônus na margem de ameaça aumenta para +2.`
+        },
+        {
+          chave: "bandoDeDeinonicos", nome: "Bando de Deinonicos", nd: "8", tipo: "Animal Enorme",
+          papel: '',
+          subgrupo: "Deinonico",
+          resumo: "Deinonico — O animal é um lagarto bípede do tamanho de um cavalo, coberto de plumagem muito colorida, como um pássaro tropical.",
+          texto:
+`Bando de Deinonicos ND 8
+Animal Enorme
+Iniciativa +9, Percepção +8, faro, visão na penumbra
+Defesa 23, Fort +18, Ref +12, Von +7
+Pontos de Vida 700
+Deslocamento 15m (10q)
+Corpo a Corpo [Bando] Mordida +26 (4d4+8) e duas garras +26 (2d6+8, 18).
+Caçada Primal (Completa) Os deinonicos avançam correndo e saltando, e atacam todas as criaturas em seu caminho. O bando percorre até o dobro de seu deslocamento; ele pode passar por espaços ocupados por criaturas Médias ou menores, mas não pode passar duas vezes pelo mesmo espaço. Ao final do movimento ele faz dois ataques com garras e compara o resultado de cada ataque com a Defesa de todas as criaturas nos espaços por onde passou, causando dano normal de garras em cada acerto. Os deinonicos não podem utilizar esta habilidade se estiverem flanqueados. Recarga (movimento).
+For 4, Des 3, Con 4, Int –4, Sab 2, Car 0
+Tesouro Garras terríveis x2d4 (CD 23 para extrair, cada garra vale T$ 100 para fabricar uma arma de corte superior leve ou de uma mão).`
+        },
+        {
+          chave: "espadaDaFloresta", nome: "Espada-da-Floresta", nd: "3", tipo: "Construto Médio",
+          papel: '',
+          resumo: "O que parecia ser um homem esguio armado com uma espada, ao chegar mais perto, revela-se como algo bem diferente.",
+          texto:
+`Espada-da-Floresta ND 3
+“Obra de Arsenal, digo que sim. Duvida? Ele porta uma espada, não vê?”
+— Walden Nefertari, qareen clérigo de Arsenal
+O que parecia ser um homem esguio armado com uma espada, ao chegar mais perto, revela-se como algo bem diferente. É um humanoide feito de vinhas e musgo, com uma grade de madeira no lugar do rosto. Mas de fato empunha uma espada, feita de madeira dura e cheia de espinhos ao longo da lâmina. Diferente de outros seres selvagens, o espada-da-floresta é um guerreiro exímio, muito hábil no uso de sua arma. São encontrados sozinhos ou em pequenos grupos familiares, que se reproduzem de forma peculiar: na época da postura, nascem frutos em várias partes do corpo. Quando maduros, os frutos são enterrados em um canteiro — de onde brotam pequenos embriões, que crescem e se desenvolvem como plantas normais. Ao atingir a maturidade, os jovens se destacam do solo e ganham a mobilidade dos adultos. Os frutos de uma espada-mãe, dizem, têm propriedades mágicas. Esses frutos, assim como a própria espada, são itens cobiçados no Reinado.
+Construto Médio
+Iniciativa +8, Percepção +7, visão no escuro
+Defesa 22, Fort +8, Ref +11, Von +8, natureza vegetal, vulnerabilidade a fogo
+Pontos de Vida 108
+Deslocamento 9m (6q)
+Corpo a Corpo Espada espinhenta +14 (1d12+15 corte, 19).
+Adaptado ao Ambiente Quando em florestas, o espada-da-floresta recebe camuflagem leve contra ataques à distância e ignora terreno difícil natural.
+Dínamo Vegetal Quando sofre dano de eletricidade, em vez disso o espada-da-floresta cura PV em quantidade igual a metade do dano que seria causado.
+Riposte Natural (Reação) Uma vez por rodada, quando é alvo de um ataque corpo a corpo, o espada-da-floresta pode fazer um teste de ataque e subtrair seu resultado do dano causado pelo ataque.
+For 6, Des 3, Con 4, Int –2, Sab 2, Car 0
+Perícias Furtividade +4 (+9 em florestas).
+Tesouro Espada espinhenta (CD 18 para extrair) e 50% de chance de 1d4 frutos da espada-mãe (CD 18 para extrair).`
+        },
+        {
+          chave: "galhadaMacho", nome: "Galhada Macho", nd: "2", tipo: "Construto Grande",
+          papel: '',
+          subgrupo: "Galhada",
+          resumo: "Galhada — À primeira vista, o animal parece um cervo comum, com a característica galhada emaranhada.",
+          texto:
+`Galhada Macho ND 2
+Construto Grande
+Iniciativa +4, Percepção +7, visão no escuro
+Defesa 19, Fort +4, Ref +11, Von +7, natureza vegetal, redução de dano 2, resistência a magia +2, vulnerabilidade a fogo
+Pontos de Vida 17
+Deslocamento 12m (8q)
+Corpo a Corpo Chifres +12 (1d6+7) e cascos +12 (1d6+7).
+Galhada de Allihanna Os chifres do galhada macho são abençoados por Allihanna; eles são armas mágicas que causam o dobro de dano contra mortos-vivos.
+For 2, Des 3, Con 1, Int –4, Sab 1, Car 0
+Tesouro Galhada abençoada (CD 17 para extrair, vale T$ 50 para fabricar um dedo de ente ou uma arma de perfuração superior).
+Parceiro O galhada macho é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe +2 em Sobrevivência. Veterano: seus ataques corpo a corpo são considerados mágicos e, uma vez por turno, você recebe +1d8 em uma rolagem de dano corpo a corpo (esse bônus é dobrado contra mortos-vivos). Mestre: o bônus em rolagens de dano muda para +1d10 e você recebe uma ação de movimento extra por turno (apenas para se deslocar).`
+        },
+        {
+          chave: "galhadaFemea", nome: "Galhada Fêmea", nd: "2", tipo: "Construto Grande",
+          papel: '',
+          subgrupo: "Galhada",
+          resumo: "Galhada — À primeira vista, o animal parece um cervo comum, com a característica galhada emaranhada.",
+          texto:
+`Galhada Fêmea ND 2
+Construto Grande
+Iniciativa +4, Percepção +7, visão no escuro
+Defesa 19, Fort +4, Ref +11, Von +7, natureza vegetal, redução de dano 2, resistência a magia +2, vulnerabilidade a fogo
+Pontos de Vida 17
+Deslocamento 12m (8q)
+Corpo a Corpo Cascos +14 (2d6+10).
+For 2, Des 3, Con 1, Int –4, Sab 1, Car 0
+Tesouro 1d4 doses de seiva-galhada (CD 17 para extrair, cada dose conta como um bálsamo restaurador). Como alternativa, se a galhada tiver uma atitude indiferente ou melhor, um personagem pode usar uma ação completa para fazer um teste de Adestramento (CD 16) com ela. Se passar, consegue extrair a seiva de forma amistosa. A galhada produz seiva apenas uma vez por dia.
+Parceiro A galhada fêmea é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você pode gastar uma ação padrão e 1 PM para curar 1d8+1 PV. Veterano: você também pode gastar uma ação padrão e 3 PM para curar 3d8+3 PV ou remover uma condição de doença, fadiga, paralisia ou veneno que o esteja afetando. Mestre: você recebe uma ação de movimento extra por turno (apenas para se deslocar) e pode também gastar uma ação padrão e 5 PM para curar 6d8+6 PV.`
+        },
+        {
+          chave: "galiGali", nome: "Gali-Gali", nd: "1/4", tipo: "Animal Minúsculo",
+          papel: '',
+          subgrupo: "Gali-Gali",
+          resumo: "Gali-Gali — O pequeno animal tem o tamanho de um ganso, com patas traseiras, minúsculos membros dianteiros e uma cauda longa, fina.",
+          texto:
+`Gali-Gali ND 1/4
+Animal Minúsculo
+Iniciativa +3, Percepção +3, faro, visão na penumbra
+Defesa 11, Fort +0, Ref +2, Von –1
+Pontos de Vida 4
+Deslocamento 9m (6q), escalada 6m (4q)
+Corpo a Corpo Mordida +7 (1d4+4).
+For 0, Des 1, Con 0, Int –4, Sab 1, Car –2
+Tesouro Nenhum.`
+        },
+        {
+          chave: "enxameDeGaliGali", nome: "Enxame de Gali-Gali", nd: "1", tipo: "Animal Médio",
+          papel: '',
+          subgrupo: "Gali-Gali",
+          resumo: "Gali-Gali — O pequeno animal tem o tamanho de um ganso, com patas traseiras, minúsculos membros dianteiros e uma cauda longa, fina.",
+          texto:
+`Enxame de Gali-Gali ND 1
+Animal Médio
+Iniciativa +3, Percepção +3, faro, visão na penumbra
+Defesa 15, Fort +5, Ref +11, Von +0
+Pontos de Vida 30
+Deslocamento 12m (8q), escalada 6m (4q)
+Enxame 4d4+6 pontos de dano de corte.
+Grudar nas Costas Quando uma criatura sai do espaço do enxame, alguns gali-gali ficam presos em suas costas. A criatura continua sofrendo metade do dano de Enxame até gastar uma ação de movimento para se livrar deles.
+For 1, Des 1, Con 0, Int –4, Sab 1, Car –2
+Tesouro Nenhum.`
+        },
+        {
+          chave: "grandeBattham", nome: "Grande Battham", nd: "12", tipo: "Animal Colossal",
+          papel: '',
+          resumo: "O animal é maior que a maioria dos castelos, com um pescoço alongado e muscular, capaz de alcançar as mais altas muralhas de Tapista.",
+          texto:
+`Grande Battham ND 12
+“Não, não ataquem. É inofensivo. Mas evitem ser pisados, vai doer.”
+— Achuak, trog druida
+O animal é maior que a maioria dos castelos, com um pescoço alongado e muscular, capaz de alcançar as mais altas muralhas de Tapista. Cada movimento, cada pequeno passo, causa um estrondo que faz o chão tremer. Ainda assim, parece pacato e tranquilo enquanto mastiga folhagens, confiante de que seu tamanho deve desencorajar qualquer inimigo. Também chamado de “lagarto-tentáculo” por piratas, ou “seismossauro” no meio acadêmico, o grande battham pertence a um vasto grupo de lagartos-trovão — aqueles tão imensos que seus pescoços de serpente se elevam no horizonte e seus passos ressoam por longas distâncias. Estão entre os maiores animais naturais de Arton. O grande battham é quadrúpede, mas com patas dianteiras mais robustas que as traseiras. O pescoço muito longo e flexível pode elevar a cabeça, proporcionalmente diminuta, até as folhagens das árvores mais altas. Não tem escamas ou carapaça, mas uma pele rugosa e muito grossa. Tem conjuntos de barbatanas coloridas, lembrando pequenas asas, na cabeça e em alguns pontos do pescoço. O próprio tamanho é sua melhor defesa. Pode pisotear quase qualquer coisa, e quase qualquer coisa morre quando pisoteada. Contra adversários mais ágeis, usa a cauda fina para golpear como um chicote. Apesar disso tudo, é um herbívoro pacífico, com o temperamento de uma vaca comum. Nunca ataca com mordidas. O grande battham anda em bandos, embora alguns possam ser encontrados sozinhos — especialmente os maiores, poderosos o bastante para se afastar sem temor. Manadas destes animais costumam ser uma das visões mais impressionantes nas planícies de Galrasia, e também uma das coisas mais destrutivas. Embora quase nada consiga assustá-los, o ataque de um grande carnívoro ou outro tipo de ameaça pode provocar um estouro de manada. Quando isso acontece, pouca coisa sobrevive ao estrago…
+Animal Colossal
+Iniciativa +9, Percepção +17, faro, visão na penumbra
+Defesa 38, Fort +26, Ref +20, Von +12, imunidade a manobras de combate
+Pontos de Vida 800
+Deslocamento 12m (8q)
+Corpo a Corpo Cauda +36 (3d6+45, alcance médio) ou pisão +36 (4d12+45).
+Quase Titânico Quando se move, o battham pisoteia qualquer criatura ou estrutura Grande ou menor em seu caminho, causando 12d6 pontos de dano de impacto (uma vez por rodada por criatura, Ref CD 33 reduz à metade). Além disso, seus ataques atingem todas as criaturas em um quadrado de 3m (para cada ataque, ele faz um único teste de ataque e compara o resultado com a Defesa de cada inimigo na área).
+For 15, Des –1, Con 10, Int –5, Sab 2, Car –1
+Tesouro Fígado de lagarto-trovão (CD 27 para extrair).`
+        },
+        {
+          chave: "raagoran", nome: "Raagoran", nd: "8", tipo: "Animal Grande",
+          papel: '',
+          resumo: "A besta volumosa parece meio réptil, meio mamífero — tem o corpo robusto e as patas poderosas de um urso, mas é coberto de escamas rochosas…",
+          texto:
+`Raagoran ND 8
+“Tenho certeza de que consigo fazer uma ótima armadura com aquele couro.”
+— Birna Binarimm, anã inventora
+A besta volumosa parece meio réptil, meio mamífero — tem o corpo robusto e as patas poderosas de um urso, mas é coberto de escamas rochosas e sua cabeça é sauroide. A cauda lembra a de um crocodilo, mas mais curta. Uma fileira de placas triangulares desce da cabeça à cauda. Também chamado “geossauro”, este animal parece ter certo parentesco com o gorlogg, embora seja maior. É encontrado em Galrasia, mas espécies aparentadas também existem nas Sanguinárias, assim como em outras florestas e montanhas remotas. Caça pequenos animais, em bandos de dois a cinco indivíduos, mas pode ser agressivo com inimigos maiores. A armadura do raagoran é muito resistente. O animal passa boa parte do tempo imerso em lamaçais com propriedades especiais; quando seca, a lama se transforma em uma carapaça fortíssima. Os caçadores dizem que, se você puder mergulhar o bicho em água ou apenas molhá-lo o bastante, a lama derrete, tornando-o mais vulnerável.
+Animal Grande
+Iniciativa +7, Percepção +9, faro, visão na penumbra
+Defesa 33, Fort +21, Ref +15, Von +8, redução de dano 10
+Pontos de Vida 320
+Deslocamento 9m (6q)
+Corpo a Corpo Duas garras +26 (2d8+18, 19) e mordida +26 (2d6+12, x3).
+Agarrar Aprimorado (Livre) Mordida (teste +28).
+Dilacerar Se o raagoran acerta os dois ataques de garra em uma mesma criatura no mesmo turno, causa mais 2d8+12 pontos de dano.
+Engolir (Padrão) No início de cada um dos turnos do raagoran, a criatura engolida sofre 2d10+8 pontos de dano de impacto mais 2d10+8 pontos de dano de ácido. Ela pode escapar causando um total de 20 pontos de dano a ele (Defesa 10, redução de dano 0).
+Carapaça de Lodo Se o raagoran passar pelo menos 1 rodada completamente imerso em água (ou coberto por uma quantidade equivalente de água) sua carapaça de lodo se desfaz e ele perde sua redução de dano.
+For 5, Des 0, Con 4, Int –4, Sab 0, Car –3
+Tesouro Nenhum.`
+        },
+        {
+          chave: "tuntram", nome: "Tuntram", nd: "10", tipo: "Animal Enorme",
+          papel: '',
+          resumo: "Grande e pesado como um elefante, o animal tem a cabeçorra guarnecida por um escudo de osso com cores vivas, e um conjunto de chifres…",
+          texto:
+`Tuntram ND 10
+“Deuses, eu imploro, faço qualquer coisa, mas PRECISO dessa montaria!”
+— Keegan de Trebuck, lefou cavaleiro
+Grande e pesado como um elefante, o animal tem a cabeçorra guarnecida por um escudo de osso com cores vivas, e um conjunto de chifres longos como lanças de justa, muito provavelmente com a mesma função. O tuntram é apenas um entre vários lagartos-trovão equipados com cabeças poderosas, armadas e blindadas. O formato do escudo ósseo é variado, bem como o número de chifres; alguns possuem apenas um, outros chegam a sete ou mais. De qualquer forma, todos são herbívoros e adotam a mesma tática de luta: se perturbados, arremetem contra o alvo para chifrar ou atropelar. Entre todos os lagartos-trovão de chifres, o tuntram deve ser o mais irritadiço e violento; quando não há inimigos, estes animais se entregam a duelos de cabeçadas entre membros do próprio bando, produzindo estrondos audíveis ao longe. O perdedor acaba temporariamente banido, perambulando sozinho até ser aceito de volta. Esta costuma ser uma oportunidade para predadores ou caçadores que buscam abatê-lo. Assim como outras feras exóticas de Galrasia, já houve intenções passadas de trazer o tuntram (e seus parentes mais dóceis) até Arton, para criação como gado ou bestas de guerra. Após uma série de incidentes desastrosos, contudo, quase todas as tentativas foram abandonadas, restando poucos casos em que o animal foi domado com sucesso. Dizem ser uma montaria muito cobiçada por cavaleiros, devido à proteção oferecida por seu escudo.
+Animal Enorme
+Iniciativa +9, Percepção +12, faro, visão na penumbra
+Defesa 36, Fort +24, Ref +9, Von +15, redução de dano 5
+Pontos de Vida 450
+Deslocamento 9m (6q)
+Corpo a Corpo Chifres +30 (3d12+33, x3).
+Amontoar (Completa) O tuntram se move em linha reta até o dobro do seu deslocamento, passando por qualquer criatura Grande ou menor. Criaturas em seu caminho sofrem 9d6+12 pontos de dano de perfuração, são empurradas até o fim do deslocamento do tuntram e ficam caídas na frente dele (Ref CD 30 reduz à metade e evita o empurrão, mas não a condição caído). Recarga (movimento).
+Investida Pesada Quando faz uma investida, o tuntram recebe +4 no teste de ataque (para um total de +6) e causa +6d6 pontos de dano.
+For 9, Des 0, Con 8, Int –4, Sab 2, Car –2
+Tesouro Folho de tuntram (CD 25 para extrair, vale T$ 1.000 para fabricar armaduras e escudos superiores).
+Parceiro O tuntram é um parceiro montaria (Enorme) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 9m e você recebe +2 em testes de ataque para derrubar e empurrar. Veterano: você recebe cobertura leve contra ataques à distância e uma ação de movimento extra (apenas para se deslocar). Mestre: você recebe +2 em testes de ataque para atropelar e, quando faz essa manobra, seu oponente não tem a opção de sair do caminho (mas ele ainda pode resistir com um teste oposto). Quando atropela uma criatura com essa manobra, você pode gastar 1 PM para fazer um ataque extra contra ela.`
+        },
+        {
+          chave: "reiTirano", nome: "Rei-Tirano", nd: "14", tipo: "Animal Enorme",
+          papel: '',
+          resumo: "A besta descomunal poderia ser facilmente confundida com algum dragão ou outro monstro mítico.",
+          texto:
+`Rei-Tirano ND 14
+“Besta-fera infernal! Agora conseguiu me enfurecer de verdade! Agora vai morrer!”
+— Berzerk Pigna, humano bárbaro
+A besta descomunal poderia ser facilmente confundida com algum dragão ou outro monstro mítico. Pernas traseiras poderosas como carvalhos erguem o corpanzil, maior que alguns navios, coberto de plumagem esbranquiçada. As patas dianteiras são curtas, mas ainda capazes de desmembrar uma pessoa. Muito mais temível é a cabeçorra escamada, com mandíbulas imensas e presas do tamanho de espadas curtas. Nomeado “tiranossauro” entre acadêmicos de Tapista, está entre os maiores lagartos-terror de Galrasia, e é possivelmente o mais perigoso. Muito ágil e rápido para seu tamanho, atinge altas velocidades mesmo na floresta densa — é inútil para um humano tentar vencê-lo na corrida. Seus sentidos muito aguçados também tornam quase impossível se esconder. Quando alcança a presa, mata-a com a mordida terrível, forte o bastante para despedaçar o crânio de um dragão. O rei-tirano é solitário por natureza, reunindo-se a outros de sua espécie apenas na época do acasalamento. Come quase qualquer coisa, incluindo carniça — pois, ao matar algo como o grande battham, permanece protegendo a carcaça contra pequenos predadores até se fartar. Abater ou capturar o rei-tirano está entre as façanhas mais audaciosas para caçadores de monstros — há patronos dispostos a pagar somas altíssimas por eles. Houve raras ocasiões em que alguns foram levados com sucesso para o Reinado, servindo como grandes atrações em arenas.
+Animal Enorme
+Iniciativa +12, Percepção +12, faro, visão no escuro
+Defesa 46, Fort +28, Ref +22, Von +14, redução de dano 5
+Pontos de Vida 725
+Deslocamento 12m (8q)
+Corpo a Corpo Mordida +40 (6d10+36, x4) e cauda +37 (6d6+31).
+Agarrar Aprimorado (Livre) Mordida (teste +45).
+Cauda Avassaladora (Livre) Quando acerta um ataque de cauda, o rei-tirano arremessa a vítima 1d10 x 1,5m em uma direção à escolha dele (Fort CD 38 evita). A vítima fica caída e, se atingir algum obstáculo, sofre 1d8 pontos de dano de impacto para cada 1,5m que foi arremessada.
+Engolir (Padrão) No início de cada um dos turnos do rei-tirano, a criatura engolida sofre 4d12+20 pontos de dano de impacto mais 4d12+20 pontos de dano de ácido. Ela pode escapar causando um total de 75 pontos de dano a ele (Defesa 20, redução de dano 0).
+Visão Baseada em Movimento O rei-tirano sofre –10 em testes de Percepção para encontrar criaturas que não estejam se movendo (em termos de jogo, criaturas que tenham feito apenas ações mentais em seu turno anterior).
+For 11, Des 1, Con 6, Int –4, Sab 1, Car –2
+Tesouro Dentes do rei-tirano (CD 29 para extrair, valem T$ 1.500 para fabricar armas superiores).`
+        },
+      ],
+      regras: [
+        { titulo: "Burafonte",
+          texto:
+`“São mesmo grandes, mas parecem bastante estúpidos. Podemos passar.”
+— Hyakunen, o Imortal (esmagado)
+O animal reptiliano tem as dimensões de um elefante, com o mesmo couro rugoso, mas decorado com listras verdes e lilases. Nas costas, duas fileiras de grandes chifres brancos que seguem da cabeça à cauda, alguns quase do tamanho de um homem. Tem olhar carrancudo, mal-humorado, muito disposto a lutar. Também chamados “cerossauros”, burafontes são enormes lagartos-trovão herbívoros. Embora os chifres em suas costas sejam ameaçadores, não podem ser usados como armas efetivas; servem apenas para desencorajar o rei-tirano e outros grandes predadores. Burafontes andam em bandos. Quando ameaçados, os adultos formam um círculo com os filhotes no centro e as caudas espinhosas voltadas para fora. Essa formação defensiva é difícil de ser vencida — mas um burafonte solitário é um alvo fácil, pois não consegue golpear com a cauda de forma precisa. Apesar da eterna expressão zangada que muitas vezes engana exploradores novatos, estes animais estão entre os lagartos-trovão mais dóceis de Galrasia, podendo ser facilmente domesticados. Povos-trovão os utilizam como convenientes bestas de carga; os chifres dorsais permitem acomodar fardos mais facilmente em suas costas. De fato, vários destes podem ser vistos em Lysianassa, ajudando a descarregar navios.` },
+        { titulo: "Deinonico",
+          texto:
+`“Sim, são muito perigosos. Para aqueles sem Allihanna no coração.”
+— Lisandra de Allihanna, dahllan sumo-sacerdotisa
+O animal é um lagarto bípede do tamanho de um cavalo, coberto de plumagem muito colorida, como um pássaro tropical. Tem longas patas traseiras, cada pé trazendo uma longa e terrível garra em forma de foice, muito capaz de estripar um ogro. Nos olhos grandes, uma inteligência que não deveria existir em feras. Deinonicos estão entre os predadores mais perigosos de Galrasia. Embora muito menores que o rei-tirano, são mais astutos e caçam em bandos, usando estratégias variadas para enganar e emboscar as presas. Sabem imitar sons variados e também se comunicar, ainda que sua linguagem consiga expressar apenas conceitos simples. Também parecem capazes de perceber armadilhas de forma quase sobrenatural, tornando praticamente impossível capturá-los com vida: até o momento, não há notícias de nenhuma expedição bem-sucedida na empreitada. Em combate, deinonicos são verdadeiras máquinas de matar: saltam sobre a presa para tentar derrubá-la, então a imobilizam com a mordida e as garras dianteiras, enquanto as foices nas patas traseiras causam ferimentos profundos. Dessa forma, muitas vezes um bando consegue abater lagartos-trovão muito maiores. Apesar de sua ferocidade e inteligência, há relatos sobre deinonicos adotados como montarias por alguns aventureiros.` },
+        { titulo: "Galhada",
+          texto:
+`“Preciso daquela cabeça em minha sala de troféus! Como assim, se recusa? Volte aqui!”
+— Graham Randwulf, nobre de Wynlla
+À primeira vista, o animal parece um cervo comum, com a característica galhada emaranhada. Contudo, vocês logo percebem que a criatura não tem olhos, o corpo é feito de matéria vegetal parecida com musgo e seus chifres são de madeira. Criatura que parece uma combinação de animal e vegetal, um galhada tem o aspecto de um grande cervo ou antílope, mas todo feito de matéria vegetal. Comportam-se de forma muito parecida com cervos normais: são dóceis, assustadiços e vivem em rebanhos. Apenas os machos têm chifres; as fêmeas produzem, em vez de leite, uma seiva adocicada com gosto de mel, propriedades curativas e altíssimo preço em Vectora e outras metrópoles. Por tudo isso, estão entre os alvos favoritos dos caçadores. Apesar de arisco, o galhada não parece temer dahllan, druidas e devotos de Allihanna. De fato, dizem que vários aventureiros ligados à deusa recebem estas belas criaturas como montarias leais.` },
+        { titulo: "Gali-Gali",
+          texto:
+`“Eram um enxame de lagartos-galinhas e avançaram sobre ela e ela gritou e só deixaram ossos e…”
+— Ollie das Colinas, hynne caçador
+O pequeno animal tem o tamanho de um ganso, com patas traseiras, minúsculos membros dianteiros e uma cauda longa, fina. Ele olha com curiosidade nos grandes olhos, enquanto outros de sua espécie deixam as folhagens. Muitos outros. Também chamado “composognato”, ou apenas comp, não parece algo que se poderia chamar lagarto-terror. Não excede um metro de comprimento, pesando até seis quilos. Come pequenos lagartos, grandes insetos e carniça. Normalmente não ataca criaturas de tamanho humano, exceto quando acuado, incapaz de fugir ou muito faminto. Contudo, grandes bandos de gali-gali podem ser verdadeiros cardumes de piranhas terrestres, avançando contra presas bem maiores. Embora seja nativo de Galrasia, em tempos recentes este pequeno predador veio como clandestino a bordo de navios exploradores e vem se espalhando pelo continente. Hoje em dia os gali-gali são mascotes populares em navios piratas (até substituindo os tradicionais papagaios na região do Mar Negro) e também uma praga que ameaça aldeias e vilarejos, atacando criações de pequenos animais e até matando crianças no berço. Alguns aventureiros, sobretudo druidas, adotam o gali-gali como companheiro animal.` },
+      ],
+    },
+
+    // ── ☠ PIRATAS & PISTOLEIROS ───────────────────────
+    {
+      chave: "piratas", nome: "Piratas & Pistoleiros", icone: "☠", cor: "#2f5a7a",
+      intro: "É verdade que alguns bucaneiros e atiradores se tornaram grandes heróis de Arton. Também é verdade que bandos inteiros destes fora da lei podem se dedicar a causas do bem. Mas, infelizmente, são exceções — não a regra. Seja pirata dos mares ou durão das planícies, todo aquele que recorre às armas de pólvora está realizando os desejos dos deuses que a criaram e demônios que a fabricam — esteja ou não ciente disso. Há quem acredite que, apenas por seguir este caminho, a alma de um pistoleiro já está condenada. Mas, diante de tais crendices, os bandoleiros de Arton apenas gargalham enquanto disparam para o alto. Um pirata e um pistoleiro se diferenciam apenas pelo território onde atuam — de resto, em termos práticos, são iguais. Enquanto os bandidos comuns preferem vítimas indefesas, piratas e pistoleiros são mais audaciosos, arrogantes, confiando em suas armas e seus líderes. São também mais gananciosos, cobiçando não menos que os maiores tesouros. Não é raro, portanto, que escolham aventureiros como seus alvos preferidos. Enquanto um bandido comum vai se acovardar e fugir ao menor sinal de derrota, piratas e pistoleiros seguem lutando mesmo após vários de seus companheiros tombarem. Para a maioria deles, antes perder a vida que a liberdade.",
+      fichas: [
+        {
+          chave: "afogado", nome: "Afogado", nd: "7", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Afogado",
+          resumo: "Afogado — O ser cadavérico de barriga inchada tem pele esbranquiçada, a carne mordiscada por peixes em vários pontos, coberta de algas e cracas em outros.",
+          texto:
+`Afogado ND 7
+Morto-vivo Médio
+Iniciativa +9, Percepção +6, visão no escuro
+Defesa 29, Fort +19, Ref +14, Von +8, imunidade a atordoado e medo
+Pontos de Vida 60
+Deslocamento 6m (4q), natação 9m (6q)
+Corpo a Corpo Duas pancadas +26 (2d6+18 mais 2d8 ácido).
+Aura de Afogamento No início de cada turno do afogado, cada criatura em um raio de 9m que não seja capaz de respirar na água deve fazer um teste de Fortitude (CD 24, +1 por teste anterior). Se falhar, a criatura se afoga. Uma criatura afogada desta forma fica inconsciente e perde 1d6 pontos de vida por rodada até sair da área.
+For 3, Des 2, Con 3, Int –1, Sab –1, Car –1
+Tesouro Nenhum.`
+        },
+        {
+          chave: "capitaoAfogado", nome: "Capitão Afogado", nd: "10", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Afogado",
+          resumo: "Afogado — O ser cadavérico de barriga inchada tem pele esbranquiçada, a carne mordiscada por peixes em vários pontos, coberta de algas e cracas em outros.",
+          texto:
+`Capitão Afogado ND 10
+Morto-vivo Médio
+Iniciativa +11, Percepção +8, visão no escuro
+Defesa 35, Fort +21, Ref +10, Von +15, imunidade a atordoado e medo, redução de dano 5
+Pontos de Vida 380
+Deslocamento 6m (4q), natação 9m (6q)
+Corpo a Corpo Duas pancadas +29 (2d6+24 mais 2d8 ácido).
+Aura de Afogamento No início de cada turno do afogado, cada criatura em um raio de 9m que não seja capaz de respirar na água deve fazer um teste de Fortitude (CD 25, +1 por teste anterior). Se falhar, a criatura se afoga. Uma criatura afogada desta forma fica inconsciente e perde 1d6 pontos de vida por rodada até sair da área.
+Recrutas Sufocados (Movimento) Uma vez por cena, o capitão afogado invoca 1d4+1 grumetes afogados em espaços desocupados em alcance curto. Eles agem a partir da próxima rodada do capitão, têm deslocamento 6m (normal e de natação) e podem gastar uma ação padrão para causar 1d8+4 pontos de dano de impacto em uma criatura adjacente. Os grumetes afogados têm For 2, Des 1, Defesa 18 e 1 PV, falham automaticamente em qualquer teste oposto ou de resistência e desaparecem quando mortos ou ao fim da cena. Uma criatura adjacente a um ou mais grumetes afogados sofre –2 em Fortitude.
+For 4, Des 2, Con 3, Int –1, Sab –1, Car –1
+Tesouro Padrão mais papagaio zumbi (um personagem com a habilidade Familiar pode transformar o papagaio zumbi em um familiar que aumenta em +1 a CD dos testes para resistir a suas magias de necromancia e concede +2 em Pilotagem).`
+        },
+        {
+          chave: "armeiroDeTenebraDevoto", nome: "Armeiro de Tenebra Devoto", nd: "6", tipo: "Humanoide (anão) Médio",
+          papel: '',
+          subgrupo: "Armeiro de Tenebra",
+          resumo: "Armeiro de Tenebra — Diferente de outros anões, este grupo não veste aço e nem usa martelos ou machados.",
+          texto:
+`Armeiro de Tenebra Devoto ND 6
+Humanoide (anão) Médio
+Iniciativa +7, Percepção +8 (+10 em subterrâneo), visão no escuro
+Defesa 26, Fort +12, Ref +6, Von +18, imunidade a trevas
+Pontos de Vida 220
+Deslocamento 6m (4q)
+Corpo a Corpo Machado de batalha +20 (1d8, x3).
+À Distância Mosquete +20 (2d8+12, 18/x3, mais 6d6 trevas).
+Disparo Preciso O armeiro de Tenebra devoto pode fazer ataques à distância contra oponentes envolvidos em combate corpo a corpo sem a penalidade padrão de –5 no teste de ataque.
+✦ Manto da Penumbra (Padrão) Uma vez por cena, o armeiro pode gerar uma área de sombras como o efeito básico da magia Escuridão (CD 22).
+Mira Apurada (Movimento) O armeiro recebe +2 em testes de ataque e na margem de ameaça com ataques à distância até o fim do turno.
+Pacto da Pólvora Quando causa dano de trevas com seu mosquete, o armeiro recupera uma quantidade de pontos de vida igual à metade do dano de trevas causado.
+Saque Rápido O armeiro pode sacar ou guardar itens como uma ação livre e recarregar seu mosquete como uma ação de movimento.
+For 0, Des 0, Con 5, Int 1, Sab 3, Car –2
+Perícias Ofício (armeiro) +9.
+Equipamento Armadura de couro, balas x20, machado de batalha, mosquete certeiro, símbolo sagrado de Tenebra.
+Tesouro Padrão.`
+        },
+        {
+          chave: "armeiroDeTenebraClerigo", nome: "Armeiro de Tenebra Clérigo", nd: "8", tipo: "Humanoide (anão) Médio",
+          papel: '',
+          subgrupo: "Armeiro de Tenebra",
+          resumo: "Armeiro de Tenebra — Diferente de outros anões, este grupo não veste aço e nem usa martelos ou machados.",
+          texto:
+`Armeiro de Tenebra Clérigo ND 8
+Humanoide (anão) Médio
+Iniciativa +10, Percepção +13 (+15 em subterrâneo), visão no escuro
+Defesa 31, Fort +15, Ref +8, Von +21, imunidade a trevas
+Pontos de Vida 210
+Deslocamento 6m (4q)
+Pontos de Mana 45
+Corpo a Corpo Machado de batalha +24 (1d8+1, x3).
+À Distância Mosquete +24 (2d8+16, 18/x3, mais 8d6 trevas).
+Disparo Preciso O armeiro de Tenebra clérigo pode fazer ataques à distância contra oponentes envolvidos em combate corpo a corpo sem a penalidade padrão de –5 no teste de ataque.
+Pacto da Pólvora Quando causa dano de trevas com seu mosquete, o armeiro recupera uma quantidade de PV igual à metade do dano de trevas causado.
+Saque Rápido O armeiro pode sacar ou guardar itens como uma ação livre e recarregar seu mosquete como uma ação de movimento.
+Visão nas Trevas O armeiro enxerga no escuro mesmo em magias de escuridão.
+Magias Como um clérigo de Tenebra de 8º nível (CD 28).
+• Arma Mágica (Padrão, 8 PM) Até o fim da cena, uma arma adjacente se torna mágica, fornecendo +2 nos testes de ataque e rolagens de dano e +2d6 pontos de dano de frio.
+• Curar Ferimentos (Padrão, 8 PM) Uma criatura adjacente cura 9d8+9 PV.
+• Escudo da Fé (Reação, 8 PM) Quando uma criatura em alcance curto sofre um ataque, ela recebe camuflagem contra ataques à distância e +5 na Defesa até seu próximo turno.
+• Miasma Mefítico (Padrão, 7 PM) Uma nuvem de 6m de raio se forma em alcance médio. Criaturas na área sofrem 7d6 pontos de dano de ácido e ficam enjoadas por 1 rodada (Fort reduz à metade e evita a condição).
+For 1, Des 0, Con 5, Int 1, Sab 5, Car –2
+Perícias Misticismo +9, Ofício (armeiro) +11, Religião +13.
+Equipamento Balas x20, capa pesada, cota de malha, machado de batalha, mosquete certeiro, símbolo sagrado de Tenebra. Tesouro Padrão.`
+        },
+        {
+          chave: "demonioDaPolvora", nome: "Demônio da Pólvora", nd: "12", tipo: "Espírito (demônio) Médio",
+          papel: '',
+          resumo: "Apesar das vestes extravagantes, a criatura descarnada de pele cinzenta, orelhas agudas e chifres caprinos certamente lembra um demônio.",
+          texto:
+`Demônio da Pólvora ND 12
+“Que mal pode fazer negociar com um demônio?”
+— Sathy, qareen barda
+Apesar das vestes extravagantes, a criatura descarnada de pele cinzenta, orelhas agudas e chifres caprinos certamente lembra um demônio. O rosto exibe olhos pretos como bolas de chumbo, e um queixo bizarramente alongado com três bocas de dentes afiados. Braços muito longos, com vários cotovelos cada, terminam em mãos de nove dedos que empunham pistolas sofisticadas. A pólvora é fabricada a partir de um mineral natural, a pedra-de-fumaça, encontrada em jazidas por toda Arton. A origem desse minério, no entanto, não tem nada de natural; existe ligação inegável entre a areia explosiva maldita e alguns deuses, sobretudo Hyninn, Tenebra e o antigo deus Keenn, que a teriam criado com diferentes propósitos. Com ela, vieram os demônios da pólvora. O objetivo destes seres cruéis é propagar o uso da pólvora, assim causando dor e sofrimento. Embora perigosíssimo em combate, o demônio prefere agir como um planejador ardiloso, liderando demônios menores e manipulando mortais cobiçosos. Seus esquemas sempre envolvem provocar a maior quantidade possível de morte e destruição. São muitas as histórias de pistoleiros que fizeram pactos com estes demônios sádicos, obtendo a posse de armas incríveis, em troca de usá-las para perpetrar matança. Mas tal acordo termina sempre em tragédia, quando o atirador acaba por acidentalmente tirar a vida de algum ente querido.
+Espírito (demônio) Médio
+Iniciativa +23, Percepção +12, visão no escuro
+Defesa 42, Fort +12, Ref +26, Von +20, imunidade a ácido, armas de fogo, frio, fogo, ofuscado e veneno, redução de dano 10
+Pontos de Vida 580
+Deslocamento 9m (6q)
+Corpo a Corpo Mordida +33 (3d4+8).
+À Distância Pistola demoníaca x2 +36 (4d6+30, 15/x3, mais 2d8 contra devotos de deuses que canalizam apenas energia positiva e criaturas que, a critério do mestre, sejam bondosas).
+Mestre da Pólvora Quando ataca com uma arma de fogo, o demônio da pólvora ignora cobertura e camuflagem, não sofre a penalidade padrão de –5 em testes de ataque contra oponentes envolvidos em combate corpo a corpo e, quando dispara contra um alvo envolvido na manobra agarrar, sempre ataca o alvo escolhido.
+Munição Explosiva Na rodada seguinte após atingir um alvo, a munição da pistola demoníaca explode. A vítima perde 6d6 pontos de vida e fica sangrando (Fort CD 33 reduz à metade e evita a condição).
+For 3, Des 9, Con 6, Int 4, Sab 2, Car 2
+Perícias Enganação +17, Misticismo +14, Ofício (alquimista) +19, Ofício (armeiro) +19, Religião +12.
+Equipamento Pistola demoníaca. Tesouro Nenhum.`
+        },
+        {
+          chave: "goblinDeSombreiro", nome: "Goblin de Sombreiro", nd: "2", tipo: "Humanoide (goblin) Pequeno",
+          papel: '',
+          subgrupo: "Goblin de Sombreiro",
+          resumo: "Goblin de Sombreiro — Os goblins parecem bastante inofensivos com seus chapéus muito largos, ponchos coloridos e forte sotaque… até o momento em que revelam suas…",
+          texto:
+`Goblin de Sombreiro ND 2
+Humanoide (goblin) Pequeno
+Iniciativa +9, Percepção +3, visão no escuro
+Defesa 18, Fort +9, Ref +11, Von +4, imunidade a fascinado e ofuscado, resistência a condições de sentidos +2
+Pontos de Vida 16
+Deslocamento 9m (6q), escalada 9m (6q)
+Corpo a Corpo Duas adagas +14 (1d4+4, 19).
+À Distância Traque +14 (2d6+4, 19/x3).
+Ataque Furtivo +1d6.
+Sombreiro Quando o goblin de sombreiro ataca pela primeira vez em um combate, sua vítima é considerada desprevenida contra esse ataque.
+Valentão O goblin recebe +2 em testes de ataque e rolagens de dano contra oponentes caídos, desprevenidos, enredados, flanqueados ou indefesos.
+For –1, Des 4, Con 2, Int 0, Sab 0, Car 0
+Perícias Enganação +5, Furtividade +10.
+Equipamento Adaga x2, balas x20, traque. Tesouro Metade mais sombreiro.`
+        },
+        {
+          chave: "liderGoblinDeSombreiro", nome: "Líder Goblin de Sombreiro", nd: "6", tipo: "Humanoide (goblin) Pequeno",
+          papel: '',
+          subgrupo: "Goblin de Sombreiro",
+          resumo: "Goblin de Sombreiro — Os goblins parecem bastante inofensivos com seus chapéus muito largos, ponchos coloridos e forte sotaque… até o momento em que revelam suas…",
+          texto:
+`Líder Goblin de Sombreiro ND 6
+Humanoide (goblin) Pequeno
+Iniciativa +12, Percepção +5, visão no escuro
+Defesa 28, Fort +13, Ref +18, Von +7, evasão, imunidade a fascinado e ofuscado, resistência a condições de sentidos +2
+Pontos de Vida 190
+Deslocamento 9m (6q), escalada 9m (6q)
+Corpo a Corpo Duas adagas +20 (2d4+8, 19).
+À Distância Bacamarte +20 (4d6+8, 19/x3). O líder goblin de sombreiro faz um teste de ataque e compara o resultado com a Defesa de cada criatura em um cone de 6m. Quando ataca, ele é empurrado 3m na direção oposta ao disparo.
+Ataque Furtivo +3d6.
+Poncho (Reação) O poncho esvoaçante do líder faz mais do que protegê-lo do clima. Uma vez por cena, o líder pode usá-lo para evitar um ataque recém-sofrido.
+Sombreiro Quando o líder ataca pela primeira vez em um combate, sua vítima é considerada desprevenida contra este ataque.
+Valentão O líder recebe +2 em testes de ataque e rolagens de dano contra oponentes caídos, desprevenidos, enredados, flanqueados ou indefesos.
+For –1, Des 5, Con 2, Int 0, Sab 0, Car 0
+Perícias Enganação +7, Furtividade +13.
+Equipamento Adaga x2, balas x20, bacamarte. Tesouro Metade mais sombreiro.`
+        },
+        {
+          chave: "homemPiranha", nome: "Homem-Piranha", nd: "2", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Homem-Piranha",
+          resumo: "Homem-Piranha — O barco cheio de pontas metálicas parece, ele próprio, algum monstro aquático.",
+          texto:
+`Homem-Piranha ND 2
+Humanoide (humano) Médio
+Iniciativa +5, Percepção +3
+Defesa 17, Fort +4, Ref +11, Von +7
+Pontos de Vida 68
+Deslocamento 9m (6q)
+Corpo a Corpo Duas adagas +13 (1d4+7, 19).
+Dentes Afiados (Reação) Uma vez por rodada, quando uma criatura adjacente erra um ataque contra o homem-piranha por 5 ou mais, sofre 1d4+4 pontos de dano de corte.
+For 2, Des 2, Con 2, Int –1, Sab 0, Car –1
+Perícias Acrobacia +5, Atletismo +7.
+Equipamento Adaga x2. Tesouro Metade.`
+        },
+        {
+          chave: "homemPiranhaImediato", nome: "Homem-Piranha Imediato", nd: "4", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Homem-Piranha",
+          resumo: "Homem-Piranha — O barco cheio de pontas metálicas parece, ele próprio, algum monstro aquático.",
+          texto:
+`Homem-Piranha Imediato ND 4
+Humanoide (humano) Médio
+Iniciativa +5, Percepção +8
+Defesa 20, Fort +6, Ref +14, Von +10
+Pontos de Vida 98
+Deslocamento 9m (6q)
+Pontos de Mana 24
+Corpo a Corpo Clava +15 (2d6+14).
+Dentes Afiados (Reação) Uma vez por rodada, quando uma criatura adjacente erra um ataque contra o homem-piranha imediato por 5 ou mais, sofre 1d4+6 pontos de dano de corte.
+Urro Divino (Livre, 1 PM) Quando faz um ataque ou lança uma magia, o imediato soma sua Constituição à rolagem de dano desse ataque ou magia.
+Magias Como um druida de Megalokk de 4º nível (CD 20).
+• Amedrontar (Padrão, 3 PM) Um animal ou humanoide em alcance curto fica apavorado por 1d4+1 rodadas e depois abalado (Von reduz para abalado por 1d4 rodadas).
+• Armamento da Natureza (Movimento, 4 PM) A clava do imediato se torna mágica; ela fornece +1 em testes de ataque e rolagens de dano e seu dano aumenta +1d6.
+• Curar Ferimentos (Padrão, 4 PM) Uma criatura adjacente cura 5d8+5 PV.
+• Escudo da Fé (Reação, 3 PM) Quando uma criatura em alcance curto sofre um ataque, ela recebe +3 na Defesa até seu próximo turno.
+For 3, Des 1, Con 3, Int –1, Sab 4, Car –1
+Perícias Acrobacia +5, Atletismo +9, Religião +8, Sobrevivência +8.
+Equipamento Clava, escudo leve, símbolo sagrado de Megalokk. Tesouro Metade.`
+        },
+        {
+          chave: "homemPiranhaCapitao", nome: "Homem-Piranha Capitão", nd: "7", tipo: "Monstro (lefou) Médio",
+          papel: '',
+          subgrupo: "Homem-Piranha",
+          resumo: "Homem-Piranha — O barco cheio de pontas metálicas parece, ele próprio, algum monstro aquático.",
+          texto:
+`Homem-Piranha Capitão ND 7
+Monstro (lefou) Médio
+Iniciativa +12, Percepção +8
+Defesa 29, Fort +19, Ref +14, Von +9, fortificação 50%, imunidade a atordoado, redução de ácido, eletricidade, fogo, frio, luz e trevas 10, resistência a efeitos lefeu e da Tormenta +5
+Pontos de Vida 290
+Deslocamento 9m (6q)
+Corpo a Corpo Machado anão +25 (1d10+20, x4) e mordida do diabo +25 (1d4+20).
+Dentes Afiados (Reação) Uma vez por rodada, quando uma criatura adjacente erra um ataque contra o homem-piranha capitão por 5 ou mais, sofre 1d4+8 pontos de dano de corte.
+Sequência do Rio (Livre) Quando o capitão acerta seus dois ataques em um mesmo oponente na mesma rodada, pode usar a manobra agarrar ou desarmar com a mordida do diabo (teste +25).
+For 6, Des 3, Con 4, Int 0, Sab 1, Car –1
+Perícias Acrobacia +10, Atletismo +13, Pilotagem +10.
+Equipamento Couraça selada, machado anão, mordida do diabo. Tesouro Metade.`
+        },
+        {
+          chave: "pirata", nome: "Pirata", nd: "1/2", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Pirata",
+          resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
+          texto:
+`Pirata ND 1/2
+Humanoide (humano) Médio
+Iniciativa +6, Percepção +2
+Defesa 14, Fort +2, Ref +5, Von +1
+Pontos de Vida 8
+Deslocamento 9m (6q)
+Corpo a Corpo Cimitarra +9 (1d6+6, 18).
+For 0, Des 0, Con 1, Int 0, Sab 1, Car –1
+Perícias Acrobacia +6, Atletismo +4.
+Equipamento Cimitarra. Tesouro Metade.`
+        },
+        {
+          chave: "imediato", nome: "Imediato", nd: "4", tipo: "Morto-vivo (osteon) Médio",
+          papel: '',
+          subgrupo: "Pirata",
+          resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
+          texto:
+`Imediato ND 4
+Morto-vivo (osteon) Médio
+Iniciativa +10, Percepção +5, visão no escuro
+Defesa 23, Fort +8, Ref +16, Von +6, redução de corte, frio e perfuração 5
+Pontos de Vida 120
+Deslocamento 9m (6q)
+Corpo a Corpo Cimitarra +17 (2d6+8, 18, mais 2d6 ácido).
+Salmoura Uma criatura que sofra dano de ácido de um ataque do imediato sofre –2 em testes de perícia por 1 rodada.
+For 1, Des 4, Con 0, Int 0, Sab 1, Car –1
+Perícias Acrobacia +10, Atletismo +7, Intimidação +5, Pilotagem +8.
+Equipamento Cimitarra. Tesouro Padrão.`
+        },
+        {
+          chave: "bandoPirata", nome: "Bando Pirata", nd: "6", tipo: "Humanoide (humano) Grande",
+          papel: '',
+          subgrupo: "Pirata",
+          resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
+          texto:
+`Bando Pirata ND 6
+Humanoide (humano) Grande
+Iniciativa +10, Percepção +5
+Defesa 27, Fort +10, Ref +17, Von +9
+Pontos de Vida 54
+Deslocamento 9m (6q)
+Corpo a Corpo [Bando] Cimitarra +24 (2d6+12, 18) e adaga +24 (2d4+12, 19).
+For 0, Des 1, Con 1, Int 0, Sab 1, Car –1
+Perícias Acrobacia +10, Atletismo +7.
+Equipamento Adaga, cimitarra (1d8 cada). Tesouro Metade.`
+        },
+        {
+          chave: "capitaoPirata", nome: "Capitão Pirata", nd: "7", tipo: "Morto-vivo (osteon) Médio",
+          papel: '',
+          subgrupo: "Pirata",
+          resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
+          texto:
+`Capitão Pirata ND 7
+Morto-vivo (osteon) Médio
+Iniciativa +16, Percepção +8, visão no escuro
+Defesa 31, Fort +8, Ref +19, Von +14, evasão, imunidade a medo, redução de corte, frio e perfuração 5
+Pontos de Vida 265
+Deslocamento 9m (6q)
+Corpo a Corpo Cimitarra x2 +24 (1d6+12, 17, mais 2d12 ácido).
+À Distância Pistola +24 (2d6+12, 19/x3).
+✦ Salmoura Uma criatura que sofra dano de ácido de um ataque do capitão pirata sofre –2 em testes de perícia por 1 rodada.
+Saque Rápido O capitão pirata pode sacar ou guardar itens como uma ação livre e recarregar sua pistola como uma ação de movimento.
+Terror dos Mares (Movimento) Criaturas em alcance médio ficam abaladas (Von CD 24 reduz a duração para 1 rodada e a criatura não pode mais ser abalada por esta habilidade até o fim da cena). Recarga (movimento).
+For 1, Des 5, Con 2, Int 1, Sab 1, Car 3
+Perícias Acrobacia +14, Atletismo +10, Intimidação +13, Pilotagem +14.
+Equipamento Balas x20, bandana, cimitarra, pistola.
+Tesouro Dobro mais bandeira pirata. Uma bandeira pirata pode ser instalada em um veículo sem custos, e oferece os benefícios da melhoria macabra.`
+        },
+        {
+          chave: "capitaoDoConclavePirata", nome: "Capitão do Conclave Pirata", nd: "8", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Pirata",
+          resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
+          texto:
+`Capitão do Conclave Pirata ND 8
+Humanoide (humano) Médio
+Iniciativa +16, Percepção +9
+Defesa 33, Fort +10, Ref +19, Von +15, evasão, imunidade a medo
+Pontos de Vida 290
+Deslocamento 9m (6q)
+Corpo a Corpo Cimitarra x2 +26 (2d6+12, 14/x3).
+À Distância Pistola +26 (2d6+10, 19/x3).
+Disparo Covarde (Livre) O capitão do Conclave Pirata só pode usar esta habilidade no seu primeiro turno de combate. Ele faz um ataque de pistola; o alvo desse ataque é considerado desprevenido.
+Sangria Sempre que rola um 6 em um dado de dano com sua cimitarra, o capitão rola +1d6 e soma o resultado ao dano causado (repetindo o processo para cada novo resultado 6).
+Saque Rápido O capitão pode sacar ou guardar itens como uma ação livre e recarregar sua pistola como uma ação de movimento.
+Saraivada (Padrão) O capitão comanda uma saraivada de canhões que atinge uma esfera de 6m em alcance médio. Criaturas na área sofrem 8d12 pontos de dano de impacto e ficam caídas (Ref CD 26 reduz à metade e evita a condição). O capitão só pode usar esta habilidade uma vez por cena, e apenas se estiver em alcance longo de seu navio.
+Todos a Postos (Movimento) Uma vez por cena, o capitão invoca 1d4+1 marujos piratas em espaços desocupados em alcance curto. Eles agem a partir da próxima rodada do capitão, têm deslocamento 9m e podem gastar uma ação padrão para causar 1d6+4 pontos de dano de corte em uma criatura adjacente. Os marujos piratas têm For 1, Des 3, Defesa 16 e 1 PV e falham automaticamente em qualquer teste oposto ou de resistência.
+For 1, Des 6, Con 2, Int 1, Sab 1, Car 4
+Perícias Acrobacia +16, Atletismo +11, Intimidação +14, Pilotagem +16.
+Equipamento Balas x20, cimitarra precisa, couraça ajustada, pistola. Tesouro Dobro.`
+        },
+        {
+          chave: "capitaoDaFrotaAurea", nome: "Capitão da Frota Áurea", nd: "10", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Pirata",
+          resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
+          texto:
+`Capitão da Frota Áurea ND 10
+Humanoide (humano) Médio
+Iniciativa +18, Percepção +10
+Defesa 36, Fort +12, Ref +20, Von +16, evasão aprimorada, imunidade a medo, redução de dano 5
+Pontos de Vida 360
+Deslocamento 9m (6q)
+Corpo a Corpo Florete x2 +29 (2d6+22, 14/x3).
+À Distância Pistola +29 (2d6+12, 18/x3).
+Bloqueio Resistente (Reação) Uma vez por rodada, quando é atingido por um ataque, o capitão da Frota Áurea pode fazer um teste de ataque com seu florete. O dano desse ataque é reduzido em um valor igual ao resultado do teste de ataque do capitão.
+Nadador Blindado O capitão não sofre penalidade por armadura em testes de Atletismo para nadar.
+Saque Rápido O capitão pode sacar ou guardar itens como uma ação livre e recarregar sua pistola como uma ação de movimento.
+Vendaval do Mar (Movimento) Quando se move 6m ou mais, o capitão recebe +5 nas rolagens de dano e na margem de ameaça com seu florete até o início de seu próximo turno.
+For 2, Des 7, Con 2, Int 1, Sab 1, Car 4
+Perícias Acrobacia +18, Atletismo +13, Diplomacia +13, Pilotagem +18.
+Equipamento Balas x20, couraça reforçada, florete maciço, pistola. Tesouro Dobro.`
+        },
+        {
+          chave: "pistoleiro", nome: "Pistoleiro", nd: "2", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Pistoleiro de Smokestone",
+          resumo: "Pistoleiro de Smokestone — Os sons de galope, gritos estridentes e estampidos de pólvora anunciam a chegada dos bandidos.",
+          texto:
+`Pistoleiro ND 2
+Humanoide (humano) Médio
+Iniciativa +8, Percepção +4
+Defesa 18, Fort +6, Ref +12, Von +4
+Pontos de Vida 63
+Deslocamento 9m (6q)
+Corpo a Corpo Adaga+12 (1d4+5, 19).
+À Distância Pistola +12 (2d6+10, 19/x3).
+Disparo Preciso O pistoleiro pode fazer ataques à distância contra oponentes envolvidos em combate corpo a corpo sem a penalidade padrão de –5 no teste de ataque.
+Saque Rápido O pistoleiro pode sacar ou guardar itens como uma ação livre e recarregar sua pistola como uma ação de movimento.
+For 0, Des 3, Con 2, Int 0, Sab 1, Car 0
+Perícias Cavalgar +8, Jogatina +5.
+Equipamento Adaga, balas x20, pistola. Tesouro Metade.`
+        },
+        {
+          chave: "liderPistoleiro", nome: "Líder Pistoleiro", nd: "4", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Pistoleiro de Smokestone",
+          resumo: "Pistoleiro de Smokestone — Os sons de galope, gritos estridentes e estampidos de pólvora anunciam a chegada dos bandidos.",
+          texto:
+`Líder Pistoleiro ND 4
+Humanoide (humano) Médio
+Iniciativa +10, Percepção +5
+Defesa 22, Fort +9, Ref +15, Von +6, imunidade a medo
+Pontos de Vida 120
+Deslocamento 9m (6q)
+Corpo a Corpo Adaga+16 (1d4+7, 19).
+À Distância Pistola +16 (2d6+15, 19/x3).
+Dedo no Gatilho Quando faz um ataque de pistola contra um oponente desprevenido, o líder pistoleiro recebe +5 na rolagem de dano e na margem de ameaça.
+Disparo Preciso O líder pode fazer ataques à distância contra oponentes envolvidos em combate corpo a corpo sem a penalidade padrão de –5 no teste de ataque.
+Saque Rápido O líder pode sacar ou guardar itens como uma ação livre e recarregar sua pistola como uma ação de movimento.
+Tibar Furado O líder carrega um amuleto da sorte, como um tibar ou uma garrafinha de metal, que já salvou sua vida mais de uma vez. Uma vez por cena, quando sofre dano que o levaria a 0 PV ou menos, o líder ignora esse dano.
+For 0, Des 4, Con 2, Int 0, Sab 1, Car 1
+Perícias Cavalgar +10, Jogatina +7.
+Equipamento Adaga, balas x20, pistola. Tesouro Metade.`
+        },
+        {
+          chave: "sahuaginPredador", nome: "Sahuagin Predador", nd: "1", tipo: "Humanoide (sahuagin) Médio",
+          papel: '',
+          subgrupo: "Sahuagin",
+          resumo: "Sahuagin — São humanoides, mas de pele escamosa que vai do verde-escuro ao cinza-azulado e azul-marinho, quase sempre com listras.",
+          texto:
+`Sahuagin Predador ND 1
+Humanoide (sahuagin) Médio
+Iniciativa +5, Percepção +3, visão no escuro
+Defesa 14, Fort +4, Ref +10, Von +1, sensibilidade a luz
+Pontos de Vida 15
+Deslocamento 9m (6q), natação 12m (8q)
+Corpo a Corpo Espada curta +11 (1d6+3, 19) e mordida +9 (1d4+3).
+Afinidade com Tubarões O sahuagin pode se comunicar telepaticamente com tubarões em alcance médio.
+Corpo Salino Se for totalmente submerso em água doce, o sahuagin fica fatigado (Fort CD 15 evita).
+Frenesi (Livre) Quando acerta um ataque de mordida, o sahuagin entra em frenesi até o fim da cena. Neste estado, ele recebe +2 em testes de ataque e rolagens de dano.
+For 2, Des 1, Con 1, Int 0, Sab 1, Car –1
+Perícias Adestramento +1, Atletismo +4.
+Equipamento Espada curta. Tesouro Nenhum.`
+        },
+        {
+          chave: "sahuaginMetamorfo", nome: "Sahuagin Metamorfo", nd: "3", tipo: "Humanoide (sahuagin) Médio",
+          papel: '',
+          subgrupo: "Sahuagin",
+          resumo: "Sahuagin — São humanoides, mas de pele escamosa que vai do verde-escuro ao cinza-azulado e azul-marinho, quase sempre com listras.",
+          texto:
+`Sahuagin Metamorfo ND 3
+Humanoide (sahuagin) Médio
+Iniciativa +7, Percepção +4, visão no escuro
+Defesa 20, Fort +10, Ref +13, Von +4, sensibilidade a luz
+Pontos de Vida 108
+Deslocamento 9m (6q), natação 15m (10q)
+Corpo a Corpo Tridente +16 (1d8+6) e mordida +14 (1d4+4).
+Afinidade com Tubarões O sahuagin pode se comunicar telepaticamente com tubarões em alcance médio.
+Corpo Salino Se for totalmente submerso em água doce, o sahuagin fica fatigado (Fort CD 15 evita).
+Derrubar (Livre) Tridente (teste +18).
+Forma de Tubarão (Completa) O sahuagin adquire uma forma híbrida de tubarão. Ele se torna Grande, recebe faro e +2 em Força e na Defesa, e seus ataques se tornam tridente +18 (1d8+8) e mordida +16 (1d6+6). Nessa forma, ele sempre ataca o oponente atualmente com a maior quantidade de dano sofrido.
+Frenesi (Livre) Quando acerta um ataque de mordida, o sahuagin entra em frenesi até o fim da cena. Neste estado, ele recebe +2 em testes de ataque e rolagens de dano.
+For 2, Des 1, Con 1, Int 0, Sab 1, Car –1
+Perícias Adestramento +2, Atletismo +5.
+Equipamento Tridente.
+Tesouro Padrão.`
+        },
+        {
+          chave: "chapeuPreto", nome: "Chapéu-Preto", nd: "12", tipo: "Humanoide (meio-orc) Médio",
+          papel: '',
+          resumo: "Assim que o recém-chegado entra na taverna, o bardo cessa de tocar, tudo silencia.",
+          texto:
+`Chapéu-Preto ND 12
+“Todo ouro pertence a Azgher. Esse desgraçado vai ser pago com chumbo!”
+— Paul Kersey, osteon xerife de Azgher
+Assim que o recém-chegado entra na taverna, o bardo cessa de tocar, tudo silencia. Grandes cintos de couro cruzam-se sobre seu peito. Na cintura, pistolas desgastadas pelo uso intenso. Mesmo na escuridão sob o chapéu largo e negro pode-se ver as feições embrutecidas de um elfo, cujo olhar ninguém no recinto ousa encarar. O chapéu-preto é um bucaneiro ou pistoleiro sanguinário, de alma endurecida e presença aterradora, capaz de matar sem o menor motivo ou provocação. Após uma vida de crimes ou algum evento trágico, ele desistiu de qualquer noção de camaradagem, honra, piedade ou redenção, vivendo apenas pela lei do mais rápido no gatilho. Chapéus-pretos estão entre os maiores assassinos do mundo: quando um destes chega à cidade, todos se trancam em casa, os comércios fecham, as tavernas esvaziam enquanto podem — pois, quando não o fazem, alguém morrerá ali. Alguns chapéus-pretos são realmente dignos do nome, assaltando caravanas, matando guardas e assassinando por dinheiro. Outros são justiceiros implacáveis, liquidando “infratores” conforme seus próprios códigos, sem se importar com leis locais. Outros ainda são duelistas, buscando testar suas habilidades contra adversários fortes, pouco importando se são bons ou maus. Por sua perícia lendária, chapéus-pretos podem ser contratados por vilões ou nobres corruptos para eliminar “heróis intrometidos”. Em geral agem sozinhos, mas podem ser acompanhados por jagunços ou pistoleiros de Smokestone (que não se importam em sacrificar caso seja conveniente). Não é raro que um chapéu-preto tenha feito um pacto com um demônio da pólvora, sendo este o motivo de sua eficiência em matar e sua desistência de tudo mais.
+Humanoide (meio-orc) Médio
+Iniciativa +20, Percepção+12 (+14 em subterrâneo), visão no escuro
+Defesa 42, Fort +20, Ref +26, Von +12, evasão aprimorada, imunidade a medo
+Pontos de Vida 480
+Deslocamento 9m (6q)
+Corpo a Corpo Adaga +32 (1d4+6, 19).
+À Distância Pistola +36 (6d6+50, 17/x3).
+Bala nas CostasO chapéu-preto recebe +10 na margem de ameaça do primeiro ataque que fizer contra cada oponente na cena.
+Duro como o Inferno Todo dano de corte, impacto e perfuração que o chapéu-preto sofre é reduzido à metade.
+Mão FirmeO chapéu-preto pode fazer ataques de pistola contra oponentes envolvidos em combate corpo a corpo sem sofrer a penalidade padrão de –5 no teste de ataque e, quando faz um ataque de pistola, rola dois dados e usa o melhor resultado.
+Reputação Uma criatura que comece seu turno em alcance médio do chápeu-preto fica abalada (Von CD 33 evita e a criatura não pode mais ser abalada por esta habilidade até o fim da cena).
+Saque Rápido O chapéu-preto pode sacar ou guardar itens como uma ação livre e recarregar sua pistola como uma ação de movimento.
+Tiro à Traição Quando faz um ataque de pistola contra um oponente desprevenido, o chápeu-preto recebe +5 na margem de ameaça e causa +6d6 pontos de dano.
+For 2, Des 6, Con 3, Int 0, Sab 2, Car 3
+Perícias Cavalgar +16, Intimidação +20, Jogatina +13, Sobrevivência +12 (+14 em subterrâneo).
+Equipamento Adaga, balas x20, pistola formidável.
+Tesouro Padrão.`
+        },
+        {
+          chave: "loboDoMar", nome: "Lobo do Mar", nd: "16", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          resumo: "Enquanto os maiores galeões nos mares não têm mais que oito canhões, aquela monstruosidade parece ostentar o dobro desse número.",
+          texto:
+`Lobo do Mar ND 16
+“James K.! O som de seu nome troveja como o céu da Tormenta que vermelheja!”
+— James K., lobo do mar
+Enquanto os maiores galeões nos mares não têm mais que oito canhões, aquela monstruosidade parece ostentar o dobro desse número. Mas apenas a Bravado tinha tantos… Impossível! Não pode ser ele! Para aqueles que vivem em terra, lobo do mar é apenas um apelido para velhos marujos. Para os bucaneiros, contudo, tem significado muito diferente. Um lobo do mar está entre os maiores piratas vivos, verdadeira lenda dos mares. Soberanos das ondas e conveses, capitães dos navios mais temidos, donos de reputações que alcançam cada porto de Arton. Alrad Mão-de-Ferro, James K., Izzy Tarante e John-de-Sangue estão entre os poucos que receberam a alcunha. Embora seja um líder carismático, capaz de inspirar sua tripulação a lutar como uma horda de demônios, o lobo do mar é também um duelista excepcional. Quando luta a bordo do próprio navio, que conhece como a palma da mão, sua vantagem em combate será quase insuperável. Mesmo que sejam inimigos mortais entre si, todos os lobos do mar compartilham de uma afinidade que pessoas da terra firme não compreendem, criando laços inquebráveis e ódios fulminantes. Assim, é muito possível que dois ou mais decidam formar alianças temporárias para aliviar certos aventureiros de seus tesouros mágicos…
+Humanoide (humano) Médio
+Iniciativa +23, Percepção +16
+Defesa 54, Fort +24, Ref +30, Von +16, evasão aprimorada, imunidade a medo, resistência a efeitos mentais e de movimento e magia +5
+Pontos de Vida 690
+Deslocamento 9m (6q)
+Corpo a Corpo Florete x2 +46 (2d6+40, 15) e adaga x2 +46 (2d4+40, 15).
+À Distância Adaga +46 (2d4+40, 15).
+Ataque Furtivo +8d6.
+Bloqueio Resistente (Reação) Uma vez por rodada, quando é atingido por um ataque, o lobo do mar pode fazer um teste de ataque com seu florete. O dano desse ataque é reduzido em um valor igual ao resultado do teste de ataque do capitão.
+Pirata O lobo do mar recebe todas as habilidades de piratas (veja a caixa na página 258).
+Todos a Postos (Movimento) Uma vez por cena, o lobo do mar invoca 2d4+1 marujos piratas em espaços desocupados em alcance curto. Eles agem a partir da próxima rodada do lobo do mar, têm deslocamento 9m e podem gastar uma ação padrão para causar 2d4+4 pontos de dano de corte em uma criatura adjacente. Os marujos piratas têm For 1, Des 3, Defesa 25 e 1 PV e falham automaticamente em qualquer teste oposto ou de resistência.
+Truque do Convés (Movimento) Uma criatura adjacente ao lobo do mar fica desprevenida contra seu próximo ataque nesta rodada (Von CD 42 evita). Esta habilidade só pode ser usada uma vez contra cada criatura na mesma cena.
+For 1, Des 7, Con 3, Int 2, Sab 2, Car 4
+Perícias Acrobacia +23, Atletismo +17, Intimidação +21, Jogatina +20, Pilotagem +23.
+Equipamento Adaga precisa x3, bandana, florete formidável preciso. Tesouro Dobro.`
+        },
+      ],
+      regras: [
+        { titulo: "Afogado",
+          texto:
+`“Era uma LEGIÃO deles, juro pelo Oceano! Precisam acreditar em mim!”
+— Falline, goblin bucaneira
+O ser cadavérico de barriga inchada tem pele esbranquiçada, a carne mordiscada por peixes em vários pontos, coberta de algas e cracas em outros. Parece encharcado, gotejando, como se recém-saído do mar. Água escorre abundante da boca e das feridas abertas. Afogados são zumbis surgidos a partir de naufrágios, acidentes ou execuções por afogamento; muitos eram piratas, ainda que nem todos. São encontrados rondando velhas embarcações encalhadas, em ruínas à beira-mar ou tripulando navios-fantasmas. Ressentidos com seu próprio destino cruel, afogados são movidos pela compulsão de matar outros da mesma forma que morreram, trazendo-os para o bando. São muito temidos por emitir uma aura que faz suas vítimas sufocarem, mesmo em terra firme. Em combate, lutam de mãos vazias, agarrando ou golpeando com os punhos massivos. Embora ataquem quaisquer humanoides vivos sem distinção, a presença de qualquer criatura incapaz de se afogar (golem, osteon, tritão…) vai enfurecê-los a ponto de levar todos a atacá-la, apesar da inutilidade de sua aura. Afogados formam pequenos bandos, ou grupos maiores liderados por um capitão mais habilidoso, ainda astuto o bastante para falar e usar armas. Também podem ser soldados de algum dragão marinho, clérigo do Oceano ou outro vilão sediado em mares e costas.` },
+        { titulo: "Armeiro de Tenebra",
+          texto:
+`“Você aí, com essa arma de pólvora. Uns anões andaram perguntando por você.”
+— Alguém na Taverna Beeholdaar
+Diferente de outros anões, este grupo não veste aço e nem usa martelos ou machados. Sob os mantos escuros é possível entrever o símbolo sagrado da Deusa das Trevas e também o brilho de pistolas de alta qualidade. Quase qualquer anão dirá que Khalmyr — ou Heredrimm, como chamam o Deus da Justiça — é a divindade mais cultuada por seu povo. Mas muitos também consideram Tenebra uma mãe generosa, aceitando os presentes que ela oferece. Entre estes, a pólvora. Um culto de anões que deixaram o machado tradicional em favor das armas de fogo, os Armeiros de Tenebra creem ser os únicos destinados a forjar e empunhar tais artefatos. Diz-se que foram inspirados pela lenda de Ingram Brassbones, maior de todos os mestres armeiros (e pária entre os anões tradicionais), mas isso não é bem verdade. De fato, eles acreditam com fanatismo fervoroso que armas de pólvora são direito divino do povo anão, caçando e matando todos os demais que ousam empunhá-las! Assim, embora sejam vistos em alguns pontos do Reinado como heróis justiceiros (afinal, eles caçam os criminosos usuários de pólvora), os Armeiros são na realidade cultistas perigosos. Se um grupo de aventureiros inclui um pistoleiro, pode acabar como a próxima oferenda destes anões a sua deusa.
+Armeiros de Tenebra atacam apenas à noite, para que a deusa testemunhe seus atos e também para tirar vantagem de sua visão no escuro. Embora todos sejam devotos, às vezes são também liderados por um clérigo verdadeiro, que oferece suporte mágico em combates.` },
+        { titulo: "Goblin de Sombreiro",
+          texto:
+`“Estou dizendo, quase despedaçaram aquele bárbaro enorme apenas com facas!”
+— Mairom Jonaramm, anão guerreiro
+Os goblins parecem bastante inofensivos com seus chapéus muito largos, ponchos coloridos e forte sotaque… até o momento em que revelam suas adagas e pistolas. Não se sabe quantos goblins formam este curioso grupo de bandoleiros que ronda as planícies do continente, ou se fazem parte de um mesmo bando. Mas parece certo que, influenciados pela cultura de Smokestone, teriam adotado seus maneirismos como forma de apanhar vítimas desprevenidas. A tática favorita dos goblins de sombreiro é abordar um viajante ou forasteiro com alguma proposta atraente ou falso pedido de ajuda, buscando separá-lo do grupo e atraí-lo para um lugar isolado. Em caso de sucesso — ou qualquer outra situação em que estejam na vantagem de pelo menos três para um —, atacam com as armas já desembainhadas, ocultas sob os ponchos largos. Tipicamente cercam a vítima (para receber bônus por flanquear) com duas adagas cada, fazendo uma grande quantidade de ataques. As pistolas costumam ser reservadas para cobrir suas fugas.` },
+        { titulo: "Homem-Piranha",
+          texto:
+`“Não inventei o nome, tá? Esses malditos já se chamavam assim quando cheguei!”
+— Grace, pirata dos rios
+O barco cheio de pontas metálicas parece, ele próprio, algum monstro aquático. Quando se aproxima o bastante, sua tripulação demonstra ser formada por piratas não menos demoníacos, as armas e dentes afiados brilhando promessas de matança. Cercados de mitos e lendas, os Homens-Piranhas são o maior e mais infame grupo de piratas dos rios. Atuam principalmente em Callistia, mas podem ser encontrados saqueando barcos e povoados em vários pontos de Arton. Homens-Piranhas são temidos pela reputação de nunca deixar sobreviventes. Outras histórias, ainda mais apavorantes, dizem que eles devoram suas vítimas com dentes afiados, deixando apenas os ossos — como o peixe que lhes empresta o nome. E outras dizem ainda que nem mesmo são humanos, mas monstros aquáticos de algum tipo. Impossível confirmar a veracidade dessas narrativas, visto que há muitos grupos diferentes de Homens-Piranhas atuando na região. Alguns até incluem um ocasional druida, feiticeiro, monstro ou demônio. Mas uma coisa é certa: todos, mesmo os mais “normais”, se beneficiam do terror inspirado pelas lendas. Para acentuar ainda mais o terror, esses piratas adotam armas estranhas e impressionantes. Uma delas é conhecida apenas como “mordida do diabo”.` },
+        { titulo: "Pirata",
+          texto:
+`“A pirataria vem mudando bastante. Mas o Mar Negro, esse nunca muda.”
+— Kheeroh, tritão bucaneiro
+Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras. Quando dominam parte do convés, abrem caminho para aquele que deve ser seu capitão — revelando que a caveira na bandeira do navio pirata não era um símbolo, mas seu retrato! Até recentemente, quase todos os piratas oceânicos de Arton agiam apenas no perigoso Mar Negro, entre a costa sudoeste do Reinado e a ilha de Galrasia. Ali era o “berço da pirataria”, esconderijo da temida Irmandade Pirata e outros bandos sanguinários. Ainda, os bucaneiros locais tinham a tradição de saquear expedições de aventureiros retornando de Galrasia com tesouros; por isso eram considerados os piratas mais audazes (ou loucos) de todos. Mais tarde, com a recente abertura do Istmo de Hangpharstyth — assim como a restauração de Tamu-ra —, novas rotas comerciais marítimas seriam estabelecidas, fazendo proliferar ataques de piratas ao longo da costa artoniana. Hoje em dia, os bucaneiros de Arton se dividem entre o Conclave Pirata do Mar Negro, a Frota Áurea do Mar do Dragão-Rei e os Piratas Independentes. Embora mais conhecidos por atacar navios em alto-mar, bandos menores de piratas podem ser vistos emboscando viajantes em quaisquer pontos próximos à costa, sobretudo cidades litorâneas e estradas que conduzem a elas. Sua predileção por armas de fogo torna-os mais perigosos que bandidos comuns.` },
+        { titulo: "Habilidades de Piratas",
+          texto:
+`Acostumados à vida no mar, todos os piratas da seção “Pirata” partilham as habilidades a seguir.
+Correr pelo Cordame (Completa) O pirata percorre até seu deslocamento, ignorando terreno difícil, e faz um ataque corpo a corpo com +2 no teste de ataque e +1d6 na rolagem de dano.
+Pernas do Mar Quando está se equilibrando ou escalando, o pirata não fica desprevenido e seu deslocamento não é reduzido à metade.` },
+        { titulo: "Pistoleiro de Smokestone",
+          texto:
+`“Procurado vivo ou morto. Preferencialmente morto.”
+— Velvet Reddington, humana caçadora
+Os sons de galope, gritos estridentes e estampidos de pólvora anunciam a chegada dos bandidos. Todos usam curiosos chapéus de abas largas, casacas e coletes de couro, cintas e botas cheias de fivelas. Todos trazem lenços cobrindo os rostos, exceto o líder, que cofia o bigode farto e parece prestes a propor algo… Este pode ser um mundo de cavaleiros e magos, mas também é um mundo de curiosidades únicas. Perdida no antigo Império de Tauron, em meio a planícies desoladas e poeirentas, existe uma cidade onde desavenças não se resolvem com espada ou feitiçaria, mas com uma bala no meio dos cornos! Enquanto o Reinado (ou qualquer pessoa de bom senso) declara as armas de fogo como perigosas e malignas, em Smokestone elas são símbolos de honra, civilidade e cavalheirismo. Aos olhos de um forasteiro, um pistoleiro não é diferente de qualquer jagunço com uma pistola ou mosquete. De fato, entre aqueles que deixam a cidade oculta e correm o Reinado, muitos são bandoleiros ou matadores de aluguel. A diferença está em sua rejeição às lâminas e armaduras metálicas “de bárbaros”; os durões das planícies preferem roupas de couro e, claro, um bom cospe-chumbo.
+Pistoleiros de Smokestone andam em bandos, seguindo um líder. Atacam viajantes desprotegidos, caravanas ou pequenos povoados. Sua arrogância e armas os levam a crer (às vezes com razão) que podem saquear grupos de heróis. Nestes casos, por seu suposto senso de civilidade, é comum que proponham resolver a “desavença” com uma disputa de tiro ao alvo, jogo de azar ou duelo contra o líder.` },
+        { titulo: "Sahuagin",
+          texto:
+`“Elfos-do-mar saqueadores? Caro amigo, em minha terra temos coisas bem piores.”
+— Louis Blanchard, herdeiro do urso bucaneiro
+São humanoides, mas de pele escamosa que vai do verde-escuro ao cinza-azulado e azul-marinho, quase sempre com listras. Suas barbatanas, que variam em número, tamanho e disposição, são negras ou vermelho-escuras. Suas mãos e pés têm dedos longos, unidos por membranas. Os sahuagin, também conhecidos como homens-tubarões, são criaturas-peixe de duas pernas que variam em aparência, mais comuns na região costeira de Moreania. São conhecidos por sua violência e crueldade, eliminando os fracos e desamparados sem piedade. Possuem um prazer sádico em atormentar e torturar suas vítimas antes de matá-las. São gananciosos e têm um forte desejo por joias e gemas preciosas, consideradas símbolos de status. Sahuagin são extremamente vingativos, até capazes de transmitir seu ódio a seus descendentes para perseguir e destruir antigos inimigos. Formam grupos para saquear navios e comunidades costeiras em busca de tesouros e vítimas, preferindo atacar durante a noite. Apesar de conseguirem ficar fora d’água por períodos prolongados, raramente se afastam muito do mar, para garantir sua fuga em caso de necessidade. Os sahuagin têm afinidade com os tubarões, frequentemente domesticando-os para uso como bestas de carga ou de guerra. Alguns, inclusive, têm o poder sobrenatural de se transformar em tubarões.` },
+      ],
+    },
+
+    // ── ⚡ POVOS-TROVÃO ────────────────────────────────
+    {
+      chave: "trovao", nome: "Povos-Trovão", icone: "⚡", cor: "#a8781c",
+      intro: "Também denominados como “antropossauros” no meio acadêmico, povos-trovão é como são conhecidas várias raças que descendem dos gigantescos lagartos-trovão do passado. Eles chamam a si mesmos de thera-psidah, ou apenas thera. Apesar de sua ancestralidade, estes seres são mais humanoides que sauroides: diferentes dos trogs, thera são criaturas de sangue quente, sem qualquer vulnerabilidade especial ao frio. Alguns têm couro liso e macio, outros são encouraçados. Todos os povos-trovão são adaptados à vida em terrenos inclementes. Usam instrumentos rudimentares de pedra, osso e madeira — de fato, são muito hábeis na fabricação de armas e armaduras com partes de monstros, em especial os insetos gigantes com quem dividem o habitat. Vivem em áreas selvagens, como Galrasia e as Sanguinárias, ou nas vastidões da Grande Savana, sendo esperado que viajantes e aventureiros cruzando essas regiões os confrontem. Embora costumem ser agressivos e territoriais, nem todo contato com os povos-trovão precisa ser hostil. Quase todas as tribos já viram um ou mais grupos de aventureiros, sendo possível abordá-las com diplomacia e cautela. Alguns até chegam a abandonar suas comunidades para viver entre os povos mais urbanizados, ou como aventureiros.",
+      fichas: [
+        {
+          chave: "ceratopsGuerreiro", nome: "Ceratops Guerreiro", nd: "3", tipo: "Humanoide (ceratops) Grande",
+          papel: '',
+          subgrupo: "Ceratops",
+          resumo: "Ceratops — Alta e forte como um ogro, a criatura exibe uma cabeçorra de formato incomum, ostentando um escudo de osso e vários longos chifres.",
+          texto:
+`Ceratops Guerreiro ND 3
+Humanoide (ceratops) Grande
+Iniciativa +0, Percepção +3
+Defesa 21, Fort +14, Ref +4, Von +9, redução de dano 2
+Pontos de Vida 33
+Deslocamento 9m (6q)
+Corpo a Corpo Tacape +14 (1d12+6) e chifres +14 (1d8+6).
+Atropelamento (Completa) O ceratops guerreiro percorre até o dobro de seu deslocamento. Ele pode passar pelo espaço ocupado de quaisquer inimigos menores que ele, mas não pode passar duas vezes pelo mesmo espaço. Criaturas atropeladas desta forma sofrem 4d8+4 pontos de dano de impacto e ficam caídas (Ref CD 17 reduz à metade e evita a condição). Recarga (movimento).
+Medo de Altura Se estiver adjacente a uma queda de 3m ou mais de altura (como um buraco ou penhasco), o ceratops fica abalado.
+For 5, Des –1, Con 4, Int –1, Sab 0, Car 0
+Perícias Atletismo +8, Intimidação +8, Sobrevivência +3.
+Equipamento Tacape aumentado. Tesouro Metade.`
+        },
+        {
+          chave: "ceratopsChefeDaTribo", nome: "Ceratops Chefe da Tribo", nd: "7", tipo: "Humanoide (ceratops) Grande",
+          papel: '',
+          subgrupo: "Ceratops",
+          resumo: "Ceratops — Alta e forte como um ogro, a criatura exibe uma cabeçorra de formato incomum, ostentando um escudo de osso e vários longos chifres.",
+          texto:
+`Ceratops Chefe da Tribo ND 7
+Humanoide (ceratops) Grande
+Iniciativa +7, Percepção +9
+Defesa 32, Fort +21, Ref +7, Von +14, redução de dano 5
+Pontos de Vida 280
+Deslocamento 9m (6q)
+Corpo a Corpo Tacape +24 (3d8+22) e chifres +24 (1d8+22).
+Atropelamento (Completa) O ceratops chefe da tribo percorre até o dobro de seu deslocamento. Ele pode passar pelo espaço ocupado de quaisquer inimigos menores que ele, mas não pode passar duas vezes pelo mesmo espaço. Criaturas atropeladas desta forma sofrem 12d8+12 pontos de dano de impacto e ficam caídas (Ref CD 24 reduz à metade e evita a condição). Recarga (movimento).
+Determinação Primal (Reação) Quando o ceratops é reduzido a 80 PV ou menos, seus instintos de proteção da família despertam. Todas as condições e efeitos negativos afetando o ceratops se encerram e ele recebe resistência a magia +5 até o fim da cena.
+Medo de Altura Se estiver adjacente a uma queda de 3m ou mais de altura (como um buraco ou penhasco), o ceratops fica abalado.
+For 6, Des 0, Con 6, Int –1, Sab 2, Car 0
+Perícias Atletismo +13, Diplomacia +7, Intimidação +13, Sobrevivência +9.
+Equipamento Tacape aumentado, gibão de peles. Tesouro Padrão.`
+        },
+        {
+          chave: "pterosCeifador", nome: "Pteros Ceifador", nd: "2", tipo: "Humanoide (pteros) Médio",
+          papel: '',
+          subgrupo: "Pteros",
+          resumo: "Pteros — A criatura de um metro e meio parece magra, mirrada, mas de musculatura rija.",
+          texto:
+`Pteros Ceifador ND 2
+Humanoide (pteros) Médio
+Iniciativa +6, Percepção +9, visão na penumbra
+Defesa 16, Fort +4, Ref +9, Von +14, evasão
+Pontos de Vida 21
+Deslocamento 9m (6q), voo 12m (8q)
+Corpo a Corpo Duas garras +12 (1d6+5).
+Companheiros de Voo Pteros ceifadores caçam em pares com seus companheiros. Se estiver flanqueando um inimigo com seu companheiro, o pteros recebe +2 em testes de ataque, em rolagens de dano e na Defesa contra esse inimigo. Quando um dos pteros morre, o choque deixa seu companheiro atordoado por 1 rodada e então esmorecido.
+Rasante (Completa) O pteros faz uma investida e ataca com suas duas garras. Os dois ataques recebem o bônus de +2 da investida, mas devem ser feitos contra o mesmo alvo. Após o ataque, o pteros ceifador pode continuar seu movimento, até o limite de seu deslocamento.
+For 1, Des 3, Con 0, Int –1, Sab 4, Car 0
+Perícias Atletismo +6, Sobrevivência +7.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "pterosDoCeuInfinito", nome: "Pteros do Céu Infinito", nd: "5", tipo: "Humanoide (pteros) Médio",
+          papel: '',
+          subgrupo: "Pteros",
+          resumo: "Pteros — A criatura de um metro e meio parece magra, mirrada, mas de musculatura rija.",
+          texto:
+`Pteros do Céu Infinito ND 5
+Humanoide (pteros) Médio
+Iniciativa +7, Percepção +11, visão na penumbra
+Defesa 20, Fort +5, Ref +11, Von +17
+Pontos de Vida 140
+Deslocamento 9m (6q), voo 12m (8q)
+Pontos de Mana 33
+Corpo a Corpo Duas garras +15 (1d6+3).
+Bênção de Anikka Por ser um devoto de Anikka do Céu Infinito (um aspecto de Wynna), o pteros do céu infinito lança magias arcanas como se fossem divinas. Além disso, quando lança uma magia, ele recebe +2 na Defesa por 1 rodada.
+Magias Como um clérigo de Wynna de 5º nível (CD 22).
+• Curar Ferimentos (Padrão, 5 PM) Uma criatura adjacente cura 6d8+6 PV.
+• Controlar Plantas (Padrão, 2 PM) Um quadrado de 9m de vegetação em alcance curto se torna terreno difícil. Criaturas na área quando a magia é lançada ou no início de seus próprios turnos ficam enredadas e imóveis (Fort evita). Uma vítima pode se libertar com uma ação padrão e um teste de Acrobacia ou Atletismo.
+• Toque Chocante (Padrão, 5 PM) O pteros dispara raios que atingem todas as criaturas em uma esfera de 6m ao seu redor, causando 4d8+4 pontos de dano de eletricidade (Fort reduz à metade).
+• Tempestade Divina (Padrão, 4 PM, sustentada) Só pode ser lançada em ambientes abertos. Um vendaval (veja Tormenta20, p. 208) preenche um cilindro de 15m de raio e 15m de altura. Uma vez por rodada, o pteros pode gastar uma ação padrão para causar 3d8 pontos de dano de eletricidade em uma criatura na área (Ref reduz à metade).
+For 0, Des 3, Con 0, Int –1, Sab 5, Car 0
+Perícias Atletismo +5, Cura +9, Religião +9, Sobrevivência +9.
+Equipamento Pó azul x2, ramo verdejante x1d3, símbolo sagrado de Anikka (Wynna). Tesouro Padrão.`
+        },
+        {
+          chave: "velocisCacador", nome: "Velocis Caçador", nd: "4", tipo: "Humanoide (velocis) Médio",
+          papel: '',
+          subgrupo: "Velocis",
+          resumo: "Velocis — Ele é alto e esguio, de pele azul-acinzentada, com manchas de negro profundo nas pernas, antebraços, pescoço e ao redor dos olhos.",
+          texto:
+`Velocis Caçador ND 4
+Humanoide (velocis) Médio
+Iniciativa +7, Percepção +8, faro, visão na penumbra Defesa 21 (23 contra ataques à distância), Fort +6, Ref +15, Von +9, redução a corte e perfuração 2
+Pontos de Vida 25
+Deslocamento 12m (8q), sem redução por terreno difícil natural
+Corpo a Corpo Lança +17 (1d6+9 mais veneno).
+À Distância Azagaia +17 (1d6+11 mais veneno).
+Ataque em Movimento O velocis caçador pode se mover antes e depois de executar a ação agredir, desde que a distância total percorrida não seja maior que seu deslocamento.
+Covardia Defensiva (Reação) Uma vez por rodada, quando sofre dano de um ataque corpo a corpo, o velocis se move até metade de seu deslocamento em direção contrária ao atacante e recebe +2 na Defesa por 1 rodada.
+Estilo de Arremesso O velocis saca armas de arremesso como uma ação livre.
+Velocista da Planície Quando faz testes de Atletismo para correr ou saltar, o velocis rola dois dados e usa o melhor resultado.
+Veneno Peçonha concentrada (perde 1d12 pontos de vida durante 3 rodadas, Fort CD 18 reduz a duração para 1 rodada).
+For 1, Des 3, Con 1, Int –1, Sab 2, Car 0
+Perícias Atletismo +7, Furtividade +6, Sobrevivência +8.
+Equipamento Azagaia x3, escudo de couro, lança, peçonha concentrada x4. Tesouro Metade.`
+        },
+        {
+          chave: "xamaDeSarana", nome: "Xamã de Sarana", nd: "6", tipo: "Humanoide (velocis) Médio",
+          papel: '',
+          subgrupo: "Velocis",
+          resumo: "Velocis — Ele é alto e esguio, de pele azul-acinzentada, com manchas de negro profundo nas pernas, antebraços, pescoço e ao redor dos olhos.",
+          texto:
+`Xamã de Sarana ND 6
+Humanoide (velocis) Médio
+Iniciativa +7, Percepção +9, faro, visão na penumbra
+Defesa 25, Fort +6, Ref +12, Von +18, imunidade a alquebrado, esmorecido e frustrado, redução a corte e perfuração 2
+Pontos de Vida 168
+Deslocamento 12m (8q), sem redução por terreno difícil natural
+Pontos de Mana 34
+✦ Aura de Paz (Livre, 2 PM) A xamã de Sarana gera uma aura de paz com um raio de 9m e duração cena. Qualquer inimigo dentro da aura que tente fazer uma ação hostil contra ela deve passar em um teste de Vontade (CD 24) ou perde a ação. Se passar, fica imune a esta habilidade por um dia.
+Magia em Movimento Quando se move e lança uma magia na mesma rodada, a xamã pode se mover antes e depois da magia, desde que a distância total percorrida não seja maior que seu deslocamento.
+Velocista da Planície Quando faz testes de Atletismo para correr ou saltar, a xamã rola dois dados e usa o melhor resultado.
+Magias Como uma clériga de Marah de 6º nível (CD 24).
+• Caminhos da Natureza (Padrão, 3 PM) Criaturas escolhidas em alcance curto recebem deslocamento +3m e ignoram penalidades por terreno difícil em terrenos naturais.
+• Curar Ferimentos (Padrão, 3 PM) Uma criatura adjacente cura 4d8+8 PV.
+• Escudo da Fé (Reação, 1 PM) Quando uma criatura em alcance curto sofre um ataque, ela recebe +2 na Defesa por 1 turno.
+• Purificação (Padrão, 3 PM) Remove uma condição entre abalado, apavorado, alquebrado, atordoado, cego, confuso, debilitado, enjoado, envenenado, esmorecido, exausto, fascinado, fatigado, fraco, frustrado, lento, ofuscado, paralisado, pasmo ou surdo de uma criatura adjacente.
+• Tranquilidade (Padrão, 2 PM) Até o fim da cena, uma criatura em alcance curto tem sua atitude mudada para indiferente e não pode atacar ou realizar qualquer ação hostil (Von reduz para penalidade de –2 em testes de ataque). Ações hostis contra o alvo dissipam a magia.
+For –1, Des 2, Con 0, Int –1, Sab 4, Car 3
+Perícias Atletismo +7, Cura +9, Diplomacia +13, Sobrevivência +11, Religião +9.
+Equipamento Bálsamo restaurador x3, ramo verdejante x4, símbolo sagrado de Sarana (Marah). Tesouro Padrão.`
+        },
+        {
+          chave: "voracisCacadora", nome: "Voracis Caçadora", nd: "8", tipo: "Humanoide (voracis) Médio",
+          papel: '',
+          subgrupo: "Voracis",
+          resumo: "Voracis — Embora pareça uma mulher baixa e esguia, sua postura lembra mais uma pantera.",
+          texto:
+`Voracis Caçadora ND 8
+Humanoide (voracis) Médio
+Iniciativa +15, Percepção +8, faro, visão na penumbra
+Defesa 30, Fort +16, Ref +20, Von +8
+Pontos de Vida 64
+Deslocamento 9m (6q), escalada 9m (6q)
+Corpo a Corpo Espada vespa +27 (2d4+22, 18) e garra +27 (1d6+22, x3).
+À Distância Azagaia +24 (1d6+22, 19) ou rede +24 (enredar).
+Corta-Passos (Livre) Uma vez por rodada, quando faz um ataque corpo a corpo, a voracis caçadora pode sofrer uma penalidade de –2 nesse teste de ataque. Se fizer isso e acertar o ataque, o alvo fica lento (Fort CD 26 evita).
+Marca da Presa (Movimento) A caçadora analisa uma criatura em alcance médio. Até o fim da cena, ela recebe +2d12 em rolagens de dano contra essa criatura.
+For 3, Des 5, Con 3, Int –1, Sab 0, Car 0
+Perícias Atletismo +13, Acrobacia +13, Intimidação +8, Sobrevivência +10.
+Equipamento Armadura de couro, azagaia x3, espada vespa atroz, garra feroz maciça, rede. Tesouro Metade.`
+        },
+        {
+          chave: "voracisRainha", nome: "Voracis Rainha", nd: "11", tipo: "Humanoide (voracis) Médio",
+          papel: '',
+          subgrupo: "Voracis",
+          resumo: "Voracis — Embora pareça uma mulher baixa e esguia, sua postura lembra mais uma pantera.",
+          texto:
+`Voracis Rainha ND 11
+Humanoide (voracis) Médio
+Iniciativa +16, Percepção +11, faro, visão na penumbra
+Defesa 41, Fort +18, Ref +24, Von +11, evasão, imunidade a medo, redução de dano 5
+Pontos de Vida 530
+Deslocamento 9m (6q), escalada 9m (6q)
+Corpo a Corpo Presa de serpente x2 +30 (1d8+27, 17) e garra +30 (1d6+27, x3).
+À Distância Azagaia +28 (1d6+25) ou rede +28 (enredar).
+Caça em Bando (Movimento) Uma vez por cena, a voracis rainha invoca 1d6+2 voracis em espaços desocupados em alcance curto. Eles agem a partir da próxima rodada da rainha, têm deslocamento 9m (normal e escalada) e podem gastar uma ação padrão para causar 2d4+4 pontos de dano de corte em uma criatura adjacente. As voracis têm For 1, Des 4, Defesa 26 e 1 PV e falham automaticamente em qualquer teste oposto ou de resistência.
+Eviscerar Quando acerta um ataque de garra, a rainha rasga a carne da vítima, que fica desprevenida e sangrando (Fort CD 31 evita). Essas condições persistem até que a vítima receba cura mágica ou primeiros socorros (veja a perícia Cura). Criaturas imunes a acertos críticos e/ou sangramentos ou usando armaduras pesadas são imunes a esta habilidade. Metabolismo.
+Fúria Primeva (Livre) A rainha entra em um estado de frenesi. Ela ganha 50 PV temporários e todas as criaturas em alcance médio ficam abaladas (Von CD 31 evita). Além disso, enquanto esta habilidade estiver ativa, a rainha recebe +4 em testes de ataque e rolagens de dano, mas não pode realizar ações que exigem calma e concentração. A fúria termina se, ao fim da rodada, a rainha não tiver atacado nem for alvo de um efeito hostil. Recarga (matar uma criatura).
+For 3, Des 7, Con 3, Int –1, Sab 2, Car 1
+Perícias Atletismo +12, Furtividade +16, Intimidação +10, Sobrevivência+13.
+Equipamento Azagaia x3, bálsamo da drogadora x2, garra feroz maciça, presa de serpente, rede.
+Tesouro Dobro.`
+        },
+        {
+          chave: "totemDeSaranaAspectoDeMarah", nome: "Totem de Sarana (Aspecto de Marah)", nd: "10", tipo: "Espírito Grande",
+          papel: '',
+          subgrupo: "Totens do Trovão",
+          resumo: "Totens do Trovão — Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual.",
+          texto:
+`Totem de Sarana (Aspecto de Marah) ND 10
+Espírito Grande
+Iniciativa +21, Percepção +17, faro, visão no escuro
+Defesa 34, Fort +10, Ref +16, Von +24, cura acelerada 10/trevas, imunidade a alquebrado, esmorecido, frustrado e paralisia, redução de dano 10, resistência a magia +2
+Pontos de Vida 420
+Deslocamento 18m (12q)
+Pontos de Mana 40
+Aura de Sacrifício (Reação, 2 PM) Quando um aliado em um raio de 9m sofre dano, o totem de Sarana sofre esse dano no lugar dele.
+Chuva Purificadora (Padrão, 3 PM, sustentada) O totem evoca uma chuva que cobre um raio de 9m ao seu redor. No início de cada turno do totem, cada aliado na área recupera 20 PV e perde todas as condições negativas.
+Placidez O totem gera uma aura de paz em um raio de 30m. Qualquer outra criatura dentro da aura que tente realizar uma ação hostil deve fazer um teste de Vontade (CD 32). Se falhar, perde a ação. Se passar, pode agir normalmente, mas perde 1d4 PM ao fim de seu turno.
+✦ Caso os PM da criatura sejam reduzidos a 0 por esta habilidade, ela fica enfeitiçada e perde a vontade de lutar por um dia.
+Toque Gentil (Padrão) O totem toca uma criatura adjacente, que perde 2d4 PM (Ref CD 32 evita).
+Veloz Como o Vento O totem pode fazer duas ações padrão em cada um de seus turnos. Além disso, quando corre, ele não precisa percorrer uma linha reta, desde que não passe pelo mesmo espaço mais de uma vez.
+For 0, Des 7, Con 5, Int 2, Sab 6, Car 6
+Perícias Atletismo +26, Cura +17, Diplomacia +17, Religião +20.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "totemDaDivinaSerpenteAspectoDeAllihanna", nome: "Totem da Divina Serpente (Aspecto de Allihanna)", nd: "14", tipo: "Espírito Enorme",
+          papel: '',
+          subgrupo: "Totens do Trovão",
+          resumo: "Totens do Trovão — Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual.",
+          texto:
+`Totem da Divina Serpente (Aspecto de Allihanna) ND 14
+Espírito Enorme
+Iniciativa +20, Percepção +24, faro, visão no escuro
+Defesa 42, Fort +27, Ref +20, Von +15, imunidade a fogo e veneno, redução de dano 15, resistência a magia +2
+Pontos de Vida 700
+Deslocamento 12m (8q), escalada 9m (6q), natação 9m (6q)
+Pontos de Mana 83
+Corpo a Corpo Presa de serpente +38 (2d6+23 corte, 16/x3, mais 2d8 fogo), garra +38 (1d10+23, 19, mais 2d8 fogo) e cauda +38 (1d12+23 mais 2d8 fogo).
+Agarrar Aprimorado (Livre) Cauda (teste +43).
+Aura de Calor O totem da Divina Serpente emana um calor intenso. No início de cada turno do totem, todas as criaturas em um raio de 9m sofrem 4d6+15 pontos de dano de fogo.
+Chama Divina Cada dado de dano de fogo causado pelo totem aumenta em um passo (já contabilizado).
+Constrição (Livre) No início de cada um de seus turnos, o totem causa 4d6+19 pontos de dano de impacto em qualquer criatura que esteja agarrando.
+Tempestade de Chamas Uma vez por rodada, quando faz um acerto crítico com sua presa de serpente, o totem pode lançar uma magia como uma ação livre.
+Magias Como um clérigo de Allihanna de 14º nível (CD 40).
+• Bola de Fogo (Padrão, 9 PM) Uma explosão causa 12d8 pontos de dano de fogo em todas as criaturas e objetos livres numa esfera de 6m em alcance médio (Ref reduz à metade).
+• Controlar Fogo (Padrão, 3 PM) O totem cria, molda, move ou extingue chamas e emanações de calor (veja Tormenta20, p. 187).
+• Coluna de Chamas (Padrão, 6 PM) Um pilar de fogo sagrado causa 6d8 pontos de dano de fogo mais 6d6 pontos de dano de luz nas criaturas e objetos livres num cilindro de 3m de raio e 30m de altura em alcance longo (Ref reduz à metade).
+• Lança Ígnea de Aleph (Padrão, 6 PM) O totem dispara um projétil de magma contra um alvo em alcance médio, que sofre 4d8 pontos de dano de fogo e 4d6 pontos de dano de perfuração e fica em chamas. As chamas causam 2d8 pontos de dano por rodada, em vez do dano normal (Ref reduz à metade e evita a condição).
+• Muralha Elemental (Padrão, 6 PM, somente fogo) Uma muralha de fogo se eleva da terra. Ela pode ser um muro de até 30m de comprimento e 3m de altura (ou o contrário) ou uma cúpula de 3m de raio (veja Tormenta20, p. 200).
+For 16, Des 4, Con 10, Int 2, Sab 8, Car 8
+Perícias Misticismo +15, Religião +24, Sobrevivência +24.
+Equipamento Presa de serpente aumentada. Tesouro Nenhum.`
+        },
+        {
+          chave: "totemDoReiTiranoAspectoDeMegalokk", nome: "Totem do Rei-Tirano (Aspecto de Megalokk)", nd: "15", tipo: "Espírito Colossal",
+          papel: '',
+          subgrupo: "Totens do Trovão",
+          resumo: "Totens do Trovão — Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual.",
+          texto:
+`Totem do Rei-Tirano (Aspecto de Megalokk) ND 15
+Espírito Colossal
+Iniciativa +16, Percepção +17, faro, visão no escuro
+Defesa 50, Fort +28, Ref +22, Von +15, cura acelerada 15, imunidade a cansaço, redução de dano 15, resistência a veneno +5
+Pontos de Vida 750
+Deslocamento 15m (10q)
+Corpo a Corpo Mordida +40 (4d20+20, 18) e pisão +40 (4d20+20 impacto, x3).
+Agarrar Aprimorado (Livre)
+Mordida (teste +50).
+Engolir (Padrão) No início de cada um dos turnos do totem do Rei-Tirano, a criatura engolida sofre 4d8+8 pontos de dano de impacto mais 4d8+8 pontos de dano de ácido. Ela pode escapar causando um total de 100 pontos de dano a ele (Defesa 20, redução de dano 0).
+Pisotear Quando o totem se move, pisoteia qualquer criatura ou estrutura Grande ou menor em seu caminho, causando 4d12+19 pontos de dano de impacto (Ref CD 40 reduz à metade).
+Sede de Sangue O totem recebe +5 em testes de ataque e rolagens de dano contra criaturas que tenham sofrido dano na última rodada.
+For 16, Des 1, Con 12, Int –4, Sab 2, Car –2
+Perícias Atletismo +30, Intimidação +30.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "totemDoPaiDeTudoAspectoDeAzgher", nome: "Totem do Pai-de-Tudo (Aspecto de Azgher)", nd: "12", tipo: "Espírito Enorme",
+          papel: '',
+          subgrupo: "Totens do Trovão",
+          resumo: "Totens do Trovão — Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual.",
+          texto:
+`Totem do Pai-de-Tudo (Aspecto de Azgher) ND 12
+Espírito Enorme
+Iniciativa +16, Percepção +21, visão no escuro
+Defesa 41, Fort +26, Ref +10, Von +22, imunidade a cansaço, dano de luz, fogo e trevas, redução de dano 10, resistência a magia +2
+Pontos de Vida 700
+Deslocamento 12m (8q)
+Corpo a Corpo Chifre solar x3 +36 (1d12+18 perfuração, 18/x3, mais 1d12 luz e 1d12 fogo).
+Força Solar (Reação) Uma vez por rodada, quando o totem do Pai-de-Tudo é alvo de um ataque corpo a corpo, uma de suas estrelas detona e causa 8d6 pontos de dano de luz em um raio de 6m ao seu redor (Ref CD 33 reduz à metade). O totem recupera uma quantidade de PV igual à metade do dano total causado pela explosão.
+Manto de Estrelas Para cada 100 PV que o totem perde, uma estrela surge ao seu redor, até um máximo de três estrelas. Para cada estrela, o totem recebe +2 em testes de ataque e seus ataques com chifre solar causam +1d8 pontos de dano de luz. Tudo que o Sol Toca O totem emana uma aura de luz e clima ensolarado em um raio de 90m. Dentro desta área, efeitos que alterem o clima são automaticamente anulados ou, se já estiverem ativos, são dissipados. Uma criatura que comece seu turno nessa área fica fatigada ou, se já estiver fatigada, fica exausta (a condição máxima causada por esta habilidade; Fort CD 33 evita).
+Vigilância do Pai Enquanto estiver sob a luz do sol, o totem está sob o efeito básico da magia Visão da Verdade.
+For 10, Des 4, Con 6, Int 1, Sab 6, Car 6
+Perícias Atletismo +20, Diplomacia +21, Intuição +21, Religião +21.
+Tesouro Nenhum.`
+        },
+      ],
+      regras: [
+        { titulo: "Ceratops",
+          texto:
+`“Hah! Pois uma vez enfrentei um desses numa arena, só com os meus punhos! Adivinhem quem venceu?”
+— Murro, humano lutador
+Alta e forte como um ogro, a criatura exibe uma cabeçorra de formato incomum, ostentando um escudo de osso e vários longos chifres. Tem couro rosa-alaranjado, coberto de pinturas de rituais. A cauda é longa, musculosa e também com chifres. Veste um manto orgulhoso feito com a pele de algum grande felino, além de joias cravejadas com gemas locais. Ceratops são os maiores e mais fortes entre os thera. Descendem de enormes quadrúpedes com cabeças blindadas e repletas de chifres. São guerreiros truculentos, orgulhosos e agressivos; na maior parte dos casos, sua simples aparência basta para desencorajar qualquer agressor. Ceratops são caçadores-coletores, saindo em expedições para colher vegetais e caçar — embora herbívoros, abatem animais por seu couro, ossos e outras matérias-primas. Sua sociedade é separada em chefes e família. Chefes são aqueles que lideram, lutam e caçam; família são aqueles que coletam, fabricam e consertam. Ainda que o papel de chefe seja muitas vezes reservado aos homens (particularmente em Galrasia), não é assim em todas as comunidades; algumas são matriarcais, enquanto outras dividem as funções igualmente entre os gêneros. Suas aldeias são construídas em clareiras ou praias, perto de florestas. Têm casas de alvenaria, redondas, com telhados de palha. A proximidade de um rio ou lago também é desejada. Como outros thera, ceratops nascem quadrúpedes e atarracados, como pequenos rinocerontes. Começam a caminhar nas pernas traseiras aos 10 anos e atingem a maturidade perto dos 14, quando os chifres estão crescidos. Filhotes são criados e educados pela família, tratando todos os adultos como “mãe” e “pai”. Como a maioria dos animais de pasto, seus ancestrais nunca se afastaram do chão durante toda a vida; seu mundo não tem noções como “acima”, “abaixo”, “subir” ou “descer”. Por isso, de forma similar aos minotauros, ceratops temem altura.` },
+        { titulo: "Pteros",
+          texto:
+`“Ele acha que é bom só porque voa! Deixa só eu mostrar um pouco da minha magia!”
+— Lassiantre, elfa maga
+A criatura de um metro e meio parece magra, mirrada, mas de musculatura rija. Os braços abertos revelam ser asas membranosas, com mãos rústicas, atrofiadas. A cabeça apresenta olhos de águia, focinho longo e uma crista colorida de cartilagem. A pele é lisa, coberta com uma fina penugem cinza-esverdeada. Tem cauda longa e fina, com ponta em forma de folha. As garras nos pés parecem bem perigosas. Pteros, ou “voadores”, são os únicos thera capazes de voar. Talvez por possuírem mãos subdesenvolvidas, são também os menos avançados tecnologicamente. Quase não usam qualquer arma ou instrumento — exceto pedras para quebrar conchas duras, e ninhos de galhos e algas marinhas. Também dispensam vestimentas, porque as asas dificultam seu uso. Quando necessário, recorrem a pequenas perfurações nas membranas das asas para a passagem de cintos, alças e cordões. Pteros formam grandes bandos, mas com organização social muito simples: não formam tribos, não adotam líderes, não dividem tarefas. Só vivem juntos porque são os únicos capazes de atingir os rochedos, penhascos e grandes árvores que escolhem para construir ninhos. Cada casal se ocupa com a própria sobrevivência e com sua prole. Apenas grandes emergências — como um predador perigoso na região — podem unir o bando contra uma ameaça comum. Pteros são monogâmicos, muito ligados a seus parceiros. O casal permanece unido por toda a vida; um voador pode se sacrificar para proteger o(a) companheiro(a). Quando um morre, o outro também pode morrer de tristeza. Aqueles que sobrevivem à perda, não raras vezes, tornam-se aventureiros. Apesar de sua reclusão, não é impossível negociar com pteros. Por seu acesso aos pontos mais remotos da região onde vivem, eles conhecem muitos segredos e podem ser convencidos a conduzir expedições. Como pagamento, estão sempre interessados em itens mágicos que consigam usar.` },
+        { titulo: "Velocis",
+          texto:
+`“Você chama de covardia. Eu chamo de presente de Allihanna a eles, para evitar derrota e morte.”
+— Lisandra de Allihanna, sumo-sacerdotisa
+Ele é alto e esguio, de pele azul-acinzentada, com manchas de negro profundo nas pernas, antebraços, pescoço e ao redor dos olhos. Tem um par de pequenos chifres voltados para trás, uma crina curta atrás do pescoço e outra na cauda delgada. Veste uma tanga simples. Empunha uma lança e um escudo grande, mas de aspecto leve. Parecidos com antílopes, os membros do povo-trovão chamados velocis são verdadeiras máquinas de correr e saltar. Alguns os descrevem como as criaturas terrestres mais rápidas de Arton. Estes thera nômades vivem em campo aberto, especialmente na Grande Savana, colhendo o que precisam por onde passam. Erguem acampamentos temporários em épocas de clima rigoroso, mas nunca ficam muito tempo no mesmo lugar; sua sobrevivência depende da fuga rápida. Comem quase qualquer matéria vegetal (até madeira), mas também caçam para abastecer a tribo de ossos, peles e ingredientes para magia. Uma grande tribo velocis é como uma manifestação de Allihanna: utiliza cada parte de suas dádivas, deixando para trás apenas vegetação rasteira e galhos nus. Velocis nascem quadrúpedes, como pequenas gazelas. São transportados pelas mães nas costas, em mochilas simples; uma ou duas semanas mais tarde, conseguem trotar e acompanhar o bando. Seus chifres crescem aos 9 anos, quando adotam a postura humanoide dos adultos e atingem a maturidade. Bastante espirituais, estes thera são os únicos que escolhem devotos divinos como líderes — tradicionalmente uma clériga de Marah, que eles chamam Sarana. Algumas tribos convivem com os ceratops, beneficiando-se de sua força guerreira e intimidação contra predadores — enquanto estes, por sua vez, são alertados contra perigos pelos incríveis sentidos aguçados dos velocis. Velocis não são apenas covardes, são orgulhosamente covardes. Nenhuma honra ou amor próprio impedem que violem promessas, abandonem companheiros ou recorram a golpes baixos. Ainda assim, são mestres em sobrevivência — não enfrentam perigos, mas sabem evitá-los, sendo valiosos como batedores, rastreadores ou curandeiros.` },
+        { titulo: "Voracis",
+          texto:
+`“Espreitei-o muitas vezes. Era ainda fraco, perdido. Deixei-o livre para crescer. Tornar-se forte, digno. Sonhei com este futuro.”
+— Ghanna dos Voracis
+Embora pareça uma mulher baixa e esguia, sua postura lembra mais uma pantera. A cabeça é feral, de focinho alongado. Tem pele marrom-avermelhada, olhos amarelos de leoa, uma cauda fina e escamada, e uma crista de cores vivas. Veste uma tanga leve e adornos feitos de ossos, garras e dentes. Uma mão empunha uma adaga serrilhada enquanto a outra exibe garras negras. Também conhecidas como “caçadoras”, voracis estão entre os humanoides mais agressivos de Arton, temidas até pelos outros thera. São as rainhas de seus territórios, o topo da cadeia alimentar — aquelas que caçam todos, sem serem caçadas por ninguém. Arrogância, orgulho e confiança encarnados, voracis são quase incapazes de acreditar na própria derrota: atacam qualquer inimigo sem medir consequências. Como demonstração de sua supremacia, capturam e conservam membros de outras raças como “mascotes”, por assim dizer. A sociedade voracis é rígida e matriarcal. As mulheres caçam, lutam e lideram. Os machos da espécie são raros, quase nunca vistos; suas vidas são consideradas valiosas, sendo incomum que abandonem a segurança da aldeia. Alguns acabam se tornando druidas. Outros, rebeldes, escapam de suas “protetoras” em busca de aventura — ou pelo menos um pouco de liberdade até que sejam recapturados. Voracis habitam vilas nas copas das árvores, em grandes tablados de madeira com cabanas semi-esféricas, feitas de ossos e decoradas com troféus de caça. Elevadores de cordas com roldanas de pedra (um dos mais espantosos avanços técnicos vistos entre os povos thera) conectam a vila ao solo; uma vez que as próprias caçadoras são exímias em escaladas, os elevadores são usados apenas para transportar cargas e prisioneiros. Voracis escolhem sua líder em combate, não raras vezes até a morte. Desafios pela liderança são comuns (chega a ser raro que uma líder mantenha seu posto por mais que algumas semanas). Seguem uma hierarquia baseada em força e intimidação — as mais fortes humilham as mais fracas para demarcar seu status.` },
+        { titulo: "Totens do Trovão",
+          texto:
+`“Tornou-se muito forte, o mais forte de todos. Agora é presa valorosa. Minha oferenda à Serpente.”
+— Ghanna, voracis caçadora
+Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual. Exaustas e inebriadas, as caçadoras voracis terminaram sua dança. Em meio às chamas da fogueira central, uma criatura imensa começa a emergir — um ser flamejante, demoníaco, com torso de mulher e cabeça de serpente. Os thera, assim como outros povos de Arton, veneram diferentes aspectos dos mesmos deuses, sobretudo Allihanna — a Deusa da Natureza não é uma fera de muitas cabeças sem motivo. Para as voracis, ela é a Divina Serpente. Para os ceratops, Ollgrmnia. Outros deuses maiores, como Azgher, Lena, Marah e Megalokk, também encontram aqui suas próprias representações locais. Através de rituais sagrados executados por uma tribo inteira ou da súplica de um único devoto em um momento de urgência extrema, os povos-trovão são capazes de invocar aspectos de seus deuses — criaturas divinas temporárias com a missão de realizar uma tarefa simples, como lutar, proteger ou curar. Sua aparência exata reflete a crença de seus devotos: muitas vezes será um lagarto-trovão primevo, remetendo a seus ancestrais, mas também pode combinar com a forma mais conhecida da divindade. Desnecessário dizer, totens são muitas vezes invocados para enfrentar inimigos que demonstrem ser poderosos demais para a tribo. Isso inclui aventureiros.` },
+      ],
+    },
   ],
 
   // ── 📖 O capítulo de regras que abre o livro ────────────────
@@ -5817,5 +8038,12 @@ Preço: T$ 27.000.` },
     { chave: "olhosDoDevorador", nome: "Olhos do Devorador", meta: "Dádiva de Aharadak (simbionte)",
       texto:
 `Chamado por alguns de “visorg”, este simbionte de corpo achatado lembra uma mão enrugada com dedos compridos e duas grandes gemas vermelhas incrustadas no dorso. Uma vez posicionada no rosto do hospedeiro, a criatura crava seus “dedos”, permanentemente prendendo-se à sua face e substituindo seus olhos. O hospedeiro recebe +5 em Percepção, enxerga perfeitamente no escuro, incluindo em magias de escuridão, e não pode ser flanqueado. Além disso, pode lançar a magia Visão da Verdade. Se aprender essa magia, seu custo é reduzido em –1 PM. Preço: T$ 34.000.` },
+    { chave: "tesourosDoEspadaDaFloresta", nome: "Tesouros do Espada-da-Floresta", meta: "Espada espinhenta e fruto da espada-mãe (Mundo Perdido)",
+      texto:
+`Espada Espinhenta. Esta espada bastarda atroz de madeira Tollon é tão efetiva quanto uma feita de aço. Se tomada à força, apodrece em pouco tempo (em termos de regras, se desfaz ao fim da aventura). Em situações especiais, Allihanna pode enviar um espada-da-floresta para presentear um de seus devotos com uma destas lâminas. Neste caso, a lâmina se manterá fresca enquanto pertencer ao devoto.
+Frutos da Espada-Mãe. Desesperadamente procurado por aqueles que são alvos de maldições e pragas, esse fruto alimenta e cura. Ingerir um fruto da espada-mãe é uma ação padrão e cura 4d8+4 pontos de vida e remove todas as condições negativas, doenças e venenos que estejam afetando um personagem. Um fruto da espada-mãe não consumido apodrece ao fim da aventura.` },
+    { chave: "figadoDeLagartoTrovao", nome: "Fígado de Lagarto-Trovão", meta: "Tesouro do Grande Battham (Mundo Perdido)",
+      texto:
+`Um símbolo de coragem e poder, o fígado do lagarto-trovão conserva uma fração da força da criatura. Obter isso exige que o fígado seja abençoado por um druida ou clérigo de Allihanna ou Megalokk em um ritual de 1 hora que consome T$ 3.000 em materiais. Após isso, se ingerido pelo personagem que derrotou o lagarto, o fígado fornece +1 em Força. Um personagem só pode aumentar sua Força desta forma uma vez.` },
   ],
 };
