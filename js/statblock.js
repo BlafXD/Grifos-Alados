@@ -24,8 +24,15 @@ window.GA_Statblock = (function () {
   const RE_ATRIBUTOS = /^For\s+[+\-–−]?(?:\d|[—–−-])/;
   // "Nome da Habilidade (Ação[, X PM])" — negrita o nome com a execução
   const RE_HABILIDADE = /^([A-ZÀ-Ý"“…][^.•]{0,64}?\((?:Livre|Padrão|padrão|Reação|Movimento|Completa|Reativa|1 hora)[^)]*\))/;
-  // linha de tipo e tamanho ("Humanoide (humano) Médio", "Animal Grande"…)
-  const RE_TIPO = /^(Humanoide|Animal|Animais|Construto|Esp[íi]rito|Morto[- ]?vivo|Monstro)\b/i;
+  // linha de tipo e tamanho ("Humanoide (humano) Médio", "Animal Grande"…).
+  // Exige o TAMANHO no fim da linha: só a palavra do tipo não basta, porque
+  // ela também abre parágrafo de lore ("Animal próprio para transportar um
+  // cavaleiro…", do Cavalo de Montaria; "Monstro com corpo de leão…", da
+  // Mantícora) — e como o corte da descrição é na PRIMEIRA linha que casa,
+  // o lore inteiro saía formatado como linha de tipo.
+  // O Guia de NPCs escreve tipo e tamanho no feminino ("Morta-viva (osteon)
+  // Média"), por isso as terminações duplas.
+  const RE_TIPO = /^(Humanoide|Animal|Animais|Constru\w+|Esp[íi]rito|Mort[oa][- ]?viv[oa]|Mort[oa]s[- ]?viv[oa]s|Monstro)(\s*\([^)]*\))?\s+(Min[úu]scul[oa]|Pequen[oa]|M[ée]di[oa]|Grande|Enorme|Colossal)\s*$/i;
   // habilidade sem execução entre parênteses: o nome é uma sequência de
   // palavras capitalizadas ("Sensibilidade a Luz", "Voz da Natureza") antes
   // da frase de descrição, que começa em artigo/pronome.
