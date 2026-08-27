@@ -6,7 +6,7 @@
 //    "Inútil/Regras - Ameaças de Arton.txt". Dá para editar à mão — mas
 //    rodar o gerador de novo sobrescreve tudo.
 //
-//  As 320 criaturas do Capítulo 1 (Ameaças), nas 22 seções
+//  As 426 criaturas do Capítulo 1 (Ameaças), nas 30 seções
 //  temáticas do livro. Cada ficha guarda o TEXTO LIMPO do statblock, no
 //  formato do livro — quem o transforma em criatura do bestiário é o
 //  parser parsearFicha() do monstros.js (o mesmo do "📋 Importar do
@@ -47,7 +47,7 @@
 //  Urso das Cavernas também vieram sem ND no statblock, mas o número
 //  estava no título da entrada e o gerador o recuperou.)
 //
-//  ⚠⚠ 2 NDs AINDA NÃO CONFERIDOS NO LIVRO — Arqueiro Escravo (5) e Kobold Xamã (3).
+//  ⚠⚠ 10 NDs AINDA NÃO CONFERIDOS NO LIVRO — Arqueiro Escravo (5), Kobold Xamã (3), Dançarino de Guerra Veterano (6), Purificado (1/2), Mantícora (6), Grande Tachygloss (16), Uraghian Jovem (5), Água-viva Gigante (8), Nagah Retalhador (12) e Nagah Sacerdotisa (5).
 //  Vieram sem ND na cópia do PDF e o número aqui é dedução do gerador;
 //  o raciocínio de cada um está no relatório. Se o livro disser outra
 //  coisa, troque na tabela ND_FALTANDO do gerador e rode de novo.
@@ -7841,6 +7841,2684 @@ Embora pareça uma mulher baixa e esguia, sua postura lembra mais uma pantera. A
 Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual. Exaustas e inebriadas, as caçadoras voracis terminaram sua dança. Em meio às chamas da fogueira central, uma criatura imensa começa a emergir — um ser flamejante, demoníaco, com torso de mulher e cabeça de serpente. Os thera, assim como outros povos de Arton, veneram diferentes aspectos dos mesmos deuses, sobretudo Allihanna — a Deusa da Natureza não é uma fera de muitas cabeças sem motivo. Para as voracis, ela é a Divina Serpente. Para os ceratops, Ollgrmnia. Outros deuses maiores, como Azgher, Lena, Marah e Megalokk, também encontram aqui suas próprias representações locais. Através de rituais sagrados executados por uma tribo inteira ou da súplica de um único devoto em um momento de urgência extrema, os povos-trovão são capazes de invocar aspectos de seus deuses — criaturas divinas temporárias com a missão de realizar uma tarefa simples, como lutar, proteger ou curar. Sua aparência exata reflete a crença de seus devotos: muitas vezes será um lagarto-trovão primevo, remetendo a seus ancestrais, mas também pode combinar com a forma mais conhecida da divindade. Desnecessário dizer, totens são muitas vezes invocados para enfrentar inimigos que demonstrem ser poderosos demais para a tribo. Isso inclui aventureiros.` },
       ],
     },
+
+    // ── 🕯 PURISTAS ────────────────────────────────────
+    {
+      chave: "puristas", nome: "Puristas", icone: "🕯", cor: "#8a2f4a",
+      intro: "Em Arton não há “povos malignos”. Não há criaturas que já nascem maléficas, condenadas a ser e agir assim: o mal é uma escolha pessoal, não hereditária. A própria existência da Supremacia Purista está entre as provas mais incisivas — e trágicas — dessa verdade. Seres humanos são capazes de conquistas extraordinárias, podem escalar as alturas mais elevadas da bravura, honra e glória. De igual forma, também podem chafurdar nos mais profundos lodaçais da ignorância, crueldade e covardia. Formados por humanos (e seres não humanos escravizados por estes), os puristas representam o pior que a humanidade tem a oferecer. Movidos por um ódio que mesmo demônios são incapazes de manifestar, formam uma das maiores forças militares no mundo conhecido, com o propósito obsessivo de aniquilar tudo que não seja humano.\nQuando a Tormenta, os duyshidakk e outras ameaças espreitam, parece inacreditável que os povos humanos também representem tamanho perigo. Mas o inacreditável, às vezes, é muito real.",
+      fichas: [
+        {
+          chave: "arcanoDeGuerraAdepto", nome: "Arcano de Guerra Adepto", nd: "4", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Arcano de Guerra",
+          resumo: "Arcano de Guerra — A armadura orgulhosa sugere ser algum tipo de oficial superior, especialmente por estar desarmado.",
+          texto:
+`Arcano de Guerra Adepto ND 4
+Humanoide (humano) Médio
+Iniciativa +7, Percepção +5
+Defesa 22, Fort +6, Ref +11, Von +16, resistência a magia +2
+Pontos de Vida 82
+Deslocamento 6m (4q)
+Pontos de Mana 36
+Corpo a Corpo Adaga +13 (1d4+2, 19).
+Conjurador Magibélico. O arcano de guerra adepto pode lançar magias vestindo armaduras pesadas sem precisar de testes de Misticismo. Além disso, sempre que faz um teste de Misticismo, ele pode rolar dois dados e escolher o melhor resultado.
+Magias Como um mago de 5º nível (CD 20, limite de PM 11).
+• Explosão de Chamas (Padrão, 3 PM) Criaturas em um cone de 6m sofrem 4d6 pontos de dano de fogo (Ref reduz à metade).
+• Névoa (Padrão, 11 PM) Forma uma nuvem quase sólida que ocupa um cubo de 6m em alcance curto e dura até o fim da cena. Criaturas a até 1,5m têm camuflagem leve e criaturas a partir de 3m têm camuflagem total. Criaturas dentro da nuvem têm seu deslocamento reduzido para 3m e sofrem –2 em testes de ataque rolagens de dano e, no início de cada um de seus turnos, sofrem 4d4 pontos de dano de ácido.
+• Salto Dimensional (Reação, 5 PM) O arcano recebe +5 na Defesa e em testes de Reflexos contra um ataque ou efeito que esteja prestes a atingi-lo. Após a resolução do efeito, ele salta para um espaço adjacente desocupado
+• Sopro das Uivantes (Padrão, 6 PM) Criaturas em um cone de 9m sofrem 8d6 pontos de dano de frio e, se forem Médias ou menores, ficam caídas e são empurradas 6m na direção oposta. Se houver uma parede ou outro objeto sólido (mas não uma criatura) no caminho, a criatura para de se mover, mas sofre +2d6 pontos de dano de impacto (Fort reduz à metade e evita a condição e o empurrão).
+• Toque Chocante (Padrão, 3 PM) Uma criatura adjacente sofre 4d8+4 pontos de dano de eletricidade (Fort reduz à metade).
+For 2, Des 3, Con 2, Int 6, Sab 1, Car 0
+Perícias Conhecimento +12, Guerra +14, Misticismo +12.
+Equipamento Adaga, armadura completa, tomo de guerra. Tesouro Padrão.`
+        },
+        {
+          chave: "arcanoDeGuerraVeterano", nome: "Arcano de Guerra Veterano", nd: "11", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Arcano de Guerra",
+          resumo: "Arcano de Guerra — A armadura orgulhosa sugere ser algum tipo de oficial superior, especialmente por estar desarmado.",
+          texto:
+`Arcano de Guerra Veterano ND 11
+Humanoide (humano) Médio
+Iniciativa +14, Percepção +9
+Defesa 41, Fort +11, Ref +24, Von +18, resistência a magia +5
+Pontos de Vida 360
+Deslocamento 6m (4q)
+Pontos de Mana 85
+Corpo a Corpo Adaga +31 (1d4+2, 19).
+Conjurador Magibélico O arcano de guerra veterano pode lançar magias vestindo armaduras pesadas sem precisar de testes de Misticismo. Além disso, sempre que faz um teste de Misticismo, ele pode rolar dois dados e escolher o melhor resultado.
+Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, o arcano muda a execução dela para livre.
+Magias Devastadoras As magias do arcano que causam dano têm cada um de seus dados de dano aumentados em um passo (já contabilizado) e ignoram até 10 pontos de redução de dano.
+Magias Como um mago de 9º nível (CD 33).
+• Açoite Flamejante (Movimento, 7 PM, sustentada) Um açoite de fogo surge na mão do arcano. Ele pode gastar uma ação padrão para açoitar uma criatura em alcance curto, que sofre 6d8 pontos de dano de fogo e fica em chamas e enredada enquanto estiver em chamas (Ref reduz à metade e evita as condições).
+• Campo de Força (Reação, 4 PM) Quando sofre dano, o arcano de guerra recebe RD 30 contra esse dano.
+• Muralha Elemental (Padrão, 9 PM) Uma muralha de fogo de até 30m de comprimento e 3m de altura se eleva da terra em alcance médio. Um lado da muralha emite ondas de calor, que causam 2d8 pontos de dano de fogo em criaturas a até 6m quando a magia é lançada e no início dos turnos do arcano. Atravessar a muralha causa 12d8 pontos de dano de fogo.
+• Relâmpago (Padrão, 7 PM) O arcano lança um relâmpago em cada criatura escolhida em alcance médio, causando 8d8 pontos de dano de eletricidade (Ref reduz à metade).
+• Sopro das Uivantes (Padrão, 6 PM) Criaturas em um cone de 9m sofrem 8d8 pontos de dano de frio e, se forem Médias ou menores, ficam caídas e são empurradas 6m na direção oposta. Se houver uma parede ou outro objeto sólido (mas não uma criatura) no caminho, a criatura para de se mover, mas sofre +2d6 pontos de dano de impacto (Fort reduz à metade e evita a condição e o empurrão).
+• Velocidade (Padrão, 3 PM, sustentada) O arcano pode executar uma ação padrão adicional por turno, que não pode ser usada para lançar magias.
+For 2, Des 3, Con 3, Int 7, Sab 2, Car 0
+Perícias Conhecimento +16, Guerra +16, Misticismo +18.
+Equipamento Adaga, armadura completa reforçada, tomo de guerra. Tesouro Padrão.`
+        },
+        {
+          chave: "cacadorDeImpuros", nome: "Caçador de Impuros", nd: "8", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          resumo: "Prostrado em um galho de árvore que parece fraco demais para sustentá-lo, o homem (ou mulher?) de manto escuro e máscara metálica prepara a…",
+          texto:
+`Caçador de Impuros ND 8
+“Vem me rastreando e caçando porque sou elfo? Agora vai morrer por esse mesmo motivo!”
+— Frendierial de Lenórienn, elfo caçador
+Prostrado em um galho de árvore que parece fraco demais para sustentá-lo, o homem (ou mulher?) de manto escuro e máscara metálica prepara a besta para um novo disparo. Enquanto puristas tipicamente agem em tropas, o caçador de impuros é um agente solitário — ainda leal à Supremacia, mas autorizado a agir de forma independente. Em poucas palavras, ele é um assassino furtivo de não humanos. O caçador atua longe dos territórios conquistados pela Supremacia, perseguindo fugitivos ou infiltrando-se em sociedades que acolhem não humanos. Seu objetivo principal é matá-los, não raras vezes coletando suas partes como “troféus” — por satisfação pessoal, prova para seus comandantes ou ambos. Mas há ocasiões em que ele comete crimes mais elaborados, buscando incitar desconfiança e medo racial onde humanos e não humanos antes viviam em paz. Em combate, o caçador usa uma máscara de metal e um capuz para ocultar sua identidade — podendo assim agir sob disfarce, como humano, quando não está caçando. Ele pode eventualmente preparar tocaias com ajuda de bandidos contratados (raramente usa soldados puristas, por agir longe de onde ficam aquartelados). Grupos de aventureiros que incluam não humanos são alvos frequentes de um caçador.
+Humanoide (humano) Médio
+Iniciativa +18, Percepção +14
+Defesa 34, Fort +4, Ref +17, Von +9
+Pontos de Vida 290
+Deslocamento 9m (6q)
+Corpo a Corpo Cimitarra x2 +23 (1d6+10, 18/x3).
+À Distância Besta leve x2 +23 (1d8+10, 19).
+Espião Infiltrado (Padrão) O caçador de impuros faz um teste de Enganação contra a Diplomacia de um alvo não humano, para apontá-lo como culpado de algum crime que não cometeu. Se vencer, criaturas inteligentes (Int –3 ou maior) em alcance médio mudam a atitude com o alvo para hostil até o fim da cena.
+Espreitador Astuto O caçador pode executar uma ação padrão adicional em seu primeiro turno de combate. Além disso, quando se move 6m ou mais, ele recebe +1d12 nas rolagens de dano de ataques corpo a corpo e à distância em alcance curto até o início do seu próximo turno.
+Inimigo de Todos (Movimento) O caçador analisa uma criatura humanoide não humana em alcance longo. Até o fim da cena, ou até usar esta habilidade em outra criatura, ele recebe +6 em testes de perícia e +2d12 nas rolagens de dano contra essa criatura, e seus ataques contra o alvo recebem +2 na margem de ameaça.
+Munição Estilhaçadora O caçador pode executar as manobras desarmar e quebrar com ataques à distância. Adicionalmente, por serem de aço-rubi, seus virotes ignoram 10 pontos da redução de dano do alvo.
+Saque Rápido O caçador pode sacar ou guardar itens e recarregar sua besta leve como uma ação livre.
+For 2, Des 4, Con 3, Int 2, Sab 2, Car 3
+Perícias Atletismo +10, Enganação +11 (+21 para disfarce), Furtividade +14, Investigação +10, Sobrevivência +10.
+Equipamento Besta leve, cimitarra, couraça sob medida, virotes de aço rubi x20. Tesouro Padrão.`
+        },
+        {
+          chave: "corcelDeComando", nome: "Corcel de Comando", nd: "3", tipo: "Construto Grande",
+          papel: '',
+          subgrupo: "Carruagem de Comando",
+          resumo: "Carruagem de Comando — O comandante purista ocupa um palanquim no dorso de um enorme construto quadrúpede, com aspecto de elefante, negro com adornos dourados.",
+          texto:
+`Corcel de Comando ND 3
+Construto Grande
+Iniciativa +5, Percepção +3, visão no escuro
+Defesa 19, Fort +13, Ref +9, Von +5, redução de corte, impacto e perfuração 5
+Pontos de Vida 82
+Deslocamento 15m (10q), sem redução por terreno difícil
+Corpo a Corpo Duas pancadas +12 (1d10+5).
+Cúpula de Proteção O piloto do corcel de comando está protegido por uma cúpula protetora (como o efeito básico da magia Campo de Força). Se o campo for destruído, o corcel usa sua próxima ação de movimento para refazê-lo.
+Encantos de Comando Encantos fazem com que a voz do piloto possa ser ouvida a até 300m e, caso ele possua alguma habilidade baseada em voz ou som, o alcance dessa habilidade se torna longo.
+Evacuação de Emergência (Completa) Se o corcel inicia seu turno com 20 PV ou menos, o piloto é alvo da magia Teletransporte com o aprimoramento de santuário, sem custo em PM. Em seguida, o corcel começa a emitir um alarme agudo e fica imóvel por 2 turnos — no fim do segundo turno, ele explode, causando 4d6 pontos de dano de fogo e 4d6 pontos de dano de perfuração em todas as criaturas em alcance curto (Ref CD 19 reduz à metade). Uma palavra de comando pode impedir a explosão.
+Piloto O corcel é mais eficiente quando controlado por um piloto, como um arcano de guerra. Pilotar exige uma ação de movimento do piloto a cada rodada e permite que o corcel use os valores de Iniciativa, Reflexos e ataque do piloto ou os seus, os que forem maiores. O piloto é considerado uma ameaça adicional para efeitos de ND.
+For 5, Des 2, Con 5, Int —, Sab 0, Car –5
+Perícias Atletismo +13.
+Tesouro Caixa de voz (CD 18 para extrair) e gema de força (CD 18 para extrair).
+Parceiro O corcel de comando é um parceiro montaria (Grande) que fornece os benefícios a seguir, e que usa Pilotagem no lugar de Cavalgar. Iniciante: seu deslocamento muda para 12m e você ignora a penalidade por terreno difícil. Veterano: você pode lançar a magia Campo de Força (apenas o efeito básico). Se aprender essa magia, seu custo diminui em –1 PM. Mestre: o alcance de suas habilidades baseadas em som (como Músicas de bardo) aumenta em um passo (de curto para médio e de médio para longo).`
+        },
+        {
+          chave: "carruagemDeComando", nome: "Carruagem de Comando", nd: "5", tipo: "Construto Enorme",
+          papel: '',
+          subgrupo: "Carruagem de Comando",
+          resumo: "Carruagem de Comando — O comandante purista ocupa um palanquim no dorso de um enorme construto quadrúpede, com aspecto de elefante, negro com adornos dourados.",
+          texto:
+`Carruagem de Comando ND 5
+Construto Enorme
+Iniciativa +6, Percepção +4, visão no escuro
+Defesa 22, Fort +15, Ref +11, Von +7, redução de corte, impacto e perfuração 5
+Pontos de Vida 190
+Deslocamento 15m (10q), sem redução por terreno difícil
+Corpo a Corpo Duas pancadas +15 (2d8+10).
+Cúpula de Proteção O piloto da carruagem de comando está protegido por uma cúpula protetora (como o efeito básico da magia Campo de Força). Se o campo for destruído, a carruagem usa sua próxima ação de movimento para refazê-lo.
+Encantos de Comando Encantos fazem com que a voz do piloto possa ser ouvida a até 300m e, caso ele possua alguma habilidade baseada em voz ou som, o alcance dessa habilidade se torna longo.
+✦ Evacuação de Emergência (Completa) Se a carruagem inicia seu turno com 20 PV ou menos, o piloto é alvo da magia Teletransporte com o aprimoramento de santuário, sem custo em PM. Em seguida, a carruagem começa a emitir um alarme agudo e fica imóvel por 2 turnos — no fim do segundo turno, ela explode, causando 6d6 pontos de dano de fogo e 6d6 pontos de dano de perfuração em todas as criaturas em alcance curto (Ref CD 24 reduz à metade). Uma palavra de comando pode impedir a explosão.
+Pernas Mecânicas A carruagem recebe +5 em testes para resistir às manobras derrubar e empurrar.
+Piloto Uma carruagem é mais eficiente quando controlada por um piloto, como um arcano de guerra. Pilotar exige uma ação de movimento do piloto a cada rodada e permite que a carruagem use os valores de Iniciativa, Reflexos e ataque do piloto ou os seus, os que forem maiores. O piloto é considerado uma ameaça adicional para efeitos de ND.
+For 6, Des 2, Con 6, Int —, Sab 0, Car –5
+Perícias Atletismo +14.
+Tesouro Caixa de voz, gema de força (CD 20 para extrair).`
+        },
+        {
+          chave: "dancarinoDeGuerra", nome: "Dançarino de Guerra", nd: "4", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Dançarino de Guerra",
+          resumo: "Dançarino de Guerra — Diante das formações rígidas e disciplinadas das tropas puristas, aquele bárbaro rosnador parece claramente fora de lugar.",
+          texto:
+`Dançarino de Guerra ND 4
+Humanoide (humano) Médio
+Iniciativa +11, Percepção +3
+Defesa 24, Fort +10, Ref +14, Von +6, evasão, imunidade a medo, resistência a efeitos de movimento +2
+Pontos de Vida 110
+Deslocamento 9m (6q)
+Corpo a Corpo Dois machados de batalha +16 (2d8+5, 19/x3). A Vida Não É Suficiente para Mim Quando um dançarino de guerra morre em combate, cada um de seus aliados em alcance médio é tomado por um frenesi equivalente ao efeito básico da magia Velocidade, até o fim da cena.
+Matar É Viver (Movimento) O dançarino entra em um estado de frenesi de combate, durante o qual pode fazer um ataque adicional sempre que executa a ação agredir. O transe termina se, ao fim da rodada, ele não tiver sido atacado nem sido alvo de um efeito hostil. Recarga (realizar uma investida).
+Viver É Lutar (Reação) Uma vez por rodada, quando é alvo de um ataque corpo a corpo, o dançarino pode fazer um teste de Acrobacia. Ele reduz desse ataque em um valor igual ao resultado de seu teste e, se reduzir o dano a 0, pode fazer um ataque corpo a corpo contra o atacante.
+For 4, Des 5, Con 4, Int 1, Sab –1, Car 2
+Perícias Acrobacia +12, Atletismo +8.
+Equipamento Machado de batalha x2, sapatos de camurça.
+Tesouro Padrão.`
+        },
+        {
+          chave: "dancarinoDeGuerraVeterano", nome: "Dançarino de Guerra Veterano", nd: "6", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Dançarino de Guerra",
+          resumo: "Dançarino de Guerra — Diante das formações rígidas e disciplinadas das tropas puristas, aquele bárbaro rosnador parece claramente fora de lugar.",
+          texto:
+`Dançarino de Guerra Veterano ND 6
+Humanoide (humano) Médio
+Iniciativa +13, Percepção +4
+Defesa 28, Fort +12, Ref +16, Von +8, evasão, imunidade a medo, resistência a efeitos de movimento +5
+Pontos de Vida 175
+Deslocamento 9m (6q)
+Corpo a Corpo Dois machados de batalha +20 (3d8+15, 19/x3).
+A Morte Não É Suficiente para Meus Inimigos (Reação) Uma vez por rodada, quando um dançarino de guerra veterano reduz os PV de um inimigo a 0 ou menos com um ataque corpo a corpo, pode executar um ataque adicional contra outra criatura dentro do seu alcance. O dançarino recebe +5 nesse teste de ataque e na rolagem de dano. A Vida Não É Suficiente para Mim Quando um dançarino morre em combate, cada um de seus aliados em alcance médio é tomado por um frenesi equivalente ao efeito básico da magia Velocidade, até o fim da cena.
+Matar É Viver (Padrão) O dançarino entra em um estado de frenesi de combate, durante o qual pode fazer um ataque adicional sempre que executa a ação agredir. O transe termina se, ao fim da rodada, ele não tiver sido atacado nem sido alvo de um efeito hostil. Recarga (realizar uma investida). Viver É Lutar (Reação) Uma vez por rodada, quando é alvo de um ataque corpo a corpo, o dançarino pode fazer um teste de Acrobacia. Ele reduz desse ataque em um valor igual ao resultado de seu teste e, se reduzir o dano a 0, pode fazer um ataque corpo a corpo contra o atacante.
+For 4, Des 5, Con 4, Int 1, Sab –1, Car 2
+Perícias Acrobacia +16, Atletismo +9.
+Equipamento Machado de batalha x2, sapatos de camurça aprimorados. Tesouro Padrão.`
+        },
+        {
+          chave: "purificado", nome: "Purificado", nd: "1/2", tipo: "Humanoide (hynne) Pequeno",
+          papel: '',
+          resumo: "Mesmo à distância, o pequeno hynne parece ter sido brutalmente torturado.",
+          texto:
+`Purificado ND 1/2
+“Usaram até os reféns! Que Arsenal me dê forças quando eu encontrar os responsáveis.”
+— Sir William, o Cavaleiro da Alvorada
+Mesmo à distância, o pequeno hynne parece ter sido brutalmente torturado. Não diz nada, mas os olhos molhados e cheios de medo imploram ajuda. Este título absurdamente cruel é empregado pela Supremacia para designar não humanos forçados a abordar forças inimigas, transportando artefatos mortais em seus corpos. Quando heróis decidem acolher um prisioneiro fugitivo, podem na verdade estar tomando a última decisão de suas vidas. Um purificado é um não humano com uma gema implantada cirurgicamente dentro do peito. Essa pedra contém energias poderosas e encantos astutos — é essencialmente uma armadilha mágica. Quando se aproxima de qualquer outro não humano, causa uma detonação capaz de rivalizar com a maior magia Bola de Fogo, matando o portador e todos à volta. Os inventores da Supremacia empregam as táticas mais desumanas para evitar que os inimigos percebam a armadilha. Muitos purificados são mutilados de formas que não consigam avisar seus salvadores — ter a língua arrancada é o mais comum. Outros, após lavagem cerebral, não sabem que trazem consigo o explosivo. E outros sabem, mas não têm escolha; estão sendo chantageados com as vidas de entes queridos. Podem ser encontrados sozinhos, em duplas ou infiltrados em pequenos grupos de “fugitivos” (que não ativam a gema). Apesar do perigo extremo, é possível para um conjurador ou inventor habilidoso extrair a gema e salvar a vítima. Assumir ou não esse risco imenso estará entre as decisões mais difíceis para quaisquer aventureiros em campanha contra os puristas.
+Humanoide (hynne) Pequeno
+Iniciativa +5, Percepção +2
+Defesa 10, Fort +3, Ref +4, Von +0, imunidade a efeitos mentais
+Pontos de Vida 9
+Deslocamento 6m (4q)
+Cicatrizes Amordaçantes Por mais que tente, o purificado não consegue alertar outras pessoas de sua condição. Qualquer tentativa do purificado de fazer isso requer que o interlocutor passe em um teste de Intuição (CD 25). Se falhar, ele não entende o que o purificado tentou comunicar durante a rodada.
+Gema da Purificação Quando o purificado chega a 3m ou menos de um não humano, a gema começa a brilhar e zunir durante 3 turnos. Ao fim do terceiro turno ela explode, matando o purificado e causando 6d6 pontos de dano de essência em todas as criaturas em alcance curto. A gema pode ser desativada com uma ação completa e um teste de Ladinagem ou Misticismo (CD 20), mas uma falha a detona imediatamente. Caso outra gema esteja no alcance da explosão, ela também se ativa e explode no próximo turno do seu purificado.
+For 0, Des 2, Con 1, Int 0, Sab –1, Car 2
+Perícias Diplomacia +7, Enganação +7.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "soldadoBlindado", nome: "Soldado Blindado", nd: "5", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Soldado Blindado",
+          resumo: "Soldado Blindado — Na vanguarda das forças puristas, a primeira linha de defesa parece formada por soldados em armaduras completas e escudos imensos, tão…",
+          texto:
+`Soldado Blindado ND 5
+Humanoide (humano) Médio
+Iniciativa +5, Percepção +7
+Defesa 32, Fort +15, Ref +6, Von +14, redução de dano 5/mágico
+Pontos de Vida 135
+Deslocamento 6m (4q)
+Corpo a Corpo Martelo de guerra +16 (2d8+12, x3).
+Empurrão (Movimento) O soldado blindado faz uma manobra empurrar (teste +16) contra um alvo adjacente, mas não pode se mover junto com o alvo e sofre –5 na Defesa até o início de seu próximo turno.
+Prontidão (Reação) Sempre que um inimigo entra ou sai por conta própria do alcance pessoal do soldado, o soldado pode fazer um ataque adicional contra essa criatura. Se acertar, além de causar dano, deixa o alvo imóvel até o início de seu próximo turno.
+For 3, Des 1, Con 4, Int 1, Sab 1, Car 0
+Equipamento Armadura completa, escudo pesado reforçado, martelo de guerra pungente, poção de Curar Ferimentos (2d8+2) x2. Tesouro Padrão.`
+        },
+        {
+          chave: "companhiaBlindadaDeElite", nome: "Companhia Blindada de Elite", nd: "9", tipo: "Humanoide (humano) Grande",
+          papel: '',
+          subgrupo: "Soldado Blindado",
+          resumo: "Soldado Blindado — Na vanguarda das forças puristas, a primeira linha de defesa parece formada por soldados em armaduras completas e escudos imensos, tão…",
+          texto:
+`Companhia Blindada de Elite ND 9
+Humanoide (humano) Grande
+Iniciativa +7, Percepção +9
+Defesa 41, Fort +17, Ref +8, Von +16, redução de dano 5/mágico
+Pontos de Vida 275
+Deslocamento 6m (4q)
+Corpo a Corpo [Bando] Martelo de guerra +27 (2d8+12, x3).
+Empurrão (Movimento) A companhia blindada de elite usa a manobra empurrar (teste +32) contra um alvo adjacente, mas não pode se mover junto com ele e sofre –5 na Defesa até o início de seu próximo turno.
+Prontidão (Reação) Sempre que um inimigo entra ou sai por conta própria do alcance pessoal da companhia, ela pode fazer um ataque adicional contra essa criatura. Se acertar, além de causar dano, deixa o alvo imóvel até o início de seu próximo turno.
+For 3, Des 1, Con 4, Int 1, Sab 1, Car 0
+Equipamento Armadura completa, escudo pesado reforçado, martelo de guerra pungente (1d6 de cada), poção de Curar Ferimentos (2d8+2) x2d6. Tesouro Padrão.`
+        },
+        {
+          chave: "soldadoSuperior", nome: "Soldado Superior", nd: "17", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          resumo: "Em meio às forças puristas, chama a atenção ver um combatente sem armas ou armadura, de peito nu.",
+          texto:
+`Soldado Superior ND 17
+“Ele luta seminu, mas as lâminas quebram ao golpeá-lo! Que tipo de monstro os puristas criaram?”
+— Ghilbert de Bielefeld, humano guerreiro
+Em meio às forças puristas, chama a atenção ver um combatente sem armas ou armadura, de peito nu. Ele parece tão alto, musculoso e flexível quanto humanamente possível, talvez mais. Seu olhar é frio, duro e inclemente. Quando os outros soldados abrem caminho para sua passagem, sem sequer oferecer cobertura, fica claro que ele é o homem mais perigoso neste campo de batalha. Criado a partir de experimentos conduzidos pela Supremacia — e que custaram as vidas de incontáveis cobaias —, o soldado superior é aquilo que os puristas acreditam ser o protótipo do “humano perfeito”, o passo seguinte em sua busca pela hegemonia mundial. O soldado superior não “nasce” — ele é cultivado em um grande tanque de substâncias alquímicas bombardeado com energias arcanas. As fórmulas e procedimentos para sua criação estão entre os segredos mais bem guardados pela Supremacia; o próprio soldado não sabe de onde veio, nem tem interesse em saber. Ele existe apenas para seguir as ordens de seus comandantes com perfeição impecável. Nenhum argumento, nenhuma emoção, nenhuma dor podem demovê-lo. Apesar do aspecto absolutamente humano, o soldado superior é forte como um gigante e sólido como um golem, além de ágil como uma pantera. Seus punhos causam mais estrago que as melhores espadas, embora ele também use armas quando necessário. De tão resistente, parece quase imune a todas as formas de ataques e magias.
+Por serem poucos (sua produção parece ser extremamente custosa), soldados superiores são designados para as missões mais importantes. Apenas os mais experientes grupos de aventureiros poderiam derrotar um destes — o que, até o presente momento, ainda não aconteceu.
+Humanoide (humano) Médio
+Iniciativa +26, Percepção +18, visão no escuro
+Defesa 50, Fort +28, Ref +28, Von +20, imunidade a doenças, efeitos mentais, medo e veneno, redução de corte, impacto e perfuração 15
+Pontos de Vida 1.080
+Deslocamento 12m (8q)
+Corpo a Corpo Ataque desarmado x4 +47 (2d12+30, 17/x3).
+Golpes Penetrantes Os ataques desarmados do soldado superior podem causar dano letal ou não letal e ignoram 10 pontos de redução de dano do alvo.
+Mestre de Manobras O soldado recebe +10 em testes de manobras. Além disso, uma vez por rodada, quando acerta um ataque desarmado, o soldado pode fazer uma manobra de combate (teste +57) contra a criatura atingida como uma ação livre.
+Super Soldado Quando o soldado é reduzido a 570 PV ou menos, entra em um frenesi de combate. Seus ataques mudam para ataque desarmado x4 +57 (3d12+30, 17/x3), sua Defesa se torna 60, seu deslocamento aumenta para 18m e ele passa a poder executar uma ação padrão adicional por turno. Entretanto, ele se torna vulnerável a todos os tipos de dano e sofre –5 em Vontade.
+For 7, Des 7, Con 7, Int 3, Sab 2, Car –1
+Perícias Acrobacia +26, Atletismo +26.
+Equipamento Cinto do campeão, faixas do pugilista, manoplas de adamante. Tesouro Padrão, mais ingredientes para uma dose de soro supremo (veja a caixa de texto).`
+        },
+      ],
+      regras: [
+        { titulo: "Equipamento Purista",
+          texto:
+`Embora o equipamento empregado pelos puristas seja de ótima qualidade, é bastante difícil vendê-lo. Puristas obviamente não enxergam com bons olhos quem comercializa suas armas e armaduras, enquanto em outros lugares, por desprezo ou por temor, muitas pessoas não querem lidar com esse tipo de material. Por isso, itens de puristas são vendidos por um quarto do preço, não pela metade.` },
+        { titulo: "Ódio Puro",
+          texto:
+`Puristas passam por um processo de doutrinação no qual aprendem a obedecer ordens sem questionar e a odiar todas as raças não humanas. Um purista recebe +5 em testes de Vontade quando está seguindo ordens de um superior (qualquer purista com ND maior) e +2 em rolagens de dano contra humanoides não humanos.` },
+        { titulo: "Arcano de Guerra",
+          texto:
+`“Por usar o presente da deusa contra os povos de Arton, eu o declaro culpado!”
+— Isis Salujah, qareen inquisidora de Wynna
+A armadura orgulhosa sugere ser algum tipo de oficial superior, especialmente por estar desarmado. A surpresa vem quando o purista, mesmo vestindo metal pesado, começa a gesticular uma conjuração arcana. Composta pela elite dos magos de guerra da Supremacia, a Ordem Magibélica é dedicada a transformar arcanistas em armas de destruição em massa, dizimando tropas inimigas com fogo, gelo e relâmpago. Embora existam uns poucos membros dissidentes atuando como heróis, a maior parte destes conjuradores de combate está subordinada ao General Supremo, oferecendo suporte arcano às forças puristas. Arcanos de guerra focam seu treinamento em magias ofensivas usando armadura, deixando que o aço os proteja enquanto se concentram em causar destruição. Uma formação de batalha comum entre os puristas consiste em ter um ou dois destes magos atuando na retaguarda, com um grupo de soldados na linha de frente. Arcanos mais poderosos também contam com soldados blindados para protegê-los.` },
+        { titulo: "Carruagem de Comando",
+          texto:
+`“O ENGENHO SERÁ PROVEITOSO EM MINHA PEREGRINAÇÃO. VOCÊS FORAM ÚTEIS.”
+— Mestre Arsenal
+O comandante purista ocupa um palanquim no dorso de um enorme construto quadrúpede, com aspecto de elefante, negro com adornos dourados. Como demonstraram os vários colossos presentes nos campos de batalha da Guerra Artoniana, o uso de máquinas de guerra vem se tornando cada vez mais extensivo pela Supremacia. Essa carruagem não é um veículo puxado por animais, mas um imenso golem de quatro patas. Atua como um posto de comando móvel, uma montaria para os líderes puristas. As patas longas vencem terrenos difíceis, a grande altura permite uma visão privilegiada dos arredores e o assento em forma de trono confere autoridade. Embora o usuário pareça exposto e vulnerável, essa visão é enganadora: uma barreira mágica invisível, semelhante a um Campo de Força, protege o trono e seu ocupante. Outros encantos potencializam a voz do usuário, fazendo com que suas ordens alcancem todo o campo de batalha. Se necessário, o construto pode lutar pisoteando inimigos. A carruagem também inclui dispositivos para assegurar a fuga de seu ocupante caso necessário. Em uma emergência, ou sob seu comando, uma magia de Teletransporte devolve o usuário a um lugar secreto, sob controle da Supremacia. Pouco depois, a máquina inteira explode. Existem versões menores e mais limitadas deste engenho, do tamanho de cavalos, conhecidos como corcéis de comando. Sabe-se que alguns foram tomados e domados por aventureiros.` },
+        { titulo: "Dançarino de Guerra",
+          texto:
+`“Os malditos puristas não eram problema. Aquele louco frenético diante deles, sim!”
+— Weonard de Deheon, paladino de Valkaria
+Diante das formações rígidas e disciplinadas das tropas puristas, aquele bárbaro rosnador parece claramente fora de lugar. Desgarrado das tropas, move-se em acrobacias ligeiras que a vista mal acompanha, brandindo lâminas duplas velozes que deixam rastros de luz. Antiga tradição tribal nas terras que originaram a Supremacia, o dançarino de guerra é um tipo de lutador ritualístico, treinado em uma forma elaborada de luta acrobática. Cabia a ele atuar em cerimônias de combate e sacrifício para louvar Keenn, o antigo Deus da Guerra. Hoje, após a ascensão de Arsenal, seus praticantes sobreviventes buscam não apenas preservar a antiga arte, mas também encontrar uma morte gloriosa em batalha. A técnica de luta lembra mais uma dança tribal, os trajes e armas parecem de um bárbaro. Ainda assim, lançando-se contra o inimigo sem nenhum apego à vida, dançarinos de guerra são respeitados entre os puristas como bardos que os inspiram, como mártires que se sacrificam pela causa. Quando um dançarino morre nas linhas de frente, os soldados restantes lutam duas vezes mais.` },
+        { titulo: "Soldado Blindado",
+          texto:
+`“Meus golpes não passam por suas placas. Perdão, Khalmyr!”
+— Carmine Reddington, falecido herói de guerra
+Na vanguarda das forças puristas, a primeira linha de defesa parece formada por soldados em armaduras completas e escudos imensos, tão pesados que um humano adulto comum mal se moveria sob tanto metal. Soldados blindados têm exatamente o propósito que parecem ter. Atuam como uma muralha viva para investir contra as forças inimigas enquanto protegem unidades capazes de atacar à distância, sobretudo arcanos de guerra. A técnica metalúrgica usada nessas couraças é impressionante; cada peça é impecavelmente ajustada ao usuário, que também recebe treino extensivo para se mover em condições tão severas. Por essa razão, armaduras e escudos tomados de soldados abatidos são inúteis para outros personagens, portando-se como peças normais ou até perigosas; fala-se da famosa “mordida da armadura”, quando um não purista faz um movimento errado vestindo uma destas, e as bordas metálicas cortam fundo sua carne.` },
+        { titulo: "O Exército Purista",
+          texto:
+`“Eu vi aquelas botas odiosas marchando sobre o Reinado e jamais deixarei que isso volte a acontecer!”
+— Sir Savir, humano cavaleiro do Exército do Reinado
+Maior rival do Reinado, a Supremacia Purista possui um exército profissional composto pelos soldados mais bem treinados e equipados de Arton. Isso não é surpresa, pois o militarismo sempre esteve no âmago da cultura do reino. Nas grandes cidades, quartéis ocupam o papel de centros cívicos, com boa parte da população trabalhando no exército ou para ele. Já nas vilas do interior, homens e mulheres reúnem-se em salões de guerreiros e partem em saques. De uma forma ou de outra, no Exército com uma Nação a sociedade gira em torno da guerra. A estrutura básica do Exército Purista é o batalhão, com cem soldados e comandado por um sargento-mor. Em missões pequenas, um batalhão pode ser dividido em grupos de assalto, formados por dez homens ou mulheres e liderados por um sargento. Dez batalhões formam um grande batalhão, com mil membros e comandado por um capitão-baluarte. Cinco grandes batalhões formam uma arma, com cinco mil soldados e comandada por um coronel. Quatro armas formam um arsenal, com vinte mil membros e comandado por um lorde general. Os batalhões básicos são formados por soldados de infantaria pesada, mas também há batalhões especializados de vários tipos. Os mais comuns são os de besteiros e os de cavaleiros, mas também há os raros e temidos batalhões de magos, especializados em feitiços de destruição em massa, e os de engenheiros, especializados em invenções de goblins escravizados, de autômatos de ferro a bombas explosivas.
+Na Guerra Artoniana, o Exército Purista possuía seis arsenais, totalizando um efetivo de 120 mil soldados. Acredita-se que ele ainda não voltou à sua força máxima, mas espiões do Reinado sabem que a Supremacia está recrutando e treinando novos soldados. Quanto tempo até ela estar preparada para uma nova guerra, ainda é algo sobre o que se pode apenas especular.
+Comandante
+Hermann Von Krauser é o comandante absoluto do Exército Purista. Tendo estudado todos os manuais artonianos de estratégia militar — e tendo escrito alguns ele mesmo —, Von Krauser possui conhecimento incomparável sobre a arte da guerra. Ele não detém o título de General Supremo à toa.` },
+      ],
+    },
+
+    // ── ⚰ REINO DOS MORTOS ────────────────────────────
+    {
+      chave: "reinomortos", nome: "Reino dos Mortos", icone: "⚰", cor: "#4a3a5a",
+      intro: "No passado, Aslothia foi um reino como os demais. Oprimido por um tirano, intolerante com a magia, mas ainda um país como outros. Uma terra para os vivos. Hoje, não mais. O Reino da Magia Proibida tinha esta alcunha por sua sistemática perseguição a todo tipo de conjuradores arcanos. Contudo, o que era alardeado pela regência como uma honrada caçada a “bruxos perigosos” não passava de um plano vilanesco. Debaixo do nariz do Reinado, o Conde Ferren Asloth era ele próprio um necromante poderoso, secretamente roubando os poderes dos arcanistas capturados. Após décadas de encarceiramento e matança, após derramar sangue de incontáveis magos, o regente enfim alcançou seu intento. Realizou um ritual mítico, jamais tentado, conhecido apenas em lendas. Transformou-se em algo jamais visto na face de Arton, algo mais poderoso que vampiros, múmias ou liches. Algo que a própria Tenebra nunca se atreveu a criar. O senhor absoluto da morte em vida. Um arquilich. A terrível mudança não se limitou ao próprio conde. Derramou-se para fora das muralhas, espalhou-se pelo reino. Conspurcou paisagens, transformou castelos em masmorras, povoados em cemitérios, campos exuberantes em pântanos enevoados. Escureceu o céu para sempre, tudo ficou cinzento e sombrio. Despertou todo tipo de abominação — esqueletos e zumbis sendo apenas as mais conhecidas. Dali em diante, tudo que era macabro e decrépito prosperou; aqueles que ainda vivem, ou embrutecem corpo e alma para desafiar o horror, ou apenas sobrevivem como gado miserável para os monstros.",
+      fichas: [
+        {
+          chave: "alzeras", nome: "Alzeras", nd: "11", tipo: "Morto-vivo Médio",
+          papel: '',
+          resumo: "O vulto em manto branco esvoaçante é bem mais alto que um humano.",
+          texto:
+`Alzeras ND 11
+“Wynna tenha piedade! Então os magos de Aslothia acabaram assim?”
+— Rositta de Wynlla, humana arcanista
+O vulto em manto branco esvoaçante é bem mais alto que um humano. Sob o capuz, em vez de rosto, traz uma runa arcana que brilha intensa. Das mangas emergem braços longos e macilentos com mãos de dedos compridos, esqueléticos. Uma delas sustenta um grande tomo aberto, levitando pouco acima da palma; de suas páginas emergem filamentos de fumaça sinistra que adquirem formas enigmáticas, macabras. Este ser sobrenatural teria surgido a partir da cólera dos magos assassinados por Ferren Asloth, despejando magias mortais contra praticamente tudo que encontram. A partir de seu grimório profano, o alzeras conjura versões perigosas de magias normalmente fracas ou até inofensivas — a pura força de seu ódio deturpa suas conjurações. Tudo aquilo que conjura, além de causar efeito normal, também inclui espinhos, estilhaços ou farpas. Assim, uma simples magia de Leque Cromático não apenas ofusca ou atordoa, mas também fere com explosões, enquanto uma Teia aprisiona ao mesmo tempo em que estrangula a vítima. Dizem ser possível argumentar com o alzeras, acalmar sua cólera e fazer com que interrompa o combate. Alguns aventureiros já teriam conseguido, mas não há certeza sobre como foi feito. Alguns apenas declararam não ser aliados de Ferren. Outros foram confrontados com algum enigma, revelado em imagens ou palavras na fumaça que emana do livro. Houve também raras vezes em que a criatura surgiu sem intenções hostis, para revelar pistas vitais a heróis em missões contra o rei necromante.
+Morto-vivo Médio
+Iniciativa +18, Percepção +16, visão no escuro
+Defesa 29, Fort +11, Ref +18, Von +24, imunidade a atordoado e medo, incorpóreo, resistência a magia +5
+Pontos de Vida 385
+Deslocamento voo 12m (8q)
+Pontos de Mana 130
+Contramágica Aprimorada (Reação) Uma vez por rodada, o alzeras faz uma contramágica.
+Conjuração Odiosa (Livre, 2 PM) Quando lança uma magia, o alzeras pode impregná-la com ódio. Criaturas que falhem na resistência contra a magia sofrem 4d8+4 pontos de dano de corte, impacto ou perfuração (à escolha do alzeras).
+Magias Como um mago de 13º nível (CD 33).
+• Amarras Etéreas (Padrão, 6 PM) Três laços de energia surgem e se enroscam em uma criatura em alcance médio, deixando-a agarrada (Ref evita). A vítima pode tentar se livrar, gastando uma ação padrão para fazer um teste de Atletismo. Se passar, destrói um laço, mais um laço adicional para cada 5 pontos pelos quais superou a CD. Cada laço também pode ser atacado e destruído (Defesa 10, 10 PV, RD 5 e imunidade a dano mágico). Um laço destruído causa 1d8+1 pontos de dano de essência na criatura amarrada. Se todos os laços forem destruídos, a magia é dissipada. Os laços afetam criaturas incorpóreas.
+• Armadura Arcana (Reação, 10 PM) Quando sofre um ataque, o alzeras recebe +9 na Defesa contra esse ataque.
+• Dissipar Magia (Padrão, 3 PM) O alzeras escolhe uma criatura, objeto ou esfera de 3m em alcance médio e faz um teste de Misticismo. Todas as magias nesse alvo com CD igual ou menor que o resultado do teste são dissipadas.
+• Imobilizar (Padrão, 6 PM) Até duas criaturas em alcance curto ficam paralisadas (Von muda para lenta). A cada rodada, a vítima pode gastar uma ação completa para fazer um novo teste de Vontade. Se passar, liberta-se do efeito.
+• Leque Cromático (Padrão, 6 PM) Criaturas em um cone de 4,5m ficam atordoadas por 1 rodada (apenas uma vez por cena, Von anula) e ofuscadas.
+• Marionete (Padrão, 10 PM, sustentada) O alzeras controla as ações físicas de uma criatura em alcance médio. Ao sofrer a magia, e no início de cada um de seus turnos, a vítima faz um teste de Fortitude. Se passar, a magia é anulada.
+• Raio do Enfraquecimento (Padrão, 8 PM) Criaturas escolhidas em alcance curto ficam exaustas (Fort muda para fatigado).
+• Selo de Mana (Padrão, 6 PM) Um selo mágico se manifesta em uma criatura adjacente até o fim da cena. Sempre que ela fizer qualquer ação que gaste PM, deve fazer um teste de Vontade. Se passar, a ação funciona. Se falhar, a ação não tem efeito, mas os PM são gastos mesmo assim.
+• Sussurros Insanos (Padrão, 3 PM) Um humanoide em alcance curto fica confuso (Von anula).
+• Teia (Padrão, 2 PM) O alzeras cria um cubo de terreno difícil de 6m em alcance curto. Criaturas na área, ou que comecem seu turno em seu interior, ficam enredadas e imóveis (Ref evita). Uma criatura pode se libertar com uma ação padrão e um teste de Acrobacia ou Atletismo.
+For —, Des 4, Con 2, Int 6, Sab 2, Car 3
+Perícias Furtividade +18, Intuição +11, Misticismo +25.
+Tesouro Tomo do rancor.`
+        },
+        {
+          chave: "cemiterioVivo", nome: "Cemitério Vivo", nd: "17", tipo: "Morto-vivo Colossal",
+          papel: '',
+          resumo: "O gigante rochoso e vagamente humanoide, sem feições, avança a passos estrondosos — lembrando um imenso elemental da terra.",
+          texto:
+`Cemitério Vivo ND 17
+“Sim, eu disse que podia esconjurar mortos-vivos, mas não um maldito cemitério inteiro!”
+— Leofred de Valkaria, humano clérigo
+O gigante rochoso e vagamente humanoide, sem feições, avança a passos estrondosos — lembrando um imenso elemental da terra. Mesmo à distância, vocês podem sentir uma intensa aura maligna, emanando ódio e morte. Conforme se aproxima, contudo, o monstro revela um horror ainda maior: seu corpo não é feito de rocha ou solo, mas de lápides e cadáveres. Um dos monstros mais perigosos e temidos em toda Aslothia, o cemitério vivo é um ser imenso, feito de terra, tumbas, lápides, caixões, estátuas e restos mortais humanos. Surge a partir de um cemitério conspurcado e animado por um espírito muito poderoso, possivelmente um antigo herói ou vilão épico. Como outros mortos-vivos incapazes de se libertar de antigos rancores ou vinganças, ele está aprisionado a este mundo — sua passagem para os reinos dos deuses negada para sempre. Invejando e odiando os que ainda vivem, a criatura existe apenas para aumentar o próprio tamanho absorvendo corpos falecidos, sejam antigos ou frescos. Na falta, matará para obtê-los; em Aslothia e outros pontos do continente, há histórias sobre aldeias inteiras arrasadas por um destes monstros. O cemitério vivo luta esmurrando com punhos descomunais, então absorvendo os inconscientes ou mortos — estes são devorados por um caixão que se abre em seu peito, como uma bocarra faminta. A criatura emana uma aura de profanação intensa que mesmo aqueles sem poder mágico podem sentir, como um arrepio macabro nos ossos. Sua proximidade reduz os poderes curativos dos clérigos. Ainda, aqueles que acabam absorvidos não perdem apenas seus corpos, mas também suas almas; será impossível ressuscitar a vítima até que a criatura seja destruída.
+Morto-vivo Colossal
+Iniciativa +13, Percepção +14, percepção às cegas (médio), visão no escuro
+Defesa 54, Fort +35, Ref +12, Von +24, imunidade a atordoado e medo, redução de dano 10, resistência a magia +5
+Pontos de Vida 1.125
+Deslocamento 12m (8q)
+Corpo a Corpo Quatro pancadas +49 (4d10+40 mais 2d8 trevas).
+Adquirir Cadáver (Movimento) O cemitério vivo agarra um humanoide inconsciente ou morto ao seu alcance.
+Aura de Profanação O cemitério exala uma aura de poeira carregada de energia negativa. Qualquer criatura viva que entre em um raio de 9m do cemitério, ou inicie seu turno nesta área, sofre 5d8+20 pontos de dano de trevas e recebe imunidade a cura mágica por 1 rodada (Fort CD 44 reduz à metade e evita a imunidade a cura).
+Finalmente Livres Quando o cemitério é destruído, ele se desmancha em um amontoado de terra, tumbas e corpos. Todas as criaturas absorvidas há menos de uma semana retornam à vida, mas os espíritos dos corpos consumidos há mais tempo se levantam como mortos-vivos amargurados e furiosos, gerando 1d4+1 falanges (Tormenta20, p. 298). Essas falanges agem normalmente a partir da rodada seguinte, na iniciativa original do cemitério.
+Herança Profana Quando o cemitério é destruído, uma esfera de 500m ao redor do espaço onde ele foi derrotado se torna corrompida por um ano. Enquanto a área estiver corrompida, criaturas vivas dentro dela não recuperam pontos de vida por efeitos mágicos e sofrem 2d8+2 pontos de dano de trevas por rodada. Uma magia Consagrar com o aprimoramento permanente remove essa corrupção.
+Tumba Viva (Movimento) Se começar seu turno agarrando um humanoide Grande ou menor, inconsciente ou morto, o cemitério abre um espaço em seu peito e coloca a criatura em seu interior, absorvendo-a. Ao fazer isso, ele ganha 20 PV temporários por nível da criatura. Uma criatura absorvida dessa forma só pode ser libertada com a destruição do cemitério.
+For 13, Des –1, Con 10,Int —, Sab 1, Car 2
+Tesouro Dobro.`
+        },
+        {
+          chave: "chacalZumbi", nome: "Chacal-Zumbi", nd: "2", tipo: "Morto-vivo Médio",
+          papel: '',
+          resumo: "A matilha numerosa rosna à volta.",
+          texto:
+`Chacal-Zumbi ND 2
+“Imploro seu perdão, Mãe Noite, mas suas crias ameaçam meus companheiros.”
+— Azael Slywitch, elfo-do-céu clérigo de Tenebra
+A matilha numerosa rosna à volta. Não demora até que vocês percebam, não se tratam de canídeos comuns; têm a pelagem rasgada em vários pontos, expondo ossos e carne putrefata. Os olhos são vazios, esbranquiçados. Não resta dúvida, os animais malditos são movidos pela fome insaciável dos não vivos. Chacais-zumbi são apenas uma entre várias espécies animais transmutadas pelo poder necromântico de Aslothia, transformadas em monstros assassinos. Rastreiam, caçam e matam para comer, assim como canídeos comuns — exceto que são mais ferozes e sua fome nunca acaba. Ainda que um ou outro chacal solitário às vezes espreite um viajante, isso é um evento raro. Estes monstros atacam sempre em bandos, usando as mesmas táticas dos lobos; farejam e perseguem a vítima buscando cercá-la, para flanquear e atacar pontos vulneráveis. Por não precisarem de sono ou descanso, são também capazes de perseguir seus alvos por dias e noites seguidos, sem deixar que descansem, até ficarem exaustos demais para se defender. Histórias locais dizem que basta uma mordida do chacal para transformar alguém em zumbi. Existe alguma verdade no rumor: a mordida muito infecciosa pode adoecer a vítima, até mesmo levar à morte — nesse caso, trazendo-a de volta como um cadáver ambulante.
+Morto-vivo Médio
+Iniciativa +6, Percepção +5, faro, visão no escuro
+Defesa 19, Fort +7, Ref +13, Von +2
+Pontos de Vida 35
+Deslocamento 9m (6q)
+Corpo a Corpo Mordida +14 (1d6+8, 19, mais doença).
+Doença Uma criatura mordida por um chacal é exposta à doença febre necrótica (Fort CD 16 evita).
+Matilha Zumbi O chacal-zumbi recebe +1 em testes de perícia para cada outro morto-vivo aliado em alcance curto.
+Fraqueza Zumbi O chacal-zumbi sofre o dobro de dano de acertos críticos ou de ataques feitos contra seu cérebro (Defesa 29).
+For 2, Des 3, Con 3, Int —, Sab 0, Car –1
+Perícias Furtividade +6, Sobrevivência +8.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "mercenarioDeAslothia", nome: "Mercenário de Aslothia", nd: "3", tipo: "Monstro (lefou) Médio",
+          papel: '',
+          subgrupo: "Mercenário de Aslothia",
+          resumo: "Mercenário de Aslothia — Poderiam ser confundidos com um bando de guerreiros quaisquer, variados em raças e armas.",
+          texto:
+`Mercenário de Aslothia ND 3
+Monstro (lefou) Médio
+Iniciativa +1, Percepção +1
+Defesa 20, Fort +14, Ref +4, Von +9, resistência a magia e medo +5
+Pontos de Vida 21
+Deslocamento 9m (6q)
+Corpo a Corpo Maça +16 (1d8+12, x3).
+Inescrupuloso O mercenário recebe +2 em testes de ataque e +1d6 em rolagens de dano contra criaturas flanqueadas, sob efeito de alguma condição ou que sigam algum código de conduta (como Código de Honra ou Código do Herói).
+For 3, Des 0, Con 2, Int –1, Sab 0, Car 0
+Perícias Atletismo +6, Intimidação +5.
+Equipamento Gibão de peles, maça. Tesouro Padrão.`
+        },
+        {
+          chave: "liderMercenarioDeAslothia", nome: "Líder Mercenário de Aslothia", nd: "5", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Mercenário de Aslothia",
+          resumo: "Mercenário de Aslothia — Poderiam ser confundidos com um bando de guerreiros quaisquer, variados em raças e armas.",
+          texto:
+`Líder Mercenário de Aslothia ND 5
+Humanoide (humano) Médio
+Iniciativa +5, Percepção +3
+Defesa 24, Fort +17, Ref +5, Von +11, imunidade a medo, resistência a magia +5
+Pontos de Vida 200
+Deslocamento 6m (4q)
+Corpo a Corpo Alabarda +17 (1d10+26, x3) ou espada curta x2 +17 (1d6+16, 19).
+Capangas Descartáveis (Reação) Uma vez por rodada, o líder mercenário pode fazer com que um aliado adjacente sofra dano de um ataque ou habilidade em vez dele próprio. Se a criatura morrer com esse dano, o líder pode fazer um ataque corpo a corpo contra o agressor. O alvo desse ataque é considerado desprevenido.
+Inescrupuloso O mercenário recebe +2 em testes de ataque e +1d6 em rolagens de dano contra criaturas flanqueadas, sob efeito de alguma condição ou que sigam algum código de conduta (como Código de Honra ou Código do Herói).
+For 4, Des 1, Con 3, Int 0, Sab 1, Car 1
+Perícias Atletismo +8, Intimidação +7.
+Equipamento Alabarda cruel, brunea, escudo leve, espada curta. Tesouro Padrão.`
+        },
+        {
+          chave: "morgueRaz", nome: "Morgue’raz", nd: "9", tipo: "Morto-vivo Grande",
+          papel: '',
+          resumo: "A coisa lembra um grande esqueleto humanoide, que poderia ter pertencido a um gigante.",
+          texto:
+`Morgue’raz ND 9
+“Danem-se os esqueletos, dane-se que sejam centenas! O que é AQUILO com eles?”
+— Drullmath, suraggel lutador
+A coisa lembra um grande esqueleto humanoide, que poderia ter pertencido a um gigante. Na ampla caixa torácica, vocês podem ver uma massa de vísceras sangrentas e pulsantes, agitadas como serpentes, como se pudessem a qualquer momento escapar através das costelas para agarrar suas vítimas. Também conhecido apenas como “morgue”, este esqueleto nunca pertenceu a um gigante, sendo a verdade muito pior: o monstro se tornou maior e mais maléfico que um esqueleto comum devido aos crimes bárbaros que praticou em vida. Diz-se que o morgue’raz surge quando um assassino morre por causas naturais em Aslothia, jamais respondendo por seus crimes neste mundo. Em casos assim, a energia negativa ambiente (ou talvez a revolta de suas antigas vítimas) o reergue como morto-vivo. Ele seguirá vagando, privado do descanso eterno, apenas procurando novas vítimas — ou alguém poderoso o bastante para acabar com seu tormento. O morgue’raz não tem lembranças de sua vida pregressa, exceto as ocasiões em que matou. Embora sua inteligência seja limitada, ele utiliza esses conhecimentos para emboscar os alvos seguintes. Pode se juntar a grupos de esqueletos e zumbis comuns; usará os tentáculos para imobilizar e enfraquecer a vítima, deixando-a mais vulnerável ao bando. Também costuma aguardar para atacar próximo de criaturas ou armadilhas que não o afetam, como areia movediça ou predadores carnívoros sem interesse em devorá-lo.
+Morto-vivo Grande
+Iniciativa +11, Percepção +8, visão no escuro
+Defesa 34, Fort +21, Ref +15, Von +9, imunidade a medo
+Pontos de Vida 378
+Deslocamento 9m (6q)
+Corpo a Corpo Duas garras +27 (1d8+18, 19) e tripas-tentáculos +27 (1d6+18 perfuração, 19).
+Agarrar Aprimorado (Livre) Tripas-tentáculos (teste +29).
+Aura de Fedor Qualquer criatura que entre em um raio de 9m do morgue’raz, ou inicie seu turno nesta área, fica enjoada por 1d4 rodadas (Fort CD 26 evita).
+Criar Lacaios Criaturas mortas por um morgue’raz se erguem uma semana depois da morte como carniçais (veja p. 228). Os carniçais obedecem instintivamente ao morgue’raz, a menos que ele já tenha sido destruído ou esteja a mais de 10 quilômetros.
+Devorar por Dentro (Padrão) Se o morgue’raz iniciar seu turno agarrando uma criatura, tripas-vermes se alojam na vítima, causando o dano da tripa-tentáculo. Além disso, a vítima fica fraca até o fim do dia (Fort CD 26 evita). Sempre que deixar um alvo fraco dessa forma, o morgue’raz recupera uma quantidade de PV igual à metade do dano causado por esta habilidade.
+For 8, Des 3, Con 4, Int –1, Sab 0, Car 0
+Perícias Furtividade +11.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "wisphago", nome: "Wisphago", nd: "8", tipo: "Morto-vivo Grande",
+          papel: '',
+          resumo: "Parecendo saído de um pesadelo, o monstro é grande como uma carruagem.",
+          texto:
+`Wisphago ND 8
+“Não adianta! Minhas magias não exercem efeito. Não, pior que isso: elas o estão alimentando!”
+— Allaza, qareen arcanista
+Parecendo saído de um pesadelo, o monstro é grande como uma carruagem. Lembra um centauro muito robusto, com patas atarracadas e cabeça pequena, selada em carapaça escura. Em vez de braços, tem longos tentáculos segmentados com muitas patas, como imensas centopeias, terminando em cabeças com mandíbulas famintas em vez de mãos. Dizem que este monstro surgiu como um subproduto do ritual profano que transformou Aslothia.
+Assim como Ferren tomou o poder de incontáveis magos, o wisphago também pode drenar poder de magias conjuradas contra ele, ou que estejam ativas à sua volta. O monstro ataca qualquer ser inteligente, mas é especialmente atraído por arcanistas e outros conjuradores, buscando destruí-los ou absorver suas magias. O wisphago é um ser solitário, refugiado nas profundezas de alguma masmorra, ou vagando por Aslothia em busca de vítimas. Diz-se que suas ações são caóticas, sem qualquer inteligência — mas também correm rumores de que wisphagos são controlados por Ferren e seus generais, levados a atacar acampamentos de heróis que incluam arcanistas. Também podem ser encontrados rondando templos e tumbas antigas; é possível que suas mentes diminutas tenham, um dia, pertencido a pessoas vivas.
+Morto-vivo Grande
+Iniciativa +12, Percepção +11, visão no escuro
+Defesa 33, Fort +21, Ref +8, Von +15, imunidade a confusão, resistência a magia +5
+Pontos de Vida 344
+Deslocamento 15m (10q)
+Corpo a Corpo Duas mordidas +26 (1d8+12, 19).
+Devorar Magia Quando o wisphago passa em um teste de resistência contra uma magia arcana por 5 ou mais, devora essa magia; ela é anulada e ele recebe uma quantidade de PV temporários cumulativos igual ao total de PM gastos na magia.
+Faro para Magos O wisphago recebe um bônus de +10 em testes de Sobrevivência para rastrear criaturas que tenham lançado uma magia arcana na última semana.
+Fome de Mana Uma criatura atingida pela mordida do wisphago perde 1d4 PM.
+Vomitar Magia (Padrão) O wisphago lança uma magia que tenha devorado durante o último mês com Devorar Magia (CD 24). Ele não precisa pagar nenhum custo da magia e pode aplicar seus aprimoramentos (limitado a 10 PM de custo total da magia). Ele só pode lançar cada magia devorada uma vez. O wisphago começa o encontro com 1d6 magias arcanas de 1º círculo e 1d4 magias arcanas de 2º círculo.
+For 6, Des 4, Con 5, Int –2, Sab 3, Car 1
+Perícias Atletismo +14, Sobrevivência +16.
+Tesouro 1d6+2 dentes de wisphago (CD 23 para extrair).`
+        },
+        {
+          chave: "lich", nome: "Lich", nd: "15", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Lich",
+          resumo: "Lich — A figura sombria veste um manto tradicional de arcanista que pode ter sido luxuoso há tempos, mas hoje se encontra em farrapos.",
+          texto:
+`Lich ND 15
+Morto-vivo Médio
+Iniciativa +14, Percepção +18, visão no escuro
+Defesa 48, Fort +27, Ref +20, Von +33, imunidade a eletricidade, frio e metamorfose, redução de dano 20/mágico, resistência a magia +5
+Pontos de Vida 560
+Deslocamento 6m (4q)
+Pontos de Mana 170
+Corpo a Corpo Toque gélido +41 (6d6+6 frio).
+Arcano de Batalha O lich soma sua Inteligência nas rolagens de dano quando lança magias (já contabilizado).
+✦ Aura de Medo Criaturas em um raio de 30m do lich ficam abaladas (Von CD 42 evita e a criatura não pode mais ser abalada por esta habilidade até o fim da cena).
+Drenar Vida (Livre, 1 PM) Quando lança uma magia que causa dano, o lich muda o tipo desse dano para trevas. Para cada criatura que falhar no teste de resistência contra essa magia, o lich recupera uma quantidade de PV igual à metade do dano causado.
+Fluxo de Mana O lich pode manter dois efeitos sustentados simultaneamente com apenas uma ação livre (mas pagando o custo de cada um).
+Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, o lich muda a execução dela para livre.
+Sacrificar Servo (Reação) Uma vez por rodada, quando sofre dano, o lich sacrifica uma de suas criaturas invocadas para reduzir esse dano a 0.
+Toque Paralisante Uma criatura que sofra dano do toque gélido do lich fica paralisada por 1d6 rodadas (Fort CD 42 evita).
+Magias Como um mago de 17º nível (CD 42, limite de PM 26).
+• Conjurar Monstro (Completa, 23 PM, sustentada) O lich conjura um zumbi Enorme em um espaço desocupado em alcance curto. Ele é um morto-vivo com Defesa 48, imunidade a corte, fogo e efeitos que pedem testes de Fortitude ou Vontade, tem For 11, Des 1, 110 PV, deslocamento 15m e pode fazer uma ação de movimento por rodada. O lich pode gastar uma ação padrão para que ele se desloque o dobro nessa rodada ou cause 4d8+15 pontos de dano de impacto em uma criatura adjacente, ou pode gastar uma ação padrão e 1 PM para que ele cause 8d8+30 pontos de dano de trevas num cone de 6m.
+• Conjurar Mortos-Vivos (Completa, 10 PM, sustentada) O lich conjura seis sombras Médias em espaços desocupados em alcance curto. Ele pode gastar uma ação de movimento para fazer elas andarem (deslocamento 9m) ou uma ação padrão para fazer cada uma causar 2d10 pontos de dano de trevas a uma criatura adjacente (criaturas vivas atingidas perdem 1d4 PM; Fort evita). As sombras são mortos-vivos incorpóreos com Des 4, Defesa 35 e todos os outros atributos nulos; elas têm 1 PV e falham automaticamente em qualquer teste de resistência ou oposto, mas têm imunidade a atordoado, dano não letal, encantamento, frio e paralisia. Elas perdem a habilidade incorpóreo quando expostas à luz do sol, desaparecem quando são reduzidas a 0 PV ou no fim da cena e não agem sem receber uma ordem.
+• Profanar (Padrão, 1 PM) Uma esfera de 9m em alcance longo se enche com energia negativa por 1 dia. Dentro dela, todo dano de trevas é maximizado.
+• Raio Polar (Padrão, 16 PM) Uma criatura em alcance médio sofre 14d8+9 pontos de dano de frio e fica paralisada em um bloco de gelo (Fort reduz o dano à metade e muda a condição para lento). É possível quebrar o gelo, que tem 20 PV, RD 10 e vulnerabilidade a fogo, para libertar a criatura presa.
+• Relâmpago (Padrão, 14 PM) O lich causa 14d8+9 pontos de dano de eletricidade em criaturas a sua escolha em alcance médio (Ref reduz à metade).
+• Toque da Morte (Padrão, 25 PM) Criaturas em alcance curto sofrem 10d8+19 pontos de dano de trevas. Um inimigo com menos da metade de seus PV em vez disso deve fazer um teste de Fortitude. Se passar, sofre o dano normal. Se falhar, seus PV são reduzidos a –10.
+• Toque Vampírico (Padrão, 19 PM) O lich faz um ataque de toque gélido. Se acertar, além do dano normal, causa 20d6+9 pontos de dano de trevas e recupera metade desse dano de trevas em pontos de vida.
+Filactério Um lich morto retorna completamente recuperado em 1d10 dias. A única forma de derrotá-lo permanentemente é destruir seu filactério (veja a caixa de texto).
+For –2, Des 1, Con 3, Int 9, Sab 3, Car 2
+Perícias Conhecimento +24, Cura +16, Furtividade +14, Intimidação +15, Misticismo +27, Ofício (alquimista) +27, Religião +16.
+Equipamento Essência de mana x5, robe do arquimago, terra de cemitério x2. Tesouro Dobro e fragmento de filactério.`
+        },
+        {
+          chave: "lichDeAslothia", nome: "Lich de Aslothia", nd: "18", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Lich",
+          resumo: "Lich — A figura sombria veste um manto tradicional de arcanista que pode ter sido luxuoso há tempos, mas hoje se encontra em farrapos.",
+          texto:
+`Lich de Aslothia ND 18
+Morto-vivo Médio
+Iniciativa +21, Percepção +17, visão no escuro
+Defesa 52, Fort +29, Ref +22, Von +35, imunidade a eletricidade, frio e metamorfose, redução de dano 20/mágico, resistência a magia +5
+Pontos de Vida 800
+Deslocamento 9m (6q)
+Pontos de Mana 180
+Corpo a Corpo Toque gélido +47 (9d6+9 frio).
+Arcano de Batalha O lich de Aslothia soma sua Inteligência nas rolagens de dano quando lança magias (já contabilizado).
+✦ Aura de Medo Criaturas em um raio de 30m do lich ficam abaladas (Von CD 46 evita e a criatura não pode mais ser abalada por esta habilidade até o fim da cena).
+Contramágica Superior (Reação) Uma vez por rodada, quando vê uma magia ser conjurada, o lich faz uma contramágica. Se usar Dissipar Magia para isso, ele rola dois dados e usa o melhor resultado.
+Drenar Vida (Livre, 1 PM) Quando lança uma magia que causa dano, o lich muda o tipo desse dano para trevas. Para cada criatura que falhar no teste de resistência contra essa magia, o lich recupera uma quantidade de PV igual à metade do dano causado.
+Fluxo de Mana O lich pode manter dois efeitos sustentados simultaneamente com apenas uma ação livre (mas pagando o custo de cada um).
+Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, o lich muda a execução dela para livre.
+Magia Discreta (Livre, +2 PM) Quando lança uma magia, o lich não precisa gesticular ou falar, e pode lançar a magia com as mãos presas, amordaçado etc. Perceber que ele lançou uma magia exige passar em um teste de Misticismo (CD 20).
+Presença Majestosa (Reação) Quando uma criatura ataca o lich, deve passar em um teste de Vontade (CD 46) ou não conseguirá machucá-lo e perderá a ação. Uma criatura que passe no teste de Vontade não é mais afetada por esta habilidade até o fim da cena.
+Rigor Mortis Uma criatura que falhe na resistência contra uma das magias do lich perde sua próxima ação de movimento.
+Sacrificar Servo (Reação) Uma vez por rodada, quando sofre dano, o lich sacrifica uma de suas criaturas invocadas para reduzir esse dano a 0.
+Toque Paralisante Uma criatura que sofra dano do toque gélido do lich fica paralisada por 1d6 rodadas (Fort CD 46 evita).
+Magias Como um mago de 18º nível (CD 46, limite de PM 30).
+• Conjurar Mortos-Vivos (Completa, 20 PM, sustentada) O lich conjura onze sombras Médias em espaços desocupados em alcance curto. Ele pode gastar uma ação de movimento para fazer elas andarem (deslocamento 9m) ou uma ação padrão para fazer cada uma causar 2d10 pontos de dano de trevas a uma criatura adjacente (criaturas vivas atingidas perdem 1d4 PM; Fort evita). As sombras são mortos-vivos incorpóreos com Des 4, Defesa 35 e todos os outros atributos nulos; elas têm 1 PV e falham automaticamente em qualquer teste de resistência ou oposto, mas têm imunidade a atordoado, dano não letal, encantamento, frio e paralisia. Elas perdem a habilidade incorpóreo quando expostas à luz do sol, desaparecem quando são reduzidas a 0 PV ou no fim da cena e não agem sem receber uma ordem.
+• Desespero Esmagador (Padrão, 8 PM) Criaturas num cone de 6m ficam debilitadas e esmorecidas (Von reduz para 1 rodada).
+• Dissipar Magia (Padrão, 3 PM) O lich escolhe uma criatura, objeto ou esfera de 3m em alcance médio e faz um teste de Misticismo. Todas as magias nesse alvo com CD igual ou menor que o resultado do teste são dissipadas.
+• Legião (Padrão, 15 PM, sustentada) Até 10 criaturas em alcance médio obedecem cegamente aos comandos do lich, exceto ordens claramente suicidas. Uma criatura tem direito a um teste de Vontade no fim de cada um de seus turnos para se livrar do efeito. Criaturas que passem no teste ficam abaladas por 1 rodada enquanto recuperam a consciência.
+• Marionete (Padrão, 10 PM, sustentada) O lich controla as ações físicas de uma criatura em alcance médio. Ao sofrer a magia, e no início de cada um de seus turnos, a vítima faz um teste de Fortitude. Se passar, a magia é anulada.
+• Rogar Maldição (Padrão, 10 PM) Uma criatura em alcance curto fica esmorecida e não pode se comunicar ou lançar magias permanentemente (Fort anula).
+• Toque da Morte (Padrão, 25 PM) Criaturas em alcance curto sofrem 10d8+22 pontos de dano de trevas. Um inimigo com menos da metade de seus PV em vez disso deve fazer um teste de Fortitude. Se passar, sofre o dano normal. Se falhar, seus PV são reduzidos a –10.
+• Toque Vampírico (Padrão, 29 PM) O lich faz um ataque de toque gélido. Se acertar, além do dano normal, causa 30d6+12 pontos de dano de trevas e recupera metade desse dano de trevas em pontos de vida.
+• Velocidade (Padrão, 10 PM, sustentada) O lich pode executar uma ação padrão adicional por turno.
+Filactério Um lich morto retorna completamente recuperado em 1d10 dias. A única forma de derrotá-lo permanentemente é destruir seu filactério (veja a caixa de texto).
+For –1, Des 4, Con 2, Int 12, Sab 2, Car 7
+Perícias Conhecimento +29, Cura +17, Diplomacia +22, Intimidação +22, Intuição +17, Misticismo +32, Nobreza +29, Ofício (alquimista) +29. EquipamentoCoroa majestosa, essência de mana x5, robe do arquimago.
+Tesouro Dobro e fragmento de filactério.`
+        },
+        {
+          chave: "arquilichFerrenAsloth", nome: "Arquilich Ferren Asloth", nd: "S", tipo: "Morto-vivo Médio",
+          papel: '',
+          subgrupo: "Lich",
+          resumo: "Lich — A figura sombria veste um manto tradicional de arcanista que pode ter sido luxuoso há tempos, mas hoje se encontra em farrapos.",
+          texto:
+`Arquilich Ferren Asloth ND S
+Morto-vivo Médio
+Iniciativa +27, Percepção +22, visão no escuro
+Defesa 66, Fort +31, Ref +27, Von +39, imunidade a adivinhação, efeitos mentais, eletricidade, frio e metamorfose, redução de dano 20/mágico, resistência a magia +5
+Pontos de Vida 2.418
+Deslocamento 9m (6q), teleporte 30m (20q)
+Pontos de Mana 255
+Corpo a Corpo Cajado da destruição +57 (2d6+16 mais 10d6+10 frio) ou toque gélido +55 (10d6+10 frio).
+Arcano de Batalha O Arquilich Ferren Asloth soma sua Inteligência nas rolagens de dano quando lança magias (já contabilizado).
+✦ Aura de Medo Criaturas em um raio de 30m de Ferren ficam abaladas (Von CD 55 evita e a criatura não pode mais ser abalada por esta habilidade até o fim da cena).
+Conhecimento Sequestrado (Reação, 3 PM) Uma vez por rodada, quando vê outra criatura lançando uma magia em alcance médio, Ferren pode tomar essa magia. A criatura deve fazer um teste de Vontade (CD 55); se falhar, não pode mais lançar essa magia até o fim da cena, e durante esse período ela se torna uma magia conhecida para Ferren.
+Contramágica Superior (Reação) Uma vez por rodada, quando vê uma magia ser conjurada, Ferren faz uma contramágica. Se usar Dissipar Magia para isso, ele rola dois dados e usa o melhor resultado.
+Dança da Morte (Livre) No início de seu turno, Ferren refaz os testes de resistência de cada condição que o esteja afetando. Se ele passar, o efeito se encerra.
+Despertar dos Mortos (Completa, 10 PM) Ferren conjura um morto-vivo à escolha dele, feito de energia negativa e de até ND 19. A criatura surge em um espaço desocupado em alcance curto, obedece aos comandos de Ferren e age na mesma iniciativa dele. O morto-vivo permanece até ser destruído, até o fim da cena ou até ser dispensado por Ferren (uma ação livre). O Arquilich só pode manter um morto-vivo conjurado por esta habilidade por vez.
+Drenar Vida (Livre, 1 PM) Quando lança uma magia que causa dano, Ferren muda o tipo desse dano para trevas. Para cada criatura que falhar no teste de resistência contra essa magia, Ferren recupera uma quantidade de PV igual à metade do dano causado.
+Fluxo de Mana Ferren pode manter dois efeitos sustentados simultaneamente com apenas uma ação livre (mas pagando o custo de cada um).
+Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, Ferren muda a execução dela para livre.
+Magia Discreta (Livre, +2 PM) Quando lança uma magia, Ferren não precisa gesticular ou falar, e pode lançá-la com as mãos presas, amordaçado etc. Perceber que ele lançou uma magia exige passar em um teste de Misticismo (CD 30).
+Presença Opressora (Reação) Quando uma criatura ataca Ferren, deve passar em um teste de Vontade (CD 55) ou não conseguirá machucá-lo, perderá a ação e sofrerá 12d6 pontos de dano psíquico. Se passar, a criatura não é mais afetada por esta habilidade até o fim da cena.
+Regente Sombrio Ferren tem controle total sobre seus domínios. Uma vez por rodada, ele pode mudar o clima de qualquer região de Aslothia como se tivesse lançado Controlar o Clima. Além disso, pode manipular suas terras, impedindo que criaturas ou efeitos cruzem suas fronteiras, e é capaz de saber a localização exata de qualquer criatura que conheça e que esteja dentro de Aslothia.
+Rigor Mortis Uma criatura que falhe na resistência contra uma magia de Ferren perde sua próxima ação de movimento.
+Sacrificar Servo (Reação) Uma vez por rodada, quando sofre dano, Ferren sacrifica uma de suas criaturas invocadas para reduzir esse dano a 0.
+Toque Paralisante Os ataques corpo a corpo de Ferren causam 10d6+10 pontos de dano de frio extras (já contabilizados). Uma criatura que sofra esse dano de frio fica paralisada por 1d6 rodadas (Fort CD 55 evita).
+✦ Visão Tumular Ferren está permanentemente sob efeito da magia Visão Mística com o aprimoramento que permite enxergar criaturas e objetos invisíveis.
+Magias Como um mago de 20º nível (CD 57, limite de PM 35). Além das magias listadas, ele pode lançar qualquer magia de abjuração, convocação ou necromancia, arcana ou divina.
+• Desespero Esmagador (Padrão, 8 PM) Criaturas num cone de 6m ficam debilitadas e esmorecidas pela cena (Von reduz para 1 rodada).
+• Dissipar Magia (Padrão, 3 PM) Ferren escolhe uma criatura, objeto ou esfera de 3m em alcance médio e faz um teste de Misticismo. Todas as magias nesse alvo com CD igual ou menor que o resultado do teste são dissipadas.
+• Ferver Sangue (Padrão, 35 PM, sustentada) O sangue de criaturas escolhidas em alcance curto começa a ferver. Quando a magia é lançada, e no início de cada um de seus turnos, cada criatura sofre 14d8+29 pontos de dano de fogo e fica enjoada por 1 rodada (Fort reduz o dano à metade e evita a condição). Se uma criatura passar em dois testes de Fortitude seguidos, dissipa a magia sobre si. Se um alvo for reduzido a 0 PV pelo dano desta magia, seu corpo explode, matando-o e causando 6d6+21 pontos de dano de fogo em todas as criaturas a até 3m (Ref reduz à metade). Esta magia não afeta criaturas sem sangue, como construtos ou mortos-vivos.
+• Legião (Padrão, 15 PM, sustentada) Até 10 alvos em alcance médio obedecem cegamente aos comandos de Ferren, exceto ordens claramente suicidas. Um alvo tem direito a um teste de Vontade no fim de cada um de seus turnos para se livrar do efeito. Alvos que passem no teste ficam abalados por 1 rodada enquanto recuperam a consciência.
+• Marionete (Padrão, 10 PM, sustentada) Ferren controla as ações físicas de uma criatura em alcance médio. Ao sofrer a magia, e no início de cada um de seus turnos, a vítima faz um teste de Fortitude. Se passar, a magia é anulada.
+• Rogar Maldição (Padrão, 10 PM) Uma criatura em alcance curto fica esmorecida e não pode se comunicar ou lançar magias permanentemente (Fort anula).
+• Tentáculos de Trevas (Padrão, 10 PM) Até o fim da cena, tentáculos surgem em uma esfera de 6m em alcance médio e tentam agarrar todas as criaturas na área. Ao lançar a magia e no início de cada um de seus turnos, Ferren faz um teste da manobra agarrar (usando Misticismo) contra cada criatura na área. Se ele passar, a criatura é agarrada; se a vítima já está agarrada, é esmagada, sofrendo 8d6+8 pontos de dano de trevas (cada tentáculo recebe +15 em sua primeira rolagem de dano). A área conta como terreno difícil e os tentáculos são imunes a dano.
+• Toque da Morte (Padrão, 25 PM) Criaturas em alcance curto sofrem 10d8+35 pontos de dano de trevas. Um inimigo com menos da metade de seus PV em vez disso deve fazer um teste de Fortitude. Se passar, sofre o dano normal. Se falhar, seus PV são reduzidos a –10.
+• Toque Vampírico (Padrão, 35 PM) Ferren faz um ataque corpo a corpo. Se acertar, além do dano normal, causa 36d6+51 pontos de dano de trevas e recupera metade desse dano de trevas em pontos de vida.
+• Velocidade (Padrão, 10 PM, sustentada) Ferren pode executar uma ação padrão adicional por turno.
+For 1, Des 6, Con 4, Int 15, Sab 4, Car 7
+Perícias Conhecimento +36, Diplomacia +25, Enganação +25, Intimidação +25, Intuição +25, Investigação +31, Misticismo +36, Nobreza +31, Ofício (alquimia) +31, Religião +20.
+Equipamento Amuleto do Abutre, cajado da destruição, robe do arquimago. Tesouro Triplo.`
+        },
+      ],
+      regras: [
+        { titulo: "Mercenário de Aslothia",
+          texto:
+`“Sim, Asloth agora é um maldito lich. Sim, ainda trabalhamos para ele. Algum problema?”
+— Solvarimm, anão guerreiro
+Poderiam ser confundidos com um bando de guerreiros quaisquer, variados em raças e armas. Mas algo parece diferente. Talvez o olhar duro, habituado a atrocidades. Talvez as cicatrizes em excesso. Ou talvez as armaduras imundas de sangue, tanto antigo quanto recente. Muito antes da transformação profana, Aslothia já era infame por toda Arton como reduto de mercenários. Enquanto outras nações conservam exércitos próprios, ou contratam heróis confiáveis para missões mais perigosas, este reino sempre teve a tradição de recorrer a soldados de aluguel, capangas de elite, caçadores de recompensa — enfim, tipos dispostos a lutar e matar por dinheiro. Enquanto fossem pagos e tivessem regalias, eram leais a Ferren. Além disso, na opinião de alguns, não há muita diferença entre mercenários e aventureiros.
+Hoje, no Reino dos Mortos, muitos mercenários simplesmente fugiram. Apenas os grupos mais embrutecidos, impiedosos e desalmados continuam servindo a este novo e macabro mestre, achando seu ouro tão bom quanto qualquer outro. Em boa parte do reino, sobretudo terras mais afastadas da capital, são eles que exercem a lei — brutal e bárbara como eles próprios. Seguem gozando de privilégios da coroa, ficando com boa parte de qualquer pilhagem, torturando e matando quando bem entendem. Se antes sua reputação já não era exemplar, hoje um mercenário de Aslothia não é considerado muito melhor que um purista. Ou um demônio.` },
+        { titulo: "Lich",
+          texto:
+`“Um reino onde os nobres são liches. Liches! Como os deuses permitem tal ignomínia?”
+— Bradney Tar, humano clérigo de Tanna-Toh
+A figura sombria veste um manto tradicional de arcanista que pode ter sido luxuoso há tempos, mas hoje se encontra em farrapos. Suas partes visíveis também podem, outrora, ter sido humanas; hoje são ressequidas, mumificadas, incompatíveis com a vida. Em vez de rosto, exibe uma face cadavérica e enegrecida de esqueleto, com luzes vermelhas brilhando nas órbitas. Liches são talvez os mortos-vivos mais poderosos e temidos de Arton, por sua altíssima inteligência e habilidades de conjuração extremas. Enquanto um arcanista normal pode ser fisicamente frágil, liches superam essa fraqueza somando proteções mágicas robustas às imunidades sobrenaturais dos mortos-vivos. Ainda, sua alma fica abrigada fora do corpo, em local seguro — garantindo o retorno da criatura em caso de destruição. Por tudo isso, derrotar um lich por completo está entre as missões mais difíceis para qualquer grupo de aventureiros. Nem todos os liches são malignos, mas a maioria é. Os próprios procedimentos para a transformação podem, não raras vezes, envolver rituais profanos e sacrifícios de vítimas. Além disso, embora mantenham a mesma inteligência e memórias que tinham em vida, quanto mais tempo nessa condição, menor seu apreço pelo conforto ou pela dignidade dos vivos. Alguns dizem que eles simplesmente enlouquecem; para outros, incluindo eles próprios, liches transcendem os padrões de moralidade que limitam seres viventes. A conversão em lich é um processo extremamente custoso e complexo; muitos arcanistas devotam longos anos em pesquisas e acúmulo de riquezas para alcançar esse objetivo. Outros rogam por essa graça a Tenebra, padroeira dos mortos-vivos; a Deusa das Trevas vez ou outra recompensa seus devotos mais amados com esse presente. Assim, devido à dificuldade em alcançar tal transformação, liches não existem em grande quantidade. Entre os exemplos mais conhecidos na história de Arton temos Thanatos, outrora professor sênior na Grande Academia Arcana; o assim chamado Rei em Agonia, derrotado por heróis épicos conhecidos como a Companhia Rubra: e o bugbear Gaardalok, antigo sumo-sacerdote de Ragnar. Todos estão atualmente desaparecidos ou destruídos. Um deles, no entanto, triunfou em seu antigo plano para alcançar um status ainda maior — não apenas um lich, mas o primeiro Arquilich de Arton. Obviamente estamos falando de Ferren Asloth, o temível regente de Aslothia, cuja ascensão metamorfoseou o próprio reino em terras sombrias e macabras. Se outrora liches apenas se escondiam em masmorras ou torres secretas, tramando nas sombras, hoje tais criaturas são parte da nobreza de Aslothia — governando seus próprios feudos de terror, servidos por súditos aterrorizados. Não é incomum que emissários em missões diplomáticas para negociar tratados com outras nações também sejam liches.` },
+        { titulo: "O Filactério de um Lich",
+          texto:
+`Parte do longo e complexo ritual para transformar um arcanista em um lich, o filactério é um receptáculo mágico que abriga a alma do conjurador. Caso o corpo do lich seja destruído, vai ressurgir dentro de 1d10 dias ao lado do item. A única maneira de eliminar um lich permanentemente é destruindo o filactério (normalmente mantido oculto e protegido). O filactério típico é um recipiente minúsculo, muitas vezes relacionado à cultura do lich, repleto de símbolos arcanos e runas místicas. Exemplos incluem caixas de metal, urnas de cerâmica ou frascos de vidro. Qualquer que seja sua forma, um filactério é um item mágico maior com Defesa 20, RD 40, 50 PV e uma aura mágica poderosa. O lich sempre sabe onde está seu filactério e quem está de posse dele. Um filactério destruído pode ser transformado em um fragmento de filactério .` },
+        { titulo: "As Bênçãos de Ferren",
+          texto:
+`Em Aslothia, desafiar o regente nunca foi uma escolha sábia ou recomendável. No entanto, desde a Noite da Ascensão Profana, uma nova motivação surgiu para os mais ambiciosos se aproximarem cada vez mais do Aquilich. Essa motivação tem nome: as bênçãos de Ferren. Essas bênçãos são concedidas apenas aos membros mais próximos da corte ou aos grandes heróis de Aslothia — aos olhos do regente. São poderes e transformações conferidos pelo próprio Asloth, um dom adquirido após sua transformação final. A natureza das bênçãos varia grandemente: uns se transformam em vampiros, outros em lobisomens e outras criaturas noturnas, mas mantendo seu intelecto. Alguns adquirem habilidades fantásticas e desenvolvem fome insaciável por carne humanoide. É raro um efeito se repetir com exatidão: dizem que Ferren traz à tona as sombras que permeiam a alma daquele que é abençoado. Os principais abençoados por Ferren são os poderosos Sislach: Narsogg, Vissanzi e Rawia. Estes, sob as ordens diretas do Arquilich, mantêm a ordem no reino de forma implacável.` },
+      ],
+    },
+
+    // ── 🏰 REINOS DE MOREANIA ──────────────────────────
+    {
+      chave: "moreania", nome: "Reinos de Moreania", icone: "🏰", cor: "#2f5a8a",
+      intro: "Revelada a Arton apenas em tempos relativamente recentes, a Ilha Nobre constitui quase um mundo próprio. Seu povo humano não teria sido obra de Valkaria, mas de Allihanna e Megalokk, únicos membros do Panteão ali cultuados — conhecidos localmente como a Dama Altiva e o Indomável. Conforme o mito, após uma calamidade que quase extinguiu toda a vida, doze animais pediram aos Irmãos Selvagens para se tornarem humanos. Pediram pelos três dons: a mão, a mente e a magia. Iniciariam assim sua longa jornada rumo à civilização, até finalmente alcançar o continente artoniano em embarcações audaciosas. Conhecido como moreau, esse povo se tornaria visão comum no Reinado e além. De igual forma, artonianos buscariam oportunidades nos Reinos de Moreania, em suas prósperas cidades, suas masmorras misteriosas, seus territórios proibidos. Pois apenas os ermos a leste são aprazíveis a humanos: as Montanhas de Marfim provam-se tão perigosas e infestadas de monstros quanto as Sanguinárias, enquanto ruínas tóxicas a oeste formam o Reino das Torres e abrigam os últimos restos dos invasores darash. Claro, não importando os riscos, mais e mais caçadores de tesouros buscam relíquias proibidas. Hoje, muitas criaturas de Moreania podem também ser encontradas em Arton, e vice-versa.",
+      fichas: [
+        {
+          chave: "bufaloDeGuerra", nome: "Búfalo-de-Guerra", nd: "2", tipo: "Animal Grande",
+          papel: '',
+          resumo: "O animal tem quase o dobro da altura de um humano na cernelha e deve pesar tanto quanto dois ou três touros.",
+          texto:
+`Búfalo-de-Guerra ND 2
+“Trocaria um olho e um braço por uma cavalaria desses bichos na Guerra Artoniana.”
+— Prescott de Deheon, veterano de guerra
+O animal tem quase o dobro da altura de um humano na cernelha e deve pesar tanto quanto dois ou três touros. A cabeçorra ostenta chifres massivos, o couro é escuro como piche. Mas o mais surpreendente em sua figura talvez seja o fato de servir como montaria a um cavaleiro em armadura, que parece minúsculo comparado à besta. Também conhecido como búfalo-cafre, este nobre e poderoso bovídeo vive em imensas manadas junto a grandes rios dos Reinos de Moreania. São animais poderosos e temidos, com poucos inimigos naturais — mesmo os leões e ursos só atacam filhotes, ou búfalos que estejam muito velhos ou feridos. As maiores manadas são lideradas por um imenso macho atroz. Agressivos e mal-humorados, búfalos-de-guerra são quase impossíveis de domesticar. Eles aceitam servir apenas aos Paladinos de Bullton, como uma dádiva oferecida pela Dama Altiva a esses guerreiros sagrados. Ocasionalmente também atuam como companheiros para druidas e caçadores, e diz-se que alguns exemplares trazidos para o Reinado também se tornaram montarias para grandes heróis.
+Animal Grande
+Iniciativa +3, Percepção +4, faro
+Defesa 18, Fort +13, Ref +7, Von +2
+Pontos de Vida 80
+Deslocamento 12m (8q)
+Corpo a Corpo Marrada +10 (2d8+10).
+Atropelamento (Completa) O búfalo-de-guerra percorre até o dobro de seu deslocamento. Ele pode passar pelo espaço ocupado de quaisquer inimigos menores que ele, mas não pode passar duas vezes pelo mesmo espaço. Criaturas atropeladas desta forma sofrem 4d8+10 pontos de dano de impacto e ficam caídas (Ref CD 16 reduz à metade e evita a condição). Recarga (movimento).
+For 7, Des 0, Con 4, Int –5, Sab 1, Car –2
+Perícias Atletismo +10 (+15 para natação).
+Tesouro Nenhum.
+Parceiro O búfalo-de-guerra é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 9m e seu limite de carga aumenta em 5 espaços. Uma vez por rodada, quando faz uma investida montada, você recebe +1d8 em uma rolagem de dano corpo a corpo. Veterano: seu deslocamento muda para 12m e ignora terreno difícil. Mestre: o bônus em rolagens de dano corpo a corpo muda para +2d8 e você recebe uma ação de movimento extra por turno (apenas para se deslocar).`
+        },
+        {
+          chave: "hippossauro", nome: "Hippossauro", nd: "3", tipo: "Animal Grande",
+          papel: '',
+          resumo: "O animal tem o tamanho e porte de um cavalo de guerra, mas parece uma combinação estranha entre este e uma ave, ou lagarto, ou ambos.",
+          texto:
+`Hippossauro ND 3
+“Deuses e deusas! Vocês de Moreania sequer sabem o que é um cavalo?”
+— Norwood de Zakharov, humano caçador
+O animal tem o tamanho e porte de um cavalo de guerra, mas parece uma combinação estranha entre este e uma ave, ou lagarto, ou ambos. É revestido de penugem fina, exceto no focinho e nas pernas, onde a pele é escamosa. As quatro patas longas terminam em garras de ave. A cauda é curta, mas adornada com penas longas e coloridas, que também aparecem vistosas na crina. A cabeça alongada e ossuda lembra mais um lagarto-terror de Galrasia, mas com olhos grandes e afetuosos. Dentes longos e recurvados fazem o animal parecer sorridente, em vez de ameaçador. O hippossauro — mais conhecido como “hippo”, ou apenas “hip” — parece uma combinação de cavalo, ave e dinossauro. Ele é forte, rápido e bastante esperto. Suas garras desafiam terrenos que nenhum cavalo seria capaz de percorrer. São também mais bem equipados para lutar: uma única patada ou mordida pode decepar um braço, e seu couro resiste a flechas e lanças. Porém, uma vez domesticados, são extremamente obedientes a seus mestres. Hippossauros podem ser cavalgados da mesma forma que cavalos comuns e aceitam os mesmos equipamentos — de fato, os lábios ossudos podem receber rebites próprios para prender arreios, sem ferir o animal. Os machos têm cores muito vivas e brilhantes, do vermelho vivo ao amarelo-ouro, passando pelo azul-celeste, violeta e laranja — sendo uma cor dominante e manchas ou plumas em uma ou duas cores diferentes. As fêmeas são mais sóbrias, castanhas, com manchas brancas ou verdes, camuflando-se facilmente na vegetação. Por esse motivo, cavaleiros que buscam uma montaria vistosa e impressionante escolhem os machos, enquanto aqueles mais discretos ou furtivos preferem as fêmeas.
+Animal Grande
+Iniciativa +4, Percepção +7, faro, visão na penumbra
+Defesa 20, Fort +14, Ref +10, Von +4, redução de perfuração 10
+Pontos de Vida 100
+Deslocamento 15m (10q)
+Corpo a Corpo Mordida +13 (1d8+4) e duas garras +13 (1d6+4).
+Salto Mortal (Completa) O hippossauro salta com suas duas garras em um inimigo em alcance curto. A vítima sofre 4d6+8 pontos de dano de corte e fica sangrando (Ref CD 17 reduz o dano à metade e evita a condição).
+For 4, Des 3, Con 3, Int –4, Sab 1, Car 1
+Perícias Atletismo +7, Sobrevivência +4.
+Tesouro Nenhum.
+Parceiro O hippossauro é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe +2 em Diplomacia (hippossauro macho) ou em Furtividade (hipossauro fêmea). Veterano: seu deslocamento muda para 15m e, uma vez por rodada, você recebe +1d8 em uma rolagem de dano corpo a corpo. Mestre: muda o bônus na perícia para +4 e você recebe uma ação de movimento extra (apenas para se deslocar).`
+        },
+        {
+          chave: "manticora", nome: "Mantícora", nd: "6", tipo: "Monstro Grande",
+          papel: '',
+          subgrupo: "Mantícora",
+          resumo: "Mantícora — A monstruosidade é grande como um elefante, mas ainda assim capaz de voar com agilidade.",
+          texto:
+`Mantícora ND 6
+Monstro Grande
+Iniciativa +7, Percepção +8, faro, visão no escuro
+Defesa 26, Fort +18, Ref +7, Von +12
+Pontos de Vida 240
+Deslocamento 9m (6q), voo 15m (10q)
+Corpo a Corpo Mordida +18 (1d10+12) e duas garras +18 (1d8+12).
+Espinhos (Movimento) A mantícora dispara 1d4 espinhos de sua cauda. Cada espinho atinge uma criatura em alcance médio, causando 1d8+7 pontos de dano de perfuração (Ref CD 22 reduz à metade). Recarga (movimento).
+For 7, Des 2, Con 5, Int –2, Sab 1, Car –1
+Tesouro Padrão mais espinhos (CD 21 para extrair, valem T$ 150 para fabricar flechas superiores).`
+        },
+        {
+          chave: "manticoraPrimal", nome: "Mantícora Primal", nd: "14", tipo: "Monstro Enorme",
+          papel: '',
+          subgrupo: "Mantícora",
+          resumo: "Mantícora — A monstruosidade é grande como um elefante, mas ainda assim capaz de voar com agilidade.",
+          texto:
+`Mantícora Primal ND 14
+Monstro Enorme
+Iniciativa +14, Percepção +16, faro, visão no escuro
+Defesa 44, Fort +28, Ref +14, Von +22
+Pontos de Vida 655
+Deslocamento 9m (6q), voo 18m (12q)
+Corpo a Corpo Mordida +40 (3d10+25) e duas garras +40 (2d8+25).
+Crueldade Se acertar seus dois ataques de garra no mesmo turno, a mantícora primal pode continuar atacando com as garras, com uma penalidade cumulativa de –5 em cada ataque adicional no mesmo turno, até errar um ataque.
+Espinhos (Movimento) A mantícora dispara 2d4 espinhos de sua cauda. Cada espinho atinge uma criatura em alcance médio, causando 2d8+8 pontos de dano de perfuração (Ref CD 38 reduz à metade). Recarga (movimento).
+Ressentimento (Movimento) A mantícora emite um rugido atormentador. Criaturas em alcance curto ficam imóveis por 1 rodada e sofrem 8d8 pontos de dano psíquico (Von CD 38 reduz à metade e evita a condição). Uma criatura só pode ser afetada pelo Ressentimento da mesma mantícora uma vez por cena.
+For 8, Des 3, Con 5, Int –3, Sab 3, Car –3
+Tesouro Padrão mais espinhos (CD 29 para extrair, valem T$ 300 para fabricar flechas superiores).`
+        },
+        {
+          chave: "otyugh", nome: "Otyugh", nd: "5", tipo: "Monstro Grande",
+          papel: '',
+          subgrupo: "Otyugh",
+          resumo: "Otyugh — Como? Matando monstros, é claro!” É difícil descrever a criatura.",
+          texto:
+`Otyugh ND 5
+Monstro Grande
+Iniciativa +3, Percepção +10, visão no escuro
+Defesa 24, Fort +17, Ref +11, Von +5, imunidade a doenças e veneno, redução de dano 5
+Pontos de Vida 213
+Deslocamento 6m (4q)
+Corpo a Corpo Dois tentáculos +17 (1d8+9, alcance 4,5m) e mordida +17 (1d6+9 mais doença).
+Agarrar Aprimorado (Livre) Tentáculo (teste +19).
+Constrição (Livre) No início de cada um de seus turnos, o otyugh causa 1d8+9 pontos de dano de impacto em cada criatura que esteja agarrando.
+Doença Uma criatura mordida por um otyugh é exposta à doença infecção do esgoto (veja Tormenta20, p. 318).
+For 5, Des –1, Con 4, Int –2, Sab 1, Car –2
+Perícias Furtividade +3 (+13 em seu refúgio).
+Tesouro Padrão.`
+        },
+        {
+          chave: "hordaDeOtyughs", nome: "Horda de Otyughs", nd: "16", tipo: "Monstro Colossal",
+          papel: '',
+          subgrupo: "Otyugh",
+          resumo: "Otyugh — Como? Matando monstros, é claro!” É difícil descrever a criatura.",
+          texto:
+`Horda de Otyughs ND 16
+Monstro Colossal
+Iniciativa +10, Percepção +14, visão no escuro
+Defesa 53, Fort +30, Ref +24, Von +16, imunidade a doenças e veneno, redução de dano 20
+Pontos de Vida 800
+Deslocamento 12m (8q)
+Corpo a Corpo [Bando] Dois tentáculos +44 (4d8+18, alcance 4,5m) e mordida +44 (4d6+18 mais doença).
+Agarrar Aprimorado (Livre) Tentáculo (teste +54). A horda pode manter até cinco criaturas Grandes ou menores agarradas sem ocupar seus tentáculos.
+Chuva de Tentáculos (Completa) A horda faz um ataque de tentáculo contra cada criatura em seu alcance.
+Constrição (Livre) No início de cada um de seus turnos, a horda causa 2d8+18 pontos de dano de impacto em cada criatura que esteja agarrando.
+Doença Uma criatura mordida pela horda, ou que comece seu turno adjacente a ela, é exposta à doença infecção do esgoto (veja Tormenta20, p. 318). Devido à virulência da horda, a CD para resistir a essa doença é 42.
+Mar de Tentáculos Criaturas a até 4,5m da horda ficam enredadas.
+For 6, Des –1, Con 4, Int –2, Sab 1, Car –3
+Tesouro Padrão.`
+        },
+        {
+          chave: "yidishanBugbear", nome: "Yidishan Bugbear", nd: "2", tipo: "Construto (yidishan) Médio",
+          papel: '',
+          resumo: "O monstro cambaleante parece ser um bugbear, mas algo está errado, muito errado!",
+          texto:
+`Yidishan Bugbear ND 2
+“Misericordiosa Valkaria, vamos acabar logo com o sofrimento dessa coisa!”
+— Lothar Algherulff, humano paladino
+O monstro cambaleante parece ser um bugbear, mas algo está errado, muito errado! Partes de seu corpo são feitas de maquinário, dolorosamente enterrado na carne. Tem um braço metálico no lugar de seu braço direito normal e várias placas de aço enxertadas no dorso. A criatura parece enlouquecida de dor e agonia, avançando feroz para que talvez vocês coloquem fim a seu sofrimento. Tentando sobreviver à própria pestilência e prolongar sua longevidade, os darash desenvolveram formas de substituir seus órgãos naturais por partes mecânicas. O resultado final, os yidishan, foi um sucesso parcial. Os meios-golens são realmente imunes a doenças, envelhecimento, fome ou sede — mas são também insanos e malignos, enlouquecidos pela dor da transformação. Meios-golens são seres bizarros, com peças de metal presas à carne com grampos, cravos e arames, de formas muito dolorosas. Suas partes mecânicas oferecem grande força e resistência, mas a agonia constante sufoca qualquer pensamento racional. A maior parte deles vaga pelo Reino das Torres em bandos, muitos a serviço do vilão Bunkman Berenwocket, aquele que criou a maior parte destes monstros.
+Construto (yidishan) Médio
+Iniciativa +3, Percepção +0, faro, visão no escuro
+Defesa 21, Fort +13, Ref +9, Von +2
+Pontos de Vida 70
+Deslocamento 9m (6q)
+Corpo a Corpo Pancada +10 (2d6+6, x3).
+Espasmo Final (Reação) Quando é reduzido a 0 PV ou menos, o yidishan bugbear faz um ataque de pancada contra uma criatura adjacente (geralmente, aquela que causou dano a ele por último).
+Saborear Pavor Enquanto estiver em alcance curto de uma criatura abalada ou apavorada, o yidishan recebe um bônus em testes de ataque e rolagens de dano igual à penalidade causada pela condição.
+Soco Pneumático (Padrão) O yidishan faz um ataque de pancada. Se acertar, causa +2d6 pontos de dano e a vítima fica enjoada por um turno e caída (Fort CD 16 evita a condição enjoada). Recarga (movimento).
+For 6, Des 2, Con 3, Int –2, Sab –1, Car –4
+Perícias Furtividade +3, Intimidação +9.
+Tesouro Metade.`
+        },
+        {
+          chave: "raposaBucaneira", nome: "Raposa Bucaneira", nd: "2", tipo: "Humanoide (moreau) Médio",
+          papel: '',
+          subgrupo: "Moreau",
+          resumo: "Moreau — É um bando curioso, para dizer o mínimo.",
+          texto:
+`Raposa Bucaneira ND 2
+Humanoide (moreau) Médio
+Iniciativa +7, Percepção +3, faro, visão na penumbra
+Defesa 18, Fort +7, Ref +14, Von +1, evasão
+Pontos de Vida 46
+Deslocamento 12m (8q)
+Corpo a Corpo Pistola-punhal +12 (1d6+4, 19).
+À DistânciaPistola-punhal +10 (2d6+6, 19/x3).
+Audácia Uma vez por rodada, a bucaneira soma seu Carisma em um teste de perícia (exceto em ataque).
+Cobrir de Pólvora (Movimento) A bucaneira joga um punhado de pólvora em um alvo em alcance curto. Até o fim da cena, o próximo ataque contra esse alvo causa +1d6 pontos de dano de fogo e o deixa em chamas.
+Estampido Ensurdecedor Quando a bucaneira dispara com sua pistola-punhal (à distância ou em corpo a corpo), todas as criaturas adjacentes a ela ficam abaladas e surdas (Fort CD 18 reduz a duração para 1 rodada).
+Pistola-Punhal Quando ataca em corpo a corpo com sua pistola-punhal, a raposa bucaneira pode disparar sua bala para causar +2d6 pontos de dano de perfuração.
+Pistoleira Veloz A bucaneira não sofre a penalidade padrão de –5 em ataques por disparar contra oponentes envolvidos em combate corpo a corpo, e pode recarregar sua pistola-punhal como uma ação de movimento.
+For 0, Des 4, Con 2, Int 2, Sab –1, Car 3
+Perícias Acrobacia +7, Atletismo +3, Enganação +9, Intimidação +6, Nobreza +7.
+Equipamento Balas x20, capa esvoaçante, pistola-punhal. Tesouro Padrão.`
+        },
+        {
+          chave: "bufaloPaladinoDeBullton", nome: "Búfalo Paladino de Bullton", nd: "6", tipo: "Humanoide (moreau) Médio",
+          papel: '',
+          subgrupo: "Moreau",
+          resumo: "Moreau — É um bando curioso, para dizer o mínimo.",
+          texto:
+`Búfalo Paladino de Bullton ND 6
+Humanoide (moreau) Médio
+Iniciativa +3, Percepção +4, faro
+Defesa 28, Fort +16, Ref +6, Von +14
+Pontos de Vida 250
+Deslocamento 6m (4q)
+Corpo a Corpo Montante +18 (3d6+15, 19) e chifres +18 (1d6+10).
+Búfalo de Batalha O búfalo paladino de Bullton cavalga um leal búfalo-de-guerra (parceiro montaria veterano, veja p. 297). Enquanto o paladino estiver montado, seu deslocamento se torna 12m, ele ignora terreno difícil e recebe +1d8 em uma rolagem de dano em investida.
+Fúria Sagrada (Livre) O paladino recebe +4 em testes de ataque e rolagens de dano e RD 5. Esse efeito se encerra se o paladino terminar 1 rodada e não tiver atacado nem sido alvo de um efeito hostil. Recarga (movimento).
+Grandes Chifres Quando faz uma investida montada, o paladino pode fazer todos os seus ataques corpo a corpo contra um único alvo.
+Marrada Impressionante O paladino recebe +2 em ataques em investida e em testes para empurrar.
+For 5, Des 0, Con 3, Int 0, Sab 1, Car 3
+Perícias Atletismo +10, Cavalgar +7, Intimidação +10, Nobreza +5, Religião +6.
+Equipamento Alforje, armadura completa, montante aumentada.
+Tesouro Padrão.`
+        },
+        {
+          chave: "corujaDruida", nome: "Coruja Druida", nd: "10", tipo: "Humanoide (Moreau) Médio",
+          papel: '',
+          subgrupo: "Moreau",
+          resumo: "Moreau — É um bando curioso, para dizer o mínimo.",
+          texto:
+`Coruja Druida ND 10
+Humanoide (Moreau) Médio
+Iniciativa +12, Percepção +16, visão no escuro
+Defesa 33, Fort +12, Ref +14, Von +24
+Pontos de Vida 284
+Deslocamento 9m (6q)
+Pontos de Mana 55
+Corpo a Corpo Bordão x2 +25 (1d8+16).
+Chamado da Dama Altiva (Padrão) Uma vez por cena, o moreau da coruja druida invoca 2d4 animais em espaços desocupados em alcance curto, que agem a partir da próxima rodada do druida. Eles têm deslocamento 9m (normal e de escalada) e podem gastar uma ação padrão para causar 2d4 pontos de dano de perfuração em uma criatura adjacente. Os animais têm For –1, Des 2, Defesa 13 e 1 PV, falham automaticamente em qualquer teste oposto ou de resistência e desaparecem quando mortos ou ao fim da cena. e.
+Magias Como um druida de Allihanna de 10º nível (CD 32).
+• Comunhão com a Natureza (Completa, 6 PM) O druida recebe 6d4 dados de auxílio que duram pelo dia ou até serem gastos. Sempre que faz um teste de perícia na natureza, ele pode gastar dois desses dados para receber +2d4 no teste.
+• Concentração de Combate (Padrão, 8 PM) Até o fim da cena, quando faz um ataque, o druida rola dois dados e usa o melhor resultado, e quando um oponente ataca o druida, rola dois dados e usa o pior resultado.
+• Ilusão Lacerante (Padrão, 9 PM, sustentada) Uma ilusão de um perigo mortal surge em um cubo de 9m em alcance médio. Criaturas dentro da área ou que iniciem seus turnos dentro dela sofrem 5d6 pontos de dano psíquico não letal (Von anula).
+• Silêncio (Padrão, 3 PM, sustentada) O druida cria uma esfera de 6m em um ponto em alcance médio. Criaturas nessa área ficam surdas e por isso não podem lançar magias.
+• Vidência (Completa, 6 PM, sustentada) O druida pode ver e ouvir uma criatura a sua escolha e seus arredores em alcance ilimitado (Von evita). O teste de resistência é modificado de acordo com a familiaridade do druida com o alvo da magia (veja Tormenta20, p. 211).
+For 1, Des 3, Con 3, Int 2, Sab 5, Car 1
+Perícias Adestramento +12, Misticismo +11, Religião +14, Sobrevivência +16.
+Equipamento Bandoleira de poções, bordão, essência de mana x3, farrapos de ermitão, símbolo sagrado de Allihanna. Tesouro Metade.`
+        },
+      ],
+      regras: [
+        { titulo: "Mantícora",
+          texto:
+`“Matem essa abominação! Eu disse MATEM! Rápido! Se recusam, faço isso sozinha!”
+— Kasandra Fontaine, herdeira do lobo druida
+A monstruosidade é grande como um elefante, mas ainda assim capaz de voar com agilidade. Tem corpo de leão, asas de dragão, cabeça humana com presas e uma longa cauda espinhosa capaz de disparar acúleos. Temido no continente e em Moreania, este monstro é a prova de que, mesmo sendo cultuados em conjunto, Allihanna e Megalokk são fundamentalmente opostos. Não muito depois do início da vida, Megalokk corrompeu os filhos de Allihanna para criar os monstros, que dominaram o mundo até que os demais deuses se unissem contra eles. Mas a Dama Altiva fez uma oferta de paz a seu irmão brutal. Propôs que, juntos, moldassem algo que representasse o melhor de ambos. Não um animal, não um monstro. Algo novo. O que surgiu foram as mantícoras. Allihanna ficou horrorizada. Megalokk se deleitou. Mantícoras são monstruosidades que não deveriam existir. Simulam o ciclo de vida natural dos animais, mas são deliberadamente cruéis como monstros. Guardam rancor e preferem se alimentar de seres inteligentes, ainda que esses sejam presa mais difícil. Tipicamente fazem seus ninhos em masmorras. Em combate, sobrevoam seus adversários, atacando com uma saraivada de espinhos, então investindo contra os sobreviventes. Paladinos e druidas moreau acreditam que matar mantícoras é seu dever sagrado, apagando a única cria “errada” de sua deusa — ainda que Allihanna nunca tenha pedido. A primeira ninhada, as mantícoras primais, seriam muito maiores e mais poderosas que o restante da espécie, mas nenhuma jamais foi encontrada. Ainda.` },
+        { titulo: "Otyugh",
+          texto:
+`“Sim, eu protejo a natureza, protejo a obra de Allihanna.
+Como? Matando monstros, é claro!”
+— Ray Sfortza, meio-elfo caçador
+É difícil descrever a criatura. Seu bulboso e pustulento corpo central é sustentado por três patas dispostas de forma estranha. Dois longos tentáculos terminam em formações espinhosas, usadas para golpear vítimas, enquanto um terceiro tentáculo contém órgãos sensoriais. Uma bocarra infecta, que parece grande demais para o próprio corpo, completa a ameaça. Embora também exista em Arton, na Ilha Nobre os otyughs nascem da pestilência darash no Reino das Torres, onde existem em grande número e chega a formar hordas abomináveis. Mas também podem ser encontrados nos Reinos, espreitando em masmorras, pântanos e esgotos. Otyughs chafurdam na sujeira, alimentando-se de detritos, mas também emboscando criaturas menores. Aguardam imersos em escombros, com o tentáculo sensorial emerso, esperando pela chegada de vítimas. Apesar da baixa inteligência, sabem falar e formular estratégias de combate — por exemplo, preferem lutar imersos em lama ou sujeira, enquanto alcançam as vítimas com os tentáculos.` },
+        { titulo: "Moreau",
+          texto:
+`“Você não tá esperando que eu faça ‘miau’, né?”
+— Jayle, herdeira da raposa
+É um bando curioso, para dizer o mínimo. Uma atrevida mulher-raposa em trajes coloridos de bucaneira, um robusto homem-búfalo em armadura pesada e um homem-coruja que poderia ser um druida. Poderia ser um bando de aventureiros. Ou bandidos dispostos a saquear. De acordo com sua própria mitologia, esta raça teria se originado de Doze Animais míticos, não existindo moreau de outras espécies. Exceto pela aparência incomum, os moreau são totalmente humanos em cultura e comportamento — e seus aventureiros adotam as mesmas carreiras. Uma diferença é que quase todos os moreau demonstram grande amor ou respeito à natureza; até os mais urbanos ficam à vontade na presença de animais. Em sua terra, é comum conviver com animais diversos no ambiente familiar, mesmo entre membros da nobreza. O típico moreau se considera civilizado, sofisticado, mas mesmo assim não vê grande distância entre sua raça e os animais de que vieram. Muitos moreau têm aparência quase humana. Trazem apenas traços bestiais mínimos, como orelhas levemente pontiagudas, dentes caninos salientes, unhas um pouco escuras, manchas leves sobre a pele, olhos ou cabelos de cores incomuns… Detalhes perceptíveis apenas com um exame atento. Apenas aqueles conhecidos como Herdeiros possuem atributos ferais mais acentuados. Entre os moreau encontrados no continente, os mais comuns são druidas, bucaneiros e cavaleiros, por refletirem as culturas de suas três maiores cidades na terra natal. Grupos moreau podem se opor a aventureiros do Reinado pelas mesmas razões que levariam humanos a fazê-lo — afinal, eles receberam dos Irmãos Selvagens a capacidade de escolher entre o bem e o mal.` },
+      ],
+    },
+
+    // ── 🩸 SANGUINÁRIAS ────────────────────────────────
+    {
+      chave: "sanguinarias", nome: "Sanguinárias", icone: "🩸", cor: "#7a1f2f",
+      intro: "Arton teve épocas remotas em que não havia humanoides, não havia povos inteligentes. Seus deuses ainda não os haviam dado à luz. Mas havia vida, havia a força irresistível que sempre encontra um meio, que move todos os seres. Essa força seria consumida e excretada por Megalokk, infestando tudo com suas crias horrendas, descomunais, indomáveis. O mundo era um inferno de monstros. Seria tornado habitável por humanos e outros povos apenas quando os deuses forçaram o recuo das feras até regiões onde permanecem confinadas. Hoje, as Sanguinárias são o reduto supremo das bestas hórridas, o reino de massacre que Arton havia sido. É verdade que algumas feras de Galrasia também existem nas Sanguinárias, e vice-versa. Contudo, enquanto o Mundo Perdido é terra de criaturas naturais — ainda que muitas vezes crescidas e embrutecidas —, as Sanguinárias são onde os verdadeiros monstros prosperam. Aqui não existe equilíbrio natural, não existe o Grande Ciclo cultuado pelos devotos de Allihanna. Tudo é caos violento, tudo ataca e mata mesmo sem fome, sem provocação, sem motivo.\nNas Sanguinárias não há relação clara de predador e presa — tudo é predador, tudo busca devastação, aniquilação, destruição. Os monstros não matam por alimento, por defesa de território, por proteção de suas famílias; eles matam por serem monstros. Grande parte dos monstros nas Sanguinárias não se reproduz por meios naturais; não há cruza, gestação ou parto. As criaturas apenas surgem, formam-se, erguem-se negrume nos dos abismos, do magma nos vulcões, da vontade de Megalokk. Aqueles que acasalam o fazem como paródia violenta dos animais de Allihanna, trazendo oferendas de vítimas ou matando o pretendente, ou ambos. Monstros existem unicamente para a violência.",
+      fichas: [
+        {
+          chave: "cerianthar", nome: "Cerianthar", nd: "4", tipo: "Monstro Médio",
+          papel: '',
+          resumo: "Apesar da vigilância constante, a aparição súbita da criatura surpreende todos vocês.",
+          texto:
+`Cerianthar ND 4
+“Acredito que aquelas árvores bizarras devem prover bom lugar de acampamento.”
+— Hyakunen, o Imortal (estraçalhado)
+Apesar da vigilância constante, a aparição súbita da criatura surpreende todos vocês. Ergue-se do solo rochoso com seu tronco rugoso e tubular, lembrando alguma árvore macabra — com tentáculos espinhosos em vez de galhos, agarrando e estraçalhando o batedor experiente que guiava seu grupo. Com horror, vocês percebem outros seres de mesmo tipo surgindo à volta. Cerianthar estão entre os monstros mais traiçoeiros e temidos nas Sanguinárias, responsáveis por dizimar incontáveis expedições. Em poucas palavras, são versões terrestres, imensas e agressivas de corais marinhos, emergindo da rocha sem aviso para agarrar e despedaçar criaturas que se aproximam. Indivíduos solitários às vezes fazem tocaia em passagens estreitas, mas estes monstros preferem formar emboscadas em grupos. De fato, em alguns pontos das montanhas, vales inteiros são forrados com estas coisas. Embora atue como um predador de emboscada, o cerianthar não mata por alimento; não parece sequer ter essa necessidade, deixando os restos das vítimas espalhados em volta da toca. Por vezes os corpos atraem as próximas presas, que sofrem o mesmo destino. Diz-se que cerianthar podem ser encontrados na superfície de alguns kaiju, atacando aventureiros que porventura tentem escalar para alcançar pontos vitais. Estudiosos suspeitam ser essa a verdadeira origem das criaturas, brotando da força vital imensurável dos gigantes, até se desprenderem pelo caminho.
+Monstro Médio
+Iniciativa +9, Percepção +5, percepção às cegas
+Defesa 22, Fort +15, Ref +5, Von +10
+Pontos de Vida 140
+Deslocamento 9m (6q)
+Corpo a Corpo Quatro tentáculos +16 (1d6+4, alcance 3m).
+Agarrar Aprimorado (Livre) Tentáculo (teste +16).
+Constrição (Livre) No início de cada um de seus turnos, o cerianthar causa 2d6+4 pontos de dano de corte em cada criatura que esteja agarrando.
+Imobilidade Uma cerianthar pode permanecer completamente imóvel. Se ele estiver assim, um personagem deve passar num teste de Percepção (CD 35) para perceber que ele é uma criatura e não parte da paisagem.
+Muitos Tentáculos O cerianthar possui oito tentáculos. Ele pode atacar com no máximo quatro tentáculos ao mesmo tempo, mas pode usar os demais para manter criaturas agarradas.
+Tentáculos Decepáveis É possível cortar um tentáculo com um ataque direto. Cada tentáculo tem Defesa 24 e é cortado se sofrer pelo menos 10 pontos de dano de corte em um único ataque. Se o tentáculo estava agarrando uma criatura, ela é solta automaticamente.
+For 3, Des 2, Con 2, Int –4, Sab 1, Car 0
+Perícias Furtividade +9.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "grandeTachygloss", nome: "Grande Tachygloss", nd: "16", tipo: "Monstro Grande",
+          papel: '',
+          resumo: "O monstro lembra vagamente um urso, mas muito maior.",
+          texto:
+`Grande Tachygloss ND 16
+“Sim, você quer aqueles espinhos. Eu também. Mas não atravessando meu coração!”
+— Almithara de Lenórienn, elfa cavaleira
+O monstro lembra vagamente um urso, mas muito maior. O corpo é inteiramente coberto de espinhos, alguns grossos como chifres, outros afilados como lanças. As patas dianteiras também projetam garras de tamanhos diferentes. Não há cabeça visível; em vez disso, apenas uma abertura escura onde olhos furiosos brilham nas trevas. Embora lembre algum tipo de ouriço gigante, o grande tachygloss não pode ser considerado um animal natural. Sua ferocidade incomum leva-o a atacar qualquer criatura que encontre, sempre lutando até a morte. Alguns estudiosos dizem que estes monstros sofrem dores indizíveis constantemente, crivados com os próprios espinhos. Aventureiros que os tenham enfrentado, contudo, sentem muito mais piedade de suas vítimas — encontradas empaladas nas proximidades do covil. Devido a algum atributo planar, os acúleos do grande tachygloss penetram adamante tão facilmente quanto fruta madura. Embora esse efeito seja mais poderoso enquanto a criatura vive, ainda assim caçadores buscam extrair esse material valioso para manufatura de armas. Houve algumas tentativas de capturar o monstro e mantê-lo em cativeiro para coleta regular de espinhos; quase todas terminaram em massacre. Não é comum encontrar o monstro longe das Sanguinárias. Ali, por ser capaz de percorrer superfícies verticais livremente, sua vantagem em combate é absolutamente letal.
+Monstro Grande
+Iniciativa +14, Percepção +16, visão no escuro
+Defesa 53, Fort +30, Ref +24, Von +16, redução de dano 20
+Pontos de Vida 800
+Deslocamento 12m (8q), escalada 12m (8q)
+Corpo a Corpo Duas garras +43 (3d8+23 mais 6d6 perfuração) e cauda +43 (2d10+23, x3, mais 6d6 perfuração).
+Acúleos O tachygloss é coberto de espinhos pontiagudos. Todo dano de perfuração que ele causa ignora redução de dano.
+Armadura de Espinhos Quando o tachygloss sofre dano por um ataque corpo a corpo adjacente, o atacante sofre 6d6 pontos de dano de perfuração.
+For 7, Des 0, Con 8, Int –4, Sab 2, Car –3
+Tesouro Acúleos de tachygloss (CD 31 para extrair, valem T$ 1.000 para fabricar uma arma com a melhoria penetrante).`
+        },
+        {
+          chave: "oxxdon", nome: "Oxxdon", nd: "2", tipo: "Monstro Médio",
+          papel: '',
+          subgrupo: "Oxxdon",
+          resumo: "Oxxdon — Aquilo que emerge da escuridão lembra uma cruza macabra entre um gafanhoto e um lagarto gigante, com longas antenas e cauda bipartida.",
+          texto:
+`Oxxdon ND 2
+Monstro Médio
+Iniciativa +7, Percepção +4, faro, visão no escuro
+Defesa 20, Fort +7, Ref +9, Von +4
+Pontos de Vida 72
+Deslocamento 12m (8q)
+Corpo a Corpo Antena +12 (ferrugem) e mordida +12 (1d8+4).
+Ferrugem A antena do oxxdon destrói automaticamente qualquer objeto de metal atingido. Uma arma de metal que cause dano a um oxxdon também é destruída imediatamente (itens mágicos têm direito a um teste de Fortitude contra CD 17 para evitar). Contra criaturas de metal (como golens), a antena deixa o alvo fatigado, então exausto, então paralisado (mesmo que seja imune a essas condições; Fort CD 17 evita). Remover cada uma destas condições da criatura exige uma hora de trabalho, o gasto de T$ 50 em materiais e passar em um teste de Ofício (artesão) contra CD 20.
+For 0, Des 4, Con 2, Int –4, Sab 1, Car –1
+Tesouro Nenhum.`
+        },
+        {
+          chave: "oxxdonImenso", nome: "Oxxdon Imenso", nd: "10", tipo: "Monstro Enorme",
+          papel: '',
+          subgrupo: "Oxxdon",
+          resumo: "Oxxdon — Aquilo que emerge da escuridão lembra uma cruza macabra entre um gafanhoto e um lagarto gigante, com longas antenas e cauda bipartida.",
+          texto:
+`Oxxdon Imenso ND 10
+Monstro Enorme
+Iniciativa +18, Percepção +10, faro, visão no escuro
+Defesa 36, Fort +13, Ref +24, Von +11
+Pontos de Vida 400
+Deslocamento 12m (8q)
+Corpo a Corpo Duas antenas +29 (1d8+10 mais ferrugem) e mordida +29 (3d8+10).
+Aura Oxidante A presença de um oxxdon imenso corrói a própria existência. Objetos soltos, bem como criaturas, que comecem o turno em um raio de 9m sofrem 4d6+10 pontos de dano de essência e ficam fatigadas por 1 rodada.
+Ferrugem Como o oxxdon (veja acima), mas com CD 30.
+For 2, Des 6, Con 3, Int –4, Sab 1, Car –1
+Tesouro Nenhum.`
+        },
+        {
+          chave: "razzaKham", nome: "Razza’Kham", nd: "17", tipo: "Monstro Enorme",
+          papel: '',
+          resumo: "Alta como um celeiro, a bizarria bípede é toda coberta de escamas e placas.",
+          texto:
+`Razza’Kham ND 17
+“Rei-tirano de Galrasia? Não, não. Hoje vamos caçar algo perigoso de verdade.”
+— Bagerrat, suraggel caçador
+Alta como um celeiro, a bizarria bípede é toda coberta de escamas e placas. Tem as pernas fortes e a cauda longa de um lagarto, mas as patas dianteiras são como garras de louva-a-deus. A bocarra enorme é guarnecida com presas longas e mandíbulas de besouro extremamente afiadas nas laterais. Várias antenas insetoides na cabeça e outros pontos do corpo completam a monstruosidade. Também conhecido como “quelicerossauro”, este monstro pode lembrar alguma fera primeva de Galrasia — onde também pode ser encontrado. Estudado com mais cautela, contudo, a criatura revela ser uma combinação bizarra de réptil e inseto, com exoesqueleto poderoso, garras espinhosas e quelíceras afiadas flanqueando a bocarra salivante. Razza’kham são mais armados, mais horrendos e mais ferozes que qualquer lagarto-terror. Conjuntos de antenas ao longo do corpo oferecem ao monstro sentidos aguçados, capazes de perceber mesmo seres ocultos por magia. A carapaça fortíssima, resistente a ataques físicos e mágicos, é cobiçada por caçadores como material para armaduras. O mesmo vale para as garras e presas, usadas para produzir facas que penetram mesmo os mais fortes metais.
+Cultistas de Megalokk dizem que o razza’kham está entre as crias favoritas do Deus dos Monstros.
+Monstro Enorme
+Iniciativa +16, Percepção +21, faro, percepção às cegas, visão no escuro
+Defesa 54, Fort +30, Ref +24, Von +17, redução de dano 15, redução de ácido, eletricidade, fogo e frio 20
+Pontos de Vida 1.010
+Deslocamento 15m (10q)
+Corpo a Corpo Duas garras +47 (6d10+36, 18) e mordida +47 (10d10+36, x3).
+Brutalidade Incontida Sempre que o razza’kham rola um resultado máximo em um dado de dano, rola um dado extra de dano do mesmo tipo.
+Dilacerar Se o razza’kham acerta os dois ataques de garra em uma mesma criatura no mesmo turno, causa mais 8d6 pontos de dano.
+Varrer (Livre) Uma vez por rodada, quando o razza’kham faz um ataque corpo a corpo e reduz os pontos de vida do alvo para 0 ou menos, pode realizar um ataque adicional contra outra criatura dentro do seu alcance.
+For 14, Des 2, Con 7, Int –5, Sab 2, Car 0
+Tesouro Três peças de quitina razza (CD 32 para extrair).`
+        },
+        {
+          chave: "serpe", nome: "Serpe", nd: "5", tipo: "Monstro Grande",
+          papel: '',
+          subgrupo: "Serpe",
+          resumo: "Serpe — As silhuetas inconfundíveis de dragões em voo se recortam contra o céu, descendo sobre vocês.",
+          texto:
+`Serpe ND 5
+Monstro Grande
+Iniciativa +5, Percepção +7, faro, visão no escuro
+Defesa 24, Fort +10, Ref +16, Von +5, imunidade a paralisia
+Pontos de Vida 200
+Deslocamento 9m (6q), voo 18m (12q)
+Corpo a Corpo Mordida +17 (2d6+12) e ferrão +17 (1d8+12 mais veneno).
+Agarrar Aprimorado (Livre) Mordida (teste +19).
+Veneno Peçonha concentrada (perde 1d12 pontos de vida por rodada durante 3 rodadas, Fort CD 20 reduz a duração para 1 rodada).
+For 6, Des 1, Con 6, Int –2, Sab 1, Car –1
+Tesouro 1d4 doses de peçonha concentrada (CD 20 para extrair).`
+        },
+        {
+          chave: "serpeAncia", nome: "Serpe Anciã", nd: "8", tipo: "Monstro Enorme",
+          papel: '',
+          subgrupo: "Serpe",
+          resumo: "Serpe — As silhuetas inconfundíveis de dragões em voo se recortam contra o céu, descendo sobre vocês.",
+          texto:
+`Serpe Anciã ND 8
+Monstro Enorme
+Iniciativa +8, Percepção +7, faro, visão no escuro
+Defesa 33, Fort +15, Ref +21, Von +8, imunidade a paralisia e veneno
+Pontos de Vida 320
+Deslocamento 9m (6q), voo 18m (12q)
+Corpo a Corpo Mordida +26 (3d6+15) e ferrão +26 (2d12+15 mais veneno).
+Agarrar Aprimorado (Livre) Mordida (teste +31).
+Jato de Podridão (Padrão) A serpe dispara um jato de veneno que ignora imunidade e afeta uma linha de 18m. Criaturas na área perdem 6d12 pontos de vida (Fort CD 26 reduz à metade). Recarga (movimento).
+Veneno Peçonha anciã (perde 3d12 pontos de vida por rodada durante 3 rodadas, ignorando imunidade a veneno, Fort CD 26 reduz a duração para 1 rodada).
+For 7, Des 1, Con 6, Int –2, Sab 1, Car –1
+Tesouro 1d4 doses de peçonha anciã (CD 23 para extrair).`
+        },
+        {
+          chave: "uraghianJovem", nome: "Uraghian Jovem", nd: "5", tipo: "Monstro Grande",
+          papel: '',
+          subgrupo: "Uraghian",
+          resumo: "Uraghian — Grande como um elefante, o inseto monstruoso avança para atacar e devorar.",
+          texto:
+`Uraghian Jovem ND 5
+Monstro Grande
+Iniciativa +3, Percepção +5, faro, visão na penumbra
+Defesa 24, Fort +17, Ref +5, Von +11, redução de fogo 20
+Pontos de Vida 200
+Deslocamento 9m (6q)
+Corpo a Corpo Mordida +17 (2d8+10 mais 6d6 fogo).
+Couraça Cáustica Uma criatura que cause dano ao uraghian com um ataque corpo a corpo sofre 6d6 pontos de dano de fogo. Criaturas com alcance natural maior que 1,5m não sofrem esse dano.
+Rajada Flamejante (Padrão) O uraghian cospe óleo flamejante em um cone de 12m. Criaturas na área sofrem 6d6+12 pontos de dano de fogo e ficam em chamas (Ref CD 20 reduz o dano à metade e evita a condição). Recarga (movimento).
+For 6, Des –1, Con 5, Int –5, Sab 1, Car –2
+Tesouro Óleo de besouro x1d4 (CD 20 para extrair).`
+        },
+        {
+          chave: "uraghianAdulto", nome: "Uraghian Adulto", nd: "8", tipo: "Monstro Enorme",
+          papel: '',
+          subgrupo: "Uraghian",
+          resumo: "Uraghian — Grande como um elefante, o inseto monstruoso avança para atacar e devorar.",
+          texto:
+`Uraghian Adulto ND 8
+Monstro Enorme
+Iniciativa +7, Percepção +10, faro, visão na penumbra
+Defesa 33, Fort +21, Ref +8, Von +15, redução de fogo 20
+Pontos de Vida 330
+Deslocamento 9m (6q)
+Corpo a Corpo Mordida +26 (2d12+35 mais 6d6 fogo).
+Couraça Cáustica Uma criatura que cause dano ao uraghian com um ataque corpo a corpo sofre 6d6 pontos de dano de fogo. Criaturas com alcance natural maior que 1,5m não sofrem esse dano.
+Rajada Flamejante (Padrão) O uraghian cospe óleo flamejante em um cone de 18m. Criaturas na área sofrem 10d6+20 pontos de dano de fogo e ficam em chamas (Ref CD 26 reduz o dano à metade e evita a condição). Recarga (movimento).
+For 8, Des –1, Con 6, Int –5, Sab 2, Car –2
+Tesouro Óleo de besouro x1d6 (CD 23 para extrair) e casulos de seda x2d4 (CD 23 para extrair, cada casulo vale T$ 100 para fabricar um vestuário superior).`
+        },
+        {
+          chave: "kaiju", nome: "Kaiju", nd: "20", tipo: "Monstro (kaiju) Colossal",
+          papel: '',
+          resumo: "Um tremor e um rugido profundo anunciam seu despertar.",
+          texto:
+`Kaiju ND 20
+“Não, rapaz. Não se combate um kaiju, como não se combate um terremoto ou uma tempestade. Apenas tenta-se sobreviver.”
+— Mon’han Galldo’han, kliren fundador da Guilda dos Caça-Monstros
+Um tremor e um rugido profundo anunciam seu despertar. Atrás da montanha, algo ainda maior que esta se ergue — algo escuro e escamado, que alcança e encobre o sol, os céus. Grandes como a estátua de Valkaria — ou até maiores —, kaiju são os maiores seres vivos conhecidos na existência. Mais que simples monstros, são verdadeiras forças da natureza, como os terremotos, vulcões e tufões. Muitas vezes, até venerados como deuses. Embora muitos concordem que os kaiju são crias de Megalokk, alguns acadêmicos acreditam que nem mesmo um deus maior teria poder para produzir estas criaturas supremas, sendo sua verdadeira origem um mistério. Eles não se reproduzem como outros seres, não acasalam ou procriam — até porque não existem espécies kaiju, não existem dois iguais. Alguns passam por estranhos estágios larvais e metamorfoses, mas nunca foram encontrados ovos ou filhotes. Suspeita-se que todos os kaiju existentes surgiram (nasceram?) no passado remoto, quando Arton era tomada pelos monstros, ou vieram de lugares ainda mais terríveis. Adormecidos, ou mesmo mortos, podem despertar/ressuscitar a qualquer momento para trazer fúria e destruição. Kaiju não morrem por meios naturais; seu tempo de vida simplesmente não pode ser medido. Um kaiju pode ser derrotado e morto, tipicamente por outro kaiju — pois quase nenhum outro ser no mundo é capaz dessa façanha. Contudo, mesmo despedaçado ou reduzido a ossos, um kaiju nunca morre realmente — ou melhor, nunca permanece morto. Vai regenerar com o tempo, sem que nada nem ninguém consiga impedir. Por isso, é normal que kaiju destruídos em batalhas épicas simplesmente retornem tempos depois. Um kaiju enfurecido pode despertar e atacar em qualquer parte de Arton, mas o único lugar onde existem em abundância são as Sanguinárias. Ali, travam batalhas titânicas cujos tremores sacodem a ilha de Tamu-ra a leste. Tamuranianos chamam a cordilheira de Trono de Sugora, o grande espírito que alguns consideram o nome nativo de Megalokk. Vez ou outra, um kaiju atravessa o mar e alcança o Império de Jade para devastar suas cidades, forçando os heróis locais a encontrar formas de lidar com a besta.
+Monstro (kaiju) Colossal
+Iniciativa +22, Percepção +16, faro, visão no escuro
+Defesa 62, Fort +34, Ref +28, Von +20, cura acelerada 50/kaiju, fortificação 75%, imunidade a efeitos de metabolismo e mentais, medo, metamorfose, paralisia e veneno, redução de dano 30
+Pontos de Vida 1.500
+Deslocamento 15m (10q), mais um entre escalada 9m (6q), natação 36m (24q) ou voo 36m (24q)
+Corpo a Corpo Duas garras +55 (2d20+50), mordida +55 (2d20+50) e cauda +55 (2d20+50).
+Agarrar Aprimorado (Livre) Mordida (teste +60).
+Arsenal Titânico Cada kaiju possui dois poderes titânicos, escolhidos entre os seguintes.
+• Arremessar Montanha (Padrão). O kaiju arremessa um pedregulho em uma criatura em alcance longo, causando 10d12 pontos de dano de impacto ao alvo e a todas as criaturas em alcance curto dele, e soterrando todos (Ref CD 50 reduz dano à metade e evita o soterramento). Criaturas soterradas ficam imóveis e sofrem 2d12 pontos de dano de impacto no início de cada um de seus turnos. Soltar-se (ou soltar um aliado soterrado) exige uma ação completa e um teste de Força (CD 28). Vários personagens podem ajudar nesse teste. Recarga (movimento).
+• Fúria Retalhadora. Uma vez por rodada, quando sofre dano, o kaiju recebe +5 em testes de ataque e +1d20 nas rolagens de dano até o fim do seu próximo turno.
+• Ferrão Peçonhento. O ataque de cauda do kaiju é substituído por um ataque de ferrão (mesmas estatísticas, mas causa dano de perfuração mais veneno).
+• Poeira dos Sonhos (Movimento). Criaturas em alcance médio ficam inconscientes e caídas; criaturas em combate, em vez disso, ficam exaustas (Von CD 50 muda para fatigada e a criatura fica imune a esta habilidade até o fim da cena). Recarga (movimento).
+• Rugido Aterrador (Padrão). Todas as criaturas em alcance longo sofrem 16d12 pontos de dano de impacto e ficam apavoradas e surdas (Fort CD 50 reduz o dano à metade, evita a condição surdo e muda de apavoradas para abaladas). Recarga (movimento).
+• Sopro Corrosivo (Padrão). Todas as criaturas em um cone de 12m sofrem 12d20 pontos de dano de ácido e ficam vulneráveis (Ref CD 50 reduz o dano à metade e evita a condição). Recarga (movimento).
+• Tempestade de Ferrões (Completa). Criaturas em alcance médio sofrem 6d12 pontos de dano de perfuração e são expostas ao veneno peçonha kaiju (Ref CD 50 reduz o dano à metade e evita o veneno). Recarga (padrão).
+• Terremoto da Ira (Completa). Todas as criaturas em alcance médio em contato com o solo sofrem 14d12 pontos de dano e ficam caídas (Ref CD 50 reduz o dano à metade e evita a condição). Recarga (ser reduzido a 800 PV).
+• Ventos Bravios. Quando o kaiju voa, os ventos produzidos por ele arremessam todas as criaturas em alcance médio 15m na direção oposta do kaiju (Fort CD 50 evita). Uma criatura arremessada fica caída e, se atingir algum obstáculo, sofre 1d6 pontos de dano de impacto para cada 1,5m que foi arremessada. Pré-requisito: deslocamento de voo.
+Engolir (Livre) No início de cada um dos turnos do kaiju, cada criatura engolida sofre 2d20+50 pontos de dano de impacto mais 2d20+50 pontos de dano de ácido. Elas podem escapar causando um total de 200 pontos de dano a ele (Defesa 25, fortificação 25%, redução de dano 0). O kaiju pode manter uma criatura Enorme, ou até dez criaturas Grandes ou menores, engolidas por vez. Maior que a Vida Quando falha em um teste de resistência contra um efeito com duração maior que instantânea, um kaiju pode, no início do seu turno, fazer um novo teste de resistência oposto à CD original, até o fim da duração do efeito. Além disso, se reduzido a 0 PV ou menos, assim que restaurado a 1 PV por sua cura acelerada o kaiju desiste de lutar e retorna à sua terra de origem.
+Titânico O kaiju é imune a manobras de combate, não pode ser flanqueado e sofre metade do dano de ataques que não sejam de outra criatura Titânica. Quando se move, pisoteia qualquer criatura ou objeto Enorme ou menor em seu caminho (atravessando seu espaço), causando 20d6 pontos de dano de impacto (uma vez por rodada por criatura, Ref CD 50 reduz à metade). Além disso, seus ataques ignoram redução de dano e atingem todas as criaturas em um quadrado de 6m (para cada ataque, ele faz um único teste de ataque e compara o resultado com a Defesa de cada inimigo na área).
+Veneno Peçonha kaiju (perde 5d12 PV por rodada durante 10 rodadas, Fort CD 50 reduz para 1 rodada).
+For 20, Des 0, Con 15, Int –3, Sab 2, Car –3
+Perícias Atletismo +35, Intimidação +35.
+Tesouro Padrão, mais 6 peças de couraça de kaiju CD 35 para extrair).`
+        },
+      ],
+      regras: [
+        { titulo: "Oxxdon",
+          texto:
+`“Não creio! Boulderann era o mais forte de nós. Aquele monstro o fez virar PÓ!”
+— Bodvarr de Petrynia, humano clérigo de Thyatis
+Aquilo que emerge da escuridão lembra uma cruza macabra entre um gafanhoto e um lagarto gigante, com longas antenas e cauda bipartida. Estranhas energias correm em filetes ao longo da carapaça escura, formando desenhos fluidos, que ocasionalmente saltam como jatos d’água. Onde tocam, produzem um chiado ácido. Diz-se que Megalokk odeia a civilização, odeia os seres inteligentes e seus instrumentos — suas armas e ferramentas covardes, sem as quais são vermes fracos e miseráveis. Talvez por esse motivo várias de suas crias têm a capacidade de destruir itens forjados pela mão humana. Também chamado “monstro da ferrugem”, o oxxdon é conhecido por essa habilidade. Sua superfície produz uma substância corrosiva planar com as mesmas propriedades de uma magia de desintegração, exceto que não afeta seres vivos — apenas instrumentos, desmanchando-os ao mais leve toque. Armas usadas contra a criatura, ou mesmo levadas muito perto, se desfazem em pó. Armaduras são atravessadas e ignoradas. Engenhocas de inventor pifam. Golens? Nem pergunte! Como outros monstros, o oxxdon não é parte do mundo natural, não tem ciclo reprodutivo conhecido. Simplesmente surge em lugares onde rondam exploradores e aventureiros, por puro desejo de Megalokk em ver tais expedições fracassar. Versões menores perambulam por masmorras em toda Arton, enquanto os maiores rondam vários pontos das Sanguinárias.` },
+        { titulo: "Serpe",
+          texto:
+`“Necrose seria sinal normal de envenenamento, não fosse um golem. Nunca vi algo assim.”
+— Doutor Asclepius, médico de Salistick
+As silhuetas inconfundíveis de dragões em voo se recortam contra o céu, descendo sobre vocês. Quando alcançam o solo, contudo, diferenças saltam aos olhos. Os monstros têm apenas duas pernas, além de dentes finos e numerosos, e grandes ferrões nas pontas das caudas. Ainda, são liderados por uma besta muito maior — cujos chiados não parecem demonstrar qualquer inteligência, apenas selvageria. Serpes são encontradas nos ermos de Arton, solitárias ou em pequenos bandos. Apenas nas Sanguinárias os lagartos alados formam bandos numerosos. Serpes são muitas vezes confundidas com dragões — mas sem parentesco real com estes. Não têm sopro de fogo ou capacidade de lançar magias. São estúpidas e extremamente agressivas, atacando tudo que encontram. Sua arma principal é o ferrão, portando um dos venenos mais mortais de Arton, capaz de matar praticamente qualquer coisa; dizem afetar até criaturas supostamente imunes, como osteon e golens. Guildas criminosas e cultos sszzaazitas cobiçam essa toxina poderosa, muitas vezes contratando expedições para caçar e capturar as feras, ou extrair sua peçonha. Uma história diz que Megalokk, invejoso das crias de Kally, teria desejado dragões para si. Serpes seriam sua primeira tentativa pífia buscando esse objetivo, logo abandonado. Outra lenda, contudo, atribui esses monstros de veneno letal a Sszzaas. Tentativas de domesticar serpes como montarias invariavelmente terminam com a morte do cavaleiro, cedo ou tarde fulminado pelo ferrão mortal. Contudo, dizem que devotos de Sszzaas e bárbaros das Sanguinárias conseguem essa proeza. Além do tipo normal, existe também a serpe anciã, maior e mais perigosa — e com veneno ainda mais letal. Costuma liderar bandos de serpes comuns nas Sanguinárias, sendo raro, mas não impossível, encontrá-la em outros territórios.` },
+        { titulo: "Uraghian",
+          texto:
+`“Acalmem-se, o besouro-do-óleo é mesmo perigoso, mas existe apenas em Galrasia.”
+— Hyakunen, o Imortal (incinerado)
+Grande como um elefante, o inseto monstruoso avança para atacar e devorar. Na carapaça escura e lustrosa dançam padrões de manchas luminosas, leitosas e macabras, de aspecto sobrenatural, em cores doentias, por vezes lembrando rostos em agonia. Também conhecido como besouro-do-óleo, este enorme besouro predador também existe em Galrasia e outras regiões, embora os maiores e mais agressivos sejam encontrados nas Sanguinárias. Mesmo equipado com uma mandíbula poderosa, a mais terrível arma do besouro-do-óleo é uma rajada de substância cáustica que lembra óleo fervente. Absurdamente inflamável, a enzima se incendeia em contato com o ar e emite chamas que deixam apenas cinzas e queimaduras assustadoras por onde passam. A própria carapaça também é revestida com material similar, que queima ao toque. Diferente de outros monstros, o besouro-do-óleo se reproduz — ainda que de modo grotesco e perigoso. Quando chega a época, o adulto simplesmente explode, liberando uma dúzia de crias até então em seu interior. Muitos grupos de aventureiros foram exterminados ao acreditar que venceram a fera, quando na verdade libertaram inimigos vorazes em número ainda maior.` },
+      ],
+    },
+
+    // ── 🌊 SOB AS ONDAS ────────────────────────────────
+    {
+      chave: "ondas", nome: "Sob as Ondas", icone: "🌊", cor: "#1f6a8a",
+      intro: "Mar Negro. Mar do Dragão-Rei. Mar dos Monstros. Os três mares de Arton, cercando o continente com águas revoltas. Todos têm seus motivos para serem navegados — buscar aventuras na selvagem Galrasia, buscar sabedoria em Khubar, alcançar o renascido Império de Jade. Todos também oferecem perigos a quem ousa desafiá-los. A simples travessia por navio é arriscada, monstros e povos marinhos hostis espreitam. Alguns capazes de abordar e saquear, outros grandes o bastante para demolir embarcações inteiras. E esta é apenas, figurativa e literalmente, a superfície de todo um mundo de reinos submersos, com suas próprias raças guerreiras, seus próprios monstros, gigantes e dragões. Sereias, tritões e elfos-do-mar povoam aldeias, cidades, até reinos. Para aqueles com meios mágicos para explorar este universo sob as águas, o domínio do deus Oceano oferece vastas oportunidades e recompensas. Existem ainda as regiões de “ar molhado”, onde as águas mágicas podem ser respiradas por seres da superfície. Aqui vivem os povos marinhos mais amistosos, hospitaleiros, dispostos a comercializar com aqueles do “mundo seco” — até mesmo pedindo seu auxílio ocasional, buscando grupos de aventureiros que venham em seu socorro. Quanto ao próprio Grande Oceano, seu desaparecimento permanece um mistério. Embora os devotos ainda sejam capazes de conjurar milagres, o Deus dos Mares não pode ser encontrado ou contactado em parte alguma — o que é incomum, mesmo levando em conta sua notória impassividade e indolência. Entre os piratas, existe cizânia e caça aos culpados. Mas, para aqueles que vivem sob as ondas, as consequências reais são ainda incertas.",
+      fichas: [
+        {
+          chave: "canceronte", nome: "Canceronte", nd: "3", tipo: "Animal Grande",
+          papel: '',
+          subgrupo: "Canceronte",
+          resumo: "Canceronte — O animal tem a aparência de um caranguejo descomunal, grande como um navio invertido.",
+          texto:
+`Canceronte ND 3
+Animal Grande
+Iniciativa +8, Percepção +4, visão na penumbra
+Defesa 21, Fort +15, Ref +9, Von +3, fortificação 25%
+Pontos de Vida 110
+Deslocamento 6m (4q), natação 12m (8q)
+Corpo a Corpo Duas garras +14 (1d8+6).
+Autotomia (Livre) O canceronte pode sacrificar uma de suas garras para se livrar de um perigo maior. Quando faz isso, ele automaticamente passa em um teste para evitar uma condição de movimento (como um teste de ataque para se libertar de um agarramento), mas perde um de seus ataques de garra. Uma garra sacrificada desta forma se regenera em um mês.
+Quebrar Tudo! O canceronte recebe +2 em testes de ataque para quebrar (teste total +18) e causa +1d8 pontos de dano contra objetos.
+For 4, Des 2, Con 5, Int –4, Sab 0, Car –2
+Tesouro 1d6 postas de canceronte (CD 18 para extrair; cada posta vale T$ 12 para preparar um banquete de canceronte).`
+        },
+        {
+          chave: "canceronteDeGuerra", nome: "Canceronte de Guerra", nd: "16", tipo: "Monstro Colossal",
+          papel: '',
+          subgrupo: "Canceronte",
+          resumo: "Canceronte — O animal tem a aparência de um caranguejo descomunal, grande como um navio invertido.",
+          texto:
+`Canceronte de Guerra ND 16
+Monstro Colossal
+Iniciativa +10, Percepção +11, visão na penumbra
+Defesa 53, Fort +30, Ref +24, Von +16, fortificação 25%, imunidade a encantamento, redução de dano 15
+Pontos de Vida 825
+Deslocamento 12m (8q), natação 18m (12q)
+Corpo a Corpo Quatro garras +45 (4d10+25).
+Abordagem Um personagem pode gastar uma ação de movimento e fazer um teste de Atletismo (CD 30) para escalar o canceronte de guerra. Se falhar por 5 ou mais, cai na frente do monstro e sofre 4d6 pontos de dano da queda. Se passar em três desses testes, chega na escotilha em sua barriga. Abrir a escotilha exige um teste de Ladinagem ou Força (CD 30). Cada canceronte possui uma equipe de cinco sahuagin (ataque +35, 3d6+25 pontos de dano de perfuração, Defesa 28, 60 PV e usa os testes de resistência do canceronte) em seu interior, para impedir que intrusos cheguem à concha de comando. Na concha de comando está o capitão (ataque +36, 3d8+25 pontos de dano de perfuração, Defesa 30, 100 PV e usa os testes de resistência do canceronte). Uma vez que o capitão seja morto, o canceronte para de lutar.
+Agarrar Aprimorado (Livre) Garra (teste +55).
+Atropelamento (Completa) O canceronte percorre até o dobro de seu deslocamento. Ele pode passar pelo espaço ocupado de quaisquer inimigos menores que ele, mas não pode passar duas vezes pelo mesmo espaço. Criaturas atropeladas desta forma sofrem 10d10+50 pontos de dano de impacto e ficam caídas (Ref CD 42 reduz à metade e evita a condição). Recarga (movimento).
+Autotomia (Livre) O canceronte pode sacrificar uma de suas garras para se livrar de um perigo maior. Quando faz isso, ele automaticamente passa em um teste para evitar uma condição de movimento (como um teste de ataque para se libertar de um agarramento), mas perde um de seus ataques de garra. Uma garra sacrificada desta forma se regenera em um mês.
+Guilhotinar (Padrão) Se o canceronte começar seu turno agarrando uma criatura menor que ele, poderá fazer um teste de agarrar contra ela. Se vencer, a criatura sofre 8d10+50 pontos de dano de impacto e fica debilitada (ou inconsciente, se já estiver debilitada).
+Máquina de Cerco O canceronte recebe +2 em testes de ataque para quebrar (teste total +57) e seus ataques ignoram redução de dano de objetos.
+For 10, Des 0, Con 8, Int –4, Sab 0, Car –2
+Tesouro Metade mais 2d4 postas de canceronte (CD 31 para extrair; cada posta vale T$ 12 para preparar um banquete de canceronte).`
+        },
+        {
+          chave: "elfoDoMarPescador", nome: "Elfo-do-Mar Pescador", nd: "3", tipo: "Humanoide (elfo-do-mar) Médio",
+          papel: '',
+          subgrupo: "Elfo-do-Mar",
+          resumo: "Elfo-do-Mar — Este ser lembra um elfo terrestre, embora mais baixo e corpulento, de ombros largos.",
+          texto:
+`Elfo-do-Mar Pescador ND 3
+Humanoide (elfo-do-mar) Médio
+Iniciativa +7, Percepção +7, percepção às cegas (apenas embaixo d’água), visão na penumbra
+Defesa 18, Fort +8, Ref +11, Von +3
+Pontos de Vida 14
+Deslocamento 9m (6q), natação 9m (6q)
+Corpo a Corpo Arpão +12 (1d10+6, x3).
+À Distância Arpão +14 (1d10+10, x3).
+Caçador Submarino Quando faz um teste de perícia (exceto testes de ataque) em um terreno aquático, o elfo-do-mar pescador rola dois dados e usa o melhor resultado.
+For 2, Des 4, Con 3, Int –1, Sab 2, Car 0
+Perícias Furtividade +7, Sobrevivência +7 (+9 embaixo d’água).
+Equipamento Arpão, gibão de peles. Tesouro Metade.`
+        },
+        {
+          chave: "elfoDoMarChefe", nome: "Elfo-do-Mar Chefe", nd: "6", tipo: "Humanoide (elfo-do-mar) Médio",
+          papel: '',
+          subgrupo: "Elfo-do-Mar",
+          resumo: "Elfo-do-Mar — Este ser lembra um elfo terrestre, embora mais baixo e corpulento, de ombros largos.",
+          texto:
+`Elfo-do-Mar Chefe ND 6
+Humanoide (elfo-do-mar) Médio
+Iniciativa +12, Percepção +10, percepção às cegas (apenas embaixo d’água), visão na penumbra
+Defesa 29, Fort +12, Ref +18, Von +6
+Pontos de Vida 230
+Deslocamento 9m (6q), natação 9m (6q)
+Corpo a Corpo Tridente x2 +22 (1d8+15).
+À Distância Rede +20 (agarrar).
+Caçador Submarino Quando faz um teste de perícia (exceto testes de ataque) em um terreno aquático, o elfo-do-mar chefe rola dois dados e usa o melhor resultado.
+Ginete de Selako O elfo-do-mar possui um selako como parceiro montaria Grande. Se estiver montado, seu deslocamento muda para 15m, ele recebe +2d6 em uma rolagem de dano corpo a corpo uma vez por rodada e, quando acerta um ataque corpo a corpo, o alvo fica sangrando.
+Investida Aquática (Completa) O elfo-do-mar realiza uma investida e faz seus dois ataques com tridente. Os dois ataques recebem o bônus de +2 da investida e causam +1d8 pontos de dano, mas devem ser feitos contra o mesmo alvo.
+For 4, Des 5, Con 3, Int –1, Sab 3, Car 2
+Perícias Atletismo +9, Cavalgar +10, Diplomacia +7, Furtividade +10, Guerra +6, Sobrevivência +10 (+12 embaixo d’água).
+Equipamento Couraça, escudo leve, rede, tridente equilibrado. Tesouro Padrão.`
+        },
+        {
+          chave: "elfoDoMarDruida", nome: "Elfo-do-Mar Druida", nd: "10", tipo: "Humanoide (elfo-do-mar) Médio",
+          papel: '',
+          subgrupo: "Elfo-do-Mar",
+          resumo: "Elfo-do-Mar — Este ser lembra um elfo terrestre, embora mais baixo e corpulento, de ombros largos.",
+          texto:
+`Elfo-do-Mar Druida ND 10
+Humanoide (elfo-do-mar) Médio
+Iniciativa +14, Percepção +15, percepção às cegas (apenas embaixo d’água), visão na penumbra
+Defesa 31, Fort +14, Ref +20, Von +24
+Pontos de Vida 250
+Deslocamento 9m (6q), natação 9m (6q)
+Pontos de Mana 54
+Corpo a Corpo Arpão +22 (1d10+1d12+18, x3).
+À Distância Arpão +24 (1d10+25, x3).
+Companheiro Animal O druida sempre está acompanhado de um canceronte que serve como um parceiro adepto guardião veterano (já contabilizado).
+Forma Animal (Completa, 6 PM) O druida adquire a forma de uma orca. Ele recebe +5 em Força, +4 na Defesa, um ataque corpo a corpo de mordida +26 (2d6+28) e um de pancada +26 (2d6+28) e seu tamanho muda para Grande. Nessa forma, ele não pode falar, mas pode lançar magias e empunhar catalisadores e esotéricos.
+Magias Como um druida do Oceano de 10º nível (CD 32).
+• Controlar Água (Padrão, 6 PM) Até o fim da cena, o druida controla a água em uma esfera de 30m em alcance longo. (veja Tormenta20, p. 186).
+• Curar Ferimentos (Padrão, 9 PM) Uma criatura em alcance curto cura 10d8+10 pontos de vida.
+• Despedaçar (Padrão, 9 PM) Um alvo em alcance curto sofre 5d8+10 pontos de dano de impacto, ou o dobro sem aplicar RD se for um construto ou um objeto mundano Pequeno, e fica atordoado (Fort reduz o dano à metade e evita a condição). Uma criatura só pode ser atordoada por esta magia uma vez por cena.
+• Escudo da Fé (Reação, 7 PM) Quando uma criatura em alcance curto sofre um ataque, ela recebe camuflagem contra ataques à distância e +5 na Defesa até seu próximo turno.
+• Suporte Ambiental (Padrão, 5 PM) Por 1 dia, criaturas escolhidas em alcance curto ficam imunes aos efeitos de calor e frio extremos, podem respirar na água e não sufocam em fumaça densa.
+Dependência de Água Se ficar um dia sem contato com água, o elfo-do-mar não recupera PM até voltar para a água.
+For 1, Des 5, Con 2, Int –2, Sab 6, Car 2
+Perícias Adestramento +15, Cura +15, Religião +15, Sobrevivência +15 (+17 embaixo d’água).
+Equipamento Arpão, escudo leve, essência de mana x2, gibão de peles, ramo verdejante x5, símbolo sagrado do Oceano. Tesouro Padrão.`
+        },
+        {
+          chave: "enguiaRainha", nome: "Enguia Rainha", nd: "19", tipo: "Monstro Colossal",
+          papel: '',
+          resumo: "O mundo sob as ondas é imenso e criaturas imensas vivem nele.",
+          texto:
+`Enguia Rainha ND 19
+“Essa calmaria é tediosa demais. Quando vamos encontrar alguma coisa?”
+— Helldin, hynne bardo ladino
+O mundo sob as ondas é imenso e criaturas imensas vivem nele. Algumas simplesmente crescem até atingir proporções colossais, sem que sua existência jamais venha a ser conhecida pelos povos da superfície, enquanto outras são temidas ou veneradas. Mesmo sem inteligência, esses titãs podem ser adorados por cultos inteiros. Assim, as razões que levaram uma moreia comum a atingir dezenas de metros, desenvolver habilidades sobrenaturais e ser venerada por povos antigos são até hoje um mistério. Igualmente desconhecidos são os motivos pelos quais estaria adormecida em uma caverna nos últimos séculos. O fato é que um altar secreto colocado na mesma caverna guardava um tesouro mágico, uma última oferenda à Enguia Rainha, talvez com a intenção de aplacar sua fúria para sempre. Esse objeto — o que seria exatamente, não se sabe — teria sido encontrado por sszzaazitas e habilmente substituído por um dos Rubis da Virtude. A remoção do objeto despertou a fera, que emergiu furiosa para atacar tudo aquilo que encontrasse. Após um embate épico contra o Paladino, acabaria ferida, recolhendo-se até a recuperação antes do próximo ataque.
+Monstro Colossal
+Iniciativa +23, Percepção +19, visão no escuro
+Defesa 54, Fort +32, Ref +26, Von +19, redução de dano 15
+Pontos de Vida 1.150
+Deslocamento Natação 12m (8q)
+Corpo a Corpo Mordida +52 (4d12+46, 19) e cauda x2 +52 (3d12+32).
+Agarrar Aprimorado (Livre) Mordida (teste +62).
+Constrição (Livre) No início de cada um de seus turnos, a Enguia Rainha causa 6d12+32 pontos de dano de impacto em cada criatura que esteja agarrando.
+Engolir (Padrão) No início de cada um dos turnos da Enguia, a criatura engolida sofre 4d12+20 pontos de dano de impacto mais 4d12+20 pontos de dano de ácido. Ela pode escapar causando um total de 200 pontos de dano a ela (Defesa 25, redução de dano 5).
+Majestade Elétrica (Padrão) A Enguia se cobre com eletricidade natural. Criaturas agarradas sofrem 10d8 pontos de dano de eletricidade (Fort CD 47 reduz à metade). Além disso, até a próxima rodada, qualquer criatura que faça um ataque corpo a corpo contra a Enguia sofre 6d8 pontos de dano de eletricidade.
+Sopro (Padrão) A Enguia sopra vapor fervente em um cone de 18m. Cada criatura nessa área sofre 12d12 pontos de dano, metade fogo e metade ácido, e é recoberta por uma substância corrosiva que causa 4d12 pontos de dano de ácido pelas próximas 1d4 rodadas (Ref CD 47 reduz o dano à metade e evita a substância). Recarga (movimento).
+For 12, Des 4, Con 11, Int –4, Sab 3, Car –1
+Tesouro Padrão mais suco gástrico (CD 34 para extrair, vale T$ 2.000 para fabricar itens que causem dano de ácido).`
+        },
+        {
+          chave: "irukanjin", nome: "Irukanjin", nd: "4", tipo: "Humanoide (irukanjin) Médio",
+          papel: '',
+          subgrupo: "Irukanjin",
+          resumo: "Irukanjin — A criatura fantasmagórica apresenta uma cabeça semiesférica e segmentada, lembrando metade de uma abóbora, sem feições.",
+          texto:
+`Irukanjin ND 4
+Humanoide (irukanjin) Médio
+Iniciativa +6, Percepção +3, visão no escuro
+Defesa 20, Fort +10, Ref +5, Von +0, redução de ácido e impacto 5
+Pontos de Vida 126
+Deslocamento Natação 12m (8q)
+Corpo a Corpo Dois tentáculos +16 (3d4+6 mais Inocular Ácido).
+Impacto Mental (Padrão) Uma criatura em alcance médio sofre 4d6 pontos de dano psíquico e fica atordoada por 1d4 rodadas (Von CD 18 reduz à metade e evita a condição). Uma criatura só pode ser atordoada por esta habilidade uma vez por cena. Recarga (movimento).
+Inocular Ácido Uma criatura atingida por um tentáculo do irukanjin sofre 2d4 pontos de dano de ácido e fica lenta. Se já estiver lenta, fica paralisada por 1 rodada (Fort CD 18 reduz à metade e evita a condição).
+Mesclar-se Enquanto está submerso em água, o irukanjin tem camuflagem leve.
+For 0, Des 3, Con 2, Int 4, Sab 1, Car –2
+Perícias Furtividade +12.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "aguaViva", nome: "Água-viva", nd: "1", tipo: "Animal Pequeno",
+          papel: '',
+          subgrupo: "Irukanjin",
+          resumo: "Irukanjin — A criatura fantasmagórica apresenta uma cabeça semiesférica e segmentada, lembrando metade de uma abóbora, sem feições.",
+          texto:
+`Água-viva ND 1
+Animal Pequeno
+Iniciativa +5, Percepção +3, visão no escuro
+Defesa 15, Fort +5, Ref +10, Von +1, imunidade a ácido, redução de impacto 5
+Pontos de Vida 9
+Deslocamento Natação 12m (8q)
+Corpo a Corpo Tentáculo x2 +11 (1d6+2 mais 1d6 ácido).
+Corpo Aquático Fora d’água, a água-viva evapora e morre em 1d8 horas. Nesse tempo, qualquer criatura que tocar nela sofre 1d6 pontos de dano de ácido.
+Mesclar-se Enquanto está submersa em água, a água-viva tem camuflagem leve.
+For 0, Des 3, Con 1,Int –4, Sab 1, Car –2
+Perícias Furtividade +7.
+Tesouro Filamentos corrosivos (CD 16 para extrair, valem T$ 10 para fabricar ácidos).`
+        },
+        {
+          chave: "enxameDeAguasVivas", nome: "Enxame de Águas-vivas", nd: "6", tipo: "Animal Grande",
+          papel: '',
+          subgrupo: "Irukanjin",
+          resumo: "Irukanjin — A criatura fantasmagórica apresenta uma cabeça semiesférica e segmentada, lembrando metade de uma abóbora, sem feições.",
+          texto:
+`Enxame de Águas-vivas ND 6
+Animal Grande
+Iniciativa +9, Percepção +6, visão no escuro
+Defesa 27, Fort +12, Ref +18, Von +6, imunidade a ácido, redução de impacto 5
+Pontos de Vida 255
+Deslocamento Natação 12m (8q)
+Enxame 4d6+10 perfuração mais 4d6+12 ácido.
+Corpo Aquático Fora d’água, o enxame de águas-vivas evapora e morre em 1d8 horas. Nesse tempo, qualquer criatura que tocar nele sofre 2d6 pontos de dano de ácido.
+Grudar nas Costas Quando uma criatura sai do espaço do enxame, algumas águas-vivas ficam presas em suas costas. A criatura continua sofrendo metade do dano da habilidade Enxame até gastar uma ação de movimento para se livrar das águas-vivas.
+Mesclar-se Enquanto está submerso em água, o enxame tem camuflagem leve.
+For 0, Des 4, Con 3, Int –4, Sab 1, Car –4
+Perícias Furtividade +9.
+Tesouro Filamentos corrosivos (CD 21 para extrair, valem T$ 60 para fabricar ácidos).`
+        },
+        {
+          chave: "aguaVivaGigante", nome: "Água-viva Gigante", nd: "8", tipo: "Animal Grande",
+          papel: '',
+          subgrupo: "Irukanjin",
+          resumo: "Irukanjin — A criatura fantasmagórica apresenta uma cabeça semiesférica e segmentada, lembrando metade de uma abóbora, sem feições.",
+          texto:
+`Água-viva Gigante ND 8
+Animal Grande
+Iniciativa +11, Percepção +7, visão no escuro
+Defesa 33, Fort +15, Ref +21, Von +8, imunidade a ácido, redução de impacto 5
+Pontos de Vida 320
+Deslocamento Natação 12m (8q)
+Corpo a Corpo Tentáculo x2 +26 (3d6+22 mais 3d6 ácido).
+Corpo Aquático Fora d’água, a água-viva gigante evapora e morre em 1d8 horas. Nesse tempo, qualquer criatura que tocar nela sofre 3d6 pontos de dano de ácido.
+Mesclar-se Enquanto está submersa em água, a água-viva tem camuflagem leve.
+For 0, Des 4, Con 3, Int –4, Sab 1, Car –3
+Perícias Furtividade +12.
+Tesouro Filamentos corrosivos (CD 23 para extrair, valem T$ 120 para fabricar ácidos).`
+        },
+        {
+          chave: "nereida", nome: "Nereida", nd: "12", tipo: "Espírito Médio",
+          papel: '',
+          resumo: "O que parecia ser uma bela elfa-do-mar, súbito, muda para uma forma completamente diferente.",
+          texto:
+`Nereida ND 12
+“Aventureiros, ajudem-me, eu suplico! Sou caçada por um ser diabólico, ele agora me persegue!”
+— Yulianna, (talvez) elfa-do-mar
+O que parecia ser uma bela elfa-do-mar, súbito, muda para uma forma completamente diferente. A criatura agora lembra uma humanoide coberta de carapaça cinza-escura, escamada. Em vez de rosto, uma máscara óssea com olhos volumosos e opacos. Filamentos longos se projetam de várias partes do corpo, trazendo pequenas luzes nas pontas. A natureza das nereidas é controversa. Alguns dizem serem fadas das águas, assim como sílfides são fadas dos ventos. Para outros, são espíritos elementais nativos de além-mundo. E outros ainda dizem serem criaturas sagradas do Grande Oceano — o que, de forma alguma, significaria bondade. Relatos sobre sua aparência são igualmente confusos. São descritas como belas humanas, elfas, elfas-do-mar, sereias — ou seres completamente diferentes, de olhos vazios e armadura escura, cheia de luzes. Por muito tempo acreditou-se que fossem espécies diferentes, sendo a forma blindada conhecida como “nereida abissal”. Hoje, após relatos de sobreviventes, sabe-se um pouco mais sobre estas criaturas perigosas. Encontros com nereidas quase sempre resultam em desgraça. Seja por crueldade ou incompreensão, elas têm pouco apreço pelas vidas de outros seres, acreditando que existem apenas para seu entretenimento. Nereidas se consideram protagonistas em histórias épicas de amor e aventura, como heroínas ou vilãs, encenando romances e combates em que todos os outros são coadjuvantes descartáveis. Assim, é comum uma nereida se fingir de donzela em apuros e conduzir seus “salvadores” a algum perigo, ou ela própria mudar para sua forma guerreira e se voltar contra os heróis em uma batalha final climática. Nereidas podem se aliar a um vilão para atrair aventureiros a armadilhas, ou várias delas formam um “elenco” para uma trama ainda mais elaborada de romance e traição. Algumas, além disso, são capazes de controlar elementais da água e outros monstros marinhos, que acabam desempenhando seus próprios papéis na aventura.
+Espírito Médio
+Iniciativa +13, Percepção +9, visão no escuro
+Defesa 41, Fort +20, Ref +12, Von +26, imunidade a frio
+Pontos de Vida 412
+Deslocamento 9m (6q), natação 18m (12q)
+Corpo a Corpo Duas garras +32 (2d6+12 mais 4d6 frio).
+Convocação Marinha (Movimento) A nereida convoca 2d6 redemoinhos em alcance curto. Os redemoinhos agem a partir da próxima rodada dela. Eles têm deslocamento 9m (normal e de natação) e podem gastar uma ação padrão para causar 2d6 pontos de dano de frio em uma criatura adjacente. Os redemoinhos têm For –1, Des 2, Defesa 26, 1 PV e falham automaticamente em qualquer teste de resistência ou oposto. Eles desaparecem quando morrem ou no fim da cena. Recarga (movimento).
+Elencar (Movimento) Uma criatura em alcance curto “recebe um papel” entre os listados abaixo. A nereida só pode conceder um papel por criatura e seus efeitos duram 1d4+1 rodadas (Von CD 35 reduz para 1 rodada.)
+• Coadjuvante. Todo dano causado pela criatura é reduzido à metade.
+• Par Romântico. A criatura fica enfeitiçada e, sempre que estiver adjacente à nereida, a nereida recebe +5 em testes de perícia e rolagens de dano contra outras criaturas.
+• Vilão. A criatura sofre +2d6 pontos de dano de frio dos ataques da nereida.
+Presença Majestosa Qualquer criatura que tente atacar a nereida deve fazer um teste de Vontade (CD 35). Se falhar, não consegue atacá-la e perde a ação. Uma criatura que passe no teste de Vontade não é mais afetada por esta habilidade até o fim da cena.
+Terror Blindado (Completa) A nereida assume sua forma guerreira até o fim da cena. Ela recebe imunidade a acertos críticos e às condições atordoado, cego, debilitado, enjoado, envenenado, exausto, fatigado, fraco, lento, ofuscado e paralisado. Além disso, no início de cada um de seus turnos, ela causa 4d8 pontos de dano de frio em todas as criaturas adjacentes e cura uma quantidade de PV igual à metade de todo esse dano.
+For 4, Des 3, Con 2, Int 1, Sab –1, Car 7
+Perícias Atuação +19, Diplomacia +19, Intimidação +19.
+Tesouro 2d6 doses de éter elemental (frio) (CD 27 para extrair).`
+        },
+        {
+          chave: "peixeRecife", nome: "Peixe-Recife", nd: "6", tipo: "Animal Enorme",
+          papel: '',
+          resumo: "A pequena ilha que conseguiram alcançar após o naufrágio contém apenas alguns corais crescendo em sua superfície.",
+          texto:
+`Peixe-Recife ND 6
+“Sorte nossa que você tem grandes amigos. Hunc!”
+— Tork, trog anão
+A pequena ilha que conseguiram alcançar após o naufrágio contém apenas alguns corais crescendo em sua superfície. Subitamente, vocês percebem um pequeno tremor; não é uma ilha. Este peixe imenso e raro pode ser facilmente confundido com uma ilhota, com corais crescendo sobre seu dorso. Como as baleias, é um animal filtrador: alimenta-se apenas de microrganismos presentes na água do mar, perto da superfície. Não é incomum encontrar todo tipo de animais marinhos vivendo em seu corpo, desde caranguejos até gaivotas. O peixe-recife é extremamente plácido e manso. Ele nunca se assusta ou foge, e nem tem motivos para isso — não tem inimigos naturais e nem valor comercial. Sua couraça extremamente resistente torna difícil feri-lo e sua carne tem sabor desagradável. Infelizmente, essa apatia faz do bicho um risco para a navegação — mais de um navio já naufragou após colidir com um peixe-recife que surgiu repentinamente em seu caminho. Um peixe-recife pode ocasionalmente se afeiçoar a uma sereia ou tritão, ou a um devoto do Oceano, provendo transporte para ele e seus aliados.
+Animal Enorme
+Iniciativa +6, Percepção +5, percepção às cegas
+Defesa 29, Fort +18, Ref +6, Von +12, redução de dano 10
+Pontos de Vida 250
+Deslocamento Natação 12m (8q)
+Corpo a Corpo Cabeçada +20 (4d8+20 impacto).
+Emergir (Completa) O peixe-recife emerge à superfície, atingindo todas as criaturas em um quadrado de 6m imediatamente acima dele. Criaturas nessa área sofrem 4d10 pontos de dano de impacto e são arremessadas 1d4 x1,5m em direção oposta ao peixe (Fort CD 22 reduz à metade e evita o arremesso). Cada vítima fica caída e, se atingir algum obstáculo, sofre 1d6 pontos de dano de impacto para cada 1,5m que foi arremessada.
+Soçobrar (Padrão) O peixe atira seu corpanzil contra uma embarcação (ou outro objeto semelhante), fazendo com que ele balance violentamente. Todas as criaturas na embarcação sofrem 2d8+10 pontos de dano de impacto e ficam atordoadas por 1 rodada e caídas (Ref CD 22 reduz o dano à metade e evita as condições).
+For 5, Des 0, Con 5, Int –4, Sab 0, Car –2
+Tesouro Nenhum.`
+        },
+        {
+          chave: "platan", nome: "Platan", nd: "2", tipo: "Animal Grande",
+          papel: '',
+          resumo: "O animal tem formato de peixe, mas o orifício no alto da cabeça demonstra que respira ar.",
+          texto:
+`Platan ND 2
+“Não importa se estão fugindo. Veja suas montarias. Não vamos enraivecer nenhum deus, hoje não!”
+— Nargom Mandíbula, humano bucaneiro
+O animal tem formato de peixe, mas o orifício no alto da cabeça demonstra que respira ar. Tem couro liso cinza-azulado, com manchas amarelas perto da cauda. Enquanto faz saltos acrobáticos perto do barco, produz um trinado estridente e divertido, que lembra uma risada. Platan são golfinhos encontrados não apenas nos mares, mas também em grandes rios e alguns lagos de Arton. Comparados a seu parente oceânico comum, têm uma fronte mais proeminente e focinho mais alongado, como um bico. Platan são mansos, inteligentes e afetuosos. Marinheiros e piratas acreditam que molestá-los enfurece o Oceano, por isso nunca são caçados. Por esses motivos, poucos sabem sobre uma habilidade extraordinária e perigosa da criatura — emitir ataques sônicos capazes de arrancar a carne dos ossos! O animal utiliza essa arma em dose moderada para atordoar os pequenos peixes de que se alimenta; quando acuado, no entanto, não hesita em usar sua força plena. Normalmente calmos, platan se enfurecem com a presença de selakos, seus inimigos naturais. Sereias, tritões e elfos-do-mar consideram os platan seus irmãos, não raro sendo aceitos como montarias.
+Animal Grande
+Iniciativa +6, Percepção +5, percepção às cegas, visão na penumbra
+Defesa 18, Fort +7, Ref +12, Von +3
+Pontos de Vida 30
+Deslocamento Natação 12m (8q)
+Ataque Sônico (Padrão) O platan causa 6d6 pontos de dano de impacto em uma criatura em alcance curto (Fort CD 16 reduz à metade).
+For 1, Des 3, Con 2, Int –4, Sab 2, Car 3
+Perícias Acrobacia +11.
+Tesouro Nenhum.
+Parceiro O platan é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para natação 9m e você recebe uma ação de movimento extra (apenas para se deslocar). Veterano: uma vez por rodada, você pode gastar 1 PM para causar 2d6 pontos de dano de impacto em uma criatura em alcance curto. Mestre: seu deslocamento de natação muda para 15m e você pode também gastar 4 PM para causar 6d6 pontos de dano de impacto em uma criatura em alcance curto.`
+        },
+        {
+          chave: "selako", nome: "Selako", nd: "2", tipo: "Animal Grande",
+          papel: '',
+          subgrupo: "Selako",
+          resumo: "Selako — Não se consegue ver o predador sob as águas, exceto pela grande barbatana dorsal triangular que se aproxima rápido, muito rápido, enquanto…",
+          texto:
+`Selako ND 2
+Animal Grande
+Iniciativa +7, Percepção +4, faro, percepção às cegas
+Defesa 18, Fort +12, Ref +7, Von +2
+Pontos de Vida 90
+Deslocamento natação 18m (12q)
+Corpo a Corpo Mordida +12 (2d8+7, 19/x3).
+Bote de Mandíbula (Completa) O selako faz uma investida contra uma criatura. Se acertar esse ataque, ele causa +2d6 pontos de dano e a vítima fica sangrando.
+Faro do Caçador O selako não fica desprevenido contra inimigos que estejam sangrando.
+For 4, Des 3, Con 3, Int –4, Sab 2, Car –2
+Perícias Furtividade +6.
+Tesouro Couro de selako (CD 17 para extrair, vale T$ 30 para fabricar um traje selako) e dentes de selako (CD 17 para extrair, valem T$ 300 para fabricar uma arma superior).
+Parceiro O selako é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para natação 15m e, uma vez por rodada, você recebe +1d6 em uma rolagem de dano corpo a corpo. Veterano: o bônus de dano aumenta para +2d6. Mestre: seu deslocamento de natação muda para 18m e, quando você usa o bônus de dano do selako contra uma criatura, ela fica sangrando.`
+        },
+        {
+          chave: "selakoTigre", nome: "Selako-Tigre", nd: "6", tipo: "Animal Enorme",
+          papel: '',
+          subgrupo: "Selako",
+          resumo: "Selako — Não se consegue ver o predador sob as águas, exceto pela grande barbatana dorsal triangular que se aproxima rápido, muito rápido, enquanto…",
+          texto:
+`Selako-Tigre ND 6
+Animal Enorme
+Iniciativa +14, Percepção +6, faro, percepção às cegas
+Defesa 25, Fort +17, Ref +11, Von +5, redução de dano 5
+Pontos de Vida 260
+Deslocamento natação 18m (12q)
+Corpo a Corpo Mordida x2 +18 (3d10+12, 17/x3).
+Bote de Mandíbula (Completa) O selako-tigre faz uma investida contra uma criatura. Se acertar esse ataque, ele causa +4d10 pontos de dano e a vítima fica sangrando.
+Dentes Afiados Os ataques do selako-tigre ignoram 5 pontos de redução de dano de seus alvos.
+Faro do Caçador O selako-tigre não fica desprevenido contra inimigos que estejam sangrando.
+For 6, Des 4, Con 3, Int –4, Sab 2, Car –2
+Perícias Furtividade +10.
+Tesouro Couro de selako x2 (CD 21 para extrair, vale T$ 30 para fabricar um traje selako) e dentes de selako x2 (CD 21 para extrair, valem T$ 300 para fabricar uma arma superior).`
+        },
+        {
+          chave: "cardumeDeSelakos", nome: "Cardume de Selakos", nd: "9", tipo: "Animal Enorme",
+          papel: '',
+          subgrupo: "Selako",
+          resumo: "Selako — Não se consegue ver o predador sob as águas, exceto pela grande barbatana dorsal triangular que se aproxima rápido, muito rápido, enquanto…",
+          texto:
+`Cardume de Selakos ND 9
+Animal Enorme
+Iniciativa +12, Percepção +9, faro, percepção às cegas
+Defesa 18, Fort +20, Ref +15, Von +9
+Pontos de Vida 390
+Deslocamento natação 18m (12q)
+Corpo a Corpo [Bando] Mordida x2 +27 (4d8+14, 19/x3).
+Frenesi Mortal (Padrão) O cardume de selakos faz um ataque de mordida contra cada criatura adjacente ou em quadrados ocupados por ele. Ele faz um único teste de ataque e compara o resultado com a Defesa de cada alvo. Criaturas que sofram dano dessa forma ficam sangrando.
+Faro do Caçador O cardume não fica desprevenido contra inimigos que estejam sangrando.
+Turbilhão Aquático O cardume pode ocupar o espaço de outras criaturas.
+For 5, Des 3, Con 3, Int –4, Sab 2, Car –2
+Perícias Furtividade +9.
+Tesouro Equivalente a 1d4+1 selakos.`
+        },
+        {
+          chave: "megaSelako", nome: "Mega-Selako", nd: "12", tipo: "Animal Colossal",
+          papel: '',
+          subgrupo: "Selako",
+          resumo: "Selako — Não se consegue ver o predador sob as águas, exceto pela grande barbatana dorsal triangular que se aproxima rápido, muito rápido, enquanto…",
+          texto:
+`Mega-Selako ND 12
+Animal Colossal
+Iniciativa +20, Percepção +10, faro, percepção às cegas
+Defesa 38, Fort +26, Ref +18, Von +8, redução de dano 10
+Pontos de Vida 630
+Deslocamento natação 18m (12q)
+Corpo a Corpo Mordida x2 +34 (4d12+40, 17/x3).
+Bote de Mandíbula (Completa) O mega-selako faz uma investida contra uma criatura. Se acertar esse ataque, ele causa +6d12 pontos de dano e a vítima fica sangrando.
+Dentes Afiados Os ataques do mega-selako ignoram 5 pontos de redução de dano de seus alvos.
+Devorar (Livre) Quando acerta um ataque em uma criatura Enorme ou menor com seu Bote de Mandíbula, o mega-selako a engole. Uma criatura engolida fica agarrada e sofre 8d12+40 pontos de dano de impacto no início de cada turno do mega-selako. O mega-selako só pode manter uma criatura engolida por vez. Uma criatura engolida pode escapar causando 50 pontos de dano ao estômago do mega-selako (Defesa 10). Isso faz com que a criatura seja regurgitada na frente do monstro.
+Faro do Caçador O mega-selako não fica desprevenido contra inimigos que estejam sangrando.
+For 7, Des 6, Con 7, Int –4, Sab 2, Car –3
+Tesouro Couro de selako x1d4 (CD 27 para extrair, cada couro vale T$ 30 para fabricar um traje selako) e dentes de selako x1d4+1 (CD 27 para extrair, cada dente vale T$ 300 para fabricar uma arma superior).`
+        },
+        {
+          chave: "pliorex", nome: "Pliorex", nd: "5", tipo: "Animal Enorme",
+          papel: '',
+          subgrupo: "Kraken x Pliorex",
+          resumo: "Kraken x Pliorex — A batalha entre os monstros é estupenda!",
+          texto:
+`Pliorex ND 5
+Animal Enorme
+Iniciativa +6, Percepção +5, faro, visão na penumbra
+Defesa 24, Fort +17, Ref +11, Von +5
+Pontos de Vida 200
+Deslocamento 6m (4q), natação 15m (10q)
+Corpo a Corpo Mordida +17 (2d8+15 mais 1d12 ácido).
+Agarrar Aprimorado (Livre) Mordida (teste +22).
+Giro da Morte Se o pliorex estiver agarrando uma criatura dentro d’água e usar a manobra agarrar novamente para causar dano, causa +2d8 pontos de dano.
+Predador das Profundezas Se estiver agarrando uma criatura Grande ou menor dentro d’água, o pliorex pode se mover a seu deslocamento normal arrastando o alvo (em vez de metade).
+For 7, Des 1, Con 6, Int –5, Sab 0, Car –1
+Tesouro Nenhum.`
+        },
+        {
+          chave: "pliorexAbissal", nome: "Pliorex Abissal", nd: "10", tipo: "Animal Colossal",
+          papel: '',
+          subgrupo: "Kraken x Pliorex",
+          resumo: "Kraken x Pliorex — A batalha entre os monstros é estupenda!",
+          texto:
+`Pliorex Abissal ND 10
+Animal Colossal
+Iniciativa +11, Percepção +10, faro, visão no escuro
+Defesa 36, Fort +22, Ref +16, Von +10
+Pontos de Vida 400
+Deslocamento 6m (4q), natação 15m (10q)
+Corpo a Corpo Mordida +29 (4d8+35, 19/x3, mais 2d12 ácido).
+Abalroar (Completa) O pliorex abissal percorre até o dobro do seu deslocamento nadando em linha reta e abalroando qualquer criatura ou embarcação em seu caminho. Uma criatura ou embarcação abalroada desta forma sofre 4d10+20 pontos de dano de impacto e, se for uma criatura, começa a se afogar (Ref CD 30 reduz à metade e evita o afogamento; veja “Sufocamento” em Tormenta20, p. 319).
+Agarrar Aprimorado (Livre) Mordida (teste +39).
+Giro da Morte Se o pliorex estiver agarrando uma criatura dentro d’água e usar a manobra agarrar novamente para causar dano, causa +6d8 pontos de dano.
+Predador das Profundezas Se estiver agarrando uma criatura Grande ou menor dentro d’água, o pliorex pode se mover a seu deslocamento normal arrastando o alvo (em vez de metade).
+For 9, Des 1, Con 7, Int –5, Sab 0, Car –1
+Tesouro Nenhum.`
+        },
+        {
+          chave: "kraken", nome: "Kraken", nd: "19", tipo: "Monstro Colossal",
+          papel: '',
+          subgrupo: "Kraken x Pliorex",
+          resumo: "Kraken x Pliorex — A batalha entre os monstros é estupenda!",
+          texto:
+`Kraken ND 19
+Monstro Colossal
+Iniciativa +22, Percepção +20, visão no escuro
+Defesa 59, Fort +32, Ref +19, Von +26, redução de dano 20, resistência a magia +5
+Pontos de Vida 1.145
+Deslocamento 9m (6q), natação 24m (16q)
+Corpo a Corpo Oito tentáculos +50 (2d10+30) e mordida +50 (2d12+23).
+Agarrar Aprimorado (Livre) Tentáculo +60.
+✦ Chamado do Mar (Padrão) O kraken pode dominar até 10 criaturas em alcance longo, como o efeito básico da magia Legião (Von CD 47 evita). Esta habilidade não tem efeito sobre criaturas em terra firme (mas afeta alvos que estejam em embarcações ou outras superfícies sobre o mar). Uma criatura que passe no teste de Vontade se torna imune a esta habilidade até o fim da cena.
+Constrição (Livre) No início de cada um de seus turnos, o kraken causa 4d10+30 pontos de dano de impacto em cada criatura que estiver agarrando.
+✦ Dominar as Marés (Completa) O kraken pode alterar o clima em uma esfera de 2km ao seu redor (como o efeito básico da magia Controlar o Clima). Esta habilidade não afeta o clima sobre terra firme.
+Nuvem de Tinta (Movimento) O kraken expele uma nuvem de tinta num cone de 30m. Criaturas a até 1,5m têm camuflagem leve e criaturas a partir de 3m têm camuflagem total. Dentro da nuvem, criaturas têm seu deslocamento reduzido para 3m (independente de seu deslocamento normal) e sofrem –5 em testes de ataque e rolagens de dano. O kraken é imune aos efeitos da nuvem.
+Terror do Mar Profundo O kraken começa o combate submerso, usando apenas quatro tentáculos para atacar. Cada tentáculo conta como uma criatura separada, com 115 PV, Defesa 54, imunidade a efeitos mentais e medo e demais características iguais às do kraken. Enquanto está submerso, o kraken não pode ser afetado por nenhum efeito, habilidade ou ataque. Quando os quatro tentáculos são destruídos, o kraken perde esta habilidade e emerge. Ele continua atacando usando seus outros quatro tentáculos e sua mordida.
+For 15, Des 5, Con 12, Int 10, Sab 4, Car 7
+Perícias Atletismo +35, Diplomacia +27, Enganação +27, Intimidação +27.
+Tesouro Dobro, 1d6 peças de pena de kraken (CD 34 para extrair) e 2d4 postas de kraken (CD 34 para extrair, cada posta vale T$ 20 para preparar um sashimi de kraken).`
+        },
+      ],
+      regras: [
+        { titulo: "Canceronte",
+          texto:
+`“Vocês não fazem ideia do banquete incrível que consigo preparar com aquele ali!”
+— Willian Garfo d’Ouro, dahllan inventor e cozinheiro
+O animal tem a aparência de um caranguejo descomunal, grande como um navio invertido. A armadura azulada brilha com runas faiscantes. Suas quatro grandes garras poderiam partir humanos ao meio sem dificuldade, enquanto seis patas poderosas fazem a criatura avançar como uma máquina de guerra viva. Cancerontes comuns são caranguejos muito grandes, medindo até três metros de diâmetro. Vivem em cavernas submarinas e raramente se aventuram fora d’água. Apesar do tamanho e das garras ameaçadoras, não são perigosos: necrófagos, alimentam-se apenas de bichos mortos, atacando outros seres apenas quando ameaçados. Sua carne é iguaria das mais apreciadas; um destes monstros servido sobre uma enorme mesa costuma ser prato tradicional em grandes ocasiões, tanto em festejos regionais quanto em jantares de gala em palácios. Seu preparo exige que a criatura seja morta apenas minutos antes de servir — portanto, o bicho deve ser capturado com vida. O preço por um canceronte vivo pode igualar um tesouro de masmorra. Muito mais impressionante — e perigoso — é o canceronte de guerra. Este monstro é cultivado ao longo de anos por druidas de povos marinhos, crescendo até dimensões gigantescas e recebendo variados implementos de combate. Ao final do processo, a criatura não é mais um animal natural, mas uma máquina de batalha. Com seus mais de dez metros de diâmetro, o canceronte de guerra inclui câmaras seladas para uma pequena tripulação de tritões ou elfos-do-mar. Embora seu propósito seja atacar fortificações humanas em terra firme, derrubando muros para despejar tropas em seu interior, alguns podem ser encontrados protegendo cidadelas de povos submarinos.` },
+        { titulo: "Elfo-do-Mar",
+          texto:
+`“Temos histórias de guerra entre nosso povo e eles. Nunca ouviu nenhuma? Pois então.”
+— Marcielle, sereia barda
+Este ser lembra um elfo terrestre, embora mais baixo e corpulento, de ombros largos. Tem pele lustrosa, perolada, azul-acinzentada. As grandes orelhas têm raios, como barbatanas de peixe. Tem cabelo branco, longo, e olhos azuis amendoados. Veste apenas uma tanga leve que parece feita de algas, enquanto empunha um tridente farpado, de aspecto muito perigoso. Em contraste com sereias e tritões, mais inclinados à conjuração de magias, elfos-do-mar são bárbaros orgulhosos e perigosos. Lançam ataques contra embarcações e comunidades costeiras para matar, saquear e — principalmente — roubar objetos de metal, que eles próprios não podem forjar em seu habitat. Estes são apenas os fatos mais conhecidos sobre os elfos-do-mar. A verdade é que muitos são pacíficos, cuidando da própria vida em suas comunidades submarinas, sem nenhum interesse em guerrear com o Reinado. Várias de suas aldeias, em regiões de ar molhado, aceitam visitantes da superfície e até moradores fixos sem receios — justamente para comercializar instrumentos e itens da terra seca, em troca de pescado, materiais únicos e tesouros do mar. Não é raro que estes elfos acabem se unindo a grupos de aventureiros; no passado, uma elfa-do-mar chamada Lenora foi aliada a heróis ilustres como Vladislav Tpish e o próprio Paladino de Arton. Apenas os membros mais rebeldes e malignos da raça se tornam saqueadores — infelizmente são estes que trazem infâmia aos demais.` },
+        { titulo: "Irukanjin",
+          texto:
+`“Eles estão vivos! Aquelas coisas os levaram! Juro por Valkaria, vou encontrá-los!”
+— Anders Garou, humano ladino
+A criatura fantasmagórica apresenta uma cabeça semiesférica e segmentada, lembrando metade de uma abóbora, sem feições. Tem um torso humanoide com dois braços, transparente, deixando visíveis os órgãos internos. Quatro longos tentáculos pendem de onde deveriam estar as pernas. Também conhecidos como “medusoides”, estes seres de aspecto alienígena lembram um cruzamento bizarro entre um humanoide e uma água-viva. Sua origem é desconhecida, existindo apenas teorias. Algumas dizem que já foram parte de uma raça numerosa, governando impérios submarinos caídos. Outras sugerem que foram criados por arcanistas épicos do passado, como seus caçadores e espiões de elite. Para alguns, ainda, seriam náufragos de algum mundo distante — membros de um povo avançado, capaz de cruzar o éter a bordo de embarcações vivas que lembram águas-vivas gigantescas. Por serem mais frequentes no Mar dos Monstros, receberam seu nome popular dos nativos de Tamu-ra — mas podem ser encontrados em todos os mares. Inteligentes, dissimulados e diabólicos, utilizam a transparência natural das águas-vivas para se aproximar furtivamente de vítimas e poderes mentais para atordoá-las. Alvos que resistem são atacados com tentáculos urticantes. Sua propensão a capturar e sequestrar, em vez de matar, sugere que vítimas dos irukanjin sejam levadas para um esconderijo submarino — existindo ainda uma chance de resgatá-las com vida. Há relatos de que seus prisioneiros são mantidos em casulos, passando por algum tipo de experimento cruel, ou provendo algum elemento valioso para as criaturas. Irukanjin são encontrados sozinhos, em pequenos grupos, e/ou acompanhados por águas-vivas de tamanhos diversos, que eles parecem controlar livremente.` },
+        { titulo: "Selako",
+          texto:
+`“Estou pouco ligando para como vocês chamam, tem um monte deles rondando o bote!”
+— Scraag, goblin lutador
+Não se consegue ver o predador sob as águas, exceto pela grande barbatana dorsal triangular que se aproxima rápido, muito rápido, enquanto um timbre musical abafado parece ressoar ao fundo. Selako é o tipo de tubarão mais comum em Arton — tão comum que, em muitos pontos do mundo, simplesmente se diz “selako” em vez de “tubarão”. São encontrados em mar aberto, sendo raro que ataquem em áreas costeiras. Nadam o dia todo, nunca dormem. São solitários, mas muitas vezes formam pequenos bandos. Embora raramente ultrapassem dois metros, existem relatos sobre selakos monstruosos e gigantescos, maiores que navios! Selakos não gostam de longas batalhas: costumam fazer um único e decisivo ataque, procurando arrancar um grande pedaço de carne com uma única e poderosa mordida. Em geral, a vítima morre pouco depois, por perda de sangue. Apesar da conhecida ferocidade dos selakos na presença de sangue, povos submarinos conseguem domesticá-los como montarias e bestas de guerra. Algumas vezes o Grande Oceano também os oferece como montarias a seus devotos.` },
+        { titulo: "Kraken x Pliorex",
+          texto:
+`“O mar não tem sentido e nem pena.”
+— Lúcio Castiglioni, humano bucaneiro
+A batalha entre os monstros é estupenda! Um deles lembra uma lula gigantesca, de corpo imenso como um navio e tentáculos massivos que alcançam tudo em volta. Os olhos do tamanho de poços parecem congelados, encarando o vazio, mas sua malícia é quase palpável. O outro lembra um imenso lagarto de couro cinzento com listras brancas e quatro grandes nadadeiras em vez de patas. A cabeça alongada tem olhos minúsculos e mandíbulas enormes de crocodilo, com dentes igualmente numerosos. O kraken é avistado raramente, mesmo em alto-mar. Ainda assim, não são poucas as histórias de navios arrastados para as profundezas por estas feras. Embora muitos acreditem se tratar de uma besta selvagem, o kraken é extremamente inteligente. Utiliza vastos complexos de túneis submarinos como covil, contendo partes com ar respirável, onde mantém vítimas em cativeiro; esses túneis às vezes levam a passagens em terra firme. Sabe-se de pelo menos uma balada sobre anões enfrentando um kraken em pleno Doherimm. Comunidades de povos aquáticos veneram o kraken, fazendo oferendas para aplacar sua fúria ou garantir sua proteção, de forma similar aos dragões em terra. É comum o monstro comandar esses servos em ataques ao mundo seco, para trazer pilhagens ou atrair heróis valorosos, que o kraken aprecia manipular, torturar e humilhar. Existe uma antiga e trágica lenda sobre uma elfa-do-mar que acreditava ser paladina de um bondoso deus submerso, quando na verdade trazia vítimas para saciar seu apetite monstruoso. Um de seus inimigos naturais, se tal coisa existe, é o pliorex. Também chamado “kronossauro”, este gigantesco lagarto-terror de Galrasia é mais abundante no Mar Negro, mas pode ocasionalmente migrar para outros pontos do litoral artoniano. O tipo comum mede entre dez e quinze metros, enquanto a variedade abissal (de coloração totalmente branca) chega ao tamanho de uma caravela. Alimenta-se de peixes, lulas, conchas e qualquer outra criatura de tamanho humano, embora também possa caçar bichos muito maiores. Assim, não é incomum que ataque embarcações, por confundi-las com presas ou para alcançar petiscos no convés. O pliorex pode se arrastar em terra, mas faz isso apenas em casos especiais, para escapar de algum predador mais perigoso ou alcançar uma presa encurralada.` },
+      ],
+    },
+
+    // ── 🐍 SSZZAAZITAS ─────────────────────────────────
+    {
+      chave: "sszzaazitas", nome: "Sszzaazitas", icone: "🐍", cor: "#4a7a2f",
+      intro: "Ser capaz de ludibriar os próprios deuses. Executar um plano de traição debaixo de seus narizes. Acabar banido, tornado mortal, e ainda recuperar sua posição como deus maior. Esse é o poder de Sszzaas. Esse é o domínio que seus devotos buscam. O Grande Corruptor já provou ser o mais inteligente e ardiloso dos deuses. Mesmo Tanna-Toh não vence seu intelecto, mesmo Hyninn não supera seus esquemas, mesmo Kally não iguala seu gênio. Os devotos sabem bem, não devem contar com sua piedade, ou mesmo sua retribuição por serviços prestados — como esperar algo assim do próprio Deus da Traição? O que esperam é conquistar sua admiração, espelhar sua argúcia e inclemência, merecer um lugar privilegiado em seu mundo. Um mundo onde os mais sagazes prosperam. Assim, nem todos os devotos de Sszzaas são malignos. Mas quase todos são. E, entre estes, não há piores que os sszzaazitas. A seita teria sido formada em algum ponto dos anos 1100, durante a inquisição sofrida pela Ordem de Sszzaas. Quase todos que serviam abertamente ao Deus Serpente foram caçados e executados, raças reptilianas inteiras teriam sido extintas. Vendo oportunidade na crise, ex-clérigos aproveitaram a crença geral de que Sszzaas e seus servos teriam desaparecido, construindo uma vasta organização secreta que ninguém imaginaria existir. Assim, quando o Corruptor realizou seu retorno triunfal, os sszzaazitas já aguardavam para ser agraciados com poder divino e restabelecer seu domínio. Eles estão em todo lugar. Têm olhos em cada sala do trono, cada mansão da nobreza, cada guilda mercante, cada companhia mercenária. Nem mesmo as igrejas de outros deuses estão livres de seus espiões, suas chantagens e emboscadas. E não há grupo de heróis que não tenha aceito deles alguma missão com objetivos escusos, mesmo sem a menor suspeita.",
+      comuns: { titulo: "Habilidades de Nagahs", aplicaSe: "(nagah)", nota: "Só as seis fichas de nagah — a Hynne Dormente é hynne e fica de fora." },
+      fichas: [
+        {
+          chave: "iniciadaDeSszzaas", nome: "Iniciada de Sszzaas", nd: "3", tipo: "Monstro (medusa) Médio",
+          papel: '',
+          subgrupo: "Adorador de Sszzaas",
+          resumo: "Adorador de Sszzaas — Obedecendo ao comando da clériga sszzaazita, os cultistas em mantos atacam vocês com o fervor de fanáticos.",
+          texto:
+`Iniciada de Sszzaas ND 3
+Monstro (medusa) Médio
+Iniciativa +7, Percepção +7, visão no escuro
+Defesa 19, Fort +3, Ref +9, Von +15, resistência a veneno +5
+Pontos de Vida 69
+Deslocamento 9m (6q)
+Pontos de Mana 19
+Corpo a Corpo Adaga +12 (1d4+3, 19, mais veneno).
+Ataque Furtivo +2d6.
+Falso Amigo Médico iniciante.
+Magias Como uma clériga de Sszzaas de 3º nível (CD 19).
+• Arma Mágica (Padrão, 3 PM) Até o fim da cena, uma arma adjacente se torna mágica, fornecendo +1 nos testes de ataque e rolagens de dano e +1d6 pontos de dano de fogo. A iniciada usa Sabedoria em vez de Força nos testes de ataque com ela (ataque total +16).
+• Comando (Padrão, 2 PM) No início do seu próximo turno, uma criatura em alcance curto fica pasma por 1 rodada (Von evita). Este efeito só pode ser usado uma vez por cena contra uma mesma criatura.
+• Curar Ferimentos (Padrão, 3 PM) Uma criatura adjacente cura 4d8+4 PV.
+• Escuridão (Padrão, 3 PM) Até o fim da cena, um objeto em alcance curto emana escuridão total em um raio de 6m, bloqueando a visão na área e através dela.
+Olhar Atordoante (Movimento) Uma criatura em alcance curto fica atordoada por 1 rodada (apenas uma vez por cena; Fort CD 19 evita).
+Veneno Perde 1d12 pontos de vida.
+For 0, Des 2, Con 0, Int 4, Sab 3, Car 4
+Perícias Enganação +20, Intuição +20, Religião +17.
+Equipamento Adaga, couro batido, símbolo sagrado de Sszzaas. Tesouro Padrão.`
+        },
+        {
+          chave: "cultistaDeSszzaas", nome: "Cultista de Sszzaas", nd: "7", tipo: "Monstro (medusa) Médio",
+          papel: '',
+          subgrupo: "Adorador de Sszzaas",
+          resumo: "Adorador de Sszzaas — Obedecendo ao comando da clériga sszzaazita, os cultistas em mantos atacam vocês com o fervor de fanáticos.",
+          texto:
+`Cultista de Sszzaas ND 7
+Monstro (medusa) Médio
+Iniciativa +11, Percepção +12, visão no escuro
+Defesa 29, Fort +7, Ref +14, Von +20, resistência a veneno +5
+Pontos de Vida 160
+Deslocamento 9m (6q)
+Pontos de Mana 40
+Corpo a Corpo Adaga +22 (1d4+4, 19, mais veneno).
+Ataque Furtivo +5d6.
+Falso Amigo Médico veterano.
+Olhar Atordoante (Movimento) Uma criatura em alcance curto fica atordoada por 1 rodada (apenas uma vez por cena; Fort CD 26 evita).
+Veneno Perde 2d12 pontos de vida durante 3 rodadas (Fort CD 26 reduz para 1 rodada).
+Magias Como uma clériga de Sszzaas de 7º nível (CD 26).
+• Arma Mágica (Padrão, 5 PM) Até o fim da cena, uma arma adjacente se torna mágica, fornecendo +2 nos testes de ataque e rolagens de dano e +1d6 pontos de dano de fogo. A cultista usa Sabedoria em vez de Força nos testes de ataque com ela (ataque total +28).
+• Comando (Padrão, 6 PM) No início do seu próximo turno, três criatura em alcance curto ficam pasmas por 1 rodada (Von evita). Este efeito só pode ser usado uma vez por cena contra uma mesma criatura.
+• Curar Ferimentos (Padrão, 7 PM) Uma criatura adjacente cura 8d8+8 PV.
+• Escuridão (Padrão, 5 PM) Até o fim da cena, um objeto em alcance curto emana escuridão total em um raio de 6m, bloqueando a visão na área e através dela.
+• Enxame de Pestes (Completa, 7 PM, sustentada) Um enxame de pequenos animais surge em alcance médio e ocupa um quadrado de 1,5m. No fim de cada um dos turnos da cultista, o enxame causa 4d12 pontos de dano de corte a qualquer criatura em seu espaço (Fort reduz à metade). A cultista pode gastar uma ação de movimento para mover o enxame 12m.
+• Miasma Mefítico (Padrão, 7 PM) Cria uma nuvem com 6m de raio; criaturas na área sofrem 7d6 pontos de dano de ácido e ficam enjoadas por 1 rodada (Fort reduz à metade e evita a condição).
+For 0, Des 2, Con 0, Int 4, Sab 4, Car 5
+Perícias Enganação +20, Intuição +20, Religião +17.
+Equipamento Adaga certeira, couraça, escudo leve, símbolo sagrado de Sszzaas. Tesouro Padrão.`
+        },
+        {
+          chave: "elementalDoVenenoPequeno", nome: "Elemental do Veneno Pequeno", nd: "2", tipo: "Espírito (elemental) Pequeno",
+          papel: '',
+          subgrupo: "Elemental do Veneno",
+          resumo: "Elemental do Veneno — A criatura amorfa parece levitar pouco acima do solo.",
+          texto:
+`Elemental do Veneno Pequeno ND 2
+Espírito (elemental) Pequeno
+Iniciativa +3, Percepção +5, percepção às cegas
+Defesa 17, Fort +13, Ref +2, Von +7, imunidade a acertos críticos, atordoado, caído, efeitos de metabolismo, paralisia e veneno
+Pontos de Vida 49
+Deslocamento voo 6m (4q)
+À Distância Pústula asquerosa +12 (enjoado por 1d4 rodadas, alcance médio).
+Corpo Nocivo Quando o elemental do veneno pequeno sofre dano por um ataque corpo a corpo, o atacante perde 1d6 pontos de vida por veneno, a menos que esteja usando uma arma alongada.
+Existência Insalubre O elemental ignora imunidade a veneno.
+Fumos Tóxicos (Livre) Uma vez por rodada, o elemental emite uma nuvem de veneno corrosivo. Criaturas em um raio de 9m ao redor dele perdem 1d12 pontos de vida por veneno e ficam vulneráveis (Fort CD 18 reduz a perda de vida à metade e evita a condição).
+For –3, Des 0, Con 2, Int –3, Sab 2, Car –4
+Tesouro 1d4 doses de peçonha irritante (CD 17 para extrair).
+Parceiro O elemental é um parceiro especial (assassino) que fornece os benefícios a seguir. Iniciante: a CD para resistir aos seus efeitos de veneno aumenta em +2 e, uma vez por rodada, você pode gastar 1 PM para envenenar uma arma que esteja usando. No próximo ataque que acertar com ela nesta cena, a arma causa perda de 1d12 PV. Veterano: você também pode gastar 3 PM para aplicar um veneno que causa perda de 2d12 PV. Mestre: seus efeitos de veneno ignoram imunidade a veneno e você também pode gastar 5 PM para aplicar um veneno que causa perda de 3d12 PV.`
+        },
+        {
+          chave: "elementalDoVenenoMedio", nome: "Elemental do Veneno Médio", nd: "8", tipo: "Espírito (elemental) Médio",
+          papel: '',
+          subgrupo: "Elemental do Veneno",
+          resumo: "Elemental do Veneno — A criatura amorfa parece levitar pouco acima do solo.",
+          texto:
+`Elemental do Veneno Médio ND 8
+Espírito (elemental) Médio
+Iniciativa +5, Percepção +9, percepção às cegas
+Defesa 31, Fort +21, Ref +8, Von +15, imunidade a acertos críticos, atordoado, caído, efeitos de metabolismo, paralisia e veneno
+Pontos de Vida 280
+Deslocamento voo 9m (6q)
+À Distância Pústula virulenta +26 (3d6+25 impacto mais veneno).
+Corpo Nocivo Quando o elemental do veneno médio sofre dano por um ataque corpo a corpo adjacente, o atacante perde 3d6 pontos de vida por veneno.
+Existência Insalubre O elemental ignora imunidade a veneno.
+Veneno Perde 4d12 pontos de vida durante 3 rodadas (Fort CD 28 reduz para 1 rodada).
+For –3, Des 1, Con 0, Int –2, Sab 1, Car –4
+Tesouro 1d6 doses de peçonha concentrada (CD 23 para extrair).
+Parceiro O elemental do veneno médio é um parceiro com as mesmas estatísticas de um elemental do veneno pequeno.`
+        },
+        {
+          chave: "elementalDoVenenoGrande", nome: "Elemental do Veneno Grande", nd: "12", tipo: "Espírito (elemental) Grande",
+          papel: '',
+          subgrupo: "Elemental do Veneno",
+          resumo: "Elemental do Veneno — A criatura amorfa parece levitar pouco acima do solo.",
+          texto:
+`Elemental do Veneno Grande ND 12
+Espírito (elemental) Grande
+Iniciativa +8, Percepção +13, percepção às cegas
+Defesa 43, Fort +26, Ref +12, Von +20, incorpóreo, imunidade a acertos críticos, atordoado, caído, efeitos de metabolismo, paralisia e veneno
+Pontos de Vida 550
+Deslocamento voo 18m (12q)
+Corpo Nocivo Quando o elemental do veneno grande sofre dano por um ataque corpo a corpo, o atacante perde 6d6 pontos de vida por veneno, a menos que esteja usando uma arma alongada.
+Existência Insalubre O elemental ignora imunidade a veneno.
+Morte Gasosa O elemental pode entrar no espaço ocupado por outras criaturas. No fim de cada turno do elemental, quaisquer criaturas em seu espaço perdem 10d12 pontos de vida e ficam exaustas. Veneno.
+Pústula Explosiva (Reação) Se sofrer 200 pontos de dano ou mais em uma única rodada, o elemental explode numa nuvem de gás de 9m de raio ao seu redor. Criaturas na área perdem 8d12 pontos de vida por veneno durante 5 rodadas (Fort CD 35 reduz a perda à metade). Na rodada seguinte, dois elementais do veneno médios surgem em espaços desocupados na área da explosão (eles não contam para as recompensas do encontro).
+For –3, Des 2, Con 0, Int –2, Sab 3, Car –4
+Tesouro 1d6 doses de peçonha potente (CD 27 para extrair), 1d6 doses de pó de lich (CD 27 para extrair).`
+        },
+        {
+          chave: "gorgona", nome: "Górgona", nd: "6", tipo: "Monstro (medusa) Médio",
+          papel: '',
+          subgrupo: "Górgona",
+          resumo: "Górgona — A cabeleira farta e sibilante, feita de serpentes, denuncia pertencer a uma medusa — como outras que vocês conheceram.",
+          texto:
+`Górgona ND 6
+Monstro (medusa) Médio
+Iniciativa +16, Percepção +9, visão no escuro
+Defesa 26, Fort +13, Ref +19, Von +8, resistência a veneno +5
+Pontos de Vida 231
+Deslocamento 9m (6q)
+Corpo a Corpo Espada curta +20 (1d6+15, 19, mais veneno).
+À Distância Arco longo +20 x2 (1d12+15, x3, mais veneno).
+Disparo Preciso A górgona pode fazer ataques à distância contra oponentes envolvidos em combate corpo a corpo sem sofrer a penalidade de –5 no teste de ataque.
+Olhar Petrificante No início de seu turno, cada personagem em alcance curto da górgona deve fazer um teste de Reflexos (CD 22). Se passar, desvia o olhar. Se falhar, fica lento. Se já estiver lento, fica petrificado permanentemente. Um personagem pode fechar os olhos como uma reação para ficar imune a esta habilidade, mas sofrerá os efeitos de estar cego por 1 rodada. Efeitos que removem paralisia revertem a petrificação. Metamorfose.
+Veneno Peçonha concentrada (perde 1d12 pontos de vida por rodada durante 3 rodadas, Fort CD 22 reduz para 1 rodada).
+For 0, Des 4, Con 1, Int 1, Sab 2, Car 3
+Perícias Enganação +13, Furtividade +14.
+Equipamento Arco longo certeiro, espada curta, flechas x20.
+Tesouro Padrão mais 1d4 doses de peçonha concentrada.`
+        },
+        {
+          chave: "gorgonaMatriarca", nome: "Górgona Matriarca", nd: "14", tipo: "Monstro (medusa) Médio",
+          papel: '',
+          subgrupo: "Górgona",
+          resumo: "Górgona — A cabeleira farta e sibilante, feita de serpentes, denuncia pertencer a uma medusa — como outras que vocês conheceram.",
+          texto:
+`Górgona Matriarca ND 14
+Monstro (medusa) Médio
+Iniciativa +22, Percepção +19, visão no escuro
+Defesa 43, Fort +14, Ref +25, Von +25, imunidade às condições atordoada e enfeitiçada, resistência a magia +2, resistência a veneno +5
+Pontos de Vida 498
+Deslocamento 9m (6q)
+Pontos de Mana 89
+Corpo a Corpo Espada curta +36 (1d6+20, 19, mais veneno).
+Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, a górgona matriarca muda a execução dela para livre.
+Olhar Petrificante Como a górgona (veja acima), mas com CD 38.
+Magias Como uma clériga de Sszzaas de de 14º nível (CD 38).
+• Miasma Mefítico (Padrão, 9 PM) Criaturas em um raio de 6m em alcance médio sofrem 8d6 pontos de dano de ácido e ficam enjoadas por 1 rodada (Fort reduz o dano à metade e evita a condição).
+• Rogar Maldição (Padrão, 10 PM) A matriarca amaldiçoa uma criatura em alcance curto. O alvo fica esmorecido e não pode se comunicar ou lançar magias permanentemente (Fort reduz para 1 rodada).
+• Toque Vampírico (Padrão, 13 PM) A matriarca faz um ataque corpo a corpo. Se acertar, além do dano normal, causa 14d6 pontos de dano de trevas e recupera pontos de vida iguais à metade desse dano de trevas.
+• Visão da Verdade (Padrão, 9 PM) Até o fim da cena, a matriarca pode ver através de camuflagem e escuridão (normais e mágicas) e de efeitos de ilusão e transmutação (enxergando a verdade como formas translúcidas ou sobrepostas) e recebe +10 em testes de Intuição e Percepção.
+Veneno Beladona (paralisado por 3 rodadas, Fort CD 43 reduz para lento por 3 rodadas).
+For 0, Des 4, Con 3, Int 2, Sab 6, Car 4
+Perícias Enganação +20, Furtividade +20, Intuição +19, Misticismo +15, Religião +19.
+Equipamento Espada curta certeira. Tesouro Padrão mais 1d4 doses de beladona.`
+        },
+        {
+          chave: "nagahMistica", nome: "Nagah Mística", nd: "6", tipo: "Humanoide (nagah) Médio",
+          papel: '',
+          subgrupo: "Nagah Arcanista",
+          resumo: "Nagah Arcanista — O gigante furioso avança para esmagá-los.",
+          texto:
+`Nagah Mística ND 6
+Humanoide (nagah) Médio
+Iniciativa +8, Percepção +6, visão na penumbra
+Defesa 20, Fort +6, Ref +12, Von +18, resistência a veneno +5
+Pontos de Vida 160
+Deslocamento 9m (6q)
+Pontos de Mana 35
+Corpo a Corpo Adaga +18 (1d6+6, 19) e cauda +18 (1d6+6).
+Falso Amigo Adepta veterana.
+Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, a nagah mística muda a execução dela para livre.
+Magias Como uma maga de 8º nível (CD 24).
+• Imagem Espelhada (Padrão, 5 PM) Cinco cópias ilusórias da nagah surgem ao seu redor, concedendo +10 na Defesa. Cada vez que um ataque erra a nagah, uma das cópias desaparece e o bônus na Defesa diminui em 2.
+• Relâmpago (Padrão, 5 PM) A nagah causa 8d6 pontos de dano de eletricidade em todas as criaturas em uma linha de 30m (Ref reduz à metade).
+• Velocidade (Padrão, 3 PM, sustentada) A nagah pode executar uma ação padrão adicional por turno, que não pode ser usada para lançar magias.
+For 1, Des 3, Con 2, Int 4, Sab 2, Car 2
+Perícias Conhecimento +10, Enganação +9, Furtividade +10, Intuição +9, Misticismo +10.
+Equipamento Adaga, essência de mana. Tesouro Padrão.`
+        },
+        {
+          chave: "nagahEncantadora", nome: "Nagah Encantadora", nd: "7", tipo: "Humanoide (nagah) Médio",
+          papel: '',
+          subgrupo: "Nagah Arcanista",
+          resumo: "Nagah Arcanista — O gigante furioso avança para esmagá-los.",
+          texto:
+`Nagah Encantadora ND 7
+Humanoide (nagah) Médio
+Iniciativa +10, Percepção +10, visão na penumbra
+Defesa 29, Fort +9, Ref +15, Von +20, resistência a veneno +5
+Pontos de Vida 197
+Deslocamento 9m (6q)
+Pontos de Mana 59
+Corpo a Corpo Adaga +22 (1d6+4, 19) e cauda +22 (1d6+4).
+Falso Amigo Adepta veterana.
+Linhagem Feérica A CD para resistir às magias de encantamento* e ilusão* da nagah encantadora aumenta em +2 e essas magias custam –1 PM (já contabilizado).
+Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, a nagah muda a execução dela para livre.
+Magias Como uma feiticeira de 9º nível (CD 26, 28 para encantamento* e ilusão*, limite de PM 9).
+• Adaga Mental* (Padrão, 8 PM) Uma criatura em alcance curto sofre 6d6 pontos de dano psíquico e fica atordoada por 1 rodada (Von reduz o dano à metade e evita a condição). Uma criatura só pode ser atordoada por esta magia uma vez por cena.
+• Desespero Esmagador* (Padrão, 8 PM) A nagah projeta uma onda de desespero em um cone de 6m. Criaturas na área ficam fracas e frustradas até o fim da cena e pasmas por 1 rodada (Von evita a condição pasmo e reduz a duração das outras condições para 1 rodada). Uma criatura só pode ser pasmada por esta magia uma vez por cena.
+• Enfeitiçar* (Padrão, 5 PM) Cada humanoide em alcance curto fica enfeitiçado pela nagah até o fim da cena, ou até a nagah ou um de seus aliados tomar uma ação hostil contra a criatura.
+• Ilusão Lacerante* (Padrão, 8 PM, sustentada) A nagah cria uma ilusão que ocupa um cubo de 9m. Quando a magia é lançada, cada criatura na área deve fazer um teste de Vontade; se falhar, acredita que a ilusão é real e sofre 5d6 pontos de dano psíquico não letal. Cada criatura que começar seu turno dentro da área e acreditar na ilusão deve repetir o teste de Vontade.
+• Imagem Espelhada* (Padrão, 8 PM) Seis cópias ilusórias da nagah surgem ao seu redor, concedendo +12 na Defesa. Cada vez que um ataque erra a nagah, uma das cópias desaparece e o bônus na Defesa diminui em 2, mas a criatura atacante fica ofuscada por 1 rodada.
+• Invisibilidade* (Padrão, 4 PM) A nagah fica invisível até o fim da cena ou até realizar uma ação hostil. Ela recebe camuflagem total e +10 em testes de Furtividade contra ouvir, e criaturas que não possam vê-la ficam desprevenidas contra seus ataques.
+For 0, Des 3, Con 2, Int 3, Sab 1, Car 5
+Perícias Conhecimento +11, Enganação +16, Furtividade +10, Intuição +10, Misticismo +12.
+Equipamento Adaga, essência de mana. Tesouro Padrão.`
+        },
+        {
+          chave: "nagahDormente", nome: "Nagah Dormente", nd: "3", tipo: "Humanoide (nagah) Médio",
+          papel: '',
+          subgrupo: "Nagah Dormente",
+          resumo: "Nagah Dormente — Os cultistas estão encurralados, não há como escaparem.",
+          texto:
+`Nagah Dormente ND 3
+Humanoide (nagah) Médio
+Iniciativa +7, Percepção +6, visão na penumbra
+Defesa 22, Fort +6, Ref +12, Von +9, resistência a veneno +5
+Pontos de Vida 27
+Deslocamento 9m (6q)
+Corpo a Corpo Espada curta +14 (1d6+4, 19) e cauda +14 (1d6+4).
+À Distância Arco curto +14 (1d6+8, x3).
+Falso Amigo Parceiro perseguidor.
+Marca da Traição (Movimento) A nagah analisa um alvo em alcance curto. Até o fim da cena ela recebe +1d8 em rolagens de dano contra essa criatura. Se o alvo for alguém com quem ela passou pelo menos uma cena como aliada, esse bônus é dobrado. Ela só pode ter um oponente marcado por vez.
+For 0, Des 4, Con 1, Int 0, Sab 3, Car 1
+Perícias Enganação +8, Furtividade +9, Sobrevivência +9.
+Equipamento Arco curto, armadura de couro, espada curta, flechas x20. Tesouro Metade.`
+        },
+        {
+          chave: "hynneDormente", nome: "Hynne Dormente", nd: "5", tipo: "Humanoide (hynne) Pequeno",
+          papel: '',
+          subgrupo: "Nagah Dormente",
+          resumo: "Nagah Dormente — Os cultistas estão encurralados, não há como escaparem.",
+          texto:
+`Hynne Dormente ND 5
+Humanoide (hynne) Pequeno
+Iniciativa +14, Percepção +6
+Defesa 22, Fort +6, Ref +16, Von +11
+Pontos de Vida 99
+Deslocamento 6m (4q)
+Corpo a Corpo Adaga +15 (1d4+11, 19, mais veneno).
+À Distância Adaga +15 (1d6+11, 19, mais veneno).
+Ataque Furtivo +4d6.
+Falso Amigo Assassino veterano.
+Pirueta Escapatória (Reação) Uma vez por rodada, quando é atingido por um ataque, o hynne pode fazer um teste de Acrobacia e reduzir o resultado deste teste do dano sofrido.
+Reviravolta O alvo do primeiro ataque do hynne na cena é considerado desprevenido.
+Sorte Salvadora (Reação) Uma vez por rodada, o hynne pode rolar novamente um teste de resistência.
+Veneno Peçonha concentrada (perde 1d12 pontos de vida por rodada durante 3 rodadas, Fort CD 20 reduz a duração para 1 rodada).
+For –1, Des 3, Con 1, Int 3, Sab 0, Car 2
+Perícias Acrobacia +9, Atletismo +7, Enganação +10, Furtividade +11, Ladinagem +7.
+Equipamento Adaga certeira, gazua. Tesouro Metade.`
+        },
+        {
+          chave: "nagahDefensor", nome: "Nagah Defensor", nd: "7", tipo: "Humanoide (nagah) Médio",
+          papel: '',
+          resumo: "O templo secreto de Sszzaas parece enfim desprotegido, seus poucos cultistas restantes correm para salvar suas peles.",
+          texto:
+`Nagah Defensor ND 7
+“Belas cimitarras. Vejamos se sabe usá-las tão bem quanto uso as minhas!”
+— Orib, o Dançarino de Sangue
+O templo secreto de Sszzaas parece enfim desprotegido, seus poucos cultistas restantes correm para salvar suas peles. Ou não? Como tudo ligado a esse deus, isto também é uma armadilha. Vocês se percebem cercados por poderosos homens-serpente empunhando cimitarras reluzentes. Na sociedade nagah, enquanto as mulheres são clérigas ou arcanistas que lideram, os homens quase sempre são guerreiros. Nagahs defensores atuam como soldados e guarda-costas para sszzaazitas. Muitos estão plenamente cientes de sua situação, procurando se manter úteis para evitar serem descartados. Outros, tolos e ingênuos, de fato acreditam ser recompensados por sua lealdade.
+Humanoide (nagah) Médio
+Iniciativa +12, Percepção +10, visão na penumbra
+Defesa 31, Fort +10, Ref +17, Von +14, redução de dano 5, resistência a veneno +5
+Pontos de Vida 82
+Deslocamento 9m (6q)
+Corpo a Corpo Alfange x2 +26 (4d4+15, 18) e cauda +26 (1d6+10).
+Escudo Vivo (Reação) Uma vez por rodada, quando um aliado adjacente ao nagah defensor sofre dano, ele pode proteger esse aliado. Se fizer isso, o dano é reduzido à metade e é causado ao nagah, em vez de ao aliado.
+Falso Amigo Fortão veterano.
+For 5, Des 3, Con 3, Int 0, Sab 1, Car 0
+Perícias Atletismo +12, Enganação +5.
+Equipamento Alfange, couraça. Tesouro Padrão.`
+        },
+        {
+          chave: "nagahRetalhador", nome: "Nagah Retalhador", nd: "12", tipo: "Humanoide (nagah) Médio",
+          papel: '',
+          resumo: "O que parecia ser um pequeno bando de monstros, agora visto de perto, na verdade é um só.",
+          texto:
+`Nagah Retalhador ND 12
+“Por que ELE pode ter quatro braços e eu não? Onde está a justiça neste mundo?”
+— Sylmara, lefou bárbara
+O que parecia ser um pequeno bando de monstros, agora visto de perto, na verdade é um só. Humanoide, mas muito grande. Lembra um centauro, mas, em vez de cavalo, tem o corpo de uma enorme serpente. A ilusão de ser muitos foi causada pelos vários braços que se movem em harmonia impecável, cada um empunhando uma arma de alta qualidade. Como que para reforçar seu papel marcial, entre os nagahs masculinos ocasionalmente surge uma mutação, um atributo capaz de torná-lo ainda mais poderoso em combate. Alguns gladiadores veteranos até sugerem ser a qualidade principal do guerreiro perfeito, o auge evolutivo entre os combatentes armados: quatro braços. Um nagah retalhador não apenas tem dois pares de mãos destras e hábeis, mas também a coordenação necessária para brandir armas com todas elas! Em batalha, é uma verdadeira barreira de lâminas. Esses nagahs acabam assim se tornando os maiores guerreiros deste povo, muitas vezes atuando como guarda-costas de elite para nagahs sacerdotisas ou sszzaazitas celebrantes.
+Humanoide (nagah) Médio
+Iniciativa +20, Percepção +14, visão na penumbra
+Defesa 43, Fort +20, Ref +26, Von +12, resistência a veneno +5
+Pontos de Vida 600
+Deslocamento 12m (8q)
+Corpo a Corpo Quatro cimitarras +36 (1d8+12, 15/x3, mais veneno) e cauda +36 (1d6+12).
+Agarrar Aprimorado (Livre) Cauda (teste +38).
+Barreira de Lâminas (Reação) Duas vezes por rodada, quando é alvo de um ataque corpo a corpo, o nagah retalhador pode fazer um teste de ataque oposto ao resultado desse ataque. Se vencer, evita o dano e pode fazer um ataque corpo a corpo contra o atacante.
+Constrição (Livre) No início de cada um de seus turnos, o retalhador causa 2d6+12 pontos de dano de impacto na criatura que estiver agarrando com sua cauda.
+Retalhar Para cada dois ataques de cimitarra que o retalhador acertar em uma mesma criatura na mesma rodada, ele causa mais 2d8+12 pontos de dano.
+Veneno Peçonha potente (perde 2d12 pontos de vida por rodada durante 3 rodadas, Fort CD 33 reduz a duração para 1 rodada).
+For 6, Des 5, Con 4, Int 0, Sab 2, Car 1
+Perícias Enganação +15, Furtividade +17, Intimidação +13.
+Equipamento Cimitarra de mitral x4. Tesouro Metade.`
+        },
+        {
+          chave: "nagahSacerdotisa", nome: "Nagah Sacerdotisa", nd: "5", tipo: "Humanoide (nagah) Médio",
+          papel: '',
+          resumo: "A clériga entoa cânticos religiosos com uma bela voz, mas se interrompe ao notar os aventureiros recém-chegados.",
+          texto:
+`Nagah Sacerdotisa ND 5
+“Ela é a curandeira, precisamos derrubá-la primeiro. Deixem isso comigo!”
+— Shambbar, qareen ladino
+A clériga entoa cânticos religiosos com uma bela voz, mas se interrompe ao notar os aventureiros recém-chegados. Ela então se ergue acima do altar, revelando um grande corpo de serpente, enquanto prepara uma conjuração. É fato que existe forte dimorfismo sexual entre as nagahs: as fêmeas são mentalmente superiores, os machos são fisicamente mais aptos. Ainda que houvesse exceções, em especial entre párias, essas diferenças sempre estabeleceram papéis claros em sua sociedade. Elas lideram e conjuram, eles pegam em armas. Por qual motivo foram criadas assim, apenas Sszzaas sabe. O fato é que quase todas as nagahs clérigas são mulheres e, entre estas, quase todas são sszzaazitas. Muitas lideram cabalas, que podem ser formadas por nagahs ou outras raças — neste último caso, às vezes escondem sua verdadeira natureza, revelando-a apenas a poucos escolhidos. Também podem ser encontradas liderando grupos de nagahs guardiões, provendo curas mágicas enquanto estes lutam.
+Humanoide (nagah) Médio
+Iniciativa +6, Percepção +7, visão na penumbra
+Defesa 23, Fort +5, Ref +11, Von +17, resistência a veneno +5
+Pontos de Vida 140
+Deslocamento 9m (6q)
+Pontos de Mana 38
+Corpo a Corpo Adaga +15 (1d4+5,19, mais veneno) e cauda +15 (1d6+5).
+Devoção Dissimulada A nagah sacerdotisa se apresenta como devota de outra divindade. Quando faz um teste de Enganação ou Religião para ocultar sua devoção verdadeira, ela rola dois dados e usa o melhor resultado.
+Falso Amigo Médica veterana.
+Magias Como uma clériga de Sszzaas de 7º nível (CD 22, limite de PM 7).
+• Curar Ferimentos (Padrão, 7 PM) Uma criatura em alcance curto cura 8d8+8 PV.
+• Comando (Padrão, 6 PM) No início do seu próximo turno, três criaturas em alcance curto ficam pasmas por 1 rodada (Von evita).
+• Marca da Obediência (Padrão, 3 PM) A sacerdotisa ordena que uma criatura adjacente não ataque a ela ou a seus aliados até o fim da cena (Von evita). A criatura pode repetir o teste de Vontade em cada um de seus turnos subsequentes.
+• Miasma Mefítico (Padrão, 7 PM) Criaturas em um raio de 6m em alcance médio sofrem 7d6 pontos de dano de ácido e ficam enjoadas por 1 rodada (Fort reduz à metade e evita a condição).
+• Santuário (Padrão, 1 PM) A sacerdotisa toca uma criatura. Até o fim da cena, ou até que essa criatura faça uma ação hostil, qualquer criatura que tente fazer uma ação hostil contra ela perde a ação (Von evita).
+Veneno Peçonha concentrada (perde 1d12 pontos de vida por rodada durante 3 rodadas, Fort CD 22 reduz para 1 rodada).
+For –1, Des 2, Con 0, Int 3, Sab 3, Car 5
+Perícias Enganação +15, Furtividade +1, Intuição +9, Religião +9.
+Equipamento Adaga, couraça, escudo leve, símbolo sagrado (qualquer, exceto Sszzaas). Tesouro Padrão.`
+        },
+        {
+          chave: "zumbiPeconha", nome: "Zumbi Peçonha", nd: "1", tipo: "Morto-vivo Médio",
+          papel: '',
+          resumo: "Pouco mais que um esqueleto coberto de carniça, o zumbi avança trôpego, nem mesmo erguendo as garras.",
+          texto:
+`Zumbi Peçonha ND 1
+“Zumbi comum! Acabei com dúzias desses. Não vai ser problema.”
+— Ringo Ward, hynne caçador de mortos-vivos
+Pouco mais que um esqueleto coberto de carniça, o zumbi avança trôpego, nem mesmo erguendo as garras. Parece uma luta fácil, até que ele arreganha a bocarra — de onde salta uma serpente muito longa, arreganhando presas gotejantes para o bote. Estes zumbis parecem bastante comuns à primeira vista, não diferentes de outros que qualquer aventureiro experiente já enfrentou. Mas, como tudo ligado aos sszzaazitas, escondem um segredo traiçoeiro. Assim que se aproxima o bastante, um zumbi peçonha escancara a bocarra para libertar uma serpente anormalmente longa, como um tentáculo. O bote veloz busca alcançar a garganta da vítima incauta e inocular um veneno poderoso, que enfraquece e atordoa. Muitas vezes isso já basta para deixá-la vulnerável às garras dos zumbis, que atacam em pequenos grupos. Quase desnecessário dizer, estes zumbis costumam ser usados por sszzaazitas como guardas em seus templos secretos, ou como escoltas. Também podem surgir espontaneamente em cemitérios, ruínas e outros lugares malditos (ou sagrados para Sszzaas, o que costuma ser a mesma coisa).
+Morto-vivo Médio
+Iniciativa –1, Percepção –1, visão no escuro
+Defesa 15, Fort +9, Ref +1, Von +6
+Pontos de Vida 21
+Deslocamento 6m (4q)
+Corpo a Corpo Mordida +10 (1d6+9 mais veneno, alcance 3m).
+Bote Oculto O alvo do primeiro ataque do zumbi em uma cena é considerado desprevenido.
+Veneno Atordoado por 1 rodada e fraco (Fort CD 14 reduz para fraco por 1 rodada).
+Fraqueza Zumbi O zumbi sofre o dobro de dano de acertos críticos ou de ataques feitos contra seu cérebro (Defesa 25).
+For 3, Des –1, Con 2, Int —, Sab –1, Car –5
+Tesouro Nenhum.`
+        },
+        {
+          chave: "nastarrath", nome: "Nastarrath", nd: "18", tipo: "Morto-vivo Colossal",
+          papel: '',
+          subgrupo: "Sszzaazita Celebrante & Nastarrath",
+          resumo: "Sszzaazita Celebrante & Nastarrath — Diante de grande público, o alto clérigo de Thyatis ergue uma taça em júbilo, oferecendo seu conteúdo a uma noviça.",
+          texto:
+`Nastarrath ND 18
+Morto-vivo Colossal
+Iniciativa +15, Percepção +17, visão no escuro
+Defesa 56, Fort +32, Ref +18, Von +26, imunidade a corte e perfuração, redução de dano 20
+Pontos de Vida 1.150
+Deslocamento 9m (6q)
+Corpo a Corpo Mordida +50 (4d10+42, 19/x3, mais veneno) e cauda x2 +50 (3d8+42, x3, mais veneno).
+Agarrar Aprimorado (Livre) Mordida (teste +60).
+Engolir (Padrão) No início de cada um dos turnos do Nastarrath, a criatura engolida sofre 4d8+21 pontos de dano de perfuração e perde 4d12 pontos de vida por veneno. Ela pode escapar causando um total de 200 pontos de dano a ele (Defesa 25) ou, se for Minúscula, gastando uma ação de movimento. A criatura engolida não fica cega nem tem cobertura contra efeitos do lado de fora (e vice-versa).
+Mastigar (Livre) No início de cada um de seus turnos, o Nastarrath causa 6d12+34 pontos de dano de corte, mais veneno, na criatura que estiver agarrando com sua mordida.
+Veneno Perde 6d12 pontos de vida por rodada durante 3 rodadas (Fort CD 52 reduz para 2d12 por 3 rodadas).
+For 12, Des 0, Con 8, Int –1, Sab 2, Car –1
+Perícias Enganação +16, Furtividade +12, Intuição +17.
+Equipamento 1d4 doses de pó de lich (CD 38 para extrair).
+Tesouro Padrão.`
+        },
+        {
+          chave: "sszzaazitaCelebrante", nome: "Sszzaazita Celebrante", nd: "16", tipo: "Humanoide (humano) Médio",
+          papel: '',
+          subgrupo: "Sszzaazita Celebrante & Nastarrath",
+          resumo: "Sszzaazita Celebrante & Nastarrath — Diante de grande público, o alto clérigo de Thyatis ergue uma taça em júbilo, oferecendo seu conteúdo a uma noviça.",
+          texto:
+`Sszzaazita Celebrante ND 16
+Humanoide (humano) Médio
+Iniciativa +23, Percepção +17
+Defesa 51, Fort +24, Ref +28, Von +18, evasão
+Pontos de Vida 571
+Deslocamento 9m (6q)
+Pontos de Mana 83
+Corpo a Corpo Punhal sszzaazita +44 (1d4+20, 19, mais veneno).
+Assassinar (Movimento) O sszzaazita celebrante analisa uma criatura em alcance curto. Até o fim de seu próximo turno, ele dobra os dados de dano extras por Ataque Furtivo em seu primeiro Ataque Furtivo que causar dano contra essa criatura.
+Ataque Furtivo +8d8.
+Cobra em Pele de CordeiroO celebrante é considerado um respeitado membro do clero de outro deus e recebe +5 em testes de Enganação e Intimidação com seus devotos.
+Falso Amigo Médico veterano.
+Ritual Disfarçado (Livre) O celebrante disfarça suas magias como se fossem de outra divindade. Uma criatura que veja o celebrante lançar uma magia deve fazer um teste de Intuição ou Misticismo (CD 38) para perceber sua verdadeira natureza. Se falhar, sofre –5 em seu teste de resistência contra ela.
+Manto do TraidorO celebrante pode se esconder mesmo sem camuflagem ou cobertura disponíveis, não sofre penalidade em testes de Furtividade por se mover ao seu deslocamento normal e reduz a penalidade em Furtividade por atacar e fazer outras ações chamativas para –5.
+Magias Como um clérigo de Sszzaas de 16º nível (CD 38).
+• Curar Ferimentos (Padrão, 12 PM) Uma criatura adjacente cura 13d8+13 PV.
+• Libertação (Padrão, 14 PM) O celebrante fica imune a efeitos de movimento, ignora qualquer efeito que impeça ou restrinja seu deslocamento, pode escolher 20 em testes de Atletismo e Acrobacia, e pode fazer todas as manobras desta perícia mesmo sem treinamento.
+• Manto de Sombras (Padrão, 6 PM, sustentada) O celebrante se torna incorpóreo. Ele pode gastar uma ação de movimento e 1 PM para “entrar” em uma sombra do seu tamanho ou maior e se teletransportar para outra sombra, também do seu tamanho ou maior, em alcance médio. Além disso, torna-se vulnerável a luz direta: se for exposto a uma fonte de luz, sofre 1 ponto de dano por rodada.
+• Silêncio (Padrão, 3 PM, sustentada) O celebrante cria uma esfera de 6m em alcance médio. Criaturas nessa área ficam surdas e por isso não podem lançar magias.
+Veneno Perde 2d12 pontos de vida durante 3 rodadas (Fort CD 38 reduz para 1 rodada).
+For 0, Des 7, Con 4, Int 2, Sab 3, Car 5
+Perícias Enganação +26 (+27 para disfarces), Furtividade +28, Intimidação +26, Intuição +24, Religião +24. EquipamentoEstojo de disfarces aprimorado, punhal sszzaazita, símbolo sagrado (qualquer, exceto Sszzaas). Tesouro Nenhum.`
+        },
+      ],
+      regras: [
+        { titulo: "Adorador de Sszzaas",
+          texto:
+`“Infelizmente, aventureiros, não poderei socorrê-los. Vejam bem, seu fracasso fazia parte do plano.”
+— Osbald de Deheon, na verdade Waldere de Sszzaas
+Obedecendo ao comando da clériga sszzaazita, os cultistas em mantos atacam vocês com o fervor de fanáticos. Nem percebem que sua líder, agora expondo a cabeleira serpentina, está abandonando a luta — e os antigos aliados. É raro encontrar cultistas de Sszzaas em grandes números, ou mesmo grupos. Eles sabem perfeitamente que, exceto em casos especiais, não podem confiar uns nos outros. Um desses casos especiais é quando executam alguma grande perfídia, envolvendo tantas vítimas — ou um alvo tão importante — que trair o aliado acaba se tornando algo secundário, deixado para depois. Assim, muitos cultos de Sszzaas são na verdade formados por bandidos devotos, ingênuos mal-intencionados que buscam recompensas, ou que acreditam servir a algum outro deus ou causa. Apenas os líderes são clérigos verdadeiros, às vezes se fazendo passar por clérigos de Hyninn, Nimb, Valkaria ou até Khalmyr! Membros de qualquer raça podem ser adoradores de Sszzaas, mas — por sua ligação com serpentes — medusas estão entre as devotas favoritas deste deus.` },
+        { titulo: "Falsos Amigos",
+          texto:
+`Sszzaas é a mentira, a enganação, o subterfúgio. E uma de suas facetas mais perversas é aproveitar a confiança e a amizade daqueles ao seu redor para promover a falsidade e a ruína. Assim, muitos sszzaazitas aprendem a se passar por outras pessoas, mais amigáveis, confiáveis e úteis. Costumam usar esses disfarces para transitar na sociedade, mantendo uma fachada respeitável enquanto avançam furtivamente os planos de Sszzaas. Um sszzaazita com a habilidade Falso Amigo tem um disfarce cuidadosamente elaborado, praticamente uma segunda identidade, sendo sua “personalidade pública”. Muitos utilizam esse disfarce para se aproximar de pessoas importantes, influentes ou poderosas (como aventureiros) e manipulá-las para seus propósitos. Em termos de regras, o sszzaazita pode atuar como um tipo de parceiro específico, indicado na habilidade. Desmascarar esse disfarce é muito difícil; o ssazzaazita recebe +10 em testes de Enganação para manter o disfarce e em testes de Vontade contra efeitos que possam revelar sua verdadeira identidade. Um sszzaazita sob disfarce de Falso Amigo pode se tornar parceiro de um aventureiro, com o objetivo de sabotar sua missão, manipular o grupo ou simplesmente traí-los no pior momento possível. A qualquer momento, o Falso Amigo pode abandonar o personagem ou mesmo atacá-lo à traição! Utilize com sabedoria. Uma campanha em que todos os parceiros subitamente se revelam traidores pode ser chata, ou fazer os jogadores perderem interesse em ter parceiros. Também evite Falsos Amigos para parceiros obtidos por habilidades; são melhores como NPCs que se tornam parceiros como parte da campanha. Também funcionam bem para aventuras de intriga, quando sszzaazitas podem estar envolvidos. Caso seu grupo goste de tramas de investigação, traição e espionagem, um Falso Amigo pode ser o tempero ideal.` },
+        { titulo: "Elemental do Veneno",
+          texto:
+`“Calma, tudo se resolve com a presa venenosa.”
+— Eferon Larethyan, meio-elfo ladino
+A criatura amorfa parece levitar pouco acima do solo. Lembra um aglomerado de gemas ou cristais escuros, mantidos em coesão por um muco esverdeado, luminoso. Por onde passa, goteja e deixa poças da mesma gosma, que emitem chiados e desprendem vapores. Este ser extraplanar parece se formar em Venomia, o Reino de Sszzaas, em seus vastos pântanos de toxina pura. Ali, existem em grandes colônias ou enxames, governados por rainhas-mães ou algo parecido, que desprendem partes dos corpos imensos para formar a prole. Em Arton, podem ser conjurados por sszzaazitas para lhes servir ou rondar lugares sagrados de Sszzaas. Ou apenas surgir em qualquer local a qualquer momento, sem motivo aparente, mas com certeza executando parte de algum plano complexo e incompreensível por mortais. Elementais do veneno exalam vapores de curto alcance, mas muito tóxicos. Prender a respiração é inútil; basta um leve contato com qualquer parte desprotegida para que penetre no organismo, começando a liquefazer tecidos internos. Mesmo seres não biológicos como golens e osteon são afetados, seus corpos corroídos, tal a intensidade do veneno. Devotos de Sszzaas são imunes à aura do elemental do veneno. Isto é, até que o deus decida o contrário. O que já aconteceu algumas vezes.` },
+        { titulo: "Górgona",
+          texto:
+`“Quem deixou essas estátuas lindas aqui? Tão detalhadas! Quero conhecer o artista!”
+— Tarik, elfo aventureiro iniciante
+A cabeleira farta e sibilante, feita de serpentes, denuncia pertencer a uma medusa — como outras que vocês conheceram. Mas algo está errado. Sob os mantos puídos, ela não parece humana, mas uma bruxa escamada. A bocarra revela grandes presas de cobra. E os olhos… Não é surpresa que medusas sejam muitas vezes associadas a Sszzaas, ligadas ao Grande Corruptor de alguma forma. Alguns acusam que medusas são suas criações monstruosas, como as nagahs. Outros sugerem que são cultistas sob disfarce, também como as nagahs. Existe ainda uma lenda sobre descenderem de sumo-sacerdotisas muito antigas, que acabaram traídas pelo Deus Serpente e transformadas em monstros; outra mentira sussurrada por sszzaazitas para macular a reputação das medusas, é o que muitos acreditam. Essa última lenda, contudo, pode ser verdadeira. Vários estudiosos dizem que, em vários momentos da história, Sszzaas não teve um único sumo-sacerdote, mas vários. Como um cônjuge infiel, manteve um bom número de “eleitos”, cada um sob a ilusão de ser único, o clérigo máximo, o grande favorito. Ou seja, esteve traindo todos eles. E elas.
+Foi quando três sumo-sacerdotisas (ou assim pensavam) travaram uma longa guerra de manipulação e assassinatos, iludindo mercenários e até aventureiros, para eliminar as “rivais farsantes”. Até que um dia, como últimas sobreviventes de suas cabalas, chegaram juntas à verdade — todas haviam sido enganadas por Sszzaas, apontadas como a única favorita. Juraram vingança. Juraram correr o mundo, encontrar outros devotos enganados, revelar a farsa. Então Sszzaas amaldiçoou-as com cabelos de serpente e olhos que transformam em pedra aqueles que os fitarem, para que nunca pudessem contar nada a ninguém. Assim surgiram as górgonas, ou “medusas verdadeiras”. Enquanto muitas de suas atuais descendentes perderam essa capacidade (ou a possuem em forma tênue), as versões ancestrais são plenamente capazes de petrificar apenas com o olhar. Medusas podem parecer humanas, até belas, mas górgonas são sempre monstruosas. Vivem em pontos remotos, cheias de ódio e ressentimento contra Sszzaas e contra o mundo. Seus covis são repletos de vítimas petrificadas, como aviso para os próximos invasores. Ainda, diz-se que as três matriarcas originais ainda vivem. Dizem que caçam sszzaazitas, por vingança. Também dizem que Sszzaas deseja assim, para que eliminem servos incapazes. Quem pode saber a verdade?` },
+        { titulo: "Nagah Arcanista",
+          texto:
+`“Ah, uma alma gêmea da magia arcana! Tão bela, tão instigante! Permita que me apresente…”
+— Hori, qareen feiticeiro
+O gigante furioso avança para esmagá-los. Quando vocês entram em combate, no entanto, percebem sua figura imensa se desvanecer e sumir. Entendem ter sido uma ilusão. Sua autora, uma sinistra mulher-serpente em posição segura, já gesticula outra conjuração. Seres de torso humanoide e corpo de serpente, nagahs foram outrora consideradas uma raça de devotos de Allihanna. Infelizmente, tudo não passou de um elaborado e duradouro disfarce, mantido enquanto Sszzaas estava afastado, tramando seu retorno. Hoje, quase todos os grupos sszzaazitas incluem nagahs. Em sua sociedade, os homens quase sempre são guerreiros, enquanto as mulheres são clérigas ou arcanistas, exercendo a liderança. Nagahs arcanistas são um grupo formado apenas por magas mulheres, protetoras extremamente ciumentas de tal posição. Embora sua magia seja arcana, elas acreditam que seus poderes também provêm do Grande Corruptor — pois sua inteligência é absoluta entre os deuses, e inteligência é o atributo principal dos magos. Consideram mágica arcana uma dádiva de Sszzaas. Assim, membros de outras raças ou gêneros que ousem conjurar essa mágica são seus alvos preferidos. Embora reclusas em seu próprio grupo, nagahs arcanistas podem eventualmente se aliar a outros sszzaazitas na execução de seus planos — que invariavelmente incluem trapacear ou matar os aliados na melhor oportunidade, para aprazer seu deus. Nagahs arcanistas são exímias na execução de rituais que ampliam seus poderes, quase sempre por meio de sacrifícios e assassinatos. Suas vítimas preferidas, claro, são conjuradores arcanos.` },
+        { titulo: "Habilidades de Nagahs",
+          texto:
+`Todas as nagahs partilham das seguintes habilidades.
+Inocência Dissimulada. Uma vez por cena, a nagah pode substituir um teste de perícia por um teste de Enganação.
+Fraquezas Ofídicas. A nagah sofre 1 ponto de dano adicional para cada dado de dano de frio e –5 em testes de resistência contra Músicas de bardo.` },
+        { titulo: "Nagah Dormente",
+          texto:
+`“Pessoal, esse é meu primo Finjo. Nunca o conheci, mas confio plenamente!”
+— Findo, hynne guerreiro
+Os cultistas estão encurralados, não há como escaparem. Um deles se adianta e sibila uma palavra desconhecida. Súbito, a companheira caçadora que esteve viajando com vocês nestes últimos meses se volta para atacá-los. Nagahs dormentes se comportam como aventureiras de grande nobreza, acompanhando heróis, combatendo o mal no mundo. Mas na verdade são sszzaazitas, enfeitiçadas pelo próprio Sszzaas para acreditar serem pessoas diferentes. A um comando secreto de outro membro da seita (que pode ser enviado à distância, por meios mágicos), a nagah “desperta” com todas as suas lembranças, incluindo tudo que ocorreu enquanto estava dormente. Ela então executará as ordens secretas de seus mestres. A própria existência das nagahs dormentes levanta ainda mais suspeita sobre membros desta raça, até mesmo aventureiras com longas carreiras de combate ao mal. Qualquer delas pode, sem saber, estar a serviço dos sszzaazitas. São capazes de mudar para seu lado maligno a qualquer momento, matar todos os seus amigos durante o sono, para deter sua missão ou roubar suas riquezas. Nenhum meio mágico conhecido pode revelar uma nagah dormente. Pior ainda, nem todas são nagahs; apenas as mentiras espalhadas pelos próprios sszzaazitas levam a crer que sim!` },
+        { titulo: "Rival Espelho",
+          texto:
+`“Klunc odeia esse cara feio!”
+— Klunc, o Bárbaro
+O vulto encapuzado reduz seu passo, aguardando pela chegada de vocês. Ele diz qualquer coisa sobre traírem um dos deuses. Quando remove o capuz, o impossível se revela: ele tem SEU rosto, SEUS trajes, SEU equipamento. As histórias sobre a Libertação de Valkaria dizem que uma de suas vinte masmorras foi preparada por Sszzaas. E que seu guardião final, aquele que deveria ser derrotado pelos Libertadores, era uma criatura deste tipo. O rival espelho é um ser mágico que, visto à distância, lembra apenas um humanoide oculto em mantos. Contudo, quando se aproxima, revela ser uma cópia idêntica do observador — ou, quando há mais de um, aquele que parece mais poderoso. O rival espelho tem as mesmas estatísticas do personagem copiado. Itens mágicos e magias benéficas conjuradas sobre o alvo também são copiadas. A cópia está em forma plena, com pontos de vida e magia máximos, sem quaisquer efeitos nocivos que porventura estejam afetando o alvo. Quando o rival é atacado, qualquer dano ou efeito afetará apenas o personagem original: ferimentos surgem no mesmo ponto onde o rival é atingido. O contrário não acontece: ataques contra o original causam seus efeitos normais, sem afetar o rival. Assim, a única forma de derrotar a criatura é abatendo o próprio companheiro. Dizem que Sszzaas criou o rival espelho para, assim como fez com os Libertadores, forçar heróis a trair um dos seus. Eles podem ser encontrados protegendo locais sagrados de Sszzaas, ou servindo a um sszzaazita celebrante. Nunca foram vistos em duplas ou grupos. Ainda.
+Rival Espelho ND ???
+???
+??? Um rival espelho possui as características e o ND do personagem que está copiando.
+✦ Transferir Dor Todo dano que o rival espelho sofre, bem como efeitos adicionais desse dano, é aplicado ao personagem que ele está copiando e não ao rival. Se o personagem copiado for reduzido a 0 PV ou menos, o rival desaparece após 1 rodada.
+Tesouro Nenhum.` },
+        { titulo: "Sszzaazita Celebrante & Nastarrath",
+          texto:
+`“Estou dizendo, é um impostor! Detenham-no antes que seja — ahh, deixa pra lá…”
+— Tyullin, elfo-do-céu hierofante de Thyatis
+Diante de grande público, o alto clérigo de Thyatis ergue uma taça em júbilo, oferecendo seu conteúdo a uma noviça. Ela desce do altar e, com um olhar de surpresa, leva uma mão à garganta e cai morta. Um tremor sugere que um grande mal acaba de despertar — ali perto se ergue uma gigantesca coluna de ossos encimada por um crânio descarnado de serpente. Do sacerdote, nem sinal. Enquanto um sem-número de cabalas sszzaazitas é liderado por cultistas, estes respondem aos celebrantes, supostamente os altos sacerdotes da “ordem”. Dizemos “supostamente” porque será raro qualquer sszzaazita admitir ser inferior a outro (exceto como bajulação falsa para traí-lo mais tarde). E dizemos “ordem” entre aspas porque, entre sszzaazitas, qualquer forma de hierarquia é pura fachada. Todos estão sempre tentando enganar todos. Como esperado. Como desejado por Sszzaas. Nesse meio de intensa traição e competição pelo favor divino, celebrantes são os manipuladores mais eficazes, os mentirosos mais convincentes e os assassinos mais frios. Mesmo quando humanos, suas palavras vertem tanto veneno que podem voltar irmão contra irmão, pai contra filho, aventureiro contra aliado. Mas seus maiores poderes se revelam no comando de grandes cerimônias, quando canalizam a fé de muitas testemunhas — às vezes sem que saibam! Um celebrante é capaz de realizar um grande ritual para Sszzaas sem sequer citar qualquer de seus nomes, sem revelar que todos ali na verdade cultuam o Deus Serpente. Diante de centenas de olhos, será capaz de invocar os poderes mais diabólicos sem despertar a mínima suspeita. Seu objetivo? Muitas vezes, a invocação de algum ser destruidor como o lendário Nastarrath — um monstro morto-vivo, entre os maiores existentes. Criado a partir do esqueleto de uma serpente gigantesca, entre aquelas que se suspeita existir nas Sanguinárias e no Reino de Sszzaas. Para muitos, o Nastarrath é considerado apenas uma lenda, um rumor entre tantos sussurrados pelos sszzaazitas. Ainda que aventureiros às vezes relatem encontros com a serpente mítica, nenhuma aparição jamais foi confirmada. Ainda assim, suspeita-se que sszzaazitas celebrantes seriam capazes de conjurá-lo, após longas e elaboradas cerimônias, após oferecer incalculáveis tesouros e sacrifícios sangrentos ao Corruptor. Talvez com o propósito de destruir uma cidade, matar um ser poderoso ou lidar com um grupo de aventureiros.` },
+      ],
+    },
+
+    // ── 🧌 TROLLS NOBRES ───────────────────────────────
+    {
+      chave: "trolls", nome: "Trolls Nobres", icone: "🧌", cor: "#5a6a4a",
+      intro: "Se outrora estes monstros degenerados eram ameaça apenas para os anões de Doherimm, sua recente atuação na Guerra Artoniana — em aliança temporária com a Supremacia Purista — demonstrou o contrário. De pensamento similar àquele cultivado pelos puristas, finntroll acreditam ser as criaturas mais perfeitas na existência, cabendo a todos os outros seres o papel de servi-los a seu bel-prazer. Os trolls nobres governam um império subterrâneo cuja real extensão é desconhecida; apesar de sua imensa arrogância, são planejadores ardilosos que sabem proteger seus segredos. Ainda assim, há relatos sobre vastas cidades que hospedam largas populações destes seres, situadas em profundidades ainda maiores que os territórios dos anões, raras vezes alcançadas por outros seres exceto quando levados como prisioneiros. Embora os caçadores e feitores sejam aqueles mais frequentemente encontrados por aventureiros, a sociedade finntroll é sofisticada e segmentada em numerosos outros papéis — sobretudo aqueles dedicados à conjuração de magias, campo de domínio entre estes seres astutos.",
+      comuns: { titulo: "Habilidades de Finntroll", aplicaSe: "(finntroll)", nota: "Só as fichas com o subtipo finntroll. O Defeituoso fica de fora de propósito: é um prisioneiro mutado nos experimentos deles, não um finntroll, e a ficha dele sai como Monstro Médio, sem subtipo." },
+      fichas: [
+        {
+          chave: "arcanistaFinntroll", nome: "Arcanista Finntroll", nd: "14", tipo: "Monstro (finntroll) Médio",
+          papel: '',
+          resumo: "Pouco da pele pálida pode ser visto sob o manto negro e elegante, adornado com bordas prateadas e esmeraldas cintilantes.",
+          texto:
+`Arcanista Finntroll ND 14
+“Sou fascinado por magia, é verdade. Mas para tudo existe limite, canalha!”
+— Gabrix A’ Leirb, o Capuz
+Pouco da pele pálida pode ser visto sob o manto negro e elegante, adornado com bordas prateadas e esmeraldas cintilantes. Sem que ele desvie os olhos profundos, a boca de lábios finos vocifera palavras arcanas enquanto a mão de dedos longos e unhas escuras gesticula uma conjuração. Exceto pelos caçadores e feitores, a maioria dos trolls nobres não usa armas, nem exerce qualquer forma de combate físico. Por se considerarem mentalmente superiores, delegam essas “tarefas braçais rústicas” a soldados trolls e outros servos. Isso não significa que sejam inofensivos em combate, muito pelo contrário. Por seu elevado intelecto e tradições arcanas, finntroll são praticantes de magia exímios, até capazes de rivalizar com as artes élficas em seu auge. Arcanistas finntroll estão entre os conjuradores arcanos mais perigosos de Arton. Em geral dispensam magias de dano direto por achá-las “primitivas e deselegantes”, preferindo efeitos incapacitantes, paralisia, controle mental e morte instantânea. É bastante raro que um arcanista abandone o conforto de sua torre luxuosa e seus escravos mentalmente dominados. Quando forçado a viajar pela necessidade, está sempre acompanhado por um séquito de servos e soldados. E caso seja de alguma forma apanhado sem trolls para protegê-lo, vai simplesmente conjurar alguns.
+Monstro (finntroll) Médio
+Iniciativa +17, Percepção +13, visão no escuro
+Defesa 43, Fort +24, Ref +16, Von +30, imunidade a ofuscado
+Pontos de Vida 423
+Deslocamento 9m (6q)
+Pontos de Mana 90
+Corpo a Corpo Açoite finntroll +35 (1d8+2).
+Conjurar Trolloides (Padrão, 5 PM) O arcanista finntroll invoca 2d4+1 trolloides em espaços desocupados em alcance curto. Os trolloides agem a partir da próxima rodada do arcanista e têm deslocamento 9m, For 5, Des 2, Defesa 25, 1 PV, são imunes a dano, exceto de ácido ou fogo, e falham automaticamente em qualquer teste de resistência ou oposto. O arcanista pode gastar uma ação de movimento para dar um dos seguintes comandos a qualquer número de trolloides. Eles desaparecem quando morrem ou no fim da cena e não agem sem receber uma ordem. Recarga (todos os trolloides foram destruídos).
+• Andar. Cada trolloide se move até 9m (6q).
+• Canalizar. A próxima magia que o arcanista lança tem como ponto de origem um trolloide a sua escolha, que é destruído após a magia ser lançada.
+• Esmagar. Cada trolloide causa 6d12 pontos de dano de impacto a uma criatura adjacente (Ref CD 40 reduz à metade).
+• Proteger. Cada trolloide adjacente ao arcanista fornece +2 nos testes de resistência e de manobras de combate dele neste turno.
+Contramágica Nobre (Reação) Uma vez por rodada, quando vê uma magia ser conjurada, o arcanista faz uma contramágica. Se usar Dissipar Magia para isso, ele rola dois dados e usa o melhor resultado.
+Servidão Arcana Quando o arcanista lança uma magia, todas as criaturas em alcance médio sofrem dano de essência igual ao dobro dos pontos de mana gastos na magia (Fort CD 40 reduz à metade). Para cada criatura que falhar neste teste, o arcanista recupera 3 PM (limitado ao custo da magia).
+Magias Como um mago de 17º nível (CD 40, limite de PM 25).
+• Campo de Força (Reação, 7 PM) Quando sofre dano, o arcanista recebe RD 50 contra esse dano.
+• Controlar a Gravidade (Padrão, 10 PM, sustentada) O arcanista controla os efeitos da gravidade em um cubo de 12m em alcance médio (veja Tormenta20, p. 186).
+• Dissipar Magia (Padrão, 3 PM) O arcanista escolhe uma criatura, objeto ou esfera de 3m em alcance médio e faz um teste de Misticismo. Todas as magias nesse alvo com CD igual ou menor que o resultado do teste são dissipadas.
+• Marionete (Padrão, 10 PM, sustentada) O arcanista controla as ações físicas de uma criatura em alcance médio. Ao sofrer a magia, e no início de cada um de seus turnos, a vítima faz um teste de Fortitude. Se passar, a magia é anulada.
+• Raio do Enfraquecimento (Padrão, 8 PM) Criaturas escolhidas em alcance curto ficam exaustas (Fort muda para fatigado).
+• Pele de Pedra (Padrão, 10 PM) Uma criatura adjacente é transformada em uma estátua de pedra sem consciência por 1d4 rodadas (Fort evita).
+• Toque da Morte (Padrão, 17 PM) Uma criatura em alcance curto sofre 10d8+10 pontos de dano de trevas. Se estiver com menos da metade de seus PV, em vez disso ela deve fazer um teste de Fortitude; se passar sofre o dano normal, caso contrário seus PV são reduzidos a –10.
+For –2, Des 4, Con 3, Int 8, Sab 2, Car 3
+Perícias Conhecimento +19, Intimidação +14, Misticismo +21.
+Equipamento Açoite finntroll, bolsa de pó poderosa canalizadora, essência de mana x4, manto pesado, robe do arquimago. Tesouro Dobro.`
+        },
+        {
+          chave: "defeituoso", nome: "Defeituoso", nd: "6", tipo: "Monstro Médio",
+          papel: '',
+          resumo: "Aquele ser pode ter sido humano algum dia — algumas partes humanas, ao menos, ainda estão preservadas.",
+          texto:
+`Defeituoso ND 6
+“Tudo que podemos fazer, amigos queridos, é enviar esses infelizes para os deuses.”
+— Lizbeth de Lena, humana clériga
+Aquele ser pode ter sido humano algum dia — algumas partes humanas, ao menos, ainda estão preservadas. Outras, no entanto, foram horrivelmente distorcidas por algum poder mágico. Como pode ainda estar vivo, impossível dizer. Nem todos aqueles capturados pelos finntroll são mantidos como escravos — estes, na verdade, são os mais “afortunados”. Muitos outros terminam como cobaias em experimentos doentios, com o objetivo de criar servos ainda mais poderosos. Não raras vezes, tais experiências resultam em “defeituosos”, como acabam sendo chamados: monstruosidades disformes, incontroláveis e, portanto, inúteis para os trolls nobres. Considerando-se “dignos” demais para abatê-los e poupá-los de ainda mais sofrimento, os finntroll apenas os libertam muito longe de suas cidades, onde não lhes causem problemas. Infelizmente para os povos de Arton, alguns destes monstros — solitários ou em pequenos grupos — terminam por alcançar o Reinado. Ainda que cada defeituoso seja diferente (e com seus próprios poderes estranhos), quase todos são maníacos violentos que buscam um fim para suas vidas agonizantes.
+Monstro Médio
+Iniciativa +8, Percepção +3, visão no escuro
+Defesa 26, Fort +18, Ref +12, Von +6, cura acelerada 15/especial
+Pontos de Vida 235
+Deslocamento 6m (4q)
+Corpo a Corpo Mordida +19 (3d6+16).
+Enxertos Cada defeituoso possui três enxertos, modificações resultantes de experimentos. Para cada enxerto, role 1d6 na tabela abaixo (enxertos iguais são cumulativos).
+1) Cabeça Extra. O defeituoso recebe um ataque de mordida extra e +5 em Percepção e Vontade.
+2) Carapaça. O defeituoso recebe RD 5 e +2 na Defesa.
+3) Garra. O defeituoso recebe um ataque de garra (ataque +19, dano 2d10+12). Se receber um segundo ataque de garra, recebe também Dilacerar (se acerta os dois ataques de garra em uma mesma criatura no mesmo turno, causa mais 1d10+6 pontos de dano).
+4) Músculos Enxertados. O defeituoso recebe +2 em testes de ataque e rolagens de dano.
+5) Pólipos (Movimento). Uma vez por cena, o defeituoso expele uma nuvem de pólipos venenosos. Criaturas em um raio de 9m ao redor dele perdem 4d12 PV e ficam enjoadas por veneno por 1 rodada (Fort CD 22 reduz a perda de vida à metade e evita a condição). Cada enxerto adicional permite usar esta habilidade mais uma vez na mesma cena.
+6) Sumidouro Místico. O defeituoso recebe resistência a magia +2 e, sempre que ele acerta um ataque corpo a corpo, a vítima perde 2 PM.
+Recordações de Dor (Reação) Quando sofre dano pela primeira vez em cada rodada, o defeituoso faz um ataque de mordida contra um oponente adjacente.
+Regeneração Experimental Cada defeituoso é suscetível a um tipo específico de energia, contra a qual sua cura acelerada não funciona. Role 1d6 para determinar essa energia: 1) ácido; 2) eletricidade; 3) fogo; 4) frio; 5) luz; 6) trevas. A cada enxerto de cabeça extra, role um tipo de energia adicional.
+For 5, Des 3, Con 2, Int –3, Sab 0, Car –2
+Perícias Sobrevivência +6.
+Tesouro Nenhum.`
+        },
+        {
+          chave: "mycotannLabutador", nome: "Mycotann Labutador", nd: "2", tipo: "Monstro (mycotann) Médio",
+          papel: '',
+          subgrupo: "Mycotann",
+          resumo: "Mycotann — O que parecia ser um grande cogumelo subitamente destaca braços e pernas, erguendo-se em postura humanoide.",
+          texto:
+`Mycotann Labutador ND 2
+Monstro (mycotann) Médio
+Iniciativa +2, Percepção +7, visão no escuro
+Defesa 17, Fort +13, Ref +7, Von +2, natureza vegetal
+Pontos de Vida 15
+Deslocamento 6m (4q)
+Corpo a Corpo Duas pancadas +12 (1d6+6).
+Esporos (Padrão) O mycotann labutador dispara uma nuvem de esporos em uma criatura em alcance curto. O alvo fica enredado ou, se já estiver enredado por este efeito, fica paralisado por 1 rodada (Fort CD 16 evita).
+Telepatia O mycotann pode se comunicar telepaticamente com qualquer criatura viva em alcance médio.
+For 1, Des 0, Con 3, Int 0, Sab –1, Car 1
+Tesouro 1d4 doses de esporos de cogumelo (CD 17 para extrair).`
+        },
+        {
+          chave: "mycotannDruida", nome: "Mycotann Druida", nd: "5", tipo: "Monstro (mycotann) Médio",
+          papel: '',
+          subgrupo: "Mycotann",
+          resumo: "Mycotann — O que parecia ser um grande cogumelo subitamente destaca braços e pernas, erguendo-se em postura humanoide.",
+          texto:
+`Mycotann Druida ND 5
+Monstro (mycotann) Médio
+Iniciativa +10, Percepção +15, visão no escuro
+Defesa 22, Fort +11, Ref +5, Von +17, natureza vegetal
+Pontos de Vida 143
+Deslocamento 6m (4q)
+Pontos de Mana 28
+Corpo a Corpo Duas pancadas +15 (1d6+8).
+Esporos (Padrão) O mycotann druida dispara uma nuvem de esporos que atinge uma criatura em alcance curto. O alvo fica enredado ou, se já estiver enredado por este efeito, em vez disso fica paralisado (Fort CD 22 evita). Veneno.
+Telepatia O mycotann pode se comunicar telepaticamente com qualquer criatura viva em alcance médio.
+Magias Como um druida de Allihanna de 5º nível (CD 22), sem precisar falar.
+• Controlar Plantas (Padrão, 2 PM) Um quadrado de 9m de vegetação em alcance curto se torna terreno difícil. Criaturas na área quando a magia é lançada ou no início de seus próprios turnos ficam enredadas e imóveis (Fort evita). Uma vítima pode se libertar com uma ação padrão e um teste de Acrobacia ou Atletismo.
+• Curar Ferimentos (Padrão, 5 PM) Uma criatura adjacente cura 6d8+6 PV.
+• Raio Solar (Padrão, 5 PM) Criaturas em uma linha de 30m sofrem 5d8 pontos de dano de luz (ou 5d12, se forem mortos-vivos) e ficam ofuscadas por 1 rodada (Ref reduz à metade e evita a condição).
+For 1, Des 0, Con 3, Int 0, Sab 4, Car 1
+Perícias Religião +8, Sobrevivência +10.
+Equipamento Símbolo sagrado de Allihanna. Tesouro Metade mais 1d4 doses de esporos de cogumelo (CD 20 para extrair).`
+        },
+        {
+          chave: "hordaMycotann", nome: "Horda Mycotann", nd: "12", tipo: "Monstro (mycotann) Enorme",
+          papel: '',
+          subgrupo: "Mycotann",
+          resumo: "Mycotann — O que parecia ser um grande cogumelo subitamente destaca braços e pernas, erguendo-se em postura humanoide.",
+          texto:
+`Horda Mycotann ND 12
+Monstro (mycotann) Enorme
+Iniciativa +14, Percepção +17, visão no escuro
+Defesa 33, Fort +23, Ref +14, Von +13, natureza vegetal
+Pontos de Vida 612
+Deslocamento 6m (4q)
+Enxame 8d12 pontos de dano de impacto.
+Esporos (Padrão) A horda dispara esporos em uma nuvem de 3m de raio em alcance médio. Criaturas na área ficam paralisadas por 1d4 rodadas (apenas uma vez por cena) e perdem 6d6 PV (Fort CD 32 reduz à metade e evita a condição).
+Telepatia A horda pode se comunicar telepaticamente com qualquer criatura viva em alcance médio.
+Véu de Esporos Uma criatura que comece seu turno dentro do espaço ocupado pela horda fica enjoada e enredada (Fort CD 32 evita). Veneno.
+For 2, Des –1, Con 3, Int 1, Sab 0, Car –1
+Perícias Atletismo +15.
+Tesouro 2d4 doses de esporos de cogumelo (CD 27 para extrair).`
+        },
+        {
+          chave: "finntrollCacador", nome: "Finntroll Caçador", nd: "2", tipo: "Monstro (finntroll) Médio",
+          papel: '',
+          subgrupo: "Opressor Finntroll",
+          resumo: "Opressor Finntroll — Sendo sabido que finntroll são conjuradores orgulhosos e desprezam a prática do combate físico, causa estranheza ver membros da raça em…",
+          texto:
+`Finntroll Caçador ND 2
+Monstro (finntroll) Médio
+Iniciativa +7, Percepção +7, visão no escuro
+Defesa 19, Fort +6, Ref +12, Von +4
+Pontos de Vida 65
+Deslocamento 9m (6q)
+Corpo a Corpo Duas cimitarras +12 (1d6+5, 18).
+À Distância Besta pesada +12 (1d12+4, 19) ou rede +12 (agarrar).
+Marca da Presa (Movimento) O finntroll caçador analisa uma criatura em alcance curto. Até o fim da cena, recebe +1d8 em rolagens de dano contra essa criatura (esse bônus é dobrado se a criatura for um anão, elfo ou humano).
+For 2, Des 3, Con 3, Int 2, Sab 2, Car –1
+Perícias Furtividade +8, Sobrevivência +7.
+Equipamento Besta pesada, cimitarra x2, rede, virotes x20.
+Tesouro Padrão.`
+        },
+        {
+          chave: "finntrollFeitor", nome: "Finntroll Feitor", nd: "6", tipo: "Monstro (finntroll) Médio",
+          papel: '',
+          subgrupo: "Opressor Finntroll",
+          resumo: "Opressor Finntroll — Sendo sabido que finntroll são conjuradores orgulhosos e desprezam a prática do combate físico, causa estranheza ver membros da raça em…",
+          texto:
+`Finntroll Feitor ND 6
+Monstro (finntroll) Médio
+Iniciativa +9, Percepção +5, visão no escuro
+Defesa 20, Fort +8, Ref +12, Von +16
+Pontos de Vida 155
+Deslocamento 9m (6q)
+Pontos de Mana 35
+Corpo a Corpo Chicote +18 (1d3+10, 19).
+Açoitar (Padrão) No próximo turno de cada aliado do finntroll em alcance médio, esse aliado recebe uma ação de movimento extra e +2 em testes de ataque e rolagens de dano.
+Magias Como um mago de 6º nível (CD 26, 28 para encantamento*, limite de PM 6).
+• Adaga Mental* (Padrão, 5 PM) Uma criatura em alcance curto sofre 4d6 pontos de dano psíquico e fica atordoada por 1 rodada (Von reduz o dano à metade e evita a condição). Uma criatura só pode ser atordoada por esta magia uma vez por cena.
+• Armadura Arcana (Padrão, 3 PM) O finntroll recebe +5 na Defesa por um dia.
+• Armadura Arcana (Reação, 2 PM) Quando sofre um ataque, o finntroll recebe +5 na Defesa contra este ataque.
+• Desespero Esmagador* (Padrão, 6 PM) O finntroll projeta uma onda de desespero em um cone de 6m. Criaturas na área ficam fracas e frustradas até o fim da cena (Von reduz para 1 rodada).
+• Enfeitiçar* (Padrão, 6 PM) Cada humanoide em alcance curto fica enfeitiçado pelo finntroll, ou até o finntroll ou um de seus aliados tomar uma ação hostil contra a criatura.
+• Marca da Obediência* (Padrão, 3 PM) O finntroll ordena que uma criatura adjacente não ataque a ele ou a seus aliados até o fim da cena (Von evita). A criatura pode repetir o teste de Vontade em cada um de seus turnos subsequentes.
+• Relâmpago (Padrão, 5 PM) O finntroll causa 8d6 pontos de dano de eletricidade em todas as criaturas em uma linha de 30m (Ref reduz à metade).
+For 0, Des 3, Con 3, Int 4, Sab 0, Car 2
+Perícias Intimidação +9, Misticismo +11.
+Equipamento Chicote cruel. Tesouro Dobro.`
+        },
+        {
+          chave: "finntrollSenhorDeEstabulo", nome: "Finntroll Senhor de Estábulo", nd: "12", tipo: "Monstro (finntroll) Médio",
+          papel: '',
+          subgrupo: "Opressor Finntroll",
+          resumo: "Opressor Finntroll — Sendo sabido que finntroll são conjuradores orgulhosos e desprezam a prática do combate físico, causa estranheza ver membros da raça em…",
+          texto:
+`Finntroll Senhor de Estábulo ND 12
+Monstro (finntroll) Médio
+Iniciativa +12, Percepção +10, visão no escuro
+Defesa 39, Fort +20, Ref +14, Von +24
+Pontos de Vida 380
+Deslocamento 9m (6q)
+Pontos de Mana 68
+Corpo a Corpo Açoite finntroll +33 (1d8+12, 19).
+✦ Abrir os Viveiros (Completa) O finntroll senhor de estábulo convoca 1d3+1 trolls (veja Tormenta20, p. 308), que surgem em espaços desocupados em alcance curto. Os trolls estão sob controle do finntroll, agem no turno dele a partir da rodada seguinte e não rendem recompensas se forem derrotados.
+Aura de Superioridade (Reação) Sempre que uma criatura inteligente tentar uma ação hostil contra o finntroll, deve fazer um teste de Vontade (CD 35). Caso falhe, a criatura perde a ação. O finntroll só pode usar esta habilidade uma vez por cena contra cada criatura.
+Palavras de Humilhação (Movimento) O finntroll faz um teste de Intimidação oposto ao teste de Vontade de uma criatura que ele tenha atingido com seu açoite neste turno. Se vencer, causa 8d6 pontos de dano psíquico não letal à criatura.
+Magias Como um mago de 9º nível (CD 35).
+• Concentração de Combate (Padrão, 3 PM) Até o fim da cena, sempre que faz um ataque, o finntroll rola dois dados e usa o melhor resultado.
+• Dissipar Magia (Padrão, 3 PM) O finntroll escolhe uma criatura, objeto ou esfera de 3m em alcance médio e faz um teste de Misticismo. Todas as magias nesse alvo com CD igual ou menor que o resultado do teste são dissipadas.
+• Enfeitiçar* (Padrão, 6 PM) Cada humanoide em alcance curto fica enfeitiçado pelo finntroll até o fim da cena, ou até o finntroll ou um de seus aliados tomar uma ação hostil contra a criatura.
+• Pele de Pedra (Padrão, 6 PM) O finntroll recebe redução de dano 5 até o fim da cena.
+• Toque Chocante (Padrão, 9 PM) O finntroll faz um ataque corpo a corpo. Se acertar, além do dano normal, causa 8d8+8 pontos de dano de eletricidade.
+• Velocidade (Padrão, 3 PM, sustentada) O finntroll pode executar uma ação padrão adicional por turno, que não pode ser usada para lançar magias.
+For 0, Des 2, Con 3, Int 5, Sab 0, Car 4
+Perícias Intimidação +18, Intuição +12, Misticismo +17.
+Equipamento Açoite finntroll macabro, manto pesado. Tesouro Dobro.`
+        },
+        {
+          chave: "perdigueiroTroll", nome: "Perdigueiro Troll", nd: "1", tipo: "Animal Médio",
+          papel: '',
+          resumo: "Visto à distância, poderia ser confundido com um grande cão ou lobo.",
+          texto:
+`Perdigueiro Troll ND 1
+“Cães de verdade odeiam os finntroll. Então eles fizeram monstros em seu lugar.”
+— Merellien de Allihanna, elfa druida
+Visto à distância, poderia ser confundido com um grande cão ou lobo. Mas, em vez de carne e pelagem, o corpo parece feito de uma massa fibrosa revestida de musgo. Uma juba densa de tentáculos emoldura a cabeçorra com mandíbula poderosa e presas brancas. Criados com o propósito de ajudar os finntroll caçadores em suas expedições, estes animais-planta atuam como seus cães de caça, farejando, perseguindo e emboscando presas. Em vez de matar, buscam imobilizar a vítima com a mordida e os tentáculos, até que seu mestre venha coletá-la. Contudo, devido a uma falha no experimento, alguns perdigueiros fugiram de seus mestres. De alguma forma conseguiram se reproduzir e agora vivem em estado selvagem, tornando-se uma praga perigosa — pois, embora sejam plantas, ainda se alimentam de carne. Diz-se que perdigueiros trolls podem ser amansados e até domados por dahllan e devotos de Allihanna.
+Animal Médio
+Iniciativa +5, Percepção +8, faro, visão na penumbra
+Defesa 17, Fort +5, Ref +9, Von +1, natureza vegetal
+Pontos de Vida 10
+Deslocamento 15m (10q)
+Corpo a Corpo Mordida +10 (1d6+5) e tentáculos +10 (1d4+5).
+Agarrar Aprimorado (Livre) Tentáculos (teste +10).
+Derrubar (Livre) Mordida (teste +10).
+For 5, Des 3, Con 2, Int –4, Sab 1, Car –2
+Perícias Sobrevivência +8, Furtividade +6.
+Tesouro Nenhum.
+Parceiro O perdigueiro troll é um parceiro especial (perseguidor) que fornece os benefícios a seguir. Iniciante: você recebe +2 em Percepção e Sobrevivência. Veterano: você recebe +2 em testes para agarrar e derrubar, e pode manter uma criatura Grande ou menor agarrada sem ocupar uma mão. Mestre: muda os bônus para +5 e, uma vez por rodada, quando acerta um ataque corpo a corpo, você pode usar a manobra agarrar como uma reação.`
+        },
+        {
+          chave: "protetorRefem", nome: "Protetor-Refém", nd: "5", tipo: "Humanoide (anão) Médio",
+          papel: '',
+          resumo: "Entre vocês e o sacerdote sinistro em mantos negros, um grupo de anões com armaduras escuras avança de machados em punho, estranhamente silenciosos.",
+          texto:
+`Protetor-Refém ND 5
+“Não ataquem, por Khalmyr, NÃO ATAQUEM! Aqueles ali… são minha família!”
+— Tharmaramm Eldrimm, anão clérigo de Khalmyr
+Entre vocês e o sacerdote sinistro em mantos negros, um grupo de anões com armaduras escuras avança de machados em punho, estranhamente silenciosos. Inacreditável que estejam protegendo o maior inimigo de seu povo! Por sua força, brutalidade e resiliência imensas — além do condicionamento milenar pelos finntroll —, trolls são a escolha favorita dos finntroll como guardas e soldados. Contudo, por notar que heróis parecem relutantes em atacar vítimas de escravidão, os pragmáticos finntroll decidiram explorar essa “interessante fraqueza”. Os escolhidos para isso foram os anões, tanto por seu vigor quanto pela proximidade de Doherimm. Após capturar vários desses guerreiros, os sádicos arcanistas finntroll usam profunda dominação mental para transformá-los em guerreiros escravos, obedientes e sacrificáveis. Assim, quando espera se defrontar com aventureiros, um finntroll talvez leve consigo uma escolta destes protetores-reféns. A ironia de transformar inimigos mortais em guarda-costas parece agradar a seu senso de humor doentio. Sabe-se, no entanto, que a vontade férrea dos anões não pode ser destruída tão facilmente. Deve haver maneiras de salvá-los, libertá-los do controle mental. Como alcançar esse feito é outra questão.
+Humanoide (anão) Médio
+Iniciativa +2, Percepção +5 (+7 em subterrâneo), visão no escuro
+Defesa 23, Fort +16, Ref +11, Von +6, redução de dano 5, resistência a efeitos mentais +2
+Pontos de Vida 40
+Deslocamento 6m (4q)
+Corpo a Corpo Martelo de guerra x2 +20 (2d8+18, x3).
+À Distância Machadinha +17 (1d6+16, x3).
+Libertação Mental Embora difícil, é possível libertar a mente de um protetor-refém. Primeiro, é necessário deixá-lo esmorecido, exausto ou enfeitiçado. Após isso, um personagem deve fazer um teste estendido de Diplomacia (CD 20, 3 sucessos exigidos), em que cada teste é uma ação completa. Se passar, o controle mental sobre o protetor-refém termina, mas ele fica inconsciente por 1 hora.
+For 2, Des 0, Con 4, Int –1, Sab 1, Car –1
+Perícias Sobrevivência +5 (+7 em subterrâneo).
+Equipamento Escudo pesado, loriga segmentada, machadinha x3, martelo de guerra. Tesouro Nenhum.`
+        },
+        {
+          chave: "cavaleiroFinntroll", nome: "Cavaleiro Finntroll", nd: "7", tipo: "Monstro (finntroll) Médio",
+          papel: '',
+          resumo: "É estranho perceber que, no dorso do gigante abrutalhado, há uma figura sinistra com armadura escura, acomodada em uma sela majestosa que…",
+          texto:
+`Cavaleiro Finntroll ND 7
+“Uma criatura vil dessas, a menos que se redima, não merece sequer a beleza da minha rima.”
+— Voraley Vorantis, qareen bardo
+É estranho perceber que, no dorso do gigante abrutalhado, há uma figura sinistra com armadura escura, acomodada em uma sela majestosa que mais parece um trono. Como a criatura superior que acredita ser, todo finntroll acha que lutar suas próprias batalhas é uma indignidade, sempre buscando formas de obrigar outros a fazê-lo. O método mais conhecido, claro, é utilizar trolls como soldados. Mas outra maneira é usá-los como montarias. Em sua sociedade, o cavaleiro finntroll é aquilo que existe de mais parecido com um “guerreiro de armadura” como os cavaleiros do Reinado. Sobre os ombros de grandes trolls, trajando couraças elegantes e afivelados em assentos luxuosos, os cavaleiros muitas vezes acompanham expedições finntroll quando estas esperam enfrentar forte oposição.
+O cavaleiro não luta realmente (isso seria querer demais!) — em vez disso direciona os ataques do troll ou provê suporte com magias. Se forçado a essa humilhação, um cavaleiro lutará com seu açoite (que tem alcance suficiente para golpear adversários adjacentes à montaria). Trolls criados como montarias ainda são perigosos. Mas, após derrotar seu cavaleiro original, é possível domá-los.
+Monstro (finntroll) Médio
+Iniciativa +9, Percepção +7, visão no escuro
+Defesa 30, Fort +14, Ref +7, Von +20
+Pontos de Vida 252
+Deslocamento 9m (6q)
+Pontos de Mana 39
+Corpo a Corpo Açoite finntroll +22 (4d4+12, 19).
+Corcel Troll O cavaleiro finntroll cavalga um troll treinado, um parceiro montaria Grande. Enquanto estiver montado, seu deslocamento se torna 12m, ele recebe uma ação de movimento extra (apenas para se deslocar), os seguintes ataques (em adição ao seu açoite) e Dilacerar.
+• Corpo a Corpo. Mordida +22 (1d8+12) e duas garras +22 (2d6+12).
+• Dilacerar. Se o cavaleiro acerta os dois ataques de garra em uma mesma criatura no mesmo turno, causa mais 4d6+12 pontos de dano.
+Investida Atroz (Completa) O cavaleiro faz uma investida e ataca com seu açoite e todos os ataques de sua mon- taria. Todos os ataques recebem o bônus de +2 da investida, mas devem ser feitos contra o mesmo personagem.
+Magias Como um mago de 7º nível (CD 26). Ele pode lançar magias enquanto montado sem precisar de testes de concentração.
+• Amedrontar (Padrão, 3 PM) Um animal ou humanoide em alcance curto fica apavorado por 1d4+1 rodadas e depois abalado (Von reduz para abalado por 1d4 rodadas).
+• Concentração de Combate (Padrão, 3 PM) Até o fim da cena, sempre que faz um ataque, o cavaleiro rola dois dados e usa o melhor resultado.
+• Desespero Esmagador (Padrão, 6 PM) Criaturas num cone de 6m ficam fracas e frustradas (Von reduz para 1 rodada).
+• Primor Atlético (Movimento, 2 PM) O cavaleiro salta e pousa em alcance corpo a corpo de uma criatura em alcance curto. Se fizer um ataque corpo a corpo contra essa criatura no mesmo turno, recebe os benefícios e penalidades de uma investida e causa um dado extra de dano do mesmo tipo com este ataque.
+For 1, Des 2, Con 3, Int 4, Sab 0, Car 2
+Perícias Cavalgar +12, Intimidação +11, Misticismo +13.
+Equipamento Açoite finntroll cruel, couraça, essência de mana x2, sela aprimorada. Tesouro Padrão.`
+        },
+        {
+          chave: "sacerdoteFinntroll", nome: "Sacerdote Finntroll", nd: "6", tipo: "Monstro (finntroll) Médio",
+          papel: '',
+          subgrupo: "Sacerdote Finntroll",
+          resumo: "Sacerdote Finntroll — A figura de pele lilás traz o cabelo escuro adornado em um penteado alto, cheio de joias.",
+          texto:
+`Sacerdote Finntroll ND 6
+Monstro (finntroll) Médio
+Iniciativa +9, Percepção +9, visão no escuro
+Defesa 25, Fort +13, Ref +8, Von +19
+Pontos de Vida 162
+Deslocamento 6m (6q)
+Pontos de Mana 49
+Corpo a Corpo Açoite finntroll +18 (1d8+6).
+Urro Divino (Livre, 1 PM) Quando faz um ataque ou lança uma magia, o sacerdote finntroll soma sua Constituição à rolagem de dano desse ataque ou magia.
+Magias Como um clérigo de Megalokk de 9º nível (CD 24, limite de PM 9).
+• Curar Ferimentos (Padrão, 9 PM) Uma criatura adjacente cura 10d8+10 PV ou criaturas escolhidas em alcance curto curam 5d8+5.
+• Comando (Padrão, 4 PM) No início do seu próximo turno, duas criaturas em alcance curto largam os itens que estão segurando e não podem pegá-los novamente até o início de seu turno seguinte (Von evita).
+• Enxame de Pestes (Completa, 8 PM, sustentada) Dois enxames de ratos surgem em alcance médio e ocupam um quadrado de 1,5m cada. No fim de cada um dos turnos do sacerdote, cada enxame causa 2d12 pontos de dano de corte a qualquer criatura em seu espaço (Fort reduz à metade). O sacerdote pode gastar uma ação de movimento para mover cada enxame 12m.
+• Miasma Mefítico (Padrão, 5 PM) Uma nuvem de 6m de raio se forma em alcance médio. Criaturas na área sofrem 6d6 pontos de dano de ácido e ficam enjoadas por 1 rodada (Fort reduz o dano à metade e evita a condição).
+• Perdição (Padrão, 5 PM) Criaturas escolhidas em alcance curto sofrem –3 em testes de ataque e rolagens de dano até o fim da cena.
+• Profanar (Padrão, 1 PM) Uma esfera de 9m em alcance longo se enche com energia negativa por 1 dia. Dentro dela, todo dano de trevas é maximizado.
+For –1, Des 2, Con 5, Int 2, Sab 4, Car 1
+Perícias Atletismo +4, Intimidação +11, Religião +11.
+Equipamento Açoite finntroll, manto pesado, meia armadura, símbolo sagrado de Megalokk. Tesouro Padrão.`
+        },
+        {
+          chave: "altoSacerdoteFinntroll", nome: "Alto Sacerdote Finntroll", nd: "12", tipo: "Monstro (finntroll) Médio",
+          papel: '',
+          subgrupo: "Sacerdote Finntroll",
+          resumo: "Sacerdote Finntroll — A figura de pele lilás traz o cabelo escuro adornado em um penteado alto, cheio de joias.",
+          texto:
+`Alto Sacerdote Finntroll ND 12
+Monstro (finntroll) Médio
+Iniciativa +18, Percepção +17, visão no escuro
+Defesa 39, Fort +19, Ref +11, Von +27, imunidade a magia de adivinhação e encantamento, redução de dano 5
+Pontos de Vida 413
+Deslocamento 6m (6q)
+Pontos de Mana 77
+Corpo a Corpo Adaga +27 (1d4+6).
+Arrogância Divina O alto sacerdote finntroll se considera a representação suprema da maior obra dos deuses. Criaturas que falhem em testes de resistência contra suas magias ficam frustradas.
+Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, o alto sacerdote muda a execução dela para livre.
+Trevas Insidiosas O alto sacerdote soma sua Sabedoria em suas rolagens de dano de magias de trevas (já contabilizado). MagiasComo um clérigo de Tenebra de 15º nível (CD 35, limite de PM 15, –1 PM no custo de Toque Vampírico).
+• Curar Ferimentos (Padrão, 10 PM) Uma criatura adjacente cura 11d8+11 PV.
+• Ligação Sombria (Padrão, 10 PM) O alto sacerdote escolhe um alvo em alcance longo e cria uma conexão entre seu corpo e o desse alvo, deixando uma marca idêntica na pele de ambos. Enquanto a magia durar, sempre que ele sofrer qualquer dano ou condição, o alvo desta magia deve fazer um teste de Fortitude; se falhar, sofre o mesmo dano que o sacerdote ou recebe a mesma condição. A magia termina se o alvo chegar a 0 PV.
+• Pele de Pedra (Padrão, 10 PM) Uma criatura adjacente é transformada em uma estátua de pedra sem consciência por 1d4 rodadas (Fort evita).
+• Perdição (Padrão, 7 PM) Criaturas escolhidas em alcance curto sofrem –4 em testes de ataque e rolagens de dano.
+• Profanar (Padrão, 1 PM) Uma esfera de 9m em alcance longo se enche com energia negativa por 1 dia. Dentro dela, todo dano de trevas é maximizado.
+• Resistência a Energia (Padrão, 6 PM) Criaturas escolhidas em alcance curto recebem redução de ácido ou fogo 10 até o fim da cena.
+• Toque Vampírico (Padrão, 6 PM) O alto sacerdote faz um ataque corpo a corpo. Se acertar, além do dano normal, causa 8d6+5 pontos de dano de trevas (Fort reduz à metade) e recupera pontos de vida iguais à metade do dano de trevas causado.
+For –1, Des 3, Con 6, Int 2, Sab 5, Car 1
+Perícias Conhecimento +17, Intimidação +16, Misticismo +17, Religião +20.
+Equipamento Adaga precisa, anel do escudo mental, manto pesado, meia armadura, símbolo sagrado de Tenebra.
+Tesouro Padrão.`
+        },
+      ],
+      regras: [
+        { titulo: "Mycotann",
+          texto:
+`“Eu SEI que estão ajudando o inimigo, mas não podemos atacá-los também. Não é certo!”
+— Hamilton Brentt, paladino de Khalmyr
+O que parecia ser um grande cogumelo subitamente destaca braços e pernas, erguendo-se em postura humanoide. Logo abaixo do chapéu, um par de olhos revela uma expressão de profundo sofrimento. Ainda assim, a criatura avança para lutar. Também conhecidos como “cogumelos anões”, mycotann são seres-cogumelo que vivem nas vastas aldeias de Camprini, numa camada subterrânea abaixo de Doherimm. São extremamente pacatos; dizem ter sido um presente de Tenebra para Marah, um povo recluso e dedicado ao culto solene da paz. Contudo, como vários “presentes” da Deusa das Trevas, este também revelaria um lado cruel — pois os seres-cogumelo acabariam se tornando escravos para os trolls nobres. Por sua habilidade de expelir esporos paralisantes, mycotann são usados como unidades de suporte para as forças finntroll; é comum encontrar alguns acompanhando caçadores, com o propósito de facilitar a captura de vítimas. Dominados e controlados através de magias mentais poderosas, tal violação de sua natureza pacífica faz com que morram rápido, levando os finntroll a constantemente saquear suas terras em busca de mais vítimas. Também ocorrem casos de aldeias inteiras enviadas como hordas suicidas contra inimigos dos trolls nobres. Alguns poucos mycotann são druidas, encarregados de proteger seu povo contra os finntroll. Não é incomum que um druida viaje à superfície em busca de heróis, para ajudar a libertar membros escravizados de seu povo.` },
+        { titulo: "Opressor Finntroll",
+          texto:
+`“Covarde desgraçado! Vai vir me encarar ou ficar se borrando de medo atrás dos seus servos?”
+— Maquius “Capito” Victorius, lefou lutador
+Sendo sabido que finntroll são conjuradores orgulhosos e desprezam a prática do combate físico, causa estranheza ver membros da raça em armaduras justas e sofisticadas, empunhando lâminas e açoites. Contudo, quando estes revelam usar trolls e monstros similares como bestas de guerra, tudo se explica. “Opressores” são finntroll focados em combate, geralmente com o propósito de abduzir vítimas, cumprir missões militares para seus líderes ou patrulhar rotas em seus territórios. São também eles os responsáveis por impor a disciplina em suas cidades subterrâneas, mantendo a população escravizada sob controle severo. Para cada missão, há um guerreiro especializado. O caçador é aquele destinado a rastrear e capturar alvos, desde camponeses para uso como escravos até nobres para chantagens ou pedidos de resgate, ou ainda devotos de deuses rivais. Em geral agem sozinhos ou em pequenos grupos, muitas vezes acompanhados por perdigueiros trolls. Feitores, por sua vez, pertencem a uma casta mais elevada e orgulhosa — porque não lutam pessoalmente, especializando-se em comandar escravos, trolls e monstros ainda piores para fazê-lo. Raramente se afastam muitos dos territórios finntroll, exceto em missões de grande importância. Quanto ao senhor de estábulo, é uma versão superior e ainda mais perigosa do feitor, um mestre do terror e da intimidação. Além de conjurar trolls onde estiver, seus comandos ferozes podem desmoralizar ou incapacitar oponentes, para deixá-los mais vulneráveis aos monstros.` },
+        { titulo: "Habilidades de Finntroll",
+          texto:
+`Todos os finntroll partilham das seguintes habilidades.
+Corpo Vegetal. Finntroll possuem visão no escuro, cura acelerada 5/ácido ou fogo e natureza vegetal.
+Presença Arcana. Um finntroll recebe +2 em Misticismo (já contabilizado) e resistência a magia +2.
+Intolerância a Luz. O finntroll possui sensibilidade a luz e, quando exposto à luz do sol ou similar, não consegue usar sua cura acelerada.` },
+        { titulo: "Sacerdote Finntroll",
+          texto:
+`“Absurdo! A Mãe Noite não acolheria um monstro! Confesse sua farsa profana!”
+— Chandrall, qareen clériga de Tenebra
+A figura de pele lilás traz o cabelo escuro adornado em um penteado alto, cheio de joias. A vestimenta negra lembra mantos sacerdotais, ainda que com aberturas reveladoras. Os adereços exibem um símbolo sagrado desconhecido, mas de alguma forma familiar. Não se pode dizer que trolls nobres sejam espiritualizados: quase todos são arrogantes e egocêntricos demais para crer em “poderes superiores”, muito menos devotar-se a eles. Além disso, eles regeneram ferimentos, dispensando curas milagrosas. Ainda assim, de forma moderada, os finntroll cultivam uma religião baseada na crença de que foram concebidos por Megalokk e Tenebra — chamados por eles Troldhaugen e Dearani, um rei brutal e uma rainha das trevas, impiedosos e sedutores. Acreditam homenagear esses deuses quando provam ao mundo a magnificência de sua maior obra (ou seja, eles mesmos). Erguem templos ostensivos para o casal divino, sob o pretexto de agradá-los, mas na verdade buscando alimentar os próprios egos. Aparentemente sem se importar muito com as motivações reais dos devotos finntroll, Tenebra e Megalokk de fato concedem poderes a seus clérigos. Estes, em retribuição, fazem peregrinações à superfície para capturar vítimas — que serão mais tarde sacrificadas em seus cultos. Resgatar prisioneiros raptados com esse propósito é trabalho comum para aventureiros.` },
+      ],
+    },
+
+    // ── ❄ UIVANTES ────────────────────────────────────
+    {
+      chave: "uivantes", nome: "Uivantes", icone: "❄", cor: "#5a8aa8",
+      intro: "Esta região cercada de montanhas geladas no coração do continente é um mundo próprio, com suas próprias leis naturais, que rejeita o restante de Arton. Nesta cordilheira rigorosa de nevasca eterna, chamada de “reino” apenas por convenções geográficas, tudo que não pertence ao gelo vive pouco. Mesmo com a suposta morte de Beluhga nada mudou em suas paisagens brancas — levando muitos a questionar se a Dragoa-Rainha realmente morreu ou se apenas aguarda o momento de sua vingança terrível.\nAs Uivantes, contudo, estão longe de ser desoladas. Uma variedade de criaturas luta pela sobrevivência, um número vasto de povos ergue comunidades e fortalezas. Muitos de seus habitantes são pacíficos, como anões do gelo em suas forjas secretas na Montanha Invencível ou pequeninos hynne e seus esportes festivos. Outros, contudo, são saqueadores ferozes e inclementes, que pilham e matam tudo que encontram. Diferente de outras regiões selvagens, é quase impossível encontrar criaturas nativas das Uivantes em outros pontos de Arton. São seres adaptados ao inferno glacial, que sobrepujam intrusos estrangeiros sem dificuldade. Quando surgem em locais distantes, é quase certo que foram capturados ou conjurados, com propósitos que podem variar desde combates de arena até povoar masmorras gélidas.",
+      fichas: [
+        {
+          chave: "carcaju", nome: "Carcaju", nd: "1", tipo: "Animal Pequeno",
+          papel: '',
+          resumo: "O animal de pelagem castanha e negra lembra um urso muito pequeno, do tamanho de um cão, mas com cauda grande e peluda.",
+          texto:
+`Carcaju ND 1
+“Que aconteceu com o kobold que derrubei com minha magia? Devia estar bem aqui.”
+— Cellica, golem arcanista
+O animal de pelagem castanha e negra lembra um urso muito pequeno, do tamanho de um cão, mas com cauda grande e peluda. Tem o mesmo pescoço curto e orelhas redondas, emprestando-lhe um aspecto gracioso. Quando rosna e arreganha as presas, contudo, demonstra ser muito mais perigoso do que parecia. Também conhecido por uma variedade de outros nomes, como glutão ou wolverine, o carcaju é um predador pequeno, mas muito forte e agressivo. Ainda que não tenha o costume de atacar humanoides, é odiado por caçadores, porque consegue roubar animais presos em armadilhas — ou mesmo aqueles que acabaram de ser abatidos à distância por flechas. Quando ferido ou encurralado, o carcaju entra em uma cólera ensandecida, mordendo e rasgando com as garras. Embora não seja facilmente domesticável, dizem que alguns conjuradores conseguem extrair energia de sua fúria para potencializar certas magias.
+Animal Pequeno
+Iniciativa +6, Percepção +5, faro, visão na penumbra
+Defesa 15, Fort +10, Ref +5, Von +0, evasão
+Pontos de Vida 26
+Deslocamento 12m (8q), escalada 9m (6q)
+Corpo a Corpo Duas garras +9 (1d4+2, 18) e mordida +9 (1d6+2). O Melhor no que Faz Quando sofre dano, o carcaju recebe +2 em testes de ataque e rolagens de dano até o fim de seu próximo turno.
+Resiliência O carcaju não fica inconsciente quando é reduzido a 0 PV ou menos. Quando é reduzido a -13 PV morre, ou fica inconsciente no caso de dano não letal.
+For 2, Des 2, Con 3, Int –4, Sab 1, Car 0
+Perícias Atletismo +6, Intimidação +4, Sobrevivência +8.
+Tesouro Nenhum.
+Parceiro O carcaju é um parceiro especial (fortão) que fornece os benefícios a seguir. Iniciante: uma vez por rodada você recebe +1d6 em uma rolagem de dano corpo a corpo. Se rolar um 6 nesse dado extra de dano, você pode rolar +1d6 e somar ao resultado uma vez. Veterano: sua margem de ameaça com armas corpo a corpo aumenta em +1. Mestre: quando sofre dano, você recebe +2 em testes de ataque e rolagens de dano até o fim de seu próximo turno.`
+        },
+        {
+          chave: "golemDeNorMedio", nome: "Golem de Nor Médio", nd: "1", tipo: "Construto Médio",
+          papel: '',
+          subgrupo: "Golem de Nor",
+          resumo: "Golem de Nor — A criatura lembra um grande golem de formas angulosas e punhos enormes, como outros tantos que circulam pelo Reinado, mas com grandes diferenças.",
+          texto:
+`Golem de Nor Médio ND 1
+Construto Médio
+Iniciativa +3, Percepção +6, visão no escuro
+Defesa 17, Fort +11, Ref -1, Von +5, imunidade a frio, redução de fogo 10
+Pontos de Vida 35
+Deslocamento 6m (4q)
+Corpo a Corpo Espada longa +9 (1d8+9, 19).
+Aura Congelante (Padrão) Uma vez por cena, o golem de Nor recebe 25 PV temporários. Se uma criatura acertar um ataque corpo a corpo contra o golem enquanto ele tem estes PV temporários, fica enredada (Fort CD 14 evita).
+For 3, Des 0, Con 3, Int —, Sab 0, Car –5
+Equipamento Escudo pesado, espada longa. Tesouro Nenhum.`
+        },
+        {
+          chave: "golemDeNorGrande", nome: "Golem de Nor Grande", nd: "8", tipo: "Construto Grande",
+          papel: '',
+          subgrupo: "Golem de Nor",
+          resumo: "Golem de Nor — A criatura lembra um grande golem de formas angulosas e punhos enormes, como outros tantos que circulam pelo Reinado, mas com grandes diferenças.",
+          texto:
+`Golem de Nor Grande ND 8
+Construto Grande
+Iniciativa +10, Percepção +13, visão no escuro
+Defesa 32, Fort +21, Ref +7, Von +15, imunidade a frio, redução de fogo 15
+Pontos de Vida 290
+Deslocamento 9m (6q)
+Corpo a Corpo Espada longa x2 +26 (2d8+25, 19, mais 2 frio).
+Aura Congelante (Padrão) Uma vez por cena, o golem de Nor grande recebe 50 PV temporários. Se uma criatura acertar um ataque corpo a corpo contra o golem enquanto ele tem estes PV temporários, fica enredada (Fort CD 24 evita).
+Imunidade a Magia O golem é imune a efeitos mágicos, com a seguinte exceção. Efeitos mágicos de frio curam PV em quantidade igual à metade do dano que causariam.
+For 5, Des 0, Con 5, Int —, Sab 0, Car –5
+Equipamento Escudo pesado de gelo eterno, espada longa aumentada de gelo eterno. Tesouro Lascas gélidas (CD 23 para extrair, valem T$ 200 para fabricar itens de gelo eterno).`
+        },
+        {
+          chave: "golemDeNorEnorme", nome: "Golem de Nor Enorme", nd: "10", tipo: "Construto Enorme",
+          papel: '',
+          subgrupo: "Golem de Nor",
+          resumo: "Golem de Nor — A criatura lembra um grande golem de formas angulosas e punhos enormes, como outros tantos que circulam pelo Reinado, mas com grandes diferenças.",
+          texto:
+`Golem de Nor Enorme ND 10
+Construto Enorme
+Iniciativa +12, Percepção +15, visão no escuro
+Defesa 35, Fort +11, Ref +8, Von +16, imunidade a frio, redução de fogo 15
+Pontos de Vida 370
+Deslocamento 12m (8q)
+Corpo a Corpo Espada longa x2 +29 (2d10+29, 19, mais 2 frio).
+Aura Congelante (Padrão) Uma vez por cena, o golem de Nor enorme recebe 100 PV temporários. Se uma criatura acertar um ataque corpo a corpo contra o golem enquanto ele tem estes PV temporários, fica enredada (Fort CD 28 evita).
+Imunidade a Magia O golem é imune a efeitos mágicos, com a seguinte exceção. Efeitos mágicos de frio curam PV em quantidade igual à metade do dano que causariam.
+Sentinela Eterno (Reação) O golem ataca uma criatura que entre em seu alcance corpo a corpo voluntariamente. Se acertar esse ataque, o golem deixa a criatura lenta e, se ela estava fazendo uma investida, ele causa +3d8 pontos de dano de frio. O golem pode usar esta habilidade uma vez por rodada contra cada criatura.
+For 7, Des 0, Con 9, Int —, Sab 0, Car –5
+Equipamento Escudo pesado de gelo eterno, espada longa aumentada de gelo eterno. Tesouro Lascas gélidas (CD 25 para extrair, valem T$ 600 para fabricar itens de gelo eterno).`
+        },
+        {
+          chave: "mamute", nome: "Mamute", nd: "8", tipo: "Animal Enorme",
+          papel: '',
+          subgrupo: "Mamute",
+          resumo: "Mamute — A enorme besta lembra um elefante, ainda que bem maior e com uma farta pelagem escura.",
+          texto:
+`Mamute ND 8
+Animal Enorme
+Iniciativa +8, Percepção +11, faro, visão na penumbra
+Defesa 33, Fort +24, Ref +8, Von +12, redução de dano 5
+Pontos de Vida 310
+Deslocamento 12m (8q)
+Corpo a Corpo Presas +27 (2d6+29, 19) e tromba +27 (2d6+25).
+Arremessar (Movimento) Se começar seu turno agarrando uma criatura Média ou menor, o mamute arremessa a vítima 1d6 x 1,5m em uma direção à escolha dele. A vítima sofre 2d6 pontos de dano de impacto, fica caída e, se atingir algum obstáculo, sofre +2d6 pontos de dano (Ref CD 26 reduz à metade e evita a condição). Recarga (movimento).
+Atropelamento (Completa) O mamute percorre até o dobro de seu deslocamento. Ele pode passar pelo espaço ocupado de quaisquer inimigos menores que ele, mas não pode passar duas vezes pelo mesmo espaço. Criaturas atropeladas desta forma sofrem 2d8+9 pontos de dano de impacto e ficam caídas (Ref CD 26 reduz à metade e evita a condição). Recarga (movimento).
+Pisotear (Padrão) Uma criatura que o mamute esteja agarrando, ou que esteja caída adjacente a ele, sofre 4d8+58 pontos de dano de impacto e fica fraca por 1 rodada (Fort CD 26 reduz o dano à metade e evita a condição).
+Tromba (Livre) Se o mamute acerta um ataque de tromba, pode fazer a manobra agarrar ou derrubar (teste +32).
+For 6, Des 0, Con 4, Int –4, Sab 1, Car 0
+Tesouro Marfim (CD 23 para extrair, vale T$ 1.000 para fabricar armas superiores) e pele de mamute (CD 23 para extrair, vale T$ 1.000 para fabricar armaduras leves superiores).
+Parceiro O mamute é um parceiro montaria (Enorme) que fornece os mesmos benefícios que um elefante (veja p. 216).`
+        },
+        {
+          chave: "lyuba", nome: "Lyuba", nd: "14", tipo: "Morto-vivo Enorme",
+          papel: '',
+          subgrupo: "Mamute",
+          resumo: "Mamute — A enorme besta lembra um elefante, ainda que bem maior e com uma farta pelagem escura.",
+          texto:
+`Lyuba ND 14
+Morto-vivo Enorme
+Iniciativa +11, Percepção +13, faro, visão na penumbra
+Defesa 45, Fort +31, Ref +15, Von +19, redução de dano 10, vulnerabilidade a fogo
+Pontos de Vida 715
+Deslocamento 12m (8q)
+Corpo a Corpo Presas espectrais +39 (2d12+35 perfuração, 18) e tromba +39 (2d12+30 mais doença).
+Atropelamento (Completa) O lyuba percorre até o dobro de seu deslocamento. Ele pode passar pelo espaço ocupado de quaisquer inimigos menores que ele, mas não pode passar duas vezes pelo mesmo espaço. Criaturas atropeladas desta forma sofrem 4d8+35 pontos de dano de impacto e ficam caídas (Ref CD 38 reduz à metade e evita a condição). Recarga (movimento).
+Caçador de Caçadores O lyuba causa +1d12 pontos de dano contra criaturas não nativas das Uivantes.
+Constrição (Livre) No início de cada um de seus turnos, o lyuba causa 4d12+30 pontos de dano de impacto na criatura que estiver agarrando com a tromba.
+Definhamento Uma criatura atingida pela tromba do lyuba é exposta à doença podridão da múmia.
+Desespero Uma criatura que comece seu turno vendo o lyuba fica apavorada (Von CD 38 evita e a criatura não pode ser apavorada por esta habilidade até o fim da cena).
+Presas Espectrais As presas do lyuba contam como armas mágicas e afetam criaturas incorpóreas. Uma criatura atingida pelas presas fica fraca (Fort CD 38 evita). Cada vez que deixa uma criatura fraca com esta habilidade, o lyuba recebe 30 PV temporários cumulativos.
+Tromba (Livre) Se o lyuba acerta um ataque de tromba, pode fazer a manobra agarrar ou derrubar (teste +44).
+For 12, Des 0, Con 8, Int –3, Sab 2, Car 0
+Tesouro Padrão, mais couro do lyuba (CD 29 para extrair, reduz em 1 PM o custo para fabricar um item com o encanto fantasmagórico).`
+        },
+        {
+          chave: "minotauroDaManada", nome: "Minotauro da Manada", nd: "2", tipo: "Humanoide (minotauro) Médio",
+          papel: '',
+          subgrupo: "Minotauro da Manada",
+          resumo: "Minotauro da Manada — Ele é grande e forte como qualquer minotauro, mas parece ainda maior, revestido de pelagem branca e muito longa, quase chegando ao chão.",
+          texto:
+`Minotauro da Manada ND 2
+Humanoide (minotauro) Médio
+Iniciativa +3, Percepção +4, faro
+Defesa 18, Fort +11, Ref +6, Von +3, redução de frio 5
+Pontos de Vida 16
+Deslocamento 9m (6q)
+Corpo a Corpo Machado de batalha +13 (2d8+5, x3) e chifres +13 (1d6+5).
+Capturar O minotauro da Manada recebe +2 em testes de agarrar e pode se deslocar normalmente enquanto arrasta uma criatura. Uma criatura arrastada desta forma sofre 1d4 pontos de dano de impacto para cada 3m que for arrastada.
+Ver Vermelho Se tiver sido alvo de um efeito hostil (ataque, habilidade, magia…) desde o fim de seu último turno, o minotauro recebe +2 em testes de perícia.
+For 4, Des 0, Con 3, Int 0, Sab 1, Car –2
+Perícias Atletismo +9, Intimidação +7.
+Equipamento Gibão de peles, machado de batalha. Tesouro Padrão.`
+        },
+        {
+          chave: "minotauroChefeDaManada", nome: "Minotauro Chefe da Manada", nd: "6", tipo: "Humanoide (minotauro) Médio",
+          papel: '',
+          subgrupo: "Minotauro da Manada",
+          resumo: "Minotauro da Manada — Ele é grande e forte como qualquer minotauro, mas parece ainda maior, revestido de pelagem branca e muito longa, quase chegando ao chão.",
+          texto:
+`Minotauro Chefe da Manada ND 6
+Humanoide (minotauro) Médio
+Iniciativa +11, Percepção +10, faro
+Defesa 26, Fort +17, Ref +11, Von +5, redução de frio 5
+Pontos de Vida 232
+Deslocamento 9m (6q)
+Corpo a Corpo Machado de batalha x2 +19 (2d8+12, x3) e chifres +19 (1d6+12).
+Liderança Brutal Aliados do minotauro chefe da Manada em alcance curto recebem os bônus em ataque e dano de sua habilidade Marca da Presa.
+Marca da Presa (Movimento) O chefe analisa uma criatura em alcance curto. Até o fim da cena, ele recebe +2 em testes de perícia e +1d8 em rolagens de dano contra essa criatura (esses bônus são dobrados contra anões, elfos e humanos).
+Ver Vermelho Se tiver sido alvo de um efeito hostil (ataque, habilidade, magia…) desde o fim de seu último turno, o minotauro recebe +2 em testes de perícia.
+For 2, Des 4, Con 3, Int –1, Sab 3, Car –2
+Perícias Atletismo +9, Furtividade +11, Sobrevivência +10 (+12 em ambientes nevados).
+Equipamento Gibão de peles, machado de batalha preciso x2. Tesouro Padrão.`
+        },
+        {
+          chave: "ogroFurioso", nome: "Ogro Furioso", nd: "5", tipo: "Humanoide (gigante) Grande",
+          papel: '',
+          subgrupo: "Ogro Furioso",
+          resumo: "Ogro Furioso — Os seres abrutalhados são altos como cabanas e fortes como cavalos, vestindo camadas de peles e ossos de animais que certamente eles próprios mataram.",
+          texto:
+`Ogro Furioso ND 5
+Humanoide (gigante) Grande
+Iniciativa +5, Percepção +2, visão na penumbra
+Defesa 24, Fort +17, Ref +11, Von +0, redução de frio 5
+Pontos de Vida 222
+Deslocamento 9m (6q)
+Corpo a Corpo Tacape +17 (4d12+14).
+Burro Demais… O ogro furioso sofre –5 em testes de Intuição e Vontade (já contabilizado).
+…Para Morrer! Todo o dano de corte, impacto e perfuração que o ogro sofre é reduzido à metade.
+Fúria Imparável O ogro não fica inconsciente quando é reduzido a 0 PV ou menos e só morre quando é reduzido a -111 PV.
+Raiva Inflamável Cada vez que acerta um ataque ou é atingido por um ataque, o ogro recebe um bônus cumulativo de +1 em testes de ataque e rolagens de dano até o fim da cena.
+For 5, Des 1, Con 3, Int –1, Sab 0, Car –2
+Perícias Atletismo +11, Intimidação +11, Intuição –3.
+Equipamento Gibão de peles, tacape aumentado. Tesouro Metade.`
+        },
+        {
+          chave: "keylor", nome: "Keylor", nd: "9", tipo: "Humanoide (gigante) Grande",
+          papel: '',
+          subgrupo: "Ogro Furioso",
+          resumo: "Ogro Furioso — Os seres abrutalhados são altos como cabanas e fortes como cavalos, vestindo camadas de peles e ossos de animais que certamente eles próprios mataram.",
+          texto:
+`Keylor ND 9
+Humanoide (gigante) Grande
+Iniciativa +8, Percepção +9, visão na penumbra
+Defesa 34, Fort +21, Ref +8, Von +16, redução de frio 10
+Pontos de Vida 360
+Deslocamento 9m (6q)
+Corpo a Corpo Machado de guerra x2 +27 (3d6+28, x3).
+Arremessar Rochas (Completa) Criaturas em um quadrado de 3m em alcance curto sofrem 4d6+20 pontos de dano (Ref CD 28 reduz à metade).
+Aura de Frio No início de cada turno do Keylor, todas as criaturas em um raio de 3m sofrem 2d6+8 pontos de dano de frio.
+Varrer Uma vez por rodada, quando o Keylor faz um ataque corpo a corpo e reduz os pontos de vida do alvo a 0 ou menos, pode fazer um ataque adicional contra outra criatura dentro do seu alcance.
+For 6, Des 0, Con 4, Int 1, Sab 1, Car –1
+Perícias Sobrevivência +11.
+Equipamento Gibão de peles, machado de guerra aumentado.
+Tesouro Padrão.`
+        },
+        {
+          chave: "soterradoVagante", nome: "Soterrado vagante", nd: "2", tipo: "Morto-vivo Médio",
+          papel: '',
+          resumo: "Aquilo que pareciam ser ossadas presas no gelo logo se revela como algo diferente e terrível.",
+          texto:
+`Soterrado vagante ND 2
+“Está morto há semanas. O pobre coitado não teve a menor — AHH, CUIDADO!”
+— Sigbert Claydenn, lefou paladino de Thyatis
+Aquilo que pareciam ser ossadas presas no gelo logo se revela como algo diferente e terrível. Os seres macabros parecem a esqueletos humanos, enegrecidos, mas sob armaduras translúcidas de gelo azulado. Luzes azuis pálidas brilham nas órbitas vazias. Soterrados são esqueletos revestidos com grossas camadas de gelo que os tornam mais resistentes. Permanecem imóveis no gelo e na neve, até que qualquer criatura viva se aproxime: talvez por guardarem recordação de sua morte horrível — ou movidos por uma necessidade desesperada do calor dos vivos —, buscam agarrar vítimas para sugar sua energia vital. Supõe-se que estes mortos-vivos surgem a partir de vítimas soterradas em avalanches, explicando seu nome. Contudo, também é verdade que alguns necromantes conseguem conjurá-los. Uns poucos, ainda, manifestam inteligência e vontade próprias; acabam integrando a curiosa raça osteon, muito embora não sejam particularmente queridos entre aventureiros.
+Morto-vivo Médio
+Iniciativa +2, Percepção +3, visão no escuro
+Defesa 20, Fort +1, Ref +5, Von +10, redução de corte e perfuração 5, redução de frio 10
+Pontos de Vida 21
+Deslocamento 6m (4q)
+Corpo a Corpo Dois punhos +14 (2d6+6 mais 2 frio).
+Agarrar Aprimorado (Livre) Punho (teste +16).
+Constrição Congelante (Padrão) No início de cada um de seus turnos, o soterrado vagante causa 4d6 pontos de dano de frio em cada criatura que estiver agarrando. Esse dano aumenta em +1d6 para cada rodada consecutiva que o soterrado estiver agarrando essa criatura.
+Esquife de Gelo O soterrado sofre 1 ponto de dano adicional por dado de dano de fogo.
+For 5, Des –1, Con 0, Int —, Sab 2, Car –1
+Perícias Furtividade +2 (+7 em terrenos nevados).
+Tesouro Nenhum.`
+        },
+        {
+          chave: "stagh", nome: "Stagh", nd: "3", tipo: "Espírito (elemental) Pequeno",
+          papel: '',
+          resumo: "A pequena criatura lembra uma aranha de cristal com um número incerto de patas, que terminam em pontas muito afiadas.",
+          texto:
+`Stagh ND 3
+“Elementais do gelo? Está certa disso? Mas sequer existe tal coisa?”
+— Eliran Madrepérola, tritão arcanista
+A pequena criatura lembra uma aranha de cristal com um número incerto de patas, que terminam em pontas muito afiadas. O corpo, formado apenas por um núcleo frio e pulsante, não tem olhos ou outros traços anatômicos visíveis. Staghs são pequenas criaturas elementais únicas - elementais do gelo. Suas patas são afiadas o bastante para penetrar rocha sólida, permitindo que se movimentem livremente sobre superfícies inclinadas. São muito comuns na região das Uivantes, onde o frio sobrenatural facilita seu surgimento. Em estado selvagem, staghs são assustadiços quando sozinhos, mas agressivos em bandos; ainda que não precisem realmente se alimentar, usam a aura de frio acumulada do bando para congelar e matar suas presas. Conjuradores especializados em magias de frio por vezes tentam obter staghs como familiares, para potencializar seus poderes.
+Espírito (elemental) Pequeno
+Iniciativa +6, Percepção +4, visão no escuro
+Defesa 22, Fort +7, Ref +12, Von +4, imunidade a acertos críticos, atordoado, cansaço, efeitos de metabolismo, frio e paralisia, vulnerabilidade a fogo
+Pontos de Vida 35
+Deslocamento 9m (6q), escalada 9m (6q)
+Corpo a Corpo Duas garras +16 (1d6+4 mais 1d6 frio).
+Aura de Frio No início de cada turno do stagh, todas as criaturas em um raio de 9m sofrem 1d6+3 pontos de dano de frio (Fort CD 17 reduz à metade).
+For 2, Des 3, Con 3, Int –4, Sab 1, Car –1
+Tesouro 1 dose de éter elemental (frio) (CD 18 para extrair).
+Familiar Um stagh concede +1 na CD de suas magias de frio.`
+        },
+        {
+          chave: "ursoDasNeves", nome: "Urso das Neves", nd: "5", tipo: "Animal Grande",
+          papel: '',
+          resumo: "A fera lembra um urso, mas bem maior que outros que vocês tenham visto.",
+          texto:
+`Urso das Neves ND 5
+“Meu conhecimento sobre assuntos da natureza é limitado, mas ursos deveriam ter cristais no lombo?”
+— Shariann, osteon nobre
+A fera lembra um urso, mas bem maior que outros que vocês tenham visto. Tem pelagem completamente branca, mas com olhos, focinho e garras vermelhos. Ainda, a parte posterior do dorso traz formações afiadas que lembram cristais de gelo. O urso das neves parece uma versão glacial do urso das cavernas, com protuberâncias dorsais afiadas, cobertas de gelo. Estudiosos afirmam que esses órgãos servem para absorver e concentrar o calor do sol, como uma espécie de lente. Outros afirmam ser ornamentos para atrair parceiros na época do acasalamento. Como outros ursos, são predadores perigosos, muito mais ágeis do que parecem. Percorrem as Uivantes solitários ou em casais, patrulhando uma grande área próxima do covil e atacando qualquer criatura que pareça comestível. São também excelentes nadadores, de longo fôlego, mergulhando atrás de presas em rios e lagos gelados. Existem lendas de aventureiros que teriam domado um urso das neves; a área mais próxima da cabeça é desguarnecida de cristas, tornando a montaria possível.
+Animal Grande
+Iniciativa +6, Percepção +9, faro, visão na penumbra
+Defesa 22, Fort +17, Ref +11, Von +5, redução de dano 5, redução de frio 5
+Pontos de Vida 220
+Deslocamento 12m (8q) natação 12m (8q)
+Corpo a Corpo Mordida +17 (1d8+7) e duas garras +17 (1d6+7).
+Agarrar Aprimorado (Livre) Mordida (teste +19).
+For 7, Des 1, Con 6, Int –4, Sab 2, Car –2
+Perícias Atletismo +12 (+17 para nadar).
+Tesouro 1d3 peças de cristais de sol (CD 20 para extrair).
+Parceiro O urso das neves é um parceiro montaria (Grande) que fornece os benefícios a seguir. Iniciante: seu deslocamento muda para 12m e você recebe redução de frio 5. Veterano: seu deslocamento muda para 12m (normal e de natação) e a redução de frio aumenta para 10. Mestre: a redução de frio aumenta para 20.`
+        },
+        {
+          chave: "vermeDoGeloLarva", nome: "Verme do Gelo Larva", nd: "10", tipo: "Monstro Enorme",
+          papel: '',
+          subgrupo: "Verme do Gelo",
+          resumo: "Verme do Gelo — O monstro emerge do gelo sólido como se este fosse água.",
+          texto:
+`Verme do Gelo Larva ND 10
+Monstro Enorme
+Iniciativa +10, Percepção +13, faro, percepção às cegas, visão no escuro
+Defesa 36, Fort +22, Ref +16, Von +10, imunidade a frio, redução de dano 5, vulnerabilidade a fogo
+Pontos de Vida 400
+Deslocamento 12m (8q), escavação 15m (10q)
+Corpo a Corpo Mordida +29 (4d8+52 mais 4d6 frio).
+Agarrar Aprimorado (Livre) Mordida (teste +34).
+Engolir (Padrão) No início de cada um dos turnos do verme do gelo larva, a criatura engolida sofre 2d6+20 pontos de dano de impacto mais 4d6+10 pontos de dano de frio. Ela pode escapar causando um total de 25 pontos de dano a ele (Defesa 15, redução de dano 0).
+Espasmo Mortal Quando o verme é morto, seu corpo explode, fazendo com que estacas de gelo se projetem do chão em um raio de 6m. Criaturas nessa área sofrem 4d6 pontos de dano de corte mais 4d6 pontos de dano de frio e ficam caídas (Ref CD 30 evita). A área afetada se torna terreno difícil e concede cobertura leve para criaturas dentro dela. Causar dano de fogo mágico a qualquer parte dessa área destrói as estacas nos espaços correspondentes.
+Sopro Glacial (Padrão) Todas as criaturas em um cone de 12m sofrem 8d10 pontos de dano de frio e ficam lentas (Ref CD 30 reduz o dano à metade e evita a condição). Recarga (movimento).
+For 6, Des 1, Con 4, Int –5, Sab 2, Car –3
+Perícias Furtividade +5 (+20 no gelo).
+Tesouro 2d4 doses de gelo extremo (CD 25 para extrair).`
+        },
+        {
+          chave: "vermeDoGeloAdulto", nome: "Verme do Gelo Adulto", nd: "18", tipo: "Monstro Colossal",
+          papel: '',
+          subgrupo: "Verme do Gelo",
+          resumo: "Verme do Gelo — O monstro emerge do gelo sólido como se este fosse água.",
+          texto:
+`Verme do Gelo Adulto ND 18
+Monstro Colossal
+Iniciativa +22, Percepção +19, faro, percepção às cegas, visão no escuro
+Defesa 56, Fort +32, Ref +26, Von +18, imunidade a caído, encantamento e frio, redução de dano 10, vulnerabilidade a fogo
+Pontos de Vida 1.100
+Deslocamento 15m (10q), escavação 18m (12q)
+Corpo a Corpo Mordida +49 (10d12+100 mais 10d8 frio).
+Agarrar Aprimorado (Livre) Mordida (teste +59).
+Engolir (Padrão) No início de cada um dos turnos do verme de gelo adulto, a criatura engolida sofre 6d6+30 pontos de dano de impacto mais 4d6+40 pontos de dano de frio. Ela pode escapar causando um total de 200 pontos de dano a ele (Defesa 25, redução de dano 0).
+Espasmo Mortal Quando o verme é morto, seu corpo explode, fazendo com que estacas de gelo se projetem do chão em um raio de 6m. Criaturas nessa área sofrem 10d8 pontos de dano de corte mais 10d8 pontos de dano de frio e ficam caídas (Ref CD 47 evita). A área afetada se torna terreno difícil e concede cobertura leve para criaturas dentro dela. Causar dano de fogo mágico a qualquer parte dessa área destrói as estacas nos espaços correspondentes.
+Frio Extremo O verme projeta uma aura de frio extremo que enfraquece todas as chamas em um raio de 9m. Nessa área, habilidades de fogo custam +1 PM para ser usadas e causam –1 ponto de dano por dado.
+Sopro Glacial (Padrão) Todas as criaturas em um cone de 12m sofrem 10d12 pontos de dano de frio e ficam lentas (Ref CD 47 reduz o dano à metade e evita a condição). Recarga (movimento).
+For 7, Des 3, Con 5, Int –5, Sab 3, Car –4
+Perícias Furtividade +22 (+32 no gelo).
+Tesouro Padrão mais 2d6 doses de gelo extremo (CD 33 para extrair).`
+        },
+      ],
+      regras: [
+        { titulo: "Golem de Nor",
+          texto:
+`“Quem esse Nor pensa que é? Também posso criar um golem e dar meu nome se quiser.”
+— Melmer Lamp, kliren inventor
+A criatura lembra um grande golem de formas angulosas e punhos enormes, como outros tantos que circulam pelo Reinado, mas com grandes diferenças. Parece todo feito de gelo, com formas elementais fluindo sob o revestimento vítreo. Na cabeça em formato de elmo, duas luzes brilham intensas. Ele avança enquanto ergue espada e escudo, igualmente translúcidos e cobertos de runas faiscantes. Fabricados com o mesmo gelo eterno usado em armas e armaduras gélidas, estes construtos parecem ser uma presença relativamente recente nas Uivantes. Segundo alguns, só poderiam ter sido produzidos pelos anões da Montanha Invencível. Mas outros propõem uma procedência diferente — seriam um invento de Eadmund Siberus Nor, prestigioso arcanista e artífice desaparecido há anos, que teria se refugiado na cordilheira para conduzir experimentos sem ser perturbado. Seja qual for sua origem verdadeira, golens de Nor podem ser encontrados em vários pontos das Uivantes, protegendo estruturas ou passagens, conforme ordens deixadas por senhores desconhecidos. Além da estrutura feita de gelo eterno, possuem uma variedade de poderes que os tornam superiores a construtos comuns. Quase todos são pouco propensos a abandonar os lugares que vigiam, mas alguns parecem ter recebido comandos para perseguir e matar criaturas de certo tipo, ou mesmo pessoas específicas. Existem versões menores e menos poderosas destes golens, mas portadoras de livre arbítrio. Alguns vagam pelas Uivantes em busca de seu criador, ou de alguma motivação para viver — sendo frequente encontrar alguns vivendo entre nativos. Outros acabam integrando grupos de aventureiros. Para as habilidades de raça do golem de Nor, veja “Golem de Gelo Eterno”, p. 134.` },
+        { titulo: "Mamute",
+          texto:
+`“Que leite delicioso! Mas é estranho, não me lembro de ter visto vacas nesta aldeia…”
+— Braydenn de Arsenal, meio-elfo clérigo
+A enorme besta lembra um elefante, ainda que bem maior e com uma farta pelagem escura. As presas são também maiores e mais recurvadas. Mamutes são versões maiores e mais primitivas do elefante comum da savana. Como estes, andam em manadas, migrando entre regiões onde exista alguma vegetação. Para muitas tribos das Uivantes, mamutes são a base de sua alimentação — a imensa quantidade de carne e gordura em um único animal pode sustentar uma aldeia inteira por bom tempo. Quase todas as tribos os caçam em estado selvagem, mas há lugares em que são domesticados como gado ou até usados como montarias e bestas de carga. O leite de mamute é uma bebida tradicional e seu esterco é usado ritualisticamente para endurecer o cabelo dos druidas. O marfim dos mamutes é cobiçado não apenas entre as tribos locais, mas também por caçadores de Arton, como troféu ou material para artesanato ou armas. Contudo, enquanto os povos das Uivantes aproveitam por completo sua carne e pele, até mesmo honrando cada animal abatido em cerimônias, caçadores estrangeiros apenas extraem as presas valiosas e abandonam a carcaça — ato considerado pecaminoso entre os nativos. Por isso existe na região o mito do lyuba, um mamute mumificado pelo gelo que retorna como um monstro em busca de vingança.` },
+        { titulo: "Minotauro da Manada",
+          texto:
+`“Ei, Marcus, pensei que você fosse um minotauro. Você é? Então aqueles, quem são?”
+— Delphine Corta-Queijos, hynne cavaleira
+Ele é grande e forte como qualquer minotauro, mas parece ainda maior, revestido de pelagem branca e muito longa, quase chegando ao chão. Os chifres são mais robustos e recurvados, com anéis salientes, lembrando aqueles de um cabrito montês. No olhar duro, penetrante, uma ferocidade pouco comum em seus parentes urbanos do Império. A proximidade das Uivantes com o reino de Tapista faz com que a região seja regularmente visitada por expedições de minotauros. Contudo, no passado distante, um gigantesco bando decidiu fazer destas montanhas sua morada permanente. A vasta tribo conhecida como a Manada é formada por cerca de 4.000 minotauros, que mostram um tipo físico diferente do típico cidadão de Tapista: muito mais peludos e com muita gordura sob a pele, da mesma forma que os iaques (tipo de boi selvagem). Vivem em nomadismo, formando acampamentos temporários até que os recursos naturais da região se esgotem, para então procurar outro lugar. Assim como o antigo Império de Tauron, minotauros da Manada eram escravistas — mas ainda mais brutais. Qualquer humanoide em seu caminho corre o risco de ser transformado em escravo, a menos que demonstre força suficiente para garantir a própria segurança e liberdade. Escravos da Manada vivem em condições cruéis, não sendo raro morrerem de frio, doença ou fadiga. Há rumores de que pequenos bandos da Manada às vezes viajam até reinos distantes em busca de novas vítimas.` },
+        { titulo: "Ogro Furioso",
+          texto:
+`“Ah, claro, claro! Como se existisse algum ogro calmo em todo este mundo!”
+— Valagnar, osteon clérigo de Hyninn
+Os seres abrutalhados são altos como cabanas e fortes como cavalos, vestindo camadas de peles e ossos de animais que certamente eles próprios mataram. Empunham tacapes atrozes e espinhosos, reforçados com galhadas de alces. Aquele que parece ser o líder, ainda maior, ergue uma clava feita com um crânio de mamute. Os Furiosos são a maior tribo de ogros nas Uivantes. Originalmente eram um único grande bando, mas este se tornou mais numeroso ao longo dos anos; hoje espalham-se em inúmeros bandos, que aterrorizam toda a região. Furiosos esmagam suas vítimas a cruéis golpes de tacape, então usando seus crânios como ornamentos. Cada ogro tem consigo um colar com vários crânios, cada um com um grande buraco onde a vítima recebeu o golpe. Além da tolerância ao frio, sua maior diferença em relação aos ogros comuns é a fúria selvagem e incontrolável que lhes dá o nome. Alguns bandos são liderados por um gigante. Diz-se que o primeiro líder do bando original, Keylor, ainda está vivo; alguns relatos, contudo, sugerem que “Keylor” na verdade seria um título guerreiro, utilizado por todos os gigantes que lideram os Furiosos.` },
+        { titulo: "Verme do Gelo",
+          texto:
+`“Quer derrotar essa coisa? Então lute pelo que deseja, será um prazer lutar ao seu lado!”
+— Daxos, qareen arcanista bucaneiro
+O monstro emerge do gelo sólido como se este fosse água. Lembra um verme de proporções gigantescas, longo como várias carroças em fila, largo como um poço. O corpo anelado e pulsante tem coloração branco-azulada. Da cabeça emergem conjuntos de mandíbulas enormes, com dentes articulados que se dobram para dentro. Talvez o maior e mais perigoso monstro nas Uivantes — rivalizando até mesmo com os dragões —, o verme do gelo percorre as montanhas em busca de presas para saciar o apetite constante. A criatura se desloca livremente sob qualquer terreno gelado, até mesmo gelo e rocha, emergindo apenas para atacar. Dizem que grande parte dos túneis e masmorras nas Uivantes não passam de antigas trilhas deixadas pela criatura. De onde vieram, como surgiram, não é conhecido. São crias de Megalokk, quase todos concordam. Existe, no entanto, uma lenda sobre serem produto de alguma civilização antiga; uma expedição de aventureiros, comandada por um nobre imprudente, teria libertado estes gigantes de sua milenar prisão congelada. Capaz de devorar um mamute inteiro por vez, o verme pode surgir sem aviso onde houver considerável quantidade de carne (como um bando de aventureiros). Povos nativos usam amuletos abençoados que dizem afastar o monstro; uma vez nas Uivantes, viajantes experientes consideram prudente encontrar logo um mascate local para adquirir um destes. Não é sabido se existe apenas um ou vários destes monstros. Estudos da arcanista Drejane Challendar oferecem uma possibilidade aterradora: todos os vermes encontrados até o momento são larvas de uma criatura muitíssimo maior, ainda desconhecida. Por enquanto.` },
+      ],
+    },
   ],
 
   // ── 📖 O capítulo de regras que abre o livro ────────────────
@@ -8045,5 +10723,8 @@ Frutos da Espada-Mãe. Desesperadamente procurado por aqueles que são alvos de 
     { chave: "figadoDeLagartoTrovao", nome: "Fígado de Lagarto-Trovão", meta: "Tesouro do Grande Battham (Mundo Perdido)",
       texto:
 `Um símbolo de coragem e poder, o fígado do lagarto-trovão conserva uma fração da força da criatura. Obter isso exige que o fígado seja abençoado por um druida ou clérigo de Allihanna ou Megalokk em um ritual de 1 hora que consome T$ 3.000 em materiais. Após isso, se ingerido pelo personagem que derrotou o lagarto, o fígado fornece +1 em Força. Um personagem só pode aumentar sua Força desta forma uma vez.` },
+    { chave: "soroSupremo", nome: "Soro Supremo", meta: "Extraído do corpo de um soldado superior (Puristas)",
+      texto:
+`Um personagem de posse do corpo de um soldado superior pode tentar extrair uma fração do soro que concede a ele seu poder. Isso é um teste estendido de Ofício (alquimista) com CD 40 em que o personagem precisa obter 5 sucessos antes de 3 falhas. Cada teste representa um dia de trabalho. Se passar, o personagem obtém uma dose de soro supremo. Se falhar, arruína a amostra e não pode mais tentar com este corpo. Ingerir uma dose do soro supremo aumenta permanentemente Força, Destreza ou Constituição (escolhido na fabricação do soro) em +1. Um personagem só pode se beneficiar de uma dose de soro supremo. Além de ser um segredo muito bem guardado pelos puristas, o soro supremo é um composto extremamente volátil, preparado para um indivíduo específico. Por esta razão, não é encontrado à venda.` },
   ],
 };

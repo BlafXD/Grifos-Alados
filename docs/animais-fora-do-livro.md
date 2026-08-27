@@ -1,8 +1,9 @@
 # Animais & Montarias — o que não veio de *Ameaças de Arton*
 
-Anotação de trabalho sobre a sub-aba **🐎 Animais & Montarias** (`js/animais-data.js`),
-feita em **26/08/2026**, quando o bestiário de *Ameaças de Arton* foi importado até a
-seção **Povos-Trovão** (320 fichas, 22 seções).
+Anotação de trabalho sobre a sub-aba **🐎 Animais & Montarias** (`js/animais-data.js`).
+Começou em **26/08/2026**, quando o bestiário de *Ameaças de Arton* tinha sido importado
+até a seção Povos-Trovão; atualizada em **27/08/2026**, com o livro inteiro colado
+(426 fichas, 30 seções).
 
 O cruzamento entre a aba e o livro é automático:
 
@@ -14,74 +15,83 @@ O script compara os **números** de cada benefício (deslocamento, bônus, dados
 — não a redação, que na aba é resumida de propósito — e escreve
 `Inútil/_relatorio-montarias.txt`. Vale rodar depois de cada leva nova do TXT.
 
-**Situação atual: 48 entradas conferidas nos dois lados, 48 com os números batendo.**
+**Situação atual: 57 entradas conferidas nos dois lados, 57 com os números batendo.
+Nenhum parceiro do livro está fora da aba.**
+
+A lista de dúvidas do livro fechado está em [duvidas-ameacas-de-arton.md](duvidas-ameacas-de-arton.md).
 
 ---
 
-## ⚠ 1. Oito entradas marcadas "Ameaças de Arton" que não existem no TXT
+## ⚠ 1. Duas entradas marcadas "Ameaças de Arton" que não existem no livro
 
-Estas oito estão na aba com a fonte `'Ameaças de Arton'`, mas **não têm statblock
-nenhum** no `Inútil/Regras - Ameaças de Arton.txt` — nem na seção Montarias, nem em
-nenhuma das outras 21 seções já coladas.
+Eram oito quando o TXT ia só até a letra P. As últimas levas resolveram seis delas —
+**Búfalo-de-Guerra** e **Hippossauro** vieram em Reinos de Moreania, **Corcel de Comando**
+em Puristas, **Platan** e **Selako** em Sob as Ondas, **Urso das Neves** em Uivantes, e
+todos os números da aba bateram com os do livro.
 
-**Decidir depois:** manter (e talvez corrigir a fonte) ou tirar do sistema.
+Sobraram duas, e agora que o capítulo acabou não há mais leva para esperar:
 
-### Duas quase certamente chegam numa leva futura
+### Troll (Grande)
 
-O livro traz as seções em ordem alfabética, e o TXT parou em **"puristas"** (P).
-Estas duas já são **citadas de passagem** no texto que temos, então a ficha delas
-deve vir nas seções S e T:
+O livro **não tem** ficha "Troll" com linha *Parceiro*. O único troll-montaria que ele
+descreve é o do **Cavaleiro Finntroll** (ND 7, seção Trolls Nobres):
 
-| Criatura | Onde aparece hoje no TXT |
-|---|---|
-| **Selako** | linha 6229, na epígrafe do tendrículo: *"Tubarão terrestre? Quer dizer, um selako que anda com…"* |
-| **Troll** | linhas 6841/6844 (comparação com o tendrículo) e 11996–12042 (o kill'bone caça trolls) |
+> **Corcel Troll** O cavaleiro finntroll cavalga um troll treinado, um parceiro montaria
+> Grande. Enquanto estiver montado, seu deslocamento se torna 12m, ele recebe uma ação de
+> movimento extra (apenas para se deslocar), os seguintes ataques (em adição ao seu açoite)
+> e Dilacerar.
 
-### Seis não aparecem em lugar nenhum
+Isso é o perfil montado **do NPC**, não uma tabela iniciante/veterano/mestre. A ficha do
+troll em si o livro manda ver no Tormenta20, p. 308. Os benefícios que estão hoje na aba
+(+1d8 → +1d10 → +2d8 de dano, mais agarrar/derrubar) continuam sem fonte que eu tenha
+conseguido achar.
 
-Nenhuma menção, nem em epígrafe, nem em comparação. Provavelmente vieram da Wiki
-de Tormenta 20 ou de outro livro, e a fonte na aba está errada.
+### Cão de Caça (Médio ou Pequeno)
 
-#### Búfalo-de-Guerra (Grande)
-- **Iniciante:** Deslocamento muda para 9 m e limite de carga +5 espaços. Uma vez por rodada, em investida montada, +1d8 em rolagem de dano corpo a corpo.
-- **Veterano:** Como acima, mas deslocamento 12 m e ignora terreno difícil.
-- **Mestre:** Como acima, mas o bônus de dano muda para +2d8 e você recebe uma ação de movimento extra por turno (apenas para se deslocar).
+A expressão "cão de caça" **não aparece uma única vez** no TXT do livro. A entrada de
+`ANIMAIS_COMPRA` (T$ 150) está certa — o texto dela vem do Tormenta20 básico. Só a
+entrada do **bestiário de montarias** é que está sem origem:
 
-#### Cão de Caça (Médio ou Pequeno)
 - **Iniciante:** Deslocamento 9 m, você pode usar faro e recebe uma ação de movimento extra por turno (apenas para se deslocar).
 - **Veterano:** Como acima, mas deslocamento 12 m e +2 na Defesa.
 - **Mestre:** Como acima; além disso, uma vez por rodada, ao acertar um ataque corpo a corpo, manobra derrubar como ação livre.
 
-> O cão de caça também está em `ANIMAIS_COMPRA` (T$ 150), e lá o texto sai do
-> Tormenta20 básico. Só a entrada do **bestiário de montarias** é que está sem
-> origem — o TXT de *Ameaças* não tem a palavra "cão de caça" uma vez sequer.
-
-#### Corcel de Comando (Grande) — *usa Pilotagem no lugar de Cavalgar*
-- **Iniciante:** Deslocamento 12 m e você ignora a penalidade por terreno difícil.
-- **Veterano:** Como acima, e pode lançar Campo de Força (só o efeito básico); se aprender a magia, custo –1 PM.
-- **Mestre:** Como acima, e o alcance das suas habilidades baseadas em som (como Músicas de Bardo) aumenta um passo.
-
-#### Hippossauro (Grande)
-- **Iniciante:** Deslocamento 12 m e +2 em Diplomacia (macho) ou Furtividade (fêmea).
-- **Veterano:** Como acima, mas deslocamento 15 m e, uma vez por rodada, +1d8 em rolagem de dano corpo a corpo.
-- **Mestre:** Como acima, mas o bônus na perícia muda para +4 e você recebe uma ação de movimento extra (apenas para se deslocar).
-
-#### Platan (Grande)
-- **Iniciante:** Deslocamento de natação 9 m e uma ação de movimento extra (apenas para se deslocar).
-- **Veterano:** Uma vez por rodada, como ação livre, gaste 1 PM para 2d6 de impacto em alcance curto.
-- **Mestre:** Como acima, mas natação 15 m e pode gastar 4 PM para 6d6 de impacto em alcance curto.
-
-#### Urso das Neves (Grande)
-- **Iniciante:** Deslocamento 12 m e redução de frio 5.
-- **Veterano:** Deslocamento de natação 12 m e a redução de frio sobe para 10.
-- **Mestre:** Como acima, mas a redução de frio sobe para 20.
-
-> A entrada "Urso" de *Ameaças* traz só três variedades — **panda, pardo e das
-> cavernas**. Não existe urso das neves ali.
+**Decidir:** manter as duas com a fonte trocada (Wiki? outro livro?) ou tirar do sistema.
 
 ---
 
-## ✅ 2. O que já foi corrigido em 26/08/2026
+## 2. Fichas do livro que a aba cobre por outra entrada
+
+Não são buraco — o script as separa num bloco próprio:
+
+- **Cavalo de Carga** — no livro é *"parceiro besta de carga"*, categoria que a aba não
+  lista; os cavalos comuns estão na entrada **Cavalo** (Tormenta 20).
+- **Gorlogg Alfa** — a ficha diz *"com as mesmas estatísticas de um gorlogg"*, e a aba
+  já junta os dois em **Gorlogg / Gorlogg Alfa**.
+- **Mamute** — a ficha diz *"os mesmos benefícios que um elefante"*, e a aba já junta os
+  dois em **Elefante / Mamute**.
+- **Elemental do Veneno Médio** — a ficha diz *"as mesmas estatísticas de um elemental do
+  veneno pequeno"*, e a aba junta os três tamanhos em **Elemental do Veneno**.
+
+---
+
+## 3. O que entrou na aba em 27/08/2026 (quinta leva)
+
+Três parceiros novos, todos **parceiro especial**:
+
+| Entrada | Arquétipo | Seção do livro |
+|---|---|---|
+| **Carcaju** | fortão | Uivantes (ND 1) |
+| **Elemental do Veneno** | assassino | Sszzaazitas (ND 2 / 8 / 12) |
+| **Perdigueiro Troll** | perseguidor | Trolls Nobres (ND 1) |
+
+E o **Corcel de Comando**, que já estava na aba sem ficha para conferir, teve confirmada
+a regra mais estranha dele: *usa Pilotagem no lugar de Cavalgar*. É a única montaria do
+livro assim.
+
+---
+
+## ✅ 4. O que já foi corrigido em 26/08/2026
 
 A aba tinha sido montada em boa parte a partir da Wiki de Tormenta 20, e a Wiki
 diverge do livro em alguns pontos. O livro passou a valer.
@@ -128,14 +138,3 @@ usavam:
 Asa-Assassina, Bogum, Cão de Kally, **Cocatriz**, Escudeiro, Fofo, Gambá, Hiena,
 Homúnculo, Kill'Bone, Ko-Kabuto, Malafex, Tentacute e Verilêmur — mais a
 **Cocatriz-Real** e o **Urso Pardo**, que são montaria.
-
----
-
-## 3. Duas fichas do livro que a aba cobre por outra entrada
-
-Não são buraco — o script as separa num bloco próprio:
-
-- **Cavalo de Carga** — no livro é *"parceiro besta de carga"*, categoria que a aba
-  não lista; os cavalos comuns estão na entrada **Cavalo** (Tormenta 20).
-- **Gorlogg Alfa** — a ficha dele diz *"com as mesmas estatísticas de um gorlogg"*,
-  e a aba já junta os dois em **Gorlogg / Gorlogg Alfa**.
