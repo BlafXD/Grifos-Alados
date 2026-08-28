@@ -134,6 +134,11 @@ A vítima exposta faz Fortitude (CD definida pelo aplicador, atributo-chave Inte
   { grupo: '🎒 Outros Itens — Regras', titulo: 'Aparatos (engenhoqueiro)', texto:
 `Modificam o funcionamento de engenhocas. Acoplado, o aparato não ocupa espaço. Cada engenhoca aceita até dois aparatos: um aumenta a CD de ativação em +2; dois aumentam em +5. Acoplar ou remover leva 1 hora de trabalho. Fabricação: Ofício (engenhoqueiro), CD 20.` },
 
+  { grupo: '🎒 Outros Itens — Regras', titulo: 'Equipamento purista (vale 1/4, não metade)', texto:
+`Regra da Supremacia Purista (Ameaças de Arton). Espólio tomado de puristas é de ótima qualidade, mas MUITO difícil de vender: os próprios puristas não perdoam quem comercializa suas armas e armaduras, e no resto de Arton o desprezo ou o medo afastam os compradores.
+Por isso, itens de puristas são vendidos por UM QUARTO do preço de lista — e não pela metade, que é a regra padrão para item usado.
+Vale para o equipamento das fichas puristas: armadura completa, escudo pesado reforçado, martelo de guerra pungente, tomo de guerra, machado de batalha, sapatos de camurça e o resto do arsenal do Exército Purista.` },
+
   // ── CONDIÇÕES DE ITENS ──────────────────────────────────────────
   { grupo: '🛠 Condições de Itens', titulo: 'Avariado / Destruído / Reparar', texto:
 `Algumas habilidades (sobretudo de ameaças) afetam itens:

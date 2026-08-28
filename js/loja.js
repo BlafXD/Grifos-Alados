@@ -397,7 +397,8 @@
         </div>
         <p class="comun-caixa-dica">É quanto a comunidade tem para <strong>comprar itens dos
           jogadores</strong> ou pagá-los (regra padrão: um item usado vende por metade do preço
-          de lista). Registre cada venda descontando daqui.</p>
+          de lista; <strong>equipamento purista vende por um quarto</strong>, porque quase
+          ninguém quer lidar com ele). Registre cada venda descontando daqui.</p>
       </div>`;
   }
 

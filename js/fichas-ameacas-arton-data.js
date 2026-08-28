@@ -6,7 +6,7 @@
 //    "Inútil/Regras - Ameaças de Arton.txt". Dá para editar à mão — mas
 //    rodar o gerador de novo sobrescreve tudo.
 //
-//  As 426 criaturas do Capítulo 1 (Ameaças), nas 30 seções
+//  As 427 criaturas do Capítulo 1 (Ameaças), nas 30 seções
 //  temáticas do livro. Cada ficha guarda o TEXTO LIMPO do statblock, no
 //  formato do livro — quem o transforma em criatura do bestiário é o
 //  parser parsearFicha() do monstros.js (o mesmo do "📋 Importar do
@@ -36,21 +36,27 @@
 //  conserto sai listado no relatório do gerador; nenhum número de regra
 //  foi tocado.
 //
-//  ⚠ Dezessete NDs vieram errados da cópia do PDF e foram conferidos no
-//  livro: Lefeu, Burodron (11), Lefeu, Ezzayn (17), Aspecto de Aharadak
-//  (10), Alto Sacerdote de Hyninn (8), Hobgoblin Atirador (5), Namasqall
-//  (13), Ber-baram (8), Gnoll Xamã de Allihanna (2), Gnoll Xamã de Marah
-//  (6), Instrumento Divino (7), Tengu Bandoleiro (6), Cavalo Glacial (2),
-//  Rinoceronte (4), Urso Pardo (3), Gigante Esqueleto (5) e Senhor das
-//  Múmias (15) vieram SEM ND; o "ND 8" que o dump colou no Sacerdote de
-//  Hyninn era do Alto Sacerdote — o Sacerdote é ND 2. (O Goblin-Bomba e o
-//  Urso das Cavernas também vieram sem ND no statblock, mas o número
-//  estava no título da entrada e o gerador o recuperou.)
-//
-//  ⚠⚠ 10 NDs AINDA NÃO CONFERIDOS NO LIVRO — Arqueiro Escravo (5), Kobold Xamã (3), Dançarino de Guerra Veterano (6), Purificado (1/2), Mantícora (6), Grande Tachygloss (16), Uraghian Jovem (5), Água-viva Gigante (8), Nagah Retalhador (12) e Nagah Sacerdotisa (5).
-//  Vieram sem ND na cópia do PDF e o número aqui é dedução do gerador;
-//  o raciocínio de cada um está no relatório. Se o livro disser outra
-//  coisa, troque na tabela ND_FALTANDO do gerador e rode de novo.
+//  ⚠ TODOS os ND daqui foram batidos contra o Apêndice C do livro (a
+//  lista de criaturas por ND), em 27/08/2026 — 427 fichas, zero
+//  divergência. Vinte e sete vieram tortos da cópia do PDF:
+//    · vinte e quatro vieram SEM ND e foram reconstruídos (Lefeu,
+//      Burodron 11 · Lefeu, Ezzayn 17 · Aspecto de Aharadak 10 · Alto
+//      Sacerdote de Hyninn 8 · Hobgoblin Atirador 5 · Namasqall 14 ·
+//      Ber-baram 8 · Gnoll Xamã de Allihanna 2 · Gnoll Xamã de Marah 6 ·
+//      Instrumento Divino 7 · Tengu Bandoleiro 6 · Cavalo Glacial 2 ·
+//      Rinoceronte 4 · Urso Pardo 3 · Gigante Esqueleto 5 · Senhor das
+//      Múmias 15 · Kobold Xamã 3 · Arqueiro Escravo 5 · Dançarino de
+//      Guerra Veterano 6 · Purificado 2 · Mantícora 6 · Grande
+//      Tachygloss 16 · Uraghian Jovem 5 · Água-viva Gigante 8 · Nagah
+//      Retalhador 12 · Nagah Sacerdotisa 5);
+//    · o "ND 8" que o dump colou no Sacerdote de Hyninn era do Alto
+//      Sacerdote — o Sacerdote é ND 2;
+//    · e em DUAS fichas o cabeçalho do statblock briga com o apêndice do
+//      próprio livro: Lefeu, Hurobakk (cabeçalho 8, apêndice 9) e
+//      Elfo-do-Mar Pescador (cabeçalho 3, apêndice 2). Nas duas os
+//      números da ficha ficam do lado do apêndice, e foi ele que valeu.
+//  (O Goblin-Bomba e o Urso das Cavernas também vieram sem ND no
+//  statblock, mas o número estava no título da entrada.)
 //
 //  ⚠ O "✦" no começo de uma linha é o selo de HABILIDADE MÁGICA (no
 //  livro é um ícone ao lado do nome; na cópia do PDF sobrou como um "e"
@@ -263,11 +269,11 @@ For 6, Des 4, Con 3, Int –1, Sab 2, Car –3
 Tesouro Nenhum.`
         },
         {
-          chave: "lefeuHurobakk", nome: "Lefeu, Hurobakk", nd: "8", tipo: "Monstro (lefeu) Grande",
+          chave: "lefeuHurobakk", nome: "Lefeu, Hurobakk", nd: "9", tipo: "Monstro (lefeu) Grande",
           papel: '',
           resumo: "O demônio lembra um inseto quadrúpede, com um segundo tronco ereto emergindo do primeiro, de forma similar a um centauro, mas com quatro…",
           texto:
-`Lefeu, Hurobakk ND 8
+`Lefeu, Hurobakk ND 9
 O demônio lembra um inseto quadrúpede, com um segundo tronco ereto emergindo do primeiro, de forma similar a um centauro, mas com quatro braços adicionais e cabeçorra insetoide. Seus braços anteriores têm a forma de imensas garras de lagosta, que parecem capazes de dilacerar aço. Criaturas de poder de combate impressionante, os hurobakk são guerreiros de elite que fornecem suporte e força de ataque devastadora aos batalhões lefeu.
 Equivalentes (em linhas gerais) à cavalaria pesada em um exército artoniano, os hurobakk entram em cena quando o inimigo é forte demais para as fileiras normais uktril e geraktril. Sua armadura é uma das mais resistentes entre os lefeu. Em geral são vistos em terrenos de planície, onde são mais eficazes, mas também patrulham as vias de acesso principais às cidades da Tormenta. Embora apenas dois ou três acompanhem cada grupo lefeu, às vezes batalhões inteiros destas criaturas avançam sobre as forças de Arton. Os hurobakk recorrem a táticas de cavalaria: galopam contra o adversário em investidas devastadoras, rompendo as linhas inimigas. Usam seu deslocamento para evitar confrontos corpo a corpo, ao mesmo tempo em que tentam atrair a atenção — pois, com sua armadura pesada, conseguem resistir a golpes melhor que seus companheiros. Curiosamente, os hurobakk costumam obedecer aos geraktril em combate. Sua função é destrutiva; não parecem atuar como comandantes.
 Monstro (lefeu) Grande
@@ -2314,11 +2320,11 @@ Perícias Furtividade +14 (+24 na água).
 Tesouro 1d4 doses de éter elemental (frio) (CD 23 para extrair).`
         },
         {
-          chave: "namasqall", nome: "Namasqall", nd: "13", tipo: "Espírito (elemental) Colossal",
+          chave: "namasqall", nome: "Namasqall", nd: "14", tipo: "Espírito (elemental) Colossal",
           papel: '',
           resumo: "A tempestade torrencial é, sem dúvida, causada pela criatura elemental que se aproxima.",
           texto:
-`Namasqall ND 13
+`Namasqall ND 14
 A tempestade torrencial é, sem dúvida, causada pela criatura elemental que se aproxima. Um imenso emaranhado de tentáculos aquosos é uma maneira de descrever, pairando e retorcendo-se acima das águas, mas também sorvendo-as como um tornado. O monstro pulsa e convulsiona enquanto emite o rugido constante de um rio caudaloso. Em seu interior, conjuntos de luzes azuladas intensas sugerem energias incríveis, prontas a explodir. Encimando tudo, a imitação rústica de um torso humanoide, sem face, os braços gesticulando e apontando, acusadores. Namasqall são os maiores e mais poderosos elementais da água conhecidos em Arton — imagina-se existir outros ainda maiores em seu Plano de origem, mas estes nunca se manifestam aqui. Muitos consideram os elementais como fenômenos, em vez de criaturas. O namasqall poderia ser um argumento a favor dessa teoria: até hoje foi encontrado apenas em estado de fúria constante, atacando e destruindo tudo em volta, como uma força da natureza. Não há mente a ser alcançada ou questionada. Qualquer outra motivação que pudesse ter, qualquer forma de aplacar sua violência, não parece existir. Sempre que um namasqall se manifesta, chove forte na área em volta. Perto da criatura, essa chuva é tão intensa quanto a pior das tempestades, a ponto de dificultar observação e movimentação. A aparição de um namasqall não parece vinculada apenas a invocações (aliás, poucos ousam invocar um deles), nem acontece apenas em lugares onde existe água abundante. Seu caos elemental pode explodir em qualquer lugar, a qualquer momento. Capaz de arrasar vilas inteiras, sua ocorrência sempre vai alarmar autoridades e demandar aventureiros poderosos.
 A presença de um pequeno (relativamente falando) torso humanoide no alto da criatura poderia sugerir inteligência, até mesmo uma intenção de se comunicar. Contudo, embora essa parte às vezes gesticule antes de manifestar poderes, sua função permanece inexplicada, pois o namasqall não fala e nem busca qualquer diálogo.
 Espírito (elemental) Colossal
@@ -2354,7 +2360,7 @@ Corpo Eólico O t’peel pode atravessar qualquer fresta por onde o ar passaria,
 For 0, Des 4, Con 2, Int –2, Sab 0, Car –1
 Perícias Ladinagem +7.
 Tesouro Metade (role novamente qualquer item que ocupe mais de 2 espaços) e 1 dose de éter elemental (eletricidade) (CD 16 para extrair).
-Familiar Um t’peel familiar pode carregar 2 espaços de itens e permite que você lance Queda Suave`
+Familiar Um t’peel familiar pode carregar 2 espaços de itens e permite que você lance Queda Suave.`
         },
         {
           chave: "rarvnaak", nome: "Rarvnaak", nd: "7", tipo: "Espírito (elemental) Médio",
@@ -8009,11 +8015,11 @@ Perícias Acrobacia +16, Atletismo +9.
 Equipamento Machado de batalha x2, sapatos de camurça aprimorados. Tesouro Padrão.`
         },
         {
-          chave: "purificado", nome: "Purificado", nd: "1/2", tipo: "Humanoide (hynne) Pequeno",
+          chave: "purificado", nome: "Purificado", nd: "2", tipo: "Humanoide (hynne) Pequeno",
           papel: '',
           resumo: "Mesmo à distância, o pequeno hynne parece ter sido brutalmente torturado.",
           texto:
-`Purificado ND 1/2
+`Purificado ND 2
 “Usaram até os reféns! Que Arsenal me dê forças quando eu encontrar os responsáveis.”
 — Sir William, o Cavaleiro da Alvorada
 Mesmo à distância, o pequeno hynne parece ter sido brutalmente torturado. Não diz nada, mas os olhos molhados e cheios de medo imploram ajuda. Este título absurdamente cruel é empregado pela Supremacia para designar não humanos forçados a abordar forças inimigas, transportando artefatos mortais em seus corpos. Quando heróis decidem acolher um prisioneiro fugitivo, podem na verdade estar tomando a última decisão de suas vidas. Um purificado é um não humano com uma gema implantada cirurgicamente dentro do peito. Essa pedra contém energias poderosas e encantos astutos — é essencialmente uma armadilha mágica. Quando se aproxima de qualquer outro não humano, causa uma detonação capaz de rivalizar com a maior magia Bola de Fogo, matando o portador e todos à volta. Os inventores da Supremacia empregam as táticas mais desumanas para evitar que os inimigos percebam a armadilha. Muitos purificados são mutilados de formas que não consigam avisar seus salvadores — ter a língua arrancada é o mais comum. Outros, após lavagem cerebral, não sabem que trazem consigo o explosivo. E outros sabem, mas não têm escolha; estão sendo chantageados com as vidas de entes queridos. Podem ser encontrados sozinhos, em duplas ou infiltrados em pequenos grupos de “fugitivos” (que não ativam a gema). Apesar do perigo extremo, é possível para um conjurador ou inventor habilidoso extrair a gema e salvar a vítima. Assumir ou não esse risco imenso estará entre as decisões mais difíceis para quaisquer aventureiros em campanha contra os puristas.
@@ -8085,7 +8091,8 @@ Mestre de Manobras O soldado recebe +10 em testes de manobras. Além disso, uma 
 Super Soldado Quando o soldado é reduzido a 570 PV ou menos, entra em um frenesi de combate. Seus ataques mudam para ataque desarmado x4 +57 (3d12+30, 17/x3), sua Defesa se torna 60, seu deslocamento aumenta para 18m e ele passa a poder executar uma ação padrão adicional por turno. Entretanto, ele se torna vulnerável a todos os tipos de dano e sofre –5 em Vontade.
 For 7, Des 7, Con 7, Int 3, Sab 2, Car –1
 Perícias Acrobacia +26, Atletismo +26.
-Equipamento Cinto do campeão, faixas do pugilista, manoplas de adamante. Tesouro Padrão, mais ingredientes para uma dose de soro supremo (veja a caixa de texto).`
+Equipamento Cinto do campeão, faixas do pugilista, manoplas de adamante. Tesouro Padrão, mais ingredientes para uma dose de soro supremo (veja a caixa de texto).
+Soro Supremo Um personagem de posse do corpo de um soldado superior pode tentar extrair uma fração do soro que concede a ele seu poder. Isso é um teste estendido de Ofício (alquimista) com CD 40 em que o personagem precisa obter 5 sucessos antes de 3 falhas. Cada teste representa um dia de trabalho. Se passar, o personagem obtém uma dose de soro supremo. Se falhar, arruína a amostra e não pode mais tentar com este corpo. Ingerir uma dose do soro supremo aumenta permanentemente Força, Destreza ou Constituição (escolhido na fabricação do soro) em +1. Um personagem só pode se beneficiar de uma dose de soro supremo. Além de ser um segredo muito bem guardado pelos puristas, o soro supremo é um composto extremamente volátil, preparado para um indivíduo específico. Por esta razão, não é encontrado à venda.`
         },
       ],
       regras: [
@@ -8948,12 +8955,12 @@ For 10, Des 0, Con 8, Int –4, Sab 0, Car –2
 Tesouro Metade mais 2d4 postas de canceronte (CD 31 para extrair; cada posta vale T$ 12 para preparar um banquete de canceronte).`
         },
         {
-          chave: "elfoDoMarPescador", nome: "Elfo-do-Mar Pescador", nd: "3", tipo: "Humanoide (elfo-do-mar) Médio",
+          chave: "elfoDoMarPescador", nome: "Elfo-do-Mar Pescador", nd: "2", tipo: "Humanoide (elfo-do-mar) Médio",
           papel: '',
           subgrupo: "Elfo-do-Mar",
           resumo: "Elfo-do-Mar — Este ser lembra um elfo terrestre, embora mais baixo e corpulento, de ombros largos.",
           texto:
-`Elfo-do-Mar Pescador ND 3
+`Elfo-do-Mar Pescador ND 2
 Humanoide (elfo-do-mar) Médio
 Iniciativa +7, Percepção +7, percepção às cegas (apenas embaixo d’água), visão na penumbra
 Defesa 18, Fort +8, Ref +11, Von +3
@@ -9694,6 +9701,20 @@ Perícias Enganação +15, Furtividade +1, Intuição +9, Religião +9.
 Equipamento Adaga, couraça, escudo leve, símbolo sagrado (qualquer, exceto Sszzaas). Tesouro Padrão.`
         },
         {
+          chave: "rivalEspelho", nome: "Rival Espelho", nd: "?", tipo: "???",
+          papel: '',
+          resumo: "O vulto encapuzado reduz seu passo, aguardando pela chegada de vocês.",
+          texto:
+`Rival Espelho ND ?
+“Klunc odeia esse cara feio!”
+— Klunc, o Bárbaro
+O vulto encapuzado reduz seu passo, aguardando pela chegada de vocês. Ele diz qualquer coisa sobre traírem um dos deuses. Quando remove o capuz, o impossível se revela: ele tem SEU rosto, SEUS trajes, SEU equipamento. As histórias sobre a Libertação de Valkaria dizem que uma de suas vinte masmorras foi preparada por Sszzaas. E que seu guardião final, aquele que deveria ser derrotado pelos Libertadores, era uma criatura deste tipo. O rival espelho é um ser mágico que, visto à distância, lembra apenas um humanoide oculto em mantos. Contudo, quando se aproxima, revela ser uma cópia idêntica do observador — ou, quando há mais de um, aquele que parece mais poderoso. O rival espelho tem as mesmas estatísticas do personagem copiado. Itens mágicos e magias benéficas conjuradas sobre o alvo também são copiadas. A cópia está em forma plena, com pontos de vida e magia máximos, sem quaisquer efeitos nocivos que porventura estejam afetando o alvo. Quando o rival é atacado, qualquer dano ou efeito afetará apenas o personagem original: ferimentos surgem no mesmo ponto onde o rival é atingido. O contrário não acontece: ataques contra o original causam seus efeitos normais, sem afetar o rival. Assim, a única forma de derrotar a criatura é abatendo o próprio companheiro. Dizem que Sszzaas criou o rival espelho para, assim como fez com os Libertadores, forçar heróis a trair um dos seus. Eles podem ser encontrados protegendo locais sagrados de Sszzaas, ou servindo a um sszzaazita celebrante. Nunca foram vistos em duplas ou grupos. Ainda.
+???
+??? Um rival espelho possui as características e o ND do personagem que está copiando.
+✦ Transferir Dor Todo dano que o rival espelho sofre, bem como efeitos adicionais desse dano, é aplicado ao personagem que ele está copiando e não ao rival. Se o personagem copiado for reduzido a 0 PV ou menos, o rival desaparece após 1 rodada.
+Tesouro Nenhum.`
+        },
+        {
           chave: "zumbiPeconha", nome: "Zumbi Peçonha", nd: "1", tipo: "Morto-vivo Médio",
           papel: '',
           resumo: "Pouco mais que um esqueleto coberto de carniça, o zumbi avança trôpego, nem mesmo erguendo as garras.",
@@ -9801,16 +9822,6 @@ Fraquezas Ofídicas. A nagah sofre 1 ponto de dano adicional para cada dado de d
 `“Pessoal, esse é meu primo Finjo. Nunca o conheci, mas confio plenamente!”
 — Findo, hynne guerreiro
 Os cultistas estão encurralados, não há como escaparem. Um deles se adianta e sibila uma palavra desconhecida. Súbito, a companheira caçadora que esteve viajando com vocês nestes últimos meses se volta para atacá-los. Nagahs dormentes se comportam como aventureiras de grande nobreza, acompanhando heróis, combatendo o mal no mundo. Mas na verdade são sszzaazitas, enfeitiçadas pelo próprio Sszzaas para acreditar serem pessoas diferentes. A um comando secreto de outro membro da seita (que pode ser enviado à distância, por meios mágicos), a nagah “desperta” com todas as suas lembranças, incluindo tudo que ocorreu enquanto estava dormente. Ela então executará as ordens secretas de seus mestres. A própria existência das nagahs dormentes levanta ainda mais suspeita sobre membros desta raça, até mesmo aventureiras com longas carreiras de combate ao mal. Qualquer delas pode, sem saber, estar a serviço dos sszzaazitas. São capazes de mudar para seu lado maligno a qualquer momento, matar todos os seus amigos durante o sono, para deter sua missão ou roubar suas riquezas. Nenhum meio mágico conhecido pode revelar uma nagah dormente. Pior ainda, nem todas são nagahs; apenas as mentiras espalhadas pelos próprios sszzaazitas levam a crer que sim!` },
-        { titulo: "Rival Espelho",
-          texto:
-`“Klunc odeia esse cara feio!”
-— Klunc, o Bárbaro
-O vulto encapuzado reduz seu passo, aguardando pela chegada de vocês. Ele diz qualquer coisa sobre traírem um dos deuses. Quando remove o capuz, o impossível se revela: ele tem SEU rosto, SEUS trajes, SEU equipamento. As histórias sobre a Libertação de Valkaria dizem que uma de suas vinte masmorras foi preparada por Sszzaas. E que seu guardião final, aquele que deveria ser derrotado pelos Libertadores, era uma criatura deste tipo. O rival espelho é um ser mágico que, visto à distância, lembra apenas um humanoide oculto em mantos. Contudo, quando se aproxima, revela ser uma cópia idêntica do observador — ou, quando há mais de um, aquele que parece mais poderoso. O rival espelho tem as mesmas estatísticas do personagem copiado. Itens mágicos e magias benéficas conjuradas sobre o alvo também são copiadas. A cópia está em forma plena, com pontos de vida e magia máximos, sem quaisquer efeitos nocivos que porventura estejam afetando o alvo. Quando o rival é atacado, qualquer dano ou efeito afetará apenas o personagem original: ferimentos surgem no mesmo ponto onde o rival é atingido. O contrário não acontece: ataques contra o original causam seus efeitos normais, sem afetar o rival. Assim, a única forma de derrotar a criatura é abatendo o próprio companheiro. Dizem que Sszzaas criou o rival espelho para, assim como fez com os Libertadores, forçar heróis a trair um dos seus. Eles podem ser encontrados protegendo locais sagrados de Sszzaas, ou servindo a um sszzaazita celebrante. Nunca foram vistos em duplas ou grupos. Ainda.
-Rival Espelho ND ???
-???
-??? Um rival espelho possui as características e o ND do personagem que está copiando.
-✦ Transferir Dor Todo dano que o rival espelho sofre, bem como efeitos adicionais desse dano, é aplicado ao personagem que ele está copiando e não ao rival. Se o personagem copiado for reduzido a 0 PV ou menos, o rival desaparece após 1 rodada.
-Tesouro Nenhum.` },
         { titulo: "Sszzaazita Celebrante & Nastarrath",
           texto:
 `“Estou dizendo, é um impostor! Detenham-no antes que seja — ahh, deixa pra lá…”
@@ -10140,7 +10151,8 @@ Pontos de Mana 77
 Corpo a Corpo Adaga +27 (1d4+6).
 Arrogância Divina O alto sacerdote finntroll se considera a representação suprema da maior obra dos deuses. Criaturas que falhem em testes de resistência contra suas magias ficam frustradas.
 Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, o alto sacerdote muda a execução dela para livre.
-Trevas Insidiosas O alto sacerdote soma sua Sabedoria em suas rolagens de dano de magias de trevas (já contabilizado). MagiasComo um clérigo de Tenebra de 15º nível (CD 35, limite de PM 15, –1 PM no custo de Toque Vampírico).
+Trevas Insidiosas O alto sacerdote soma sua Sabedoria em suas rolagens de dano de magias de trevas (já contabilizado).
+Magias Como um clérigo de Tenebra de 15º nível (CD 35, limite de PM 15, –1 PM no custo de Toque Vampírico).
 • Curar Ferimentos (Padrão, 10 PM) Uma criatura adjacente cura 11d8+11 PV.
 • Ligação Sombria (Padrão, 10 PM) O alto sacerdote escolhe um alvo em alcance longo e cria uma conexão entre seu corpo e o desse alvo, deixando uma marca idêntica na pele de ambos. Enquanto a magia durar, sempre que ele sofrer qualquer dano ou condição, o alvo desta magia deve fazer um teste de Fortitude; se falhar, sofre o mesmo dano que o sacerdote ou recebe a mesma condição. A magia termina se o alvo chegar a 0 PV.
 • Pele de Pedra (Padrão, 10 PM) Uma criatura adjacente é transformada em uma estátua de pedra sem consciência por 1d4 rodadas (Fort evita).
@@ -10723,8 +10735,5 @@ Frutos da Espada-Mãe. Desesperadamente procurado por aqueles que são alvos de 
     { chave: "figadoDeLagartoTrovao", nome: "Fígado de Lagarto-Trovão", meta: "Tesouro do Grande Battham (Mundo Perdido)",
       texto:
 `Um símbolo de coragem e poder, o fígado do lagarto-trovão conserva uma fração da força da criatura. Obter isso exige que o fígado seja abençoado por um druida ou clérigo de Allihanna ou Megalokk em um ritual de 1 hora que consome T$ 3.000 em materiais. Após isso, se ingerido pelo personagem que derrotou o lagarto, o fígado fornece +1 em Força. Um personagem só pode aumentar sua Força desta forma uma vez.` },
-    { chave: "soroSupremo", nome: "Soro Supremo", meta: "Extraído do corpo de um soldado superior (Puristas)",
-      texto:
-`Um personagem de posse do corpo de um soldado superior pode tentar extrair uma fração do soro que concede a ele seu poder. Isso é um teste estendido de Ofício (alquimista) com CD 40 em que o personagem precisa obter 5 sucessos antes de 3 falhas. Cada teste representa um dia de trabalho. Se passar, o personagem obtém uma dose de soro supremo. Se falhar, arruína a amostra e não pode mais tentar com este corpo. Ingerir uma dose do soro supremo aumenta permanentemente Força, Destreza ou Constituição (escolhido na fabricação do soro) em +1. Um personagem só pode se beneficiar de uma dose de soro supremo. Além de ser um segredo muito bem guardado pelos puristas, o soro supremo é um composto extremamente volátil, preparado para um indivíduo específico. Por esta razão, não é encontrado à venda.` },
   ],
 };
