@@ -15,10 +15,15 @@ O script compara os **números** de cada benefício (deslocamento, bônus, dados
 — não a redação, que na aba é resumida de propósito — e escreve
 `Inútil/_relatorio-montarias.txt`. Vale rodar depois de cada leva nova do TXT.
 
-**Situação atual: 57 entradas conferidas nos dois lados, 57 com os números batendo.
+**Situação atual: 58 entradas conferidas nos dois lados, 58 com os números batendo.
 Nenhum parceiro do livro está fora da aba.**
 
 A lista de dúvidas do livro fechado está em [duvidas-ameacas-de-arton.md](duvidas-ameacas-de-arton.md).
+
+> **Familiares saíram desta aba.** Dez fichas do livro trazem uma linha `Familiar`
+> separada da linha `Parceiro`, e esse benefício não cabia aqui. Desde 27/08/2026 elas
+> vivem na sub-aba **🦉 Familiares** (`js/familiares-data.js`), com uma décima primeira
+> que só existe em quadro: o **dragão filhote**.
 
 ---
 
@@ -64,8 +69,6 @@ entrada do **bestiário de montarias** é que está sem origem:
 
 Não são buraco — o script as separa num bloco próprio:
 
-- **Cavalo de Carga** — no livro é *"parceiro besta de carga"*, categoria que a aba não
-  lista; os cavalos comuns estão na entrada **Cavalo** (Tormenta 20).
 - **Gorlogg Alfa** — a ficha diz *"com as mesmas estatísticas de um gorlogg"*, e a aba
   já junta os dois em **Gorlogg / Gorlogg Alfa**.
 - **Mamute** — a ficha diz *"os mesmos benefícios que um elefante"*, e a aba já junta os
@@ -84,6 +87,13 @@ Três parceiros novos, todos **parceiro especial**:
 | **Carcaju** | fortão | Uivantes (ND 1) |
 | **Elemental do Veneno** | assassino | Sszzaazitas (ND 2 / 8 / 12) |
 | **Perdigueiro Troll** | perseguidor | Trolls Nobres (ND 1) |
+
+Mais o **Cavalo de Carga**, que ganhou entrada própria com o tamanho
+`— (parceiro besta de carga)`. É uma categoria do livro que a aba não tinha: o animal
+não dá os três degraus iniciante/veterano/mestre, só carrega peso. O texto da regra está
+na p. 416 de *Ameaças de Arton*, fora do capítulo de ameaças, e não veio em TXT nenhum —
+por isso a entrada (e a `obs` do **Trobo**, que serve para as duas coisas) traz um `OBS:`
+explicando a categoria e apontando a página, em vez da regra literal.
 
 E o **Corcel de Comando**, que já estava na aba sem ficha para conferir, teve confirmada
 a regra mais estranha dele: *usa Pilotagem no lugar de Cavalgar*. É a única montaria do
