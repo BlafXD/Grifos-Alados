@@ -6,8 +6,10 @@
 //    "Inútil/Regras - Ameaças de Arton.txt". Dá para editar à mão — mas
 //    rodar o gerador de novo sobrescreve tudo.
 //
-//  As 427 criaturas do Capítulo 1 (Ameaças), nas 30 seções
-//  temáticas do livro. Cada ficha guarda o TEXTO LIMPO do statblock, no
+//  As 430 criaturas do livro — o Apêndice C lista
+//  exatamente estas —, nas 30 seções temáticas do Capítulo 1, mais um
+//  grupo nosso ("Fora do Capítulo 1") para as três que o livro imprime
+//  adiante. Cada ficha guarda o TEXTO LIMPO do statblock, no
 //  formato do livro — quem o transforma em criatura do bestiário é o
 //  parser parsearFicha() do monstros.js (o mesmo do "📋 Importar do
 //  livro"), exatamente como já acontece com js/fichas-t20-data.js.
@@ -16,9 +18,14 @@
 //    chave   — id estável (não mudar; a aba e o modal usam)
 //    nome/nd — repetidos fora do texto para listas e filtros
 //    tipo    — linha de tipo e tamanho (só exibição em listas)
-//    papel   — 'solo' | 'lacaio' | 'especial'. No livro é um ÍCONE, que
-//              não sobrevive à cópia do PDF: vem vazio, e o bestiário
-//              assume "lacaio" até o mestre trocar na ficha.
+//    papel   — 'solo' | 'lacaio' | 'especial'. No livro é um ÍCONE
+//              VETORIAL ao lado do nome: não é caractere nenhum, e por
+//              isso nunca saiu em cópia de texto. Foi lido do PDF em
+//              28/08/2026 assinando a geometria do desenho e batendo com
+//              a legenda da p. 12 — as três assinaturas aparecem 430
+//              vezes fora da legenda, uma para cada ficha. Só o RIVAL
+//              ESPELHO fica vazio: o livro não lhe dá ícone, porque ele
+//              copia o personagem (ND "?" e tipo "???").
 //    resumo  — uma linha para o modal de inserção
 //    texto   — statblock completo; PRIMEIRA linha = "Nome ND X", depois
 //              a descrição (quando a entrada do livro tem uma ficha só),
@@ -70,6 +77,12 @@
 //    comuns  — quando o grupo tem um quadro que vale para TODAS as fichas
 //              dele; "aplicaSe" filtra pela linha de tipo e a aba oferece
 //              anexá-lo ao mandar a ficha para o combate.
+//    reforcos— a caixa "Reforços" que fecha a seção no livro: criaturas de
+//              OUTRAS seções que combinam com o tema. Cada nome traz
+//              "c: [chaves]" com a(s) ficha(s) que ele cobre (um nome como
+//              "Trog" é título de entrada e cobre várias), ou "f: 1" quando
+//              é o asterisco do livro — criatura que NÃO está aqui. São 28
+//              caixas: Mascotes & Familiares e Montarias não têm.
 // ════════════════════════════════════════════════════════════════════
 window.FICHAS_AMEACAS_ARTON = {
 
@@ -86,7 +99,7 @@ window.FICHAS_AMEACAS_ARTON = {
       fichas: [
         {
           chave: "almaAcorrentada", nome: "Alma Acorrentada", nd: "7", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Essas aparições lembram fantasmas translúcidos e avermelhados, envoltos em névoa sangrenta.",
           texto:
 `Alma Acorrentada ND 7
@@ -108,7 +121,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "bruxoDaTormenta", nome: "Bruxo da Tormenta", nd: "6", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Bruxo da Tormenta",
           resumo: "Bruxo da Tormenta — O estranho em mantos escarlates tem cabelo longo, oleoso e desgrenhado.",
           texto:
@@ -133,7 +146,7 @@ Equipamento Cajado arcano de matéria vermelha. Tesouro Padrão.`
         },
         {
           chave: "arquibruxoDaTormenta", nome: "Arquibruxo da Tormenta", nd: "14", tipo: "Monstro (lefou) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Bruxo da Tormenta",
           resumo: "Bruxo da Tormenta — O estranho em mantos escarlates tem cabelo longo, oleoso e desgrenhado.",
           texto:
@@ -167,7 +180,7 @@ Equipamento Anel da energia, cajado arcano de matéria vermelha. Tesouro Nenhum.
         },
         {
           chave: "enxameInfernal", nome: "Enxame Infernal", nd: "8", tipo: "Monstro (lefeu) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O que parecia uma nuvem de insetos, quando examinada de perto revela-se algo muito pior.",
           texto:
 `Enxame Infernal ND 8
@@ -189,7 +202,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "esmagadorColetivo", nome: "Esmagador coletivo", nd: "15", tipo: "Construto Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "A criatura lembra um gigante brutal, feito de matéria vermelha, de onde emergem incontáveis cabeças, braços e pernas.",
           texto:
 `Esmagador coletivo ND 15
@@ -213,7 +226,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "infecto", nome: "Infecto", nd: "3", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Infecto",
           resumo: "Infecto — Os vultos trôpegos poderiam ser zumbis comuns.",
           texto:
@@ -231,7 +244,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "turbaDeInfectos", nome: "Turba de infectos", nd: "7", tipo: "Morto-vivo Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Infecto",
           resumo: "Infecto — Os vultos trôpegos poderiam ser zumbis comuns.",
           texto:
@@ -249,7 +262,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "lefeuVeridak", nome: "Lefeu, veridak", nd: "8", tipo: "Monstro (lefeu) Grande",
-          papel: '',
+          papel: "lacaio",
           resumo: "Lefeu, Veridak As criaturas lembram grandes louva-a-deus bípedes, com corpos delgados e dois pares de braços.",
           texto:
 `Lefeu, veridak ND 8
@@ -270,7 +283,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "lefeuHurobakk", nome: "Lefeu, Hurobakk", nd: "9", tipo: "Monstro (lefeu) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O demônio lembra um inseto quadrúpede, com um segundo tronco ereto emergindo do primeiro, de forma similar a um centauro, mas com quatro…",
           texto:
 `Lefeu, Hurobakk ND 9
@@ -291,7 +304,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "lefeuBurodron", nome: "Lefeu, Burodron", nd: "11", tipo: "Monstro (lefeu) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Sua aparência lembra um enorme gorila, com braços longos e grossos, recobertos de carapaça dura, que terminam em garras poderosas.",
           texto:
 `Lefeu, Burodron ND 11
@@ -312,7 +325,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "lefeuMorgadrel", nome: "Lefeu, Morgadrel", nd: "13", tipo: "Monstro (lefeu) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Estes monstros lembram imensos caranguejos, com carapaças extremamente grossas e corpos largos como estradas.",
           texto:
 `Lefeu, Morgadrel ND 13
@@ -333,7 +346,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "lefeuEzzayn", nome: "Lefeu, Ezzayn", nd: "17", tipo: "Monstro (lefeu) Enorme",
-          papel: '',
+          papel: "lacaio",
           resumo: "Este tipo de enxame lefeu foi confrontado pela primeira vez durante a campanha que ficaria conhecida como “Coração de Rubi” — quando…",
           texto:
 `Lefeu, Ezzayn ND 17
@@ -354,7 +367,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "gatzvalithLordeDaTormenta", nome: "Gatzvalith, Lorde da Tormenta", nd: "S+", tipo: "Monstro (lekael) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Neste reino de sangue e bizarria, infestado de monstros deformados, aquele que deve ser o regente parece assustadoramente humano.",
           texto:
 `Gatzvalith, Lorde da Tormenta ND S+
@@ -430,6 +443,23 @@ Esquadrão Veridak
 • Poder sobre a Realidade Um lekael pode lançar qualquer magia simulada (veja p. 376) de até 4º círculo como um conjurador de 20º nível (CD 55, limite de PM 20) sem gastar PM.
 • Telepatia O lekael pode se comunicar com qualquer criatura inteligente (Int –3 ou mais) dentro de sua área de Tormenta ou a 1km de distância fora dela. Além disso, é imune a efeitos mentais.` },
       ],
+      reforcos: { pag: 27, nomes: [
+        { n: "Acólito da Agonia", c: ["iniciadoDaAgonia", "sacerdoteDaAgonia"] },
+        { n: "Aspecto de Aharadak", c: ["aspectoDeAharadak"] },
+        { n: "Avatar de Aharadak", c: ["avatarDeAharadak"] },
+        { n: "Golem de Matéria Vermelha", c: ["golemDeMateriaVermelha"] },
+        { n: "Elemental Corrompido", c: ["elementalCorrompido"] },
+        { n: "Fanático Lefou", c: ["fanaticoLefou", "liderFanaticoLefou"] },
+        { n: "Lefeu Geraktril", f: 1 },
+        { n: "Lefeu Thuwarokk", f: 1 },
+        { n: "Lefeu Uktril", f: 1 },
+        { n: "Maníaco Lefou", f: 1 },
+        { n: "Otyugh", c: ["otyugh", "hordaDeOtyughs"] },
+        { n: "Reishid", c: ["reishid", "reishidLiderDeCulto"] },
+        { n: "Sacerdote de Aharadak", f: 1 },
+        { n: "Senhor do Gigante Rubro", c: ["senhorDoGiganteRubroFormaInicial", "senhorDoGiganteRubroFormaFinal"] },
+        { n: "Zyrrinaz", c: ["zyrrinaz"] },
+      ] },
     },
 
     // ── 🪓 BRUTOS & INDOMÁVEIS ─────────────────────────
@@ -440,7 +470,7 @@ Esquadrão Veridak
       fichas: [
         {
           chave: "meioOrcBandoleiro", nome: "Meio-Orc Bandoleiro", nd: "1", tipo: "Humanoide (meio-orc) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Meio-Orc",
           resumo: "Meio-Orc — O forasteiro poderia ser descrito apenas como um “humano grande e feroz”, mas é algo mais.",
           texto:
@@ -459,7 +489,7 @@ Tesouro Metade.`
         },
         {
           chave: "meioOrcCapanga", nome: "Meio-Orc Capanga", nd: "1", tipo: "Humanoide (meio-orc) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Meio-Orc",
           resumo: "Meio-Orc — O forasteiro poderia ser descrito apenas como um “humano grande e feroz”, mas é algo mais.",
           texto:
@@ -476,7 +506,7 @@ Equipamento Couro batido, maça. Tesouro Metade.`
         },
         {
           chave: "meioOrcChefe", nome: "Meio-Orc Chefe", nd: "5", tipo: "Humanoide (meio-orc) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Meio-Orc",
           resumo: "Meio-Orc — O forasteiro poderia ser descrito apenas como um “humano grande e feroz”, mas é algo mais.",
           texto:
@@ -497,7 +527,7 @@ Tesouro Padrão.`
         },
         {
           chave: "orcCombatente", nome: "Orc Combatente", nd: "1/2", tipo: "Humanoide (orc) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Orc",
           resumo: "Orc — O bando é formado por humanoides musculosos, com pele verde-acinzentada, focinho suíno e presas inferiores que se projetam fora da boca.",
           texto:
@@ -513,7 +543,7 @@ Equipamento Couro batido, maça. Tesouro Metade.`
         },
         {
           chave: "orcVeterano", nome: "Orc Veterano", nd: "1", tipo: "Humanoide (orc) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Orc",
           resumo: "Orc — O bando é formado por humanoides musculosos, com pele verde-acinzentada, focinho suíno e presas inferiores que se projetam fora da boca.",
           texto:
@@ -529,7 +559,7 @@ Equipamento Couro batido, marreta. Tesouro Metade.`
         },
         {
           chave: "orcChefe", nome: "Orc chefe", nd: "2", tipo: "Humanoide (orc) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Orc",
           resumo: "Orc — O bando é formado por humanoides musculosos, com pele verde-acinzentada, focinho suíno e presas inferiores que se projetam fora da boca.",
           texto:
@@ -547,7 +577,7 @@ Equipamento Gibão de peles, machado de batalha. Tesouro Padrão.`
         },
         {
           chave: "orcRei", nome: "Orc Rei", nd: "5", tipo: "Humanoide (orc) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Orc",
           resumo: "Orc — O bando é formado por humanoides musculosos, com pele verde-acinzentada, focinho suíno e presas inferiores que se projetam fora da boca.",
           texto:
@@ -565,7 +595,7 @@ Equipamento Couro batido, escudo pesado, lança. Tesouro Dobro.`
         },
         {
           chave: "orcMutante", nome: "Orc Mutante", nd: "5", tipo: "Humanoide (orc) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Orc Mutante",
           resumo: "Orc Mutante — APENAS ORCS!” Em meio à horda monstruosa, algo ainda mais monstruoso emerge.",
           texto:
@@ -582,7 +612,7 @@ Equipamento Machado de guerra. Tesouro Padrão.`
         },
         {
           chave: "orcMutanteSuperior", nome: "Orc Mutante Superior", nd: "10", tipo: "Humanoide (orc) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Orc Mutante",
           resumo: "Orc Mutante — APENAS ORCS!” Em meio à horda monstruosa, algo ainda mais monstruoso emerge.",
           texto:
@@ -607,7 +637,7 @@ Equipamento Tacape macabro. Tesouro Padrão.`
         },
         {
           chave: "orcXama", nome: "Orc Xamã", nd: "7", tipo: "Humanoide (orc) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Embora todos os orcs sejam parecidos, um deles destoa dos demais.",
           texto:
 `Orc Xamã ND 7
@@ -633,7 +663,7 @@ Equipamento Adaga, ossos de monstro x1d4, símbolo sagrado de Megalokk. Tesouro 
         },
         {
           chave: "sapoAtroz", nome: "Sapo Atroz", nd: "2", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Apenas os grandes olhos são visíveis na superfície da lama.",
           texto:
 `Sapo Atroz ND 2
@@ -657,7 +687,7 @@ Parceiro O sapo atroz é um parceiro montaria (Grande) que fornece os benefício
         },
         {
           chave: "tabrachiSoldado", nome: "Tabrachi Soldado", nd: "1", tipo: "Humanoide (tabrachi) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Tabrachi",
           resumo: "Tabrachi — Embora humanoide, a criatura tem o aspecto de um grande sapo.",
           texto:
@@ -677,7 +707,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "tabrachiCampeao", nome: "Tabrachi Campeão", nd: "3", tipo: "Humanoide (tabrachi) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Tabrachi",
           resumo: "Tabrachi — Embora humanoide, a criatura tem o aspecto de um grande sapo.",
           texto:
@@ -697,7 +727,7 @@ Equipamento Azagaia x2, escudo pesado, gibão de peles, lança, 1d4 doses de pe�
         },
         {
           chave: "trogCombatente", nome: "Trog Combatente", nd: "1", tipo: "Monstro (trog) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Trog",
           resumo: "Trog — O humanoide reptiliano é coberto de escamas verdes, com cabeça de lagarto e uma crista que começa na testa e continua até a base do pescoço.",
           texto:
@@ -717,7 +747,7 @@ Tesouro Metade.`
         },
         {
           chave: "trogCacador", nome: "Trog Caçador", nd: "2", tipo: "Monstro (trog) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Trog",
           resumo: "Trog — O humanoide reptiliano é coberto de escamas verdes, com cabeça de lagarto e uma crista que começa na testa e continua até a base do pescoço.",
           texto:
@@ -737,7 +767,7 @@ Equipamento Arco longo, flechas x20. Tesouro Metade.`
         },
         {
           chave: "trogReiDosTuneis", nome: "Trog Rei dos Túneis", nd: "5", tipo: "Monstro (trog) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Trog",
           resumo: "Trog — O humanoide reptiliano é coberto de escamas verdes, com cabeça de lagarto e uma crista que começa na testa e continua até a base do pescoço.",
           texto:
@@ -758,7 +788,7 @@ Tesouro Metade.`
         },
         {
           chave: "trogAnaoBruto", nome: "Trog Anão Bruto", nd: "1", tipo: "Monstro (trog) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Trog",
           resumo: "Trog — O humanoide reptiliano é coberto de escamas verdes, com cabeça de lagarto e uma crista que começa na testa e continua até a base do pescoço.",
           texto:
@@ -777,7 +807,7 @@ Equipamento Loriga segmentada, machado de guerra. Tesouro Metade.`
         },
         {
           chave: "trogAnaoEremita", nome: "Trog Anão Eremita", nd: "8", tipo: "Monstro (trog) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Trog",
           resumo: "Trog — O humanoide reptiliano é coberto de escamas verdes, com cabeça de lagarto e uma crista que começa na testa e continua até a base do pescoço.",
           texto:
@@ -798,7 +828,7 @@ Equipamento Machado de guerra atroz. Tesouro Metade.`
         },
         {
           chave: "ogro", nome: "Ogro", nd: "4", tipo: "Humanoide (gigante) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Ogro",
           resumo: "Ogro — Quando ouvia que algo é “grande como um ogro”, talvez você não soubesse o significado exato da comparação — mas agora sabe.",
           texto:
@@ -817,7 +847,7 @@ Equipamento Tacape aumentado. Tesouro Padrão.`
         },
         {
           chave: "ogroCacador", nome: "Ogro Caçador", nd: "7", tipo: "Humanoide (gigante) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Ogro",
           resumo: "Ogro — Quando ouvia que algo é “grande como um ogro”, talvez você não soubesse o significado exato da comparação — mas agora sabe.",
           texto:
@@ -836,7 +866,7 @@ Equipamento Tacape aumentado. Tesouro Metade.`
         },
         {
           chave: "ogroCapanga", nome: "Ogro Capanga", nd: "11", tipo: "Humanoide (gigante) Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Ogro",
           resumo: "Ogro — Quando ouvia que algo é “grande como um ogro”, talvez você não soubesse o significado exato da comparação — mas agora sabe.",
           texto:
@@ -894,6 +924,29 @@ Sangue Frio. O trog sofre 1 ponto de dano adicional por dado de dano de frio.` }
 Quando ouvia que algo é “grande como um ogro”, talvez você não soubesse o significado exato da comparação — mas agora sabe. Aquilo que se aproxima a passadas pesadas é alto e robusto como um antigo carvalho, uma montanha de músculos em forma humanoide, encimada por uma cabeça diminuta. Tão feio quanto forte, coberto de pelos desgrenhados, verrugas e manchas. Veste peles e couro de animais que matou, e empunha uma clava grande como uma tora.
 Grandes e fortes como touros (e quase tão espertos), estes gigantes primitivos são também solitários e mal-humorados, quase nunca encontrados em bandos. No entanto, por sua estupidez, são frequentemente convencidos a acompanhar bandidos e gnolls, em troca de diversão ou guloseimas. Também é comum encontrá-los servindo a bruxos ou cultistas. Enganar um ogro não é tarefa difícil, sendo muito mais recomendado que tentar vencê-lo pela força bruta. Mesmo quando enfurecidos, ogros podem cair em provocações e ser levados a cometer erros. Ogros são combatentes brutais, mas rústicos. Normalmente usam apenas tacapes, embora causem grande dano com essas armas improvisadas. Sua estratégia é simples: bater com força, matar e devorar os restos da vítima enquanto ainda quentes… Ogros não desenvolvem tecnologia; vivem de saque, roubo e pilhagem. Carnívoros, alimentam-se de praticamente qualquer criatura — incluindo humanos, elfos, anões e hynne (pelos quais têm certa predileção). Sua única outra forma de conseguir comida e equipamento é recebendo-os de algum vilão que os recrute; por sua combinação de força e inépcia, ogros são muito utilizados como guardas, soldados e capangas. Estes recebem armas e armaduras melhores, tornando-se uma ameaça ainda maior que seus primos mais selvagens. Contam-se histórias sobre ogros que teriam se reunido a grupos de aventureiros. Essa ocorrência é muito rara, mas não impossível; o gigante bruto contribui com sua enorme força e resistência, embora também cause problemas de muitas maneiras.` },
       ],
+      reforcos: { pag: 41, nomes: [
+        { n: "Armadilhas Kobolds", q: "Armadilhas Kobolds" },
+        { n: "Enxame Kobold", f: 1 },
+        { n: "Enxame Larval", c: ["enxameLarval"] },
+        { n: "Gangue Goblin", c: ["gangueGoblin", "hordaGoblin"] },
+        { n: "Gnoll Caçador de Cabeças", c: ["gnollCacadorDeCabecas"] },
+        { n: "Gnoll Capanga", c: ["gnollCapanga", "gnollSaqueador", "gnollFilibusteiro"] },
+        { n: "Gnoll Líder de Alcateia", c: ["gnollLiderDeAlcateia"] },
+        { n: "Gnoll Vuul’rak", c: ["gnollVuulRak"] },
+        { n: "Gnoll Xamã", c: ["gnollXamaDeAllihanna", "gnollXamaDeMegalokk", "gnollXamaDeMarah"] },
+        { n: "Goblin Salteador", f: 1 },
+        { n: "Kobold", c: ["koboldPatrulheiro", "koboldVeterano", "patrulhaKobold"] },
+        { n: "Kobold Bruto", c: ["koboldBruto"] },
+        { n: "Kobold Explosivo", c: ["koboldExplosivo"] },
+        { n: "Kobold-Mãe", c: ["koboldMae"] },
+        { n: "Kobold Xamã", c: ["koboldXama"] },
+        { n: "Matrona Gnoll", c: ["matronaGnoll"] },
+        { n: "Minotauro da Manada", c: ["minotauroDaManada", "minotauroChefeDaManada"] },
+        { n: "Mycotann", c: ["mycotannLabutador", "mycotannDruida", "hordaMycotann"] },
+        { n: "Ogro Furioso", c: ["ogroFurioso", "keylor"] },
+        { n: "Slark", c: ["slark"] },
+        { n: "Vagalhão Kobold", q: "Vagalhão Kobold" },
+      ] },
     },
 
     // ── 🗡 CAPANGAS & BANDOLEIROS ──────────────────────
@@ -903,7 +956,7 @@ Grandes e fortes como touros (e quase tão espertos), estes gigantes primitivos 
       fichas: [
         {
           chave: "bandidoComum", nome: "Bandido Comum", nd: "1/4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Bandido",
           resumo: "Bandido — Há três assaltantes cheios de valentia em torno da jovem filha do taverneiro.",
           texto:
@@ -920,7 +973,7 @@ Equipamento Clava. Tesouro Metade.`
         },
         {
           chave: "bandidoLigeiro", nome: "Bandido Ligeiro", nd: "1/2", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Bandido",
           resumo: "Bandido — Há três assaltantes cheios de valentia em torno da jovem filha do taverneiro.",
           texto:
@@ -938,7 +991,7 @@ Equipamento Clava, funda, pedras x20. Tesouro Metade.`
         },
         {
           chave: "bandidoSelvagem", nome: "Bandido Selvagem", nd: "1", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Bandido",
           resumo: "Bandido — Há três assaltantes cheios de valentia em torno da jovem filha do taverneiro.",
           texto:
@@ -957,7 +1010,7 @@ Equipamento Azagaia x3, escudo leve, lança. Tesouro Metade.`
         },
         {
           chave: "capanga", nome: "Capanga", nd: "1/2", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Capanga",
           resumo: "Capanga — A entrada do esconderijo é vigiada por um homem enorme com um tacape, e um minotauro ainda maior com um machado.",
           texto:
@@ -974,7 +1027,7 @@ Equipamento Tacape. Tesouro Metade.`
         },
         {
           chave: "jagunco", nome: "Jagunço", nd: "2", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Capanga",
           resumo: "Capanga — A entrada do esconderijo é vigiada por um homem enorme com um tacape, e um minotauro ainda maior com um machado.",
           texto:
@@ -994,7 +1047,7 @@ Tesouro Metade.`
         },
         {
           chave: "capangaMinotauro", nome: "Capanga Minotauro", nd: "3", tipo: "Humanoide (minotauro) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Capanga",
           resumo: "Capanga — A entrada do esconderijo é vigiada por um homem enorme com um tacape, e um minotauro ainda maior com um machado.",
           texto:
@@ -1012,7 +1065,7 @@ Equipamento Azagaia x3, cota de malha, escudo pesado, machado de batalha. Tesour
         },
         {
           chave: "chefeBandido", nome: "Chefe Bandido", nd: "1", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Chefe do Crime",
           resumo: "Chefe do Crime — Diante dos marginais, uma figura altiva parece se sobressair.",
           texto:
@@ -1031,7 +1084,7 @@ Equipamento Adaga, espada curta. Tesouro Padrão.`
         },
         {
           chave: "chefeDeGangue", nome: "Chefe de Gangue", nd: "2", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Chefe do Crime",
           resumo: "Chefe do Crime — Diante dos marginais, uma figura altiva parece se sobressair.",
           texto:
@@ -1050,7 +1103,7 @@ Equipamento Couro batido, espada curta, espada longa. Tesouro Padrão.`
         },
         {
           chave: "chefeDeQuadrilha", nome: "Chefe de Quadrilha", nd: "4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Chefe do Crime",
           resumo: "Chefe do Crime — Diante dos marginais, uma figura altiva parece se sobressair.",
           texto:
@@ -1070,7 +1123,7 @@ Equipamento Bandana, couro batido, espada curta certeira, espada longa. Tesouro 
         },
         {
           chave: "sacerdoteDeHyninn", nome: "Sacerdote de Hyninn", nd: "2", tipo: "Humanoide (goblin) Pequeno",
-          papel: '',
+          papel: "especial",
           subgrupo: "Clérigo de Hyninn",
           resumo: "Clérigo de Hyninn — Em seu manto puído, o goblin tem o aspecto de um ladrão maltrapilho comum, até dizer sutilmente algo como “fazei-me mais esperto que os…",
           texto:
@@ -1095,7 +1148,7 @@ Equipamento Adaga, gazua, símbolo sagrado de Hyninn. Tesouro Padrão.`
         },
         {
           chave: "altoSacerdoteDeHyninn", nome: "Alto Sacerdote de Hyninn", nd: "8", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Clérigo de Hyninn",
           resumo: "Clérigo de Hyninn — Em seu manto puído, o goblin tem o aspecto de um ladrão maltrapilho comum, até dizer sutilmente algo como “fazei-me mais esperto que os…",
           texto:
@@ -1123,7 +1176,7 @@ Tesouro Padrão.`
         },
         {
           chave: "devotoDeHyninnManhoso", nome: "Devoto de Hyninn Manhoso", nd: "1/2", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Devoto de Hyninn",
           resumo: "Devoto de Hyninn — O ladrão está cercado, sua fuga parece impossível, até que ele murmura uma oração ligeira.",
           texto:
@@ -1142,7 +1195,7 @@ Equipamento Adaga, gazua. Tesouro Metade.`
         },
         {
           chave: "devotoDeHyninnSimao", nome: "Devoto de Hyninn Simão", nd: "1", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Devoto de Hyninn",
           resumo: "Devoto de Hyninn — O ladrão está cercado, sua fuga parece impossível, até que ele murmura uma oração ligeira.",
           texto:
@@ -1161,7 +1214,7 @@ Equipamento Adaga, gazua. Tesouro Metade.`
         },
         {
           chave: "devotoDeHyninnVelhaco", nome: "Devoto de Hyninn Velhaco", nd: "4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Devoto de Hyninn",
           resumo: "Devoto de Hyninn — O ladrão está cercado, sua fuga parece impossível, até que ele murmura uma oração ligeira.",
           texto:
@@ -1181,7 +1234,7 @@ Equipamento Adaga precisa, capa esvoaçante, gazua. Tesouro Metade.`
         },
         {
           chave: "gatuno", nome: "Gatuno", nd: "1", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Gatuno",
           resumo: "Gatuno — O guarda do portão cai inconsciente, um pequeno dardo cravado no pescoço.",
           texto:
@@ -1201,7 +1254,7 @@ Equipamento Armadura de couro, gazua, porrete. Tesouro Padrão.`
         },
         {
           chave: "gatunoMestre", nome: "Gatuno Mestre", nd: "3", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Gatuno",
           resumo: "Gatuno — O guarda do portão cai inconsciente, um pequeno dardo cravado no pescoço.",
           texto:
@@ -1222,7 +1275,7 @@ Equipamento Armadura de couro, bomba de fumaça x3, gazua aprimorada, porrete. T
         },
         {
           chave: "duplo", nome: "Duplo", nd: "4", tipo: "Humanoide (duplo) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Quando seu disfarce é enfim desmascarado, a sacerdotisa élfica sorri com malícia — e se transforma em algo muito diferente.",
           texto:
 `Duplo ND 4
@@ -1275,6 +1328,28 @@ O ladrão está cercado, sua fuga parece impossível, até que ele murmura uma o
 — Kira, medusa ladina
 O guarda do portão cai inconsciente, um pequeno dardo cravado no pescoço. Nenhum sinal do atacante, exceto por um breve farfalhar da folhagem na copa da árvore ao longe. O gatuno é o clássico ladrão furtivo e acrobático que corre sobre telhados, entra pelas janelas, engana sentinelas e espreita na escuridão. Ele é mais ágil, esperto e audacioso que o bandido comum. Com a motivação certa, talvez até venha a se tornar um ladino aventureiro. Contra heróis focados em combate, gatunos são adversários desafiadores — porque quase nunca lutam de fato, apenas atacam furtivamente das sombras. Se o alvo não caiu, o gatuno foge e desiste, ou aguarda outra oportunidade. Poucas vezes um gatuno está interessado em matar; ele é um ladrão, não um assassino (assassinos são muito mais caros!). Quando um confronto é inevitável, sua meta será apenas incapacitar o oponente para então roubar aquilo que procura. Gatunos agem sozinhos, formando grupos apenas para grandes golpes, como invadir e roubar tesouros em algum castelo. Alguns também trabalham para guildas e quadrilhas, em missões de roubo ou reconhecimento para golpes posteriores. Grupos de aventureiros em viagem, portando itens valiosos, também podem ser alvos de um gatuno: ele provavelmente vai esperar que todos durmam para roubá-los. Caso um deles esteja acordado, vigiando, pode atraí-lo para uma emboscada ou incapacitá-lo com sonífero. Estas estatísticas também podem representar espiões ou ninjas.` },
       ],
+      reforcos: { pag: 48, nomes: [
+        { n: "Coletor de Arsenal", c: ["coletorDeArsenal"] },
+        { n: "Gnoll Caçador de Cabeças", c: ["gnollCacadorDeCabecas"] },
+        { n: "Gnoll Capanga", c: ["gnollCapanga", "gnollSaqueador", "gnollFilibusteiro"] },
+        { n: "Gnoll Líder de Alcateia", c: ["gnollLiderDeAlcateia"] },
+        { n: "Gnoll Vuul’rak", c: ["gnollVuulRak"] },
+        { n: "Gnoll Xamã", c: ["gnollXamaDeAllihanna", "gnollXamaDeMegalokk", "gnollXamaDeMarah"] },
+        { n: "Goblin Salteador", f: 1 },
+        { n: "Guardas", f: 1 },
+        { n: "Harpia", c: ["harpiaSaqueadora"] },
+        { n: "Kaijin", c: ["kaijinCapanga", "kaijinBruto", "kaijinNinja"] },
+        { n: "Kappa", c: ["kappaBrigao", "kappaYokozuna"] },
+        { n: "Matrona Gnoll", c: ["matronaGnoll"] },
+        { n: "Meio-Orc", c: ["meioOrcBandoleiro", "meioOrcCapanga", "meioOrcChefe"] },
+        { n: "Nezumi", c: ["nezumiCapanga", "nezumiNinja", "nezumiBrutamontes"] },
+        { n: "Ogro", c: ["ogro", "ogroCacador", "ogroCapanga"] },
+        { n: "Orc", c: ["orcCombatente", "orcVeterano", "orcChefe", "orcRei"] },
+        { n: "Orc Xamã", c: ["orcXama"] },
+        { n: "Tabrachi", c: ["tabrachiSoldado", "tabrachiCampeao"] },
+        { n: "Trog", c: ["trogCombatente", "trogCacador", "trogReiDosTuneis", "trogAnaoBruto", "trogAnaoEremita"] },
+        { n: "Trog Anão", c: ["trogAnaoBruto", "trogAnaoEremita"] },
+      ] },
     },
 
     // ── 👁 CULTO DE AHARADAK ───────────────────────────
@@ -1285,7 +1360,7 @@ O guarda do portão cai inconsciente, um pequeno dardo cravado no pescoço. Nenh
       fichas: [
         {
           chave: "iniciadoDaAgonia", nome: "Iniciado da Agonia", nd: "3", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Acólito da Agonia",
           resumo: "Acólito da Agonia — A figura em mantos ensanguentados, empunhando uma lâmina enferrujada, bem poderia ser um açougueiro saindo do abatedouro.",
           texto:
@@ -1308,7 +1383,7 @@ Equipamento Adaga, gibão de peles e símbolo sagrado de Aharadak. Tesouro Metad
         },
         {
           chave: "sacerdoteDaAgonia", nome: "Sacerdote da Agonia", nd: "9", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Acólito da Agonia",
           resumo: "Acólito da Agonia — A figura em mantos ensanguentados, empunhando uma lâmina enferrujada, bem poderia ser um açougueiro saindo do abatedouro.",
           texto:
@@ -1334,7 +1409,7 @@ Equipamento Gibão de peles espinhoso de matéria vermelha, símbolo sagrado de 
         },
         {
           chave: "aspectoDeAharadak", nome: "Aspecto de Aharadak", nd: "10", tipo: "Monstro (lefeu) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Difícil descrever o monstro repulsivo.",
           texto:
 `Aspecto de Aharadak ND 10
@@ -1357,7 +1432,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "fanaticoLefou", nome: "Fanático Lefou", nd: "5", tipo: "Monstro (lefou) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Fanático Lefou",
           resumo: "Fanático Lefou — À primeira vista, parece um bárbaro empunhando um tacape e vestindo uma armadura rústica, ambas feitas com carapaça de algum monstro.",
           texto:
@@ -1376,7 +1451,7 @@ Tesouro Metade.`
         },
         {
           chave: "liderFanaticoLefou", nome: "Líder Fanático Lefou", nd: "8", tipo: "Monstro (lefou) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Fanático Lefou",
           resumo: "Fanático Lefou — À primeira vista, parece um bárbaro empunhando um tacape e vestindo uma armadura rústica, ambas feitas com carapaça de algum monstro.",
           texto:
@@ -1396,7 +1471,7 @@ Equipamento Tacape. Tesouro Padrão.`
         },
         {
           chave: "reishid", nome: "Reishid", nd: "8", tipo: "Monstro (lefeu) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Reishid",
           resumo: "Reishid — O líder do culto parece prestes a cravar um punhal enegrecido no coração da vítima acorrentada ao altar.",
           texto:
@@ -1418,7 +1493,7 @@ Tesouro Padrão mais adaga da Tormenta. Esta é uma arma mágica específica que
         },
         {
           chave: "reishidLiderDeCulto", nome: "Reishid Líder de Culto", nd: "12", tipo: "Monstro (lefeu) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Reishid",
           resumo: "Reishid — O líder do culto parece prestes a cravar um punhal enegrecido no coração da vítima acorrentada ao altar.",
           texto:
@@ -1445,7 +1520,7 @@ Tesouro Padrão mais adaga da Tormenta (veja Reishid).`
         },
         {
           chave: "senhorDoGiganteRubroFormaInicial", nome: "Senhor do Gigante Rubro forma inicial", nd: "9", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Senhor do Gigante Rubro",
           resumo: "Senhor do Gigante Rubro — O humanoide bruto em carapaça espinhosa e gotejante bem poderia ser apenas outra abominação da Tormenta.",
           texto:
@@ -1469,7 +1544,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "senhorDoGiganteRubroFormaFinal", nome: "Senhor do Gigante Rubro Forma Final", nd: "16", tipo: "Monstro (lefeu) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Senhor do Gigante Rubro",
           resumo: "Senhor do Gigante Rubro — O humanoide bruto em carapaça espinhosa e gotejante bem poderia ser apenas outra abominação da Tormenta.",
           texto:
@@ -1493,7 +1568,7 @@ Tesouro 1d4 sementes rubras (CD 31 para extrair).`
         },
         {
           chave: "zyrrinaz", nome: "Zyrrinaz", nd: "5", tipo: "Monstro (lefeu) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "O vulto ligeiro bem poderia ser um elfo — ágil, delgado e empunhando um arco longo.",
           texto:
 `Zyrrinaz ND 5
@@ -1516,7 +1591,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "avatarDeAharadak", nome: "Avatar de Aharadak", nd: "S", tipo: "Monstro (lefeu) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "Grande como um castelo, a monstruosidade parece formada por incontáveis camadas de gordura e crostas vermelhas, rasgadas por fístulas que…",
           texto:
 `Avatar de Aharadak ND S
@@ -1590,6 +1665,29 @@ Templos de Aharadak ainda são raros, a maioria das nações e comunidades os re
           texto:
 `Todas as criaturas com o subtipo lefeu possuem as habilidades lefeu descritas na seção “A Tormenta” (Tormenta20, p. 315).` },
       ],
+      reforcos: { pag: 61, nomes: [
+        { n: "Alma Acorrentada", c: ["almaAcorrentada"] },
+        { n: "Armadilhas Vivas", q: "Armadilhas Vivas" },
+        { n: "Bruxo da Tormenta", c: ["bruxoDaTormenta", "arquibruxoDaTormenta"] },
+        { n: "Enxame Infernal", c: ["enxameInfernal"] },
+        { n: "Esmagador Coletivo", c: ["esmagadorColetivo"] },
+        { n: "Gatzvalith", c: ["gatzvalithLordeDaTormenta"] },
+        { n: "Golem de Matéria Vermelha", c: ["golemDeMateriaVermelha"] },
+        { n: "Infecto", c: ["infecto", "turbaDeInfectos"] },
+        { n: "Lefeu Burodron", c: ["lefeuBurodron"] },
+        { n: "Lefeu Ezzayn", c: ["lefeuEzzayn"] },
+        { n: "Lefeu Geraktril", f: 1 },
+        { n: "Lefeu Hurobakk", c: ["lefeuHurobakk"] },
+        { n: "Lefeu Morgadrel", c: ["lefeuMorgadrel"] },
+        { n: "Lefeu Thuwarokk", f: 1 },
+        { n: "Lefeu Uktril", f: 1 },
+        { n: "Lefeu Veridak", c: ["lefeuVeridak"] },
+        { n: "Legionário Insano", c: ["legionarioInsano"] },
+        { n: "Maníaco Lefou", f: 1 },
+        { n: "Otyugh", f: 1 },
+        { n: "Reishid", c: ["reishid", "reishidLiderDeCulto"] },
+        { n: "Sacerdote de Aharadak", f: 1 },
+      ] },
     },
 
     // ── 🐉 DRAGÕES ─────────────────────────────────────
@@ -1600,7 +1698,7 @@ Templos de Aharadak ainda são raros, a maioria das nações e comunidades os re
       fichas: [
         {
           chave: "dragaoFilhoteDoBosque", nome: "Dragão Filhote do Bosque", nd: "3", tipo: "Monstro (dragão) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Menor",
           resumo: "Dragão Menor — O lagarto escamoso e colorido, do tamanho de um grande cão, emerge da caverna com um olhar ansioso.",
           texto:
@@ -1619,7 +1717,7 @@ Tesouro Padrão.`
         },
         {
           chave: "dragaoFilhoteDosRios", nome: "Dragão Filhote dos Rios", nd: "3", tipo: "Monstro (dragão) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Menor",
           resumo: "Dragão Menor — O lagarto escamoso e colorido, do tamanho de um grande cão, emerge da caverna com um olhar ansioso.",
           texto:
@@ -1636,7 +1734,7 @@ Tesouro Padrão.`
         },
         {
           chave: "ninhadaDeDragoesFilhotes", nome: "Ninhada de Dragões Filhotes", nd: "5", tipo: "Monstro (dragão) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Menor",
           resumo: "Dragão Menor — O lagarto escamoso e colorido, do tamanho de um grande cão, emerge da caverna com um olhar ansioso.",
           texto:
@@ -1654,7 +1752,7 @@ Tesouro Padrão.`
         },
         {
           chave: "dragaoJovemDaProtecao", nome: "Dragão Jovem da Proteção", nd: "7", tipo: "Monstro (dragão) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Menor",
           resumo: "Dragão Menor — O lagarto escamoso e colorido, do tamanho de um grande cão, emerge da caverna com um olhar ansioso.",
           texto:
@@ -1673,7 +1771,7 @@ Tesouro Dobro e 2 peças de couro de dragão (CD 22 para extrair).`
         },
         {
           chave: "dragaoJovemDoOcaso", nome: "Dragão Jovem do Ocaso", nd: "7", tipo: "Monstro (dragão) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Menor",
           resumo: "Dragão Menor — O lagarto escamoso e colorido, do tamanho de um grande cão, emerge da caverna com um olhar ansioso.",
           texto:
@@ -1693,7 +1791,7 @@ Tesouro Dobro e 2 peças de couro de dragão (CD 22 para extrair).`
         },
         {
           chave: "dragaoAdultoDaTirania", nome: "Dragão Adulto da tirania", nd: "11", tipo: "Monstro (dragão) Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Adulto",
           resumo: "Dragão Adulto — Imenso e soberano, o monstro alado mergulha dos céus, as escamas alvas brilhando como os picos nevados das Uivantes.",
           texto:
@@ -1721,7 +1819,7 @@ Tesouro Dobro e 4 peças de couro de dragão (CD 26 para extrair).`
         },
         {
           chave: "dragaoAdultoDosSegredos", nome: "Dragão Adulto dos Segredos", nd: "11", tipo: "Monstro (dragão) Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Adulto",
           resumo: "Dragão Adulto — Imenso e soberano, o monstro alado mergulha dos céus, as escamas alvas brilhando como os picos nevados das Uivantes.",
           texto:
@@ -1752,7 +1850,7 @@ Tesouro Dobro e 4 peças de couro de dragão (CD 26 para extrair).`
         },
         {
           chave: "dragaoVeneravelDaEquidade", nome: "Dragão Venerável da Equidade", nd: "15", tipo: "Monstro (dragão) Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Venerável",
           resumo: "Dragão Venerável — A fera é gigantesca, mas ainda assim move-se com elegância e altivez impressionantes.",
           texto:
@@ -1783,7 +1881,7 @@ Tesouro Dobro e 4 peças de couro de dragão (CD 30 para extrair).`
         },
         {
           chave: "dragaoVeneravelDosRecifes", nome: "Dragão Venerável dos recifes", nd: "15", tipo: "Monstro (dragão) Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Venerável",
           resumo: "Dragão Venerável — A fera é gigantesca, mas ainda assim move-se com elegância e altivez impressionantes.",
           texto:
@@ -1814,7 +1912,7 @@ Tesouro Dobro e 4 peças de couro de dragão (CD 30 para extrair).`
         },
         {
           chave: "dragaoFeral", nome: "Dragão Feral", nd: "10", tipo: "Monstro (dragão) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "O corpanzil exibe musculatura poderosa sob o couro blindado e asas que fariam sombra a um celeiro.",
           texto:
 `Dragão Feral ND 10
@@ -1838,7 +1936,7 @@ Tesouro Padrão e 2 peças de couro de dragão (CD 25 para extrair).`
         },
         {
           chave: "dragaoBicefalo", nome: "Dragão Bicéfalo", nd: "12", tipo: "Monstro (dragão) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "A saraivada de relâmpagos e a chuva de veneno chegam sem qualquer aviso.",
           texto:
 `Dragão Bicéfalo ND 12
@@ -1862,7 +1960,7 @@ Tesouro Dobro e 4 peças de couro de dragão (2 de dragão de ácido, 2 de drag�
         },
         {
           chave: "sckharDragaoReiDoFogo", nome: "Sckhar Dragão-rei do fogo", nd: "S+", tipo: "Monstro (dragão) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "Mesmo como um regente élfico arrogante, Sckhar emana grandiosidade.",
           texto:
 `Sckhar Dragão-rei do fogo ND S+
@@ -1970,6 +2068,28 @@ Imenso e soberano, o monstro alado mergulha dos céus, as escamas alvas brilhand
 — Auronatt, dragão das escarpas
 A fera é gigantesca, mas ainda assim move-se com elegância e altivez impressionantes. Quando os observa, vocês quase podem sentir sua insignificância perante algo tão mais antigo e sábio. Enquanto dragões adultos tornam-se temidos por aterrorizar aldeias ou atacar viajantes — quase sempre demandando a atuação de heróis locais —, veneráveis são aqueles que muitas vezes deixaram para trás esses hábitos selvagens e medíocres. Um dragão venerável alcançou esse estágio não apenas por viver séculos, mas também por colecionar um vasto repertório de vitórias contra aventureiros e outros inimigos. Poucos seres podem ameaçá-lo. Assim, estabelecer dominância sobre criaturas inferiores se torna algo trivial, até esquecido. Quando atingem esta idade, dragões podem adquirir hábitos muito distantes das histórias que os bardos cantam. Podem buscar destinos diferentes. Até se tornar seres diferentes. Diz-se que todo dragão é majestoso, orgulhoso, arrogante. Mas, quanto mais antigos se tornam, mais esses traços podem aumentar — ou se atenuar. Assim, enquanto alguns seguem cerceando vilarejos, exigindo tributos e acumulando tesouros, outros passam a achar tais hábitos fúteis e tediosos. Nenhum venerável é igual a outro. Nenhum será encontrado aleatoriamente na última câmara de alguma masmorra, esperando que heróis tentem matá-lo e pilhar seu tesouro (embora alguns decidam que sim). Pode haver uma venerável que adotou a identidade de uma caçadora elfa, liderando um clã que protege as florestas de Tollon. Outro que escolheu ser cultuado como divindade pelos povos-trovão da Grande Savana. Outro que acabaria enamorado de um bardo hynne, ouvindo suas canções bucólicas com ternura. E outro que acumula fortunas inimagináveis enquanto gerencia um cassino cósmico no Reino de Nimb. Se existe uma constante sobre os dragões, mesmo entre os veneráveis, é que eles são intensos. Quando se devotam a algo ou alguém, nada mais em qualquer dos mundos é merecedor de sua atenção. Quando se apaixonam, nenhum amor na história dos seres vivos será mais poderoso ou renderá mais frutos. Quando odeiam, esse rancor vai persistir por séculos, perseguindo toda a descendência dos culpados. E quando se enfurecem, nem mesmo a raiva de um deus pode se comparar.` },
       ],
+      reforcos: { pag: 74, nomes: [
+        { n: "Armadilhas Kobolds", q: "Armadilhas Kobolds" },
+        { n: "Cão de Kally", c: ["caoDeKally"] },
+        { n: "Dracomante", c: ["dracomante", "dracomanteSuperior"] },
+        { n: "Dragões", f: 1 },
+        { n: "Elemental da Água", q: "Elemental da Água" },
+        { n: "Elemental do Ar", q: "Elemental do Ar" },
+        { n: "Elemental do Fogo", q: "Elemental do Fogo" },
+        { n: "Elemental da Terra", q: "Elemental da Terra" },
+        { n: "Enxame Kobold", f: 1 },
+        { n: "Enxame Larval", c: ["enxameLarval"] },
+        { n: "Kallyanach", c: ["kallyanachBarbaro", "kallyanachMorteGlacial"] },
+        { n: "Kobold", c: ["koboldPatrulheiro", "koboldVeterano", "patrulhaKobold"] },
+        { n: "Kobold Bruto", c: ["koboldBruto"] },
+        { n: "Kobold Explosivo", c: ["koboldExplosivo"] },
+        { n: "Kobold-Mãe", c: ["koboldMae"] },
+        { n: "Kobold Xamã", c: ["koboldXama"] },
+        { n: "Necrodraco", c: ["necrodracoEsqueleto", "necrodracoZumbi", "necrodracoLich"] },
+        { n: "Serpe", c: ["serpe", "serpeAncia"] },
+        { n: "Tirano do Terceiro", f: 1 },
+        { n: "Vagalhão Kobold", q: "Vagalhão Kobold" },
+      ] },
     },
 
     // ── 👺 DUYSHIDAKK ──────────────────────────────────
@@ -1979,7 +2099,7 @@ A fera é gigantesca, mas ainda assim move-se com elegância e altivez impressio
       fichas: [
         {
           chave: "bugbearSentinela", nome: "Bugbear Sentinela", nd: "2", tipo: "Humanoide (bugbear) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Bugbear",
           resumo: "Bugbear — Os seres enormes e abrutalhados parecem desatentos, quase adormecidos, os corpos imensos quase desabando sobre as pernas curtas.",
           texto:
@@ -1997,7 +2117,7 @@ Equipamento Apito, gibão de peles, machado de guerra aumentado. Tesouro Metade.
         },
         {
           chave: "bugbearGuardaCostas", nome: "Bugbear Guarda-Costas", nd: "6", tipo: "Humanoide (bugbear) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Bugbear",
           resumo: "Bugbear — Os seres enormes e abrutalhados parecem desatentos, quase adormecidos, os corpos imensos quase desabando sobre as pernas curtas.",
           texto:
@@ -2016,7 +2136,7 @@ Equipamento Gibão de peles, machado de guerra aumentado cruel. Tesouro Metade.`
         },
         {
           chave: "bruxaGoblin", nome: "Bruxa Goblin", nd: "11", tipo: "Humanoide (goblin) Pequeno",
-          papel: '',
+          papel: "especial",
           resumo: "A gargalhada macabra vem antes que vocês vejam a criatura pequena e horrenda, o enorme chapéu pontudo e o manto esfarrapado não conseguindo…",
           texto:
 `Bruxa Goblin ND 11
@@ -2046,7 +2166,7 @@ Tesouro Padrão.`
         },
         {
           chave: "gangueGoblin", nome: "Gangue Goblin", nd: "5", tipo: "Humanoide (goblin) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Gangue Goblin",
           resumo: "Gangue Goblin — É impossível contá-los!",
           texto:
@@ -2064,7 +2184,7 @@ Tesouro Metade.`
         },
         {
           chave: "hordaGoblin", nome: "Horda Goblin", nd: "14", tipo: "Humanoide (goblin) Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Gangue Goblin",
           resumo: "Gangue Goblin — É impossível contá-los!",
           texto:
@@ -2082,7 +2202,7 @@ Tesouro Metade.`
         },
         {
           chave: "goblinBomba", nome: "Goblin-Bomba", nd: "3", tipo: "Humanoide (goblin) Pequeno",
-          papel: '',
+          papel: "especial",
           resumo: "Os pequenos seres cinzentos de olhos injetados não parecem diferentes de outros goblins.",
           texto:
 `Goblin-Bomba ND 3
@@ -2106,7 +2226,7 @@ Equipamento Bandoleira de poções, couro batido. Tesouro Padrão mais insumos (
         },
         {
           chave: "goblinDeFerro", nome: "Goblin de Ferro", nd: "5", tipo: "Humanoide (goblin) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Goblin de Ferro",
           resumo: "Goblin de Ferro — Em meio ao bando de bandoleiros endiabrados, um deles é diferente.",
           texto:
@@ -2132,7 +2252,7 @@ Tesouro Padrão mais peças sobressalentes (valem T$ 500 para fabricar engenhoca
         },
         {
           chave: "goblinDeFerroMarkIi", nome: "Goblin de Ferro Mark II", nd: "8", tipo: "Humanoide (goblin) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Goblin de Ferro",
           resumo: "Goblin de Ferro — Em meio ao bando de bandoleiros endiabrados, um deles é diferente.",
           texto:
@@ -2154,7 +2274,7 @@ Equipamento Instrumentos de Ofício (engenhoqueiro) aprimorados. Tesouro Padrão
         },
         {
           chave: "hobgoblinAtirador", nome: "Hobgoblin Atirador", nd: "5", tipo: "Humanoide (hobgoblin) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "O hobgoblin de armadura leve recua, protegido pelos soldados na linha de frente.",
           texto:
 `Hobgoblin Atirador ND 5
@@ -2178,7 +2298,7 @@ Tesouro Metade.`
         },
         {
           chave: "hobgoblinComandanteTatico", nome: "Hobgoblin Comandante Tático", nd: "11", tipo: "Humanoide (hobgoblin) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Em meio aos soldados hobgoblins em suas armaduras escuras, um se destaca.",
           texto:
 `Hobgoblin Comandante Tático ND 11
@@ -2202,7 +2322,7 @@ Equipamento Armadura completa reforçada, escudo pesado, espada longa precisa, l
         },
         {
           chave: "hobgoblinGladiador", nome: "Hobgoblin Gladiador", nd: "16", tipo: "Humanoide (hobgoblin) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Este hobgoblin usa armadura, mas deixa entrever uma musculatura possante, elástica.",
           texto:
 `Hobgoblin Gladiador ND 16
@@ -2226,7 +2346,7 @@ Equipamento Corrente de espinhos de mitral ameaçadora, couraça reforçada abas
         },
         {
           chave: "sangueDoAyrrak", nome: "Sangue do Ayrrak", nd: "19", tipo: "Humanoide (bugbear) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Poucos não duyshidakk viram o Imperador Supremo e viveram para contar.",
           texto:
 `Sangue do Ayrrak ND 19
@@ -2271,6 +2391,16 @@ Os seres enormes e abrutalhados parecem desatentos, quase adormecidos, os corpos
 — Sigma Redbelt, kliren inventor
 Em meio ao bando de bandoleiros endiabrados, um deles é diferente. Alguns diriam que ele veste uma armadura feita de sucata. Para outros, mais parece que alguma máquina infernal o engoliu. Engenhoqueiros goblins são conhecidos por produzir aparelhos perigosos, em especial para eles próprios. Alguns, ainda mais laboriosos, constroem vestes mecânicas completas com o propósito de aumentar sua força e agilidade, além de oferecer habilidades ofensivas e defensivas. Quase todos morrem tentando. Alguns conseguem. Um goblin de ferro usa uma armadura mecanizada com inúmeros engenhos, diferentes em cada indivíduo. Quase todas fornecem algum grau de proteção ao usuário, mesmo que por acidente. Muitas trazem armas embutidas, que funcionam metade das vezes e explodem na outra metade. Algumas voam; entre estas, algumas conseguem pousar. A única certeza sobre um goblin de ferro é que ele pode ser tão perigoso para seus inimigos quanto para seus aliados.` },
       ],
+      reforcos: { pag: 86, nomes: [
+        { n: "Arauto de Thwor", f: 1 },
+        { n: "Devorador de Medos", f: 1 },
+        { n: "Engenho de Guerra Goblin", f: 1 },
+        { n: "Goblin Engenhoqueiro", f: 1 },
+        { n: "Goblin Salteador", f: 1 },
+        { n: "Hobgoblin Mago de Batalha", f: 1 },
+        { n: "Hobgoblin Soldado", f: 1 },
+        { n: "Sombra de Thwor", f: 1 },
+      ] },
     },
 
     // ── 🌪 ELEMENTAIS ──────────────────────────────────
@@ -2280,7 +2410,7 @@ Em meio ao bando de bandoleiros endiabrados, um deles é diferente. Alguns diria
       fichas: [
         {
           chave: "aquinNe", nome: "Aquin’ne", nd: "2", tipo: "Espírito (elemental) Pequeno",
-          papel: '',
+          papel: "lacaio",
           resumo: "A manifestação não combina com nenhuma criatura conhecida.",
           texto:
 `Aquin’ne ND 2
@@ -2301,7 +2431,7 @@ Familiar Um aquin’ne familiar concede deslocamento de natação 9m e permite l
         },
         {
           chave: "corgann", nome: "Corgann", nd: "8", tipo: "Espírito (elemental) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "À primeira vista, o que se aproxima parece algum tipo de peixe-fantasma voador, movendo-se no ar como faria na água.",
           texto:
 `Corgann ND 8
@@ -2321,7 +2451,7 @@ Tesouro 1d4 doses de éter elemental (frio) (CD 23 para extrair).`
         },
         {
           chave: "namasqall", nome: "Namasqall", nd: "14", tipo: "Espírito (elemental) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "A tempestade torrencial é, sem dúvida, causada pela criatura elemental que se aproxima.",
           texto:
 `Namasqall ND 14
@@ -2343,7 +2473,7 @@ Tesouro 1d4+2 doses de éter elemental (frio) (CD 29 para extrair).`
         },
         {
           chave: "tPeel", nome: "T’Peel", nd: "1", tipo: "Espirito (elemental) Minúsculo",
-          papel: '',
+          papel: "lacaio",
           resumo: "Poderia ser apenas uma brisa incomum, um fenômeno climático breve e estranho, ou não.",
           texto:
 `T’Peel ND 1
@@ -2364,7 +2494,7 @@ Familiar Um t’peel familiar pode carregar 2 espaços de itens e permite que vo
         },
         {
           chave: "rarvnaak", nome: "Rarvnaak", nd: "7", tipo: "Espírito (elemental) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Não existe nada para ser visto, até que você conjura sua magia divinatória.",
           texto:
 `Rarvnaak ND 7
@@ -2385,7 +2515,7 @@ Tesouro 1d4 doses de éter elemental (eletricidade) (CD 22 para extrair).`
         },
         {
           chave: "hallusTir", nome: "Hallus’tir", nd: "15", tipo: "Espírito (elemental) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "“Uma coluna de templo sustentando o próprio céu” é como a manifestação poderia ser descrita.",
           texto:
 `Hallus’tir ND 15
@@ -2408,7 +2538,7 @@ Tesouro 1d4+2 doses de éter elemental (eletricidade) (CD 30 para extrair) e 1d4
         },
         {
           chave: "pakk", nome: "Pakk", nd: "1", tipo: "Espirito (elemental) Minúsculo",
-          papel: '',
+          papel: "lacaio",
           resumo: "O que poderia ser tomado como uma mariposa em chamas na verdade se revela como um minúsculo e gracioso ser elemental.",
           texto:
 `Pakk ND 1
@@ -2427,7 +2557,7 @@ Familiar Um pakk familiar permite que você lance Explosão de Chamas. Caso apre
         },
         {
           chave: "berBaram", nome: "Ber-baram", nd: "8", tipo: "Espírito (elemental) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Os cascos bipartidos dessas criaturas quadrúpedes, do tamanho de touros, reverberam pelo solo em ritmo inquietante.",
           texto:
 `Ber-baram ND 8
@@ -2446,7 +2576,7 @@ Tesouro 1d4 doses de éter elemental (fogo) (CD 23 para extrair).`
         },
         {
           chave: "serpentaar", nome: "Serpentaar", nd: "14", tipo: "Espírito (elemental) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "O primeiro pensamento evocado pelo monstro é uma imensa e gorda serpente feita de piche, com chamas furiosas explodindo de bolhas formadas…",
           texto:
 `Serpentaar ND 14
@@ -2466,7 +2596,7 @@ Tesouro 1d4+2 doses de éter elemental (fogo) (CD 29 para extrair).`
         },
         {
           chave: "terrier", nome: "Terrier", nd: "1", tipo: "Espirito (elemental) Pequeno",
-          papel: '',
+          papel: "solo",
           resumo: "Este pequeno ser poderia ser confundido com um amontoado de pedras cinzentas comuns, se ficasse quieto.",
           texto:
 `Terrier ND 1
@@ -2485,7 +2615,7 @@ Familiar Um terrier familiar concede redução de dano 2/impacto.`
         },
         {
           chave: "pamgra", nome: "Pamgra", nd: "7", tipo: "Espírito (elemental) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Pamgra",
           resumo: "Pamgra — A criatura tem o tamanho e as proporções de um grande gorila, mas feito de pedras, amalgamadas com lama ou rocha liquefeita.",
           texto:
@@ -2503,7 +2633,7 @@ Tesouro 1d4 doses de éter elemental (ácido) (CD 22 para extrair).`
         },
         {
           chave: "bandoDePamgras", nome: "Bando de Pamgras", nd: "11", tipo: "Espírito (elemental) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Pamgra",
           resumo: "Pamgra — A criatura tem o tamanho e as proporções de um grande gorila, mas feito de pedras, amalgamadas com lama ou rocha liquefeita.",
           texto:
@@ -2522,7 +2652,7 @@ Tesouro 1d6 doses de éter elemental (ácido) (CD 26 para extrair).`
         },
         {
           chave: "tanaloom", nome: "Tanaloom", nd: "13", tipo: "Espírito (elemental) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "A coluna é imensa, poderia ser parte de uma construção formidável — mas não existe nada parecido por perto.",
           texto:
 `Tanaloom ND 13
@@ -2543,7 +2673,7 @@ Tesouro 2d4 doses de éter elemental (ácido) (CD 28 para extrair).`
         },
         {
           chave: "elementalCorrompido", nome: "Elemental Corrompido", nd: "16", tipo: "Espírito (elemental) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "A água do rio é turva e tem um tom acobreado.",
           texto:
 `Elemental Corrompido ND 16
@@ -2590,6 +2720,30 @@ Firmes e sólidos como o solo de onde se originam, elementais da terra normalmen
           texto:
 `A criatura tem o tamanho e as proporções de um grande gorila, mas feito de pedras, amalgamadas com lama ou rocha liquefeita. Em vez de cabeça, traz um pedaço de cristal incrustado, sem feições. Formações cristalinas parecidas também afloram de seus punhos, tornando-os imensos tacapes cheios de pontas afiadas. Pamgras são elementais da terra mais agressivos que outros de seu tipo. Embora sejam também encontrados sozinhos, costumam formar grandes grupos para investir com violência sobre tudo que encontram. Encontros pacíficos com estes seres são bastante raros, embora às vezes ocorram. Apesar da estrutura vagamente humanoide, nada no comportamento dos pamgra sugere que tenham qualquer inteligência. E embora atuem em bandos, não adotam táticas de combate elaboradas, exceto avançar e esmagar pela força dos números. Quando assolam uma região, grupos de aventureiros costumam ser enviados para destruí-los (quando têm poder suficiente) ou atraí-los para longe; por sua agressividade, pamgras são alvo fácil de provocações (se estas são de fato compreendidas, não se sabe), imediatamente perseguindo seus autores. Pamgras são especialmente perigosos em áreas montanhosas, onde ocorrem com mais frequência. Em grandes números, podem entrar em um estranho frenesi — começam a esmurrar o chão em sincronia, afetando o terreno em volta e causando todo tipo de catástrofe sísmica, como terremotos e avalanches.` },
       ],
+      reforcos: { pag: 101, nomes: [
+        { n: "Cão do Inferno", f: 1 },
+        { n: "Centopeia-Dragão", f: 1 },
+        { n: "Dragão Adulto", c: ["dragaoAdultoDaTirania", "dragaoAdultoDosSegredos"] },
+        { n: "Dragão Bicéfalo", c: ["dragaoBicefalo"] },
+        { n: "Dragão Feral", c: ["dragaoFeral"] },
+        { n: "Dragão Filhote", c: ["dragaoFilhoteDoBosque", "dragaoFilhoteDosRios"] },
+        { n: "Dragão-Real", c: ["dragaoBicefalo"] },
+        { n: "Dragão Venerável", c: ["dragaoVeneravelDaEquidade", "dragaoVeneravelDosRecifes"] },
+        { n: "Dragões", f: 1 },
+        { n: "Elemental do Veneno", c: ["elementalDoVenenoPequeno", "elementalDoVenenoMedio", "elementalDoVenenoGrande"] },
+        { n: "Gárgula", c: ["gargula", "gargulaAssassina"] },
+        { n: "Golem de Barro", c: ["golemDeBarro"] },
+        { n: "Golem de Bronze", c: ["golemDeBronze"] },
+        { n: "Golem de Carne", c: ["golemDeCarne"] },
+        { n: "Golem de Ferro", c: ["golemDeFerro", "golemDeFerroSuperior"] },
+        { n: "Golem de Nor", c: ["golemDeNorMedio", "golemDeNorGrande", "golemDeNorEnorme"] },
+        { n: "Golem de Pedra", c: ["golemDePedra"] },
+        { n: "Glop", c: ["glop", "mamaeGlop"] },
+        { n: "Glooop", c: ["glooop"] },
+        { n: "Mamãe Glop", c: ["mamaeGlop"] },
+        { n: "Stagh", c: ["stagh"] },
+        { n: "Verme do Gelo", c: ["vermeDoGeloLarva", "vermeDoGeloAdulto"] },
+      ] },
     },
 
     // ── 🏞 ERMOS ───────────────────────────────────────
@@ -2599,7 +2753,7 @@ Firmes e sólidos como o solo de onde se originam, elementais da terra normalmen
       fichas: [
         {
           chave: "bulette", nome: "Bulette", nd: "7", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O animal lembra um imenso tubarão com patas curtas, carapaça grossa e a famosa bocarra com centenas de dentes.",
           texto:
 `Bulette ND 7
@@ -2622,7 +2776,7 @@ Parceiro O bulette é um parceiro montaria (Grande) que fornece os benefícios a
         },
         {
           chave: "carrascoDeLena", nome: "Carrasco de Lena", nd: "6", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "A criatura tem a forma de uma salamandra imensa, com couro rugoso, pernas atarracadas e cauda muito grossa.",
           texto:
 `Carrasco de Lena ND 6
@@ -2644,7 +2798,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "centauroChefe", nome: "Centauro Chefe", nd: "8", tipo: "Humanoide (centauro) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Entre os centauros, existe um que claramente se destaca.",
           texto:
 `Centauro Chefe ND 8
@@ -2664,7 +2818,7 @@ Equipamento Machado de guerra aumentado maciço, gibão de peles. Tesouro Padrã
         },
         {
           chave: "centauroXamaDeMegalokk", nome: "Centauro Xamã de Megalokk", nd: "10", tipo: "Humanoide (centauro) Grande",
-          papel: '',
+          papel: "especial",
           resumo: "Aquele ser quadrúpede e com braços parece um centauro — mas apenas um pouco.",
           texto:
 `Centauro Xamã de Megalokk ND 10
@@ -2691,7 +2845,7 @@ Equipamento Clava macabra aumentada, farrapos de ermitão, símbolo sagrado de M
         },
         {
           chave: "ente", nome: "Ente", nd: "8", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "A criatura é alta como uma árvore e também muito parecida com uma.",
           texto:
 `Ente ND 8
@@ -2719,7 +2873,7 @@ Tesouro Padrão mais lasca de ente (CD 23 para extrair, vale T$ 70 para fabricar
         },
         {
           chave: "estirge", nome: "Estirge", nd: "1", tipo: "Monstro Minúsculo",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Estirge",
           resumo: "Estirge — O enxame é formado por seres voadores demoníacos que lembram grandes mosquitos, mas de corpos vermelhos e peludos, com asas negras de morcego.",
           texto:
@@ -2739,7 +2893,7 @@ Familiar Um estirge pode ser invocado como familiar, mas isso requer uma ova de 
         },
         {
           chave: "enxameEstirge", nome: "Enxame Estirge", nd: "5", tipo: "Monstro Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Estirge",
           resumo: "Estirge — O enxame é formado por seres voadores demoníacos que lembram grandes mosquitos, mas de corpos vermelhos e peludos, com asas negras de morcego.",
           texto:
@@ -2757,7 +2911,7 @@ Tesouro Ova de estirge.`
         },
         {
           chave: "nuvemDeEstirges", nome: "Nuvem de Estirges", nd: "16", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Estirge",
           resumo: "Estirge — O enxame é formado por seres voadores demoníacos que lembram grandes mosquitos, mas de corpos vermelhos e peludos, com asas negras de morcego.",
           texto:
@@ -2776,7 +2930,7 @@ Tesouro Ova de estirge.`
         },
         {
           chave: "feraVassalo", nome: "Fera-Vassalo", nd: "3", tipo: "Monstro Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Fera-Cacto",
           resumo: "Fera-Cacto — Os seres vagamente humanoides, sem feições visíveis, avançam em silêncio.",
           texto:
@@ -2796,7 +2950,7 @@ Tesouro Espinhos (CD 18 para extrair, valem T$ 50 para fabricar flechas superior
         },
         {
           chave: "feraLider", nome: "Fera-Líder", nd: "5", tipo: "Monstro Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Fera-Cacto",
           resumo: "Fera-Cacto — Os seres vagamente humanoides, sem feições visíveis, avançam em silêncio.",
           texto:
@@ -2816,7 +2970,7 @@ Tesouro Espinhos (CD 20 para extrair, valem T$ 150 para fabricar flechas superio
         },
         {
           chave: "feraMae", nome: "Fera-Mãe", nd: "13", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Fera-Cacto",
           resumo: "Fera-Cacto — Os seres vagamente humanoides, sem feições visíveis, avançam em silêncio.",
           texto:
@@ -2834,7 +2988,7 @@ Tesouro 1d4+1 doses de peçonha potente (CD 28 para extrair) e espinhos (CD 28 p
         },
         {
           chave: "lagartoPerseguidor", nome: "Lagarto Perseguidor", nd: "2", tipo: "Animal Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Grande como um crocodilo, o lagarto de escamas listradas se ergue sobre pernas poderosas com garras longas.",
           texto:
 `Lagarto Perseguidor ND 2
@@ -2855,7 +3009,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "tendriculo", nome: "Tendrículo", nd: "6", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Grande como uma cabana, a coisa parece um amontoado de vegetação úmida, emaranhada com vinhas e cipós.",
           texto:
 `Tendrículo ND 6
@@ -2877,7 +3031,7 @@ Tesouro 1d4 doses de essência de sombra (CD 21 para extrair).`
         },
         {
           chave: "rhandomm", nome: "Rhandomm", nd: "20", tipo: "Espírito Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "É um humanoide titânico — um gigante literal, alto como a torre de um castelo.",
           texto:
 `Rhandomm ND 20
@@ -2929,6 +3083,54 @@ O enxame é formado por seres voadores demoníacos que lembram grandes mosquitos
 — Osbald Oddmar III, hynne nobre
 Os seres vagamente humanoides, sem feições visíveis, avançam em silêncio. São cobertos de calosidades e espinhos afiados, e vários atingem dois metros de altura. Onde deveria haver mãos, trazem ferrões longos como adagas, que parecem ter o único propósito de matar. Feras-cactos são monstros vegetais de origem desconhecida, que rondam áreas secas — sobretudo desertos e savanas — em grupos. Diz-se que nascem e crescem enraizadas como cactos comuns, protegidos pelas feras adultas, até que se desprendem do solo e juntam-se ao bando para caçar. Preferem caçar à noite, mas podem estar ativas a qualquer hora do dia. São extremamente silenciosas; têm pés estofados, produzindo pouco ou nenhum ruído ao caminhar. Também usam uma linguagem de gestos para se comunicar. Feras-cactos podem disparar seus espinhos como setas de bestas. No entanto, mostram-se muito mais perigosas em combate corporal: as garras-espinhos nos braços são órgãos complexos, adaptados para penetrar fundo a carne e sugar sangue ou outros fluidos. Uma fraqueza pouco conhecida destes monstros é que, sob chuva forte ou imersos em água, apodrecem e morrem rapidamente. Não costuma ser problema nas regiões áridas que habitam, mas conjuradores com tal conhecimento — e as magias certas — podem tirar proveito dessa vulnerabilidade. Existem rumores de que as feras protegem grandes redes de túneis onde guardam os tesouros de suas vítimas. Esses covis também abrigam uma suposta fera-mãe, gigantesca demais para se mover, que governa a raça inteira. Tentativas de comunicação com essa matriarca foram, até agora, infrutíferas.` },
       ],
+      reforcos: { pag: 110, nomes: [
+        { n: "Árvore-Matilha", c: ["arvoreMatilha"] },
+        { n: "Bandido", c: ["bandidoComum", "bandidoLigeiro", "bandidoSelvagem", "chefeBandido"] },
+        { n: "Basilisco", f: 1 },
+        { n: "Cão do Inferno", f: 1 },
+        { n: "Capanga", c: ["ogroCapanga", "capanga", "jagunco", "capangaMinotauro", "gnollCapanga", "kaijinCapanga", "nezumiCapanga"] },
+        { n: "Centauros", f: 1 },
+        { n: "Chefe do Crime", c: ["chefeBandido", "chefeDeGangue", "chefeDeQuadrilha"] },
+        { n: "Clérigo de Hyninn", c: ["sacerdoteDeHyninn", "altoSacerdoteDeHyninn"] },
+        { n: "Coletor de Arsenal", c: ["coletorDeArsenal"] },
+        { n: "Devoto de Hyninn", c: ["devotoDeHyninnManhoso", "devotoDeHyninnSimao", "devotoDeHyninnVelhaco"] },
+        { n: "Dragão Adulto", c: ["dragaoAdultoDaTirania", "dragaoAdultoDosSegredos"] },
+        { n: "Dragão Bicéfalo", c: ["dragaoBicefalo"] },
+        { n: "Dragão Feral", c: ["dragaoFeral"] },
+        { n: "Dragão Filhote", c: ["dragaoFilhoteDoBosque", "dragaoFilhoteDosRios"] },
+        { n: "Dragão-Real", c: ["dragaoBicefalo"] },
+        { n: "Dragão Venerável", c: ["dragaoVeneravelDaEquidade", "dragaoVeneravelDosRecifes"] },
+        { n: "Dragões", f: 1 },
+        { n: "Espada-da-Floresta", c: ["espadaDaFloresta"] },
+        { n: "Galhada", c: ["galhadaMacho", "galhadaFemea"] },
+        { n: "Gnoll Caçador de Cabeças", c: ["gnollCacadorDeCabecas"] },
+        { n: "Gnoll Capanga", c: ["gnollCapanga", "gnollSaqueador", "gnollFilibusteiro"] },
+        { n: "Gnoll Líder de Alcateia", c: ["gnollLiderDeAlcateia"] },
+        { n: "Gnoll Saqueador", c: ["gnollSaqueador"] },
+        { n: "Gnoll Vuul’rak", c: ["gnollVuulRak"] },
+        { n: "Gnoll Xamã", c: ["gnollXamaDeAllihanna", "gnollXamaDeMegalokk", "gnollXamaDeMarah"] },
+        { n: "Goblin Salteador", f: 1 },
+        { n: "Gorlogg", c: ["gorlogg", "gorloggAlfa"] },
+        { n: "Grifo", f: 1 },
+        { n: "Guardas", f: 1 },
+        { n: "Hiena", c: ["hiena", "hienaRainha", "hienodonte"] },
+        { n: "Hobgoblin Soldado", f: 1 },
+        { n: "Lobo", f: 1 },
+        { n: "Lobo-das-Cavernas", f: 1 },
+        { n: "Matrona Gnoll", c: ["matronaGnoll"] },
+        { n: "Meio-Orc", c: ["meioOrcBandoleiro", "meioOrcCapanga", "meioOrcChefe"] },
+        { n: "Ogro", c: ["ogro", "ogroCacador", "ogroCapanga"] },
+        { n: "Orc", c: ["orcCombatente", "orcVeterano", "orcChefe", "orcRei"] },
+        { n: "Orc Mutante", c: ["orcMutante", "orcMutanteSuperior"] },
+        { n: "Orc Xamã", c: ["orcXama"] },
+        { n: "Quimera", c: ["quimera"] },
+        { n: "Sapo Atroz", c: ["sapoAtroz"] },
+        { n: "Serpe", c: ["serpe", "serpeAncia"] },
+        { n: "Tabrachi", c: ["tabrachiSoldado", "tabrachiCampeao"] },
+        { n: "Trog", c: ["trogCombatente", "trogCacador", "trogReiDosTuneis", "trogAnaoBruto", "trogAnaoEremita"] },
+        { n: "Trog Anão", c: ["trogAnaoBruto", "trogAnaoEremita"] },
+        { n: "Urso-Coruja", f: 1 },
+      ] },
     },
 
     // ── 🐺 GNOLLS ──────────────────────────────────────
@@ -2938,7 +3140,7 @@ Os seres vagamente humanoides, sem feições visíveis, avançam em silêncio. S
       fichas: [
         {
           chave: "gnollCacadorDeCabecas", nome: "Gnoll Caçador de Cabeças", nd: "8", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "As setas envenenadas vieram de algum ponto nas árvores logo atrás.",
           texto:
 `Gnoll Caçador de Cabeças ND 8
@@ -2962,7 +3164,7 @@ Equipamento Bálsamo restaurador x3, besta leve precisa, couro batido, espada lo
         },
         {
           chave: "gnollCapanga", nome: "Gnoll Capanga", nd: "1/2", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Gnoll Capanga",
           resumo: "Gnoll Capanga — Em meio aos goblins frenéticos, uma criatura maior se destaca.",
           texto:
@@ -2981,7 +3183,7 @@ Tesouro Metade.`
         },
         {
           chave: "gnollSaqueador", nome: "Gnoll Saqueador", nd: "1", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Gnoll Capanga",
           resumo: "Gnoll Capanga — Em meio aos goblins frenéticos, uma criatura maior se destaca.",
           texto:
@@ -2998,7 +3200,7 @@ Equipamento Arco curto, flechas x20, lança. Tesouro Metade.`
         },
         {
           chave: "gnollFilibusteiro", nome: "Gnoll Filibusteiro", nd: "2", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Gnoll Capanga",
           resumo: "Gnoll Capanga — Em meio aos goblins frenéticos, uma criatura maior se destaca.",
           texto:
@@ -3017,7 +3219,7 @@ Tesouro Padrão.`
         },
         {
           chave: "gnollLiderDeAlcateia", nome: "Gnoll Líder de Alcateia", nd: "5", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Os latidos-risadas dos gnolls são enervantes, eles estão claramente tentando abalar vocês.",
           texto:
 `Gnoll Líder de Alcateia ND 5
@@ -3039,7 +3241,7 @@ Equipamento Azagaia x2, couro batido, machado de batalha. Tesouro Padrão.`
         },
         {
           chave: "gnollXamaDeAllihanna", nome: "Gnoll Xamã de Allihanna", nd: "2", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Gnoll Xamã",
           resumo: "Gnoll Xamã — Os gnolls estão bastante feridos pelos golpes, alguns já esboçando sinais de rendição.",
           texto:
@@ -3064,7 +3266,7 @@ Tesouro Padrão.`
         },
         {
           chave: "gnollXamaDeMegalokk", nome: "Gnoll Xamã de Megalokk", nd: "5", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Gnoll Xamã",
           resumo: "Gnoll Xamã — Os gnolls estão bastante feridos pelos golpes, alguns já esboçando sinais de rendição.",
           texto:
@@ -3089,7 +3291,7 @@ Equipamento Couro batido, símbolo sagrado de Megalokk, tacape. Tesouro Padrão.
         },
         {
           chave: "gnollXamaDeMarah", nome: "Gnoll Xamã de Marah", nd: "6", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Gnoll Xamã",
           resumo: "Gnoll Xamã — Os gnolls estão bastante feridos pelos golpes, alguns já esboçando sinais de rendição.",
           texto:
@@ -3113,7 +3315,7 @@ Equipamento Bálsamo restaurador x4, couro batido, símbolo sagrado de Marah. Te
         },
         {
           chave: "hiena", nome: "Hiena", nd: "1", tipo: "Animal Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Hiena",
           resumo: "Hiena — Não, NÃO foi ruim!” O bando de canídeos robustos, de orelhas arredondadas e focinhos enegrecidos, emite latidos enervantes que lembram risadas.",
           texto:
@@ -3133,7 +3335,7 @@ Parceiro A hiena é um parceiro especial (perseguidor) que fornece os benefício
         },
         {
           chave: "hienaRainha", nome: "Hiena Rainha", nd: "2", tipo: "Animal Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Hiena",
           resumo: "Hiena — Não, NÃO foi ruim!” O bando de canídeos robustos, de orelhas arredondadas e focinhos enegrecidos, emite latidos enervantes que lembram risadas.",
           texto:
@@ -3153,7 +3355,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "hienodonte", nome: "Hienodonte", nd: "3", tipo: "Animal Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Hiena",
           resumo: "Hiena — Não, NÃO foi ruim!” O bando de canídeos robustos, de orelhas arredondadas e focinhos enegrecidos, emite latidos enervantes que lembram risadas.",
           texto:
@@ -3173,7 +3375,7 @@ Parceiro O hienodonte é um parceiro montaria (Grande) que fornece os benefício
         },
         {
           chave: "matronaGnoll", nome: "Matrona Gnoll", nd: "11", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Súbito, a numerosa alcateia abre passagem.",
           texto:
 `Matrona Gnoll ND 11
@@ -3197,7 +3399,7 @@ Tesouro Padrão.`
         },
         {
           chave: "gnollVuulRak", nome: "Gnoll Vuul’rak", nd: "16", tipo: "Humanoide (gnoll) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O monstro grotesco tem alguma semelhança com os homens-hienas saqueadores dos ermos, mas claramente não se trata da mesma criatura.",
           texto:
 `Gnoll Vuul’rak ND 16
@@ -3239,6 +3441,15 @@ Não, NÃO foi ruim!”
 — Bazza Hyzzabo, qareen bardo
 O bando de canídeos robustos, de orelhas arredondadas e focinhos enegrecidos, emite latidos enervantes que lembram risadas. Embora sejam ameaçadores, entre eles emerge uma criatura muito maior, saída de pesadelos. Ainda que gnolls não tenham parentesco real com hienas (até onde se sabe), é impossível negar sua semelhança e afinidade. Muitos bandos gnoll acabam domesticando estes carniceiros; hienas assumem ali os mesmos papéis dos cães nas sociedades humanas, como animais de guarda e caça. Enquanto outros seres são abalados por seu latido estridente, nos gnolls o efeito é oposto, reforçando seu moral e tornando-os imunes ao medo. Em estado selvagem, hienas costumam seguir grandes predadores para comer restos de suas presas — ou, quando a oportunidade surge, para roubá-las. Bandos famintos podem atacar viajantes, mas apenas quando em maior número; se perdem membros a ponto de eliminar essa vantagem, os sobreviventes recuam ou fogem. Ainda assim, são animais mais perigosos do que parecem; a mordida terrível, capaz de triturar ossos, está entre as mais fortes das crias de Allihanna — até rivalizando com carnívoros bem maiores, como o próprio rei-tirano de Galrasia. Mais raro e perigoso que as hienas, também existe o hienodonte, sua versão atroz de tempos primevos. Quase do tamanho de um urso, raramente é encontrado longe de Galrasia, onde forma bandos capazes de abater os maiores lagartos-trovão. Alguns foram trazidos para o Reinado por caçadores; acabaram escapando para os ermos, cruzando com hienas normais e liderando suas alcateias. Os maiores bandos gnolls conseguem usá-los como montarias poderosas, e diz-se que alguns aventureiros também os cavalgam.` },
       ],
+      reforcos: { pag: 121, nomes: [
+        { n: "Bandido", c: ["bandidoComum", "bandidoLigeiro", "bandidoSelvagem", "chefeBandido"] },
+        { n: "Capanga", c: ["ogroCapanga", "capanga", "jagunco", "capangaMinotauro", "gnollCapanga", "kaijinCapanga", "nezumiCapanga"] },
+        { n: "Chefe do Crime", c: ["chefeBandido", "chefeDeGangue", "chefeDeQuadrilha"] },
+        { n: "Clérigo de Hyninn", c: ["sacerdoteDeHyninn", "altoSacerdoteDeHyninn"] },
+        { n: "Devoto de Hyninn", c: ["devotoDeHyninnManhoso", "devotoDeHyninnSimao", "devotoDeHyninnVelhaco"] },
+        { n: "Gatuno", c: ["gatuno", "gatunoMestre"] },
+        { n: "Ogro", c: ["ogro", "ogroCacador", "ogroCapanga"] },
+      ] },
     },
 
     // ── 🗿 GOLENS ──────────────────────────────────────
@@ -3248,7 +3459,7 @@ O bando de canídeos robustos, de orelhas arredondadas e focinhos enegrecidos, e
       fichas: [
         {
           chave: "gargula", nome: "Gárgula", nd: "2", tipo: "Construto Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Gárgula",
           resumo: "Gárgula — A criatura parece a estátua de um humanoide grotesco e alado, com chifres, cauda e garras.",
           texto:
@@ -3265,7 +3476,7 @@ Tesouro Padrão.`
         },
         {
           chave: "gargulaAssassina", nome: "Gárgula Assassina", nd: "4", tipo: "Construto Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Gárgula",
           resumo: "Gárgula — A criatura parece a estátua de um humanoide grotesco e alado, com chifres, cauda e garras.",
           texto:
@@ -3283,7 +3494,7 @@ Tesouro Padrão.`
         },
         {
           chave: "golemDeBarro", nome: "Golem de Barro", nd: "10", tipo: "Construto Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O monstro lembra um humanoide grotesco, com feições disformes.",
           texto:
 `Golem de Barro ND 10
@@ -3308,7 +3519,7 @@ Tesouro 1d4 doses de corrosivo mineral (CD 25 para extrair).`
         },
         {
           chave: "golemDeBronze", nome: "Golem de Bronze", nd: "9", tipo: "Construto Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O vulto em couraça cobreada bem poderia ser algum legionário tapistano.",
           texto:
 `Golem de Bronze ND 9
@@ -3328,7 +3539,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "golemDeCarne", nome: "Golem de Carne", nd: "7", tipo: "Construto Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O vulto robusto, quase humano à primeira vista, logo revela o horror de sua real natureza.",
           texto:
 `Golem de Carne ND 7
@@ -3348,7 +3559,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "golemDeEspelhos", nome: "Golem de Espelhos", nd: "9", tipo: "Construto Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O que parecia algum tipo de escultura pitoresca, angulosa e sem feições, revela-se como uma criatura metálica toda coberta de espelhos.",
           texto:
 `Golem de Espelhos ND 9
@@ -3369,7 +3580,7 @@ Equipamento Espada bastarda aumentada precisa. Tesouro Fragmento refletor (CD 24
         },
         {
           chave: "golemDeFerro", nome: "Golem de Ferro", nd: "10", tipo: "Construto Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Golem de Ferro",
           resumo: "Golem de Ferro — O titã se assemelha a um gigante vestindo armadura pesada e elmo fechado, com punhos descomunais.",
           texto:
@@ -3387,7 +3598,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "golemDeFerroSuperior", nome: "Golem de Ferro Superior", nd: "15", tipo: "Construto Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Golem de Ferro",
           resumo: "Golem de Ferro — O titã se assemelha a um gigante vestindo armadura pesada e elmo fechado, com punhos descomunais.",
           texto:
@@ -3406,7 +3617,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "golemDeMateriaVermelha", nome: "Golem de Matéria Vermelha", nd: "18", tipo: "Construto (lefeu) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "O grande construto humanoide sem feições parece ter sido feito com algo que vocês não conseguem identificar — ou melhor, algo que não…",
           texto:
 `Golem de Matéria Vermelha ND 18
@@ -3429,7 +3640,7 @@ Tesouro Retalhos rubros (CD 33 para extrair, valem T$ 8.000 para fabricar itens 
         },
         {
           chave: "golemDePedra", nome: "Golem de Pedra", nd: "12", tipo: "Construto Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O que parecia ser uma grande estátua de um minotauro ergue-se da alcova na parede e avança na direção de vocês com passos estrondosos.",
           texto:
 `Golem de Pedra ND 12
@@ -3449,7 +3660,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "instrumentoDivino", nome: "Instrumento Divino", nd: "7", tipo: "Construto Médio",
-          papel: '',
+          papel: "solo",
           resumo: "O ser luminoso parece um guerreiro sagrado trajando uma couraça de cristal, sob a qual circula algo que parece luz líquida.",
           texto:
 `Instrumento Divino ND 7
@@ -3471,7 +3682,7 @@ Equipamento Escudo pesado de mitral, espada longa certeira, símbolo sagrado. Te
         },
         {
           chave: "soldadoMecanico", nome: "Soldado Mecânico", nd: "3", tipo: "Construto Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "A criatura é claramente uma máquina.",
           texto:
 `Soldado Mecânico ND 3
@@ -3503,6 +3714,20 @@ A criatura parece a estátua de um humanoide grotesco e alado, com chifres, caud
 — Jaimim da Brigada Rubra, hynne ladino
 O titã se assemelha a um gigante vestindo armadura pesada e elmo fechado, com punhos descomunais. Contudo, quando se movimenta, parece muito mais forte e denso que uma criatura de carne e osso. Ainda, as frestas da armadura derramam fogo elemental, deixando claro que o adversário não é algo criado pelos deuses. Muitos construtos são feitos de aço e outros metais variados. O verdadeiro golem de ferro, no entanto, pertence a outro patamar. Esta versão muito aprimorada do golem de bronze está entre os construtos mais poderosos de Arton — poucos artífices no mundo têm capacidade e recursos para construí-los. De fato, devido a seu custo exorbitante, são raros até mesmo entre as forças da Supremacia Purista. Embora sejam maiores e mais pesados que ogros, seus movimentos são precisos. Além da força física imensa, sua alta resistência e imunidades tornam o monstro quase indestrutível. O ferro usado em sua construção anula quase todas as formas de magia, inutilizando as táticas de muitos aventureiros. São várias as histórias sobre grupos de heróis que, ao confrontar um destes em alguma masmorra, não tiveram escolha além de recuar e repensar sua estratégia. Como outros golens movidos por centelha elemental, alguns destes acabam ganhando vida. Muitos se tornam campeões gladiadores, guarda-costas para regentes ou sumos-sacerdotes, ou aventureiros. Golens de ferro não falam, mas produzem sons metálicos profundos que seu criador, e eventuais companheiros, podem compreender.` },
       ],
+      reforcos: { pag: 135, nomes: [
+        { n: "Carruagem de Comando", c: ["corcelDeComando", "carruagemDeComando"] },
+        { n: "Elemental da Água", q: "Elemental da Água" },
+        { n: "Elemental do Ar", q: "Elemental do Ar" },
+        { n: "Elemental do Fogo", q: "Elemental do Fogo" },
+        { n: "Elemental da Terra", q: "Elemental da Terra" },
+        { n: "Engenho de Guerra Goblin", f: 1 },
+        { n: "Goblin Engenhoqueiro", f: 1 },
+        { n: "Golem de Nor", c: ["golemDeNorMedio", "golemDeNorGrande", "golemDeNorEnorme"] },
+        { n: "Kishin", c: ["kishin"] },
+        { n: "Kishinauros", c: ["kishinauros"] },
+        { n: "Mashin", c: ["mashinMonge", "mashinSamurai"] },
+        { n: "Yidishan", c: ["yidishanBugbear"] },
+      ] },
     },
 
     // ── ⚒ IGREJA DE ARSENAL ───────────────────────────
@@ -3512,7 +3737,7 @@ O titã se assemelha a um gigante vestindo armadura pesada e elmo fechado, com p
       fichas: [
         {
           chave: "coletorDeArsenal", nome: "Coletor de Arsenal", nd: "10", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "O bando usa armaduras que de certa forma lembram a célebre couraça de Mestre Arsenal, com as características aletas no elmo fechado.",
           texto:
 `Coletor de Arsenal ND 10
@@ -3542,7 +3767,7 @@ Tesouro Padrão.`
         },
         {
           chave: "forjadorLiturgico", nome: "Forjador Litúrgico", nd: "9", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Forjador Litúrgico",
           resumo: "Forjador Litúrgico — Todos no grupo trajam mantos escuros, armaduras pesadas e grandes elmos fechados — trazendo, na fronte, a espada e o martelo cruzados.",
           texto:
@@ -3560,7 +3785,7 @@ Equipamento Armamento sagrado, instrumentos de Ofício (armeiro) aprimorados, me
         },
         {
           chave: "concilioForjador", nome: "Concílio forjador", nd: "13", tipo: "Humanoide (humano) Grande",
-          papel: '',
+          papel: "especial",
           subgrupo: "Forjador Litúrgico",
           resumo: "Forjador Litúrgico — Todos no grupo trajam mantos escuros, armaduras pesadas e grandes elmos fechados — trazendo, na fronte, a espada e o martelo cruzados.",
           texto:
@@ -3578,7 +3803,7 @@ Equipamento Arma superior com 1 melhoria a sua escolha, instrumentos de Ofício 
         },
         {
           chave: "guerreiroPerpetuo", nome: "Guerreiro Perpétuo", nd: "7", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Visto à distância, poderia ser um clérigo ou guerreiro em armadura completa.",
           texto:
 `Guerreiro Perpétuo ND 7
@@ -3598,7 +3823,7 @@ Equipamento Escudo pesado, grilhão de descrença, martelo de guerra. Tesouro Ne
         },
         {
           chave: "kishin", nome: "Kishin", nd: "13", tipo: "Construto Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Grande e robusto de tanta blindagem, o engenho humanoide parece ainda maior.",
           texto:
 `Kishin ND 13
@@ -3622,7 +3847,7 @@ Tesouro 1d4 lascas adaptativas (CD 28 para extrair, cada lasca vale T$ 1.000 par
         },
         {
           chave: "capelaoDeGuerra", nome: "Capelão de Guerra", nd: "4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Sacerdote de Guerra",
           resumo: "Sacerdote de Guerra — Em meio aos soldados da Supremacia, há um clérigo de armadura usando as cores puristas.",
           texto:
@@ -3646,7 +3871,7 @@ Equipamento Armadura completa, escudo leve, martelo de guerra certeiro, símbolo
         },
         {
           chave: "bispoDeGuerra", nome: "Bispo de Guerra", nd: "8", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Sacerdote de Guerra",
           resumo: "Sacerdote de Guerra — Em meio aos soldados da Supremacia, há um clérigo de armadura usando as cores puristas.",
           texto:
@@ -3674,7 +3899,7 @@ Equipamento Armadura completa ajustada reforçada, escudo leve reforçado, marte
         },
         {
           chave: "kishinauros", nome: "Kishinauros", nd: "S", tipo: "Construto Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "Ele é alto como a própria estátua de Valkaria — impossível crer que uma máquina tão grande possa existir.",
           texto:
 `Kishinauros ND S
@@ -3722,6 +3947,23 @@ Todos no grupo trajam mantos escuros, armaduras pesadas e grandes elmos fechados
 — Thalyandra, dahllan clériga de Arsenal
 Em meio aos soldados da Supremacia, há um clérigo de armadura usando as cores puristas. Seu símbolo sagrado não é familiar, lembrando uma arma erguida para o céu. Ele carrega um martelo de guerra em uma mão, enquanto a outra conjura uma cura mágica sobre um companheiro ferido. Arsenal foi um mortal que se tornou deus por seus próprios esforços. Ao fazê-lo, também realizou o grande objetivo de Valkaria — que um ser humano derrotasse um deus. Este e outros fatos levaram a Deusa da Humanidade à liderança do Panteão, trazendo numerosas consequências ao mundo dos mortais. Talvez o produto mais sinistro de tais ascensões seja o Templo da Pureza Divina, culto formado por puristas devotos de Valkaria e Arsenal. Religião oficial da Supremacia, traz uma visão deturpada das crenças e objetivos dessas fés: por serem superiores, capazes de desafiar os próprios deuses, caberia aos humanos governar Arton e colocar os demais povos em “seu devido lugar”. Alguns acham lógico que o tirânico Arsenal abençoe esses fanáticos odiosos. Mas como podem ser capazes de brandir os milagres de Valkaria — totalmente oposta a qualquer forma de intolerância — é um mistério completo. Alguns especulam que o propósito da deusa seria prover Arton com adversários óbvios a derrotar. Seja como for, estes clérigos guerreiros têm sido vistos acompanhando não apenas tropas puristas, mas também coletores de Arsenal, Forjadores Litúrgicos e outros, lutando e provendo curas mágicas. Como tal aliança entre diferentes igrejas funciona, é algo que apenas o pragmatismo de Arsenal pode explicar.` },
       ],
+      reforcos: { pag: 143, nomes: [
+        { n: "Arcano de Guerra", c: ["arcanoDeGuerraAdepto", "arcanoDeGuerraVeterano"] },
+        { n: "Capitão-Baluarte", f: 1 },
+        { n: "Carruagem de Comando", c: ["corcelDeComando", "carruagemDeComando"] },
+        { n: "Cavaleiro do Leopardo Sangrento", f: 1 },
+        { n: "Colosso Supremo", f: 1 },
+        { n: "Dançarino de Guerra", c: ["dancarinoDeGuerra", "dancarinoDeGuerraVeterano"] },
+        { n: "Golem de Bronze", c: ["golemDeBronze"] },
+        { n: "Golem de Ferro", c: ["golemDeFerro", "golemDeFerroSuperior"] },
+        { n: "Golem de Pedra", c: ["golemDePedra"] },
+        { n: "Instrumento Divino", c: ["instrumentoDivino"] },
+        { n: "Recruta Purista", f: 1 },
+        { n: "Sargento-Mor", f: 1 },
+        { n: "Soldado Blindado", c: ["soldadoBlindado", "companhiaBlindadaDeElite"] },
+        { n: "Soldado Mecânico", c: ["soldadoMecanico"] },
+        { n: "Soldado Purista", f: 1 },
+      ] },
     },
 
     // ── 🐲 IGREJA DE KALLYADRANOCH ─────────────────────
@@ -3731,7 +3973,7 @@ Em meio aos soldados da Supremacia, há um clérigo de armadura usando as cores 
       fichas: [
         {
           chave: "cavaleiroDeKally", nome: "Cavaleiro de Kally", nd: "8", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Vocês chegam a tempo de ver um pequeno grupo de homens em armaduras voando para longe em cavalos alados, escamados.",
           texto:
 `Cavaleiro de Kally ND 8
@@ -3755,7 +3997,7 @@ Equipamento Armadura completa de couro de dragão, espada bastarda, lança monta
         },
         {
           chave: "acolitoDeKally", nome: "Acólito de Kally", nd: "3", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Clérigo de Kally",
           resumo: "Clérigo de Kally — A mulher altiva os observa com olhos que quase expelem chamas, enquanto empunha um cetro em formato de garra.",
           texto:
@@ -3780,7 +4022,7 @@ Equipamento Gibão de peles, maça, símbolo sagrado de Kallyadranoch. Tesouro P
         },
         {
           chave: "clerigoDeKally", nome: "Clérigo de Kally", nd: "8", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Clérigo de Kally",
           resumo: "Clérigo de Kally — A mulher altiva os observa com olhos que quase expelem chamas, enquanto empunha um cetro em formato de garra.",
           texto:
@@ -3809,7 +4051,7 @@ Equipamento Azagaia x2, couraça, maça, símbolo sagrado de Kallyadranoch. Teso
         },
         {
           chave: "altoClerigoDeKally", nome: "Alto Clérigo de Kally", nd: "13", tipo: "Monstro (kallyanach) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Clérigo de Kally",
           resumo: "Clérigo de Kally — A mulher altiva os observa com olhos que quase expelem chamas, enquanto empunha um cetro em formato de garra.",
           texto:
@@ -3841,7 +4083,7 @@ Equipamento Lança de arremesso, meia armadura, símbolo sagrado de Kallyadranoc
         },
         {
           chave: "corcelDeKally", nome: "Corcel de Kally", nd: "2", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "A criatura tem o tamanho e forma de um cavalo, mas claramente não é.",
           texto:
 `Corcel de Kally ND 2
@@ -3863,7 +4105,7 @@ Parceiro O corcel de Kally é um parceiro montaria (Grande) que fornece os benef
         },
         {
           chave: "dracomante", nome: "Dracomante", nd: "5", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Dracomante",
           resumo: "Dracomante — Quando o conjurador sinistro gesticula, linhas brilhantes feitas de chamas correm ao longo do manto escuro e diagramas surgem no ar.",
           texto:
@@ -3889,7 +4131,7 @@ Tesouro Metade.`
         },
         {
           chave: "dracomanteSuperior", nome: "Dracomante Superior", nd: "14", tipo: "Humanoide (elfo) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Dracomante",
           resumo: "Dracomante — Quando o conjurador sinistro gesticula, linhas brilhantes feitas de chamas correm ao longo do manto escuro e diagramas surgem no ar.",
           texto:
@@ -3919,7 +4161,7 @@ Equipamento Adaga, cetro elemental de couro de dragão (fogo), pergaminho de Tra
         },
         {
           chave: "kallyanachBarbaro", nome: "Kallyanach Bárbaro", nd: "6", tipo: "Monstro (kallyanach) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kallyanach",
           resumo: "Kallyanach — O ser humanoide é coberto de escamas robustas, tem cabeça adornada de chifres e presas, mãos com garras e grandes asas.",
           texto:
@@ -3937,7 +4179,7 @@ Equipamento Couraça, gadanho. Tesouro Metade.`
         },
         {
           chave: "kallyanachMorteGlacial", nome: "Kallyanach Morte Glacial", nd: "9", tipo: "Monstro (kallyanach) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kallyanach",
           resumo: "Kallyanach — O ser humanoide é coberto de escamas robustas, tem cabeça adornada de chifres e presas, mãos com garras e grandes asas.",
           texto:
@@ -3958,7 +4200,7 @@ Tesouro Padrão.`
         },
         {
           chave: "avatarDeKallyadranoch", nome: "Avatar de Kallyadranoch", nd: "S", tipo: "Monstro (dragão) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "DE VOCÊ, NÃO TENHO NADA A TEMER.” Seu olhar é atraído para a criatura prostrada no cume da montanha de riquezas.",
           texto:
 `Avatar de Kallyadranoch ND S
@@ -4008,6 +4250,26 @@ Quando o conjurador sinistro gesticula, linhas brilhantes feitas de chamas corre
 — Ben-Hakk, meio-dragão bardo
 O ser humanoide é coberto de escamas robustas, tem cabeça adornada de chifres e presas, mãos com garras e grandes asas. Se foi humano um dia, ou elfo, ou mesmo minotauro, é impossível dizer — os traços dracônicos predominam por completo. Um meio-dragão pode surgir de várias maneiras. E, apesar da conhecida volúpia dos dragões, o acasalamento pode ser a menos comum de todas. Dragões são seres extremamente mágicos: sua própria presença emana uma aura elemental que se estende por toda a região que dominam, às vezes perdurando por anos após sua morte ou partida. Essa emanação pode ser pressentida ou farejada por predadores, que ficam prudentemente afastados. No entanto, quando povos humanoides vivem na área, um bebê nascido ali pode ser meio-dragão. Também ocorre que a transformação seja intencional, em vez de acidental. Para um devoto de Kally, não há honra maior do que ser abençoado com essa metamorfose em algo mais próximo de sua divindade. Muitos dracomantes também perseguem esse objetivo, através de fórmulas e rituais. Fala-se em pequenas aldeias bárbaras formadas apenas por meios-dragões, em alguns pontos das Sanguinárias. E existe ainda uma causa muito mais evidente: Kallyadranoch voltou a ser um deus maior. Se ele desejar que qualquer nascimento no mundo resulte em um meio-dragão, por motivos que apenas um deus conhece, assim será.` },
       ],
+      reforcos: { pag: 150, nomes: [
+        { n: "Armadilhas Kobolds", q: "Armadilhas Kobolds" },
+        { n: "Cão de Kally", c: ["caoDeKally"] },
+        { n: "Dragão Adulto", c: ["dragaoAdultoDaTirania", "dragaoAdultoDosSegredos"] },
+        { n: "Dragão Bicéfalo", c: ["dragaoBicefalo"] },
+        { n: "Dragão Feral", c: ["dragaoFeral"] },
+        { n: "Dragão Menor", c: ["dragaoFilhoteDoBosque", "dragaoFilhoteDosRios", "ninhadaDeDragoesFilhotes", "dragaoJovemDaProtecao", "dragaoJovemDoOcaso"] },
+        { n: "Dragão-Real", c: ["dragaoBicefalo"] },
+        { n: "Dragão Venerável", c: ["dragaoVeneravelDaEquidade", "dragaoVeneravelDosRecifes"] },
+        { n: "Dragões", g: "dragoes" },
+        { n: "Enxame Larval", c: ["enxameLarval"] },
+        { n: "Enxame Kobold", f: 1 },
+        { n: "Kobold", c: ["koboldPatrulheiro", "koboldVeterano", "patrulhaKobold"] },
+        { n: "Kobold Bruto", c: ["koboldBruto"] },
+        { n: "Kobold Explosivo", c: ["koboldExplosivo"] },
+        { n: "Kobold Xamã", c: ["koboldXama"] },
+        { n: "Serpe", c: ["serpe", "serpeAncia"] },
+        { n: "Tirano do Terceiro", f: 1 },
+        { n: "Vagalhão Kobold", q: "Vagalhão Kobold" },
+      ] },
     },
 
     // ── 🏯 IMPÉRIO DE JADE ─────────────────────────────
@@ -4017,7 +4279,7 @@ O ser humanoide é coberto de escamas robustas, tem cabeça adornada de chifres 
       fichas: [
         {
           chave: "chibiKabuto", nome: "Chibi-Kabuto", nd: "1/4", tipo: "Animal Minúsculo",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kabuto",
           resumo: "Kabuto — Um olhar apressado sugere que a grande besta-inseto seja alguma aberração da Tormenta.",
           texto:
@@ -4034,7 +4296,7 @@ Familiar Um chibi-kabuto familiar aumenta em +1 o bônus na Defesa que você rec
         },
         {
           chave: "koKabuto", nome: "Ko-Kabuto", nd: "1", tipo: "Animal Pequeno",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kabuto",
           resumo: "Kabuto — Um olhar apressado sugere que a grande besta-inseto seja alguma aberração da Tormenta.",
           texto:
@@ -4052,7 +4314,7 @@ Parceiro O ko-kabuto é um parceiro especial (guardião) que fornece os benefíc
         },
         {
           chave: "hordaDeKoKabuto", nome: "Horda de Ko-Kabuto", nd: "3", tipo: "Animal Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kabuto",
           resumo: "Kabuto — Um olhar apressado sugere que a grande besta-inseto seja alguma aberração da Tormenta.",
           texto:
@@ -4070,7 +4332,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "daiKabuto", nome: "Dai-Kabuto", nd: "4", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kabuto",
           resumo: "Kabuto — Um olhar apressado sugere que a grande besta-inseto seja alguma aberração da Tormenta.",
           texto:
@@ -4089,7 +4351,7 @@ Parceiro O dai-kabuto é um parceiro montaria (Grande) que fornece os benefício
         },
         {
           chave: "kaijinCapanga", nome: "Kaijin Capanga", nd: "6", tipo: "Monstro (kaijin) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Kaijin",
           resumo: "Kaijin — Por Lin-Wu, como isso é possível?” O monstro aberrante é, obviamente, um demônio da Tormenta — mas algo parece diferente.",
           texto:
@@ -4114,7 +4376,7 @@ Tesouro Metade.`
         },
         {
           chave: "kaijinBruto", nome: "Kaijin BRUTO", nd: "11", tipo: "Monstro (kaijin) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kaijin",
           resumo: "Kaijin — Por Lin-Wu, como isso é possível?” O monstro aberrante é, obviamente, um demônio da Tormenta — mas algo parece diferente.",
           texto:
@@ -4141,7 +4403,7 @@ Tesouro Metade.`
         },
         {
           chave: "kaijinNinja", nome: "Kaijin Ninja", nd: "13", tipo: "Monstro (kaijin) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Kaijin",
           resumo: "Kaijin — Por Lin-Wu, como isso é possível?” O monstro aberrante é, obviamente, um demônio da Tormenta — mas algo parece diferente.",
           texto:
@@ -4170,7 +4432,7 @@ Equipamento Dardos x20, espada curta certeira, essência de sombra x1d4, gazua, 
         },
         {
           chave: "kappaBrigao", nome: "Kappa Brigão", nd: "1", tipo: "Espírito (kappa) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kappa",
           resumo: "Kappa — Os estranhos seres aquáticos têm o aspecto de tartarugas bípedes, com faces reptilianas, olhos redondos e vermelhos, escamas…",
           texto:
@@ -4190,7 +4452,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "kappaYokozuna", nome: "Kappa Yokozuna", nd: "3", tipo: "Espírito (kappa) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kappa",
           resumo: "Kappa — Os estranhos seres aquáticos têm o aspecto de tartarugas bípedes, com faces reptilianas, olhos redondos e vermelhos, escamas…",
           texto:
@@ -4211,7 +4473,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "mashinMonge", nome: "Mashin Monge", nd: "3", tipo: "Construto (golem) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Mashin",
           resumo: "Mashin — À primeira vista, lembra um ser humano esbelto em armadura metálica, ou uma estátua de manufatura sofisticada.",
           texto:
@@ -4231,7 +4493,7 @@ Equipamento Adaga x3. Tesouro Nenhum.`
         },
         {
           chave: "mashinSamurai", nome: "Mashin Samurai", nd: "5", tipo: "Construto (golem) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Mashin",
           resumo: "Mashin — À primeira vista, lembra um ser humano esbelto em armadura metálica, ou uma estátua de manufatura sofisticada.",
           texto:
@@ -4251,7 +4513,7 @@ Equipamento Katana certeira, meia armadura. Tesouro Metade.`
         },
         {
           chave: "nezumiCapanga", nome: "Nezumi Capanga", nd: "1", tipo: "Humanoide (nezumi) Pequeno",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Nezumi",
           resumo: "Nezumi — Os recém-chegados podem ser facilmente descritos como pessoas-ratos.",
           texto:
@@ -4271,7 +4533,7 @@ Tesouro Metade.`
         },
         {
           chave: "nezumiNinja", nome: "Nezumi Ninja", nd: "3", tipo: "Humanoide (nezumi) Pequeno",
-          papel: '',
+          papel: "especial",
           subgrupo: "Nezumi",
           resumo: "Nezumi — Os recém-chegados podem ser facilmente descritos como pessoas-ratos.",
           texto:
@@ -4292,7 +4554,7 @@ Equipamento Bomba de fumaça x3, espada curta x2, shuriken x6. Tesouro Metade.`
         },
         {
           chave: "nezumiBrutamontes", nome: "Nezumi Brutamontes", nd: "4", tipo: "Humanoide (nezumi) Pequeno",
-          papel: '',
+          papel: "solo",
           subgrupo: "Nezumi",
           resumo: "Nezumi — Os recém-chegados podem ser facilmente descritos como pessoas-ratos.",
           texto:
@@ -4311,7 +4573,7 @@ Equipamento Gibão de peles, marreta aumentada. Tesouro Metade.`
         },
         {
           chave: "oni", nome: "Oni", nd: "5", tipo: "Espírito Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Oni",
           resumo: "Oni — Os humanoides imensos e abrutalhados são muito parecidos com ogros, mas há diferenças óbvias — sendo a mais marcante sua pele azulada ou avermelhada.",
           texto:
@@ -4331,7 +4593,7 @@ Equipamento Machado de guerra. Tesouro Padrão.`
         },
         {
           chave: "akaOni", nome: "Aka Oni", nd: "9", tipo: "Espírito (lefeu) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Oni",
           resumo: "Oni — Os humanoides imensos e abrutalhados são muito parecidos com ogros, mas há diferenças óbvias — sendo a mais marcante sua pele azulada ou avermelhada.",
           texto:
@@ -4352,7 +4614,7 @@ Equipamento Gibão de peles, tetsubo aumentado de matéria vermelha. Tesouro Nen
         },
         {
           chave: "tenguBandoleiro", nome: "Tengu Bandoleiro", nd: "6", tipo: "Espírito (tengu) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Tengu",
           resumo: "Tengu — O vulto humanoide é escuro como a noite, todo coberto de penas profundamente negras.",
           texto:
@@ -4372,7 +4634,7 @@ Equipamento Katana. Tesouro Padrão.`
         },
         {
           chave: "daitengu", nome: "Daitengu", nd: "8", tipo: "Espírito (tengu) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Tengu",
           resumo: "Tengu — O vulto humanoide é escuro como a noite, todo coberto de penas profundamente negras.",
           texto:
@@ -4398,7 +4660,7 @@ Equipamento Katana ×2. Tesouro Padrão.`
         },
         {
           chave: "dragaoCelestialJovem", nome: "Dragão Celestial Jovem", nd: "10", tipo: "Espírito Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Celestial",
           resumo: "Dragão Celestial — A grande forma escamada e colorida lembra um dragão — e realmente é, mas também algo diferente.",
           texto:
@@ -4422,7 +4684,7 @@ Tesouro Dobro.`
         },
         {
           chave: "dragaoCelestialAdulto", nome: "Dragão Celestial Adulto", nd: "15", tipo: "Espírito Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Celestial",
           resumo: "Dragão Celestial — A grande forma escamada e colorida lembra um dragão — e realmente é, mas também algo diferente.",
           texto:
@@ -4449,7 +4711,7 @@ Tesouro Dobro.`
         },
         {
           chave: "dragaoCelestialVeneravel", nome: "Dragão Celestial Venerável", nd: "20", tipo: "Espírito Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragão Celestial",
           resumo: "Dragão Celestial — A grande forma escamada e colorida lembra um dragão — e realmente é, mas também algo diferente.",
           texto:
@@ -4531,6 +4793,30 @@ A grande forma escamada e colorida lembra um dragão — e realmente é, mas tam
 • Metamorfose Celestial (Completa). Podem se transformar em outras criaturas, como a magia Metamorfose (mas sem limitação para tamanhos menores que o seu). Dragões curiosos usam esta habilidade para se misturar nas sociedades humanoides e aprender sobre seus costumes. Um dragão morto reverte à sua forma original.
 • Presença Celestial. A mera visão de um dragão celestial adulto ou mais velho pode fascinar ou amedrontar. Uma criatura que comece seu turno em alcance longo do dragão fica apavorada (se tiver 4 níveis ou menos) ou abalada (se tiver 5 níveis ou mais) até o fim da cena. Criaturas com um código de conduta (como cavaleiros e paladinos) ou devotos de Khalmyr ou Lin-Wu em vez disso ficam fascinados, independente de seu nível (Von evita em todos os casos). Uma criatura que passe no teste de resistência fica imune a esta habilidade por um dia.` },
       ],
+      reforcos: { pag: 166, nomes: [
+        { n: "Alma Acorrentada", c: ["almaAcorrentada"] },
+        { n: "Bandido", c: ["bandidoComum", "bandidoLigeiro", "bandidoSelvagem", "chefeBandido"] },
+        { n: "Bruxo da Tormenta", c: ["bruxoDaTormenta", "arquibruxoDaTormenta"] },
+        { n: "Capanga", c: ["ogroCapanga", "capanga", "jagunco", "capangaMinotauro", "gnollCapanga", "kaijinCapanga", "nezumiCapanga"] },
+        { n: "Chefe do Crime", c: ["chefeBandido", "chefeDeGangue", "chefeDeQuadrilha"] },
+        { n: "Infecto", c: ["infecto", "turbaDeInfectos"] },
+        { n: "Irukanjin", c: ["irukanjin", "aguaViva", "enxameDeAguasVivas", "aguaVivaGigante"] },
+        { n: "Kaiju", c: ["kaiju"] },
+        { n: "Lefeu Geraktril", f: 1 },
+        { n: "Lefeu Burodron", c: ["lefeuBurodron"] },
+        { n: "Lefeu Ezzayn", c: ["lefeuEzzayn"] },
+        { n: "Lefeu Hurobakk", c: ["lefeuHurobakk"] },
+        { n: "Lefeu Morgadrel", c: ["lefeuMorgadrel"] },
+        { n: "Lefeu Thuwarokk", f: 1 },
+        { n: "Lefel Veridak" },
+        { n: "Lefeu Uktril", f: 1 },
+        { n: "Lefeu Veridak", c: ["lefeuVeridak"] },
+        { n: "Maníaco Lefou", f: 1 },
+        { n: "Otyugh", f: 1 },
+        { n: "Reishid", c: ["reishid", "reishidLiderDeCulto"] },
+        { n: "Senhor do Gigante Rubro", c: ["senhorDoGiganteRubroFormaInicial", "senhorDoGiganteRubroFormaFinal"] },
+        { n: "Zyrrinaz", c: ["zyrrinaz"] },
+      ] },
     },
 
     // ── 🐂 IMPÉRIO DE TAURON ───────────────────────────
@@ -4540,7 +4826,7 @@ A grande forma escamada e colorida lembra um dragão — e realmente é, mas tam
       fichas: [
         {
           chave: "arqueiroEscravo", nome: "Arqueiro Escravo", nd: "5", tipo: "Humanoide (elfo) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "É uma visão estranha, perturbadora.",
           texto:
 `Arqueiro Escravo ND 5
@@ -4562,7 +4848,7 @@ Equipamento Arco longo, couraça, flechas x20. Tesouro Nenhum.`
         },
         {
           chave: "centuriao", nome: "Centurião", nd: "3", tipo: "Humanoide (minotauro) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Centurião",
           resumo: "Centurião — Ainda que as legiões pareçam formadas por soldados absolutamente iguais, com as mesmas armaduras, lanças e escudos, um deles se adianta.",
           texto:
@@ -4583,7 +4869,7 @@ Equipamento Azagaia x3, escudo pesado, gládio certeiro, loriga segmentada. Teso
         },
         {
           chave: "centuriaoDeElite", nome: "Centurião de Elite", nd: "7", tipo: "Humanoide (minotauro) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Centurião",
           resumo: "Centurião — Ainda que as legiões pareçam formadas por soldados absolutamente iguais, com as mesmas armaduras, lanças e escudos, um deles se adianta.",
           texto:
@@ -4605,7 +4891,7 @@ Equipamento Azagaia x3, escudo pesado, gládio certeiro, loriga segmentada refor
         },
         {
           chave: "furiaDeTauron", nome: "Fúria de Tauron", nd: "4", tipo: "Morto-vivo Pequeno",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Fúria de Tauron",
           resumo: "Fúria de Tauron — A aparição flutuante tem o aspecto de um crânio bovino envolto em chamas macabras, espectrais.",
           texto:
@@ -4624,7 +4910,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "estouroDeFuriasDeTauron", nome: "Estouro de Fúrias de Tauron", nd: "8", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Fúria de Tauron",
           resumo: "Fúria de Tauron — A aparição flutuante tem o aspecto de um crânio bovino envolto em chamas macabras, espectrais.",
           texto:
@@ -4643,7 +4929,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "gladiadorTaurico", nome: "Gladiador Táurico", nd: "10", tipo: "Humanoide (minotauro) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "É um guerreiro minotauro, mas claramente não um legionário.",
           texto:
 `Gladiador Táurico ND 10
@@ -4666,7 +4952,7 @@ Equipamento Couraça, rede, tridente cruel e equilibrado. Tesouro Padrão.`
         },
         {
           chave: "legionario", nome: "Legionário", nd: "1", tipo: "Humanoide (minotauro) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Legionário",
           resumo: "Legionário — Alto e sólido como um muro, envergando uma orgulhosa loriga segmentada, o soldado minotauro avança empunhando lança e escudo.",
           texto:
@@ -4685,7 +4971,7 @@ Equipamento Azagaia x3, escudo pesado, gládio, loriga segmentada. Tesouro Metad
         },
         {
           chave: "decuria", nome: "Decúria", nd: "5", tipo: "Humanoide (minotauro) Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Legionário",
           resumo: "Legionário — Alto e sólido como um muro, envergando uma orgulhosa loriga segmentada, o soldado minotauro avança empunhando lança e escudo.",
           texto:
@@ -4705,7 +4991,7 @@ Equipamento Azagaia x3, escudo pesado, gládio, loriga segmentada (1d10 de cada)
         },
         {
           chave: "legionarioInsano", nome: "Legionário Insano", nd: "8", tipo: "Humanoide (minotauro) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Parece apenas mais uma patrulha de legionários, como tantas outras nas estradas imperiais.",
           texto:
 `Legionário Insano ND 8
@@ -4727,7 +5013,7 @@ Equipamento Gládio, loriga segmentada. Tesouro Metade.`
         },
         {
           chave: "minauroArcanista", nome: "Minauro Arcanista", nd: "3", tipo: "Humanoide (minauro) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Minauro",
           resumo: "Minauro — Ela lembra uma humana robusta, como a maioria dos minotauros.",
           texto:
@@ -4750,7 +5036,7 @@ Equipamento Essência de mana, espada curta, varinha arcana. Tesouro Padrão.`
         },
         {
           chave: "minauroLadino", nome: "Minauro Ladino", nd: "6", tipo: "Humanoide (minauro) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Minauro",
           resumo: "Minauro — Ela lembra uma humana robusta, como a maioria dos minotauros.",
           texto:
@@ -4772,7 +5058,7 @@ Equipamento Bomba x3, bomba de fumaça x3, espada curta, gazua. Tesouro Padrão.
         },
         {
           chave: "governadorCorrupto", nome: "Governador Corrupto", nd: "6", tipo: "Humanoide (minotauro) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "A figura obesa em toga elegante, transportada em uma liteira carregada por escravos, acena um comando para que se detenham.",
           texto:
 `Governador Corrupto ND 6
@@ -4821,6 +5107,17 @@ Alto e sólido como um muro, envergando uma orgulhosa loriga segmentada, o solda
 — Minara Minostini, minaura guerreira
 Ela lembra uma humana robusta, como a maioria dos minotauros. Também tem cabeça bovina, mas com olhos grandes e expressivos, focinho curto e chifres menores que aqueles vistos em minotauros. Tem pés humanos calçando sandálias. Veste armadura de couro e empunha algo que, se não fosse absurdo, poderia ser um canhão. Minotauros precisam de fêmeas humanas, élficas ou qareen para se reproduzir — pois, apesar de existirem minotauras mulheres, não existem minotauros fêmeas. Filhos do sexo masculino são minotauros. Filhas do sexo feminino são humanas, elfas ou qareen. No entanto, em raras ocasiões, uma criatura totalmente nova vem à luz. Os meios-minotauros, ou minauros, lembram humanos com traços táuricos. Não demonstram a grande força da raça de Tauron, mas também estão livres de suas fraquezas. E, diferente destes, podem ter qualquer sexo. Já foram considerados aberrações, “coisas que não deveriam existir” — preconceito que ficou no passado, exceto para os mais intolerantes. Quando nascidos e criados no Império de Tauron, meios-minotauros agem e se comportam como seus pais, demonstrando disciplina, honra e orgulho. No entanto, talvez por sua força física inferior, sentem mais necessidade de demonstrar suas capacidades, competindo com minotauros “puros” o tempo todo. Sua parte humana também pode levar a uma curiosidade imprudente por assuntos “proibidos” para o povo táurico, como armas de longo alcance, magia arcana ou talentos ladinos. De fato, minauros tendem a mostrar comportamento mais diverso, desenvolvem gostos e aversões imprevisíveis. Minauros e minotauros não se relacionam bem. Mesmo o minotauro mais nobre e generoso não consegue disfarçar a mágoa, considerando os minauros inferiores, dignos de pena. Minauros são tratados como doentes, inválidos ou “irmãozinhos” pequenos — o que eles detestam! Por isso preferem deixar o convívio com minotauros para viver entre outras raças, onde sua força acima da média é respeitada e bem-vinda. Se resolvem ser aventureiros, minauros ficam muito à vontade em grupos formados por pessoas diversas. Entendem que sua grande força é importante para a equipe, adotando classes combativas, mas também podem “nadar contra a corrente” e seguir carreiras totalmente contrárias à raça dos pais, como arcanistas, bardos, inventores e ladinos.` },
       ],
+      reforcos: { pag: 177, nomes: [
+        { n: "Bandido", c: ["bandidoComum", "bandidoLigeiro", "bandidoSelvagem", "chefeBandido"] },
+        { n: "Capanga", c: ["ogroCapanga", "capanga", "jagunco", "capangaMinotauro", "gnollCapanga", "kaijinCapanga", "nezumiCapanga"] },
+        { n: "Chefe do Crime", c: ["chefeBandido", "chefeDeGangue", "chefeDeQuadrilha"] },
+        { n: "Fanático Lefou", c: ["fanaticoLefou", "liderFanaticoLefou"] },
+        { n: "Gárgula", c: ["gargula", "gargulaAssassina"] },
+        { n: "Golem de Bronze", c: ["golemDeBronze"] },
+        { n: "Maníaco Lefou", f: 1 },
+        { n: "Minotauro da Manada", c: ["minotauroDaManada", "minotauroChefeDaManada"] },
+        { n: "Soldado Mecânico", c: ["soldadoMecanico"] },
+      ] },
     },
 
     // ── 🐕 KOBOLDS ─────────────────────────────────────
@@ -4830,7 +5127,7 @@ Ela lembra uma humana robusta, como a maioria dos minotauros. Também tem cabeç
       fichas: [
         {
           chave: "caoDeKally", nome: "Cão de Kally", nd: "2", tipo: "Monstro Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Quando o bando de humanoides-cães-lagartos raivosos emerge da vegetação, algo maior toma a dianteira.",
           texto:
 `Cão de Kally ND 2
@@ -4852,7 +5149,7 @@ Parceiro Embora seja difícil de treinar, um cão de Kally é um parceiro especi
         },
         {
           chave: "enxameLarval", nome: "Enxame Larval", nd: "1", tipo: "Monstro (kobold) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "O poder elemental sangra das paredes, escorrendo e gotejando como fogo líquido.",
           texto:
 `Enxame Larval ND 1
@@ -4872,7 +5169,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "koboldPatrulheiro", nome: "Kobold Patrulheiro", nd: "1/2", tipo: "Monstro (kobold) Pequeno",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Kobold",
           resumo: "Kobold — São pouco mais de uma dúzia.",
           texto:
@@ -4891,7 +5188,7 @@ Equipamento Funda, lança, pedras x20. Tesouro Metade.`
         },
         {
           chave: "koboldVeterano", nome: "Kobold Veterano", nd: "2", tipo: "Monstro (kobold) Pequeno",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Kobold",
           resumo: "Kobold — São pouco mais de uma dúzia.",
           texto:
@@ -4912,7 +5209,7 @@ Tesouro Metade.`
         },
         {
           chave: "patrulhaKobold", nome: "Patrulha Kobold", nd: "4", tipo: "Monstro (kobold) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Kobold",
           resumo: "Kobold — São pouco mais de uma dúzia.",
           texto:
@@ -4932,7 +5229,7 @@ Tesouro Metade.`
         },
         {
           chave: "koboldBruto", nome: "Kobold Bruto", nd: "4", tipo: "Monstro (kobold) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "São seres do tamanho de ogros, grandes e fortes, mas com cabeças diminutas de kobolds.",
           texto:
 `Kobold Bruto ND 4
@@ -4954,7 +5251,7 @@ Equipamento Tacape aumentado. Tesouro Metade.`
         },
         {
           chave: "koboldExplosivo", nome: "Kobold Explosivo", nd: "1", tipo: "Monstro (kobold) Pequeno",
-          papel: '',
+          papel: "lacaio",
           resumo: "A criatura estridente recebe seu ataque certeiro, sua lâmina o atravessa sem deixar qualquer vida.",
           texto:
 `Kobold Explosivo ND 1
@@ -4976,7 +5273,7 @@ Equipamento Funda, lança, pedras x20. Tesouro Metade.`
         },
         {
           chave: "koboldXama", nome: "Kobold Xamã", nd: "3", tipo: "Monstro (kobold) Pequeno",
-          papel: '',
+          papel: "especial",
           resumo: "Súbito, os kobolds abrem passagem para alguém diferente.",
           texto:
 `Kobold Xamã ND 3
@@ -5004,7 +5301,7 @@ Equipamento Andrajos, bálsamo restaurador, funda, gadanho, pedras x20, símbolo
         },
         {
           chave: "koboldMae", nome: "Kobold-Mãe", nd: "12", tipo: "Monstro (kobold) Grande",
-          papel: '',
+          papel: "especial",
           resumo: "Na vasta caverna de paredes viscosas, pululando com uma população de kobolds, há uma criatura diferente.",
           texto:
 `Kobold-Mãe ND 12
@@ -5067,6 +5364,17 @@ Levantar-se (Atletismo ou Acrobacia CD 35). Um personagem caído tenta se livrar
 Proteger-se (Nenhum teste). O personagem se defende e recebe +5 no próximo teste de Fortitude contra o vagalhão.
 Ajudar (Varia). O personagem faz um teste para ajudar (veja Tormenta20, p. 221) um aliado. O jogador pode usar qualquer perícia que conseguir justificar — Atletismo para proteger um aliado, Percepção para ver qual a melhor direção para atacar etc.` },
       ],
+      reforcos: { pag: 187, nomes: [
+        { n: "Dragão Adulto", c: ["dragaoAdultoDaTirania", "dragaoAdultoDosSegredos"] },
+        { n: "Dragão Bicéfalo", c: ["dragaoBicefalo"] },
+        { n: "Dragão Feral", c: ["dragaoFeral"] },
+        { n: "Dragão Menor", c: ["dragaoFilhoteDoBosque", "dragaoFilhoteDosRios", "ninhadaDeDragoesFilhotes", "dragaoJovemDaProtecao", "dragaoJovemDoOcaso"] },
+        { n: "Dragão-Real", c: ["dragaoBicefalo"] },
+        { n: "Dragão Venerável", c: ["dragaoVeneravelDaEquidade", "dragaoVeneravelDosRecifes"] },
+        { n: "Dragões", f: 1 },
+        { n: "Enxame Kobold", f: 1 },
+        { n: "Tirano do Terceiro", f: 1 },
+      ] },
     },
 
     // ── 🐾 MASCOTES & FAMILIARES ───────────────────────
@@ -5076,7 +5384,7 @@ Ajudar (Varia). O personagem faz um teste para ajudar (veja Tormenta20, p. 221) 
       fichas: [
         {
           chave: "bogum", nome: "Bogum", nd: "1/2", tipo: "Construto Minúsculo",
-          papel: '',
+          papel: "lacaio",
           resumo: "O que parecia apenas um pequeno amontoado de folhas subitamente se move.",
           texto:
 `Bogum ND 1/2
@@ -5098,7 +5406,7 @@ Parceiro O bogum é um parceiro especial (companheiro animal), exclusivo de drui
         },
         {
           chave: "escudeiro", nome: "Escudeiro", nd: "1/2", tipo: "Animal Pequeno",
-          papel: '',
+          papel: "lacaio",
           resumo: "Os elfos-do-mar erguem-se das águas e avançam como guerreiros furiosos.",
           texto:
 `Escudeiro ND 1/2
@@ -5117,7 +5425,7 @@ Parceiro O escudeiro é um parceiro especial (fortão) que fornece os benefício
         },
         {
           chave: "fofo", nome: "Fofo", nd: "1/2", tipo: "Monstro Minúsculo",
-          papel: '',
+          papel: "lacaio",
           resumo: "O bicho lembra uma massa de pão, tanto na consistência quanto na cor.",
           texto:
 `Fofo ND 1/2
@@ -5136,7 +5444,7 @@ Parceiro O fofo é um parceiro especial (guardião) que fornece os benefícios a
         },
         {
           chave: "gamba", nome: "Gambá", nd: "1/2", tipo: "Animal Minúsculo",
-          papel: '',
+          papel: "lacaio",
           resumo: "O pequeno animal é pouco maior que um gato, com pelagem manchada de preto e branco, e uma cauda longa e escamosa.",
           texto:
 `Gambá ND 1/2
@@ -5156,7 +5464,7 @@ Parceiro O gambá é um parceiro especial (vigilante) que fornece os benefícios
         },
         {
           chave: "homunculo", nome: "Homúnculo", nd: "1", tipo: "Construto Minúsculo",
-          papel: '',
+          papel: "lacaio",
           resumo: "Você desperta a tempo de ver algo próximo de seu travesseiro algo pequeno e demoníaco.",
           texto:
 `Homúnculo ND 1
@@ -5179,7 +5487,7 @@ Parceiro O homúnculo é um parceiro especial (ajudante) que fornece os benefíc
         },
         {
           chave: "killBone", nome: "Kill’Bone", nd: "1/2", tipo: "Animal Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "O animal parece um cão selvagem, mas com algum tipo de armadura óssea revestida de espinhos e uma longa cauda também espinhosa.",
           texto:
 `Kill’Bone ND 1/2
@@ -5200,7 +5508,7 @@ Parceiro O kill’bone é um parceiro especial (perseguidor) que fornece os bene
         },
         {
           chave: "tentacute", nome: "Tentacute", nd: "1/2", tipo: "Animal Minúsculo",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Tentacute",
           resumo: "Tentacute — O pequeno animal tem o mesmo tamanho e corpo felino de um gato comum.",
           texto:
@@ -5221,7 +5529,7 @@ Parceiro O tentacute é um parceiro especial (vigilante) que fornece os benefíc
         },
         {
           chave: "tropaDeTentacutes", nome: "Tropa de Tentacutes", nd: "2", tipo: "Animal Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Tentacute",
           resumo: "Tentacute — O pequeno animal tem o mesmo tamanho e corpo felino de um gato comum.",
           texto:
@@ -5242,7 +5550,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "verilemur", nome: "Verilêmur", nd: "1/2", tipo: "Animal Minúsculo",
-          papel: '',
+          papel: "especial",
           subgrupo: "Verilêmur & Malafex",
           resumo: "Verilêmur & Malafex — O que parece um corvo com manchas brancas crocita furiosamente contra outro pequeno animal que lembra um macaco, mas com focinho de raposa…",
           texto:
@@ -5261,7 +5569,7 @@ Parceiro (apenas devotos de Khalmyr) O verilêmur é um parceiro especial (vigil
         },
         {
           chave: "malafex", nome: "Malafex", nd: "1/2", tipo: "Animal Minúsculo",
-          papel: '',
+          papel: "especial",
           subgrupo: "Verilêmur & Malafex",
           resumo: "Verilêmur & Malafex — O que parece um corvo com manchas brancas crocita furiosamente contra outro pequeno animal que lembra um macaco, mas com focinho de raposa…",
           texto:
@@ -5316,7 +5624,7 @@ O que parece um corvo com manchas brancas crocita furiosamente contra outro pequ
       fichas: [
         {
           chave: "asaAssassina", nome: "Asa-Assassina", nd: "1", tipo: "Animal Minúsculo",
-          papel: '',
+          papel: "lacaio",
           resumo: "As criaturas têm o aspecto de mariposas, mas são grandes como pássaros.",
           texto:
 `Asa-Assassina ND 1
@@ -5338,7 +5646,7 @@ Parceiro Uma asa-assassina é um parceiro especial (assassino) que fornece os be
         },
         {
           chave: "cocatriz", nome: "Cocatriz", nd: "3", tipo: "Monstro Pequeno",
-          papel: '',
+          papel: "solo",
           subgrupo: "Cocatriz",
           resumo: "Cocatriz — O bicho parece um galo grande e muito feio, mas com duas caudas (ou três, difícil dizer) escamadas de serpente.",
           texto:
@@ -5357,7 +5665,7 @@ Parceiro A cocatriz é um parceiro especial (adepto) que fornece os benefícios 
         },
         {
           chave: "cocatrizReal", nome: "Cocatriz-Real", nd: "7", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Cocatriz",
           resumo: "Cocatriz — O bicho parece um galo grande e muito feio, mas com duas caudas (ou três, difícil dizer) escamadas de serpente.",
           texto:
@@ -5376,7 +5684,7 @@ Parceiro A cocatriz-real é um parceiro montaria (Grande) que fornece os benefí
         },
         {
           chave: "harpiaSaqueadora", nome: "Harpia saqueadora", nd: "4", tipo: "Monstro (harpia) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "O monstro lembra uma mulher humana, velha e sinistra como uma bruxa, com cabelo emaranhado e sujo de sangue.",
           texto:
 `Harpia saqueadora ND 4
@@ -5397,7 +5705,7 @@ Equipamento Maça. Tesouro Nenhum.`
         },
         {
           chave: "glop", nome: "Glop", nd: "1/4", tipo: "Monstro Pequeno",
-          papel: '',
+          papel: "lacaio",
           resumo: "A coisinha pulsante é pouco maior que um pão.",
           texto:
 `Glop ND 1/4
@@ -5413,7 +5721,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "glooop", nome: "Glooop", nd: "2", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "A criatura poderia lembrar uma grande saca de grãos — isto é, uma que tenha sido esquecida e deixada apodrecer até ganhar uma camada de…",
           texto:
 `Glooop ND 2
@@ -5431,7 +5739,7 @@ Tesouro Padrão.`
         },
         {
           chave: "mamaeGlop", nome: "Mamãe Glop", nd: "2", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Como um glop normal, a criatura também lembra uma gosma esverdeada em formato de gota.",
           texto:
 `Mamãe Glop ND 2
@@ -5449,7 +5757,7 @@ Tesouro Padrão.`
         },
         {
           chave: "mantor", nome: "Mantor", nd: "5", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "A estranha criatura parece uma grande capa negra, como uma arraia ondulando no ar.",
           texto:
 `Mantor ND 5
@@ -5471,7 +5779,7 @@ Tesouro Metade, mais couro de mantor (CD 20 para extrair, vale T$ 150 para fabri
         },
         {
           chave: "mimico", nome: "Mímico", nd: "6", tipo: "Monstro Médio",
-          papel: '',
+          papel: "solo",
           resumo: "O baú está aberto, revelando uma quantidade incrível de ouro, gemas, joias e objetos de arte.",
           texto:
 `Mímico ND 6
@@ -5495,7 +5803,7 @@ Tesouro Padrão.`
         },
         {
           chave: "quimera", nome: "Quimera", nd: "8", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O monstro tem o corpo poderoso de um imenso leão, com asas coriáceas dracônicas e uma cauda escamada de crocodilo.",
           texto:
 `Quimera ND 8
@@ -5525,7 +5833,7 @@ Tesouro Coração de quimera (CD 23 para extrair, vale T$ 300 para fabricar trê
         },
         {
           chave: "slark", nome: "Slark", nd: "1", tipo: "Humanoide (slark) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "São vários seres humanoides, mas de aspecto truculento e ameaçador, com faces horrendas de lagarto e três dedos em cada mão.",
           texto:
 `Slark ND 1
@@ -5546,7 +5854,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "tigreDeHyninn", nome: "Tigre-de-Hyninn", nd: "5", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Tigre-de-Hyninn",
           resumo: "Tigre-de-Hyninn — O que surge no túnel à frente não pode ser descrito — é como um borrão no vazio, sem forma, sem cor, mas com movimento.",
           texto:
@@ -5566,7 +5874,7 @@ Tesouro Resíduos (CD 20 para extrair, valem T$ 150 para fabricar poções e per
         },
         {
           chave: "tigreDeHyninnPrimordial", nome: "Tigre-de-Hyninn Primordial", nd: "11", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Tigre-de-Hyninn",
           resumo: "Tigre-de-Hyninn — O que surge no túnel à frente não pode ser descrito — é como um borrão no vazio, sem forma, sem cor, mas com movimento.",
           texto:
@@ -5588,7 +5896,7 @@ Tesouro Resíduos (CD 26 para extrair, valem T$ 300 para fabricar poções e per
         },
         {
           chave: "brawar", nome: "Brawar", nd: "14", tipo: "Construto Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Com um estrondo metálico, o que parecia a imensa estátua de um guerreiro anão lentamente se afasta da parede.",
           texto:
 `Brawar ND 14
@@ -5627,6 +5935,55 @@ Com seus aposentos e corredores imundos, contaminados com dejetos e detritos alq
 — Samantha de Bielefeld, osteon caçadora
 O que surge no túnel à frente não pode ser descrito — é como um borrão no vazio, sem forma, sem cor, mas com movimento. Até mesmo seu tamanho parece difícil de estimar, pode ser grande como um cavalo ou alto como um ogro. A única coisa que vocês conseguem perceber com clareza é seu rugido, lembrando um grande felino. O tigre-de-Hyninn é assim chamado apenas devido à semelhança entre seu som e o rugido de um tigre. Certamente não é um animal, talvez nem seja uma criatura de qualquer tipo — e sim um fenômeno bizarro, uma deformação anormal da realidade. A aparição desfocada, contudo, parece movida pelo impulso de atacar tudo que encontra, então “tigre” acaba servindo como um nome adequado. Embora a coisa nem pareça existir, seus ataques produzem ferimentos muitos reais, como aqueles causados por garras e presas de feras mundanas. Ainda, devido ao número de ataques que consegue executar, especula-se que o tigre tenha numerosas cabeças/patas/tentáculos, ou talvez mude de anatomia à vontade. Sua verdadeira forma não se revela nem mesmo após a morte, pois a criatura não deixa cadáver — simplesmente desaparece, deixando uns poucos resíduos, considerados valiosíssimos como ingredientes alquímicos. Alguns estudos da Academia Arcana e da Igreja de Tanna-Toh teorizam que o tigre-de-Hyninn se originou em Lamnor, séculos antes da Grande Batalha, onde teria sido conjurado em rituais ao Deus da Trapaça. A coisa então se espalhou pelo continente, sendo temida até mesmo pelos duyshidakk. Hoje, suas manifestações podem ocorrer em qualquer ponto de Arton, mas principalmente em masmorras e florestas escuras.` },
       ],
+      reforcos: { pag: 208, nomes: [
+        { n: "Aranha Gigante", f: 1 },
+        { n: "Armadilhas Kobolds", q: "Armadilhas Kobolds" },
+        { n: "Cão de Kally", c: ["caoDeKally"] },
+        { n: "Carniçal", c: ["carnical", "lacedon"] },
+        { n: "Centopeia-Dragão", f: 1 },
+        { n: "Duplo", c: ["duplo"] },
+        { n: "Enxame Larval", c: ["enxameLarval"] },
+        { n: "Esqueleto", f: 1 },
+        { n: "Fantasma", c: ["fantasma", "fantasmaAncestral"] },
+        { n: "Gárgula", f: 1 },
+        { n: "Garra-Zumbi", c: ["garraZumbi", "garraZumbiOgro", "garraZumbiEnxame", "garraZumbiGigante"] },
+        { n: "Glop", f: 1 },
+        { n: "Golem de Barro", c: ["golemDeBarro"] },
+        { n: "Golem de Bronze", c: ["golemDeBronze"] },
+        { n: "Golem de Carne", c: ["golemDeCarne"] },
+        { n: "Golem de Espelhos", c: ["golemDeEspelhos"] },
+        { n: "Golem de Ferro", f: 1 },
+        { n: "Golem de Pedra", c: ["golemDePedra"] },
+        { n: "Guerreiro de Chifres", f: 1 },
+        { n: "Kobold Bruto", c: ["koboldBruto"] },
+        { n: "Kobold Explosivo", c: ["koboldExplosivo"] },
+        { n: "Kobold-Mãe", c: ["koboldMae"] },
+        { n: "Kobold Patrulheiro", c: ["koboldPatrulheiro"] },
+        { n: "Kobold Veterano", c: ["koboldVeterano"] },
+        { n: "Kobold Xamã", c: ["koboldXama"] },
+        { n: "Lívido", c: ["livido"] },
+        { n: "Mamãe Glop", c: ["mamaeGlop"] },
+        { n: "Mantícora", f: 1 },
+        { n: "Meio-Orc Bandoleiro", c: ["meioOrcBandoleiro"] },
+        { n: "Meio-Orc Capanga", c: ["meioOrcCapanga"] },
+        { n: "Meio-Orc Chefe", c: ["meioOrcChefe"] },
+        { n: "Mortalha", c: ["mortalha"] },
+        { n: "Múmia", c: ["mumia"] },
+        { n: "Necrodraco", c: ["necrodracoEsqueleto", "necrodracoZumbi", "necrodracoLich"] },
+        { n: "Orc Chefe", f: 1 },
+        { n: "Orc Combatente", f: 1 },
+        { n: "Orc Mutante", f: 1 },
+        { n: "Orc Mutante Superior", c: ["orcMutanteSuperior"] },
+        { n: "Orc Rei", c: ["orcRei"] },
+        { n: "Orc Veterano", c: ["orcVeterano"] },
+        { n: "Orc Xamã", c: ["orcXama"] },
+        { n: "Oxxdon", c: ["oxxdon", "oxxdonImenso"] },
+        { n: "Rato Gigante", f: 1 },
+        { n: "Senhor das Múmias", c: ["senhorDasMumias"] },
+        { n: "Soldado Mecânico", c: ["soldadoMecanico"] },
+        { n: "Trog", c: ["trogCombatente", "trogCacador", "trogReiDosTuneis", "trogAnaoBruto", "trogAnaoEremita"] },
+        { n: "Trog Anão", c: ["trogAnaoBruto", "trogAnaoEremita"] },
+      ] },
     },
 
     // ── 🐎 MONTARIAS ───────────────────────────────────
@@ -5636,7 +5993,7 @@ O que surge no túnel à frente não pode ser descrito — é como um borrão no
       fichas: [
         {
           chave: "baleote", nome: "Baleote", nd: "3", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O grande animal tem aspecto de golfinho ou baleia, mas está “nadando” nas alturas como que por mágica.",
           texto:
 `Baleote ND 3
@@ -5656,7 +6013,7 @@ Parceiro O baleote é um parceiro montaria (Grande) que fornece os benefícios a
         },
         {
           chave: "capivara", nome: "Capivara", nd: "1", tipo: "Animal Médio",
-          papel: '',
+          papel: "solo",
           resumo: "O animal lembra um rato ou coelho, mas muito maior e mais robusto, provavelmente pesando o mesmo que um humano.",
           texto:
 `Capivara ND 1
@@ -5677,7 +6034,7 @@ Parceiro A capivara é um parceiro montaria (Médio) que fornece os benefícios 
         },
         {
           chave: "cavaloDeCarga", nome: "Cavalo de Carga", nd: "1/2", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Mais lento, mas também mais forte, este animal robusto é próprio para puxar arados, transportar alforjes cheios no lombo ou mover carroças pesadas.",
           texto:
 `Cavalo de Carga ND 1/2
@@ -5695,7 +6052,7 @@ Parceiro O cavalo de carga é um parceiro besta de carga (veja a página 416).`
         },
         {
           chave: "cavaloDeMontaria", nome: "Cavalo de Montaria", nd: "1/2", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Animal próprio para transportar um cavaleiro por grandes distâncias — o “veículo pessoal” mais comum em Arton.",
           texto:
 `Cavalo de Montaria ND 1/2
@@ -5712,7 +6069,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "cavaloDeGuerra", nome: "Cavalo de Guerra", nd: "1", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Trata-se de um cavalo de montaria treinado e equipado para combate.",
           texto:
 `Cavalo de Guerra ND 1
@@ -5729,7 +6086,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "cavaloDeNamalkah", nome: "Cavalo de Namalkah", nd: "2", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O reino de Namalkah é conhecido por criar os mais extraordinários cavalos de Arton.",
           texto:
 `Cavalo de Namalkah ND 2
@@ -5747,7 +6104,7 @@ Parceiro O cavalo de Namalkah é um parceiro montaria (Grande) que fornece os be
         },
         {
           chave: "cavaloGlacial", nome: "Cavalo Glacial", nd: "2", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O estranho animal quadrúpede até lembra um cavalo, tem o mesmo tamanho, mas claramente não é.",
           texto:
 `Cavalo Glacial ND 2
@@ -5768,7 +6125,7 @@ Parceiro O cavalo glacial é um parceiro montaria (Grande) que fornece os benef�
         },
         {
           chave: "corcelDoDeserto", nome: "Corcel do Deserto", nd: "2", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Visto de longe, o guerreiro Sar-Allan parecia estar cavalgando um cavalo comum.",
           texto:
 `Corcel do Deserto ND 2
@@ -5789,7 +6146,7 @@ Parceiro O corcel do deserto é um parceiro montaria (Grande) que fornece os ben
         },
         {
           chave: "dromedario", nome: "Dromedário", nd: "1", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O animal até lembra um cavalo, mas bem maior e mais robusto.",
           texto:
 `Dromedário ND 1
@@ -5810,7 +6167,7 @@ Parceiro O dromedário é um parceiro montaria (Grande) que fornece os benefíci
         },
         {
           chave: "elefante", nome: "Elefante", nd: "7", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "O imenso e estranho animal tem pele grossa, rugosa e com pelos espaçados, em tom variando do cinza ao marrom.",
           texto:
 `Elefante ND 7
@@ -5833,7 +6190,7 @@ Parceiro O elefante é um parceiro montaria (Enorme) que fornece os benefícios 
         },
         {
           chave: "gorlogg", nome: "Gorlogg", nd: "1", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Gorlogg",
           resumo: "Gorlogg — A besta quadrúpede lembra um lagarto, mas também um lobo ou pantera, combinando patas robustas com garras felinas e uma cabeça estreita e…",
           texto:
@@ -5852,7 +6209,7 @@ Parceiro O gorlogg é um parceiro montaria (Grande) que fornece os benefícios a
         },
         {
           chave: "gorloggAlfa", nome: "Gorlogg Alfa", nd: "5", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Gorlogg",
           resumo: "Gorlogg — A besta quadrúpede lembra um lagarto, mas também um lobo ou pantera, combinando patas robustas com garras felinas e uma cabeça estreita e…",
           texto:
@@ -5872,7 +6229,7 @@ Parceiro O gorlogg alfa é um parceiro montaria (Grande) com as mesmas estatíst
         },
         {
           chave: "leao", nome: "Leão", nd: "2", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Maior e mais forte entre os felinos, seu porte médio é o mesmo de um cavalo pequeno, mas alguns são bem maiores, tão grandes quanto ursos —…",
           texto:
 `Leão ND 2
@@ -5892,7 +6249,7 @@ Parceiro O leão é um parceiro montaria (Grande) que fornece os benefícios a s
         },
         {
           chave: "pantera", nome: "Pantera", nd: "2", tipo: "Animal Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Este caçador solitário prefere atacar em selvas e florestas escuras, preferencialmente à noite, matando a presa e depois levando-a para ser…",
           texto:
 `Pantera ND 2
@@ -5912,7 +6269,7 @@ Parceiro A pantera é um parceiro especial (assassino) que fornece os benefício
         },
         {
           chave: "tigre", nome: "Tigre", nd: "3", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Quase não existem mais tigres em estado selvagem; seu habitat natural, a ilha de Tamu-ra, foi devastado pela Tormenta — levando o animal à…",
           texto:
 `Tigre ND 3
@@ -5933,7 +6290,7 @@ Parceiro O tigre é um parceiro montaria (Grande) que fornece os benefícios a s
         },
         {
           chave: "rinoceronte", nome: "Rinoceronte", nd: "4", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Rinoceronte",
           resumo: "Rinoceronte — O imenso animal de couro grosso poderia ser confundido com um porco imenso, mas com uma cabeçorra volumosa e um enorme chifre no focinho.",
           texto:
@@ -5952,7 +6309,7 @@ Parceiro O rinoceronte é um parceiro montaria (Grande) que fornece os benefíci
         },
         {
           chave: "rinoceronteLanoso", nome: "Rinoceronte Lanoso", nd: "6", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Rinoceronte",
           resumo: "Rinoceronte — O imenso animal de couro grosso poderia ser confundido com um porco imenso, mas com uma cabeçorra volumosa e um enorme chifre no focinho.",
           texto:
@@ -5972,7 +6329,7 @@ Parceiro O rinoceronte lanoso é um parceiro montaria (Grande) que fornece os be
         },
         {
           chave: "brontoterio", nome: "Brontotério", nd: "8", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Rinoceronte",
           resumo: "Rinoceronte — O imenso animal de couro grosso poderia ser confundido com um porco imenso, mas com uma cabeçorra volumosa e um enorme chifre no focinho.",
           texto:
@@ -5993,7 +6350,7 @@ Parceiro O brontotério é um parceiro montaria (Enorme) que fornece os benefíc
         },
         {
           chave: "tatuMontanha", nome: "Tatu-Montanha", nd: "4", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "O imenso monstro não é realmente um tatu, mas sim uma variedade gigante de molusco — lembrando mais algum tipo de tartaruga monstruosa.",
           texto:
 `Tatu-Montanha ND 4
@@ -6014,7 +6371,7 @@ Parceiro O tatu-montanha é um parceiro montaria (Enorme) que fornece os benefí
         },
         {
           chave: "trobo", nome: "Trobo", nd: "1", tipo: "Animal Grande",
-          papel: '',
+          papel: "lacaio",
           resumo: "A grande ave sem asas é mais alta que um humano adulto e robusta como um búfalo.",
           texto:
 `Trobo ND 1
@@ -6033,7 +6390,7 @@ Parceiro O trobo pode ser usado como um parceiro besta de carga (veja página 41
         },
         {
           chave: "tumarkhan", nome: "Tumarkhân", nd: "4", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "O animal enorme e robusto parece um elefante, com as mesmas patas poderosas mantendo o corpo muito acima do chão e as mesmas presas…",
           texto:
 `Tumarkhân ND 4
@@ -6054,7 +6411,7 @@ Parceiro O tumarkhân é um parceiro montaria (Enorme) que fornece os benefício
         },
         {
           chave: "ursoPanda", nome: "Urso Panda", nd: "1", tipo: "Animal Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Menor e relativamente inofensivo, alimenta-se de brotos de bambu e luta apenas em defesa própria.",
           texto:
 `Urso Panda ND 1
@@ -6073,7 +6430,7 @@ Parceiro O panda é um parceiro montaria (Médio) que fornece os benefícios a s
         },
         {
           chave: "ursoPardo", nome: "Urso Pardo", nd: "3", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O tipo mais comum, encontrado em florestas frias, de clima temperado — especialmente nas proximidades das Uivantes.",
           texto:
 `Urso Pardo ND 3
@@ -6092,7 +6449,7 @@ Parceiro O urso pardo é um parceiro montaria (Grande) que fornece os benefício
         },
         {
           chave: "ursoDasCavernas", nome: "Urso das Cavernas", nd: "8", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Versão maior e mais antiga do urso comum, encontrado em Galrasia e nas Sanguinárias.",
           texto:
 `Urso das Cavernas ND 8
@@ -6113,7 +6470,7 @@ Parceiro O urso das cavernas é um parceiro montaria (Enorme) que fornece os ben
         },
         {
           chave: "warg", nome: "Warg", nd: "3", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Ragnar? Repita isso, desgraçado!” A criatura é quadrúpede e musculosa, grande como um urso e negra como a noite, apenas as presas grandes e…",
           texto:
 `Warg ND 3
@@ -6137,7 +6494,7 @@ Parceiro O warg é um parceiro montaria (Grande) que não causa penalidades em F
         },
         {
           chave: "unicornio", nome: "Unicórnio", nd: "4", tipo: "Espírito Grande",
-          papel: '',
+          papel: "especial",
           resumo: "O animal tem a aparência de um grande e magnífico cavalo branco, com um único chifre dourado e espiralado na fronte.",
           texto:
 `Unicórnio ND 4
@@ -6208,7 +6565,7 @@ Como uma montanha peluda de músculos e gordura, o animal emerge da floresta ao 
       fichas: [
         {
           chave: "carnical", nome: "Carniçal", nd: "1", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Carniçal",
           resumo: "Carniçal — Parece haver um sobrevivente em meio aos cadáveres, mas… algo está errado.",
           texto:
@@ -6227,7 +6584,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "lacedon", nome: "Lacedon", nd: "2", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Carniçal",
           resumo: "Carniçal — Parece haver um sobrevivente em meio aos cadáveres, mas… algo está errado.",
           texto:
@@ -6247,7 +6604,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "cavaloEsqueleto", nome: "Cavalo Esqueleto", nd: "1", tipo: "Morto-vivo Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Esqueleto",
           resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
           texto:
@@ -6266,7 +6623,7 @@ Parceiro O cavalo esqueleto é um parceiro montaria (Grande) que fornece os bene
         },
         {
           chave: "ogroEsqueleto", nome: "Ogro Esqueleto", nd: "3", tipo: "Morto-vivo Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Esqueleto",
           resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
           texto:
@@ -6284,7 +6641,7 @@ Equipamento Tacape aumentado. Tesouro Nenhum.`
         },
         {
           chave: "ursoPardoEsqueleto", nome: "Urso Pardo Esqueleto", nd: "4", tipo: "Morto-vivo Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Esqueleto",
           resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
           texto:
@@ -6305,7 +6662,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "giganteEsqueleto", nome: "Gigante Esqueleto", nd: "5", tipo: "Morto-vivo Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Esqueleto",
           resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
           texto:
@@ -6323,7 +6680,7 @@ Equipamento Tacape aumentado. Tesouro Nenhum.`
         },
         {
           chave: "mamuteEsqueleto", nome: "Mamute Esqueleto", nd: "8", tipo: "Morto-vivo Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Esqueleto",
           resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
           texto:
@@ -6341,7 +6698,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "hidraEsqueleto", nome: "Hidra Esqueleto", nd: "11", tipo: "Morto-vivo Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Esqueleto",
           resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
           texto:
@@ -6359,7 +6716,7 @@ Tesouro Padrão.`
         },
         {
           chave: "reiTiranoEsqueleto", nome: "Rei-Tirano Esqueleto", nd: "12", tipo: "Morto-vivo Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Esqueleto",
           resumo: "Esqueleto — Lutando contra a nevasca, vocês seguem avançando até que uma forma se destaca contra o céu tempestuoso.",
           texto:
@@ -6380,7 +6737,7 @@ Tesouro Dentes do rei-tirano (CD 27 para extrair, valem T$ 1.500 para fabricar a
         },
         {
           chave: "fantasma", nome: "Fantasma", nd: "7", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Fantasma",
           resumo: "Fantasma — A garota tem a mesma aparência de sua descrição, mas translúcida e embaçada, com uma aura luminosa ao redor.",
           texto:
@@ -6400,7 +6757,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "fantasmaAncestral", nome: "Fantasma Ancestral", nd: "14", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Fantasma",
           resumo: "Fantasma — A garota tem a mesma aparência de sua descrição, mas translúcida e embaçada, com uma aura luminosa ao redor.",
           texto:
@@ -6422,7 +6779,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "garraZumbi", nome: "Garra-Zumbi", nd: "1/4", tipo: "Morto-vivo Minúsculo",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Garra-Zumbi",
           resumo: "Garra-Zumbi — Você se aproxima para descobrir que o achado parece ser parte de um cadáver enterrado, apenas a mão direita apodrecida assomando fora da terra.",
           texto:
@@ -6441,7 +6798,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "garraZumbiOgro", nome: "Garra-Zumbi Ogro", nd: "2", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Garra-Zumbi",
           resumo: "Garra-Zumbi — Você se aproxima para descobrir que o achado parece ser parte de um cadáver enterrado, apenas a mão direita apodrecida assomando fora da terra.",
           texto:
@@ -6460,7 +6817,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "garraZumbiEnxame", nome: "Garra-Zumbi Enxame", nd: "3", tipo: "Morto-vivo Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Garra-Zumbi",
           resumo: "Garra-Zumbi — Você se aproxima para descobrir que o achado parece ser parte de um cadáver enterrado, apenas a mão direita apodrecida assomando fora da terra.",
           texto:
@@ -6477,7 +6834,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "garraZumbiGigante", nome: "Garra-Zumbi Gigante", nd: "5", tipo: "Morto-vivo Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Garra-Zumbi",
           resumo: "Garra-Zumbi — Você se aproxima para descobrir que o achado parece ser parte de um cadáver enterrado, apenas a mão direita apodrecida assomando fora da terra.",
           texto:
@@ -6496,7 +6853,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "livido", nome: "Lívido", nd: "3", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "especial",
           resumo: "A criatura cadavérica lembra os carniçais que vocês enfrentaram tempos atrás.",
           texto:
 `Lívido ND 3
@@ -6519,7 +6876,7 @@ Tesouro 1d4-1 doses de isca putrefata (CD 18 para extrair).`
         },
         {
           chave: "mortalha", nome: "Mortalha", nd: "11", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Vocês são recebidos por uma figura sinistra, envolta em uma aura espectral, coberta da cabeça aos pés com um manto de escuridão esvoaçante.",
           texto:
 `Mortalha ND 11
@@ -6542,7 +6899,7 @@ Tesouro Manto da mortalha (CD 26 para extrair, vale T$ 6.000 e 1 PM para fabrica
         },
         {
           chave: "mumia", nome: "Múmia", nd: "5", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "solo",
           resumo: "A criatura parece um cadáver ressequido, envolto em bandagens cerimoniais.",
           texto:
 `Múmia ND 5
@@ -6563,7 +6920,7 @@ Tesouro Padrão.`
         },
         {
           chave: "senhorDasMumias", nome: "Senhor das Múmias", nd: "15", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Aquele que lidera as múmias também lembra um cadáver seco e coberto de bandagens, mas de postura claramente orgulhosa, trajando um manto…",
           texto:
 `Senhor das Múmias ND 15
@@ -6592,7 +6949,7 @@ Equipamento Ankh solar harmonizado, símbolo sagrado, traje de seda banhado a ou
         },
         {
           chave: "necrodracoEsqueleto", nome: "Necrodraco Esqueleto", nd: "12", tipo: "Morto-vivo Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Necrodraco",
           resumo: "Necrodraco — O monstro só poderia ser descrito como o gigantesco cadáver de um dragão — exceto que ele se move!",
           texto:
@@ -6611,7 +6968,7 @@ Tesouro Padrão e 1d6 doses de terra de cemitério (CD 27 para extrair).`
         },
         {
           chave: "necrodracoZumbi", nome: "Necrodraco Zumbi", nd: "14", tipo: "Morto-vivo Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Necrodraco",
           resumo: "Necrodraco — O monstro só poderia ser descrito como o gigantesco cadáver de um dragão — exceto que ele se move!",
           texto:
@@ -6632,7 +6989,7 @@ Tesouro Padrão e 2d4 doses de terra de cemitério (CD 29 para extrair).`
         },
         {
           chave: "necrodracoLich", nome: "Necrodraco Lich", nd: "20", tipo: "Morto-vivo (dragão) Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Necrodraco",
           resumo: "Necrodraco — O monstro só poderia ser descrito como o gigantesco cadáver de um dragão — exceto que ele se move!",
           texto:
@@ -6666,7 +7023,7 @@ Tesouro Dobro e fragmento de filactério.`
         },
         {
           chave: "tarsoDragaoReiDosMortos", nome: "Tarso, Dragão-Rei dos Mortos", nd: "S+", tipo: "Morto-vivo (dragão) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "A criatura conhecida apenas como Tarso não é ninguém menos que o Dragão-Rei dos Mortos.",
           texto:
 `Tarso, Dragão-Rei dos Mortos ND S+
@@ -6727,6 +7084,23 @@ Você se aproxima para descobrir que o achado parece ser parte de um cadáver en
 — Vladislav Tpish, reitor da Academia Arcana
 O monstro só poderia ser descrito como o gigantesco cadáver de um dragão — exceto que ele se move! Mais que isso, voa inacreditável nos céus, mesmo sem restar qualquer couro nas asas. Apesar da distância, vocês podem ver luzes intensas e gélidas nas órbitas vazias do crânio. E de algum modo, sabem que a criatura olha diretamente para vocês. Humanoides não são os únicos seres com almas que podem morrer e acabar impedidos de viajar aos reinos dos deuses; o mesmo pode acontecer com dragões. O resultado de tal evento é a criatura conhecida como necrodraco, ou dragão morto-vivo. A transformação em morto-vivo, no entanto, mudará um dragão por completo; grande parte de suas habilidades, especialmente o sopro e imunidades elementais, só poderiam existir em criaturas vivas. De modo geral, tornam-se mais fracos. Independente de seu tipo quando vivo, todo necrodraco passa a expelir um sopro de energia negativa. Ainda podem voar, mesmo aqueles com asas esqueléticas, agora por meios mágicos. Quase todos os necrodracos surgiram enquanto Kallyadranoch estava ausente do Panteão — nesse período não havia sequer um reino divino para recebê-los. Ainda preservando grande parte da inteligência, alguns perseguiram os aventureiros responsáveis por suas mortes, buscando vingança ou a destruição final. Outros ainda aguardam para ser descobertos em esconderijos remotos. Há quem acredite que eles nem existem mais. Pode ser verdade. Ou não. Necrodracos podem ser esqueletos, zumbis ou liches — sendo estes últimos os mais poderosos, também conhecidos como dracoliches. De fato, exceto pelos próprios deuses, o ser mais poderoso de Arton nos dias de hoje talvez seja Tarso, Dragão-Rei dos Mortos.` },
       ],
+      reforcos: { pag: 239, nomes: [
+        { n: "Alzeras", c: ["alzeras"] },
+        { n: "Aparição", f: 1 },
+        { n: "Chacal Zumbi", c: ["chacalZumbi"] },
+        { n: "Cemitério Vivo", c: ["cemiterioVivo"] },
+        { n: "Esqueletos", f: 1 },
+        { n: "Guerreiro Perpétuo", c: ["guerreiroPerpetuo"] },
+        { n: "Lich", c: ["necrodracoLich", "lich", "lichDeAslothia", "arquilichFerrenAsloth"] },
+        { n: "Morgue'raz", c: ["morgueRaz"] },
+        { n: "Necromante", f: 1 },
+        { n: "Soterrado", c: ["soterradoVagante"] },
+        { n: "Turba Zumbi", f: 1 },
+        { n: "Vampiro", f: 1 },
+        { n: "Wisphago", c: ["wisphago"] },
+        { n: "Zumbis", f: 1 },
+        { n: "Zumbi Peçonha", c: ["zumbiPeconha"] },
+      ] },
     },
 
     // ── 🦕 MUNDO PERDIDO ───────────────────────────────
@@ -6736,7 +7110,7 @@ O monstro só poderia ser descrito como o gigantesco cadáver de um dragão — 
       fichas: [
         {
           chave: "arvoreMatilha", nome: "Árvore-Matilha", nd: "13", tipo: "Construto Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "O horror tem o aspecto de uma árvore macabra, mas com inúmeras cabeças lupinas encimando pescoços longos e musculosos, cada uma…",
           texto:
 `Árvore-Matilha ND 13
@@ -6757,7 +7131,7 @@ Tesouro Padrão.`
         },
         {
           chave: "burafonte", nome: "Burafonte", nd: "4", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Burafonte",
           resumo: "Burafonte — O animal reptiliano tem as dimensões de um elefante, com o mesmo couro rugoso, mas decorado com listras verdes e lilases.",
           texto:
@@ -6774,7 +7148,7 @@ Tesouro Protuberâncias ósseas (CD 19 para extrair, valem T$ 100 para fabricar 
         },
         {
           chave: "armentoDeBurafontes", nome: "Armento de Burafontes", nd: "8", tipo: "Animal Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Burafonte",
           resumo: "Burafonte — O animal reptiliano tem as dimensões de um elefante, com o mesmo couro rugoso, mas decorado com listras verdes e lilases.",
           texto:
@@ -6792,7 +7166,7 @@ Tesouro 2d4 protuberâncias ósseas (CD 23 para extrair, cada protuberância val
         },
         {
           chave: "deinonico", nome: "Deinonico", nd: "4", tipo: "Animal Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Deinonico",
           resumo: "Deinonico — O animal é um lagarto bípede do tamanho de um cavalo, coberto de plumagem muito colorida, como um pássaro tropical.",
           texto:
@@ -6811,7 +7185,7 @@ Parceiro O deinonico é um parceiro montaria (Média) que fornece os benefícios
         },
         {
           chave: "bandoDeDeinonicos", nome: "Bando de Deinonicos", nd: "8", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Deinonico",
           resumo: "Deinonico — O animal é um lagarto bípede do tamanho de um cavalo, coberto de plumagem muito colorida, como um pássaro tropical.",
           texto:
@@ -6828,7 +7202,7 @@ Tesouro Garras terríveis x2d4 (CD 23 para extrair, cada garra vale T$ 100 para 
         },
         {
           chave: "espadaDaFloresta", nome: "Espada-da-Floresta", nd: "3", tipo: "Construto Médio",
-          papel: '',
+          papel: "solo",
           resumo: "O que parecia ser um homem esguio armado com uma espada, ao chegar mais perto, revela-se como algo bem diferente.",
           texto:
 `Espada-da-Floresta ND 3
@@ -6850,7 +7224,7 @@ Tesouro Espada espinhenta (CD 18 para extrair) e 50% de chance de 1d4 frutos da 
         },
         {
           chave: "galhadaMacho", nome: "Galhada Macho", nd: "2", tipo: "Construto Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Galhada",
           resumo: "Galhada — À primeira vista, o animal parece um cervo comum, com a característica galhada emaranhada.",
           texto:
@@ -6868,7 +7242,7 @@ Parceiro O galhada macho é um parceiro montaria (Grande) que fornece os benefí
         },
         {
           chave: "galhadaFemea", nome: "Galhada Fêmea", nd: "2", tipo: "Construto Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Galhada",
           resumo: "Galhada — À primeira vista, o animal parece um cervo comum, com a característica galhada emaranhada.",
           texto:
@@ -6885,7 +7259,7 @@ Parceiro A galhada fêmea é um parceiro montaria (Grande) que fornece os benef�
         },
         {
           chave: "galiGali", nome: "Gali-Gali", nd: "1/4", tipo: "Animal Minúsculo",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Gali-Gali",
           resumo: "Gali-Gali — O pequeno animal tem o tamanho de um ganso, com patas traseiras, minúsculos membros dianteiros e uma cauda longa, fina.",
           texto:
@@ -6901,7 +7275,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "enxameDeGaliGali", nome: "Enxame de Gali-Gali", nd: "1", tipo: "Animal Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Gali-Gali",
           resumo: "Gali-Gali — O pequeno animal tem o tamanho de um ganso, com patas traseiras, minúsculos membros dianteiros e uma cauda longa, fina.",
           texto:
@@ -6918,7 +7292,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "grandeBattham", nome: "Grande Battham", nd: "12", tipo: "Animal Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "O animal é maior que a maioria dos castelos, com um pescoço alongado e muscular, capaz de alcançar as mais altas muralhas de Tapista.",
           texto:
 `Grande Battham ND 12
@@ -6937,7 +7311,7 @@ Tesouro Fígado de lagarto-trovão (CD 27 para extrair).`
         },
         {
           chave: "raagoran", nome: "Raagoran", nd: "8", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "A besta volumosa parece meio réptil, meio mamífero — tem o corpo robusto e as patas poderosas de um urso, mas é coberto de escamas rochosas…",
           texto:
 `Raagoran ND 8
@@ -6959,7 +7333,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "tuntram", nome: "Tuntram", nd: "10", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Grande e pesado como um elefante, o animal tem a cabeçorra guarnecida por um escudo de osso com cores vivas, e um conjunto de chifres…",
           texto:
 `Tuntram ND 10
@@ -6980,7 +7354,7 @@ Parceiro O tuntram é um parceiro montaria (Enorme) que fornece os benefícios a
         },
         {
           chave: "reiTirano", nome: "Rei-Tirano", nd: "14", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "A besta descomunal poderia ser facilmente confundida com algum dragão ou outro monstro mítico.",
           texto:
 `Rei-Tirano ND 14
@@ -7023,6 +7397,22 @@ O animal é um lagarto bípede do tamanho de um cavalo, coberto de plumagem muit
 — Ollie das Colinas, hynne caçador
 O pequeno animal tem o tamanho de um ganso, com patas traseiras, minúsculos membros dianteiros e uma cauda longa, fina. Ele olha com curiosidade nos grandes olhos, enquanto outros de sua espécie deixam as folhagens. Muitos outros. Também chamado “composognato”, ou apenas comp, não parece algo que se poderia chamar lagarto-terror. Não excede um metro de comprimento, pesando até seis quilos. Come pequenos lagartos, grandes insetos e carniça. Normalmente não ataca criaturas de tamanho humano, exceto quando acuado, incapaz de fugir ou muito faminto. Contudo, grandes bandos de gali-gali podem ser verdadeiros cardumes de piranhas terrestres, avançando contra presas bem maiores. Embora seja nativo de Galrasia, em tempos recentes este pequeno predador veio como clandestino a bordo de navios exploradores e vem se espalhando pelo continente. Hoje em dia os gali-gali são mascotes populares em navios piratas (até substituindo os tradicionais papagaios na região do Mar Negro) e também uma praga que ameaça aldeias e vilarejos, atacando criações de pequenos animais e até matando crianças no berço. Alguns aventureiros, sobretudo druidas, adotam o gali-gali como companheiro animal.` },
       ],
+      reforcos: { pag: 249, nomes: [
+        { n: "Bulette", c: ["bulette"] },
+        { n: "Canceronte", c: ["canceronte", "canceronteDeGuerra"] },
+        { n: "Carrasco de Lena", c: ["carrascoDeLena"] },
+        { n: "Ente", c: ["ente"] },
+        { n: "Enxame de Estirges", c: ["enxameEstirge"] },
+        { n: "Estirge", c: ["estirge", "enxameEstirge", "nuvemDeEstirges"] },
+        { n: "Gorlogg", c: ["gorlogg", "gorloggAlfa"] },
+        { n: "Grande Tachygloss", c: ["grandeTachygloss"] },
+        { n: "Lagarto Perseguidor", c: ["lagartoPerseguidor"] },
+        { n: "Lobo-das-Cavernas", f: 1 },
+        { n: "Nuvem de Estirges", c: ["nuvemDeEstirges"] },
+        { n: "Oxxdon", c: ["oxxdon", "oxxdonImenso"] },
+        { n: "Razza’kham", c: ["razzaKham"] },
+        { n: "Tendrículo", c: ["tendriculo"] },
+      ] },
     },
 
     // ── ☠ PIRATAS & PISTOLEIROS ───────────────────────
@@ -7032,7 +7422,7 @@ O pequeno animal tem o tamanho de um ganso, com patas traseiras, minúsculos mem
       fichas: [
         {
           chave: "afogado", nome: "Afogado", nd: "7", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Afogado",
           resumo: "Afogado — O ser cadavérico de barriga inchada tem pele esbranquiçada, a carne mordiscada por peixes em vários pontos, coberta de algas e cracas em outros.",
           texto:
@@ -7049,7 +7439,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "capitaoAfogado", nome: "Capitão Afogado", nd: "10", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Afogado",
           resumo: "Afogado — O ser cadavérico de barriga inchada tem pele esbranquiçada, a carne mordiscada por peixes em vários pontos, coberta de algas e cracas em outros.",
           texto:
@@ -7067,7 +7457,7 @@ Tesouro Padrão mais papagaio zumbi (um personagem com a habilidade Familiar pod
         },
         {
           chave: "armeiroDeTenebraDevoto", nome: "Armeiro de Tenebra Devoto", nd: "6", tipo: "Humanoide (anão) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Armeiro de Tenebra",
           resumo: "Armeiro de Tenebra — Diferente de outros anões, este grupo não veste aço e nem usa martelos ou machados.",
           texto:
@@ -7091,7 +7481,7 @@ Tesouro Padrão.`
         },
         {
           chave: "armeiroDeTenebraClerigo", nome: "Armeiro de Tenebra Clérigo", nd: "8", tipo: "Humanoide (anão) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Armeiro de Tenebra",
           resumo: "Armeiro de Tenebra — Diferente de outros anões, este grupo não veste aço e nem usa martelos ou machados.",
           texto:
@@ -7119,7 +7509,7 @@ Equipamento Balas x20, capa pesada, cota de malha, machado de batalha, mosquete 
         },
         {
           chave: "demonioDaPolvora", nome: "Demônio da Pólvora", nd: "12", tipo: "Espírito (demônio) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Apesar das vestes extravagantes, a criatura descarnada de pele cinzenta, orelhas agudas e chifres caprinos certamente lembra um demônio.",
           texto:
 `Demônio da Pólvora ND 12
@@ -7141,7 +7531,7 @@ Equipamento Pistola demoníaca. Tesouro Nenhum.`
         },
         {
           chave: "goblinDeSombreiro", nome: "Goblin de Sombreiro", nd: "2", tipo: "Humanoide (goblin) Pequeno",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Goblin de Sombreiro",
           resumo: "Goblin de Sombreiro — Os goblins parecem bastante inofensivos com seus chapéus muito largos, ponchos coloridos e forte sotaque… até o momento em que revelam suas…",
           texto:
@@ -7162,7 +7552,7 @@ Equipamento Adaga x2, balas x20, traque. Tesouro Metade mais sombreiro.`
         },
         {
           chave: "liderGoblinDeSombreiro", nome: "Líder Goblin de Sombreiro", nd: "6", tipo: "Humanoide (goblin) Pequeno",
-          papel: '',
+          papel: "solo",
           subgrupo: "Goblin de Sombreiro",
           resumo: "Goblin de Sombreiro — Os goblins parecem bastante inofensivos com seus chapéus muito largos, ponchos coloridos e forte sotaque… até o momento em que revelam suas…",
           texto:
@@ -7184,7 +7574,7 @@ Equipamento Adaga x2, balas x20, bacamarte. Tesouro Metade mais sombreiro.`
         },
         {
           chave: "homemPiranha", nome: "Homem-Piranha", nd: "2", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Homem-Piranha",
           resumo: "Homem-Piranha — O barco cheio de pontas metálicas parece, ele próprio, algum monstro aquático.",
           texto:
@@ -7202,7 +7592,7 @@ Equipamento Adaga x2. Tesouro Metade.`
         },
         {
           chave: "homemPiranhaImediato", nome: "Homem-Piranha Imediato", nd: "4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Homem-Piranha",
           resumo: "Homem-Piranha — O barco cheio de pontas metálicas parece, ele próprio, algum monstro aquático.",
           texto:
@@ -7227,7 +7617,7 @@ Equipamento Clava, escudo leve, símbolo sagrado de Megalokk. Tesouro Metade.`
         },
         {
           chave: "homemPiranhaCapitao", nome: "Homem-Piranha Capitão", nd: "7", tipo: "Monstro (lefou) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Homem-Piranha",
           resumo: "Homem-Piranha — O barco cheio de pontas metálicas parece, ele próprio, algum monstro aquático.",
           texto:
@@ -7246,7 +7636,7 @@ Equipamento Couraça selada, machado anão, mordida do diabo. Tesouro Metade.`
         },
         {
           chave: "pirata", nome: "Pirata", nd: "1/2", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Pirata",
           resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
           texto:
@@ -7263,7 +7653,7 @@ Equipamento Cimitarra. Tesouro Metade.`
         },
         {
           chave: "imediato", nome: "Imediato", nd: "4", tipo: "Morto-vivo (osteon) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Pirata",
           resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
           texto:
@@ -7281,7 +7671,7 @@ Equipamento Cimitarra. Tesouro Padrão.`
         },
         {
           chave: "bandoPirata", nome: "Bando Pirata", nd: "6", tipo: "Humanoide (humano) Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Pirata",
           resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
           texto:
@@ -7298,7 +7688,7 @@ Equipamento Adaga, cimitarra (1d8 cada). Tesouro Metade.`
         },
         {
           chave: "capitaoPirata", nome: "Capitão Pirata", nd: "7", tipo: "Morto-vivo (osteon) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Pirata",
           resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
           texto:
@@ -7320,7 +7710,7 @@ Tesouro Dobro mais bandeira pirata. Uma bandeira pirata pode ser instalada em um
         },
         {
           chave: "capitaoDoConclavePirata", nome: "Capitão do Conclave Pirata", nd: "8", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Pirata",
           resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
           texto:
@@ -7343,7 +7733,7 @@ Equipamento Balas x20, cimitarra precisa, couraça ajustada, pistola. Tesouro Do
         },
         {
           chave: "capitaoDaFrotaAurea", nome: "Capitão da Frota Áurea", nd: "10", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Pirata",
           resumo: "Pirata — Vários bucaneiros saltam para o navio, alguns empunhando cutelos, outros pistolas, e outros ainda com ganchos e lâminas em próteses ameaçadoras.",
           texto:
@@ -7365,7 +7755,7 @@ Equipamento Balas x20, couraça reforçada, florete maciço, pistola. Tesouro Do
         },
         {
           chave: "pistoleiro", nome: "Pistoleiro", nd: "2", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Pistoleiro de Smokestone",
           resumo: "Pistoleiro de Smokestone — Os sons de galope, gritos estridentes e estampidos de pólvora anunciam a chegada dos bandidos.",
           texto:
@@ -7385,7 +7775,7 @@ Equipamento Adaga, balas x20, pistola. Tesouro Metade.`
         },
         {
           chave: "liderPistoleiro", nome: "Líder Pistoleiro", nd: "4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Pistoleiro de Smokestone",
           resumo: "Pistoleiro de Smokestone — Os sons de galope, gritos estridentes e estampidos de pólvora anunciam a chegada dos bandidos.",
           texto:
@@ -7407,7 +7797,7 @@ Equipamento Adaga, balas x20, pistola. Tesouro Metade.`
         },
         {
           chave: "sahuaginPredador", nome: "Sahuagin Predador", nd: "1", tipo: "Humanoide (sahuagin) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Sahuagin",
           resumo: "Sahuagin — São humanoides, mas de pele escamosa que vai do verde-escuro ao cinza-azulado e azul-marinho, quase sempre com listras.",
           texto:
@@ -7427,7 +7817,7 @@ Equipamento Espada curta. Tesouro Nenhum.`
         },
         {
           chave: "sahuaginMetamorfo", nome: "Sahuagin Metamorfo", nd: "3", tipo: "Humanoide (sahuagin) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Sahuagin",
           resumo: "Sahuagin — São humanoides, mas de pele escamosa que vai do verde-escuro ao cinza-azulado e azul-marinho, quase sempre com listras.",
           texto:
@@ -7450,7 +7840,7 @@ Tesouro Padrão.`
         },
         {
           chave: "chapeuPreto", nome: "Chapéu-Preto", nd: "12", tipo: "Humanoide (meio-orc) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Assim que o recém-chegado entra na taverna, o bardo cessa de tocar, tudo silencia.",
           texto:
 `Chapéu-Preto ND 12
@@ -7477,7 +7867,7 @@ Tesouro Padrão.`
         },
         {
           chave: "loboDoMar", nome: "Lobo do Mar", nd: "16", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Enquanto os maiores galeões nos mares não têm mais que oito canhões, aquela monstruosidade parece ostentar o dobro desse número.",
           texto:
 `Lobo do Mar ND 16
@@ -7545,6 +7935,18 @@ Pistoleiros de Smokestone andam em bandos, seguindo um líder. Atacam viajantes 
 — Louis Blanchard, herdeiro do urso bucaneiro
 São humanoides, mas de pele escamosa que vai do verde-escuro ao cinza-azulado e azul-marinho, quase sempre com listras. Suas barbatanas, que variam em número, tamanho e disposição, são negras ou vermelho-escuras. Suas mãos e pés têm dedos longos, unidos por membranas. Os sahuagin, também conhecidos como homens-tubarões, são criaturas-peixe de duas pernas que variam em aparência, mais comuns na região costeira de Moreania. São conhecidos por sua violência e crueldade, eliminando os fracos e desamparados sem piedade. Possuem um prazer sádico em atormentar e torturar suas vítimas antes de matá-las. São gananciosos e têm um forte desejo por joias e gemas preciosas, consideradas símbolos de status. Sahuagin são extremamente vingativos, até capazes de transmitir seu ódio a seus descendentes para perseguir e destruir antigos inimigos. Formam grupos para saquear navios e comunidades costeiras em busca de tesouros e vítimas, preferindo atacar durante a noite. Apesar de conseguirem ficar fora d’água por períodos prolongados, raramente se afastam muito do mar, para garantir sua fuga em caso de necessidade. Os sahuagin têm afinidade com os tubarões, frequentemente domesticando-os para uso como bestas de carga ou de guerra. Alguns, inclusive, têm o poder sobrenatural de se transformar em tubarões.` },
       ],
+      reforcos: { pag: 263, nomes: [
+        { n: "Bandido", c: ["bandidoComum", "bandidoLigeiro", "bandidoSelvagem", "chefeBandido"] },
+        { n: "Canceronte", c: ["canceronte", "canceronteDeGuerra"] },
+        { n: "Capanga", c: ["ogroCapanga", "capanga", "jagunco", "capangaMinotauro", "gnollCapanga", "kaijinCapanga", "nezumiCapanga"] },
+        { n: "Chefe do Crime", c: ["chefeBandido", "chefeDeGangue", "chefeDeQuadrilha"] },
+        { n: "Elfo-do-Mar", c: ["elfoDoMarPescador", "elfoDoMarChefe", "elfoDoMarDruida"] },
+        { n: "Gnoll Capanga", c: ["gnollCapanga", "gnollSaqueador", "gnollFilibusteiro"] },
+        { n: "Goblin-Bomba", c: ["goblinBomba"] },
+        { n: "Goblin Engenhoqueiro", f: 1 },
+        { n: "Hobgoblin Atirador", c: ["hobgoblinAtirador"] },
+        { n: "Irukanjin", c: ["irukanjin", "aguaViva", "enxameDeAguasVivas", "aguaVivaGigante"] },
+      ] },
     },
 
     // ── ⚡ POVOS-TROVÃO ────────────────────────────────
@@ -7554,7 +7956,7 @@ São humanoides, mas de pele escamosa que vai do verde-escuro ao cinza-azulado e
       fichas: [
         {
           chave: "ceratopsGuerreiro", nome: "Ceratops Guerreiro", nd: "3", tipo: "Humanoide (ceratops) Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Ceratops",
           resumo: "Ceratops — Alta e forte como um ogro, a criatura exibe uma cabeçorra de formato incomum, ostentando um escudo de osso e vários longos chifres.",
           texto:
@@ -7573,7 +7975,7 @@ Equipamento Tacape aumentado. Tesouro Metade.`
         },
         {
           chave: "ceratopsChefeDaTribo", nome: "Ceratops Chefe da Tribo", nd: "7", tipo: "Humanoide (ceratops) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Ceratops",
           resumo: "Ceratops — Alta e forte como um ogro, a criatura exibe uma cabeçorra de formato incomum, ostentando um escudo de osso e vários longos chifres.",
           texto:
@@ -7593,7 +7995,7 @@ Equipamento Tacape aumentado, gibão de peles. Tesouro Padrão.`
         },
         {
           chave: "pterosCeifador", nome: "Pteros Ceifador", nd: "2", tipo: "Humanoide (pteros) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Pteros",
           resumo: "Pteros — A criatura de um metro e meio parece magra, mirrada, mas de musculatura rija.",
           texto:
@@ -7612,7 +8014,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "pterosDoCeuInfinito", nome: "Pteros do Céu Infinito", nd: "5", tipo: "Humanoide (pteros) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Pteros",
           resumo: "Pteros — A criatura de um metro e meio parece magra, mirrada, mas de musculatura rija.",
           texto:
@@ -7636,7 +8038,7 @@ Equipamento Pó azul x2, ramo verdejante x1d3, símbolo sagrado de Anikka (Wynna
         },
         {
           chave: "velocisCacador", nome: "Velocis Caçador", nd: "4", tipo: "Humanoide (velocis) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Velocis",
           resumo: "Velocis — Ele é alto e esguio, de pele azul-acinzentada, com manchas de negro profundo nas pernas, antebraços, pescoço e ao redor dos olhos.",
           texto:
@@ -7658,7 +8060,7 @@ Equipamento Azagaia x3, escudo de couro, lança, peçonha concentrada x4. Tesour
         },
         {
           chave: "xamaDeSarana", nome: "Xamã de Sarana", nd: "6", tipo: "Humanoide (velocis) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Velocis",
           resumo: "Velocis — Ele é alto e esguio, de pele azul-acinzentada, com manchas de negro profundo nas pernas, antebraços, pescoço e ao redor dos olhos.",
           texto:
@@ -7684,7 +8086,7 @@ Equipamento Bálsamo restaurador x3, ramo verdejante x4, símbolo sagrado de Sar
         },
         {
           chave: "voracisCacadora", nome: "Voracis Caçadora", nd: "8", tipo: "Humanoide (voracis) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Voracis",
           resumo: "Voracis — Embora pareça uma mulher baixa e esguia, sua postura lembra mais uma pantera.",
           texto:
@@ -7704,7 +8106,7 @@ Equipamento Armadura de couro, azagaia x3, espada vespa atroz, garra feroz maci�
         },
         {
           chave: "voracisRainha", nome: "Voracis Rainha", nd: "11", tipo: "Humanoide (voracis) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Voracis",
           resumo: "Voracis — Embora pareça uma mulher baixa e esguia, sua postura lembra mais uma pantera.",
           texto:
@@ -7726,7 +8128,7 @@ Tesouro Dobro.`
         },
         {
           chave: "totemDeSaranaAspectoDeMarah", nome: "Totem de Sarana (Aspecto de Marah)", nd: "10", tipo: "Espírito Grande",
-          papel: '',
+          papel: "especial",
           subgrupo: "Totens do Trovão",
           resumo: "Totens do Trovão — Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual.",
           texto:
@@ -7749,7 +8151,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "totemDaDivinaSerpenteAspectoDeAllihanna", nome: "Totem da Divina Serpente (Aspecto de Allihanna)", nd: "14", tipo: "Espírito Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Totens do Trovão",
           resumo: "Totens do Trovão — Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual.",
           texto:
@@ -7778,7 +8180,7 @@ Equipamento Presa de serpente aumentada. Tesouro Nenhum.`
         },
         {
           chave: "totemDoReiTiranoAspectoDeMegalokk", nome: "Totem do Rei-Tirano (Aspecto de Megalokk)", nd: "15", tipo: "Espírito Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Totens do Trovão",
           resumo: "Totens do Trovão — Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual.",
           texto:
@@ -7800,7 +8202,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "totemDoPaiDeTudoAspectoDeAzgher", nome: "Totem do Pai-de-Tudo (Aspecto de Azgher)", nd: "12", tipo: "Espírito Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Totens do Trovão",
           resumo: "Totens do Trovão — Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual.",
           texto:
@@ -7846,6 +8248,19 @@ Embora pareça uma mulher baixa e esguia, sua postura lembra mais uma pantera. A
 — Ghanna, voracis caçadora
 Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual. Exaustas e inebriadas, as caçadoras voracis terminaram sua dança. Em meio às chamas da fogueira central, uma criatura imensa começa a emergir — um ser flamejante, demoníaco, com torso de mulher e cabeça de serpente. Os thera, assim como outros povos de Arton, veneram diferentes aspectos dos mesmos deuses, sobretudo Allihanna — a Deusa da Natureza não é uma fera de muitas cabeças sem motivo. Para as voracis, ela é a Divina Serpente. Para os ceratops, Ollgrmnia. Outros deuses maiores, como Azgher, Lena, Marah e Megalokk, também encontram aqui suas próprias representações locais. Através de rituais sagrados executados por uma tribo inteira ou da súplica de um único devoto em um momento de urgência extrema, os povos-trovão são capazes de invocar aspectos de seus deuses — criaturas divinas temporárias com a missão de realizar uma tarefa simples, como lutar, proteger ou curar. Sua aparência exata reflete a crença de seus devotos: muitas vezes será um lagarto-trovão primevo, remetendo a seus ancestrais, mas também pode combinar com a forma mais conhecida da divindade. Desnecessário dizer, totens são muitas vezes invocados para enfrentar inimigos que demonstrem ser poderosos demais para a tribo. Isso inclui aventureiros.` },
       ],
+      reforcos: { pag: 273, nomes: [
+        { n: "Árvore-Matilha", c: ["arvoreMatilha"] },
+        { n: "Burafonte", c: ["burafonte", "armentoDeBurafontes"] },
+        { n: "Deinonico", c: ["deinonico", "bandoDeDeinonicos"] },
+        { n: "Espada-da-Floresta", c: ["espadaDaFloresta"] },
+        { n: "Galhada", c: ["galhadaMacho", "galhadaFemea"] },
+        { n: "Gali-Gali", c: ["galiGali", "enxameDeGaliGali"] },
+        { n: "Grande Battham", c: ["grandeBattham"] },
+        { n: "Raagoran", c: ["raagoran"] },
+        { n: "Rei-Tirano", c: ["reiTirano"] },
+        { n: "Tuntram", c: ["tuntram"] },
+        { n: "Uraghian", c: ["uraghianJovem", "uraghianAdulto"] },
+      ] },
     },
 
     // ── 🕯 PURISTAS ────────────────────────────────────
@@ -7855,7 +8270,7 @@ Vocês não alcançam a aldeia nas alturas a tempo de impedir o ritual. Exaustas
       fichas: [
         {
           chave: "arcanoDeGuerraAdepto", nome: "Arcano de Guerra Adepto", nd: "4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Arcano de Guerra",
           resumo: "Arcano de Guerra — A armadura orgulhosa sugere ser algum tipo de oficial superior, especialmente por estar desarmado.",
           texto:
@@ -7880,7 +8295,7 @@ Equipamento Adaga, armadura completa, tomo de guerra. Tesouro Padrão.`
         },
         {
           chave: "arcanoDeGuerraVeterano", nome: "Arcano de Guerra Veterano", nd: "11", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Arcano de Guerra",
           resumo: "Arcano de Guerra — A armadura orgulhosa sugere ser algum tipo de oficial superior, especialmente por estar desarmado.",
           texto:
@@ -7908,7 +8323,7 @@ Equipamento Adaga, armadura completa reforçada, tomo de guerra. Tesouro Padrão
         },
         {
           chave: "cacadorDeImpuros", nome: "Caçador de Impuros", nd: "8", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Prostrado em um galho de árvore que parece fraco demais para sustentá-lo, o homem (ou mulher?) de manto escuro e máscara metálica prepara a…",
           texto:
 `Caçador de Impuros ND 8
@@ -7933,7 +8348,7 @@ Equipamento Besta leve, cimitarra, couraça sob medida, virotes de aço rubi x20
         },
         {
           chave: "corcelDeComando", nome: "Corcel de Comando", nd: "3", tipo: "Construto Grande",
-          papel: '',
+          papel: "especial",
           subgrupo: "Carruagem de Comando",
           resumo: "Carruagem de Comando — O comandante purista ocupa um palanquim no dorso de um enorme construto quadrúpede, com aspecto de elefante, negro com adornos dourados.",
           texto:
@@ -7955,7 +8370,7 @@ Parceiro O corcel de comando é um parceiro montaria (Grande) que fornece os ben
         },
         {
           chave: "carruagemDeComando", nome: "Carruagem de Comando", nd: "5", tipo: "Construto Enorme",
-          papel: '',
+          papel: "especial",
           subgrupo: "Carruagem de Comando",
           resumo: "Carruagem de Comando — O comandante purista ocupa um palanquim no dorso de um enorme construto quadrúpede, com aspecto de elefante, negro com adornos dourados.",
           texto:
@@ -7977,7 +8392,7 @@ Tesouro Caixa de voz, gema de força (CD 20 para extrair).`
         },
         {
           chave: "dancarinoDeGuerra", nome: "Dançarino de Guerra", nd: "4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dançarino de Guerra",
           resumo: "Dançarino de Guerra — Diante das formações rígidas e disciplinadas das tropas puristas, aquele bárbaro rosnador parece claramente fora de lugar.",
           texto:
@@ -7997,7 +8412,7 @@ Tesouro Padrão.`
         },
         {
           chave: "dancarinoDeGuerraVeterano", nome: "Dançarino de Guerra Veterano", nd: "6", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dançarino de Guerra",
           resumo: "Dançarino de Guerra — Diante das formações rígidas e disciplinadas das tropas puristas, aquele bárbaro rosnador parece claramente fora de lugar.",
           texto:
@@ -8016,7 +8431,7 @@ Equipamento Machado de batalha x2, sapatos de camurça aprimorados. Tesouro Padr
         },
         {
           chave: "purificado", nome: "Purificado", nd: "2", tipo: "Humanoide (hynne) Pequeno",
-          papel: '',
+          papel: "lacaio",
           resumo: "Mesmo à distância, o pequeno hynne parece ter sido brutalmente torturado.",
           texto:
 `Purificado ND 2
@@ -8036,7 +8451,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "soldadoBlindado", nome: "Soldado Blindado", nd: "5", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Soldado Blindado",
           resumo: "Soldado Blindado — Na vanguarda das forças puristas, a primeira linha de defesa parece formada por soldados em armaduras completas e escudos imensos, tão…",
           texto:
@@ -8054,7 +8469,7 @@ Equipamento Armadura completa, escudo pesado reforçado, martelo de guerra punge
         },
         {
           chave: "companhiaBlindadaDeElite", nome: "Companhia Blindada de Elite", nd: "9", tipo: "Humanoide (humano) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Soldado Blindado",
           resumo: "Soldado Blindado — Na vanguarda das forças puristas, a primeira linha de defesa parece formada por soldados em armaduras completas e escudos imensos, tão…",
           texto:
@@ -8072,7 +8487,7 @@ Equipamento Armadura completa, escudo pesado reforçado, martelo de guerra punge
         },
         {
           chave: "soldadoSuperior", nome: "Soldado Superior", nd: "17", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Em meio às forças puristas, chama a atenção ver um combatente sem armas ou armadura, de peito nu.",
           texto:
 `Soldado Superior ND 17
@@ -8131,6 +8546,18 @@ Na Guerra Artoniana, o Exército Purista possuía seis arsenais, totalizando um 
 Comandante
 Hermann Von Krauser é o comandante absoluto do Exército Purista. Tendo estudado todos os manuais artonianos de estratégia militar — e tendo escrito alguns ele mesmo —, Von Krauser possui conhecimento incomparável sobre a arte da guerra. Ele não detém o título de General Supremo à toa.` },
       ],
+      reforcos: { pag: 283, nomes: [
+        { n: "Capitão-Baluarte", f: 1 },
+        { n: "Cavaleiro do Leopardo Sangrento", f: 1 },
+        { n: "Colosso Supremo", f: 1 },
+        { n: "Golem de Bronze", c: ["golemDeBronze"] },
+        { n: "Golem de Ferro", c: ["golemDeFerro", "golemDeFerroSuperior"] },
+        { n: "Recruta Purista", f: 1 },
+        { n: "Sacerdote de Guerra", c: ["capelaoDeGuerra", "bispoDeGuerra"] },
+        { n: "Sargento-Mor", f: 1 },
+        { n: "Soldado Mecânico", c: ["soldadoMecanico"] },
+        { n: "Soldado Purista", f: 1 },
+      ] },
     },
 
     // ── ⚰ REINO DOS MORTOS ────────────────────────────
@@ -8140,7 +8567,7 @@ Hermann Von Krauser é o comandante absoluto do Exército Purista. Tendo estudad
       fichas: [
         {
           chave: "alzeras", nome: "Alzeras", nd: "11", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "especial",
           resumo: "O vulto em manto branco esvoaçante é bem mais alto que um humano.",
           texto:
 `Alzeras ND 11
@@ -8172,7 +8599,7 @@ Tesouro Tomo do rancor.`
         },
         {
           chave: "cemiterioVivo", nome: "Cemitério Vivo", nd: "17", tipo: "Morto-vivo Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "O gigante rochoso e vagamente humanoide, sem feições, avança a passos estrondosos — lembrando um imenso elemental da terra.",
           texto:
 `Cemitério Vivo ND 17
@@ -8195,7 +8622,7 @@ Tesouro Dobro.`
         },
         {
           chave: "chacalZumbi", nome: "Chacal-Zumbi", nd: "2", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "A matilha numerosa rosna à volta.",
           texto:
 `Chacal-Zumbi ND 2
@@ -8217,7 +8644,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "mercenarioDeAslothia", nome: "Mercenário de Aslothia", nd: "3", tipo: "Monstro (lefou) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Mercenário de Aslothia",
           resumo: "Mercenário de Aslothia — Poderiam ser confundidos com um bando de guerreiros quaisquer, variados em raças e armas.",
           texto:
@@ -8235,7 +8662,7 @@ Equipamento Gibão de peles, maça. Tesouro Padrão.`
         },
         {
           chave: "liderMercenarioDeAslothia", nome: "Líder Mercenário de Aslothia", nd: "5", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Mercenário de Aslothia",
           resumo: "Mercenário de Aslothia — Poderiam ser confundidos com um bando de guerreiros quaisquer, variados em raças e armas.",
           texto:
@@ -8254,7 +8681,7 @@ Equipamento Alabarda cruel, brunea, escudo leve, espada curta. Tesouro Padrão.`
         },
         {
           chave: "morgueRaz", nome: "Morgue’raz", nd: "9", tipo: "Morto-vivo Grande",
-          papel: '',
+          papel: "solo",
           resumo: "A coisa lembra um grande esqueleto humanoide, que poderia ter pertencido a um gigante.",
           texto:
 `Morgue’raz ND 9
@@ -8277,7 +8704,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "wisphago", nome: "Wisphago", nd: "8", tipo: "Morto-vivo Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Parecendo saído de um pesadelo, o monstro é grande como uma carruagem.",
           texto:
 `Wisphago ND 8
@@ -8301,7 +8728,7 @@ Tesouro 1d6+2 dentes de wisphago (CD 23 para extrair).`
         },
         {
           chave: "lich", nome: "Lich", nd: "15", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Lich",
           resumo: "Lich — A figura sombria veste um manto tradicional de arcanista que pode ter sido luxuoso há tempos, mas hoje se encontra em farrapos.",
           texto:
@@ -8335,7 +8762,7 @@ Equipamento Essência de mana x5, robe do arquimago, terra de cemitério x2. Tes
         },
         {
           chave: "lichDeAslothia", nome: "Lich de Aslothia", nd: "18", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Lich",
           resumo: "Lich — A figura sombria veste um manto tradicional de arcanista que pode ter sido luxuoso há tempos, mas hoje se encontra em farrapos.",
           texto:
@@ -8375,7 +8802,7 @@ Tesouro Dobro e fragmento de filactério.`
         },
         {
           chave: "arquilichFerrenAsloth", nome: "Arquilich Ferren Asloth", nd: "S", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Lich",
           resumo: "Lich — A figura sombria veste um manto tradicional de arcanista que pode ter sido luxuoso há tempos, mas hoje se encontra em farrapos.",
           texto:
@@ -8438,6 +8865,29 @@ A figura sombria veste um manto tradicional de arcanista que pode ter sido luxuo
           texto:
 `Em Aslothia, desafiar o regente nunca foi uma escolha sábia ou recomendável. No entanto, desde a Noite da Ascensão Profana, uma nova motivação surgiu para os mais ambiciosos se aproximarem cada vez mais do Aquilich. Essa motivação tem nome: as bênçãos de Ferren. Essas bênçãos são concedidas apenas aos membros mais próximos da corte ou aos grandes heróis de Aslothia — aos olhos do regente. São poderes e transformações conferidos pelo próprio Asloth, um dom adquirido após sua transformação final. A natureza das bênçãos varia grandemente: uns se transformam em vampiros, outros em lobisomens e outras criaturas noturnas, mas mantendo seu intelecto. Alguns adquirem habilidades fantásticas e desenvolvem fome insaciável por carne humanoide. É raro um efeito se repetir com exatidão: dizem que Ferren traz à tona as sombras que permeiam a alma daquele que é abençoado. Os principais abençoados por Ferren são os poderosos Sislach: Narsogg, Vissanzi e Rawia. Estes, sob as ordens diretas do Arquilich, mantêm a ordem no reino de forma implacável.` },
       ],
+      reforcos: { pag: 294, nomes: [
+        { n: "Afogado", c: ["afogado", "capitaoAfogado"] },
+        { n: "Aparição", f: 1 },
+        { n: "Bandido", c: ["bandidoComum", "bandidoLigeiro", "bandidoSelvagem", "chefeBandido"] },
+        { n: "Capanga", c: ["ogroCapanga", "capanga", "jagunco", "capangaMinotauro", "gnollCapanga", "kaijinCapanga", "nezumiCapanga"] },
+        { n: "Carniçal", c: ["carnical", "lacedon"] },
+        { n: "Chefe do Crime", c: ["chefeBandido", "chefeDeGangue", "chefeDeQuadrilha"] },
+        { n: "Esqueleto", c: ["cavaloEsqueleto", "ogroEsqueleto", "ursoPardoEsqueleto", "giganteEsqueleto", "mamuteEsqueleto", "hidraEsqueleto", "reiTiranoEsqueleto", "necrodracoEsqueleto"] },
+        { n: "Esqueletos", f: 1 },
+        { n: "Fantasma", c: ["fantasma", "fantasmaAncestral"] },
+        { n: "Garra-Zumbi", c: ["garraZumbi", "garraZumbiOgro", "garraZumbiEnxame", "garraZumbiGigante"] },
+        { n: "Lívido", c: ["livido"] },
+        { n: "Mantor", c: ["mantor"] },
+        { n: "Mortalha", c: ["mortalha"] },
+        { n: "Múmia", c: ["mumia"] },
+        { n: "Nastarrath", c: ["nastarrath"] },
+        { n: "Necrodraco", c: ["necrodracoEsqueleto", "necrodracoZumbi", "necrodracoLich"] },
+        { n: "Necromante", f: 1 },
+        { n: "Senhor das Múmias", c: ["senhorDasMumias"] },
+        { n: "Soterrado", c: ["soterradoVagante"] },
+        { n: "Vampiro", f: 1 },
+        { n: "Zumbis", f: 1 },
+      ] },
     },
 
     // ── 🏰 REINOS DE MOREANIA ──────────────────────────
@@ -8447,7 +8897,7 @@ A figura sombria veste um manto tradicional de arcanista que pode ter sido luxuo
       fichas: [
         {
           chave: "bufaloDeGuerra", nome: "Búfalo-de-Guerra", nd: "2", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O animal tem quase o dobro da altura de um humano na cernelha e deve pesar tanto quanto dois ou três touros.",
           texto:
 `Búfalo-de-Guerra ND 2
@@ -8468,7 +8918,7 @@ Parceiro O búfalo-de-guerra é um parceiro montaria (Grande) que fornece os ben
         },
         {
           chave: "hippossauro", nome: "Hippossauro", nd: "3", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O animal tem o tamanho e porte de um cavalo de guerra, mas parece uma combinação estranha entre este e uma ave, ou lagarto, ou ambos.",
           texto:
 `Hippossauro ND 3
@@ -8489,7 +8939,7 @@ Parceiro O hippossauro é um parceiro montaria (Grande) que fornece os benefíci
         },
         {
           chave: "manticora", nome: "Mantícora", nd: "6", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Mantícora",
           resumo: "Mantícora — A monstruosidade é grande como um elefante, mas ainda assim capaz de voar com agilidade.",
           texto:
@@ -8506,7 +8956,7 @@ Tesouro Padrão mais espinhos (CD 21 para extrair, valem T$ 150 para fabricar fl
         },
         {
           chave: "manticoraPrimal", nome: "Mantícora Primal", nd: "14", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Mantícora",
           resumo: "Mantícora — A monstruosidade é grande como um elefante, mas ainda assim capaz de voar com agilidade.",
           texto:
@@ -8525,7 +8975,7 @@ Tesouro Padrão mais espinhos (CD 29 para extrair, valem T$ 300 para fabricar fl
         },
         {
           chave: "otyugh", nome: "Otyugh", nd: "5", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Otyugh",
           resumo: "Otyugh — Como? Matando monstros, é claro!” É difícil descrever a criatura.",
           texto:
@@ -8545,7 +8995,7 @@ Tesouro Padrão.`
         },
         {
           chave: "hordaDeOtyughs", nome: "Horda de Otyughs", nd: "16", tipo: "Monstro Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Otyugh",
           resumo: "Otyugh — Como? Matando monstros, é claro!” É difícil descrever a criatura.",
           texto:
@@ -8566,7 +9016,7 @@ Tesouro Padrão.`
         },
         {
           chave: "yidishanBugbear", nome: "Yidishan Bugbear", nd: "2", tipo: "Construto (yidishan) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "O monstro cambaleante parece ser um bugbear, mas algo está errado, muito errado!",
           texto:
 `Yidishan Bugbear ND 2
@@ -8588,7 +9038,7 @@ Tesouro Metade.`
         },
         {
           chave: "raposaBucaneira", nome: "Raposa Bucaneira", nd: "2", tipo: "Humanoide (moreau) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Moreau",
           resumo: "Moreau — É um bando curioso, para dizer o mínimo.",
           texto:
@@ -8611,7 +9061,7 @@ Equipamento Balas x20, capa esvoaçante, pistola-punhal. Tesouro Padrão.`
         },
         {
           chave: "bufaloPaladinoDeBullton", nome: "Búfalo Paladino de Bullton", nd: "6", tipo: "Humanoide (moreau) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Moreau",
           resumo: "Moreau — É um bando curioso, para dizer o mínimo.",
           texto:
@@ -8633,7 +9083,7 @@ Tesouro Padrão.`
         },
         {
           chave: "corujaDruida", nome: "Coruja Druida", nd: "10", tipo: "Humanoide (Moreau) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Moreau",
           resumo: "Moreau — É um bando curioso, para dizer o mínimo.",
           texto:
@@ -8675,6 +9125,29 @@ Como? Matando monstros, é claro!”
 — Jayle, herdeira da raposa
 É um bando curioso, para dizer o mínimo. Uma atrevida mulher-raposa em trajes coloridos de bucaneira, um robusto homem-búfalo em armadura pesada e um homem-coruja que poderia ser um druida. Poderia ser um bando de aventureiros. Ou bandidos dispostos a saquear. De acordo com sua própria mitologia, esta raça teria se originado de Doze Animais míticos, não existindo moreau de outras espécies. Exceto pela aparência incomum, os moreau são totalmente humanos em cultura e comportamento — e seus aventureiros adotam as mesmas carreiras. Uma diferença é que quase todos os moreau demonstram grande amor ou respeito à natureza; até os mais urbanos ficam à vontade na presença de animais. Em sua terra, é comum conviver com animais diversos no ambiente familiar, mesmo entre membros da nobreza. O típico moreau se considera civilizado, sofisticado, mas mesmo assim não vê grande distância entre sua raça e os animais de que vieram. Muitos moreau têm aparência quase humana. Trazem apenas traços bestiais mínimos, como orelhas levemente pontiagudas, dentes caninos salientes, unhas um pouco escuras, manchas leves sobre a pele, olhos ou cabelos de cores incomuns… Detalhes perceptíveis apenas com um exame atento. Apenas aqueles conhecidos como Herdeiros possuem atributos ferais mais acentuados. Entre os moreau encontrados no continente, os mais comuns são druidas, bucaneiros e cavaleiros, por refletirem as culturas de suas três maiores cidades na terra natal. Grupos moreau podem se opor a aventureiros do Reinado pelas mesmas razões que levariam humanos a fazê-lo — afinal, eles receberam dos Irmãos Selvagens a capacidade de escolher entre o bem e o mal.` },
       ],
+      reforcos: { pag: 302, nomes: [
+        { n: "Afogado", c: ["afogado", "capitaoAfogado"] },
+        { n: "Bandido", c: ["bandidoComum", "bandidoLigeiro", "bandidoSelvagem", "chefeBandido"] },
+        { n: "Bugbear", c: ["bugbearSentinela", "bugbearGuardaCostas", "yidishanBugbear"] },
+        { n: "Capanga", c: ["ogroCapanga", "capanga", "jagunco", "capangaMinotauro", "gnollCapanga", "kaijinCapanga", "nezumiCapanga"] },
+        { n: "Devorador de Medos", f: 1 },
+        { n: "Dragão Feral", c: ["dragaoFeral"] },
+        { n: "Esqueleto", c: ["cavaloEsqueleto", "ogroEsqueleto", "ursoPardoEsqueleto", "giganteEsqueleto", "mamuteEsqueleto", "hidraEsqueleto", "reiTiranoEsqueleto", "necrodracoEsqueleto"] },
+        { n: "Esqueletos", f: 1 },
+        { n: "Enxame Goblin" },
+        { n: "Glop", c: ["glop", "mamaeGlop"] },
+        { n: "Glooop", c: ["glooop"] },
+        { n: "Goblin Salteador", f: 1 },
+        { n: "Golem de Bronze", c: ["golemDeBronze"] },
+        { n: "Golem de Ferro", c: ["golemDeFerro", "golemDeFerroSuperior"] },
+        { n: "Golem de Pedra", c: ["golemDePedra"] },
+        { n: "Harpia", c: ["harpiaSaqueadora"] },
+        { n: "Hobgoblin Soldado", f: 1 },
+        { n: "Pirata", c: ["pirata", "imediato", "bandoPirata", "capitaoPirata", "capitaoDoConclavePirata", "capitaoDaFrotaAurea"] },
+        { n: "Sahuagin", c: ["sahuaginPredador", "sahuaginMetamorfo"] },
+        { n: "Soldado Mecânico", c: ["soldadoMecanico"] },
+        { n: "Zumbis", f: 1 },
+      ] },
     },
 
     // ── 🩸 SANGUINÁRIAS ────────────────────────────────
@@ -8684,7 +9157,7 @@ Como? Matando monstros, é claro!”
       fichas: [
         {
           chave: "cerianthar", nome: "Cerianthar", nd: "4", tipo: "Monstro Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Apesar da vigilância constante, a aparição súbita da criatura surpreende todos vocês.",
           texto:
 `Cerianthar ND 4
@@ -8708,7 +9181,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "grandeTachygloss", nome: "Grande Tachygloss", nd: "16", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "O monstro lembra vagamente um urso, mas muito maior.",
           texto:
 `Grande Tachygloss ND 16
@@ -8728,7 +9201,7 @@ Tesouro Acúleos de tachygloss (CD 31 para extrair, valem T$ 1.000 para fabricar
         },
         {
           chave: "oxxdon", nome: "Oxxdon", nd: "2", tipo: "Monstro Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Oxxdon",
           resumo: "Oxxdon — Aquilo que emerge da escuridão lembra uma cruza macabra entre um gafanhoto e um lagarto gigante, com longas antenas e cauda bipartida.",
           texto:
@@ -8745,7 +9218,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "oxxdonImenso", nome: "Oxxdon Imenso", nd: "10", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Oxxdon",
           resumo: "Oxxdon — Aquilo que emerge da escuridão lembra uma cruza macabra entre um gafanhoto e um lagarto gigante, com longas antenas e cauda bipartida.",
           texto:
@@ -8763,7 +9236,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "razzaKham", nome: "Razza’Kham", nd: "17", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Alta como um celeiro, a bizarria bípede é toda coberta de escamas e placas.",
           texto:
 `Razza’Kham ND 17
@@ -8785,7 +9258,7 @@ Tesouro Três peças de quitina razza (CD 32 para extrair).`
         },
         {
           chave: "serpe", nome: "Serpe", nd: "5", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Serpe",
           resumo: "Serpe — As silhuetas inconfundíveis de dragões em voo se recortam contra o céu, descendo sobre vocês.",
           texto:
@@ -8803,7 +9276,7 @@ Tesouro 1d4 doses de peçonha concentrada (CD 20 para extrair).`
         },
         {
           chave: "serpeAncia", nome: "Serpe Anciã", nd: "8", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Serpe",
           resumo: "Serpe — As silhuetas inconfundíveis de dragões em voo se recortam contra o céu, descendo sobre vocês.",
           texto:
@@ -8822,7 +9295,7 @@ Tesouro 1d4 doses de peçonha anciã (CD 23 para extrair).`
         },
         {
           chave: "uraghianJovem", nome: "Uraghian Jovem", nd: "5", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Uraghian",
           resumo: "Uraghian — Grande como um elefante, o inseto monstruoso avança para atacar e devorar.",
           texto:
@@ -8840,7 +9313,7 @@ Tesouro Óleo de besouro x1d4 (CD 20 para extrair).`
         },
         {
           chave: "uraghianAdulto", nome: "Uraghian Adulto", nd: "8", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Uraghian",
           resumo: "Uraghian — Grande como um elefante, o inseto monstruoso avança para atacar e devorar.",
           texto:
@@ -8858,7 +9331,7 @@ Tesouro Óleo de besouro x1d6 (CD 23 para extrair) e casulos de seda x2d4 (CD 23
         },
         {
           chave: "kaiju", nome: "Kaiju", nd: "20", tipo: "Monstro (kaiju) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "Um tremor e um rugido profundo anunciam seu despertar.",
           texto:
 `Kaiju ND 20
@@ -8907,6 +9380,36 @@ As silhuetas inconfundíveis de dragões em voo se recortam contra o céu, desce
 — Hyakunen, o Imortal (incinerado)
 Grande como um elefante, o inseto monstruoso avança para atacar e devorar. Na carapaça escura e lustrosa dançam padrões de manchas luminosas, leitosas e macabras, de aspecto sobrenatural, em cores doentias, por vezes lembrando rostos em agonia. Também conhecido como besouro-do-óleo, este enorme besouro predador também existe em Galrasia e outras regiões, embora os maiores e mais agressivos sejam encontrados nas Sanguinárias. Mesmo equipado com uma mandíbula poderosa, a mais terrível arma do besouro-do-óleo é uma rajada de substância cáustica que lembra óleo fervente. Absurdamente inflamável, a enzima se incendeia em contato com o ar e emite chamas que deixam apenas cinzas e queimaduras assustadoras por onde passam. A própria carapaça também é revestida com material similar, que queima ao toque. Diferente de outros monstros, o besouro-do-óleo se reproduz — ainda que de modo grotesco e perigoso. Quando chega a época, o adulto simplesmente explode, liberando uma dúzia de crias até então em seu interior. Muitos grupos de aventureiros foram exterminados ao acreditar que venceram a fera, quando na verdade libertaram inimigos vorazes em número ainda maior.` },
       ],
+      reforcos: { pag: 312, nomes: [
+        { n: "Árvore-Matilha", c: ["arvoreMatilha"] },
+        { n: "Basilisco", f: 1 },
+        { n: "Burafonte", c: ["burafonte", "armentoDeBurafontes"] },
+        { n: "Cão do Inferno", f: 1 },
+        { n: "Deinonico", c: ["deinonico", "bandoDeDeinonicos"] },
+        { n: "Dragão Adulto", c: ["dragaoAdultoDaTirania", "dragaoAdultoDosSegredos"] },
+        { n: "Dragão Bicéfalo", c: ["dragaoBicefalo"] },
+        { n: "Dragão Feral", c: ["dragaoFeral"] },
+        { n: "Dragão Menor", c: ["dragaoFilhoteDoBosque", "dragaoFilhoteDosRios", "ninhadaDeDragoesFilhotes", "dragaoJovemDaProtecao", "dragaoJovemDoOcaso"] },
+        { n: "Dragão-Real", c: ["dragaoBicefalo"] },
+        { n: "Dragão Venerável", c: ["dragaoVeneravelDaEquidade", "dragaoVeneravelDosRecifes"] },
+        { n: "Dragões", f: 1 },
+        { n: "Gali-Gali", c: ["galiGali", "enxameDeGaliGali"] },
+        { n: "Grande Battham", c: ["grandeBattham"] },
+        { n: "Grifo", f: 1 },
+        { n: "Meio-Orc", c: ["meioOrcBandoleiro", "meioOrcCapanga", "meioOrcChefe"] },
+        { n: "Orc", c: ["orcCombatente", "orcVeterano", "orcChefe", "orcRei"] },
+        { n: "Orc Xamã", c: ["orcXama"] },
+        { n: "Orc Mutante", c: ["orcMutante", "orcMutanteSuperior"] },
+        { n: "Quimera", c: ["quimera"] },
+        { n: "Sapo Atroz", c: ["sapoAtroz"] },
+        { n: "Raagoran", c: ["raagoran"] },
+        { n: "Rei-Tirano", c: ["reiTirano"] },
+        { n: "Rhandomm", c: ["rhandomm"] },
+        { n: "Trog", c: ["trogCombatente", "trogCacador", "trogReiDosTuneis", "trogAnaoBruto", "trogAnaoEremita"] },
+        { n: "Trog Anão", c: ["trogAnaoBruto", "trogAnaoEremita"] },
+        { n: "Tuntram", c: ["tuntram"] },
+        { n: "Urso-Coruja", f: 1 },
+      ] },
     },
 
     // ── 🌊 SOB AS ONDAS ────────────────────────────────
@@ -8916,7 +9419,7 @@ Grande como um elefante, o inseto monstruoso avança para atacar e devorar. Na c
       fichas: [
         {
           chave: "canceronte", nome: "Canceronte", nd: "3", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Canceronte",
           resumo: "Canceronte — O animal tem a aparência de um caranguejo descomunal, grande como um navio invertido.",
           texto:
@@ -8934,7 +9437,7 @@ Tesouro 1d6 postas de canceronte (CD 18 para extrair; cada posta vale T$ 12 para
         },
         {
           chave: "canceronteDeGuerra", nome: "Canceronte de Guerra", nd: "16", tipo: "Monstro Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Canceronte",
           resumo: "Canceronte — O animal tem a aparência de um caranguejo descomunal, grande como um navio invertido.",
           texto:
@@ -8956,7 +9459,7 @@ Tesouro Metade mais 2d4 postas de canceronte (CD 31 para extrair; cada posta val
         },
         {
           chave: "elfoDoMarPescador", nome: "Elfo-do-Mar Pescador", nd: "2", tipo: "Humanoide (elfo-do-mar) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Elfo-do-Mar",
           resumo: "Elfo-do-Mar — Este ser lembra um elfo terrestre, embora mais baixo e corpulento, de ombros largos.",
           texto:
@@ -8975,7 +9478,7 @@ Equipamento Arpão, gibão de peles. Tesouro Metade.`
         },
         {
           chave: "elfoDoMarChefe", nome: "Elfo-do-Mar Chefe", nd: "6", tipo: "Humanoide (elfo-do-mar) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Elfo-do-Mar",
           resumo: "Elfo-do-Mar — Este ser lembra um elfo terrestre, embora mais baixo e corpulento, de ombros largos.",
           texto:
@@ -8996,7 +9499,7 @@ Equipamento Couraça, escudo leve, rede, tridente equilibrado. Tesouro Padrão.`
         },
         {
           chave: "elfoDoMarDruida", nome: "Elfo-do-Mar Druida", nd: "10", tipo: "Humanoide (elfo-do-mar) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Elfo-do-Mar",
           resumo: "Elfo-do-Mar — Este ser lembra um elfo terrestre, embora mais baixo e corpulento, de ombros largos.",
           texto:
@@ -9024,7 +9527,7 @@ Equipamento Arpão, escudo leve, essência de mana x2, gibão de peles, ramo ver
         },
         {
           chave: "enguiaRainha", nome: "Enguia Rainha", nd: "19", tipo: "Monstro Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "O mundo sob as ondas é imenso e criaturas imensas vivem nele.",
           texto:
 `Enguia Rainha ND 19
@@ -9047,7 +9550,7 @@ Tesouro Padrão mais suco gástrico (CD 34 para extrair, vale T$ 2.000 para fabr
         },
         {
           chave: "irukanjin", nome: "Irukanjin", nd: "4", tipo: "Humanoide (irukanjin) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Irukanjin",
           resumo: "Irukanjin — A criatura fantasmagórica apresenta uma cabeça semiesférica e segmentada, lembrando metade de uma abóbora, sem feições.",
           texto:
@@ -9067,7 +9570,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "aguaViva", nome: "Água-viva", nd: "1", tipo: "Animal Pequeno",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Irukanjin",
           resumo: "Irukanjin — A criatura fantasmagórica apresenta uma cabeça semiesférica e segmentada, lembrando metade de uma abóbora, sem feições.",
           texto:
@@ -9086,7 +9589,7 @@ Tesouro Filamentos corrosivos (CD 16 para extrair, valem T$ 10 para fabricar ác
         },
         {
           chave: "enxameDeAguasVivas", nome: "Enxame de Águas-vivas", nd: "6", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Irukanjin",
           resumo: "Irukanjin — A criatura fantasmagórica apresenta uma cabeça semiesférica e segmentada, lembrando metade de uma abóbora, sem feições.",
           texto:
@@ -9106,7 +9609,7 @@ Tesouro Filamentos corrosivos (CD 21 para extrair, valem T$ 60 para fabricar ác
         },
         {
           chave: "aguaVivaGigante", nome: "Água-viva Gigante", nd: "8", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Irukanjin",
           resumo: "Irukanjin — A criatura fantasmagórica apresenta uma cabeça semiesférica e segmentada, lembrando metade de uma abóbora, sem feições.",
           texto:
@@ -9125,7 +9628,7 @@ Tesouro Filamentos corrosivos (CD 23 para extrair, valem T$ 120 para fabricar á
         },
         {
           chave: "nereida", nome: "Nereida", nd: "12", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           resumo: "O que parecia ser uma bela elfa-do-mar, súbito, muda para uma forma completamente diferente.",
           texto:
 `Nereida ND 12
@@ -9151,7 +9654,7 @@ Tesouro 2d6 doses de éter elemental (frio) (CD 27 para extrair).`
         },
         {
           chave: "peixeRecife", nome: "Peixe-Recife", nd: "6", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "A pequena ilha que conseguiram alcançar após o naufrágio contém apenas alguns corais crescendo em sua superfície.",
           texto:
 `Peixe-Recife ND 6
@@ -9171,7 +9674,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "platan", nome: "Platan", nd: "2", tipo: "Animal Grande",
-          papel: '',
+          papel: "lacaio",
           resumo: "O animal tem formato de peixe, mas o orifício no alto da cabeça demonstra que respira ar.",
           texto:
 `Platan ND 2
@@ -9191,7 +9694,7 @@ Parceiro O platan é um parceiro montaria (Grande) que fornece os benefícios a 
         },
         {
           chave: "selako", nome: "Selako", nd: "2", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Selako",
           resumo: "Selako — Não se consegue ver o predador sob as águas, exceto pela grande barbatana dorsal triangular que se aproxima rápido, muito rápido, enquanto…",
           texto:
@@ -9211,7 +9714,7 @@ Parceiro O selako é um parceiro montaria (Grande) que fornece os benefícios a 
         },
         {
           chave: "selakoTigre", nome: "Selako-Tigre", nd: "6", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Selako",
           resumo: "Selako — Não se consegue ver o predador sob as águas, exceto pela grande barbatana dorsal triangular que se aproxima rápido, muito rápido, enquanto…",
           texto:
@@ -9231,7 +9734,7 @@ Tesouro Couro de selako x2 (CD 21 para extrair, vale T$ 30 para fabricar um traj
         },
         {
           chave: "cardumeDeSelakos", nome: "Cardume de Selakos", nd: "9", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Selako",
           resumo: "Selako — Não se consegue ver o predador sob as águas, exceto pela grande barbatana dorsal triangular que se aproxima rápido, muito rápido, enquanto…",
           texto:
@@ -9251,7 +9754,7 @@ Tesouro Equivalente a 1d4+1 selakos.`
         },
         {
           chave: "megaSelako", nome: "Mega-Selako", nd: "12", tipo: "Animal Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Selako",
           resumo: "Selako — Não se consegue ver o predador sob as águas, exceto pela grande barbatana dorsal triangular que se aproxima rápido, muito rápido, enquanto…",
           texto:
@@ -9271,7 +9774,7 @@ Tesouro Couro de selako x1d4 (CD 27 para extrair, cada couro vale T$ 30 para fab
         },
         {
           chave: "pliorex", nome: "Pliorex", nd: "5", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kraken x Pliorex",
           resumo: "Kraken x Pliorex — A batalha entre os monstros é estupenda!",
           texto:
@@ -9290,7 +9793,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "pliorexAbissal", nome: "Pliorex Abissal", nd: "10", tipo: "Animal Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kraken x Pliorex",
           resumo: "Kraken x Pliorex — A batalha entre os monstros é estupenda!",
           texto:
@@ -9310,7 +9813,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "kraken", nome: "Kraken", nd: "19", tipo: "Monstro Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Kraken x Pliorex",
           resumo: "Kraken x Pliorex — A batalha entre os monstros é estupenda!",
           texto:
@@ -9359,6 +9862,22 @@ Não se consegue ver o predador sob as águas, exceto pela grande barbatana dors
 — Lúcio Castiglioni, humano bucaneiro
 A batalha entre os monstros é estupenda! Um deles lembra uma lula gigantesca, de corpo imenso como um navio e tentáculos massivos que alcançam tudo em volta. Os olhos do tamanho de poços parecem congelados, encarando o vazio, mas sua malícia é quase palpável. O outro lembra um imenso lagarto de couro cinzento com listras brancas e quatro grandes nadadeiras em vez de patas. A cabeça alongada tem olhos minúsculos e mandíbulas enormes de crocodilo, com dentes igualmente numerosos. O kraken é avistado raramente, mesmo em alto-mar. Ainda assim, não são poucas as histórias de navios arrastados para as profundezas por estas feras. Embora muitos acreditem se tratar de uma besta selvagem, o kraken é extremamente inteligente. Utiliza vastos complexos de túneis submarinos como covil, contendo partes com ar respirável, onde mantém vítimas em cativeiro; esses túneis às vezes levam a passagens em terra firme. Sabe-se de pelo menos uma balada sobre anões enfrentando um kraken em pleno Doherimm. Comunidades de povos aquáticos veneram o kraken, fazendo oferendas para aplacar sua fúria ou garantir sua proteção, de forma similar aos dragões em terra. É comum o monstro comandar esses servos em ataques ao mundo seco, para trazer pilhagens ou atrair heróis valorosos, que o kraken aprecia manipular, torturar e humilhar. Existe uma antiga e trágica lenda sobre uma elfa-do-mar que acreditava ser paladina de um bondoso deus submerso, quando na verdade trazia vítimas para saciar seu apetite monstruoso. Um de seus inimigos naturais, se tal coisa existe, é o pliorex. Também chamado “kronossauro”, este gigantesco lagarto-terror de Galrasia é mais abundante no Mar Negro, mas pode ocasionalmente migrar para outros pontos do litoral artoniano. O tipo comum mede entre dez e quinze metros, enquanto a variedade abissal (de coloração totalmente branca) chega ao tamanho de uma caravela. Alimenta-se de peixes, lulas, conchas e qualquer outra criatura de tamanho humano, embora também possa caçar bichos muito maiores. Assim, não é incomum que ataque embarcações, por confundi-las com presas ou para alcançar petiscos no convés. O pliorex pode se arrastar em terra, mas faz isso apenas em casos especiais, para escapar de algum predador mais perigoso ou alcançar uma presa encurralada.` },
       ],
+      reforcos: { pag: 323, nomes: [
+        { n: "Afogado", c: ["afogado", "capitaoAfogado"] },
+        { n: "Dragão Adulto", c: ["dragaoAdultoDaTirania", "dragaoAdultoDosSegredos"] },
+        { n: "Dragão Bicéfalo", c: ["dragaoBicefalo"] },
+        { n: "Dragão Feral", c: ["dragaoFeral"] },
+        { n: "Dragão Menor", c: ["dragaoFilhoteDoBosque", "dragaoFilhoteDosRios", "ninhadaDeDragoesFilhotes", "dragaoJovemDaProtecao", "dragaoJovemDoOcaso"] },
+        { n: "Dragão-Real", c: ["dragaoBicefalo"] },
+        { n: "Dragão Venerável", c: ["dragaoVeneravelDaEquidade", "dragaoVeneravelDosRecifes"] },
+        { n: "Dragões", f: 1 },
+        { n: "Elemental da Água", q: "Elemental da Água" },
+        { n: "Homem-Piranha", c: ["homemPiranha", "homemPiranhaImediato", "homemPiranhaCapitao"] },
+        { n: "Kappa", c: ["kappaBrigao", "kappaYokozuna"] },
+        { n: "Lobo do Mar", c: ["loboDoMar"] },
+        { n: "Pirata", c: ["pirata", "imediato", "bandoPirata", "capitaoPirata", "capitaoDoConclavePirata", "capitaoDaFrotaAurea"] },
+        { n: "Sahuagin", c: ["sahuaginPredador", "sahuaginMetamorfo"] },
+      ] },
     },
 
     // ── 🐍 SSZZAAZITAS ─────────────────────────────────
@@ -9369,7 +9888,7 @@ A batalha entre os monstros é estupenda! Um deles lembra uma lula gigantesca, d
       fichas: [
         {
           chave: "iniciadaDeSszzaas", nome: "Iniciada de Sszzaas", nd: "3", tipo: "Monstro (medusa) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Adorador de Sszzaas",
           resumo: "Adorador de Sszzaas — Obedecendo ao comando da clériga sszzaazita, os cultistas em mantos atacam vocês com o fervor de fanáticos.",
           texto:
@@ -9396,7 +9915,7 @@ Equipamento Adaga, couro batido, símbolo sagrado de Sszzaas. Tesouro Padrão.`
         },
         {
           chave: "cultistaDeSszzaas", nome: "Cultista de Sszzaas", nd: "7", tipo: "Monstro (medusa) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Adorador de Sszzaas",
           resumo: "Adorador de Sszzaas — Obedecendo ao comando da clériga sszzaazita, os cultistas em mantos atacam vocês com o fervor de fanáticos.",
           texto:
@@ -9425,7 +9944,7 @@ Equipamento Adaga certeira, couraça, escudo leve, símbolo sagrado de Sszzaas. 
         },
         {
           chave: "elementalDoVenenoPequeno", nome: "Elemental do Veneno Pequeno", nd: "2", tipo: "Espírito (elemental) Pequeno",
-          papel: '',
+          papel: "solo",
           subgrupo: "Elemental do Veneno",
           resumo: "Elemental do Veneno — A criatura amorfa parece levitar pouco acima do solo.",
           texto:
@@ -9445,7 +9964,7 @@ Parceiro O elemental é um parceiro especial (assassino) que fornece os benefíc
         },
         {
           chave: "elementalDoVenenoMedio", nome: "Elemental do Veneno Médio", nd: "8", tipo: "Espírito (elemental) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Elemental do Veneno",
           resumo: "Elemental do Veneno — A criatura amorfa parece levitar pouco acima do solo.",
           texto:
@@ -9465,7 +9984,7 @@ Parceiro O elemental do veneno médio é um parceiro com as mesmas estatísticas
         },
         {
           chave: "elementalDoVenenoGrande", nome: "Elemental do Veneno Grande", nd: "12", tipo: "Espírito (elemental) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Elemental do Veneno",
           resumo: "Elemental do Veneno — A criatura amorfa parece levitar pouco acima do solo.",
           texto:
@@ -9484,7 +10003,7 @@ Tesouro 1d6 doses de peçonha potente (CD 27 para extrair), 1d6 doses de pó de 
         },
         {
           chave: "gorgona", nome: "Górgona", nd: "6", tipo: "Monstro (medusa) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Górgona",
           resumo: "Górgona — A cabeleira farta e sibilante, feita de serpentes, denuncia pertencer a uma medusa — como outras que vocês conheceram.",
           texto:
@@ -9506,7 +10025,7 @@ Tesouro Padrão mais 1d4 doses de peçonha concentrada.`
         },
         {
           chave: "gorgonaMatriarca", nome: "Górgona Matriarca", nd: "14", tipo: "Monstro (medusa) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Górgona",
           resumo: "Górgona — A cabeleira farta e sibilante, feita de serpentes, denuncia pertencer a uma medusa — como outras que vocês conheceram.",
           texto:
@@ -9532,7 +10051,7 @@ Equipamento Espada curta certeira. Tesouro Padrão mais 1d4 doses de beladona.`
         },
         {
           chave: "nagahMistica", nome: "Nagah Mística", nd: "6", tipo: "Humanoide (nagah) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Nagah Arcanista",
           resumo: "Nagah Arcanista — O gigante furioso avança para esmagá-los.",
           texto:
@@ -9556,7 +10075,7 @@ Equipamento Adaga, essência de mana. Tesouro Padrão.`
         },
         {
           chave: "nagahEncantadora", nome: "Nagah Encantadora", nd: "7", tipo: "Humanoide (nagah) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Nagah Arcanista",
           resumo: "Nagah Arcanista — O gigante furioso avança para esmagá-los.",
           texto:
@@ -9584,7 +10103,7 @@ Equipamento Adaga, essência de mana. Tesouro Padrão.`
         },
         {
           chave: "nagahDormente", nome: "Nagah Dormente", nd: "3", tipo: "Humanoide (nagah) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Nagah Dormente",
           resumo: "Nagah Dormente — Os cultistas estão encurralados, não há como escaparem.",
           texto:
@@ -9604,7 +10123,7 @@ Equipamento Arco curto, armadura de couro, espada curta, flechas x20. Tesouro Me
         },
         {
           chave: "hynneDormente", nome: "Hynne Dormente", nd: "5", tipo: "Humanoide (hynne) Pequeno",
-          papel: '',
+          papel: "especial",
           subgrupo: "Nagah Dormente",
           resumo: "Nagah Dormente — Os cultistas estão encurralados, não há como escaparem.",
           texto:
@@ -9628,7 +10147,7 @@ Equipamento Adaga certeira, gazua. Tesouro Metade.`
         },
         {
           chave: "nagahDefensor", nome: "Nagah Defensor", nd: "7", tipo: "Humanoide (nagah) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "O templo secreto de Sszzaas parece enfim desprotegido, seus poucos cultistas restantes correm para salvar suas peles.",
           texto:
 `Nagah Defensor ND 7
@@ -9649,7 +10168,7 @@ Equipamento Alfange, couraça. Tesouro Padrão.`
         },
         {
           chave: "nagahRetalhador", nome: "Nagah Retalhador", nd: "12", tipo: "Humanoide (nagah) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "O que parecia ser um pequeno bando de monstros, agora visto de perto, na verdade é um só.",
           texto:
 `Nagah Retalhador ND 12
@@ -9673,7 +10192,7 @@ Equipamento Cimitarra de mitral x4. Tesouro Metade.`
         },
         {
           chave: "nagahSacerdotisa", nome: "Nagah Sacerdotisa", nd: "5", tipo: "Humanoide (nagah) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "A clériga entoa cânticos religiosos com uma bela voz, mas se interrompe ao notar os aventureiros recém-chegados.",
           texto:
 `Nagah Sacerdotisa ND 5
@@ -9702,7 +10221,7 @@ Equipamento Adaga, couraça, escudo leve, símbolo sagrado (qualquer, exceto Ssz
         },
         {
           chave: "rivalEspelho", nome: "Rival Espelho", nd: "?", tipo: "???",
-          papel: '',
+          papel: "",
           resumo: "O vulto encapuzado reduz seu passo, aguardando pela chegada de vocês.",
           texto:
 `Rival Espelho ND ?
@@ -9716,7 +10235,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "zumbiPeconha", nome: "Zumbi Peçonha", nd: "1", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Pouco mais que um esqueleto coberto de carniça, o zumbi avança trôpego, nem mesmo erguendo as garras.",
           texto:
 `Zumbi Peçonha ND 1
@@ -9737,7 +10256,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "nastarrath", nome: "Nastarrath", nd: "18", tipo: "Morto-vivo Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Sszzaazita Celebrante & Nastarrath",
           resumo: "Sszzaazita Celebrante & Nastarrath — Diante de grande público, o alto clérigo de Thyatis ergue uma taça em júbilo, oferecendo seu conteúdo a uma noviça.",
           texto:
@@ -9759,7 +10278,7 @@ Tesouro Padrão.`
         },
         {
           chave: "sszzaazitaCelebrante", nome: "Sszzaazita Celebrante", nd: "16", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Sszzaazita Celebrante & Nastarrath",
           resumo: "Sszzaazita Celebrante & Nastarrath — Diante de grande público, o alto clérigo de Thyatis ergue uma taça em júbilo, oferecendo seu conteúdo a uma noviça.",
           texto:
@@ -9828,6 +10347,27 @@ Os cultistas estão encurralados, não há como escaparem. Um deles se adianta e
 — Tyullin, elfo-do-céu hierofante de Thyatis
 Diante de grande público, o alto clérigo de Thyatis ergue uma taça em júbilo, oferecendo seu conteúdo a uma noviça. Ela desce do altar e, com um olhar de surpresa, leva uma mão à garganta e cai morta. Um tremor sugere que um grande mal acaba de despertar — ali perto se ergue uma gigantesca coluna de ossos encimada por um crânio descarnado de serpente. Do sacerdote, nem sinal. Enquanto um sem-número de cabalas sszzaazitas é liderado por cultistas, estes respondem aos celebrantes, supostamente os altos sacerdotes da “ordem”. Dizemos “supostamente” porque será raro qualquer sszzaazita admitir ser inferior a outro (exceto como bajulação falsa para traí-lo mais tarde). E dizemos “ordem” entre aspas porque, entre sszzaazitas, qualquer forma de hierarquia é pura fachada. Todos estão sempre tentando enganar todos. Como esperado. Como desejado por Sszzaas. Nesse meio de intensa traição e competição pelo favor divino, celebrantes são os manipuladores mais eficazes, os mentirosos mais convincentes e os assassinos mais frios. Mesmo quando humanos, suas palavras vertem tanto veneno que podem voltar irmão contra irmão, pai contra filho, aventureiro contra aliado. Mas seus maiores poderes se revelam no comando de grandes cerimônias, quando canalizam a fé de muitas testemunhas — às vezes sem que saibam! Um celebrante é capaz de realizar um grande ritual para Sszzaas sem sequer citar qualquer de seus nomes, sem revelar que todos ali na verdade cultuam o Deus Serpente. Diante de centenas de olhos, será capaz de invocar os poderes mais diabólicos sem despertar a mínima suspeita. Seu objetivo? Muitas vezes, a invocação de algum ser destruidor como o lendário Nastarrath — um monstro morto-vivo, entre os maiores existentes. Criado a partir do esqueleto de uma serpente gigantesca, entre aquelas que se suspeita existir nas Sanguinárias e no Reino de Sszzaas. Para muitos, o Nastarrath é considerado apenas uma lenda, um rumor entre tantos sussurrados pelos sszzaazitas. Ainda que aventureiros às vezes relatem encontros com a serpente mítica, nenhuma aparição jamais foi confirmada. Ainda assim, suspeita-se que sszzaazitas celebrantes seriam capazes de conjurá-lo, após longas e elaboradas cerimônias, após oferecer incalculáveis tesouros e sacrifícios sangrentos ao Corruptor. Talvez com o propósito de destruir uma cidade, matar um ser poderoso ou lidar com um grupo de aventureiros.` },
       ],
+      reforcos: { pag: 336, nomes: [
+        { n: "Bandido", c: ["bandidoComum", "bandidoLigeiro", "bandidoSelvagem", "chefeBandido"] },
+        { n: "Capanga", c: ["ogroCapanga", "capanga", "jagunco", "capangaMinotauro", "gnollCapanga", "kaijinCapanga", "nezumiCapanga"] },
+        { n: "Carniçal", c: ["carnical", "lacedon"] },
+        { n: "Chefe do Crime", c: ["chefeBandido", "chefeDeGangue", "chefeDeQuadrilha"] },
+        { n: "Cobras", f: 1 },
+        { n: "Cultista de Sszzaas", f: 1 },
+        { n: "Esqueleto", c: ["cavaloEsqueleto", "ogroEsqueleto", "ursoPardoEsqueleto", "giganteEsqueleto", "mamuteEsqueleto", "hidraEsqueleto", "reiTiranoEsqueleto", "necrodracoEsqueleto"] },
+        { n: "Esqueletos", f: 1 },
+        { n: "Estirge", c: ["estirge", "enxameEstirge", "nuvemDeEstirges"] },
+        { n: "Fantasma", c: ["fantasma", "fantasmaAncestral"] },
+        { n: "Hidra", f: 1 },
+        { n: "Lagash", f: 1 },
+        { n: "Lívido", c: ["livido"] },
+        { n: "Mímico", c: ["mimico"] },
+        { n: "Mortalha", c: ["mortalha"] },
+        { n: "Múmia", c: ["mumia"] },
+        { n: "Nagah", f: 1 },
+        { n: "Necrodraco", c: ["necrodracoEsqueleto", "necrodracoZumbi", "necrodracoLich"] },
+        { n: "Senhor das Múmias", c: ["senhorDasMumias"] },
+      ] },
     },
 
     // ── 🧌 TROLLS NOBRES ───────────────────────────────
@@ -9838,7 +10378,7 @@ Diante de grande público, o alto clérigo de Thyatis ergue uma taça em júbilo
       fichas: [
         {
           chave: "arcanistaFinntroll", nome: "Arcanista Finntroll", nd: "14", tipo: "Monstro (finntroll) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Pouco da pele pálida pode ser visto sob o manto negro e elegante, adornado com bordas prateadas e esmeraldas cintilantes.",
           texto:
 `Arcanista Finntroll ND 14
@@ -9873,7 +10413,7 @@ Equipamento Açoite finntroll, bolsa de pó poderosa canalizadora, essência de 
         },
         {
           chave: "defeituoso", nome: "Defeituoso", nd: "6", tipo: "Monstro Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Aquele ser pode ter sido humano algum dia — algumas partes humanas, ao menos, ainda estão preservadas.",
           texto:
 `Defeituoso ND 6
@@ -9901,7 +10441,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "mycotannLabutador", nome: "Mycotann Labutador", nd: "2", tipo: "Monstro (mycotann) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Mycotann",
           resumo: "Mycotann — O que parecia ser um grande cogumelo subitamente destaca braços e pernas, erguendo-se em postura humanoide.",
           texto:
@@ -9919,7 +10459,7 @@ Tesouro 1d4 doses de esporos de cogumelo (CD 17 para extrair).`
         },
         {
           chave: "mycotannDruida", nome: "Mycotann Druida", nd: "5", tipo: "Monstro (mycotann) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Mycotann",
           resumo: "Mycotann — O que parecia ser um grande cogumelo subitamente destaca braços e pernas, erguendo-se em postura humanoide.",
           texto:
@@ -9943,7 +10483,7 @@ Equipamento Símbolo sagrado de Allihanna. Tesouro Metade mais 1d4 doses de espo
         },
         {
           chave: "hordaMycotann", nome: "Horda Mycotann", nd: "12", tipo: "Monstro (mycotann) Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Mycotann",
           resumo: "Mycotann — O que parecia ser um grande cogumelo subitamente destaca braços e pernas, erguendo-se em postura humanoide.",
           texto:
@@ -9963,7 +10503,7 @@ Tesouro 2d4 doses de esporos de cogumelo (CD 27 para extrair).`
         },
         {
           chave: "finntrollCacador", nome: "Finntroll Caçador", nd: "2", tipo: "Monstro (finntroll) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Opressor Finntroll",
           resumo: "Opressor Finntroll — Sendo sabido que finntroll são conjuradores orgulhosos e desprezam a prática do combate físico, causa estranheza ver membros da raça em…",
           texto:
@@ -9983,7 +10523,7 @@ Tesouro Padrão.`
         },
         {
           chave: "finntrollFeitor", nome: "Finntroll Feitor", nd: "6", tipo: "Monstro (finntroll) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Opressor Finntroll",
           resumo: "Opressor Finntroll — Sendo sabido que finntroll são conjuradores orgulhosos e desprezam a prática do combate físico, causa estranheza ver membros da raça em…",
           texto:
@@ -10010,7 +10550,7 @@ Equipamento Chicote cruel. Tesouro Dobro.`
         },
         {
           chave: "finntrollSenhorDeEstabulo", nome: "Finntroll Senhor de Estábulo", nd: "12", tipo: "Monstro (finntroll) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Opressor Finntroll",
           resumo: "Opressor Finntroll — Sendo sabido que finntroll são conjuradores orgulhosos e desprezam a prática do combate físico, causa estranheza ver membros da raça em…",
           texto:
@@ -10038,7 +10578,7 @@ Equipamento Açoite finntroll macabro, manto pesado. Tesouro Dobro.`
         },
         {
           chave: "perdigueiroTroll", nome: "Perdigueiro Troll", nd: "1", tipo: "Animal Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Visto à distância, poderia ser confundido com um grande cão ou lobo.",
           texto:
 `Perdigueiro Troll ND 1
@@ -10060,7 +10600,7 @@ Parceiro O perdigueiro troll é um parceiro especial (perseguidor) que fornece o
         },
         {
           chave: "protetorRefem", nome: "Protetor-Refém", nd: "5", tipo: "Humanoide (anão) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Entre vocês e o sacerdote sinistro em mantos negros, um grupo de anões com armaduras escuras avança de machados em punho, estranhamente silenciosos.",
           texto:
 `Protetor-Refém ND 5
@@ -10081,7 +10621,7 @@ Equipamento Escudo pesado, loriga segmentada, machadinha x3, martelo de guerra. 
         },
         {
           chave: "cavaleiroFinntroll", nome: "Cavaleiro Finntroll", nd: "7", tipo: "Monstro (finntroll) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "É estranho perceber que, no dorso do gigante abrutalhado, há uma figura sinistra com armadura escura, acomodada em uma sela majestosa que…",
           texto:
 `Cavaleiro Finntroll ND 7
@@ -10111,7 +10651,7 @@ Equipamento Açoite finntroll cruel, couraça, essência de mana x2, sela aprimo
         },
         {
           chave: "sacerdoteFinntroll", nome: "Sacerdote Finntroll", nd: "6", tipo: "Monstro (finntroll) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Sacerdote Finntroll",
           resumo: "Sacerdote Finntroll — A figura de pele lilás traz o cabelo escuro adornado em um penteado alto, cheio de joias.",
           texto:
@@ -10137,7 +10677,7 @@ Equipamento Açoite finntroll, manto pesado, meia armadura, símbolo sagrado de 
         },
         {
           chave: "altoSacerdoteFinntroll", nome: "Alto Sacerdote Finntroll", nd: "12", tipo: "Monstro (finntroll) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Sacerdote Finntroll",
           resumo: "Sacerdote Finntroll — A figura de pele lilás traz o cabelo escuro adornado em um penteado alto, cheio de joias.",
           texto:
@@ -10189,6 +10729,17 @@ Intolerância a Luz. O finntroll possui sensibilidade a luz e, quando exposto à
 — Chandrall, qareen clériga de Tenebra
 A figura de pele lilás traz o cabelo escuro adornado em um penteado alto, cheio de joias. A vestimenta negra lembra mantos sacerdotais, ainda que com aberturas reveladoras. Os adereços exibem um símbolo sagrado desconhecido, mas de alguma forma familiar. Não se pode dizer que trolls nobres sejam espiritualizados: quase todos são arrogantes e egocêntricos demais para crer em “poderes superiores”, muito menos devotar-se a eles. Além disso, eles regeneram ferimentos, dispensando curas milagrosas. Ainda assim, de forma moderada, os finntroll cultivam uma religião baseada na crença de que foram concebidos por Megalokk e Tenebra — chamados por eles Troldhaugen e Dearani, um rei brutal e uma rainha das trevas, impiedosos e sedutores. Acreditam homenagear esses deuses quando provam ao mundo a magnificência de sua maior obra (ou seja, eles mesmos). Erguem templos ostensivos para o casal divino, sob o pretexto de agradá-los, mas na verdade buscando alimentar os próprios egos. Aparentemente sem se importar muito com as motivações reais dos devotos finntroll, Tenebra e Megalokk de fato concedem poderes a seus clérigos. Estes, em retribuição, fazem peregrinações à superfície para capturar vítimas — que serão mais tarde sacrificadas em seus cultos. Resgatar prisioneiros raptados com esse propósito é trabalho comum para aventureiros.` },
       ],
+      reforcos: { pag: 345, nomes: [
+        { n: "Aranha Gigante", f: 1 },
+        { n: "Esqueleto", c: ["cavaloEsqueleto", "ogroEsqueleto", "ursoPardoEsqueleto", "giganteEsqueleto", "mamuteEsqueleto", "hidraEsqueleto", "reiTiranoEsqueleto", "necrodracoEsqueleto"] },
+        { n: "Esqueletos", f: 1 },
+        { n: "Ganchador", f: 1 },
+        { n: "Quimera", c: ["quimera"] },
+        { n: "Troll", f: 1 },
+        { n: "Trog", c: ["trogCombatente", "trogCacador", "trogReiDosTuneis", "trogAnaoBruto", "trogAnaoEremita"] },
+        { n: "Trog Anão", c: ["trogAnaoBruto", "trogAnaoEremita"] },
+        { n: "Troll das Cavernas", f: 1 },
+      ] },
     },
 
     // ── ❄ UIVANTES ────────────────────────────────────
@@ -10198,7 +10749,7 @@ A figura de pele lilás traz o cabelo escuro adornado em um penteado alto, cheio
       fichas: [
         {
           chave: "carcaju", nome: "Carcaju", nd: "1", tipo: "Animal Pequeno",
-          papel: '',
+          papel: "solo",
           resumo: "O animal de pelagem castanha e negra lembra um urso muito pequeno, do tamanho de um cão, mas com cauda grande e peluda.",
           texto:
 `Carcaju ND 1
@@ -10219,7 +10770,7 @@ Parceiro O carcaju é um parceiro especial (fortão) que fornece os benefícios 
         },
         {
           chave: "golemDeNorMedio", nome: "Golem de Nor Médio", nd: "1", tipo: "Construto Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Golem de Nor",
           resumo: "Golem de Nor — A criatura lembra um grande golem de formas angulosas e punhos enormes, como outros tantos que circulam pelo Reinado, mas com grandes diferenças.",
           texto:
@@ -10236,7 +10787,7 @@ Equipamento Escudo pesado, espada longa. Tesouro Nenhum.`
         },
         {
           chave: "golemDeNorGrande", nome: "Golem de Nor Grande", nd: "8", tipo: "Construto Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Golem de Nor",
           resumo: "Golem de Nor — A criatura lembra um grande golem de formas angulosas e punhos enormes, como outros tantos que circulam pelo Reinado, mas com grandes diferenças.",
           texto:
@@ -10254,7 +10805,7 @@ Equipamento Escudo pesado de gelo eterno, espada longa aumentada de gelo eterno.
         },
         {
           chave: "golemDeNorEnorme", nome: "Golem de Nor Enorme", nd: "10", tipo: "Construto Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Golem de Nor",
           resumo: "Golem de Nor — A criatura lembra um grande golem de formas angulosas e punhos enormes, como outros tantos que circulam pelo Reinado, mas com grandes diferenças.",
           texto:
@@ -10273,7 +10824,7 @@ Equipamento Escudo pesado de gelo eterno, espada longa aumentada de gelo eterno.
         },
         {
           chave: "mamute", nome: "Mamute", nd: "8", tipo: "Animal Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Mamute",
           resumo: "Mamute — A enorme besta lembra um elefante, ainda que bem maior e com uma farta pelagem escura.",
           texto:
@@ -10294,7 +10845,7 @@ Parceiro O mamute é um parceiro montaria (Enorme) que fornece os mesmos benefí
         },
         {
           chave: "lyuba", nome: "Lyuba", nd: "14", tipo: "Morto-vivo Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Mamute",
           resumo: "Mamute — A enorme besta lembra um elefante, ainda que bem maior e com uma farta pelagem escura.",
           texto:
@@ -10317,7 +10868,7 @@ Tesouro Padrão, mais couro do lyuba (CD 29 para extrair, reduz em 1 PM o custo 
         },
         {
           chave: "minotauroDaManada", nome: "Minotauro da Manada", nd: "2", tipo: "Humanoide (minotauro) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Minotauro da Manada",
           resumo: "Minotauro da Manada — Ele é grande e forte como qualquer minotauro, mas parece ainda maior, revestido de pelagem branca e muito longa, quase chegando ao chão.",
           texto:
@@ -10336,7 +10887,7 @@ Equipamento Gibão de peles, machado de batalha. Tesouro Padrão.`
         },
         {
           chave: "minotauroChefeDaManada", nome: "Minotauro Chefe da Manada", nd: "6", tipo: "Humanoide (minotauro) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Minotauro da Manada",
           resumo: "Minotauro da Manada — Ele é grande e forte como qualquer minotauro, mas parece ainda maior, revestido de pelagem branca e muito longa, quase chegando ao chão.",
           texto:
@@ -10356,7 +10907,7 @@ Equipamento Gibão de peles, machado de batalha preciso x2. Tesouro Padrão.`
         },
         {
           chave: "ogroFurioso", nome: "Ogro Furioso", nd: "5", tipo: "Humanoide (gigante) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Ogro Furioso",
           resumo: "Ogro Furioso — Os seres abrutalhados são altos como cabanas e fortes como cavalos, vestindo camadas de peles e ossos de animais que certamente eles próprios mataram.",
           texto:
@@ -10377,7 +10928,7 @@ Equipamento Gibão de peles, tacape aumentado. Tesouro Metade.`
         },
         {
           chave: "keylor", nome: "Keylor", nd: "9", tipo: "Humanoide (gigante) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Ogro Furioso",
           resumo: "Ogro Furioso — Os seres abrutalhados são altos como cabanas e fortes como cavalos, vestindo camadas de peles e ossos de animais que certamente eles próprios mataram.",
           texto:
@@ -10398,7 +10949,7 @@ Tesouro Padrão.`
         },
         {
           chave: "soterradoVagante", nome: "Soterrado vagante", nd: "2", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Aquilo que pareciam ser ossadas presas no gelo logo se revela como algo diferente e terrível.",
           texto:
 `Soterrado vagante ND 2
@@ -10420,7 +10971,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "stagh", nome: "Stagh", nd: "3", tipo: "Espírito (elemental) Pequeno",
-          papel: '',
+          papel: "lacaio",
           resumo: "A pequena criatura lembra uma aranha de cristal com um número incerto de patas, que terminam em pontas muito afiadas.",
           texto:
 `Stagh ND 3
@@ -10440,7 +10991,7 @@ Familiar Um stagh concede +1 na CD de suas magias de frio.`
         },
         {
           chave: "ursoDasNeves", nome: "Urso das Neves", nd: "5", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "A fera lembra um urso, mas bem maior que outros que vocês tenham visto.",
           texto:
 `Urso das Neves ND 5
@@ -10461,7 +11012,7 @@ Parceiro O urso das neves é um parceiro montaria (Grande) que fornece os benef�
         },
         {
           chave: "vermeDoGeloLarva", nome: "Verme do Gelo Larva", nd: "10", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Verme do Gelo",
           resumo: "Verme do Gelo — O monstro emerge do gelo sólido como se este fosse água.",
           texto:
@@ -10482,7 +11033,7 @@ Tesouro 2d4 doses de gelo extremo (CD 25 para extrair).`
         },
         {
           chave: "vermeDoGeloAdulto", nome: "Verme do Gelo Adulto", nd: "18", tipo: "Monstro Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Verme do Gelo",
           resumo: "Verme do Gelo — O monstro emerge do gelo sólido como se este fosse água.",
           texto:
@@ -10529,6 +11080,105 @@ Os seres abrutalhados são altos como cabanas e fortes como cavalos, vestindo ca
 `“Quer derrotar essa coisa? Então lute pelo que deseja, será um prazer lutar ao seu lado!”
 — Daxos, qareen arcanista bucaneiro
 O monstro emerge do gelo sólido como se este fosse água. Lembra um verme de proporções gigantescas, longo como várias carroças em fila, largo como um poço. O corpo anelado e pulsante tem coloração branco-azulada. Da cabeça emergem conjuntos de mandíbulas enormes, com dentes articulados que se dobram para dentro. Talvez o maior e mais perigoso monstro nas Uivantes — rivalizando até mesmo com os dragões —, o verme do gelo percorre as montanhas em busca de presas para saciar o apetite constante. A criatura se desloca livremente sob qualquer terreno gelado, até mesmo gelo e rocha, emergindo apenas para atacar. Dizem que grande parte dos túneis e masmorras nas Uivantes não passam de antigas trilhas deixadas pela criatura. De onde vieram, como surgiram, não é conhecido. São crias de Megalokk, quase todos concordam. Existe, no entanto, uma lenda sobre serem produto de alguma civilização antiga; uma expedição de aventureiros, comandada por um nobre imprudente, teria libertado estes gigantes de sua milenar prisão congelada. Capaz de devorar um mamute inteiro por vez, o verme pode surgir sem aviso onde houver considerável quantidade de carne (como um bando de aventureiros). Povos nativos usam amuletos abençoados que dizem afastar o monstro; uma vez nas Uivantes, viajantes experientes consideram prudente encontrar logo um mascate local para adquirir um destes. Não é sabido se existe apenas um ou vários destes monstros. Estudos da arcanista Drejane Challendar oferecem uma possibilidade aterradora: todos os vermes encontrados até o momento são larvas de uma criatura muitíssimo maior, ainda desconhecida. Por enquanto.` },
+      ],
+      reforcos: { pag: 355, nomes: [
+        { n: "Bandido", c: ["bandidoComum", "bandidoLigeiro", "bandidoSelvagem", "chefeBandido"] },
+        { n: "Capanga", c: ["ogroCapanga", "capanga", "jagunco", "capangaMinotauro", "gnollCapanga", "kaijinCapanga", "nezumiCapanga"] },
+        { n: "Cavalo Glacial", c: ["cavaloGlacial"] },
+        { n: "Chefe do Crime", c: ["chefeBandido", "chefeDeGangue", "chefeDeQuadrilha"] },
+        { n: "Dragão Adulto", c: ["dragaoAdultoDaTirania", "dragaoAdultoDosSegredos"] },
+        { n: "Dragão Bicéfalo", c: ["dragaoBicefalo"] },
+        { n: "Dragão Feral", c: ["dragaoFeral"] },
+        { n: "Dragão Menor", c: ["dragaoFilhoteDoBosque", "dragaoFilhoteDosRios", "ninhadaDeDragoesFilhotes", "dragaoJovemDaProtecao", "dragaoJovemDoOcaso"] },
+        { n: "Dragão-Real", c: ["dragaoBicefalo"] },
+        { n: "Dragão Venerável", c: ["dragaoVeneravelDaEquidade", "dragaoVeneravelDosRecifes"] },
+        { n: "Dragões", f: 1 },
+        { n: "Elemental do Ar", q: "Elemental do Ar" },
+        { n: "Zumbis", f: 1 },
+      ] },
+    },
+
+    // ── 📎 FORA DO CAPÍTULO 1 ──────────────────────────
+    {
+      chave: "foracap", nome: "Fora do Capítulo 1", icone: "📎", cor: "#6a6a6a",
+      intro: "As três criaturas que o Apêndice C do livro lista mas que não estão no Capítulo 1: elas aparecem mais adiante, junto do material que as usa. O Bispo do Forte Sagrado é a versão reforçada do Bispo de Guerra da Igreja de Arsenal, com um templo consagrado que dá quatro elementos de cenário; o dejeto vivo é uma gosma de masmorra; o cardume de aquin’ne é o bando do elemental da água que abre a seção Elementais. O Caique colou os três statblocks em 27/08/2026, a pedido — o texto de lore de cada uma ficou nas páginas originais e não veio junto.",
+      fichas: [
+        {
+          chave: "bispoDoForteSagrado", nome: "Bispo do Forte Sagrado", nd: "10", tipo: "Humanoide (humano) Médio",
+          alias: "Bispo de Guerra",
+          papel: "especial",
+          resumo: "Versão reforçada do Bispo de Guerra da Igreja de Arsenal (ND 8): mesmas magias, mesmo equipamento e o mesmo Ódio Puro purista, com números…",
+          texto:
+`Bispo do Forte Sagrado ND 10
+Versão reforçada do Bispo de Guerra da Igreja de Arsenal (ND 8): mesmas magias, mesmo equipamento e o mesmo Ódio Puro purista, com números maiores e a habilidade Templo, que traz quatro elementos de cenário — fonte curativa, linhas místicas, selo místico e torreta. Não tem parágrafo de lore: é o exemplo de Chefe Final do Capítulo 2 (p. 371) — os quatro elementos da habilidade Templo são a regra de arena da p. 370 aplicada.
+Humanoide (humano) Médio
+Iniciativa +10, Percepção +16
+Defesa 30, Fort +17, Ref +10, Von +28, imunidade a medo, maior que a morte, redução de dano 15
+Pontos de Vida 460
+Deslocamento 6m (4q)
+Pontos de Mana 82
+Corpo a Corpo Martelo de guerra x2 +26 (1d8+10, x3).
+Ódio Puro Como um purista, o bispo do forte sagrado recebe +5 em testes de Vontade quando está seguindo ordens de um superior (qualquer purista com ND maior) e +2 em rolagens de dano contra humanoides não humanos.
+Prece de Combate (+2 PM) Quando lança uma magia divina com tempo de conjuração de uma ação padrão em si mesmo, o bispo pode lançá-la como uma ação de movimento.
+✦ Símbolo Sagrado Energizado (Movimento, 1 PM) O bispo energiza seu símbolo sagrado. Até o fim da cena, ele emite uma luz avermelhada que ilumina como uma tocha e, enquanto estiver sendo empunhado, reduz o custo de magias divinas em –1 PM.
+Templo O bispo controla um templo devotado a Arsenal. Esse templo está sob efeito da magia Consagrar e, dentro dele, devotos de Arsenal recebem +2 na Defesa e em testes de perícia (já contabilizado). Uma magia Profanar anula esses efeitos por 1d6 rodadas.
+✦ • Fonte Curativa. Energias místicas fornecem cura acelerada 10 para o bispo. Um personagem pode gastar duas ações completas e fazer um teste de Religião (CD 30) para gerar um pulso curativo que cura 10 PV em todos os personagens e desativa a fonte.
+✦ • Linhas Místicas. O bispo recebe +2 na CD de suas habilidades (já contabilizado) e recupera 2 PM no início de cada um de seus turnos. Um personagem pode gastar uma ação padrão e fazer um teste de Misticismo (CD 30) para receber esse benefício no lugar do bispo por 1 rodada (uma vez por cena por personagem).
+✦ • Selo Místico. A arena possui um símbolo místico que armazena a magia Soco de Arsenal. O bispo pode gastar uma ação de movimento para lançar o efeito básico dessa magia sem gastar PM (uma criatura em alcance médio sofre 4d6+3 pontos de dano de impacto e é empurrada 3m na direção oposta; Fort CD 30 reduz o dano à metade e evita o empurrão). Um personagem pode desativar o selo com uma ação completa e um teste de Misticismo (CD 30).
+• Torreta. O bispo pode gastar uma ação de movimento para ativar a torreta, que dispara contra uma criatura em alcance médio (ataque +26, dano 1d8+10 impacto, x3). Um personagem pode desativar a torreta com uma ação completa e um teste de Ladinagem (CD 30).
+Magias Como um clérigo de Arsenal de 10º nível (CD 30).
+• Curar Ferimentos (Padrão, 8 PM) Uma criatura adjacente cura 9d8+9 PV.
+• Dissipar Magia (Padrão, 3 PM) O bispo escolhe uma criatura, objeto ou esfera de 3m em alcance médio e faz um teste de Misticismo. Todas as magias nesse alvo com CD igual ou menor que o resultado do teste são dissipadas.
+• Escudo da Fé (Reação, 3 PM) Quando uma criatura em alcance curto sofre um ataque, ela recebe +3 na Defesa por 1 turno.
+• Oração (Padrão, 11 PM, sustentada) O bispo e seus aliados em alcance curto recebem +4 em testes de perícia e rolagens de dano, e todos os inimigos em alcance curto recebem –4 em testes de perícia e rolagens de dano.
+• Soco de Arsenal (Padrão, 7 PM) Uma criatura em alcance médio sofre 6d6+3 pontos de dano de impacto e é empurrada 3m na direção oposta (Fort reduz à metade e evita o empurrão).
+• Sopro da Salvação (Padrão, 8 PM) O bispo sopra um cone de 9m que cura 3d8+3 PV e remove uma das seguintes condições dos aliados na área: abalado, atordoado, apavorado, alquebrado, cego, confuso, debilitado, enfeitiçado, enjoado, esmorecido, exausto, fascinado, fatigado, fraco, frustrado, lento, paralisado, pasmo e surdo.
+For 3, Des 0, Con 4, Int 2, Sab 6, Car 1
+Perícias Guerra +18, Misticismo +14, Religião +18.
+Equipamento Armadura completa ajustada reforçada, escudo leve reforçado, martelo de guerra, símbolo sagrado de Arsenal, poção de Velocidade. Tesouro Padrão.`
+        },
+        {
+          chave: "dejetoVivo", nome: "Dejeto Vivo", nd: "6", tipo: "Monstro Grande",
+          papel: "solo",
+          resumo: "Gosma de masmorra do tamanho de um cavalo, que engole e digere quem agarra e deixa enjoado quem chega perto.",
+          texto:
+`Dejeto Vivo ND 6
+Gosma de masmorra do tamanho de um cavalo, que engole e digere quem agarra e deixa enjoado quem chega perto. Não tem parágrafo de lore: é a criatura construída passo a passo no exemplo de criação de ameaça do Capítulo 2 (p. 385–386).
+Monstro Grande
+Iniciativa +2, Percepção +6, percepção às cegas (médio)
+Defesa 24, Fort +18, Ref +6, Von +12, resistência a alquimia e magia +5
+Pontos de Vida 280
+Deslocamento 6m (4q), escalada 6m (4q), natação 6m (4q)
+Corpo a Corpo Três pseudópodes +20 (1d8+10 impacto, x2, mais 1d8 ácido).
+Agarrar Aprimorado (Livre) Pseudópode (teste +22).
+Engolir (Padrão) No início de cada um dos turnos do dejeto vivo, a criatura engolida sofre 2d6+10 pontos de dano de ácido. Ela pode escapar causando um total de 20 pontos de dano ao interior do dejeto (Defesa 10).
+Odor Nauseabundo Uma criatura que comece seu turno em alcance curto do dejeto vivo fica enjoada pela cena (Fort CD 22 evita e a criatura não pode mais ficar enjoada por esta habilidade até o fim da cena).
+For 4, Des −1, Con 5, Int −5, Sab 1, Car 0
+Tesouro Padrão (exceto itens alquímicos), 1d6 doses de ácido (CD 21 para extrair).`
+        },
+        {
+          chave: "cardumeDeAquinNe", nome: "Cardume de Aquin’ne", nd: "5", tipo: "Espírito (elemental) Médio",
+          papel: "lacaio",
+          resumo: "O bando do aquin’ne, o elemental da água que abre a seção Elementais: afoga quem agarra e varre a linha de frente.",
+          texto:
+`Cardume de Aquin’ne ND 5
+O bando do aquin’ne, o elemental da água que abre a seção Elementais: afoga quem agarra e varre a linha de frente. Não tem parágrafo de lore: é a criatura construída no exemplo de criação de bando do Capítulo 2 (p. 389), a partir do aquin’ne da p. 88.
+Espírito (elemental) Médio
+Iniciativa +5, Percepção +5, visão no escuro
+Defesa 23, Fort +14, Ref +11, Von +6, imunidade a acertos críticos e efeitos de atordoamento, cansaço, frio, metabolismo e paralisia, vulnerabilidade a fogo
+Pontos de Vida 40
+Deslocamento 9m (6q), natação 15m (10q)
+Corpo a Corpo [Bando] Tentáculo hídrico x2 +19 (4d4+12 corte).
+Afogar Uma criatura agarrada pelo cardume de aquin’ne é considerada submersa até se soltar.
+Agarrar Aprimorado (Livre) Tentáculo hídrico (teste +21).
+Redemoinho de Maresia (Padrão) O cardume toca um objeto adjacente, que perde 10 PV (Ref CD 20 evita).
+Varrer (Livre) Uma vez por rodada, quando o cardume de aquin’ne faz um ataque corpo a corpo e reduz os pontos de vida do alvo para 0 ou menos, pode realizar um ataque adicional contra outra criatura dentro do seu alcance.
+For 4, Des 2, Con 2, Int –2, Sab 2, Car –2
+Perícias Atletismo +7 (+15 para nadar), Furtividade +3 (+13 na água).
+Tesouro 2d4 doses de éter elemental (frio) (CD 20 para extrair).`
+        },
+      ],
+      regras: [
       ],
     },
   ],

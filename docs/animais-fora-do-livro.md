@@ -2,8 +2,13 @@
 
 Anotação de trabalho sobre a sub-aba **🐎 Animais & Montarias** (`js/animais-data.js`).
 Começou em **26/08/2026**, quando o bestiário de *Ameaças de Arton* tinha sido importado
-até a seção Povos-Trovão; atualizada em **27/08/2026**, com o livro inteiro colado
-(426 fichas, 30 seções).
+até a seção Povos-Trovão; atualizada em **27/08/2026** com o livro inteiro colado e em
+**28/08/2026** contra o **PDF** do livro (430 fichas, 31 seções).
+
+A régua nova é a **Tabela A-2: Parceiros**, p. 417 — um índice de 69 parceiros com tipo e
+página, que eu não conhecia. A aba concorda com ela em tudo, **menos no Platan**: a A-2 diz
+"Montaria (Médio)" e o statblock (p. 322) diz "montaria (Grande)". A ficha é `Animal
+Grande`, então a A-2 é que errou; a aba está certa.
 
 O cruzamento entre a aba e o livro é automático:
 
@@ -27,41 +32,42 @@ A lista de dúvidas do livro fechado está em [duvidas-ameacas-de-arton.md](duvi
 
 ---
 
-## ⚠ 1. Duas entradas marcadas "Ameaças de Arton" que não existem no livro
+## ✅ 1. As duas entradas "sem fonte" — resolvidas no PDF em 28/08/2026
 
-Eram oito quando o TXT ia só até a letra P. As últimas levas resolveram seis delas —
-**Búfalo-de-Guerra** e **Hippossauro** vieram em Reinos de Moreania, **Corcel de Comando**
-em Puristas, **Platan** e **Selako** em Sob as Ondas, **Urso das Neves** em Uivantes, e
-todos os números da aba bateram com os do livro.
+Eram oito quando o TXT ia só até a letra P. As levas resolveram seis —
+**Búfalo-de-Guerra** e **Hippossauro** em Reinos de Moreania, **Corcel de Comando**
+em Puristas, **Platan** e **Selako** em Sob as Ondas, **Urso das Neves** em Uivantes.
 
-Sobraram duas, e agora que o capítulo acabou não há mais leva para esperar:
+As duas últimas ficaram abertas porque eu procurei no TXT colado, e o TXT só traz
+statblocks. **Abrindo o PDF do livro, as duas apareceram** — e em nenhum dos dois casos
+os números da aba estavam errados.
 
-### Troll (Grande)
+### Troll → **Troll Montaria** (Grande) · a fonte estava certa
 
-O livro **não tem** ficha "Troll" com linha *Parceiro*. O único troll-montaria que ele
-descreve é o do **Cavaleiro Finntroll** (ND 7, seção Trolls Nobres):
+Eu procurei uma *ficha* de troll com linha `Parceiro` e não achei, e concluí errado. A
+regra não está numa ficha: está numa **caixa lateral, "Troll Montaria", na p. 344**, ao
+lado do Cavaleiro Finntroll. O **Apêndice A, Tabela A-2** (p. 417) confirma, listando
+"Troll montaria — Montaria (Grande) — 345".
 
-> **Corcel Troll** O cavaleiro finntroll cavalga um troll treinado, um parceiro montaria
-> Grande. Enquanto estiver montado, seu deslocamento se torna 12m, ele recebe uma ação de
-> movimento extra (apenas para se deslocar), os seguintes ataques (em adição ao seu açoite)
-> e Dilacerar.
+> Nas raras ocasiões que um cavaleiro finntroll é derrotado e seu troll sobrevive, um
+> personagem treinado em Adestramento pode conquistar a criatura e transformá-la em uma
+> valiosa montaria. […] **Iniciante:** deslocamento 12m e, uma vez por rodada, +1d8 em uma
+> rolagem de dano corpo a corpo. **Veterano:** o bônus vai para +1d10 e você recebe +2 em
+> testes para agarrar e derrubar. **Mestre:** o bônus vai para +2d8 e o de agarrar e
+> derrubar, para +5.
 
-Isso é o perfil montado **do NPC**, não uma tabela iniciante/veterano/mestre. A ficha do
-troll em si o livro manda ver no Tormenta20, p. 308. Os benefícios que estão hoje na aba
-(+1d8 → +1d10 → +2d8 de dano, mais agarrar/derrubar) continuam sem fonte que eu tenha
-conseguido achar.
+Bate número por número com a aba. A entrada foi **renomeada para "Troll Montaria"** (o
+nome do livro) e ganhou um `obs` com a página e a condição de domar.
 
-### Cão de Caça (Médio ou Pequeno)
+### Cão de Caça (Médio ou Pequeno) → **Tormenta 20, p. 262**
 
-A expressão "cão de caça" **não aparece uma única vez** no TXT do livro. A entrada de
-`ANIMAIS_COMPRA` (T$ 150) está certa — o texto dela vem do Tormenta20 básico. Só a
-entrada do **bestiário de montarias** é que está sem origem:
+Não é deste livro mesmo — é da lista de montarias do capítulo de parceiros do
+**Tormenta20 básico**, e o texto de lá é palavra por palavra o que estava na aba
+(9 m + faro → 12 m + 2 na Defesa → derrubar como ação livre). Só a `fonte` mudou.
 
-- **Iniciante:** Deslocamento 9 m, você pode usar faro e recebe uma ação de movimento extra por turno (apenas para se deslocar).
-- **Veterano:** Como acima, mas deslocamento 12 m e +2 na Defesa.
-- **Mestre:** Como acima; além disso, uma vez por rodada, ao acertar um ataque corpo a corpo, manobra derrubar como ação livre.
-
-**Decidir:** manter as duas com a fonte trocada (Wiki? outro livro?) ou tirar do sistema.
+> **Nota sobre o `_conferir-montarias.js`:** ele lista **Troll Montaria** em *"na aba, sem
+> ficha no TXT"*. É esperado — o script cruza a aba com as linhas `Parceiro` das fichas, e
+> a regra do troll é caixa lateral, que o TXT não traz.
 
 ---
 
@@ -89,11 +95,18 @@ Três parceiros novos, todos **parceiro especial**:
 | **Perdigueiro Troll** | perseguidor | Trolls Nobres (ND 1) |
 
 Mais o **Cavalo de Carga**, que ganhou entrada própria com o tamanho
-`— (parceiro besta de carga)`. É uma categoria do livro que a aba não tinha: o animal
-não dá os três degraus iniciante/veterano/mestre, só carrega peso. O texto da regra está
-na p. 416 de *Ameaças de Arton*, fora do capítulo de ameaças, e não veio em TXT nenhum —
-por isso a entrada (e a `obs` do **Trobo**, que serve para as duas coisas) traz um `OBS:`
-explicando a categoria e apontando a página, em vez da regra literal.
+`— (parceiro besta de carga)`. É uma categoria nova, criada neste livro.
+
+⚠ **Corrigido em 28/08/2026:** o `OBS:` dizia que a besta de carga *"não tem os três
+degraus"*. **Tem** — e os três são a capacidade de carga. A regra, na p. 416 (Apêndice A),
+é esta:
+
+> **Novo Tipo de Parceiro: Besta de Carga** — Uma criatura capaz de carregar peso, como um
+> boi, burro ou mula. **Iniciante:** pode carregar 10 espaços de itens. **Veterano:** 15
+> espaços. **Mestre:** 20 espaços de itens.
+
+O texto real substituiu o `OBS:` no **Cavalo de Carga** e no **Trobo**, que serve para as
+duas coisas.
 
 E o **Corcel de Comando**, que já estava na aba sem ficha para conferir, teve confirmada
 a regra mais estranha dele: *usa Pilotagem no lugar de Cavalgar*. É a única montaria do

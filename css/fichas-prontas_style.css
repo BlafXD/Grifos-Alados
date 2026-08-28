@@ -134,6 +134,70 @@
 }
 .fp-comuns em { opacity: 0.85; }
 
+/* ── ⚔ CAIXA DE REFORÇOS ───────────────────────────────────────────── */
+/* A caixa que fecha cada seção no livro: criaturas de OUTRAS seções que
+   combinam com o tema. Vem fechada — é sugestão de encontro, não regra. */
+.fp-reforcos {
+  margin: 0 0 1rem;
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  border-left: 3px solid var(--cor, var(--rust));
+}
+.fp-reforcos-cab {
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--ink-faded);
+  list-style: none;
+}
+.fp-reforcos-cab::-webkit-details-marker { display: none; }
+.fp-reforcos-cab strong { color: var(--rust-dark); font-family: 'Cinzel', serif; letter-spacing: 0.05em; }
+.fp-reforcos-cab:hover strong { color: var(--rust); }
+.fp-reforcos-qtd { margin-left: 0.4rem; font-size: 0.68rem; opacity: 0.75; }
+.fp-reforcos-ajuda {
+  margin: 0;
+  padding: 0 0.75rem 0.5rem;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--ink-faded);
+}
+.fp-reforcos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 0 0.75rem 0.7rem;
+}
+.fp-ref {
+  padding: 0.16rem 0.45rem;
+  background: var(--parchment);
+  border: 1px solid var(--gold-dim);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+button.fp-ref:hover {
+  background: var(--cor, var(--rust));
+  border-color: var(--cor, var(--rust));
+  color: var(--parchment);
+}
+/* nome que o livro marca com asterisco: não está neste livro, não tem link */
+.fp-ref--fora {
+  border-style: dashed;
+  color: var(--ink-faded);
+  cursor: default;
+  opacity: 0.75;
+}
+.fp-ref--fora sup { font-size: 0.6rem; }
+
+/* faixa de "mostrando só as fichas de X" */
+.fp-selecao {
+  padding: 0.35rem 0.6rem;
+  background: var(--gold-pale);
+  border-left: 3px solid var(--gold-dim);
+  color: var(--ink);
+}
+
 /* ── CARD DE FICHA ─────────────────────────────────────────────────── */
 .fp-sub {
   font-family: 'Cinzel', serif;
