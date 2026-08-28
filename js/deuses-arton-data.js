@@ -17,9 +17,12 @@
 //    chave    — id estável (não mudar; a aba e o modal usam)
 //    nome/nd  — repetidos fora do texto para listas e filtros
 //    tipo     — linha de tipo e tamanho (só exibição em listas)
-//    papel    — 'solo' | 'lacaio' | 'especial'. No livro é um ÍCONE, que
-//               não sobrevive à cópia do PDF: vem vazio, e o bestiário
-//               assume "lacaio" até o mestre trocar na ficha.
+//    papel    — 'solo' | 'lacaio' | 'especial'. No livro é um ÍCONE
+//               VETORIAL ao lado do nome: não é caractere nenhum, e por
+//               isso nunca saiu em cópia de texto. Foi lido do PDF em
+//               28/08/2026 assinando a geometria do desenho. Este livro
+//               não repete a legenda dos papéis (é suplemento), então os
+//               desenhos de referência vêm do Tormenta 20 — são os mesmos.
 //    deus     — a divindade de quem este é o avatar
 //    subgrupo — "Deus, Epíteto": aponta para o quadro de dados dele em
 //               `regras`, que a aba mostra dentro do card da ficha
@@ -69,7 +72,7 @@ window.FICHAS_DEUSES_ARTON = {
       fichas: [
         {
           chave: "avatarDeAharadak", nome: "Avatar de Aharadak", nd: "S", tipo: "Monstro (lekael) Colossal",
-          papel: '',
+          papel: "solo",
           deus: "Aharadak", subgrupo: "Aharadak, Deus da Tormenta",
           resumo: "O avatar mais comum de Aharadak é uma monstruosidade do tamanho de um castelo, coberta de carapaça, pedaços de carne esponjosa e bocarras…",
           texto:
@@ -95,7 +98,7 @@ Tesouro 2d6 peças rubras (CD 35 para extrair, cada peça vale T$ 1.500 para fab
         },
         {
           chave: "avatarDeAllihanna", nome: "Avatar de Allihanna", nd: "20", tipo: "Espírito Enorme",
-          papel: '',
+          papel: "solo",
           deus: "Allihanna", subgrupo: "Allihanna, Deusa da Natureza",
           resumo: "Allihanna talvez seja a divindade mais variada em sua forma de avatar.",
           texto:
@@ -125,7 +128,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "avatarDeArsenal", nome: "Avatar de Arsenal", nd: "18", tipo: "Espírito Médio",
-          papel: '',
+          papel: "solo",
           deus: "Arsenal", subgrupo: "Arsenal, Deus da Guerra",
           resumo: "Arsenal compreende que sua ascensão é ainda recente e precária, adotando posturas cautelosas em suas intervenções no mundo mortal.",
           texto:
@@ -149,7 +152,7 @@ Equipamento Armadura de Arsenal, Holy Avenger (veja p. 247), Martelo dos Trovõe
         },
         {
           chave: "avatarDeAzgher", nome: "Avatar de Azgher", nd: "S", tipo: "Espírito Médio",
-          papel: '',
+          papel: "solo",
           deus: "Azgher", subgrupo: "Azgher, Deus-Sol",
           resumo: "Viajantes planares experientes afirmam que o astro-rei visto nos céus de Arton não é realmente Azgher, mas seu reino divino, Solaris…",
           texto:
@@ -176,7 +179,7 @@ Equipamento Labareda, Mensageiro do Deserto e Raio de Sol. Tesouro Nenhum.`
         },
         {
           chave: "avatarDeHyninn", nome: "Avatar de Hyninn", nd: "19", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           deus: "Hyninn", subgrupo: "Hyninn, Deus da Trapaça",
           resumo: "A forma mundana de Hyninn varia dependendo da missão a ser confiada e da peça a ser pregada.",
           texto:
@@ -204,7 +207,7 @@ Equipamento Falso Amigo. Tesouro Nenhum.`
         },
         {
           chave: "avatarDeKallyadranoch", nome: "Avatar de Kallyadranoch", nd: "20", tipo: "Espírito (dragão) Médio",
-          papel: '',
+          papel: "solo",
           deus: "Kallyadranoch", subgrupo: "Kallyadranoch, Deus dos Dragões",
           resumo: "Mesmo enquanto prisioneiro em um corpo mortal élfico, Kallyadranoch voltou a ser um deus maior, membro do Panteão.",
           texto:
@@ -233,7 +236,7 @@ Tesouro Triplo.`
         },
         {
           chave: "avatarDeKhalmyr", nome: "Avatar de Khalmyr", nd: "S", tipo: "Espírito Médio",
-          papel: '',
+          papel: "solo",
           deus: "Khalmyr", subgrupo: "Khalmyr, Deus da Justiça",
           resumo: "O avatar mais comum de Khalmyr lembra sua representação habitual: um imenso e poderoso guerreiro humano ou anão, de rosto severo, vestindo…",
           texto:
@@ -260,7 +263,7 @@ Equipamento Balas x20, baluarte anão, Rhumnam. Tesouro Nenhum.`
         },
         {
           chave: "avatarDeLena", nome: "Avatar de Lena", nd: "20", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           deus: "Lena", subgrupo: "Lena, Deusa da Vida",
           resumo: "Por muito tempo, dizia-se que Lena visitava Arton como uma menina de 9 anos.",
           texto:
@@ -282,7 +285,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "avatarDeLinWu", nome: "Avatar de Lin-Wu", nd: "19", tipo: "Espírito (dragão) Enorme",
-          papel: '',
+          papel: "solo",
           deus: "Lin-Wu", subgrupo: "Lin-Wu, Deus da Honra",
           resumo: "No Império de Jade, Lin-Wu costuma assumir uma entre duas aparências: um imenso dragão celestial, serpenteando nos céus em cores…",
           texto:
@@ -309,7 +312,7 @@ Equipamento Kaminari. Tesouro Nenhum.`
         },
         {
           chave: "avatarDeMarah", nome: "Avatar de Marah", nd: "19", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           deus: "Marah", subgrupo: "Marah, Deusa da Paz e do Amor",
           resumo: "Antigamente, Marah era representada como uma mulher solene, em vestes brancas que brilhavam com luz própria.",
           texto:
@@ -333,7 +336,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "avatarDeMegalokk", nome: "Avatar de Megalokk", nd: "20", tipo: "Monstro (kaiju) Colossal",
-          papel: '',
+          papel: "solo",
           deus: "Megalokk", subgrupo: "Megalokk, Deus dos Monstros",
           resumo: "Devido à relativa facilidade em enfurecer este deus, o avatar de Megalokk pode às vezes ser invocado por seus clérigos e outros…",
           texto:
@@ -365,7 +368,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "avatarDeNimb", nome: "Avatar de Nimb", nd: "S+", tipo: "Espírito (Nimb) Médio",
-          papel: '',
+          papel: "solo",
           deus: "Nimb", subgrupo: "Nimb, Deus do Caos",
           resumo: "Nimb raramente se manifesta da mesma forma duas vezes.",
           texto:
@@ -399,7 +402,7 @@ Tesouro Padrão.`
         },
         {
           chave: "avatarDoOceano", nome: "Avatar do Oceano", nd: "S", tipo: "Espírito Médio",
-          papel: '',
+          papel: "solo",
           deus: "Oceano", subgrupo: "Oceano, Deus dos Mares",
           resumo: "Quando ainda decidia visitar o mundo material, Oceano adotava a aparência de um galante elfo-do-mar, ricamente ornamentado com tesouros de…",
           texto:
@@ -427,7 +430,7 @@ Equipamento Dente do Leviatã. Tesouro Dobro.`
         },
         {
           chave: "avatarDeSszzaas", nome: "Avatar de Sszzaas", nd: "19", tipo: "Espírito Médio",
-          papel: '',
+          papel: "solo",
           deus: "Sszzaas", subgrupo: "Sszzaas, Deus da Traição",
           resumo: "Normalmente, Sszzaas não quer ser reconhecido.",
           texto:
@@ -453,7 +456,7 @@ Equipamento Inoculadora. Tesouro Nenhum.`
         },
         {
           chave: "avatarDeTannaToh", nome: "Avatar de Tanna-Toh", nd: "20", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           deus: "Tanna-Toh", subgrupo: "Tanna-Toh, Deusa do Conhecimento",
           resumo: "A aparência favorita de Tanna-Toh ao visitar Arton é a de uma anciã munida de várias bolsas pesadas de pergaminhos.",
           texto:
@@ -477,7 +480,7 @@ Equipamento Cajado do poder, Robe Professoral. Tesouro Nenhum.`
         },
         {
           chave: "avatarDeTenebra", nome: "Avatar de Tenebra", nd: "S", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "especial",
           deus: "Tenebra", subgrupo: "Tenebra, Deusa das Trevas",
           resumo: "Quando vem a este mundo, Tenebra surge como uma vampira extremamente atraente ou, se não quiser ser reconhecida, adota a forma de uma velha…",
           texto:
@@ -504,7 +507,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "avatarDeThwor", nome: "Avatar de Thwor", nd: "18", tipo: "Humanoide (bugbear) Enorme",
-          papel: '',
+          papel: "solo",
           deus: "Thwor", subgrupo: "Thwor, Deus dos Goblinoides",
           resumo: "Não se tem notícia de um avatar de Thwor.",
           texto:
@@ -536,7 +539,7 @@ Equipamento Machado de guerra magnífico gigante atroz de adamante. Tesouro Dobr
         },
         {
           chave: "avatarDeThyatis", nome: "Avatar de Thyatis", nd: "19", tipo: "Espírito Enorme",
-          papel: '',
+          papel: "solo",
           deus: "Thyatis", subgrupo: "Thyatis, Deus da Ressurreição e da Profecia",
           resumo: "Muitos dizem que avistar um avatar de Thyatis é garantia de morte — seguida ou não de ressurreição.",
           texto:
@@ -562,7 +565,7 @@ Tesouro Pena flamejante (se o portador da pena morrer, ela é automaticamente co
         },
         {
           chave: "avatarDeValkaria", nome: "Avatar de Valkaria", nd: "S+", tipo: "Espírito (humano) Médio",
-          papel: '',
+          papel: "solo",
           deus: "Valkaria", subgrupo: "Valkaria, Deusa da Aventura",
           resumo: "Exceto talvez por Nimb, nenhuma outra divindade usa aparências tão variadas quanto Valkaria.",
           texto:
@@ -595,7 +598,7 @@ Equipamento Valkaria costumava empregar como arma pessoal o Desbravador, um mang
         },
         {
           chave: "avatarDeWynna", nome: "Avatar de Wynna", nd: "S", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           deus: "Wynna", subgrupo: "Wynna, Deusa da Magia",
           resumo: "Wynna visita Arton com razoável frequência.",
           texto:
