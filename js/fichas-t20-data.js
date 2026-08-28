@@ -16,9 +16,12 @@
 //    chave   — id estável (não mudar; a aba e o modal usam)
 //    nome/nd — repetidos fora do texto para listas e filtros
 //    tipo    — linha de tipo e tamanho (só exibição em listas)
-//    papel   — 'solo' | 'lacaio' | 'especial'. No livro é um ÍCONE, que
-//              não sobrevive à cópia do PDF: vem vazio, e o bestiário
-//              assume "lacaio" até o mestre trocar na ficha.
+//    papel   — 'solo' | 'lacaio' | 'especial'. No livro é um ÍCONE
+//              VETORIAL ao lado do nome: não é caractere nenhum, e por
+//              isso nunca saiu em cópia de texto. Foi lido do PDF em
+//              28/08/2026 assinando a geometria do desenho e batendo com
+//              a legenda do livro — as 80 linhas de tipo conferem uma a
+//              uma, na ordem de leitura das páginas.
 //    resumo  — uma linha para o modal de inserção
 //    texto   — statblock completo; PRIMEIRA linha = "Nome ND X", depois
 //              descrição, linha de tipo, e o bloco do livro.
@@ -53,7 +56,7 @@ window.FICHAS_T20 = {
       fichas: [
         {
           chave: "glop", nome: "Glop", nd: "1/4", tipo: "Monstro Pequeno",
-          papel: '',
+          papel: "lacaio",
           resumo: "Pequenas gosmas esverdeadas com formato de gota que perambulam pelos corredores de masmorras.",
           texto:
 `Glop ND 1/4
@@ -69,7 +72,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "ratoGigante", nome: "Rato Gigante", nd: "1/4", tipo: "Animal Pequeno",
-          papel: '',
+          papel: "lacaio",
           resumo: "Esse roedor de pelagem grossa, olhos vermelhos e presas amareladas atinge até um metro de comprimento.",
           texto:
 `Rato Gigante ND 1/4
@@ -86,7 +89,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "orcCombatente", nome: "Orc combatente", nd: "1/2", tipo: "Humanoide (orc) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Orcs",
           resumo: "Orcs — Estes humanoides monstruosos podem ser encontrados em muitos pontos de Arton, em pequenos bandos ou vastas tribos.",
           texto:
@@ -103,7 +106,7 @@ Equipamento Couro batido, maça. Tesouro Metade.`
         },
         {
           chave: "orcChefe", nome: "Orc Chefe", nd: "2", tipo: "Humanoide (orc) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Orcs",
           resumo: "Orcs — Estes humanoides monstruosos podem ser encontrados em muitos pontos de Arton, em pequenos bandos ou vastas tribos.",
           texto:
@@ -123,7 +126,7 @@ Tesouro Padrão.`
         },
         {
           chave: "orcMutante", nome: "Orc mutante", nd: "5", tipo: "Humanoide (orc) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Orcs",
           resumo: "Orcs — Estes humanoides monstruosos podem ser encontrados em muitos pontos de Arton, em pequenos bandos ou vastas tribos.",
           texto:
@@ -141,7 +144,7 @@ Equipamento Machado de guerra. Tesouro Padrão.`
         },
         {
           chave: "aranhaGigante", nome: "Aranha Gigante", nd: "2", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Grandes como cavalos, estas aranhas capturam suas vítimas com teia, disparando-a ou tecendo uma armadilha em alguma passagem, para então par",
           texto:
 `Aranha Gigante ND 2
@@ -160,7 +163,7 @@ Tesouro 1d4 doses de veneno de aranha gigante (CD 17 para extrair, T$ 45 cada do
         },
         {
           chave: "gargula", nome: "Gárgula", nd: "2", tipo: "Construto Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Esses predadores furtivos se mantêm imóveis no alto de ruínas, castelos, catedrais e outros prédios, fingindo ser estátuas.",
           texto:
 `Gárgula ND 2
@@ -177,7 +180,7 @@ Tesouro Padrão.`
         },
         {
           chave: "guerreiroDeChifres", nome: "Guerreiro de Chifres", nd: "3", tipo: "Espírito (demônio) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Numerosas entidades malignas invadem Arton para corromper, torturar ou destruir os mortais.",
           texto:
 `Guerreiro de Chifres ND 3
@@ -195,7 +198,7 @@ Equipamento Machado de guerra cruel. Tesouro Padrão.`
         },
         {
           chave: "manticora", nome: "Mantícora", nd: "6", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Monstro com corpo de leão, asas de dragão e rosto humano envelhecido, a mantícora está entre as criaturas mais perigosas em uma masmorra — m",
           texto:
 `Mantícora ND 6
@@ -212,7 +215,7 @@ Tesouro Padrão mais espinhos (CD 21 para extrair). Os espinhos contam como T$ 1
         },
         {
           chave: "centopeiaDragao", nome: "Centopeia-dragão", nd: "7", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Com dez metros de comprimento, estes monstros incandescentes avançam devorando tudo que encontram.",
           texto:
 `Centopeia-dragão ND 7
@@ -231,7 +234,7 @@ Tesouro 2d4 doses de essência abissal (CD 22 para extrair).`
         },
         {
           chave: "golemDeFerro", nome: "Golem de Ferro", nd: "10", tipo: "Construto Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Ainda que existam golens inteligentes, também existem numerosos construtos antigos e sem inteligência real — deixados em ruínas ancestrais p",
           texto:
 `Golem de Ferro ND 10
@@ -262,7 +265,7 @@ Tesouro Nenhum.`
       fichas: [
         {
           chave: "bandido", nome: "Bandido", nd: "1/4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Bandidos",
           resumo: "Bandidos — Bandidos operam em estradas desertas, emboscando viajantes.",
           texto:
@@ -279,7 +282,7 @@ Equipamento Clava. Tesouro Metade.`
         },
         {
           chave: "chefeBandido", nome: "Chefe Bandido", nd: "1", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Bandidos",
           resumo: "Bandidos — Bandidos operam em estradas desertas, emboscando viajantes.",
           texto:
@@ -298,7 +301,7 @@ Equipamento Adaga, espada curta. Tesouro Padrão.`
         },
         {
           chave: "guardaDeCidade", nome: "Guarda de Cidade", nd: "1/2", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Guardas",
           resumo: "Guardas — Onde há ordem e civilização, há algum tipo de guarda ou milícia.",
           texto:
@@ -315,7 +318,7 @@ Equipamento Apito, couro batido, maça. Tesouro Nenhum.`
         },
         {
           chave: "sargentoDaGuarda", nome: "Sargento da Guarda", nd: "1", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Guardas",
           resumo: "Guardas — Onde há ordem e civilização, há algum tipo de guarda ou milícia.",
           texto:
@@ -334,7 +337,7 @@ Equipamento Apito, besta leve, cota de malha, maça, virotes x20. Tesouro Metade
         },
         {
           chave: "lobo", nome: "Lobo", nd: "1/2", tipo: "Animal Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Predadores primordiais, lobos vivem em alcateias lideradas pelo macho mais forte — o alfa, que conduz o bando nas caçadas.",
           texto:
 `Lobo ND 1/2
@@ -353,7 +356,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "centauroCombatente", nome: "Centauro combatente", nd: "1", tipo: "Humanoide (centauro) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Centauros",
           resumo: "Centauros — Este povo equino é recluso, desconfiado e territorial.",
           texto:
@@ -373,7 +376,7 @@ Equipamento Arco longo aumentado, flechas x20, tacape aumentado. Tesouro Metade.
         },
         {
           chave: "centauroXama", nome: "Centauro Xamã", nd: "3", tipo: "Humanoide (centauro) Grande",
-          papel: '',
+          papel: "especial",
           subgrupo: "Centauros",
           resumo: "Centauros — Este povo equino é recluso, desconfiado e territorial.",
           texto:
@@ -397,7 +400,7 @@ Equipamento Bordão aumentado, símbolo sagrado de Allihanna. Tesouro Metade.`
         },
         {
           chave: "gnollSaqueador", nome: "Gnoll saqueador", nd: "1", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Gnolls",
           resumo: "Gnolls — De todos os humanoides monstruosos, o estridente povo-hiena é o mais propenso a preparar emboscadas em beira de estrada.",
           texto:
@@ -414,7 +417,7 @@ Equipamento Arco curto, flechas x20, lança. Tesouro Metade.`
         },
         {
           chave: "gnollFilibusteiro", nome: "Gnoll Filibusteiro", nd: "2", tipo: "Humanoide (gnoll) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Gnolls",
           resumo: "Gnolls — De todos os humanoides monstruosos, o estridente povo-hiena é o mais propenso a preparar emboscadas em beira de estrada.",
           texto:
@@ -432,7 +435,7 @@ Equipamento Balas x20, espada curta, mosquete. Tesouro Padrão.`
         },
         {
           chave: "gorlogg", nome: "Gorlogg", nd: "1", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Estas feras primitivas lembram uma combinação de lobo e crocodilo, com mandíbulas capazes de destroçar ossos.",
           texto:
 `Gorlogg ND 1
@@ -450,7 +453,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "trog", nome: "Trog", nd: "1", tipo: "Humanoide (trog) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Quando um destes homens-lagarto decide integrar um grupo de aventureiros, isso é exceção, não regra.",
           texto:
 `Trog ND 1
@@ -470,7 +473,7 @@ Equipamento Azagaias x2, lança. Tesouro Metade.`
         },
         {
           chave: "loboDasCavernas", nome: "Lobo-das-Cavernas", nd: "2", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Um ancestral pré-histórico do lobo comum, mas muito maior e com uma coluna de placas ósseas ao longo do dorso.",
           texto:
 `Lobo-das-Cavernas ND 2
@@ -489,7 +492,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "caoDoInferno", nome: "Cão do Inferno", nd: "3", tipo: "Espírito Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Estas feras agressivas são enormes, fortes e musculosas, com pelagem castanho-avermelhada como ferrugem, presas, garras e língua negras como",
           texto:
 `Cão do Inferno ND 3
@@ -507,7 +510,7 @@ Tesouro 1d4 doses de essência abissal (CD 18 para extrair).`
         },
         {
           chave: "grifo", nome: "Grifo", nd: "3", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Grifos têm corpo e patas traseiras de leão, mas patas dianteiras, asas e cabeça de águia.",
           texto:
 `Grifo ND 3
@@ -524,7 +527,7 @@ Tesouro Um ninho de grifo tem 25% de chance de conter 1d4 ovos no valor de T$ 2.
         },
         {
           chave: "basilisco", nome: "Basilisco", nd: "4", tipo: "Monstro Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Lagartos venenosos com dois metros de comprimento, basiliscos possuem o terrível poder de transformar seres vivos em pedra com o olhar.",
           texto:
 `Basilisco ND 4
@@ -542,7 +545,7 @@ Tesouro 1d4 doses de peçonha concentrada (CD 19 para extrair), couro de basilis
         },
         {
           chave: "ogro", nome: "Ogro", nd: "4", tipo: "Humanoide (gigante) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Estes gigantes primitivos são solitários e mal-humorados, quase nunca encontrados em bandos.",
           texto:
 `Ogro ND 4
@@ -561,7 +564,7 @@ Equipamento Tacape aumentado. Tesouro Padrão.`
         },
         {
           chave: "ursoCoruja", nome: "Urso-Coruja", nd: "4", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Este estranho ser lembra um grande urso, mas coberto de penas e com a cabeça de uma enorme coruja.",
           texto:
 `Urso-Coruja ND 4
@@ -578,7 +581,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "serpe", nome: "Serpe", nd: "5", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Muitas vezes confundidos com dragões, estes monstros reptilianos alados são apenas feras com pouca inteligência e sem poderes mágicos.",
           texto:
 `Serpe ND 5
@@ -619,7 +622,7 @@ Tesouro 1d4 doses de peçonha concentrada (CD 20 para extrair).`
       fichas: [
         {
           chave: "recrutaPurista", nome: "Recruta Purista", nd: "1/2", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "A ralé do exército purista.",
           texto:
 `Recruta Purista ND 1/2
@@ -636,7 +639,7 @@ Equipamento Alabarda, cota de malha. Tesouro Nenhum.`
         },
         {
           chave: "soldadoPurista", nome: "Soldado Purista", nd: "1", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "A base dos batalhões puristas.",
           texto:
 `Soldado Purista ND 1
@@ -654,7 +657,7 @@ Equipamento Besta pesada, escudo pesado, espada bastarda, meia armadura, virotes
         },
         {
           chave: "sargentoMor", nome: "Sargento-mor", nd: "3", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Sargentos da Supremacia são soldados veteranos e embrutecidos.",
           texto:
 `Sargento-mor ND 3
@@ -673,7 +676,7 @@ Equipamento Armadura completa, besta pesada, escudo pesado, espada bastarda aume
         },
         {
           chave: "capelaoDeGuerra", nome: "Capelão de Guerra", nd: "4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Composto por adoradores fanáticos de Valkaria e Arsenal, o Templo da Pureza Divina prega que os humanos são a raça eleita e que os outros po",
           texto:
 `Capelão de Guerra ND 4
@@ -696,7 +699,7 @@ Equipamento Armadura completa, escudo leve, martelo de guerra certeiro, símbolo
         },
         {
           chave: "capitaoBaluarte", nome: "Capitão-Baluarte", nd: "5", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Esses oficiais de baixo escalão são escolhidos entre a jovem nobreza da Supremacia e treinados desde a infância para liderar.",
           texto:
 `Capitão-Baluarte ND 5
@@ -715,7 +718,7 @@ Equipamento Armadura completa reforçada, escudo pesado reforçado, espada longa
         },
         {
           chave: "cavaleiroDoLeopardoSangrento", nome: "Cavaleiro do Leopardo Sangrento", nd: "9", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           alias: "Cavaleiro do Leopardo",   // grafia da Tabela 7-1
           resumo: "Considerados “puristas entre os puristas”, os cavaleiros da Ordem do Leopardo Sangrento são os mais fanáticos combatentes da Supremacia.",
           texto:
@@ -740,7 +743,7 @@ Equipamento Armadura completa reforçada, espada bastarda aumentada pungente de 
         },
         {
           chave: "colossoSupremo", nome: "Colosso Supremo", nd: "14", tipo: "Construto Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "Grandes como moinhos de vento, feitos de pedra e metal, estes engenhos infernais são forjados com técnicas que combinam magia e tecnologia goblin.",
           texto:
 `Colosso Supremo ND 14
@@ -775,7 +778,7 @@ Tesouro 1d6 engrenagens (CD 29 para extrair; cada engrenagem conta como T$ 1.000
       fichas: [
         {
           chave: "zumbi", nome: "Zumbi", nd: "1/4", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Zumbis",
           resumo: "Zumbis — O tipo mais comum e rudimentar de morto-vivo, pouco mais que um amontoado cambaleante de carne apodrecida.",
           texto:
@@ -792,7 +795,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "turbaZumbi", nome: "Turba Zumbi", nd: "2", tipo: "Morto-vivo (bando) Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Zumbis",
           resumo: "Zumbis — O tipo mais comum e rudimentar de morto-vivo, pouco mais que um amontoado cambaleante de carne apodrecida.",
           texto:
@@ -810,7 +813,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "esqueleto", nome: "Esqueleto", nd: "2", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Esqueletos",
           resumo: "Esqueletos — Basta um olhar atento para diferenciar um osteon destes mortos-vivos sem mente.",
           texto:
@@ -826,7 +829,7 @@ Equipamento Escudo pesado, espada longa. Tesouro Nenhum.`
         },
         {
           chave: "esqueletoDeElite", nome: "Esqueleto de elite", nd: "4", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Esqueletos",
           resumo: "Esqueletos — Basta um olhar atento para diferenciar um osteon destes mortos-vivos sem mente.",
           texto:
@@ -842,7 +845,7 @@ Equipamento Escudo pesado, espada longa, meia armadura. Tesouro Nenhum.`
         },
         {
           chave: "falange", nome: "Falange", nd: "8", tipo: "Morto-vivo (bando) Grande",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Esqueletos",
           resumo: "Esqueletos — Basta um olhar atento para diferenciar um osteon destes mortos-vivos sem mente.",
           texto:
@@ -859,7 +862,7 @@ Equipamento Escudo pesado, espada longa, meia armadura (1d8 cada). Tesouro Nenhu
         },
         {
           chave: "aparicao", nome: "Aparição", nd: "5", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Vistas à distância, estas criaturas feitas de pura sombra lembram vultos usando mantos esvoaçantes.",
           texto:
 `Aparição ND 5
@@ -876,7 +879,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "necromante", nome: "Necromante", nd: "7", tipo: "Humanoide (elfo) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Estes arcanistas especializados em magias de trevas e na conjuração de mortos-vivos nem sempre são vilões.",
           texto:
 `Necromante ND 7
@@ -901,7 +904,7 @@ Equipamento Adaga, essência de mana. Tesouro Dobro.`
         },
         {
           chave: "vampiro", nome: "Vampiro", nd: "12", tipo: "Morto-vivo Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Tornar-se vampiro costuma ser o objetivo de muitos necromantes em busca de mais poder ou clérigos de Tenebra que querem melhor servir à deusa.",
           texto:
 `Vampiro ND 12
@@ -939,7 +942,7 @@ Equipamento Armadura completa delicada de mitral, espada longa precisa de mitral
       fichas: [
         {
           chave: "goblinSalteador", nome: "Goblin Salteador", nd: "1/4", tipo: "Humanoide (goblin) Pequeno",
-          papel: '',
+          papel: "lacaio",
           resumo: "Quase sempre subestimados e considerados “fracos”, estes goblins possuem uma ferocidade caótica, sendo máquinas insanas de esfaquear e estripar.",
           texto:
 `Goblin Salteador ND 1/4
@@ -956,7 +959,7 @@ Equipamento Adagas x2. Tesouro Padrão.`
         },
         {
           chave: "hobgoblinSoldado", nome: "Hobgoblin Soldado", nd: "2", tipo: "Humanoide (hobgoblin) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "De estatura similar a humanos robustos, hobgoblins são os mais militaristas entre os duyshidakk.",
           texto:
 `Hobgoblin Soldado ND 2
@@ -974,7 +977,7 @@ Equipamento Arco longo, cota de malha, escudo pesado, espada longa, flechas x20.
         },
         {
           chave: "goblinEngenhoqueiro", nome: "Goblin Engenhoqueiro", nd: "3", tipo: "Humanoide (goblin) Pequeno",
-          papel: '',
+          papel: "especial",
           resumo: "Tidos por muitos como pragas inúteis, os goblins cultivam uma longa “tradição” de transformar sucata em mecanismos e engenhocas de certa utilidade.",
           texto:
 `Goblin Engenhoqueiro ND 3
@@ -996,7 +999,7 @@ Equipamento Adaga, besta leve, instrumentos de Ofício (engenhoqueiro), virotes 
         },
         {
           chave: "arautoDeThwor", nome: "Arauto de Thwor", nd: "4", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Após conhecer a história de sofrimento e opressão dos duyshidakk, não é espantoso que outros povos experimentem afinidade com sua causa.",
           texto:
 `Arauto de Thwor ND 4
@@ -1020,7 +1023,7 @@ Tesouro Padrão.`
         },
         {
           chave: "hobgoblinMagoDeBatalha", nome: "Hobgoblin Mago de Batalha", nd: "5", tipo: "Humanoide (hobgoblin) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "No passado remoto, durante a Infinita Guerra contra os elfos, todos os hobgoblins odiavam e desprezavam magia — justamente por ser “coisa de elfo”.",
           texto:
 `Hobgoblin Mago de Batalha ND 5
@@ -1045,7 +1048,7 @@ Equipamento Espada longa, essência de mana. Tesouro Padrão.`
         },
         {
           chave: "engenhoDeGuerraGoblin", nome: "Engenho de Guerra Goblin", nd: "6", tipo: "Construto Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Elevando a capacidade mecânica e inventiva dos goblins a novos patamares, o engenho de guerra goblin é uma geringonça de terror e imprevisibilidade.",
           texto:
 `Engenho de Guerra Goblin ND 6
@@ -1068,7 +1071,7 @@ Tesouro Padrão.`
         },
         {
           chave: "devoradorDeMedos", nome: "Devorador de Medos", nd: "8", tipo: "Humanoide (bugbear) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Bugbears são crueldade e violência em forma de carne.",
           texto:
 `Devorador de Medos ND 8
@@ -1088,7 +1091,7 @@ Equipamento Machado de guerra cruel. Tesouro Metade.`
         },
         {
           chave: "sombraDeThwor", nome: "Sombra de Thwor", nd: "9", tipo: "Humanoide (hobgoblin) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Muitas vezes lembrados por sua força física e aparência brutal, hobgoblins são também humanoides ágeis e furtivos, capazes de agir confortav",
           texto:
 `Sombra de Thwor ND 9
@@ -1121,7 +1124,7 @@ Equipamento Couro batido ajustado, machadinhas atrozes x4, peçonha potente x1d4
       fichas: [
         {
           chave: "cascavel", nome: "Cascavel", nd: "1/4", tipo: "Animal Minúsculo",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Cobras",
           resumo: "Cobras — Não apenas um animal sagrado para os sszzaazitas, mas o próprio símbolo de sua divindade, será praticamente certa a existência de serpentes",
           texto:
@@ -1139,7 +1142,7 @@ Tesouro 1 dose de peçonha comum (CD 15 para extrair).`
         },
         {
           chave: "jiboia", nome: "Jiboia", nd: "1/2", tipo: "Animal Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Cobras",
           resumo: "Cobras — Não apenas um animal sagrado para os sszzaazitas, mas o próprio símbolo de sua divindade, será praticamente certa a existência de serpentes",
           texto:
@@ -1158,7 +1161,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "naja", nome: "Naja", nd: "1", tipo: "Animal Pequeno",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Cobras",
           resumo: "Cobras — Não apenas um animal sagrado para os sszzaazitas, mas o próprio símbolo de sua divindade, será praticamente certa a existência de serpentes",
           texto:
@@ -1176,7 +1179,7 @@ Tesouro 1 dose de peçonha concentrada (CD 16 para extrair).`
         },
         {
           chave: "sucuri", nome: "Sucuri", nd: "3", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Cobras",
           resumo: "Cobras — Não apenas um animal sagrado para os sszzaazitas, mas o próprio símbolo de sua divindade, será praticamente certa a existência de serpentes",
           texto:
@@ -1195,7 +1198,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "nagahGuardiao", nome: "Nagah Guardião", nd: "3", tipo: "Humanoide (nagah) Médio",
-          papel: '',
+          papel: "lacaio",
           subgrupo: "Nagah",
           resumo: "Nagah — Estes seres de torso humanoide e corpo de serpente foram outrora considerados uma raça de devotos de Allihanna.",
           texto:
@@ -1213,7 +1216,7 @@ Equipamento Cimitarras x2. Tesouro Padrão.`
         },
         {
           chave: "nagahMistica", nome: "Nagah Mística", nd: "6", tipo: "Humanoide (nagah) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Nagah",
           resumo: "Nagah — Estes seres de torso humanoide e corpo de serpente foram outrora considerados uma raça de devotos de Allihanna.",
           texto:
@@ -1237,7 +1240,7 @@ Equipamento Adaga, essência de mana. Tesouro Padrão.`
         },
         {
           chave: "cultistaDeSszzaas", nome: "Cultista de Sszzaas", nd: "7", tipo: "Monstro (medusa) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Mesmo com sua religião sendo proibida no Reinado, todos já ouviram falar de algum grupo sszzaazita escondido nas sombras de mansões sinistra",
           texto:
 `Cultista de Sszzaas ND 7
@@ -1259,7 +1262,7 @@ Equipamento Adaga certeira, couraça, escudo leve, símbolo sagrado de Sszzaas. 
         },
         {
           chave: "hidra", nome: "Hidra", nd: "11", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Esta monstruosidade reptiliana tem a aparência de um lagarto imenso e obeso, coberto de escamas verdes ou marrons, com cinco cabeças enciman",
           texto:
 `Hidra ND 11
@@ -1277,7 +1280,7 @@ Tesouro Padrão.`
         },
         {
           chave: "lagash", nome: "Lagash", nd: "13", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Esta serpente gigantesca é considerada sagrada pelos sszzaazitas — embora isso não impeça cultistas do Deus da Traição de usarem-na para pro",
           texto:
 `Lagash ND 13
@@ -1315,7 +1318,7 @@ Tesouro Padrão.`
       fichas: [
         {
           chave: "finntrollCacador", nome: "Finntroll Caçador", nd: "2", tipo: "Monstro (finntroll) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Finntroll",
           resumo: "Finntroll — Arrogantes e indolentes, finntroll raramente deixam seu império subterrâneo — e quando o fazem, sempre têm um propósito cruel, como caçar es",
           texto:
@@ -1338,7 +1341,7 @@ Tesouro Padrão.`
         },
         {
           chave: "finntrollFeitor", nome: "Finntroll Feitor", nd: "6", tipo: "Monstro (finntroll) Médio",
-          papel: '',
+          papel: "especial",
           alias: "Fintroll feitor",   // grafia da Tabela 7-1
           subgrupo: "Finntroll",
           resumo: "Finntroll — Arrogantes e indolentes, finntroll raramente deixam seu império subterrâneo — e quando o fazem, sempre têm um propósito cruel, como caçar es",
@@ -1362,7 +1365,7 @@ Equipamento Chicote cruel. Tesouro Dobro.`
         },
         {
           chave: "ganchador", nome: "Ganchador", nd: "5", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Esta criatura parece um besouro humanoide com quase três metros de altura.",
           texto:
 `Ganchador ND 5
@@ -1381,7 +1384,7 @@ Tesouro Metade mais duas garras (CD 20 para extrair; cada garra conta como T$ 50
         },
         {
           chave: "troll", nome: "Troll", nd: "5", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Um troll é um monstro feito de matéria vegetal.",
           texto:
 `Troll ND 5
@@ -1398,7 +1401,7 @@ Tesouro Padrão.`
         },
         {
           chave: "trollDasCavernas", nome: "Troll das Cavernas", nd: "9", tipo: "Monstro Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Maiores e mais poderosos que trolls comuns, são empregados pelos finntrolls como armas pesadas.",
           texto:
 `Troll das Cavernas ND 9
@@ -1447,7 +1450,7 @@ Aquático. O vrakoll possui deslocamento de natação 9m e pode respirar debaixo
       fichas: [
         {
           chave: "enxameKobold", nome: "Enxame Kobold", nd: "2", tipo: "Monstro (kobold, enxame) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Esses pequenos humanoides reptilianos são considerados uma praga — o que realmente são!",
           texto:
 `Enxame Kobold ND 2
@@ -1465,7 +1468,7 @@ Tesouro Metade.`
         },
         {
           chave: "dragaoFilhote", nome: "Dragão Filhote", nd: "3", tipo: "Monstro (dragão) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragões",
           resumo: "Dragões — As estatísticas a seguir representam o tipo mais comum de dragão, um cuspidor de fogo.",
           texto:
@@ -1483,7 +1486,7 @@ Tesouro Padrão.`
         },
         {
           chave: "dragaoJovem", nome: "Dragão Jovem", nd: "7", tipo: "Monstro (dragão) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragões",
           resumo: "Dragões — As estatísticas a seguir representam o tipo mais comum de dragão, um cuspidor de fogo.",
           texto:
@@ -1504,7 +1507,7 @@ Tesouro Dobro e 2 peças de couro de dragão (CD 22 para extrair, veja o quadro 
         },
         {
           chave: "dragaoAdulto", nome: "Dragão Adulto", nd: "11", tipo: "Monstro (dragão) Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragões",
           resumo: "Dragões — As estatísticas a seguir representam o tipo mais comum de dragão, um cuspidor de fogo.",
           texto:
@@ -1533,7 +1536,7 @@ Tesouro Dobro e 4 peças de couro de dragão (CD 26 para extrair, veja o quadro 
         },
         {
           chave: "dragaoVeneravel", nome: "Dragão Venerável", nd: "15", tipo: "Monstro (dragão) Enorme",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragões",
           resumo: "Dragões — As estatísticas a seguir representam o tipo mais comum de dragão, um cuspidor de fogo.",
           texto:
@@ -1565,7 +1568,7 @@ Tesouro Dobro e 4 peças de couro de dragão (CD 30 para extrair, veja o quadro 
         },
         {
           chave: "dragaoRei", nome: "Dragão-Rei", nd: "20", tipo: "Monstro (dragão) Colossal",
-          papel: '',
+          papel: "solo",
           subgrupo: "Dragões",
           resumo: "Dragões — As estatísticas a seguir representam o tipo mais comum de dragão, um cuspidor de fogo.",
           texto:
@@ -1599,7 +1602,7 @@ Tesouro Dobro e 6 peças couro de dragão (CD 35 para extrair, veja o quadro na 
         },
         {
           chave: "tiranoDoTerceiro", nome: "Tirano do Terceiro", nd: "10", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Poderosos servos de Kallyadranoch, os tiranos são verdadeiros exércitos de uma só pessoa, cavalgando dragões e aterrorizando o mundo com seu poderio.",
           texto:
 `Tirano do Terceiro ND 10
@@ -1650,7 +1653,7 @@ Esotérico (Exige uma Peça). Quando lança uma magia que cause dano do mesmo ti
       fichas: [
         {
           chave: "maniacoLefou", nome: "Maníaco Lefou", nd: "2", tipo: "Humanoide (lefou) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Poucos meios-demônios da Tormenta têm a sorte de integrar um grupo de aventureiros.",
           texto:
 `Maníaco Lefou ND 2
@@ -1667,7 +1670,7 @@ Equipamento Machado de guerra. Tesouro Metade.`
         },
         {
           chave: "uktril", nome: "Uktril", nd: "3", tipo: "Monstro (lefeu) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "Mesmo o lefeu mais comum e mais fraco é uma abominação perversa, uma combinação impossível de humano e formiga, com garras cruéis que gotejam muco.",
           texto:
 `Uktril ND 3
@@ -1684,7 +1687,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "geraktril", nome: "Geraktril", nd: "6", tipo: "Monstro (lefeu) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Versão maior e mais avançada dos uktril, são abominações de três braços com pinças capazes de cortar homens ao meio.",
           texto:
 `Geraktril ND 6
@@ -1701,7 +1704,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "reishid", nome: "Reishid", nd: "8", tipo: "Monstro (lefeu) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Mestres da espionagem e assassinato, estes lefeu estão entre os mais perigosos encontrados longe das áreas de Tormenta.",
           texto:
 `Reishid ND 8
@@ -1723,7 +1726,7 @@ Tesouro Padrão mais adaga da Tormenta. Esta é uma arma mágica específica que
         },
         {
           chave: "thuwarokk", nome: "Thuwarokk", nd: "16", tipo: "Monstro (lefeu) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "Este gigantesco lefeu lembra um besouro blindado, mas é quase tão grande quanto um castelo!",
           texto:
 `Thuwarokk ND 16
@@ -1743,7 +1746,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "otyugh", nome: "Otyugh", nd: "5", tipo: "Monstro Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Este monstro disforme e repugnante surge em lugares maculados pela Tormenta — especialmente pântanos, esgotos e masmorras — sendo fruto da c",
           texto:
 `Otyugh ND 5
@@ -1763,7 +1766,7 @@ Tesouro Padrão.`
         },
         {
           chave: "sacerdoteDeAharadak", nome: "Sacerdote de Aharadak", nd: "10", tipo: "Humanoide (humano) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Esses macabros devotos do Deus da Tormenta promovem a insanidade, a devassidão e a deturpação de tudo que é vivo.",
           texto:
 `Sacerdote de Aharadak ND 10
