@@ -23,9 +23,12 @@
 //    chave    — id estável (não mudar; a aba e o modal usam)
 //    nome/nd  — repetidos fora do texto para listas e filtros
 //    tipo     — linha de tipo e tamanho (só exibição em listas)
-//    papel    — 'solo' | 'lacaio' | 'especial'. No livro é um ÍCONE, que
-//               não sobrevive à cópia do PDF: vem vazio, e o bestiário
-//               assume "lacaio" até o mestre trocar na ficha.
+//    papel    — 'solo' | 'lacaio' | 'especial'. No livro é um ÍCONE
+//               VETORIAL ao lado do nome: não é caractere nenhum, e por
+//               isso nunca saiu em cópia de texto. Foi lido do PDF em
+//               28/08/2026 assinando a geometria do desenho. Este livro
+//               não repete a legenda dos papéis (é suplemento), então os
+//               desenhos de referência vêm do Tormenta 20 — são os mesmos.
 //    subgrupo — quadro de habilidades que a criatura divide com as
 //               outras do tipo dela (dragões celestiais, inevitáveis,
 //               gênios); a aba mostra a caixa dentro do card
@@ -78,7 +81,7 @@
       fichas: [
         {
           chave: "aspectoDeAllihanna", nome: "Aspecto de Allihanna", nd: "5", tipo: "Animal Grande",
-          papel: '',
+          papel: "solo",
           resumo: "A criatura estranha, porém bela, lembra uma mescla de vários animais selvagens.",
           texto:
 `Aspecto de Allihanna ND 5
@@ -99,7 +102,7 @@ Parceiro O aspecto de Allihanna é um parceiro veterano que fornece os benefíci
         },
         {
           chave: "aspectoDeKallyadranoch", nome: "Aspecto de Kallyadranoch", nd: "6", tipo: "Monstro (dragão) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Não muito maior que um cavalo, mas ainda aterrador, o dragão é revestido de escamas brilhantes como brasas ardentes.",
           texto:
 `Aspecto de Kallyadranoch ND 6
@@ -133,7 +136,7 @@ Parceiro No improvável caso de o aspecto considerar alguém digno de cavalgá-l
         },
         {
           chave: "aspectoDeKhalmyr", nome: "Aspecto de Khalmyr", nd: "5", tipo: "Humanoide (anão) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "O anão em armadura brilhante de mitral emana nobreza, empunhando um volumoso escudo com o símbolo sagrado de Khalmyr.",
           texto:
 `Aspecto de Khalmyr ND 5
@@ -157,7 +160,7 @@ Parceiro O aspecto de Khalmyr é um parceiro veterano que fornece +3 na Defesa e
         },
         {
           chave: "aspectoDeLinWu", nome: "Aspecto de Lin-Wu", nd: "4", tipo: "Espírito Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Habilidades de Dragões Celestiais",
           resumo: "A criatura de corpo serpentino é adornada com escamas brilhantes que reluzem à luz do sol.",
           texto:
@@ -189,7 +192,7 @@ Parceiro O aspecto de Lin-Wu é um parceiro montaria (Grande) que fornece os ben
         },
         {
           chave: "aspectoDeMarah", nome: "Aspecto de Marah", nd: "4", tipo: "Espírito (aggelus) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Trajada em vestes sumárias e ousadas, capazes de envergonhar o mais desbocado menestrel, a dançarina aggelus irradia um magnetismo…",
           texto:
 `Aspecto de Marah ND 4
@@ -218,7 +221,7 @@ Parceiro O aspecto de Marah é um parceiro veterano que fornece +2 em Atuação 
         },
         {
           chave: "aspectoDeValkaria", nome: "Aspecto de Valkaria", nd: "5", tipo: "Humanoide (humana) Média",
-          papel: '',
+          papel: "solo",
           resumo: "A jovem parece cheia de entusiasmo, ansiosa por uma aventura, mas igualmente despreparada.",
           texto:
 `Aspecto de Valkaria ND 5
@@ -282,7 +285,7 @@ Tudo depende do propósito do aspecto e da(s) faceta(s) do deus que ele personif
       fichas: [
         {
           chave: "pilly", nome: "Pilly", nd: "3", tipo: "Espírito (celestial) Minúsculo",
-          papel: '',
+          papel: "lacaio",
           resumo: "Em um primeiro momento, a criaturinha lembra uma fada, com suas quatro finas asas de inseto que brilham ao sol com as cores do arco-íris.",
           texto:
 `Pilly ND 3
@@ -302,7 +305,7 @@ Parceiro Um pilly parceiro fornece os benefícios a seguir. Iniciante: reduz o c
         },
         {
           chave: "luminar", nome: "Luminar", nd: "–", tipo: "Espírito (celestial) Minúsculo",
-          papel: '',
+          papel: "especial",
           resumo: "A manifestação divina se revela como uma pequena esfera flutuante de luz branca e pura, mais brilhante que uma tocha.",
           texto:
 `Luminar ND –
@@ -324,7 +327,7 @@ Parceiro Um luminar parceiro fornece os benefícios a seguir. Iniciante: uma vez
         },
         {
           chave: "protetor", nome: "Protetor", nd: "7", tipo: "Espírito (celestial) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "Ele tem a aparência de um humano, embora claramente não o seja.",
           texto:
 `Protetor ND 7
@@ -346,7 +349,7 @@ Equipamento Escudo pesado, maça banhada a ouro. Tesouro Padrão.`
         },
         {
           chave: "shiradi", nome: "Shiradi", nd: "7", tipo: "Espírito (celestial) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Com o dobro da altura de um homem, a criatura lembra um grande felino humanoide — de postura bípede, mas com cabeça, garras e cauda de leão.",
           texto:
 `Shiradi ND 7
@@ -371,7 +374,7 @@ Equipamento Símbolo sagrado de Valkaria. Tesouro Nenhum.`
         },
         {
           chave: "fado", nome: "Fado", nd: "8", tipo: "Construto (inevitável) Grande",
-          papel: '',
+          papel: "solo",
           subgrupo: "Habilidades de Inevitáveis",
           resumo: "Visto à distância, poderia muito bem ser um guerreiro tapistano de loriga dourada, manto tinto e espada em riste.",
           texto:
@@ -394,7 +397,7 @@ Equipamento Corrente de espinhos sagrada. Tesouro Nenhum.`
         },
         {
           chave: "probo", nome: "Probo", nd: "11", tipo: "Construto (inevitável) Médio",
-          papel: '',
+          papel: "especial",
           subgrupo: "Habilidades de Inevitáveis",
           resumo: "Visto à distância, poderia muito bem ser um guerreiro tapistano de loriga dourada, manto tinto e espada em riste.",
           texto:
@@ -426,7 +429,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "parcus", nome: "Parcus", nd: "14", tipo: "Construto (inevitável) Médio",
-          papel: '',
+          papel: "solo",
           subgrupo: "Habilidades de Inevitáveis",
           resumo: "Visto à distância, poderia muito bem ser um guerreiro tapistano de loriga dourada, manto tinto e espada em riste.",
           texto:
@@ -452,7 +455,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "pegaso", nome: "Pégaso", nd: "3", tipo: "Espírito Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Surge diante de vocês um magnífico cavalo mágico com asas, branco e brilhante como a lua cheia.",
           texto:
 `Pégaso ND 3
@@ -474,7 +477,7 @@ Parceiro O pégaso é um parceiro montaria (Grande) que aceita apenas devotos de
         },
         {
           chave: "pegasoDeKhalmyr", nome: "Pégaso de Khalmyr", nd: "15", tipo: "Espírito (celestial) Grande",
-          papel: '',
+          papel: "solo",
           resumo: "Surge diante de vocês um magnífico cavalo mágico com asas, branco e brilhante como a lua cheia.",
           texto:
 `Pégaso de Khalmyr ND 15
@@ -505,7 +508,7 @@ Parceiro O Pégaso de Khalmyr é um parceiro montaria (Grande) mestre que aceita
         },
         {
           chave: "muhir", nome: "Muhir", nd: "15", tipo: "Espírito (celestial) Médio",
-          papel: '',
+          papel: "solo",
           resumo: "O recém-chegado passaria por um elfo de linhagem nobre, mas parece ser muito mais.",
           texto:
 `Muhir ND 15
@@ -538,7 +541,7 @@ Tesouro Metade.`
         },
         {
           chave: "orel", nome: "Orel", nd: "16", tipo: "Espírito (celestial) Grande",
-          papel: '',
+          papel: "especial",
           resumo: "Não há dúvida de que aquele ser não pertence a este mundo, nem poderia existir por meios naturais.",
           texto:
 `Orel ND 16
@@ -563,7 +566,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "furiaExtrema", nome: "Fúria Extrema", nd: "20", tipo: "Espírito (celestial) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "Sua chegada é anunciada pelo som celestial de gongos e trombetas.",
           texto:
 `Fúria Extrema ND 20
@@ -617,7 +620,7 @@ Visão da Justiça O inevitável está permanentemente sob o efeito básico da m
       fichas: [
         {
           chave: "driade", nome: "Dríade", nd: "4", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           resumo: "A criatura de pele esverdeada e cabeleira lembrando folhagens mal parece humana — mas é uma visão fugidia.",
           texto:
 `Dríade ND 4
@@ -643,7 +646,7 @@ Tesouro Padrão.`
         },
         {
           chave: "duendeMenor", nome: "Duende menor", nd: "1", tipo: "Espírito Pequeno",
-          papel: '',
+          papel: "especial",
           resumo: "Embora vocês tenham sido informados de que ambas as criaturas são duendes, os dois são seres totalmente diferentes!",
           texto:
 `Duende menor ND 1
@@ -670,7 +673,7 @@ Equipamento Adaga. Tesouro Padrão.`
         },
         {
           chave: "duendeMaior", nome: "Duende maior", nd: "5", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Embora vocês tenham sido informados de que ambas as criaturas são duendes, os dois são seres totalmente diferentes!",
           texto:
 `Duende maior ND 5
@@ -699,7 +702,7 @@ Equipamento Adaga. Tesouro Padrão.`
         },
         {
           chave: "dragonete", nome: "Dragonete", nd: "4", tipo: "Espírito Pequeno",
-          papel: '',
+          papel: "especial",
           resumo: "A criaturinha desconcertante tem o tamanho de um gato, mas a aparência de um dragão completo, com cabeça reptiliana, quatro patas e escamas coloridas.",
           texto:
 `Dragonete ND 4
@@ -724,7 +727,7 @@ Parceiro Um dragonete parceiro fornece os benefícios a seguir. Iniciante: dimin
         },
         {
           chave: "naiade", nome: "Náiade", nd: "3", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Ela tem a aparência de uma mulher bela e esguia, mas feita de água.",
           texto:
 `Náiade ND 3
@@ -750,7 +753,7 @@ Tesouro Padrão.`
         },
         {
           chave: "ninfa", nome: "Ninfa", nd: "6", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           resumo: "Ela é, com certeza, a criatura mais bela em todo este mundo dos deuses.",
           texto:
 `Ninfa ND 6
@@ -779,7 +782,7 @@ Tesouro Padrão.`
         },
         {
           chave: "satiroArqueiro", nome: "Sátiro Arqueiro", nd: "2", tipo: "Espírito (sátiro) Médio",
-          papel: '',
+          papel: "lacaio",
           resumo: "O humanoide de baixa estatura tem tronco, cabeça e braços humanos, mas também chifres recurvados e pernas de bode, com cascos.",
           texto:
 `Sátiro Arqueiro ND 2
@@ -807,7 +810,7 @@ Equipamento Arco curto, armadura de couro, flechas x10, instrumento musical (fla
         },
         {
           chave: "silfideTravessa", nome: "Sílfide Travessa", nd: "1", tipo: "Espírito (sílfide) Minúsculo",
-          papel: '',
+          papel: "especial",
           resumo: "Sílfides são o povo-fada de Arton.",
           texto:
 `Sílfide Travessa ND 1
@@ -834,7 +837,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "silfideEncantadora", nome: "Sílfide Encantadora", nd: "8", tipo: "Espírito (sílfide) Minúsculo",
-          papel: '',
+          papel: "especial",
           resumo: "Sílfides são o povo-fada de Arton.",
           texto:
 `Sílfide Encantadora ND 8
@@ -865,7 +868,7 @@ Tesouro Padrão.`
         },
         {
           chave: "velhaBruxa", nome: "Velha Bruxa", nd: "9", tipo: "Espírito Médio",
-          papel: '',
+          papel: "especial",
           resumo: "A anciã parece impossivelmente velha para um ser humano, mais velha que as árvores e as montanhas.",
           texto:
 `Velha Bruxa ND 9
@@ -892,7 +895,7 @@ Equipamento Uma vassoura, pilão ou outro instrumento doméstico. Tesouro Padrã
         },
         {
           chave: "eiradaanGuardiao", nome: "Eiradaan Guardião", nd: "7", tipo: "Espírito (eiradaan) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "O recém-chegado poderia ser um elfo, com as mesmas orelhas pontiagudas, os mesmos olhos amendoados e traços delicados.",
           texto:
 `Eiradaan Guardião ND 7
@@ -924,7 +927,7 @@ Equipamento Espada longa de mitral. Tesouro Padrão.`
         },
         {
           chave: "eiradaanNobre", nome: "Eiradaan Nobre", nd: "13", tipo: "Espírito (eiradaan) Médio",
-          papel: '',
+          papel: "especial",
           resumo: "O recém-chegado poderia ser um elfo, com as mesmas orelhas pontiagudas, os mesmos olhos amendoados e traços delicados.",
           texto:
 `Eiradaan Nobre ND 13
@@ -976,7 +979,7 @@ Os seres feéricos têm temperamentos variados, de cordiais e brincalhões a rec
       fichas: [
         {
           chave: "yazzu", nome: "Yazzu", nd: "10", tipo: "Espírito (gênio) Grande",
-          papel: '',
+          papel: "especial",
           subgrupo: "Habilidades de Gênios",
           resumo: "Alto e vigoroso como um minotauro, o recém-chegado tem pele azulada com tatuagens claras, cabelo e barba longos, escuros e esverdeados como…",
           texto:
@@ -1010,7 +1013,7 @@ Parceiro O yazzu é um parceiro que fornece os benefícios a seguir. Iniciante: 
         },
         {
           chave: "jairuan", nome: "Jairuan", nd: "6", tipo: "Espírito (gênio) Grande",
-          papel: '',
+          papel: "especial",
           subgrupo: "Habilidades de Gênios",
           resumo: "Maior que o mais alto dos humanos, o rapaz de pele bronzeada e tatuada é também forte, atlético, como um gladiador.",
           texto:
@@ -1039,7 +1042,7 @@ Parceiro O jairuan é um parceiro que fornece os benefícios a seguir. Iniciante
         },
         {
           chave: "gizzehi", nome: "Gizzehi", nd: "12", tipo: "Espírito (gênio) Grande",
-          papel: '',
+          papel: "especial",
           subgrupo: "Habilidades de Gênios",
           resumo: "Embora lembre uma mulher humanoide, a criatura é alta como um celeiro e sua pele parece carvão, mas com símbolos brilhantes de chamas.",
           texto:
@@ -1069,7 +1072,7 @@ Parceiro O gizzehi é um parceiro que fornece os benefícios a seguir. Iniciante
         },
         {
           chave: "allaraz", nome: "Allaraz", nd: "14", tipo: "Espírito (gênio) Grande",
-          papel: '',
+          papel: "especial",
           subgrupo: "Habilidades de Gênios",
           resumo: "Ela lembra uma guerreira élfica, mas alta e vigorosa como uma árvore, o cabelo prateado preso em rabo de cavalo muito longo.",
           texto:
@@ -1106,7 +1109,7 @@ Parceiro O allaraz é um parceiro que fornece os benefícios a seguir. Iniciante
         },
         {
           chave: "kemooz", nome: "Kemooz", nd: "9", tipo: "Espírito (gênio) Grande",
-          papel: '',
+          papel: "especial",
           subgrupo: "Habilidades de Gênios",
           resumo: "Bem maior que um ogro, a mulher inacreditavelmente robusta cruza os braços imensos sobre o peito.",
           texto:
@@ -1135,7 +1138,7 @@ Parceiro O kemooz é um parceiro que fornece os benefícios a seguir. Iniciante:
         },
         {
           chave: "dabbus", nome: "Dabbus", nd: "15", tipo: "Espírito (gênio) Grande",
-          papel: '',
+          papel: "especial",
           subgrupo: "Habilidades de Gênios",
           resumo: "Difícil discernir a forma da criatura, diluída nas sombras ao redor.",
           texto:
@@ -1205,7 +1208,7 @@ Servo dos Deuses. Todos os gênios podem lançar a magia Viagem Planar, sem nece
       fichas: [
         {
           chave: "galokkCapanga", nome: "Galokk Capanga", nd: "6", tipo: "Humanoide (gigante) Grande",
-          papel: '',
+          papel: "lacaio",
           resumo: "Chega a ser difícil determinar a raça da mulher, e quase inacreditável supor ser humana.",
           texto:
 `Galokk Capanga ND 6
@@ -1229,7 +1232,7 @@ Tesouro Nenhum.`
         },
         {
           chave: "galokkGuardaCostas", nome: "Galokk Guarda-Costas", nd: "10", tipo: "Humanoide (gigante) Grande",
-          papel: '',
+          papel: "lacaio",
           resumo: "Chega a ser difícil determinar a raça da mulher, e quase inacreditável supor ser humana.",
           texto:
 `Galokk Guarda-Costas ND 10
@@ -1253,7 +1256,7 @@ Equipamento Escudo pesado espinhoso, machado de batalha aumentado, meia armadura
         },
         {
           chave: "giganteBicefalo", nome: "Gigante Bicéfalo", nd: "13", tipo: "Humanoide (gigante) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "O imenso humanoide de corpo musculoso veste apenas uma tanga de couro esfarrapada e empunha duas enormes clavas rústicas.",
           texto:
 `Gigante Bicéfalo ND 13
@@ -1276,7 +1279,7 @@ Equipamento Clava aumentada x2. Tesouro Dobro.`
         },
         {
           chave: "giganteDasColinas", nome: "Gigante das Colinas", nd: "7", tipo: "Humanoide (gigante) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Alto como um armazém, o monstro tem alguma semelhança com um homem, mas bruto, primitivo, selvagem.",
           texto:
 `Gigante das Colinas ND 7
@@ -1298,7 +1301,7 @@ Equipamento Clava aumentada, gibão de peles. Tesouro Bolsa de gigante.`
         },
         {
           chave: "giganteDoFogo", nome: "Gigante do Fogo", nd: "11", tipo: "Humanoide (gigante) Enorme",
-          papel: '',
+          papel: "especial",
           resumo: "O estranho ser poderia lembrar um anão de Doherimm, com a mesma estatura atarracada, a mesma barba copiosa — mas toda semelhança acaba aí.",
           texto:
 `Gigante do Fogo ND 11
@@ -1322,7 +1325,7 @@ Equipamento Machado de batalha de adamante aumentado, meia armadura banhada a ou
         },
         {
           chave: "giganteDasRochas", nome: "Gigante das Rochas", nd: "9", tipo: "Humanoide (gigante) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Sua cabeça poderia facilmente alcançar o topo da muralha de um castelo.",
           texto:
 `Gigante das Rochas ND 9
@@ -1347,7 +1350,7 @@ Equipamento Barril gigante, couraça, machado de batalha aumentado maciço. Teso
         },
         {
           chave: "giganteDoGelo", nome: "Gigante do Gelo", nd: "9", tipo: "Humanoide (gigante) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Sua cabeça poderia facilmente alcançar o topo da muralha de um castelo.",
           texto:
 `Gigante do Gelo ND 9
@@ -1372,7 +1375,7 @@ Equipamento Barril gigante, gibão de peles, machado de batalha aumentado de gel
         },
         {
           chave: "giganteDosMares", nome: "Gigante dos Mares", nd: "9", tipo: "Humanoide (gigante) Enorme",
-          papel: '',
+          papel: "solo",
           resumo: "Sua cabeça poderia facilmente alcançar o topo da muralha de um castelo.",
           texto:
 `Gigante dos Mares ND 9
@@ -1397,7 +1400,7 @@ Equipamento Barril gigante, gibão de peles, machado de batalha aumentado de lan
         },
         {
           chave: "giganteReal", nome: "Gigante Real", nd: "19", tipo: "Humanoide (gigante) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "Estrondos sacodem o chão, em ritmo familiar de passos, denunciando a aproximação de algo bípede e gigantesco.",
           texto:
 `Gigante Real ND 19
@@ -1421,7 +1424,7 @@ Equipamento Clava gigante, meia armadura. Tesouro Padrão.`
         },
         {
           chave: "giganteMaximo", nome: "Gigante Máximo", nd: "S+", tipo: "Humanoide (gigante) Colossal",
-          papel: '',
+          papel: "solo",
           resumo: "É uma visão impossível, absurda, que desafia a sanidade.",
           texto:
 `Gigante Máximo ND S+
