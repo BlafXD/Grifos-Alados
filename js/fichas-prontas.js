@@ -49,7 +49,7 @@ window.GA_FichasProntas = (function () {
     { chave: 'ameacasArton', icone: '👹', cor: '#8f2f2f',
       nome: 'Ameaças de Arton', curto: 'Ameaças de Arton',
       fonte: 'FICHAS_AMEACAS_ARTON',
-      sub: 'O bestiário grande de Arton, nas 30 seções do livro: as criaturas das áreas de Tormenta, os povos brutos, o crime organizado, o culto de Aharadak, os dragões, os duyshidakk, os elementais, os monstros dos ermos, os gnolls, os golens, as igrejas de Arsenal e de Kallyadranoch, os impérios de Jade e de Tauron, os kobolds, os mascotes e familiares, os monstros de masmorra, as montarias, os mortos-vivos, as feras de Galrasia, os piratas e pistoleiros, os povos-trovão, a Supremacia Purista, os mortos de Aslothia, os moreau da Ilha Nobre, as feras das Sanguinárias, o que vive sob as ondas, os sszzaazitas, os trolls nobres e o gelo das Uivantes. Traz junto o capítulo de regras de ameaças (tipos, tamanho, papel de combate e as habilidades gerais), os simbiontes do Devorador e os tesouros arrancados das feras do mundo perdido.' },
+      sub: 'O bestiário completo de Arton — as 430 criaturas que o Apêndice C do livro lista. Nas 30 seções do Capítulo 1: as criaturas das áreas de Tormenta, os povos brutos, o crime organizado, o culto de Aharadak, os dragões, os duyshidakk, os elementais, os monstros dos ermos, os gnolls, os golens, as igrejas de Arsenal e de Kallyadranoch, os impérios de Jade e de Tauron, os kobolds, os mascotes e familiares, os monstros de masmorra, as montarias, os mortos-vivos, as feras de Galrasia, os piratas e pistoleiros, os povos-trovão, a Supremacia Purista, os mortos de Aslothia, os moreau da Ilha Nobre, as feras das Sanguinárias, o que vive sob as ondas, os sszzaazitas, os trolls nobres e o gelo das Uivantes. Mais o grupo 📎 Fora do Capítulo 1, com as três fichas que o livro imprime adiante (Bispo do Forte Sagrado, dejeto vivo e cardume de aquin’ne). Traz junto o capítulo de regras de ameaças (tipos, tamanho, papel de combate e as habilidades gerais), os simbiontes do Devorador e os tesouros arrancados das feras do mundo perdido.' },
     { chave: 'deusesArton',  icone: '⛩', cor: '#8a6a1f',
       nome: 'Deuses de Arton', curto: 'Deuses de Arton',
       fonte: 'FICHAS_DEUSES_ARTON',
@@ -63,6 +63,11 @@ window.GA_FichasProntas = (function () {
   let livroAtivo = LIVROS[0].chave;
   let catAtiva = '';
   let termo = '';
+  // Quando você clica num nome da caixa ⚔ Reforços que cobre VÁRIAS fichas
+  // ("Trog", "Dragão Adulto" — no livro são títulos de entrada), a aba passa a
+  // mostrar só essas. `null` = sem seleção. Some ao digitar na busca ou ao
+  // trocar de categoria.
+  let reforcoSel = null;             // { rot: 'Trog', chaves: Set }
 
   // ── ACESSO AOS DADOS ─────────────────────────────────────────────
   function dadosDe(l) { return window[l.fonte] || null; }
@@ -198,10 +203,49 @@ window.GA_FichasProntas = (function () {
     // textoComSelo (e não nl2br) porque um quadro pode trazer habilidade
     // mágica marcada — é o caso de Metamorfose Dracônica, em "Habilidades
     // Dracônicas", que vale para todos os dragões jovens ou mais velhos.
+    // data-fp-regra: alvo dos nomes da caixa ⚔ Reforços que apontam para um
+    // quadro em vez de uma ficha ("Armadilhas Kobolds", "Elemental da Água").
     return `
-      <details class="vc-card vc-card--regra" data-busca="${esc(busca)}">
+      <details class="vc-card vc-card--regra" data-busca="${esc(busca)}" data-fp-regra="${esc(r.titulo)}">
         <summary class="vc-card-cab"><span class="vc-card-nome">📖 ${esc(r.titulo)}</span></summary>
         <div class="vc-card-corpo"><div class="vc-regras">${SB.textoComSelo(r.texto)}</div></div>
+      </details>`;
+  }
+
+  // ── ⚔ REFORÇOS ───────────────────────────────────────────────────
+  // A caixa que fecha cada seção do livro: criaturas de OUTRAS seções que
+  // combinam com o tema. Cada nome vira um botão que leva à ficha (ou ao
+  // quadro, ou à seção). Os nomes com asterisco no livro são de fora deste
+  // livro e ficam sem link — mas continuam na lista, porque o mestre pode
+  // ter a ficha em outro lugar.
+  function blocoReforcos(cat) {
+    const R = cat.reforcos;
+    if (!R || !Array.isArray(R.nomes) || !R.nomes.length) return '';
+    const daqui = R.nomes.filter(r => !r.f).length;
+    const itens = R.nomes.map(r => {
+      if (r.f) {
+        return `<span class="fp-ref fp-ref--fora" title="O livro marca com asterisco: não está em Ameaças de Arton. Procure no Tormenta20 básico ou no livro de origem.">${esc(r.n)}<sup>*</sup></span>`;
+      }
+      if (r.c && r.c.length) {
+        return `<button type="button" class="fp-ref" data-fp-ref="${esc(r.c.join(' '))}" data-fp-ref-rot="${esc(r.n)}"
+                        title="${r.c.length === 1 ? 'Abre a ficha' : 'Mostra as ' + r.c.length + ' fichas desta entrada'}">${esc(r.n)}</button>`;
+      }
+      if (r.q) {
+        return `<button type="button" class="fp-ref" data-fp-ref-quadro="${esc(r.q)}"
+                        title="É um quadro de regra, não uma ficha — abre o quadro">📖 ${esc(r.n)}</button>`;
+      }
+      if (r.g) {
+        return `<button type="button" class="fp-ref" data-fp-ref-cat="${esc(r.g)}" title="É a seção inteira — filtra por ela">${esc(r.n)}</button>`;
+      }
+      return `<span class="fp-ref fp-ref--fora" title="O livro imprime este nome, mas ele não bate com nenhuma ficha nem quadro deste livro.">${esc(r.n)}</span>`;
+    }).join('');
+    return `
+      <details class="fp-reforcos" data-fp-reforcos="${esc(cat.chave)}">
+        <summary class="fp-reforcos-cab">⚔ <strong>Reforços</strong>
+          <span class="fp-reforcos-qtd">${daqui} deste livro${R.nomes.length - daqui ? ' · ' + (R.nomes.length - daqui) + ' de fora' : ''}</span>
+        </summary>
+        <p class="fp-reforcos-ajuda">Criaturas de outras seções que combinam com o tema desta — a sugestão do próprio livro (p.&nbsp;${R.pag}) para montar um encontro sem folhear tudo. Clique num nome para ir até ele. <sup>*</sup> = o livro marca como de fora de <em>Ameaças de Arton</em>.</p>
+        <div class="fp-reforcos-lista">${itens}</div>
       </details>`;
   }
 
@@ -276,6 +320,7 @@ window.GA_FichasProntas = (function () {
           <h2 class="vc-grupo-titulo">${esc(cat.icone || '')} ${esc(cat.nome)}</h2>
           ${cat.intro ? `<p class="npc-intro">${nl2br(cat.intro)}</p>` : ''}
           ${comuns}
+          ${blocoReforcos(cat)}
           <div class="vc-lista">${cards}${caixas}</div>
         </div>`;
     });
@@ -307,6 +352,7 @@ window.GA_FichasProntas = (function () {
       <input class="cr-busca fp-busca" type="text" value="${esc(termo)}"
              placeholder="Buscar ficha (orc, dragão, ND 5, morto-vivo, veneno…)" autocomplete="off">
       <p class="fp-busca-nota" data-fp-nota hidden></p>
+      <p class="fp-busca-nota fp-selecao" data-fp-selecao hidden></p>
       <div class="fp-corpo">${corpoDoLivro(l)}</div>`;
 
     aplicarFiltro(cont);
@@ -317,13 +363,19 @@ window.GA_FichasProntas = (function () {
     cont = cont || document.getElementById('fichas-prontas-content');
     if (!cont) return;
     const t = semAcento(termo.trim());
+    const sel = reforcoSel;                       // seleção vinda da caixa ⚔ Reforços
 
     cont.querySelectorAll('[data-busca]').forEach(el => {
       const grupo = el.closest('[data-fp-grupo]');
       const daCat = !catAtiva || !grupo || grupo.dataset.fpGrupo === catAtiva;
-      const bate = daCat && (!t || el.dataset.busca.indexOf(t) >= 0);
+      const daSel = !sel || sel.chaves.has(el.dataset.fpFicha);
+      const bate = daCat && daSel && (!t || el.dataset.busca.indexOf(t) >= 0);
       el.style.display = bate ? '' : 'none';
-      if (el.tagName === 'DETAILS') el.open = !!t && bate;
+      if (el.tagName === 'DETAILS') el.open = (!!t || !!sel) && bate;
+    });
+    // a própria caixa de Reforços some enquanto há busca ou seleção
+    cont.querySelectorAll('.fp-reforcos').forEach(bx => {
+      bx.style.display = (t || sel) ? 'none' : '';
     });
     let achados = 0;
     cont.querySelectorAll('.fp-grupo').forEach(gr => {
@@ -331,6 +383,15 @@ window.GA_FichasProntas = (function () {
       achados += visiveis.length;
       gr.style.display = visiveis.length ? '' : 'none';
     });
+    // faixa avisando qual reforço está selecionado, com a saída
+    const fx = cont.querySelector('[data-fp-selecao]');
+    if (fx) {
+      fx.hidden = !sel;
+      if (sel) {
+        fx.innerHTML = `⚔ Mostrando <strong>${esc(sel.rot)}</strong> — ${achados} ficha${achados !== 1 ? 's' : ''} desta entrada do livro.
+          <button type="button" class="fp-ir-livro" data-fp-limpar-sel="">✕ limpar</button>`;
+      }
+    }
 
     // quantas fichas o mesmo termo acha nos OUTROS livros
     const nota = cont.querySelector('[data-fp-nota]');
@@ -409,12 +470,47 @@ window.GA_FichasProntas = (function () {
 
     cont.addEventListener('click', e => {
       const aba = e.target.closest('[data-fp-livro-aba]');
-      if (aba) { livroAtivo = aba.dataset.fpLivroAba; catAtiva = ''; render(); return; }
+      if (aba) { livroAtivo = aba.dataset.fpLivroAba; catAtiva = ''; reforcoSel = null; render(); return; }
       const chip = e.target.closest('[data-fp-cat-chip]');
       if (chip) {
-        catAtiva = chip.dataset.fpCatChip;
+        catAtiva = chip.dataset.fpCatChip; reforcoSel = null;
         cont.querySelectorAll('.fp-cat').forEach(b => b.classList.toggle('fp-cat--ativa', b === chip));
         aplicarFiltro(cont);
+        return;
+      }
+      // ── ⚔ Reforços ──
+      const lim = e.target.closest('[data-fp-limpar-sel]');
+      if (lim) { reforcoSel = null; aplicarFiltro(cont); return; }
+      const ref = e.target.closest('[data-fp-ref]');
+      if (ref) {
+        const chaves = ref.dataset.fpRef.split(' ').filter(Boolean);
+        if (chaves.length === 1) {                    // uma ficha só: abre e rola
+          reforcoSel = null; aplicarFiltro(cont);
+          const alvo = cont.querySelector('[data-fp-ficha="' + chaves[0] + '"]');
+          if (alvo) { alvo.open = true; alvo.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+        } else {                                      // entrada com várias: filtra
+          reforcoSel = { rot: ref.dataset.fpRefRot || '', chaves: new Set(chaves) };
+          catAtiva = ''; termo = '';
+          const busca = cont.querySelector('.fp-busca'); if (busca) busca.value = '';
+          cont.querySelectorAll('.fp-cat').forEach((b, i) => b.classList.toggle('fp-cat--ativa', i === 0));
+          aplicarFiltro(cont);
+          const topo = cont.querySelector('[data-fp-selecao]');
+          if (topo) topo.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+        return;
+      }
+      const refQ = e.target.closest('[data-fp-ref-quadro]');
+      if (refQ) {
+        reforcoSel = null; aplicarFiltro(cont);
+        const alvo = cont.querySelector('[data-fp-regra="' + CSS.escape(refQ.dataset.fpRefQuadro) + '"]');
+        if (alvo) { alvo.open = true; alvo.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+        return;
+      }
+      const refC = e.target.closest('[data-fp-ref-cat]');
+      if (refC) {
+        reforcoSel = null;
+        const chipAlvo = cont.querySelector('[data-fp-cat-chip="' + CSS.escape(refC.dataset.fpRefCat) + '"]');
+        if (chipAlvo) chipAlvo.click();
         return;
       }
       const env = e.target.closest('[data-fp-enviar]');
@@ -426,6 +522,7 @@ window.GA_FichasProntas = (function () {
     cont.addEventListener('input', e => {
       if (!e.target.classList || !e.target.classList.contains('fp-busca')) return;
       termo = e.target.value;
+      if (termo.trim()) reforcoSel = null;      // digitar desfaz a seleção de reforço
       aplicarFiltro(cont);
     });
   }
@@ -440,7 +537,7 @@ window.GA_FichasProntas = (function () {
     ndValor: ndValor, todas: todas,
     // leva a aba até uma ficha específica (usado pelo bestiário)
     focar: function (livroChave, fichaChave) {
-      livroAtivo = livroChave; catAtiva = ''; termo = '';
+      livroAtivo = livroChave; catAtiva = ''; termo = ''; reforcoSel = null;
       render();
       const cont = document.getElementById('fichas-prontas-content');
       const alvo = cont && cont.querySelector('[data-fp-ficha="' + fichaChave + '"]');
