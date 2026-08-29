@@ -7,7 +7,8 @@
 ║  funciona offline, abrindo o index.html direto. Este servidor    ║
 ║  só é necessário para EDITAR/SALVAR as Notícias:                 ║
 ║                                                                  ║
-║    POST /api/noticias  -> grava as noticias em dois arquivos:    ║
+║    POST /api/noticias  -> grava as noticias em dois arquivos     ║
+║        (o JSON e uma lista de campanhas, uma por RPG):           ║
 ║        - data/noticias.json    (copia legivel em JSON)           ║
 ║        - js/noticias-data.js   (lido pelo site, inclusive        ║
 ║                                 offline, sem servidor)           ║
@@ -72,7 +73,7 @@ def save_noticias():
     os.makedirs(JS_DIR, exist_ok=True)
     with open(os.path.join(JS_DIR, 'noticias-data.js'), 'w', encoding='utf-8') as f:
         f.write('// Noticias do Grifos Alados.\n')
-        f.write('// Este arquivo e gerado/atualizado pelo server.py ao salvar.\n')
+        f.write('// Gerado ao salvar (server.py) ou pelo botao "Baixar arquivo" do site.\n')
         f.write('// Ele permite que as noticias sejam lidas mesmo offline (sem servidor).\n')
         f.write('window.NOTICIAS_DADOS = ' + texto_json + ';\n')
 

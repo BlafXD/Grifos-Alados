@@ -24,7 +24,7 @@
   // Viagem: o diário e as paradas que o mestre revelou) — entram inteiras,
   // com a barra de formatação delas.
   const PERMITIDOS =
-    '.nav-link, .cr-subtab, summary, .ga-tip, .ga-tip-pop, ' +
+    '.nav-link, .cr-subtab, .nc-camp-aba, summary, .ga-tip, .ga-tip-pop, ' +
     '.loja-aba, .loja-busca, .cr-busca, .vg-toggle, .bs-toggle, .vg-regras, ' +
     '[data-jog-edita]';
 
