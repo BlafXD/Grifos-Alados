@@ -3,13 +3,19 @@
 //  Localização: /grifos-alados/js/deuses-servos-data.js
 //
 //  ⚠ ARQUIVO GERADO por "Inútil/_gerar-deuses-servos.js" a partir de
-//    "Inútil/Regras Parte 2 do Deuses de Arton.txt". Dá para editar à
+//    "Inútil/Regras Parte 2 do Deuses de Arton.txt" e de
+//    "Inútil/Regras - Deuses de Arton (abissais).txt". Dá para editar à
 //    mão — mas rodar o gerador de novo sobrescreve tudo.
 //
 //  A segunda metade do livro Deuses de Arton: quem o Panteão manda
-//  quando um avatar seria demais. Cinco grupos — aspectos dos deuses,
-//  celestiais (com os inevitáveis), fadas (com os eiradaan), gênios e
-//  gigantes.
+//  quando um avatar seria demais. Seis grupos — abissais, aspectos dos
+//  deuses, celestiais (com os inevitáveis), fadas (com os eiradaan),
+//  gênios e gigantes.
+//
+//  ⚠ OS ABISSAIS SAÍRAM DO PDF, não da cópia em texto: a seção nunca
+//  foi colada no TXT do livro. O recorte está em
+//  "Inútil/_extrair-abissais.js", que documenta faixa por faixa o que
+//  veio de cada página.
 //
 //  É o MESMO livro dos avatares, então em vez de abrir uma aba nova
 //  este arquivo ACRESCENTA suas categorias ao window.FICHAS_DEUSES_ARTON
@@ -73,6 +79,314 @@
   }
 
   B.categorias.push(
+
+    // ── 😈 ABISSAIS ────────────────────────────────
+    {
+      chave: "abissais", nome: "Abissais", icone: "😈", cor: "#9e3a2f",
+      intro: "Diabos, demônios, infernais: os nativos dos reinos dos deuses maléficos, concebidos para servir — mas há os que se rebelam, e uns pouquíssimos que chegam a almejar bondade. Do diabrete de estimação a Abahddon e Lamashtu, que dividem um capítulo só para eles.",
+      fichas: [
+        {
+          chave: "aucharai", nome: "Aucharai", nd: "6", tipo: "Espírito (abissal) Médio",
+          papel: "solo",
+          resumo: "É um demônio alto, maior que um humano, mas muito magro.",
+          texto:
+`Aucharai ND 6
+É um demônio alto, maior que um humano, mas muito magro. Tem pele negra, lustrosa e sem pelos, como se coberto de piche. O rosto tem expressão insana e macabra, com presas pontudas projetando-se fora da boca e olhos ardendo como chamas.
+Entre os abissais, aucharai são espiões e assassinos, especializados em rastrear, perseguir e exterminar alvos para seus mestres. São astutos e perspicazes, estabelecendo planos maliciosos antes de começar uma missão. Furtivos e sorrateiros, preferem atacar primeiro o adversário que parece mais poderoso, esperando incapacitar a maior ameaça para então deliciar-se sem pressa com as mortes dos demais.
+Quase todos os abissais com algum poder e influência, assim como muitos vilões de Arton, têm alguns aucharai a seu serviço, para espionar e despachar inimigos de forma sutil (tanto quanto possível para demônios). Quando um clérigo de Tenebra ou de Sszzaas suplica a sua divindade pela eliminação de um inimigo, muitas vezes este será o abissal conjurado.
+Espírito (abissal) Médio
+Iniciativa +10, Percepção +6, visão no escuro
+Defesa 26, Fort +8, Ref +18, Von +10, evasão, imunidade a ácido e veneno, redução de dano 5
+Pontos de Vida 240
+Deslocamento 12m (8q)
+Corpo a Corpo Duas espadas curtas +20 (2d6+18, 19).
+Ataque Furtivo +2d6.
+✦ Detectar Pensamentos O aucharai detecta constantemente os pensamentos superficiais de todas as criaturas inteligentes em alcance curto. Ele não pode ser surpreendido por criaturas cujos pensamentos esteja detectando dessa forma e recebe +2 na Defesa e em testes de perícia contra elas. Uma criatura ciente desta habilidade pode gastar uma ação de movimento e fazer um teste de Vontade (CD 24). Se passar, esconde seus pensamentos até o fim da cena.
+✦ Escurecer Olhos (Padrão) O aucharai invoca uma sombra mística sobre os olhos de uma criatura em alcance curto. A vítima fica cega (Fort CD 24 reduz para 1 rodada). Recarga (movimento).
+Protegido pela Escuridão Se estiver em uma condição de pouca iluminação que forneça camuflagem leve, em vez disso o aucharai recebe camuflagem total.
+✦ Visão Abissal O aucharai está permanentemente sob efeito da magia Visão Mística com o aprimoramento que permite enxergar criaturas e objetos invisíveis.
+For 4, Des 5, Con 2, Int 3, Sab 1, Car 1
+Perícias Acrobacia +10, Atletismo +9, Furtividade +15, Ladinagem +8.
+Tesouro Padrão.`
+        },
+        {
+          chave: "trioDeCarvarel", nome: "Trio de Carvarel", nd: "8", tipo: "Espírito (abissal) Grande",
+          papel: "solo",
+          resumo: "A criatura abissal tem corpo humanoide robusto, coberto de pelos, com cabeça de bode, chifres e cascos.",
+          texto:
+`Trio de Carvarel ND 8
+A criatura abissal tem corpo humanoide robusto, coberto de pelos, com cabeça de bode, chifres e cascos. Ele empunha um grande machado e bufa em antecipação ao combate.
+Também conhecidos apenas como “guerreiro de chifres”, são o tipo mais comum de abissal. Nos reinos divinos, formam as tropas de infantaria nos exércitos dos deuses malignos, em vastos números. Embora considerado fraco entre os abissais, um único carvarel é bem capaz de dizimar vários soldados humanos!
+Carvarel são violentos, brutais, sempre ansiosos para ferir e matar com seus machados. Estão também entre os demônios de menor inteligência, sendo razoavelmente fácil enganá-los ou atacá-los com magias mentais.
+Em Arton, carvarel podem ser encontrados em pequenos bandos errantes (masmorras costumam ser seu terreno favorito) ou servindo a devotos do mal. Apesar da dificuldade de mantê-los sob controle, a magia para invocá-los é relativamente simples, tornando-os interessantes como guardas e soldados para vilões conjuradores.
+Espírito (abissal) Grande
+Iniciativa +6, Percepção +3, faro, visão no escuro
+Defesa 33, Fort +19, Ref +16, Von +15, imunidade a ácido e venenos, redução de dano 5, redução de fogo e frio 10
+Pontos de Vida 305
+Deslocamento 9m (6q)
+Corpo a Corpo [Bando] Machado de guerra x2 +26 (1d12+16, x3) ou chifres x2 +26 (2d6+10 impacto).
+Marrada Infernal (Completa) O trio de carvarel faz uma investida e desfere todos os seus ataques de machado de guerra e de chifres contra quaisquer criaturas em alcance. Todos os ataques recebem o bônus de +2 da investida, mas o trio não pode fazer mais de dois ataques contra a mesma criatura.
+For 5, Des 3, Con 4, Int –2, Sab 1, Car –1
+Perícias Atletismo +13, Intimidação +9.
+Equipamento Machado de guerra cruel x3. Tesouro Padrão.`
+        },
+        {
+          chave: "diabrete", nome: "Diabrete", nd: "2", tipo: "Espírito (abissal) Minúsculo",
+          papel: "lacaio",
+          resumo: "O diminuto humanoide poderia ser confundido com um silfo, mas as diferenças logo se fazem óbvias.",
+          texto:
+`Diabrete ND 2
+O diminuto humanoide poderia ser confundido com um silfo, mas as diferenças logo se fazem óbvias. É careca, com asas de couro e uma cauda fina e comprida, que termina em um ferrão. Parece pequeno e fraco demais para ser perigoso, apesar dos olhos vermelhos e da expressão cruel.
+Diabretes são abissais menores, quase como bichos de estimação para outros demônios, ou mesmo humanos e outras raças — muitos arcanistas os empregam como familiares ou espiões. De fato, por sua covardia, acabam se tornando bastante obedientes quando domesticados.
+Em estado selvagem, estas criaturas malévolas gostam de travessuras, mas suas brincadeiras quase sempre envolvem alguma crueldade, como assustar pessoas, fomentar brigas ou causar acidentes. São também conhecidos por roubar bebês ou devorá-los no berço, apenas para desfrutar do sofrimento dos pais.
+Diabretes são maus, mas também medrosos, sempre preferindo agir em bandos e fugir quando descobertos. Se encurralados e forçados a lutar, recorrem ao ferrão venenoso na cauda.
+Além do diabrete comum, existem variedades mais inteligentes e muito mais perigosas. Um exemplo terrível são os diabretes negociantes: quando fazem um acordo, tomam da vítima alguma coisa valiosa (alma, força, juventude, lembranças, futuro...) e usam como material para forjar um item poderoso, que podem entregar ou guardar para si. Não têm interesse em lucro, apenas em espalhar miséria e sofrimento.
+Espírito (abissal) Minúsculo
+Iniciativa +5, Percepção +4, visão no escuro
+Defesa 17, Fort +6, Ref +12, Von +4, imunidade a ácido e veneno
+Pontos de Vida 20
+Deslocamento 6m (4q), voo 12m (8q)
+Corpo a Corpo Ferrão +14 (1d6+8 mais veneno).
+Peste Invisível (Padrão) O diabrete se torna invisível (como na magia Invisibilidade) até o fim da cena ou até fazer um ataque.
+Veneno Peçonha comum (perde 1d12 pontos de vida, Fort CD 16 evita).
+For –2, Des 2, Con 0, Int 2, Sab 1, Car 1
+Perícias Furtividade +10, Misticismo +7.
+Tesouro Nenhum.
+Familiar Um diabrete fornece +1 PM para gastar em aprimoramentos sempre que você lança uma magia de ilusão ou veneno.`
+        },
+        {
+          chave: "diabreteNegociante", nome: "Diabrete Negociante", nd: "4", tipo: "Espírito (abissal) Pequeno",
+          papel: "especial",
+          resumo: "O diminuto humanoide poderia ser confundido com um silfo, mas as diferenças logo se fazem óbvias.",
+          texto:
+`Diabrete Negociante ND 4
+O diminuto humanoide poderia ser confundido com um silfo, mas as diferenças logo se fazem óbvias. É careca, com asas de couro e uma cauda fina e comprida, que termina em um ferrão. Parece pequeno e fraco demais para ser perigoso, apesar dos olhos vermelhos e da expressão cruel.
+Diabretes são abissais menores, quase como bichos de estimação para outros demônios, ou mesmo humanos e outras raças — muitos arcanistas os empregam como familiares ou espiões. De fato, por sua covardia, acabam se tornando bastante obedientes quando domesticados.
+Em estado selvagem, estas criaturas malévolas gostam de travessuras, mas suas brincadeiras quase sempre envolvem alguma crueldade, como assustar pessoas, fomentar brigas ou causar acidentes. São também conhecidos por roubar bebês ou devorá-los no berço, apenas para desfrutar do sofrimento dos pais.
+Diabretes são maus, mas também medrosos, sempre preferindo agir em bandos e fugir quando descobertos. Se encurralados e forçados a lutar, recorrem ao ferrão venenoso na cauda.
+Além do diabrete comum, existem variedades mais inteligentes e muito mais perigosas. Um exemplo terrível são os diabretes negociantes: quando fazem um acordo, tomam da vítima alguma coisa valiosa (alma, força, juventude, lembranças, futuro...) e usam como material para forjar um item poderoso, que podem entregar ou guardar para si. Não têm interesse em lucro, apenas em espalhar miséria e sofrimento.
+Espírito (abissal) Pequeno
+Iniciativa +7, Percepção +6, visão no escuro
+Defesa 21, Fort +4, Ref +15, Von +11, imunidade a ácido e veneno, redução de fogo e frio 5
+Pontos de Vida 120
+Deslocamento 6m (4q), voo 12m (8q)
+Corpo a Corpo Martelo de forja +15 (1d8+8, x3) e mordida +15 (1d6+8).
+Barganha O diabrete negociante pode conceder um Desejo a uma criatura. Em troca, a criatura dá algo muito importante e imaterial. A lista a seguir contém alguns exemplos de pagamentos, mas o mestre é livre para criar outros (veja o quadro).
+• Amor. Um dos parceiros do personagem o abandona, e seu limite de parceiros diminui em –1.
+• Coragem. O personagem falha automaticamente em testes de resistência contra medo e sofre –5 em Iniciativa.
+• Felicidade. O personagem perde o prazer pela vida; ele não recebe benefícios de itens de alimentação e, independentemente de suas condições de descanso, sua recuperação nunca é melhor que normal.
+• Juventude. O personagem perde 1 ponto de Constituição e falha automaticamente em testes contra efeitos de cansaço. Alternativamente, se você tiver o suplemento Heróis de Arton, a criatura envelhece uma categoria de idade (veja Capítulo 4: Regras Opcionais), mas não recebe nenhum dos benefícios da nova categoria.
+Confundir (Padrão) Uma criatura em alcance curto fica confusa (Von CD 18 evita e a criatura fica imune a esta habilidade por um dia). Recarga (movimento).
+Risada Enervante Criaturas a até 9m do diabrete sofrem –2 em Intuição e Vontade.
+For 0, Des 3, Con 0, Int 6, Sab 2, Car 5
+Perícias Enganação +14, Intuição +11, Ofício (armeiro) +13, Ofício (artesão) +13.
+Equipamento Instrumentos de Ofício (armeiro, artesão) aprimorados.
+Tesouro Padrão e 1d4-1 itens feitos dos sentimentos de alguém.`
+        },
+        {
+          chave: "jhumariel", nome: "Jhumariel", nd: "10", tipo: "Espírito (abissal) Grande",
+          papel: "solo",
+          resumo: "Aquilo lembra um sapo humanoide, grande e forte como um ogro.",
+          texto:
+`Jhumariel ND 10
+Aquilo lembra um sapo humanoide, grande e forte como um ogro. Seu corpo é verde e inchado de músculos, que secretam muco fétido e pegajoso. A bocarra tem incontáveis fileiras de dentes serrilhados, e deixa escorrer uma saliva fumegante, corrosiva.
+Jhumariel atuam como líderes e guerreiros de elite entre os exércitos demoníacos. São aqueles que comandam os carvarel em batalha — o que fazem com pura intimidação e força bruta, ainda que sejam mais inteligentes que eles.
+Acima de tudo, jhumariel são obcecados por combate e matança. Incitam seus bandos contra inimigos e, em tempos de paz, semeiam discórdia entre aliados. Não é surpresa, portanto, que tenham sido favoritos de Keenn no passado, e hoje sejam muito utilizados por Arsenal e seus devotos.
+Em batalha, avançam em meio aos adversários para incapacitá-los com seu fedor pestilento, e então terminar o serviço com as garras e a mordida terríveis.
+Espírito (abissal) Grande
+Iniciativa +7, Percepção +8, faro, visão no escuro
+Defesa 36, Fort +22, Ref +14, Von +12, imunidade a ácido, fogo e veneno, redução de dano 10
+Pontos de Vida 400
+Deslocamento 12m (8q)
+Corpo a Corpo Duas garras +29 (2d8+20, 19) e mordida ácida +29 (2d6+14 mais 2d6 ácido).
+Cuspe (Padrão) O jhumariel cospe saliva ácida em uma criatura em alcance curto. A vítima sofre 8d8 pontos de dano de ácido e fica coberta por muco corrosivo que causa 4d8 pontos de dano de ácido no início de cada um dos seus dois próximos turnos (Ref CD 30 reduz à metade e evita o muco). Recarga (movimento).
+Dilacerar Se o jhumariel acerta os dois ataques de garra em uma mesma criatura no mesmo turno, causa mais 4d6+4 pontos de dano.
+Invocar Carvarel (Completa) Uma vez por cena, o jhumariel invoca 1d3+1 carvarel (veja guerreiro de chifres, em Tormenta20, p. 287). Eles surgem em alcance curto e agem a partir da próxima rodada, em suas iniciativas.
+Mau Cheiro (Padrão) O jhumariel expele um gás fétido. Todas as criaturas em alcance curto ficam enjoadas por 1d6 rodadas (Fort CD 30 evita). Uma criatura que passe no teste de resistência fica imune a esta habilidade por um dia. Veneno.
+For 6, Des 2, Con 6, Int 2, Sab 1, Car –2
+Perícias Atletismo +15 (+25 para saltar), Intimidação +15.
+Tesouro Padrão mais 1d4 doses de saliva ácida (CD 30 para extrair, veja quadro).`
+        },
+        {
+          chave: "margharon", nome: "Margharon", nd: "14", tipo: "Espírito (abissal) Enorme",
+          papel: "especial",
+          resumo: "O outrora respeitável elfo abandona essa aparência para revelar o que parece ser sua forma verdadeira: uma aberração gigantesca, como um…",
+          texto:
+`Margharon ND 14
+O outrora respeitável elfo abandona essa aparência para revelar o que parece ser sua forma verdadeira: uma aberração gigantesca, como um amontoado de carne inchada, alta e cônica como uma torre de castelo. Uma miríade de tentáculos aflora da base, espalhando-se em volta como raízes de uma grande árvore. No topo, uma bocarra repleta de dentes afiados.
+Margharon estão entre os mais poderosos abissais — são os mercadores de almas dos reinos divinos. Eles negociam os espíritos falecidos que seus mestres, os próprios deuses, mais cobiçam.
+Embora sua aparência real seja aterradora, os margharon usam poderes mágicos para assumir um aspecto ilustre na sociedade mortal, tipicamente como um nobre humano, elfo ou qareen. Uma vez infiltrado, o margharon procura seu alvo e investiga suas maiores necessidades, para então oferecer um contrato: aquilo que a vítima mais deseja — riqueza, fama, poder político, a ressurreição de um ente querido... — em troca de sua alma.
+Há quem aceite a oferta, acreditando que encontrará os deuses apenas quando chegar sua hora, ou mesmo buscando uma forma de burlar o pacto. Contudo, após selar o acordo, o margharon tramará para distorcer as regras (o contrato será cumprido, mesmo que nem sempre da maneira esperada) ou abreviar a vida do contratante.
+Outra tática deste abissal é preparar emboscadas mortais para aventureiros e, quando esses estão perto da derrota, poupar suas vidas se aceitarem assinar um contrato.
+Espírito (abissal) Enorme
+Iniciativa +9, Percepção +12, visão no escuro
+Defesa 44, Fort +28, Ref +14, Von +22, fortificação 50%, imunidade a ácido, atordoamento, eletricidade e veneno, redução de dano 20, resistência a magia +4
+Pontos de Vida 490
+Deslocamento 9m (6q)
+Pontos de Mana 70
+Corpo a Corpo Quatro tentáculos +37 (2d8+28) e mordida +37 (2d6+22).
+Agarrar Aprimorado Tentáculo (teste +39).
+Magia Acelerada (Livre, +4 PM) Uma vez por rodada, quando lança uma magia com execução de ação completa ou menor, o margharon muda a execução dela para livre.
+✦ Mudar Forma (Padrão) O margharon assume a forma de qualquer humanoide de tamanho Pequeno a Enorme, como o efeito da magia Metamorfose. Ele pode permanecer na forma escolhida por tempo indeterminado, mas, se morrer, reverte à forma natural.
+Magias Como um feiticeiro de 14º nível (CD 40).
+• Dissipar Magia (Padrão, 3 PM) O margharon escolhe uma criatura, objeto ou esfera de 3m em alcance médio e faz um teste de Misticismo. Todas as magias nesse alvo com CD igual ou menor que o resultado do teste são dissipadas.
+• Muralha Elemental (Padrão, 14 PM) Uma muralha de fogo de até 30m de comprimento e 3m de altura se eleva da terra, em alcance médio. Um lado da muralha emite ondas de calor, que causam 2d8 pontos de dano de fogo em criaturas a até 6m quando a magia é lançada e no início dos turnos do margharon. Atravessar a muralha causa 16d6 pontos de dano de fogo.
+• Relâmpago (Padrão, 12 PM) O margharon lança um relâmpago em cada criatura escolhida em alcance médio, causando 12d6 pontos de dano de eletricidade (Ref reduz à metade).
+• Teletransporte (Padrão, 6 PM) O margharon se teleporta para um lugar a sua escolha a até 1.000 km. Ele precisa passar em um teste de Misticismo (CD 20 para lugares que visita com frequência, CD 30 para lugares em que ele já esteve ao menos uma vez ou CD 40 para lugares onde nunca esteve). Se falhar no teste, surge a 1d10 x 10 km afastado em qualquer direção e, se rolar 1 natural, fica atordoado por 1d4 rodadas.
+For 5, Des 0, Con 4, Int 6, Sab 3, Car 6
+Perícias Diplomacia +17, Enganação +22, Misticismo +19, Intimidação +17, Intuição +16, Investigação +17.
+Tesouro Padrão.`
+        },
+        {
+          chave: "rhayrivel", nome: "Rhayrivel", nd: "7", tipo: "Espírito (abissal) Médio",
+          papel: "solo",
+          resumo: "A criatura tem o aspecto de um humano muito forte, careca, de olhos vermelhos e língua bifurcada.",
+          texto:
+`Rhayrivel ND 7
+A criatura tem o aspecto de um humano muito forte, careca, de olhos vermelhos e língua bifurcada. Tem o corpo todo coberto de lâminas, correntes e ganchos de aço farpado. O metal enxertado em sua carne, por certo, causa muita dor — mas não tanta quanto ele parece disposto a infligir em seus inimigos.
+Rhayrivel são legionários sádicos, amedrontando aliados e inimigos com a mesma intensidade. Muitos servem a demônios mais poderosos, enquanto outros invadem Arton para matar, angariando almas para seus patronos. Por seu sadismo obsessivo, estão entre os abissais mais propensos a escapar de seus mestres, em busca de liberdade para torturar e flagelar à vontade. Sempre que estes assassinos surgem, trazem consigo dor e sofrimento sem limites.
+Em rituais de sacrifício, é comum que um ou mais rhayrivel sejam enviados ou conjurados para garantir que a vítima sofra as dores mais atrozes. Portanto, aventureiros em missões para resgatar tais infelizes podem muito bem ter que enfrentá-los.
+Espírito (abissal) Médio
+Iniciativa +9, Percepção +7, visão no escuro
+Defesa 31, Fort +19, Ref +15, Von +7, imunidade a ácido e veneno, redução de dano 5, redução de fogo e frio 10
+Pontos de Vida 280
+Deslocamento 9m (6q)
+Corpo a Corpo Duas cimitarras +24 (2d8+20, 18).
+Correntes Farpadas (Padrão) O rhayrivel projeta suas correntes contra uma criatura em alcance curto. A vítima sofre 3d6+26 pontos de dano de corte e é acometida por uma dor profunda, que causa uma penalidade de –5 em testes de perícia até o fim da cena (Fort CD 24 reduz à metade e evita a dor e a penalidade). Um efeito capaz de remover uma condição de fadiga remove a dor e a penalidade.
+Sadismo O rhayrivel recebe +5 em testes de ataque e rolagens de dano contra criaturas que estejam sangrando.
+Talho Atroz Uma criatura atingida por um ataque de cimitarra do rhayrivel fica sangrando (Fort CD 24 evita).
+For 6, Des 2, Con 4, Int 1, Sab 0, Car –2
+Perícias Intimidação +14.
+Tesouro Padrão.`
+        },
+        {
+          chave: "sucubo", nome: "Súcubo", nd: "5", tipo: "Espírito (abissal) Médio",
+          papel: "especial",
+          resumo: "A mulher é estonteante, de corpo escultural e beleza indescritível.",
+          texto:
+`Súcubo ND 5
+A mulher é estonteante, de corpo escultural e beleza indescritível. Tem cabelos longos e brilhantes, pele macia, seios fartos, lábios carnudos. Olhar ao mesmo tempo ingênuo e sedutor, convidando à luxúria. As asas demoníacas apenas emolduram essa obra de arte.
+Também chamados de “íncubos” quando masculinos, súcubos são os mais belos abissais — na verdade, os seres mais belos na existência. Ou não.
+Todo ser inteligente enxerga um súcubo/íncubo com a aparência mais atraente possível. Portanto, nem sempre será uma mulher voluptuosa; pode apresentar qualquer gênero, tipo físico e atributos, conforme os desejos íntimos de cada observador. Após um encontro com esta criatura, é comum que cada testemunha a descreva de forma completamente diferente. Um súcubo também pode se mostrar idêntico, ou muito parecido, com alguém que o observador ame ou por quem esteja apaixonado.
+Súcubos vivem para seduzir mortais, sendo os abissais mais comumente encontrados em Arton, coletando almas para suas coleções. Também visitam o mundo material em busca de adoração, o que conseguem facilmente em qualquer taverna — ou mesmo qualquer palácio. Sua estratégia favorita é demonstrar amizade ou admiração, logo aproximando-se para seduzir. Não hesitam em fingir ser donzelas ou príncipes em perigo para atrair heróis, muito menos render-se a tórridas noites de amor antes de atacar. Então, no momento certo, aplicam seu beijo mortal para sugar a vida da vítima.
+Súcubos evitam combate a qualquer custo, preferindo enfeitiçar seus inimigos para que lutem entre si.
+Espírito (abissal) Médio
+Iniciativa +7, Percepção +6, visão no escuro
+Defesa 21, Fort +5, Ref +11, Von +17, imunidade a ácido, encantamento e veneno, redução de fogo, frio e trevas 10, vulnerabilidade a luz
+Pontos de Vida 140
+Deslocamento 9m (6q), voo 15m (10q)
+Pontos de Mana 30
+Corpo a Corpo Duas garras +15 (2d4+10, 19).
+Beijo Drenante (Padrão) O súcubo beija uma criatura adjacente, que fica enfeitiçada e frustrada (Von CD 22 evita). Falhas consecutivas na mesma cena se acumulam: na segunda, a criatura fica esmorecida; na terceira, fica inconsciente. Por fim, na quarta falha, a vítima morre e o súcubo recupera 6d6 PM.
+Desejo Encarnado Quando faz um teste de uma perícia baseada em Carisma, o súcubo rola dois dados e usa o melhor resultado.
+✦ Mudar Forma (Padrão) O súcubo assume a forma de qualquer humanoide de tamanho Pequeno a Grande, como o efeito da magia Metamorfose. Ele pode permanecer na forma escolhida por tempo indeterminado, mas, se morrer, reverte à forma natural.
+Magias Como um feiticeiro de 7º nível (CD 22, 24 para encantamento*).
+• Enfeitiçar* (Padrão, 6 PM) Um espírito, humanoide ou monstro em alcance curto fica enfeitiçado (Von evita).
+• Imagem Espelhada (Padrão, 5 PM) O súcubo cria cinco cópias ilusórias de si mesmo que fornecem +10 na Defesa. Cada vez que um ataque erra o súcubo, uma das imagens desaparece e o bônus na Defesa diminui em 2.
+• Marca da Obediência* (Padrão, 3 PM) O súcubo ordena que uma criatura adjacente não ataque-o ou seus aliados até o fim da cena (Von evita). A criatura pode repetir o teste de Vontade em cada um de seus turnos subsequentes.
+• Sono* (Padrão, 1 PM) Uma criatura em alcance curto fica exausta por 1d4+1 rodadas, depois fatigada (Von muda para fatigado por 1d4 rodadas).
+For –1, Des 3, Con 2, Int 3, Sab 2, Car 10
+Perícias Atuação +19, Diplomacia +19, Enganação +19, Intuição +6.
+Equipamento Nenhum. Tesouro Padrão.`
+        },
+        {
+          chave: "abahddon", nome: "Abahddon", nd: "S", tipo: "Espírito (abissal) Grande",
+          papel: "solo",
+          resumo: "O demônio tem corpo massivo e poderoso, inchado de músculos, com partes segmentadas ou ornamentadas com espinhos.",
+          texto:
+`Abahddon ND S
+O demônio tem corpo massivo e poderoso, inchado de músculos, com partes segmentadas ou ornamentadas com espinhos. Tem um par de grandes chifres anelados, retorcidos, e um terceiro chifre aflorando no centro. Garras longas e negras afloram nas mãos e na cauda, asas de couro produzem fumaça e enxofre com seus movimentos. Ainda assim, apesar da aparência monstruosa, os olhos flamejantes brilham com sagacidade e malícia infernais.
+Este talvez seja o demônio mais ardiloso em todos os mundos. Diz-se que todos os grandes planos, todos os esquemas seguidos e executados por abissais, foram concebidos pela mente assustadoramente genial de Abahddon, Lorde das Profundezas.
+Tamanha sua engenhosidade, seu talento para executar planos complexos, que Abahddon tem o privilégio de servir a inúmeros deuses — não há divindade maligna que não utilize seus serviços, mesmo quando estes ocasionalmente conflitam com seus próprios objetivos. Diz-se que teria auxiliado Sszzaas durante o grande roubo dos Rubis da Virtude. Outros acusam-no de armar lutas durante o Torneio do Deus Guerreiro, que conduziu Arsenal ao Panteão. Outros ainda apontam sua manipulação de eventos que levaram à ascensão da Supremacia Purista. Assim, Abahddon segue se tornando tão influente e necessário que nem mesmo a queda de um deus pode prejudicá-lo.
+Este demônio extremamente inteligente tece planos sobre planos. Nunca é apanhado de surpresa ou sem uma alternativa em que obtenha alguma vantagem. Suas tramas, de tão complexas, podem ser compreendidas apenas por ele próprio; seus subordinados apenas seguem ordens, de pouco adiantando interrogá-los para antever os movimentos do demônio.
+Totalmente oposto a Lamashtu, o Lorde das Profundezas raramente recorre a violência ou força bruta. Prefere manipular, mentir e enganar para que outros lutem. Tem predileção especial por ludibriar os mais nobres e bem-intencionados, fazendo com que inadvertidamente causem o mal. Contudo, uma vez que ele escolha lutar, pouquíssimos em Arton podem derrotá-lo.
+Quando atua secretamente, Abahddon prefere a forma de um nobre idoso, de voz rouca e grave, muito sorridente, atencioso e solícito. Obviamente, no entanto, ele tem infinitos outros disfarces.
+Espírito (abissal) Grande
+Iniciativa +19, Percepção +22, visão no escuro
+Defesa 64, Fort +29, Ref +21, Von +36, imunidade a ácido, adivinhação, efeitos mentais, fogo e veneno, maior que a morte, redução de dano 20/luz, resistência a magia +5
+Pontos de Vida 2.555
+Deslocamento 12m (8q), voo 18m (12q)
+Pontos de Mana 156
+Corpo a Corpo Kazidhaan +64 (6d12+92, 19, mais 2d8 contra devotos de deuses que canalizam apenas energia positiva e criaturas que, a critério do mestre, sejam bondosas), mordida +58 (8d6+44) e cauda +58 (8d8+36 corte).
+Agarrar Aprimorado (Livre) Cauda (teste + 60).
+Concentração Abissal Abahddon pode lançar magias mesmo com as mãos presas ou amordaçado (como se estivesse sob efeito do poder Magia Discreta) e, quando faz um teste de Vontade para concentração, rola dois dados e usa o melhor resultado.
+Constrição (Livre) No início de cada um de seus turnos, Abahddon causa 8d8+36 pontos de dano de impacto em qualquer criatura que esteja agarrando.
+Dádiva Abissal (Completa) Abahddon transfere uma fração de seu poder para outra criatura em alcance curto. Essa criatura pode escolher um dos benefícios a seguir. Uma mesma criatura só pode receber uma dádiva de Abahddon.
+• A criatura aprende e pode lançar uma magia de até 3º círculo (atributo-chave Carisma).
+• Um atributo da criatura, à escolha dela, aumenta em +1.
+• A criatura recebe um poder qualquer (exceto concedido ou da Tormenta), cujos pré-requisitos cumpra.
+Pacto Maculado (Movimento) Uma criatura em alcance médio ouve “conselhos” de uma voz suave; comandos simples como “vá até aquele lugar”, “solte esse item” etc. A cada vez que segue um desses conselhos, a criatura recebe +2 em rolagens de dano por 1 rodada e 2 PM temporários.
+Por Trás das Cortinas Quando faz um teste de Diplomacia, Enganação, Intimidação, Intuição ou Percepção, Abahddon rola dois dados e usa o melhor resultado.
+Preço do Pacto Quando Abahddon usa Desejo, Dádiva Abissal ou Pacto Maculado para conceder um efeito benéfico a uma criatura, essa criatura sofre uma penalidade cumulativa de –5 em testes de perícia e rolagens de dano contra Abahddon. A penalidade tem a mesma duração que o efeito benéfico correspondente.
+Magias Como um conjurador arcano de 20º nível (CD 51, limite de PM 36).
+• Chuva de Meteoros (Completa, 15 PM) Meteoros caem em um quadrado de 36m em alcance longo. Criaturas na área sofrem 15d6 pontos de dano de impacto, 15d6 pontos de dano de fogo e ficam caídas e presas (agarradas) sob os escombros (Ref reduz o dano à metade e evita a condição; veja Tormenta20, p. 183).
+• Desejo (Padrão, 15 PM) Abahddon molda a realidade a sua vontade. Ele pode dissipar os efeitos de qualquer magia de 4º círculo ou menor, transportar até 10 criaturas voluntárias em alcance longo para qualquer outro plano ou fazer algo ainda mais poderoso (nesse caso, exige o sacrifício de 2 PM).
+• Desespero Esmagador (Padrão, 8 PM) Criaturas num cone de 6m ficam debilitadas e esmorecidas (Von reduz para 1 rodada).
+• Dissipar Magia (Padrão, 3 PM) Abahddon escolhe uma criatura, objeto ou esfera de 3m em alcance médio e faz um teste de Misticismo. Todas as magias nesse alvo com CD igual ou menor que o resultado do teste são dissipadas.
+• Legião (Padrão, 15 PM, sustentada) Até 10 criaturas em alcance médio obedecem cegamente aos comandos de Abahddon, exceto ordens claramente suicidas. Uma criatura tem direito a um teste de Vontade no fim de cada um de seus turnos para se livrar do efeito. Criaturas que passem no teste ficam abaladas por 1 rodada enquanto recuperam a consciência.
+• Marionete (Padrão, 10 PM, sustentada) Abahddon controla as ações físicas de uma criatura em alcance médio. Ao sofrer a magia, e no início de cada um de seus turnos, a vítima faz um teste de Fortitude. Se passar, a magia é anulada.
+• Rogar Maldição (Padrão, 10 PM) Uma criatura em alcance curto fica esmorecida e não pode se comunicar ou lançar magias permanentemente (Fort evita).
+For 8, Des 3, Con 5, Int 16, Sab 6, Car 12
+Perícias Atletismo +24, Diplomacia +33, Enganação +38, Intimidação +33, Intuição +27, Misticismo +32.
+Equipamento Kazidhaan. Tesouro Triplo.`
+        },
+        {
+          chave: "lamashtu", nome: "Lamashtu", nd: "S", tipo: "Espírito (abissal) Grande",
+          papel: "solo",
+          resumo: "A criatura lembra uma grande nagah, metade humana e metade serpente gigante.",
+          texto:
+`Lamashtu ND S
+A criatura lembra uma grande nagah, metade humana e metade serpente gigante. Os três pares de braços, no entanto, revelam se tratar de uma guerreira demoníaca. Cada mão empunha uma arma magnífica, ricamente ornamentada. Não veste armadura, mas usa uma fortuna incalculável em joias mágicas — braceletes, colares, anéis, brincos, tiara. Seria uma mulher muito bela, mas o ódio em seus olhos e em seus dentes cerrados revela existir apenas desejo por matança em seu coração.
+Os abissais do reino divino de Arsenal são o que existe de pior em termos de violência e brutalidade nos mundos dos deuses. Nascem no campo de batalha, vivem para o derramamento de sangue e sempre procuram um novo confronto, independentemente de vitória ou derrota. Embora isso faça parecer que tenham comportamentos homogêneos, a verdade não poderia estar mais distante. Criaturas do caos, quanto mais poderosos ficam, mais diversas se tornam suas personalidades, preferências e maneirismos.
+Lamashtu ascenderia como uma das favoritas de Keenn, o antigo Deus da Guerra, por sua atuação nas frequentes batalhas locais. Liderando exércitos, oferecendo serviços a outros demônios ou conquistando territórios por conta própria, ela deixou sua marca através da ferocidade. Talvez existam demônios mais poderosos ou habilidosos, mas nenhum que iguale sua ferocidade. Forte, mas também uma sagaz estudiosa das artes da guerra, Lamashtu organiza elaborados planos de combate com seus generais antes de cada conflito. E em vez de se esconder na retaguarda ou cercar-se de guardas, segue à frente para saudar o inimigo com suas armas e liderar seus comandados pelo exemplo.
+Quando as espadas se cruzam e os escudos se chocam, porém, Lamashtu não segue mais nenhuma tática ou plano. Embriagada de violência, busca apenas matar e destruir.
+Se a ferocidade fez Keenn se afeiçoar por Lamashtu, foi sua tenacidade que a deixou nas graças de Arsenal. Mesmo quando as forças a seu redor sofrem derrotas esmagadoras, a Rainha dos Massacres ainda consegue obter vitórias pessoais. Talvez seu exército perca a batalha, mas ela certamente matará o campeão inimigo. Se tiver que sacrificar algumas unidades para aumentar seus espólios, não pensará duas vezes. Sob a selvageria sanguinária, Lamashtu guarda um desejo implacável de vitória.
+A Senhora do Genocídio passa muito pouco tempo longe dos campos de batalha. Quando o faz, repousa em seu covil, desfrutando dos tesouros que adquiriu em séculos de matança. Os espólios que mais aprecia são joias de todos os tipos e tamanhos. Quanto mais raras, melhor.
+Espírito (abissal) Grande
+Iniciativa +23, Percepção +21, visão no escuro
+Defesa 65, Fort +36, Ref +28, Von +24, evasão aprimorada, imunidade a ácido, fogo e medo, maior que a morte, redução de dano 30
+Pontos de Vida 2.500
+Deslocamento 12m (8q)
+Pontos de Mana 126
+Corpo a Corpo Cimitarra energética +58 (6d6+62, 18/x3), martelo de guerra lancinante +58 (3d8+52, x3), mangual magnífico +58 (4d8+48), espada longa anticriatura +58 (3d8+52, 19), tridente venenoso +58 (3d6+55) e espada bastarda sanguinária +58 (3d10+48, 19).
+Arsenal Demoníaco Lamashtu possui uma variedade de armas encantadas. Atualmente, ela usa os itens descritos acima (encantos não contabilizados), mas eles podem ser substituídos por quaisquer outras armas mágicas, a critério do mestre.
+Ataque Mágico (Livre) Uma vez por rodada, quando usa a ação agredir, Lamashtu lança uma magia com tempo de execução de ação padrão ou menor no lugar de um de seus ataques corpo a corpo.
+Furacão de Lâminas (Reação) Quando erra um ataque corpo a corpo, Lamashtu pode repetir esse ataque contra outra criatura ao seu alcance. Recarga (movimento).
+Investida Implacável Quando faz uma investida, Lamashtu causa +1d10 pontos de dano de fogo e pode continuar se movimentando depois do ataque.
+Invocar Jhumariel (Completa) Uma vez por cena, Lamashtu invoca 1d6+1 jhumariel. Eles surgem em espaços vazios em alcance curto e agem a partir da próxima rodada, em suas iniciativas.
+Superioridade em Batalha Lamashtu é imune a manobras de combate e não pode ser flanqueada. Além disso, seus ataques ignoram redução de dano.
+Tenacidade Sulfúrica Quando faz um ataque corpo a corpo que reduz os pontos de vida de um alvo a 0 ou menos, Lamashtu recupera uma quantidade de PV igual ao dano causado.
+✦ Visão Perfeita Lamashtu está sempre sob efeito de Visão da Verdade, com todos os aprimoramentos.
+Magias Como uma conjuradora arcana de 20º nível (CD 51).
+• Assassino Fantasmagórico (Padrão, 10 PM) Um espectro surge adjacente a Lamashtu, e um alvo em alcance médio deve fazer um teste de Vontade. Se ele passar, o espectro é dissipado. Se falhar, ele acredita na existência do espectro, que se move 18m por rodada ao final do seu turno, em direção à vítima. Se o espectro terminar seu turno adjacente à vítima, ela deve fazer um teste de Fortitude. Se passar, sofre 6d6 pontos de dano de trevas (esse dano não pode reduzir o alvo a menos de 0 PV e não o deixa sangrando). Se falhar, sofre um colapso, ficando imediatamente com –1 PV e sangrando.
+• Bola de Fogo (Padrão, 19 PM) Uma explosão causa 22d6 pontos de dano de fogo em todas as criaturas e objetos livres numa esfera de 6m em alcance médio (Ref reduz à metade).
+• Ferver Sangue (Padrão, 20 PM, sustentada) Lamashtu faz o sangue de criaturas escolhidas em alcance curto aquecer até entrar em ebulição. Quando a magia é lançada, e no início de cada um de seus turnos, os alvos sofrem 7d8 pontos de dano de fogo e ficam enjoados por 1 rodada (Fort reduz à metade e evita a condição). Se um alvo passar em dois testes de Fortitude seguidos, dissipa a magia. Se um alvo for reduzido a 0 PV pelo dano desta magia, seu corpo explode, matando-o e causando 6d6 pontos de dano de fogo em todas as criaturas a até 3m (Ref reduz à metade). Não afeta criaturas sem sangue, como construtos ou mortos-vivos.
+• Perdição (Padrão, 9 PM) Criaturas escolhidas em alcance curto sofrem –5 em testes de ataque e rolagens de dano até o fim da cena.
+• Teletransporte (Padrão, 6 PM) Lamashtu se teleporta para um lugar a sua escolha a até 1.000 km. Ela precisa passar em um teste de Misticismo (CD 20 para lugares que visita com frequência, CD 30 para lugares em que ele já esteve ao menos uma vez ou CD 40 para lugares onde nunca esteve). Se falhar no teste, surge 1d10 x 10 km afastada em qualquer direção e, se rolar 1 natural, fica atordoada por 1d4 rodadas.
+• Toque da Morte (Padrão, 17 PM) Uma criatura em alcance curto sofre 10d8+10 pontos de dano de trevas. Se estiver com menos da metade de seus PV, em vez disso, deve fazer um teste de Fortitude. Se passar, sofre o dano normal. Se falhar, seus PV são reduzidos a –10.
+For 18, Des 6, Con 16, Int 6, Sab 4, Car 10
+Perícias Acrobacia +22, Enganação +28, Guerra +27, Intimidação +28, Intuição +22, Misticismo +24.
+Equipamento Cimitarra energética, espada bastarda sanguinária, espada longa anticriatura, mangual magnífico, martelo de guerra lancinante, tridente venenoso. Tesouro Triplo.`
+        },
+      ],
+
+      regras: [
+        { titulo: "Abissais",
+          texto:
+`Diabos. Demônios. Abissais. Infernais. Planares malignos. Os nativos dos reinos de deuses maléficos têm muitos nomes. Estudiosos de outros tempos acreditaram que fossem criaturas diferentes, atreladas à ordem ou ao caos, seguindo hierarquias complexas e até mesmo travando guerras milenares sangrentas por supremacia. Também se pensava que fossem formados a partir do próprio mal, incapazes de mudar essa natureza, sendo impossível suprimir ou redimir sua perversidade sem destruí-los.
+
+Hoje, sabe-se não ser bem assim. A verdade é que, quando divindades ascendem ou caem, os abissais também mudam. Quase todos atuam a serviço de seus respectivos criadores, pois foram concebidos com esse objetivo — mas há aqueles que se rebelam, libertam-se, buscam seus próprios objetivos. Muitas vezes esses objetivos são egoístas, cruéis, nem tão diferentes do antigo patrono. Mas alguns, muito raros, podem almejar bondade ou nobreza. Assim, se o paladino que perdoa um demônio era antes tachado de tolo ingênuo, hoje sabemos que sua clemência não é apenas bem-intencionada, mas justificada.
+
+Contudo, tais exceções são exatamente isso: exceções. Como lacaios divinos ou apenas monstros rebeldes, abissais estão entre os seres mais perigosos de Arton e além. Ainda, devotos de deuses com tendências profanas — sobretudo Arsenal, Hyninn, Kallyadranoch, Megalokk, Nimb, Sszzaas, Thwor, Tenebra — podem ser recompensados com servos abissais, ou recebem seu auxílio temporário em missões importantes.` },
+        { titulo: "Barganhas",
+          texto:
+`Os diabretes negociantes transformam o que tomaram de sua vítima em um item, que em geral guardam para si. Embora possam permitir que o requerente fique com o item, por sadismo, um personagem não deve receber qualquer bônus além do benefício que já alcançou. Não se sabe de nenhuma forma de devolver o que foi perdido aos requerentes. Apenas recuperar os itens não é o bastante, nem matar o diabrete com o qual se negociou. Pode haver um meio, mas certamente seria o objetivo de uma aventura, ou mesmo uma campanha inteira.
+As barganhas apresentadas são sugestões, e o mestre pode criar novos elementos para serem negociados. Penalidades recebidas através de uma barganha não podem ser evitadas por nenhum efeito (como evitar uma penalidade de medo usando Coragem Total). O mestre também precisa ter em mente que o objeto de qualquer barganha deve ter um efeito negativo sobre o personagem. Um personagem que não se beneficie de itens de alimentação ou condições de descanso não irá receber as penalidades normais por barganhar sua alegria. Perder a alegria vai prejudicá-lo de alguma outra forma terrível e única. Por sua natureza sobrenatural, não é possível barganhar uma emoção para recuperar outra, nem enganar os diabretes negociantes de nenhuma forma. As barganhas são sempre pesadas e trágicas para o requerente.` },
+        { titulo: "Contrato Infernal",
+          texto:
+`Margharon são exímios negociadores e manipuladores, capazes de oferecer exatamente aquilo com que cada criatura sonha. Uma criatura que assine um contrato com um margharon sofre a Maldição da Mortalidade: sempre que sofre dano físico, a criatura fica sangrando, e só se recupera desse sangramento se curar pelo menos 30 pontos de vida por meio de uma ou mais curas mágicas. Além disso, quando a criatura morre, sua alma fica presa, sob controle do margharon. O único meio de remover a Maldição da Mortalidade — ou de recuperar a alma da criatura, caso ela já tenha morrido — é destruir o margharon. Um personagem prestes a assinar um contrato pode fazer um teste de Intuição (CD 40) para perceber que está sendo enganado pelas letras miúdas que escondem a maldição.` },
+      ],
+    },
 
     // ── 🕊 ASPECTOS DOS DEUSES ─────────────────────
     {
@@ -1518,5 +1832,12 @@ Arma Exótica • Uma Mão T$ 1.000 • Dano * • Crítico * Alcance * • 1 Es
 • Rum. O gigante recebe imunidade a efeitos de fadiga e de metabolismo por 1d4+1 rodadas mas, após isso, fica fraco.
 • Sidra. Uma criatura em alcance curto é atingida por um jato de alta pressão; ela sofre 1d8+15 pontos de dano de impacto e fica atordoada por 1 rodada (Fort reduz à metade e evita a condição). Uma criatura só pode ser atordoada por este efeito uma vez por cena.
 • Vinho. Até o fim da cena, o gigante recebe Cura Acelerada 5, mas sofre –5 em Vontade. Um barril gigante encontrado como parte do tesouro de um gigante é um item que ocupa 5 espaços e possui 1d4+1 cargas de uma destas bebidas. Usá-lo conta como a habilidade Barril Gigante de... (CD For).` },
+    { chave: "salivaAcida", nome: "Saliva Ácida", meta: "Abissais",
+      texto:
+`Este líquido viscoso e esverdeado só pode ser obtido do cadáver de um jhumariel, e não pode ser fabricado normalmente. Uma dose é suficiente para cobrir uma arma corpo a corpo ou 20 munições; aplicá-la é uma ação padrão e faz a arma (ou a munição) causar +1d8 pontos de dano de ácido até o fim da cena.
+Preparado alquímico, T$ 150, 0,5 espaço.` },
+    { chave: "kazidhaan", nome: "Kazidhaan", meta: "Abissais",
+      texto:
+`A arma do Lorde das Profundezas é uma montante atroz pungente magnífica profana, conhecida pelos abissais também como “Eliminadora”. Apesar de suas qualidades formidáveis, o poder mais assustador de Kazidhaan não é sua capacidade destrutiva, mas seu efeito sobre aqueles que ela derrota. Se uma criatura tiver seus pontos de vida reduzidos a 0 ou menos por um ataque de Kazidhaan feito por um abissal, uma marca (como uma tatuagem) é inscrita em sua pele de forma permanente. Enquanto a criatura tiver essa marca, o abissal que a derrotou pode lhe dar comandos telepáticos (exceto ordens claramente suicidas) de qualquer lugar no mesmo Plano. A criatura pode tentar resistir a um comando, mas para isso deve fazer um teste de Vontade (CD Car; 51 para Abahddon); se passar, consegue resistir a esse comando específico por 1 dia. A marca causada por Kazidhaan só pode ser removida em um ritual de purificação realizado por pelo menos três clérigos com acesso a magias de 4º círculo e que custa T$ 1.000.` },
   ]);
 })();
