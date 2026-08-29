@@ -53,7 +53,7 @@ window.GA_FichasProntas = (function () {
     { chave: 'deusesArton',  icone: '⛩', cor: '#8a6a1f',
       nome: 'Deuses de Arton', curto: 'Deuses de Arton',
       fonte: 'FICHAS_DEUSES_ARTON',
-      sub: 'Como o Panteão pisa em Arton: os avatares dos vinte Deuses Maiores, cada um com o quadro de dados da divindade dentro do card — e quem os deuses mandam quando um avatar seria demais (aspectos, celestiais, fadas, gênios e gigantes).' },
+      sub: 'Como o Panteão pisa em Arton: as 76 criaturas do Capítulo 4. Os avatares dos vinte Deuses Maiores, cada um com o quadro de dados da divindade dentro do card — e quem os deuses mandam quando um avatar seria demais, nos seis grupos do livro: abissais (do diabrete de estimação a Abahddon e Lamashtu), aspectos dos deuses, celestiais, fadas, gênios e gigantes. Os três perigos da Tabela 4-1 (vento abrasador, pântano amaldiçoado e cataclismo) não estão aqui: são perigos complexos, e ficam na aba ⚠ Perigos.' },
     { chave: 'npcs',         icone: '👤', cor: '#4a5a7a',
       nome: 'Guia de NPCs', curto: 'Guia de NPCs',
       fonte: 'GUIA_NPCS',

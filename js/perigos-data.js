@@ -215,7 +215,7 @@ Acalmar Animal (Adestramento CD 25): elimina a chance de a criatura fugir.`,
     chave: 'ventoAbrasador',
     nome: 'Vento Abrasador',
     nd: '3',
-    fonte: 'Deuses e Heróis',
+    fonte: 'Deuses de Arton',
     descricao: 'Em regiões áridas, rajadas de vento ardente capazes de arrancar a pele dos ossos podem matar mesmo os viajantes mais preparados.',
     objetivo: 'Sobreviver à rajada de vento (dura 1d4+2 rodadas).',
     efeito:
@@ -231,7 +231,7 @@ Refrescar-se (sem teste): gasta item/magia (ração, Criar Elementos…) para re
     chave: 'pantanoAmaldicoado',
     nome: 'Pântano Amaldiçoado',
     nd: '5',
-    fonte: 'Deuses e Heróis',
+    fonte: 'Deuses de Arton',
     descricao: 'Os aventureiros precisam atravessar um brejo escuro, de águas fétidas e borbulhantes. As brumas e a vegetação os afastam uns dos outros — cada um deve contar consigo mesmo.',
     objetivo: 'Atravessar o pântano (cada personagem deve acumular 5 avanços).',
     efeito:
@@ -258,7 +258,7 @@ Recuar (sem teste): diminui o próprio número de avanços em um (útil para aju
     chave: 'cataclismo',
     nome: 'Cataclismo',
     nd: '17',
-    fonte: 'Deuses e Heróis',
+    fonte: 'Deuses de Arton',
     descricao: 'Os deuses estão furiosos! Algo ofendeu o Panteão, e cabe aos personagens lidar com a ira divina.',
     objetivo: 'Aplacar as divindades (acumular 7 perdões) ou sobreviver à fúria delas por 1d6+3 rodadas, o que vier primeiro.',
     efeito:
