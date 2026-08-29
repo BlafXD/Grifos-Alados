@@ -255,3 +255,85 @@
   .nc-modal     { max-height: 100vh; border-left: none; border-right: none; }
   .nc-ano-ctrl  { gap: 0.25rem; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   ABAS DE CAMPANHA — uma gazeta para cada RPG
+   Mesma linguagem visual das sub-abas de Consultas (.cr-subtabs):
+   gruda logo abaixo do menu principal e marca a ativa com fio de ouro.
+   ══════════════════════════════════════════════════════════════════ */
+.nc-camp-abas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 0.4rem 0.75rem;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.22), transparent 45%),
+    var(--parchment);
+  border-bottom: 3px double var(--gold-dim);
+  position: sticky;
+  top: var(--nav-h, 48px);
+  z-index: 90;
+}
+
+.nc-camp-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-right: 0.35rem;
+  white-space: nowrap;
+}
+
+.nc-camp-aba {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  padding: 0.45rem 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.nc-camp-aba:hover { background: var(--parchment3); color: var(--ink); }
+.nc-camp-aba--ativa,
+.nc-camp-aba--ativa:hover {
+  color: var(--parchment);
+  background: var(--ink);
+  border-color: var(--ink);
+  box-shadow: inset 0 2px 0 var(--gold);     /* fio de ouro no topo da aba ativa */
+}
+
+/* ── CONTROLES DE CAMPANHA (só no modo edição) ──────────────────── */
+.nc-camp-ctrl {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px dashed var(--parchment3);
+}
+.nc-camp-sep {
+  width: 1px;
+  align-self: stretch;
+  min-height: 1.2rem;
+  background: var(--parchment3);
+  margin: 0 0.4rem;
+}
+
+/* Os jogadores trocam de campanha, mas não editam nenhuma. */
+.ga-jogador .nc-camp-ctrl { display: none; }
+
+/* ── RESPONSIVO ─────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .nc-camp-abas { padding: 0.5rem 0.3rem 0.6rem; gap: 0.3rem; }
+  .nc-camp-aba  { font-size: 0.66rem; padding: 0.38rem 0.7rem; }
+  .nc-camp-rot  { display: none; }
+  .nc-camp-sep  { display: none; }
+}
