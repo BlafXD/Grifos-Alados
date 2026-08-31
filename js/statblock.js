@@ -122,5 +122,9 @@ window.GA_Statblock = (function () {
     }).join('<br>');
   }
 
-  return { linha: linha, bloco: bloco, marcar: marcar, textoComSelo: textoComSelo, RE_TIPO: RE_TIPO };
+  // RE_HABILIDADE e RE_HAB_SIMPLES saem daqui porque a aba ⚗ Criar Ameaça
+  // precisa SEPARAR nome e texto da habilidade (aqui só se negrita o nome).
+  // É o mesmo reconhecedor que já formata as 585 fichas dos bestiários.
+  return { linha: linha, bloco: bloco, marcar: marcar, textoComSelo: textoComSelo,
+           RE_TIPO: RE_TIPO, RE_HABILIDADE: RE_HABILIDADE, RE_HAB_SIMPLES: RE_HAB_SIMPLES };
 })();

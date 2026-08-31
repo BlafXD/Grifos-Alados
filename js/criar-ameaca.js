@@ -1,9 +1,16 @@
 // ═══════════════════════════════════════════════════════════════════
 //  CRIAR-AMEACA.JS — Aba "⚗ Criar Ameaça"
 //  A oficina do "Manual de Criação de Ameaças" (Ameaças de Arton,
-//  Capítulo 2, p. 377–387): os oito passos do livro, com as Tabelas
+//  Capítulo 2, p. 377–389): os oito passos do livro, com as Tabelas
 //  2-2, 2-3 A/B/C e 2-4 aplicadas sozinhas, mais as ameaças que o
 //  mestre criou (adicionar, editar, duplicar e remover).
+//
+//  A aba trabalha de três modos. "Nova" são os oito passos, do zero.
+//  "Modificada" (p. 387) e "Bando" (p. 387–389) partem de uma
+//  CRIATURA-BASE — uma ficha dos bestiários ou outra ameaça criada
+//  aqui — e guardam a diferença dela para a linha da Tabela 2-3 do
+//  ND original. É essa diferença que o livro manda preservar ao
+//  mudar o ND ("anote as diferenças […] e mantenha as diferenças").
 //
 //  Lê window.GA_CRIAR_AMEACA (tabelas) e window.GA_CRIAR_AMEACA_MANUAL
 //  (texto do manual + biblioteca de habilidades). Desenha o statblock
@@ -21,8 +28,11 @@
 
   const esc = window.GA_esc;
 
-  let D = null;   // GA_CRIAR_AMEACA
-  let M = null;   // GA_CRIAR_AMEACA_MANUAL
+  // Os dois arquivos de dados entram ANTES deste no index.html, então já
+  // dá para resolvê-los aqui — é o que deixa window.GA_CriarAmeaca (lá no
+  // fim) funcionar mesmo em páginas que não desenham a aba.
+  let D = window.GA_CRIAR_AMEACA || null;            // tabelas
+  let M = window.GA_CRIAR_AMEACA_MANUAL || null;     // texto do manual
 
   // ═══════════════════════════════════════════════════════════════
   //  ARMAZENAMENTO
@@ -87,7 +97,25 @@
       ataques: [], habilidades: [], pericias: [],
       atributos: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
       equipamento: '', tesouro: 'padrao', tesouroObs: '', parceiro: '', notas: '',
+
+      // ── Criatura derivada (p. 387–389) ───────────────────────────
+      // 'nova' = os oito passos, do zero. 'modificada' e 'bando' partem
+      // de uma criatura-base; veja o cabeçalho do arquivo.
+      modo: 'nova',
+      base: null,     // { livro, chave, nome, nd, papel, tamanho, cd, dano }
+      deltas: null,   // desvio em PONTOS da linha do ND da criatura-base
+      bando: null,    // { quantidade, faixa, multAplicado }
     };
+  }
+
+  // Um delta zerado para cada coluna da Tabela 2-3.
+  function deltasZero() {
+    const z = {};
+    D.PARAM_COLUNAS.forEach(function (col) { z[col.chave] = 0; });
+    return z;
+  }
+  function bandoNovo() {
+    return { quantidade: '', faixa: '', multAplicado: 1, habsMult: 1, tamanhoAplicado: '' };
   }
 
   // Completa campos que uma criatura salva por uma versão anterior possa
@@ -106,6 +134,12 @@
     c.ataques.forEach(function (a) { if (!a.id) a.id = uid('at'); });
     c.habilidades.forEach(function (h) { if (!h.id) h.id = uid('hb'); });
     c.pericias.forEach(function (p) { if (!p.id) p.id = uid('pe'); });
+
+    // criatura derivada: modo válido, delta completo, bando presente
+    if (['nova', 'modificada', 'bando'].indexOf(c.modo) < 0) c.modo = 'nova';
+    if (c.modo === 'nova') { c.base = null; c.deltas = null; c.bando = null; }
+    if (c.deltas) c.deltas = Object.assign(deltasZero(), c.deltas);
+    if (c.modo === 'bando') c.bando = Object.assign(bandoNovo(), c.bando || {});
     return c;
   }
 
@@ -133,13 +167,25 @@
     return D.NDS[Math.max(0, Math.min(D.NDS.length - 1, i + (delta || 0)))];
   }
 
-  // Estatísticas finais da criatura, já com os ajustes de ±ND.
+  // Desvio em PONTOS herdado da criatura-base (0 numa ameaça nova).
+  function pontos(c, chave) {
+    return c.deltas ? (parseInt(c.deltas[chave], 10) || 0) : 0;
+  }
+
+  // Estatísticas finais da criatura. Três camadas, nesta ordem:
+  //   1. a linha da Tabela 2-3 do papel e do ND;
+  //   2. o ajuste de ±1/±2 ND do Passo 3 (anda na tabela, sem sair dela);
+  //   3. o delta em PONTOS herdado da criatura-base (p. 387: "modifique
+  //      as estatísticas de sua criatura para as do novo ND e mantenha as
+  //      diferenças").
   function stats(c) {
     const out = {};
     D.PARAM_COLUNAS.forEach(function (col) {
-      const delta = c.ajustes[col.chave] || 0;
-      out[col.chave] = parametros(c.papel, ndComDelta(c.nd, delta))[col.chave];
-      out[col.chave + 'Nd'] = ndComDelta(c.nd, delta);
+      const nd = ndComDelta(c.nd, c.ajustes[col.chave] || 0);
+      const pts = pontos(c, col.chave);
+      out[col.chave] = parametros(c.papel, nd)[col.chave] + pts;
+      out[col.chave + 'Nd'] = nd;
+      out[col.chave + 'Pts'] = pts;
     });
     return out;
   }
@@ -281,9 +327,611 @@
     const n = parseInt(v, 10) || 0;
     return (n >= 0 ? '+' : '–') + Math.abs(n);
   }
+  // "3700" → "3.700": é assim que o livro imprime os PV de quatro
+  // dígitos para cima (o Gatzvalith tem "Pontos de Vida 3.700").
+  function milhar(v) {
+    return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
   // Modificador de tamanho: o livro imprime "0" no Médio, não "+0".
   function sinalZero(v) {
     return (parseInt(v, 10) || 0) === 0 ? '0' : sinal(v);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  CRIATURA-BASE — ler uma ficha do livro no formato desta aba
+  // ═══════════════════════════════════════════════════════════════
+  //  "Como Modificar Criaturas" e "Como Criar Bandos" partem de uma
+  //  ficha pronta. Quem lê o statblock é o parsearFicha() do
+  //  monstros.js (window.GA_Monstros.lerFicha) — o mesmo que já lê as
+  //  585 fichas dos bestiários para a aba ⚔ Combates. Ele devolve a
+  //  criatura no formato daquela aba, que guarda ataques e habilidades
+  //  como texto corrido; aqui elas precisam vir separadas campo a
+  //  campo, e é só essa separação que este trecho acrescenta (com o
+  //  MESMO reconhecedor de nome de habilidade do statblock.js).
+
+  // "–3", "−3", " +3 " → 3 / −3. O livro usa três traços diferentes.
+  function inteiro(v) {
+    const n = parseInt(String(v == null ? '' : v).replace(/[–—−]/g, '-').replace(/\s+/g, ''), 10);
+    return isNaN(n) ? 0 : n;
+  }
+
+  // Divide por vírgula SEM cortar dentro de parênteses nem no meio de um
+  // decimal: "4d4+12 corte, x2, mais 1d8 ácido" tem três partes, mas
+  // "(+14 para nadar)" tem uma e "alcance 4,5m" também.
+  function partesPorVirgula(txt) {
+    const s = String(txt || '');
+    const out = [];
+    let nivel = 0, atual = '';
+    s.split('').forEach(function (ch, i) {
+      if (ch === '(') nivel++;
+      else if (ch === ')') nivel = Math.max(0, nivel - 1);
+      const decimal = /\d/.test(s[i - 1] || '') && /\d/.test(s[i + 1] || '');
+      if (ch === ',' && nivel === 0 && !decimal) { out.push(atual); atual = ''; return; }
+      atual += ch;
+    });
+    out.push(atual);
+    return out.map(function (s) { return s.trim(); }).filter(Boolean);
+  }
+
+  // Desloca todo "+N"/"–N" de um texto livre por `delta`. É o que o livro
+  // faz com a observação da perícia ao mudar o ND: o aquin'ne tem
+  // "Atletismo +6 (+14 para nadar)" e o cardume, "+7 (+15 para nadar)".
+  function deslocarBonus(txt, delta) {
+    if (!delta) return String(txt || '');
+    return String(txt || '').replace(/([+\-–−])(\d+)/g, function (_, sg, n) {
+      return sinal((sg === '+' ? 1 : -1) * parseInt(n, 10) + delta);
+    });
+  }
+
+  // Tipo, subtipo e tamanho a partir de "Espírito (elemental) Pequeno".
+  const _TIPO_RE = [
+    [/\bAnima(?:l|is)\b/i, 'animal'], [/\bConstru/i, 'construto'],
+    [/\bEsp[íi]rito/i, 'espirito'], [/\bHumanoide/i, 'humanoide'],
+    [/\bMort[oa]s?[- ]?viv[oa]s?\b/i, 'morto-vivo'], [/\bMonstro/i, 'monstro'],
+  ];
+  const _TAM_RE = [
+    [/Min[úu]scul[oa]/i, 'minusculo'], [/Pequen[oa]/i, 'pequeno'], [/M[ée]di[oa]/i, 'medio'],
+    [/Grande/i, 'grande'], [/Enorme/i, 'enorme'], [/Colossal/i, 'colossal'],
+  ];
+  function lerTipoTamanho(txt) {
+    const t = String(txt || '');
+    const out = { tipo: 'monstro', subtipo: '', tamanho: 'medio' };
+    const msub = t.match(/\(([^)]*)\)/);
+    if (msub) out.subtipo = msub[1].trim();
+    _TIPO_RE.some(function (p) { if (p[0].test(t)) { out.tipo = p[1]; return true; } return false; });
+    _TAM_RE.some(function (p) { if (p[0].test(t)) { out.tamanho = p[1]; return true; } return false; });
+    return out;
+  }
+
+  // "For 4, Des 2, Con 2, Int –2, Sab 2, Car –2" → { for: 4, des: 2, … }
+  function lerAtributos(txt) {
+    const out = {};
+    D.ATRIBUTOS.forEach(function (a) {
+      const m = String(txt || '').match(new RegExp('\\b' + a.curto + '\\s+([+\\-–−]?\\d+)', 'i'));
+      out[a.id] = m ? inteiro(m[1]) : 0;
+    });
+    return out;
+  }
+
+  // Uma linha de ataque pode trazer vários ataques colados por " e ":
+  // "Mordida +18 (1d10+12) e duas garras +18 (1d8+12)". O "e" também
+  // aparece DENTRO de um ataque ("Garras e presas +12"), então o corte só
+  // vale onde os dois lados têm bônus próprio.
+  function partirAtaques(txt) {
+    const out = [];
+    const temBonus = function (p) { return /[+\-–−]\s*\d/.test(p); };
+    String(txt || '').split(/\s+e\s+/).forEach(function (p) {
+      if (out.length && !temBonus(p)) { out[out.length - 1] += ' e ' + p; return; }
+      out.push(p);
+    });
+    // o primeiro pedaço sem bônus é começo de nome, não ataque
+    for (let i = 0; i < out.length - 1;) {
+      if (!temBonus(out[i])) { out[i + 1] = out[i] + ' e ' + out[i + 1]; out.splice(i, 1); }
+      else i++;
+    }
+    return out.filter(function (p) { return p.trim(); });
+  }
+
+  // Um ataque do statblock: "Tentáculo hídrico x2 +13 (2d4+6 corte)".
+  // Devolve o ataque no formato da aba MAIS o valor de ataque lido, que
+  // não mora no ataque (vem da Tabela 2-3, pelo ND).
+  function lerAtaque(txt, alcance) {
+    // O último grupo é a prosa que algumas fichas põem DEPOIS do dano
+    // ("(3d8+6 trevas). Uma criatura viva atingida deve fazer…", da
+    // Aparição) — sem ele o ataque inteiro não casava e sumia.
+    //
+    // Duas tentativas, e a ordem importa: o valor de ataque vem SEMPRE
+    // depois de um espaço, e exigir isso é o que impede o "+1" de
+    // "1d4+1 tentáculos +17" (o tigre-de-hyninn conta os tentáculos com
+    // um dado) de ser confundido com o bônus. Só quando não há nenhum
+    // sinal precedido de espaço é que vale o colado — é o caso da
+    // "Adaga+12" do pistoleiro, que o livro imprime sem espaço.
+    const t = String(txt || '');
+    const m = t.match(/^(.*?\S)\s+([+\-–−]\s*\d+)\s*(?:\(([^)]*)\))?\s*(.*)$/) ||
+              t.match(/^(.*?)\s*([+\-–−]\s*\d+)\s*(?:\(([^)]*)\))?\s*(.*)$/);
+    if (!m) return null;
+    let nome = m[1].trim(), qtd = 1;
+    const mq = nome.match(/\s*x\s*(\d+)\s*$/i);
+    if (mq) { qtd = parseInt(mq[1], 10) || 1; nome = nome.slice(0, mq.index).trim(); }
+
+    const partes = partesPorVirgula(m[3] || '');
+    const dano = partes.shift() || '';
+    let dados = '', bonus = 0, tipo = '', colado = false;
+    const extra = [];
+    const md = dano.match(/^(\d*d\d+(?:\s*[+\-–−]\s*\d+)?)\s*(.*)$/i);
+    if (md) {
+      const mb = md[1].replace(/\s+/g, '').match(/^(\d*d\d+)([+\-–−]\d+)?$/i);
+      dados = mb ? mb[1] : md[1].replace(/\s+/g, '');
+      bonus = mb && mb[2] ? inteiro(mb[2]) : 0;
+      // "corte" é tipo de dano; "mais 4d6 ácido" (o bulette escreve sem
+      // vírgula) é dano EXTRA, e precisa sair daqui para entrar na média
+      let resto = md[2].trim();
+      const mt = resto.match(/^([a-zà-ÿ]+)\s+(.*)$/i);
+      if (mt && D.TIPOS_DANO.indexOf(mt[1].toLowerCase()) >= 0) {
+        tipo = mt[1];
+        resto = mt[2].trim();
+      } else if (!/\d*\s*d\s*\d/i.test(resto)) {
+        tipo = resto;
+        resto = '';
+      }
+      if (resto) { extra.push(resto); colado = true; }
+    } else {
+      tipo = dano;
+    }
+    let critico = '';
+    partes.forEach(function (p) {
+      if (/^(?:\d+\s*\/\s*)?x\s*\d+$/i.test(p)) critico = p;
+      else extra.push(p);
+    });
+    return {
+      ataque: { id: uid('at'), nome: nome || 'Ataque', qtd: qtd, alcance: alcance,
+                dados: dados, bonus: bonus, tipo: tipo, critico: critico,
+                extra: extra.join(', '), extraColado: colado, secundario: false,
+                depois: String(m[4] || '').replace(/^\s*\.\s*/, '').replace(/\s*\.\s*$/, '').trim() },
+      valorAtaque: inteiro(m[2]),
+    };
+  }
+
+  // Uma habilidade do statblock: "Agarrar Aprimorado (Livre) Tentáculo
+  // hídrico (teste +13)." O nome sai pelo mesmo reconhecedor que o
+  // statblock.js usa para negritá-lo nas fichas dos livros.
+  function lerHabilidade(linha) {
+    const magica = linha.indexOf('✦') === 0;
+    const txt = (magica ? linha.slice(1) : linha).trim();
+    const SB = window.GA_Statblock;
+    const m = SB ? (txt.match(SB.RE_HABILIDADE) || txt.match(SB.RE_HAB_SIMPLES)) : null;
+
+    let nome = '', execucao = '—', corpo = txt;
+    if (m) {
+      nome = m[1].trim();
+      corpo = txt.slice(m[1].length).trim();
+      const me = nome.match(/^(.*?)\s*\(([^)]*)\)\s*$/);
+      if (me) { nome = me[1].trim(); execucao = me[2].trim(); }
+    }
+    // execução fora da lista do <select> ("Padrão, 2 PM") voltaria a "—" e
+    // o custo em PM se perderia: devolve o parêntese para o texto.
+    if (D.EXECUCOES.indexOf(execucao) < 0) {
+      if (execucao !== '—') corpo = '(' + execucao + ') ' + corpo;
+      execucao = '—';
+    }
+    return { id: uid('hb'), nome: nome || 'Habilidade', execucao: execucao,
+             texto: corpo, magica: magica };
+  }
+
+  // Lê uma ficha inteira (texto no formato do livro) para o formato desta
+  // aba. `papel` é obrigatório: sem ele não há linha da Tabela 2-3 para
+  // comparar, e sem comparação não há delta nenhum.
+  // Devolve { c, lidos, avisos } ou null.
+  function lerFichaBase(texto, papel) {
+    const api = window.GA_Monstros;
+    if (!api || typeof api.lerFicha !== 'function') return null;
+    const r = api.lerFicha(texto);
+    if (!r || !r.cr) return null;
+    const cr = r.cr;
+    const avisos = (r.avisos || []).slice();
+    const c = nova();
+    const st = function (k) { return (cr.stats[k] || {}).padrao || ''; };
+
+    c.papel = ['solo', 'lacaio', 'especial'].indexOf(papel) >= 0 ? papel : 'solo';
+    c.nome = cr.nome || '';
+    c.conceito = cr.descricao || '';
+    if (D.NDS.indexOf(cr.nd) >= 0) {
+      c.nd = cr.nd;
+    } else if (cr.nd) {
+      avisos.push('O ND “' + cr.nd + '” não é uma linha da Tabela 2-3 — usei ND 1.');
+    }
+
+    const tt = lerTipoTamanho(cr.tipoTamanho);
+    c.tipo = tt.tipo; c.subtipo = tt.subtipo; c.tamanho = tt.tamanho;
+    c.sentidos = cr.tags || '';
+    c.defesasExtra = cr.condicoes || '';
+    c.atributos = lerAtributos(cr.atributos);
+    // "Int —" (criatura sem mente): aqui o atributo é um número, então
+    // vira 0 — o mestre precisa saber que essa nuance se perdeu
+    const semValor = D.ATRIBUTOS.filter(function (a) {
+      return new RegExp('\\b' + a.curto + '\\s+[—–−-](?!\\s*\\d)', 'i').test(cr.atributos || '');
+    }).map(function (a) { return a.curto; });
+    if (semValor.length) {
+      avisos.push('O livro escreve ' + semValor.join(' e ') + ' como traço (sem valor). ' +
+                  'Esta ficha guarda atributos como número, então ' +
+                  (semValor.length === 1 ? 'virou' : 'viraram') + ' 0.');
+    }
+
+    // deslocamento: o valor da ficha já vem com "(6q)", que o statblock()
+    // recoloca sozinho — guardar os dois duplicaria os quadrados.
+    const semQuadrados = function (v) { return String(v || '').replace(/\s*\([^)]*\)\s*/g, '').trim(); };
+    c.deslTerrestre = semQuadrados(st('deslocamento'));
+    c.semTerrestre = !c.deslTerrestre;
+    [['desVoo', 'voo'], ['desEscalada', 'escalada'],
+     ['desEscavacao', 'escavacao'], ['desNatacao', 'natacao']].forEach(function (p) {
+      const v = semQuadrados(st(p[0]));
+      if (v) c.deslExtras.push({ id: p[1], principal: false, valor: v });
+    });
+
+    const pm = st('pm');
+    if (pm) { c.usaPM = true; c.pmManual = pm; }
+
+    // ── ataques e habilidades, linha a linha do texto original ──────
+    //  Aqui o texto vem SEMPRE com uma linha por linha do statblock: é
+    //  assim nas bibliotecas dos livros e no statblock() desta aba, as
+    //  duas únicas fontes. (O parsearFicha() cola as linhas para dar
+    //  conta do Ctrl+C do PDF; por isso ataque e habilidade se separam
+    //  aqui, e não lá.)
+    const lidos = { defesa: null, pv: null, ataque: null, dano: null, cd: null,
+                    fort: null, ref: null, von: null };
+    const ROTULO = /^(Iniciativa|Defesa|Pontos de Vida|Pontos de Mana|Deslocamento|Per[íi]cias|Equipamento|Tesouro|Parceiro)\b/i;
+    const ATRIB = /^For\s+[+\-–−]?(?:\d|[—–−-])/;
+    const magias = [];
+    let linhaTesouro = '', linhaEquip = '';
+    let dentro = false;
+
+    String(texto || '').split('\n').map(function (l) { return l.trim(); })
+      .filter(Boolean).forEach(function (l) {
+        // depois dos atributos o statblock ainda traz habilidades soltas
+        // (o aquin’ne fecha com "Familiar …", DEPOIS do Tesouro)
+        if (ATRIB.test(l)) { dentro = true; return; }
+        if (/^(Pontos de Vida|Pontos de Mana|Deslocamento)\b/i.test(l)) { dentro = true; return; }
+        if (/^Tesouro\b/i.test(l)) { linhaTesouro = l.replace(/^Tesouro\s*/i, ''); return; }
+        if (/^Equipamento\b/i.test(l)) { linhaEquip = l.replace(/^Equipamento\s*/i, ''); return; }
+        if (!dentro || ROTULO.test(l)) return;
+        if (/^(Magias\b|•)/.test(l)) { magias.push(l); return; }
+        if (/^(Corpo a Corpo|À Dist[âa]ncia)\b/i.test(l)) {
+          const alc = /^Corpo a Corpo/i.test(l) ? 'corpo' : 'distancia';
+          // a ficha da criatura-base pode JÁ ser um bando (Turba Zumbi,
+          // Falange): a marca fica guardada para voltar na ficha
+          if (/\[Bando\]/i.test(l)) c.marcaBando = true;
+          const linhaAtk = l.replace(/^(?:Corpo a Corpo|À Dist[âa]ncia)\s*/i, '')
+                            .replace(/^\[Bando\]\s*/i, '')   // o bando já é um modo daqui
+                            .replace(/\s*\.\s*$/, '');
+          partirAtaques(linhaAtk).forEach(function (t) {
+              const a = lerAtaque(t, alc);
+              if (!a) return;
+              a.ataque.valorLido = a.valorAtaque;
+              c.ataques.push(a.ataque);
+              if (lidos.ataque == null) lidos.ataque = a.valorAtaque;
+            });
+          return;
+        }
+        c.habilidades.push(lerHabilidade(l));
+      });
+
+    if (magias.length) {
+      c.habilidades.push({ id: uid('hb'), nome: 'Magias', execucao: '—',
+                           texto: magias.join('\n'), magica: true });
+    }
+
+    // tesouro: a categoria quando o livro a nomeia; senão a linha inteira
+    // é recurso especial ("1 dose de éter elemental (CD 17 para extrair)").
+    c.equipamento = linhaEquip.replace(/\s*\.\s*$/, '');
+    const tes = linhaTesouro.replace(/\s*\.\s*$/, '');
+    const mCat = tes.match(/^(Nenhum|Metade|Padrão|Padrao|Dobro)\b\s*/i);
+    c.tesouro = 'nenhum';
+    if (mCat) {
+      const cat = mCat[1].toLowerCase();
+      c.tesouro = /^padr/.test(cat) ? 'padrao' : cat;
+      c.tesouroObs = tes.slice(mCat[0].length).trim();
+    } else if (tes) {
+      c.tesouroObs = tes;
+    }
+
+    // ── estatísticas de combate lidas (a base do delta) ─────────────
+    lidos.defesa = st('defesa') ? inteiro(st('defesa')) : null;
+    lidos.pv     = st('pv') ? inteiro(st('pv')) : null;
+    lidos.fort   = st('fortitude') ? inteiro(st('fortitude')) : null;
+    lidos.ref    = st('reflexos') ? inteiro(st('reflexos')) : null;
+    lidos.von    = st('vontade') ? inteiro(st('vontade')) : null;
+    lidos.dano   = c.ataques.length ? danoTotalAtual(c) : null;
+    // Nem todo ataque da mesma linha usa o mesmo valor: o urso-coruja
+    // morde a +16 e arranha a +15. O primeiro define o valor da criatura
+    // (é ele que vira delta contra a tabela); os outros guardam a
+    // diferença para o próprio ataque.
+    c.ataques.forEach(function (a) {
+      a.ajusteAtaque = (a.valorLido != null && lidos.ataque != null)
+        ? a.valorLido - lidos.ataque : 0;
+      delete a.valorLido;
+    });
+    // a CD do livro está no texto das habilidades ("Ref CD 16 evita"); a
+    // do tesouro é outra conta (15 + ND) e não entra aqui.
+    c.habilidades.some(function (h) {
+      const m = String(h.texto || '').match(/\bCD\s+(\d+)(?!\s*para\s+extrair)/i);
+      if (m) { lidos.cd = inteiro(m[1]); return true; }
+      return false;
+    });
+
+    // resistências: a maior é a "forte", a do meio a "média", a menor a
+    // "fraca" — é assim que o livro distribui os três valores da tabela.
+    if (lidos.fort != null && lidos.ref != null && lidos.von != null) {
+      const faixas = ['resForte', 'resMedia', 'resFraca'];
+      [{ q: 'fort', v: lidos.fort }, { q: 'ref', v: lidos.ref }, { q: 'von', v: lidos.von }]
+        .sort(function (a, b) { return b.v - a.v; })
+        .forEach(function (o, i) { c.resDistrib[o.q] = faixas[i]; lidos[faixas[i]] = o.v; });
+    }
+
+    // ── estatísticas secundárias ───────────────────────────────────
+    // Iniciativa entra como NÃO treinada e Percepção como treinada (é o
+    // que o próprio manual faz no dejeto vivo: "precisam apenas de
+    // Percepção treinada"). O que sobrar da conta vira "+extra", então o
+    // valor impresso no livro é sempre reproduzido exatamente.
+    const ini = st('iniciativa'), per = st('percepcao');
+    if (ini) {
+      c.iniciativaTreinada = false;
+      c.iniciativaExtra = inteiro(ini) - valorPericia(c, 'des', false, 0);
+    }
+    if (per) {
+      c.percepcaoTreinada = true;
+      c.percepcaoExtra = inteiro(per) - valorPericia(c, 'sab', true, 0);
+    }
+    partesPorVirgula(cr.pericias || '').forEach(function (p) {
+      const m = p.match(/^(.+?)\s*([+\-–−]\d+)\s*(?:\(([^]*)\))?\s*$/);
+      if (!m) return;
+      const nome = m[1].trim();
+      const def = periciaDef(nome) || periciaDef(nome.replace(/\s*\([^)]*\)\s*$/, '').trim());
+      if (!def) { avisos.push('Perícia “' + nome + '” não está na lista — ficou de fora.'); return; }
+      const valor = inteiro(m[2]);
+      const per2 = { id: uid('pe'), nome: def.nome, treinada: true, extra: 0,
+                     obs: (m[3] || '').trim() };
+      per2.extra = valor - valorPericia(c, def.atr, true, 0);
+      // o texto entre parênteses ("+14 para nadar") acompanha o valor da
+      // perícia quando o ND muda; guarda a régua para deslocá-lo depois
+      if (per2.obs) per2.obsRef = { valor: valor, obs: per2.obs };
+      c.pericias.push(per2);
+    });
+
+    return { c: c, lidos: lidos, avisos: avisos };
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  DELTAS — a diferença que o livro manda anotar e preservar
+  // ═══════════════════════════════════════════════════════════════
+  //  "Compare as estatísticas de sua criatura com as listadas na linha
+  //  de seu papel e ND na Tabela 2-3 […] e anote as diferenças."
+  function deltasDe(papel, nd, lidos) {
+    const p = parametros(papel, nd);
+    const d = deltasZero();
+    D.PARAM_COLUNAS.forEach(function (col) {
+      const v = lidos[col.chave];
+      if (v != null) d[col.chave] = v - p[col.chave];
+    });
+    return d;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  BANDOS (p. 387–389)
+  // ═══════════════════════════════════════════════════════════════
+  function patamaresSubidos(c) {
+    if (!c.base) return 0;
+    return Math.max(0, patamarDe(c.nd).ordem - patamarDe(c.base.nd).ordem);
+  }
+  function multDano(c) {
+    return c.modo === 'bando' ? D.multBando(patamaresSubidos(c)) : 1;
+  }
+  // "1d8" → "3d8" com mult 3; "2d4" → "4d4" com mult 2.
+  function multiplicarDados(dados, mult) {
+    return String(dados || '').replace(/(\d*)d(\d+)/gi, function (_, n, f) {
+      return ((parseInt(n || '1', 10) * mult) + 'd' + f);
+    });
+  }
+  // Dano de habilidade: multiplica dados soltos, "N PV" e "N pontos de
+  // dano" — os três jeitos que o livro escreve dano dentro de uma regra.
+  function multiplicarTextoDano(txt, mult) {
+    if (mult === 1) return String(txt || '');
+    return String(txt || '')
+      .replace(/(\d*)d(\d+)\s*([+\-–−])\s*(\d+)/gi, function (_, n, f, sg, b) {
+        return (parseInt(n || '1', 10) * mult) + 'd' + f + sg + (parseInt(b, 10) * mult);
+      })
+      .replace(/(\d*)d(\d+)/gi, function (_, n, f) {
+        return (parseInt(n || '1', 10) * mult) + 'd' + f;
+      })
+      .replace(/(\d+)\s+(PV|pontos de dano)\b/gi, function (_, n, r) {
+        return (parseInt(n, 10) * mult) + ' ' + r;
+      });
+  }
+
+  // Aplica ao bando o dano do item 4 do roteiro: o dano da criatura-base
+  // multiplicado pelo aumento de patamar. Os ataques guardam o dano
+  // ORIGINAL (`bandoBase`), então mudar o ND recalcula sem acumular.
+  function aplicarDanoBando(c) {
+    if (c.modo !== 'bando') return;
+    const mult = multDano(c);
+    let baseTotal = 0;
+    c.ataques.forEach(function (a) {
+      if (!a.bandoBase) a.bandoBase = { dados: a.dados, bonus: parseInt(a.bonus, 10) || 0, extra: a.extra };
+      const b = a.bandoBase;
+      if (!a.secundario) {
+        baseTotal += (mediaDados(String(b.dados || '') + ' ' + String(b.extra || '')) + (b.bonus || 0)) *
+                     (parseInt(a.qtd, 10) || 1);
+      }
+      a.dados = multiplicarDados(b.dados, mult);
+      a.bonus = (b.bonus || 0) * mult;
+      a.extra = multiplicarTextoDano(b.extra, mult);
+    });
+    // O dano de um bando NÃO sai da Tabela 2-3: é o da criatura-base
+    // vezes o aumento de patamar. Guardar isso como delta em pontos faz
+    // o "alvo por golpe" do Passo 4 apontar para o número certo.
+    if (c.deltas) {
+      c.deltas.dano = baseTotal * mult -
+        parametros(c.papel, ndComDelta(c.nd, c.ajustes.dano || 0)).dano;
+    }
+    c.bando.multAplicado = mult;
+  }
+
+  // Habilidades: o mesmo dano ×patamar, mas "exceto magias". Fica num
+  // botão porque mexe em texto corrido escrito à mão.
+  function aplicarDanoHabilidades(c) {
+    const mult = multDano(c);
+    let n = 0;
+    c.habilidades.forEach(function (h) {
+      if (h.magica) return;                       // "exceto magias"
+      if (!h.bandoBase) h.bandoBase = h.texto;
+      const novo = multiplicarTextoDano(h.bandoBase, mult);
+      if (novo !== h.texto) n++;
+      h.texto = novo;
+    });
+    if (c.bando) c.bando.habsMult = mult;
+    return n;
+  }
+
+  // Os números que o livro escreve POR EXTENSO no meio do texto e que
+  // não se recalculam sozinhos quando o ND ou o tamanho mudam.
+  function fotoDerivada(c) {
+    const s = stats(c);
+    return { cd: s.cd, cdExtrair: cdExtrair(c), ataque: s.ataque,
+             manobras: tamanhoDe(c.tamanho).manobras };
+  }
+
+  // Ao mudar o ND de uma criatura derivada: a CD das habilidades, a CD
+  // para extrair do tesouro, o valor entre parênteses das perícias e o
+  // teste de manobra escrito dentro de uma habilidade. Esta é a costura.
+  function sincronizarDerivada(c, antes) {
+    if (c.modo === 'nova' || !c.base || !antes) return;
+    const agora = fotoDerivada(c);
+
+    const trocar = function (txt, de, para) {
+      if (!de || de === para) return String(txt || '');
+      return String(txt || '').replace(new RegExp('\\bCD\\s+' + de + '\\b', 'g'), 'CD ' + para);
+    };
+    // o teste de agarrar sai do valor de ataque MAIS o modificador de
+    // manobras do tamanho — os dois mudam num bando, e o livro soma os
+    // dois: o aquin’ne agarra com +13 e o cardume, com +21
+    const dTeste = (agora.ataque - antes.ataque) + (agora.manobras - antes.manobras);
+    const arrumar = function (txt) {
+      let t = trocar(txt, antes.cd, agora.cd);
+      if (dTeste) {
+        t = t.replace(/\(teste\s*([+\-–−]\d+)\)/gi, function (_, v) {
+          return '(teste ' + sinal(inteiro(v) + dTeste) + ')';
+        });
+      }
+      return t;
+    };
+    c.habilidades.forEach(function (h) {
+      h.texto = arrumar(h.texto);
+      if (h.bandoBase) h.bandoBase = arrumar(h.bandoBase);
+    });
+    // no tesouro a CD é outra conta (15 + ND), então é outra troca
+    c.tesouroObs = trocar(c.tesouroObs, antes.cdExtrair, agora.cdExtrair);
+
+    // "(+14 para nadar)" acompanha o valor da própria perícia
+    c.pericias.forEach(function (p) {
+      if (!p.obsRef) return;
+      const def = periciaDef(p.nome);
+      if (!def) return;
+      const v = valorPericia(c, def.atr, p.treinada, p.extra);
+      p.obs = deslocarBonus(p.obsRef.obs, v - p.obsRef.valor);
+    });
+    if (c.modo === 'bando') aplicarDanoBando(c);
+  }
+
+  // "Esta mudança no tamanho afeta testes de Furtividade" (item 3). O
+  // cardume é a prova: o aquin'ne Pequeno tem Furtividade +4 e o cardume
+  // Médio tem +3 — um ponto A MAIS pelo ND e dois A MENOS pelo tamanho.
+  // `tamanhoAplicado` guarda o tamanho que a perícia já reflete, para
+  // trocar o tamanho duas vezes não somar o ajuste duas vezes.
+  function ajustarFurtividade(c) {
+    if (c.modo !== 'bando' || !c.base) return;
+    const de = tamanhoDe(c.bando.tamanhoAplicado || c.base.tamanho).furtividade;
+    const para = tamanhoDe(c.tamanho).furtividade;
+    const d = para - de;
+    if (d) c.pericias.forEach(function (p) {
+      if (p.nome === 'Furtividade') p.extra = (parseInt(p.extra, 10) || 0) + d;
+    });
+    c.bando.tamanhoAplicado = c.tamanho;
+  }
+
+  // Item 2 e 3 do roteiro de bandos: a faixa de ND e o salto de tamanho
+  // que o livro sugere para uma quantidade de indivíduos.
+  function aplicarFaixaBando(c, faixaId) {
+    const f = D.BANDO_FAIXAS.find(function (x) { return x.id === faixaId; });
+    if (!f || !c.base || c.modo !== 'bando') return;
+    const antes = fotoDerivada(c);
+    c.bando.faixa = faixaId;
+    c.nd = ndComDelta(c.base.nd, Math.round((f.nd[0] + f.nd[1]) / 2));
+    const ord = tamanhoDe(c.base.tamanho).ordem;
+    c.tamanho = D.TAMANHOS[Math.min(D.TAMANHOS.length - 1, ord + f.tam)].id;
+    atualizarDerivada(c, antes);
+  }
+
+  // Tudo que precisa correr depois de mexer no ND ou no tamanho de uma
+  // criatura derivada, na ordem certa.
+  function atualizarDerivada(c, antes) {
+    if (c.modo === 'nova') return;
+    ajustarFurtividade(c);
+    sincronizarDerivada(c, antes);
+  }
+
+  // ── Criar a criatura derivada ─────────────────────────────────────
+  // As estatísticas de combate de uma ameaça já pronta desta aba —
+  // servem de "criatura-base" tanto quanto uma ficha do livro.
+  function lidosDe(c) {
+    const s = stats(c);
+    const l = {};
+    D.PARAM_COLUNAS.forEach(function (col) { l[col.chave] = s[col.chave]; });
+    return l;
+  }
+
+  // `cBase` é uma criatura no formato desta aba; `lidos`, as estatísticas
+  // dela; `origem`, de onde ela veio (para a etiqueta do painel).
+  function derivar(cBase, lidos, modo, origem) {
+    const c = JSON.parse(JSON.stringify(cBase));
+    c.id = uid('ca');
+    c.criadoEm = c.alteradoEm = Date.now();
+    c.ataques.forEach(function (a) { a.id = uid('at'); });
+    c.habilidades.forEach(function (h) { h.id = uid('hb'); });
+    c.pericias.forEach(function (p) { p.id = uid('pe'); });
+
+    c.modo = modo;
+    c.deltas = deltasDe(c.papel, c.nd, lidos);
+    // o desvio agora é medido em pontos; os ±ND do Passo 3 já estão
+    // embutidos no que foi lido e contariam duas vezes
+    c.ajustes = deltasZero();
+    c.base = {
+      livro: (origem && origem.livro) || '', chave: (origem && origem.chave) || '',
+      nome: cBase.nome || 'criatura-base', nd: c.nd, papel: c.papel,
+      tamanho: c.tamanho, avisos: (origem && origem.avisos) || [],
+      // as estatísticas da criatura-base, guardadas como fato: o dano de
+      // um bando reescreve o delta contra a linha do ND NOVO, e aí não
+      // dá mais para reconstruir o valor original de trás para a frente
+      lidos: JSON.parse(JSON.stringify(lidos)),
+    };
+
+    if (modo === 'bando') {
+      c.bando = bandoNovo();
+      c.bando.tamanhoAplicado = c.tamanho;
+      c.nome = 'Bando de ' + (cBase.nome || 'criaturas');
+      // item 5: "a criatura recebe a habilidade Bando"
+      const def = M.HABILIDADES_GERAIS.find(function (h) { return h.nome === 'Bando'; });
+      if (def && !c.habilidades.some(function (h) { return h.nome === 'Bando'; })) {
+        c.habilidades.push({ id: uid('hb'), nome: def.nome, execucao: def.acao || '—',
+                             texto: def.texto, magica: !!def.magica });
+      }
+      aplicarFaixaBando(c, 'dez');
+      // item 4: o dano das habilidades sobe junto com o dos ataques.
+      // Depois da faixa, para o texto já sair com a CD do ND do bando.
+      aplicarDanoHabilidades(c);
+    } else {
+      c.nome = (cBase.nome || 'Ameaça') + ' (versão nova)';
+    }
+    return c;
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -314,7 +962,7 @@
            ', Von ' + sinal(s[c.resDistrib.von]) +
            (c.defesasExtra ? ', ' + c.defesasExtra : ''));
 
-    L.push('Pontos de Vida ' + s.pv);
+    L.push('Pontos de Vida ' + milhar(s.pv));
     if (c.usaPM) L.push('Pontos de Mana ' + (c.pmManual || pmSugerido(c)));
 
     // Deslocamento
@@ -331,7 +979,10 @@
       const lista = c.ataques.filter(function (a) { return (a.alcance || 'corpo') === alc; });
       if (!lista.length) return;
       const rot = alc === 'corpo' ? 'Corpo a Corpo' : 'À Distância';
-      L.push(rot + ' ' + lista.map(function (a) { return textoAtaque(c, a); }).join(' e ') + '.');
+      // o livro marca a linha de ataque do bando: "Corpo a Corpo [Bando]
+      // Tentáculo hídrico x2 +19 (4d4+12 corte)."
+      const marca = (c.modo === 'bando' || c.marcaBando) ? '[Bando] ' : '';
+      L.push(rot + ' ' + marca + lista.map(function (a) { return textoAtaque(c, a); }).join(' e ') + '.');
     });
 
     // Habilidades (o ✦ inicial é o selo de habilidade mágica)
@@ -355,14 +1006,14 @@
 
     if (c.parceiro) L.push('Parceiro ' + c.parceiro);
 
+    // Sem categoria mas com recurso especial, o livro imprime só o
+    // recurso ("Tesouro 2d4 doses de éter elemental…"), sem "Nenhum".
     const tes = (D.TESOUROS.find(function (t) { return t.id === c.tesouro; }) || {}).nome || 'Padrão';
-    if (c.equipamento) {
-      L.push('Equipamento ' + c.equipamento + ' Tesouro ' + tes + (c.tesouroObs ? ' ' + c.tesouroObs : '') + '.');
-    } else if (c.tesouro !== 'nenhum' || c.tesouroObs) {
-      L.push('Tesouro ' + tes + (c.tesouroObs ? ' ' + c.tesouroObs : '') + '.');
-    } else {
-      L.push('Tesouro Nenhum.');
-    }
+    const linhaTes = c.tesouro === 'nenhum'
+      ? (c.tesouroObs || 'Nenhum')
+      : tes + (c.tesouroObs ? ' ' + c.tesouroObs : '');
+    if (c.equipamento) L.push('Equipamento ' + c.equipamento + ' Tesouro ' + linhaTes + '.');
+    else L.push('Tesouro ' + linhaTes + '.');
 
     return L.join('\n');
   }
@@ -378,21 +1029,34 @@
   function textoAtaque(c, a) {
     const s = stats(c);
     // ataque complementar usa a linha de 2 ND abaixo (Passo 4)
-    const base = a.secundario
+    const base = (a.secundario
       ? parametros(c.papel, ndComDelta(c.nd, -2)).ataque
-      : s.ataque;
+      : s.ataque) + (parseInt(a.ajusteAtaque, 10) || 0);
     const qtd = parseInt(a.qtd, 10) || 1;
     const nome = a.nome || 'Ataque';
     const rotulo = qtd > 1 ? nome + ' x' + qtd : nome;
     // bônus 0 não aparece — e "0" vindo do <input> é string, que é
     // truthy: sem o parseInt saía "1d8+0" na ficha.
     const bonus = parseInt(a.bonus, 10) || 0;
+    // "extraColado" veio do livro grudado no dano, sem vírgula ("1d4 mais
+    // 1d4 ácido" do glop, contra "1d8+10 impacto, x2, mais 1d8 ácido" do
+    // dejeto vivo) — o livro usa as duas formas, e a ficha lida volta na
+    // forma em que entrou.
     const dano = [
       (a.dados || '') + (bonus ? (bonus > 0 ? '+' : '') + bonus : ''),
       a.tipo || '',
+      a.extraColado ? (a.extra || '') : '',
     ].filter(Boolean).join(' ');
-    const det = [dano, a.critico || '', a.extra || ''].filter(Boolean).join(', ');
-    return rotulo + ' ' + sinal(base) + (det ? ' (' + det + ')' : '');
+    const det = [dano, a.critico || '', a.extraColado ? '' : (a.extra || '')]
+      .filter(Boolean).join(', ');
+    // o que a ficha do livro escreve DEPOIS do dano volta com a mesma
+    // pontuação: frase nova entra com ponto ("… trevas). Uma criatura
+    // viva…"), alternativa e continuação de lista entram coladas
+    // ("… x3) ou chifres +14…", "… 19), garra +30…").
+    const dep = String(a.depois || '');
+    const cola = !dep ? ''
+      : (/^[,;]/.test(dep) ? dep : (/^[A-ZÀ-Ý]/.test(dep) ? '. ' + dep : ' ' + dep));
+    return rotulo + ' ' + sinal(base) + (det ? ' (' + det + ')' : '') + cola;
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -552,6 +1216,8 @@
         '<p class="cr-sub">O <em>Manual de Criação de Ameaças</em> (' + esc(D.FONTE.livro) + ', ' +
           esc(D.FONTE.capitulo) + ', ' + esc(D.FONTE.paginas) + ') com as tabelas aplicadas sozinhas. ' +
           'Escolha papel e ND: Defesa, resistências, PV, ataque, dano médio e CD saem prontos da Tabela 2-3. ' +
+          'Em <strong>🔧 Modificar</strong> e <strong>👥 Bando</strong> a oficina parte de uma criatura pronta, ' +
+          'anota a diferença dela para a tabela e mantém essa diferença no ND novo. ' +
           'Onde o livro manda consultar outra página, passe o mouse — a regra aparece aqui 📖.</p>' +
       '</div>' +
       '<nav class="ca-subtabs" aria-label="Criar ameaça">' +
@@ -607,6 +1273,10 @@
         '<span class="ca-barra-tit">📜 Minhas ameaças <em>(' + dados.criaturas.length + ')</em></span>' +
         '<div class="ca-barra-acoes">' +
           '<button type="button" class="ca-btn ca-btn--nova" data-acao="nova">＋ Nova ameaça</button>' +
+          '<button type="button" class="ca-btn ca-btn--deriva" data-acao="derivar" data-modo="modificada" ' +
+            'title="Partir de uma criatura pronta e mudar o ND mantendo as diferenças (p. 387)">🔧 Modificar…</button>' +
+          '<button type="button" class="ca-btn ca-btn--deriva" data-acao="derivar" data-modo="bando" ' +
+            'title="Transformar uma criatura pronta num bando (p. 387–389)">👥 Bando…</button>' +
           '<button type="button" class="ca-btn" data-acao="duplicar">⧉ Duplicar</button>' +
           '<button type="button" class="ca-btn ca-btn--perigo" data-acao="remover">🗑 Remover</button>' +
           '<button type="button" class="ca-btn" data-acao="backup">⬇ Backup (.json)</button>' +
@@ -623,6 +1293,7 @@
     return barraCriaturas(c) +
       '<div class="ca-oficina">' +
         '<div class="ca-passos">' +
+          painelBase(c) +
           passo0(c) + passo1(c) + passo2(c) + passo3(c) +
           passo4(c) + passo5(c) + passo6(c) + passo7(c) +
         '</div>' +
@@ -657,6 +1328,87 @@
     return '<label class="ca-campo">' +
       '<span class="ca-campo-rot">' + rot + (dica ? '<em>' + esc(dica) + '</em>' : '') + '</span>' +
       html + '</label>';
+  }
+
+  // ── PAINEL DA CRIATURA-BASE (p. 387–389) ──────────────────────────
+  //  Só aparece nos modos "modificada" e "bando". Usa a mesma casca dos
+  //  oito passos, com o texto do livro dentro do "📖 O que o livro diz".
+  function painelBase(c) {
+    if (c.modo === 'nova' || !c.base) return '';
+    const bando = c.modo === 'bando';
+    const pb = papelDe(c.base.papel), pn = papelDe(c.papel);
+
+    const corpo =
+      '<div class="ca-base-card">' +
+        '<div class="ca-base-lado">' +
+          '<span class="ca-base-rot">Criatura-base</span>' +
+          '<strong>' + esc(c.base.nome) + '</strong>' +
+          '<span class="ca-base-meta">' + esc(pb.icone + ' ' + pb.nome) + ' · ND ' + esc(c.base.nd) +
+            ' · ' + esc(tamanhoDe(c.base.tamanho).nome) +
+            (c.base.livro ? ' · <em>' + esc(c.base.livro) + '</em>' : '') + '</span>' +
+        '</div>' +
+        '<span class="ca-base-seta" aria-hidden="true">➜</span>' +
+        '<div class="ca-base-lado">' +
+          '<span class="ca-base-rot">' + (bando ? 'Bando' : 'Versão nova') + '</span>' +
+          '<strong>' + esc(c.nome || 'sem nome') + '</strong>' +
+          '<span class="ca-base-meta">' + esc(pn.icone + ' ' + pn.nome) + ' · ND ' + esc(c.nd) +
+            ' · ' + esc(tamanhoDe(c.tamanho).nome) + '</span>' +
+        '</div>' +
+        '<button type="button" class="ca-mini" data-acao="zerar-deltas" ' +
+          'title="Pôr todas as diferenças em zero: a ameaça passa a cair exatamente na linha da Tabela 2-3">' +
+          '↺ Zerar as diferenças</button>' +
+      '</div>' +
+      '<p class="ca-nota ca-nota--auto" data-calc="base-patamar"></p>' +
+      // o que a leitura da ficha não conseguiu trazer inteiro
+      ((c.base.avisos || []).length
+        ? '<p class="ca-nota ca-nota--info"><strong>Ao ler a ficha:</strong> ' +
+          c.base.avisos.map(esc).join(' · ') + '</p>'
+        : '') +
+      (bando ? bandoHTML(c) : '') +
+      '<p class="ca-nota">As diferenças em pontos ficam à vista no <strong>Passo 3</strong>, uma coluna por estatística: ' +
+        'o valor da base, a linha da Tabela 2-3 do ND novo e a diferença — que você pode editar.</p>';
+
+    return cascaPasso(bando ? M.BANDOS : M.MODIFICAR, corpo);
+  }
+
+  // Os itens 1 a 7 do roteiro de bandos que viram controle.
+  function bandoHTML(c) {
+    const b = c.bando;
+    const faixas = D.BANDO_FAIXAS.map(function (f) {
+      const nd = f.nd[0] === f.nd[1] ? '+' + f.nd[0] : '+' + f.nd[0] + ' a +' + f.nd[1];
+      const tam = f.tam ? '+' + f.tam + ' categoria' + (f.tam > 1 ? 's' : '') + ' de tamanho' : 'mesmo tamanho';
+      return '<button type="button" class="ca-faixa' + (b.faixa === f.id ? ' ca-faixa--ativa' : '') +
+        '" data-acao="bando-faixa" data-faixa="' + f.id + '" title="' + esc(f.fonte) + '">' +
+        '<span class="ca-faixa-rot">' + esc(f.rotulo) + '</span>' +
+        '<span class="ca-faixa-num">ND ' + nd + ' · ' + tam + '</span></button>';
+    }).join('');
+
+    const selTam = '<select class="ca-select" data-acao="bando-tamanho">' +
+      D.TAMANHOS.map(function (t) {
+        return '<option value="' + t.id + '"' + (c.tamanho === t.id ? ' selected' : '') + '>' +
+          esc(t.nome) + '</option>';
+      }).join('') + '</select>';
+
+    return '<div class="ca-sub-rot">1) Composição do bando</div>' +
+      campo('Quantidade de criaturas',
+        '<input type="text" class="ca-input" data-campo-bando="quantidade" value="' + esc(b.quantidade) +
+        '" placeholder="oito a doze aquin’ne">',
+        'só descritiva — não tem efeito em regras') +
+      '<div class="ca-sub-rot">2) e 3) ND e tamanho, pela quantidade</div>' +
+      '<div class="ca-faixas">' + faixas + '</div>' +
+      '<p class="ca-nota">Um clique põe o ND no meio da faixa e sobe o tamanho. Depois dá para mexer no ND ' +
+        'lá no Passo 2 — o bando continua herdando as diferenças da criatura-base.</p>' +
+      '<div class="ca-grade">' + campo('Tamanho do bando', selTam) + '</div>' +
+      '<p class="ca-nota ca-nota--auto" data-calc="bando-tamanho"></p>' +
+      '<div class="ca-sub-rot">4) e 5) Dano e habilidades</div>' +
+      '<div class="ca-conta-dano" data-calc="bando-dano"></div>' +
+      '<div class="ca-hab-acoes">' +
+        '<button type="button" class="ca-btn" data-acao="bando-dano-habs" ' +
+          'title="Refaz o dano escrito no texto das habilidades a partir do original da criatura-base">' +
+          '✖ Refazer o dano das habilidades</button>' +
+      '</div>' +
+      '<div class="ca-sub-rot">7) Equipamento e tesouro</div>' +
+      '<p class="ca-nota" data-calc="bando-tesouro"></p>';
   }
 
   // ── PASSO 0 ───────────────────────────────────────────────────────
@@ -785,13 +1537,25 @@
   // ── PASSO 3 ───────────────────────────────────────────────────────
   //  Cada estatística tem um seletor de ±ND: é o "ajustar para o valor
   //  de 1 ou 2 níveis de desafio a mais ou a menos" do livro.
+  //  Numa criatura DERIVADA aparecem três colunas a mais — o valor da
+  //  criatura-base, a linha da Tabela 2-3 do ND novo e a diferença em
+  //  pontos entre as duas. É a diferença que o livro manda preservar, e
+  //  ela fica editável: o mestre pode mudar de ideia sobre um desvio.
   function linhaStat(c, chave, rotulo) {
     const opcoes = [-2, -1, 0, 1, 2].map(function (d) {
       return '<option value="' + d + '"' + ((c.ajustes[chave] || 0) === d ? ' selected' : '') + '>' +
         (d === 0 ? '±0' : (d > 0 ? '+' : '−') + Math.abs(d)) + '</option>';
     }).join('');
-    return '<div class="ca-stat">' +
+    const derivada = c.modo !== 'nova' && !!c.deltas && !!c.base;
+    return '<div class="ca-stat' + (derivada ? ' ca-stat--deriva' : '') + '">' +
       '<span class="ca-stat-rot">' + esc(rotulo) + '</span>' +
+      (derivada
+        ? '<span class="ca-stat-base" data-calc="statbase-' + chave + '" title="Valor da criatura-base">—</span>' +
+          '<span class="ca-stat-seta" aria-hidden="true">➜</span>' +
+          '<span class="ca-stat-tab" data-calc="stattab-' + chave + '" title="Linha da Tabela 2-3 no ND novo">—</span>' +
+          '<input type="number" class="ca-input ca-input--num ca-stat-pts" data-delta-pts="' + chave + '" value="' +
+            (parseInt(c.deltas[chave], 10) || 0) + '" title="Diferença em pontos herdada da criatura-base">'
+        : '') +
       '<span class="ca-stat-val" data-calc="stat-' + chave + '">—</span>' +
       '<select class="ca-stat-aj" data-ajuste="' + chave + '" title="Usar o valor de outro ND (±1 ou ±2)">' +
         opcoes + '</select>' +
@@ -1086,9 +1850,16 @@
   // ═══════════════════════════════════════════════════════════════
   //  ATUALIZAÇÃO DOS VALORES CALCULADOS (sem re-render)
   // ═══════════════════════════════════════════════════════════════
+  function elCalc(sel) {
+    return document.querySelector('#criar-ameaca-content [data-calc="' + sel + '"]');
+  }
   function mostrar(sel, txt) {
-    const el = document.querySelector('#criar-ameaca-content [data-calc="' + sel + '"]');
+    const el = elCalc(sel);
     if (el) el.textContent = txt;
+  }
+  function mostrarHTML(sel, html) {
+    const el = elCalc(sel);
+    if (el) el.innerHTML = html;
   }
 
   function atualizarCalculos() {
@@ -1097,12 +1868,25 @@
     const s = stats(c);
 
     // Passo 3 — estatísticas
+    const derivada = c.modo !== 'nova' && !!c.deltas && !!c.base;
+    const linhaBase = derivada ? parametros(c.base.papel, c.base.nd) : null;
     D.PARAM_COLUNAS.forEach(function (col) {
-      const v = s[col.chave];
-      mostrar('stat-' + col.chave, col.sinal ? sinal(v) : String(v));
-      const ndAj = s[col.chave + 'Nd'];
-      mostrar('statnd-' + col.chave, ndAj === c.nd ? 'ND ' + c.nd : 'como ND ' + ndAj);
+      const k = col.chave;
+      const fmt = function (v) { return col.sinal ? sinal(v) : String(v); };
+      mostrar('stat-' + k, fmt(s[k]));
+      const ndAj = s[k + 'Nd'];
+      const pts = s[k + 'Pts'];
+      mostrar('statnd-' + k,
+        (ndAj === c.nd ? 'ND ' + c.nd : 'como ND ' + ndAj) + (pts ? ' ' + sinal(pts) : ''));
+      if (derivada) {
+        // o valor que a criatura-base tinha de fato; sem ele (ficha lida
+        // pela metade), a reconstrução pela linha dela mais o delta
+        const lido = c.base.lidos && c.base.lidos[k];
+        mostrar('statbase-' + k, fmt(lido != null ? lido : linhaBase[k] + pts));
+        mostrar('stattab-' + k, fmt(parametros(c.papel, ndAj)[k]));
+      }
     });
+    if (derivada) atualizarPainelBase(c, s);
     mostrar('res-resumo',
       'Fort ' + sinal(s[c.resDistrib.fort]) +
       ' · Ref ' + sinal(s[c.resDistrib.ref]) +
@@ -1141,14 +1925,24 @@
     // Passo 5 — cota de habilidades
     const cota = cotaHabilidades(c);
     const n = c.habilidades.length;
-    const elc = document.querySelector('#criar-ameaca-content [data-calc="cota"]');
+    const elc = elCalc('cota');
     if (elc) {
       const dentro = n >= cota.min && n <= cota.max;
-      elc.className = 'ca-cota' + (n === 0 ? '' : (dentro ? ' ca-cota--ok' : ' ca-cota--fora'));
-      elc.innerHTML = '<strong>' + n + '</strong> habilidade' + (n === 1 ? '' : 's') +
-        ' — uma ameaça <em>' + esc(papelDe(c.papel).nome.toLowerCase()) + '</em> de patamar <em>' +
-        esc(patamarDe(c.nd).nome.toLowerCase()) + '</em> tem de <strong>' + cota.min + ' a ' + cota.max + '</strong>. ' +
-        'CD das habilidades desta criatura: <strong>' + s.cd + '</strong>.';
+      // "aumente ou diminua a quantidade de habilidades apenas se o novo
+      // ND resultar em uma criatura de patamar diferente da original.
+      // Caso contrário, o melhor é trocar habilidades." (p. 387)
+      const mesmoPatamar = derivada && patamarDe(c.nd).id === patamarDe(c.base.nd).id;
+      elc.className = 'ca-cota' + (mesmoPatamar ? '' : (n === 0 ? '' : (dentro ? ' ca-cota--ok' : ' ca-cota--fora')));
+      elc.innerHTML = mesmoPatamar
+        ? '<strong>' + n + '</strong> habilidade' + (n === 1 ? '' : 's') + ', as mesmas de ' +
+          esc(c.base.nome) + '. O ND mudou dentro do <em>mesmo patamar</em>, então o livro pede ' +
+          '<strong>trocar</strong> habilidades, não acrescentar nem tirar. ' +
+          'CD das habilidades: <strong>' + s.cd + '</strong>.'
+        : '<strong>' + n + '</strong> habilidade' + (n === 1 ? '' : 's') +
+          ' — uma ameaça <em>' + esc(papelDe(c.papel).nome.toLowerCase()) + '</em> de patamar <em>' +
+          esc(patamarDe(c.nd).nome.toLowerCase()) + '</em> tem de <strong>' + cota.min + ' a ' + cota.max + '</strong>. ' +
+          (derivada ? 'O patamar mudou, então aqui o livro deixa acrescentar ou tirar. ' : '') +
+          'CD das habilidades desta criatura: <strong>' + s.cd + '</strong>.';
     }
 
     // Passo 6 — atributos e perícias
@@ -1184,6 +1978,66 @@
     if (av) av.innerHTML = avisos(c, s).map(function (a) {
       return '<p class="ca-aviso ca-aviso--' + a.tipo + '">' + a.txt + '</p>';
     }).join('');
+  }
+
+  // Os valores calculados do painel da criatura-base (e do bando).
+  function atualizarPainelBase(c, s) {
+    const patB = patamarDe(c.base.nd), patN = patamarDe(c.nd);
+    const subiu = patN.ordem - patB.ordem;
+    const nB = ndNum(c.base.nd), nN = ndNum(c.nd);
+    // o livro diz "metade da mudança no ND"; a conta real da perícia é a
+    // metade de cada ND, que só difere daquela quando as paridades mudam
+    const dPer = Math.floor(nN / 2) - Math.floor(nB / 2);
+    const trB = D.bonusTreinamento(nB), trN = D.bonusTreinamento(nN);
+
+    mostrar('base-patamar',
+      'ND ' + c.base.nd + ' ➜ ND ' + c.nd + ' (' + sinal(nN - nB) + ') · patamar ' +
+      (subiu === 0
+        ? patB.nome + ', o mesmo — o livro pede trocar habilidades, não acrescentar'
+        : patB.nome + ' ➜ ' + patN.nome + ' (' + Math.abs(subiu) + ' ' +
+          (Math.abs(subiu) === 1 ? 'patamar' : 'patamares') + (subiu > 0 ? ' acima' : ' abaixo') + ')') +
+      ' · perícias ' + sinal(dPer) + ' pela metade do ND' +
+      (trB !== trN
+        ? ' · atenção: o bônus de treinamento muda de ' + sinal(trB) + ' para ' + sinal(trN) +
+          ' — as perícias treinadas sobem sozinhas, confira se é o que você quer'
+        : ''));
+
+    if (c.modo !== 'bando' || !c.bando) return;
+
+    const tamB = tamanhoDe(c.base.tamanho), tamN = tamanhoDe(c.tamanho);
+    const catg = tamN.ordem - tamB.ordem;
+    mostrar('bando-tamanho',
+      tamB.nome + ' ➜ ' + tamN.nome +
+      (catg === 0 ? ' (o mesmo tamanho)'
+                  : ' — ' + Math.abs(catg) + ' categoria' + (Math.abs(catg) === 1 ? '' : 's') +
+                    (catg > 0 ? ' acima' : ' abaixo')) +
+      '. Furtividade ' + sinalZero(tamN.furtividade) + ', manobras ' + sinalZero(tamN.manobras) +
+      (catg ? ' — a Furtividade da lista de perícias já foi ajustada em ' +
+              sinal(tamN.furtividade - tamB.furtividade) + '.' : '.'));
+
+    const mult = multDano(c);
+    const subiuPat = patamaresSubidos(c);
+    const habsFora = (c.bando.habsMult || 1) !== mult;
+    const el = elCalc('bando-dano');
+    if (el) {
+      el.className = 'ca-conta-dano' + (habsFora ? ' ca-conta-dano--dif' : ' ca-conta-dano--ok');
+      el.innerHTML =
+        '<span><strong>Patamares subidos:</strong> ' + subiuPat + '</span>' +
+        '<span><strong>Dano do bando:</strong> ×' + mult +
+          (mult === 1 ? ' <em>(mesmo patamar: dano igual ao da base)</em>' : '') + '</span>' +
+        '<span><strong>Somando os ataques:</strong> ' + danoTotalAtual(c) + '</span>' +
+        '<span class="ca-alerta">' + (habsFora
+          ? 'O texto das habilidades ainda está em ×' + (c.bando.habsMult || 1) +
+            ' — use o botão abaixo para refazer.'
+          : 'Magias não entram na multiplicação.') + '</span>';
+    }
+
+    const tes = (D.TESOUROS.find(function (t) { return t.id === c.tesouro; }) || {}).nome || 'Padrão';
+    mostrar('bando-tesouro',
+      'Mantenha a categoria (' + (c.tesouro === 'nenhum' && c.tesouroObs ? 'só o recurso especial' : tes) +
+      '), mas use a linha do ND ' + c.nd + '. A CD para extrair já virou ' + cdExtrair(c) +
+      ' (era ' + (15 + Math.ceil(ndNum(c.base.nd))) + '). Aumente as quantidades conforme o número de ' +
+      'criaturas — no cardume o livro troca “1 dose” por “2d4 doses”.');
   }
 
   // Conferências que o próprio manual pede.
@@ -1279,6 +2133,18 @@
       c.ajustes[el.dataset.ajuste] = parseInt(el.value, 10) || 0;
       salvar(); atualizarCalculos(); return;
     }
+    if (el.dataset.deltaPts) {
+      if (!c.deltas) c.deltas = deltasZero();
+      const antes = fotoDerivada(c);
+      c.deltas[el.dataset.deltaPts] = parseInt(el.value, 10) || 0;
+      atualizarDerivada(c, antes);
+      salvar(); atualizarCalculos(); return;
+    }
+    if (el.dataset.campoBando) {
+      if (!c.bando) c.bando = bandoNovo();
+      c.bando[el.dataset.campoBando] = el.value;
+      salvar(); return;
+    }
     if (el.dataset.res) {
       c.resDistrib[el.dataset.res] = el.value;
       salvar(); atualizarCalculos(); return;
@@ -1298,13 +2164,16 @@
     // tipo / tamanho / forma / ritmo → o deslocamento automático muda junto
     if (el.dataset.campo === 'tipo' || el.dataset.campo === 'tamanho' ||
         el.dataset.campo === 'forma' || el.dataset.campo === 'ritmo') {
-      const antes = deslocamentoAuto(c);
+      const deslAntes = deslocamentoAuto(c);
+      const foto = fotoDerivada(c);
       c[el.dataset.campo] = el.value;
       // só reescreve o campo se ele ainda estiver no valor automático
-      if (!c.deslTerrestre || c.deslTerrestre === antes) c.deslTerrestre = deslocamentoAuto(c);
+      if (!c.deslTerrestre || c.deslTerrestre === deslAntes) c.deslTerrestre = deslocamentoAuto(c);
       c.deslExtras.forEach(function (ex) {
         ex.valor = deslocamentoExtraAuto(c, ex);
       });
+      // num bando, mudar o tamanho mexe na Furtividade (Tabela 1-1)
+      if (el.dataset.campo === 'tamanho') atualizarDerivada(c, foto);
       salvar(); render(); return;
     }
     if (el.dataset.campo === 'funcao') {
@@ -1348,6 +2217,13 @@
       const ex = c.deslExtras.find(function (x) { return x.id === el.dataset.desl; });
       if (ex) { ex.principal = el.checked; ex.valor = deslocamentoExtraAuto(c, ex); }
       salvar(); render(); return;
+    }
+    if (el.dataset.acao === 'bando-tamanho') {
+      const antes = fotoDerivada(c);
+      c.tamanho = el.value;
+      atualizarDerivada(c, antes);
+      salvar(); render();
+      return;
     }
     if (el.dataset.acao === 'importar') {
       importarArquivo(el);
@@ -1401,7 +2277,39 @@
     if (acao === 'backup') { baixarBackup(); return; }
 
     if (acao === 'papel') { if (c) { c.papel = el.dataset.papel; salvar(); render(); } return; }
-    if (acao === 'nd')    { if (c) { c.nd = el.dataset.nd; salvar(); render(); } return; }
+    if (acao === 'nd') {
+      if (!c) return;
+      // numa criatura derivada o ND arrasta junto a CD escrita no texto
+      // das habilidades, a observação das perícias e o dano do bando
+      const antes = fotoDerivada(c);
+      c.nd = el.dataset.nd;
+      atualizarDerivada(c, antes);
+      salvar(); render();
+      return;
+    }
+
+    // ── criatura-base (p. 387–389) ─────────────────────────────────
+    if (acao === 'derivar') { abrirModalBase(el.dataset.modo); return; }
+    if (acao === 'zerar-deltas') {
+      if (!c || !c.deltas) return;
+      const antes = fotoDerivada(c);
+      c.deltas = deltasZero();
+      atualizarDerivada(c, antes);
+      salvar(); render();
+      return;
+    }
+    if (acao === 'bando-faixa') {
+      if (!c || c.modo !== 'bando') return;
+      aplicarFaixaBando(c, el.dataset.faixa);
+      salvar(); render();
+      return;
+    }
+    if (acao === 'bando-dano-habs') {
+      if (!c || c.modo !== 'bando') return;
+      aplicarDanoHabilidades(c);
+      salvar(); render();
+      return;
+    }
 
     if (acao === 'usar-hab-tipo') {
       if (!c) return;
@@ -1501,6 +2409,155 @@
     const i = escada.indexOf(String(atual || '').trim());
     if (i < 0) return atual;
     return escada[Math.max(0, Math.min(escada.length - 1, i + delta))];
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  MODAL — escolher a criatura-base
+  // ═══════════════════════════════════════════════════════════════
+  //  Duas portas: as fichas dos bestiários (js/fichas-prontas.js) e as
+  //  ameaças já criadas nesta aba. O papel de combate é obrigatório: sem
+  //  ele não há linha da Tabela 2-3 para comparar, e sem comparação não
+  //  há diferença nenhuma para anotar.
+
+  // Todas as fichas de um livro, achatadas para a lista de busca.
+  function fichasDoLivro(livroChave) {
+    const B = window.GA_FichasProntas;
+    const l = B && B.livro(livroChave);
+    if (!l) return [];
+    const out = [];
+    B.livros().forEach(function (x) {
+      if (x.chave !== livroChave) return;
+      (x.categorias || []).forEach(function (cat) {
+        (cat.fichas || []).forEach(function (f) {
+          out.push({ chave: f.chave, nome: f.nome, nd: f.nd, tipo: f.tipo,
+                     papel: f.papel, grupo: cat.nome });
+        });
+      });
+    });
+    return out;
+  }
+
+  function listaBaseHTML(fonte, termo) {
+    const t = window.GA_semAcento ? window.GA_semAcento(termo || '').toLowerCase()
+                                  : String(termo || '').toLowerCase();
+    const casa = function (nome) {
+      if (!t) return true;
+      const n = window.GA_semAcento ? window.GA_semAcento(nome).toLowerCase() : String(nome).toLowerCase();
+      return n.indexOf(t) >= 0;
+    };
+
+    let itens = [];
+    if (fonte === 'minhas') {
+      itens = dados.criaturas.filter(function (x) { return casa(x.nome || 'sem nome'); })
+        .map(function (x) {
+          return { chave: x.id, nome: x.nome || 'Ameaça sem nome', nd: x.nd,
+                   tipo: tipoDe(x.tipo).nome + ' ' + tamanhoDe(x.tamanho).nome,
+                   papel: x.papel, grupo: '' };
+        });
+    } else {
+      itens = fichasDoLivro(fonte).filter(function (f) { return casa(f.nome); });
+    }
+    if (!itens.length) return '<p class="ca-vazio">Nada com esse nome.</p>';
+
+    const LIMITE = 60;
+    const html = itens.slice(0, LIMITE).map(function (f) {
+      const meta = esc('ND ' + (f.nd || '—') + (f.tipo ? ' · ' + f.tipo : '') +
+                       (f.grupo ? ' · ' + f.grupo : ''));
+      // ficha sem papel de combate (o Rival Espelho é o caso do livro):
+      // o mestre escolhe na hora, senão não há delta a calcular
+      if (['solo', 'lacaio', 'especial'].indexOf(f.papel) < 0) {
+        return '<div class="ca-base-item ca-base-item--sempapel">' +
+          '<span class="ca-base-item-nome">' + esc(f.nome) + '</span>' +
+          '<span class="ca-base-item-meta">' + meta + ' · <em>sem papel no livro — escolha:</em></span>' +
+          '<span class="ca-base-papeis">' + D.PAPEIS.map(function (p) {
+            return '<button type="button" class="ca-mini" data-base-pick="' + esc(f.chave) +
+              '" data-papel="' + p.id + '">' + esc(p.icone + ' ' + p.nome) + '</button>';
+          }).join('') + '</span></div>';
+      }
+      const pap = papelDe(f.papel);
+      return '<button type="button" class="ca-base-item" data-base-pick="' + esc(f.chave) + '">' +
+        '<span class="ca-base-item-nome">' + esc(f.nome) + '</span>' +
+        '<span class="ca-base-item-meta">' + esc(pap.icone + ' ' + pap.nome) + ' · ' + meta + '</span>' +
+      '</button>';
+    }).join('');
+
+    return html + (itens.length > LIMITE
+      ? '<p class="ca-nota">Mais ' + (itens.length - LIMITE) + ' — refine a busca.</p>' : '');
+  }
+
+  function abrirModalBase(modo) {
+    const bando = modo === 'bando';
+    const B = window.GA_FichasProntas;
+    const livros = B ? B.livros().filter(function (l) { return l.disponivel; }) : [];
+    const fontes = [{ chave: 'minhas', rotulo: '📜 Minhas ameaças' }].concat(
+      livros.map(function (l) { return { chave: l.chave, rotulo: l.icone + ' ' + l.curto }; }));
+    const inicial = livros.length ? livros[0].chave : 'minhas';
+
+    const ov = window.GA_abrirModal(
+      '<div class="ga-modal-cab"><span>' + (bando ? '👥 Criar um bando' : '🔧 Modificar uma criatura') + '</span>' +
+      '<button type="button" class="ga-modal-x" data-ga-fechar>✕</button></div>' +
+      '<p class="ga-modal-dica">' +
+        (bando
+          ? 'Escolha a criatura-base. O bando herda as diferenças dela para a Tabela 2-3, sobe de ND e de tamanho pela quantidade de indivíduos e multiplica o dano pelo aumento de patamar.'
+          : 'Escolha a criatura-base. A aba anota a diferença de cada estatística dela para a linha do seu papel e ND na Tabela 2-3, e mantém essa diferença quando você mudar o ND.') +
+      '</p>' +
+      '<div class="ca-base-busca">' +
+        '<select class="ca-select" data-base-fonte>' + fontes.map(function (f) {
+          return '<option value="' + f.chave + '"' + (f.chave === inicial ? ' selected' : '') + '>' +
+            esc(f.rotulo) + '</option>';
+        }).join('') + '</select>' +
+        '<input type="search" class="ca-input" data-base-termo placeholder="Buscar pelo nome…" autofocus>' +
+      '</div>' +
+      '<div class="ca-base-lista" data-base-lista>' + listaBaseHTML(inicial, '') + '</div>');
+
+    const selFonte = ov.querySelector('[data-base-fonte]');
+    const inpTermo = ov.querySelector('[data-base-termo]');
+    const lista = ov.querySelector('[data-base-lista]');
+    const redesenhar = function () {
+      lista.innerHTML = listaBaseHTML(selFonte.value, inpTermo.value);
+    };
+    selFonte.addEventListener('change', redesenhar);
+    inpTermo.addEventListener('input', redesenhar);
+
+    lista.addEventListener('click', function (e) {
+      const bt = e.target.closest('[data-base-pick]');
+      if (!bt) return;
+      const res = criarDerivada(selFonte.value, bt.dataset.basePick, modo, bt.dataset.papel);
+      if (!res || !res.c) {
+        alert('Não foi possível ler a ficha desta criatura.');
+        return;
+      }
+      dados.criaturas.push(res.c);
+      dados.atual = res.c.id;
+      salvarAgora();
+      ov._fechar();
+      render();
+      if (res.avisos && res.avisos.length) {
+        console.warn('[criar-ameaca] ao ler a criatura-base:', res.avisos.join(' · '));
+      }
+    });
+    setTimeout(function () { inpTermo.focus(); }, 30);
+  }
+
+  // Monta a criatura derivada a partir de uma das duas fontes.
+  // Devolve { c, avisos } ou null.
+  function criarDerivada(fonte, chave, modo, papelForcado) {
+    if (fonte === 'minhas') {
+      const orig = dados.criaturas.find(function (x) { return x.id === chave; });
+      if (!orig) return null;
+      return { c: derivar(orig, lidosDe(orig), modo,
+                          { livro: 'criada nesta aba', chave: orig.id }), avisos: [] };
+    }
+    const B = window.GA_FichasProntas;
+    const ref = B && B.ficha(fonte, chave);
+    if (!ref) return null;
+    const papel = ['solo', 'lacaio', 'especial'].indexOf(papelForcado) >= 0
+      ? papelForcado : ref.def.papel;
+    const lido = lerFichaBase(ref.def.texto, papel);
+    if (!lido) return null;
+    return { c: derivar(lido.c, lido.lidos, modo,
+                        { livro: ref.livro.curto || fonte, chave: chave, avisos: lido.avisos }),
+             avisos: lido.avisos };
   }
 
   // ── Remoção com confirmação (nada some por clique acidental) ──────
@@ -1655,4 +2712,36 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+
+  // ═══════════════════════════════════════════════════════════════
+  //  API PÚBLICA
+  // ═══════════════════════════════════════════════════════════════
+  //  As duas primeiras são a porta de entrada de fora da aba (uma ficha
+  //  do bestiário pode mandar "modifique esta criatura" para cá). As
+  //  outras são as contas puras do manual, sem DOM nenhum — é por elas
+  //  que dá para conferir o exemplo do livro fora do navegador.
+  window.GA_CriarAmeaca = {
+    // Cria a ameaça derivada de uma ficha pronta e abre a aba nela.
+    // Devolve { nome, nd, modo } ou null.
+    modificar: function (livro, chave, papel) { return _derivarEabrir(livro, chave, 'modificada', papel); },
+    bando:     function (livro, chave, papel) { return _derivarEabrir(livro, chave, 'bando', papel); },
+
+    lerFicha: lerFichaBase,      // texto do livro → criatura desta aba
+    deltas:   deltasDe,          // papel + ND + estatísticas → diferenças
+    derivar:  derivar,           // criatura-base → modificada ou bando
+    stats:    stats,             // tabela + ±ND + diferenças
+    statblock: statblock,        // criatura → ficha no formato do livro
+    faixaBando: aplicarFaixaBando,
+  };
+
+  function _derivarEabrir(livro, chave, modo, papel) {
+    if (!D) return null;
+    const res = criarDerivada(livro, chave, modo, papel);
+    if (!res || !res.c) return null;
+    dados.criaturas.push(res.c);
+    dados.atual = res.c.id;
+    salvarAgora();
+    if (document.getElementById('criar-ameaca-content')) render();
+    return { nome: res.c.nome, nd: res.c.nd, modo: modo };
+  }
 })();

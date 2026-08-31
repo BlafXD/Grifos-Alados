@@ -1,8 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════
 //  CRIAR-AMEACA-DATA.JS — Manual de Criação de Ameaças (tabelas)
 //  Fonte: "Ameaças de Arton", Capítulo 2 — Regras Avançadas de
-//  Ameaças, seção "Manual de Criação de Ameaças" (p. 377–387 do
-//  livro; p. 379–389 do PDF). Transcrito direto do PDF oficial.
+//  Ameaças, seção "Manual de Criação de Ameaças" (p. 377–389 do
+//  livro; p. 379–391 do PDF) — os oito passos, mais "Como Modificar
+//  Criaturas" e "Como Criar Bandos". Transcrito direto do PDF oficial.
 //
 //  Este arquivo guarda as TABELAS e listas fechadas. O texto corrido
 //  do manual (os oito passos, os quadros, os exemplos) está em
@@ -16,7 +17,7 @@ window.GA_CRIAR_AMEACA = (function () {
     livro: 'Ameaças de Arton',
     capitulo: 'Capítulo 2 — Regras Avançadas de Ameaças',
     secao: 'Manual de Criação de Ameaças',
-    paginas: 'p. 377–387',
+    paginas: 'p. 377–389',
   };
 
   // ── NÍVEIS DE DESAFIO (ordem canônica das Tabelas 2-3) ───────────
@@ -356,6 +357,32 @@ window.GA_CRIAR_AMEACA = (function () {
 
   const EXECUCOES = ['—', 'Livre', 'Padrão', 'Movimento', 'Completa', 'Reação'];
 
+  // ── BANDOS (Ameaças de Arton, p. 387–389) ────────────────────────
+  //  Multiplicador de dano pelo número de patamares SUBIDOS (item 4 do
+  //  roteiro de bandos): "dano x2 para um patamar, dano x4 para dois
+  //  patamares e dano x6 para três patamares". Zero patamar = dano igual
+  //  ao da criatura-base. É índice direto: BANDO_DANO_MULT[patamares].
+  const BANDO_DANO_MULT = [1, 2, 4, 6];
+  function multBando(patamaresSubidos) {
+    const n = Math.max(0, Math.min(BANDO_DANO_MULT.length - 1, patamaresSubidos | 0));
+    return BANDO_DANO_MULT[n];
+  }
+
+  // As referências que o livro dá para escolher ND e tamanho pela
+  // quantidade de indivíduos (itens 2 e 3). São REFERÊNCIAS, não regra
+  // fechada: "você pode escolher qualquer valor (desde que acima do ND da
+  // criatura-base)".
+  //  nd:   [mínimo, máximo] de pontos de ND acima da criatura-base
+  //  tam:  categorias de tamanho a subir (teto em Colossal)
+  const BANDO_FAIXAS = [
+    { id: 'poucas', rotulo: 'Poucas (o exemplo das mantícoras: três)', nd: [2, 2], tam: 0,
+      fonte: 'O livro cria um bando de três mantícoras de ND 6 e escolhe ND 8 para ele — sem falar em mudança de tamanho.' },
+    { id: 'dez', rotulo: 'Cerca de dez', nd: [2, 4], tam: 1,
+      fonte: 'Um bando com dez indivíduos terá ND entre 2 e 4 pontos acima do ND da criatura-base, e será uma categoria de tamanho maior.' },
+    { id: 'muitas', rotulo: 'Dezenas ou cem', nd: [6, 8], tam: 3,
+      fonte: 'Um bando com dezenas ou mesmo cem indivíduos terá ND entre 6 e 8 pontos acima, e será três categorias de tamanho maior (até um máximo de Colossal).' },
+  ];
+
   // ── TESOURO (Tormenta20, Capítulo 8) ─────────────────────────────
   const TESOUROS = [
     { id: 'nenhum', nome: 'Nenhum', desc: 'A criatura não fornece tesouro — não se rola na tabela.' },
@@ -376,5 +403,7 @@ window.GA_CRIAR_AMEACA = (function () {
     FUNCOES: FUNCOES, PERICIAS: PERICIAS, bonusTreinamento: bonusTreinamento,
     ARMAS_NATURAIS: ARMAS_NATURAIS, TIPOS_DANO: TIPOS_DANO,
     EXECUCOES: EXECUCOES, TESOUROS: TESOUROS,
+    BANDO_DANO_MULT: BANDO_DANO_MULT, BANDO_FAIXAS: BANDO_FAIXAS,
+    multBando: multBando,
   };
 })();

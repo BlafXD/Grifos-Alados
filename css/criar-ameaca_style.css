@@ -857,3 +857,134 @@
   .ca-stat { grid-template-columns: 1fr auto auto; }
   .ca-per-nome { min-width: 6.5rem; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   CRIATURA-BASE — "Como Modificar Criaturas" e "Como Criar Bandos"
+   (Ameaças de Arton, p. 387–389)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.ca-btn--deriva { border-color: var(--gold-dim); color: var(--rust-dark); }
+.ca-btn--deriva:hover { background: var(--gold-pale); color: var(--ink); }
+
+/* ── O cartão "de ➜ para" no alto da oficina ─────────────────────── */
+.ca-base-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--gold-pale);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--raio);
+}
+.ca-base-lado { display: flex; flex-direction: column; gap: 0.1rem; min-width: 10rem; }
+.ca-base-lado > strong {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--ink);
+  line-height: 1.15;
+}
+.ca-base-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--rust);
+}
+.ca-base-meta { font-size: 0.78rem; color: var(--text-dim); }
+.ca-base-meta em { font-style: italic; }
+.ca-base-seta { font-size: 1.2rem; color: var(--gold); line-height: 1; }
+.ca-base-card .ca-mini { margin-left: auto; }
+
+/* ── As faixas de quantidade do bando (itens 2 e 3) ──────────────── */
+.ca-faixas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.4rem;
+}
+.ca-faixa {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.45rem 0.55rem;
+  text-align: left;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  color: var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ca-faixa:hover { background: var(--parchment3); }
+.ca-faixa-rot { font-family: 'Cinzel', serif; font-size: 0.76rem; font-weight: 700; }
+.ca-faixa-num { font-size: 0.72rem; font-style: italic; color: var(--text-dim); }
+.ca-faixa--ativa,
+.ca-faixa--ativa:hover { background: var(--rust); border-color: var(--rust); color: var(--parchment); }
+.ca-faixa--ativa .ca-faixa-num { color: var(--parchment); font-style: normal; }
+
+/* ── Passo 3 numa criatura derivada: base ➜ tabela ➜ diferença ───── */
+/*  A linha ocupa a largura toda da grade: são três números a mais, e
+    espremidos em meia coluna eles ficam ilegíveis.                   */
+.ca-stat--deriva {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(7rem, 1fr) auto auto auto auto auto auto;
+  grid-template-areas: 'rot base seta tab pts val aj' 'nd nd nd nd nd nd nd';
+}
+.ca-stat-base,
+.ca-stat-tab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  padding: 0.12rem 0.4rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment);
+  white-space: nowrap;
+}
+.ca-stat-base { grid-area: base; }
+.ca-stat-tab  { grid-area: tab; color: var(--ink-faded); }
+.ca-stat-seta { grid-area: seta; color: var(--gold); font-size: 0.8rem; line-height: 1; }
+.ca-stat-pts  { grid-area: pts; width: 3.4rem; }
+
+/* ── Modal: escolher a criatura-base ─────────────────────────────── */
+.ca-base-busca { display: flex; gap: 0.4rem; margin-bottom: 0.5rem; }
+.ca-base-busca .ca-select { flex: 0 0 auto; max-width: 14rem; }
+.ca-base-busca .ca-input  { flex: 1 1 auto; }
+.ca-base-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 22rem;
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+.ca-base-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  width: 100%;
+  padding: 0.4rem 0.55rem;
+  text-align: left;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  color: var(--ink);
+  cursor: pointer;
+}
+button.ca-base-item:hover { background: var(--gold-pale); border-color: var(--gold-dim); }
+.ca-base-item--sempapel { cursor: default; background: var(--parchment); }
+.ca-base-item-nome { font-family: 'Cinzel', serif; font-size: 0.86rem; font-weight: 600; }
+.ca-base-item-meta { font-size: 0.74rem; color: var(--text-dim); }
+.ca-base-papeis { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.2rem; }
+
+@media (max-width: 40rem) {
+  .ca-stat--deriva {
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas: 'rot val aj' 'base tab pts' 'nd nd nd';
+  }
+  .ca-stat--deriva .ca-stat-seta { display: none; }
+  .ca-base-busca { flex-wrap: wrap; }
+  .ca-base-busca .ca-select { max-width: none; }
+}
