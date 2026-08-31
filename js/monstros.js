@@ -6152,7 +6152,14 @@
       salvarAgora();
       render();
       return { sessao: NOME, cena: c.nome };
-    }
+    },
+
+    // Lê uma ficha no formato do livro e devolve { cr, avisos } SEM inserir
+    // nada na aba. É o mesmo parser do "📋 Importar do livro", emprestado à
+    // aba "⚗ Criar Ameaça", que precisa ler a criatura-base de "Como
+    // Modificar Criaturas" e "Como Criar Bandos" (Ameaças de Arton, p. 387).
+    // Sem isto, aquela aba teria um segundo parser de statblock para manter.
+    lerFicha: function (texto) { return parsearFicha(texto); }
   };
 
   // ── INICIALIZAÇÃO ────────────────────────────────────────────────

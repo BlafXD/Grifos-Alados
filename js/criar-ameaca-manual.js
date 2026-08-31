@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════
 //  CRIAR-AMEACA-MANUAL.JS — o texto do "Manual de Criação de Ameaças"
-//  Ameaças de Arton, Capítulo 2 (p. 377–387), transcrito do PDF.
+//  Ameaças de Arton, Capítulo 2 (p. 377–389), transcrito do PDF.
 //
 //  Marcação dos textos: [[chave|trecho visível]] vira uma nuvem de
 //  regra (span.ga-tip) com o conteúdo de REFERENCIAS[chave]. É o que
