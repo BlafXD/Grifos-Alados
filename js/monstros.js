@@ -6092,6 +6092,50 @@
       };
     },
 
+    // Insere uma ficha vinda de TEXTO (formato do livro) na cena narrada;
+    // sem cena narrada, agrupa numa sessão própria. Passa pelo mesmo
+    // parser do "📋 Importar do livro". Usado pela aba "⚗ Criar Ameaça",
+    // que monta o statblock e manda a criatura pronta para cá.
+    // opcoes = { papel, sessao } (ambos opcionais).
+    // Devolve { sessao, cena, nome, narrada } ou null.
+    inserirFichaTexto: function (texto, opcoes) {
+      opcoes = opcoes || {};
+      const r = parsearFicha(texto);
+      if (!r || !r.cr) return null;
+      const cr = r.cr;
+      if (['solo', 'lacaio', 'especial'].indexOf(opcoes.papel) >= 0) cr.papel = opcoes.papel;
+      normalizarCriatura(cr);
+
+      let si = -1, ci = -1;
+      if (dados.cenaNarrada) {
+        dados.sessoes.forEach((s, i) => s.cenas.forEach((c, j) => {
+          if (c.id === dados.cenaNarrada) { si = i; ci = j; }
+        }));
+      }
+      const narrada = si >= 0;
+      if (!narrada) {
+        const NOME = opcoes.sessao || '⚗ Ameaças criadas';
+        let s = dados.sessoes.find(x => x.nome === NOME);
+        if (!s) { s = novaSessao(dados.sessoes.length + 1); s.nome = NOME; dados.sessoes.push(s); }
+        s.aberto = true;
+        if (!s.cenas.length) { const c = novaCena(1); c.nome = 'Fichas avulsas'; s.cenas.push(c); }
+        si = dados.sessoes.indexOf(s);
+        ci = s.cenas.length - 1;
+      }
+      const cena = dados.sessoes[si].cenas[ci];
+      cr.nome = _nomeUnicoNaCena(cena, cr.nome || 'Ameaça');
+      cr.aberto = false;
+      cena.criaturas.push(cr);
+      salvarAgora();
+      render();
+      return {
+        sessao: dados.sessoes[si].nome,
+        cena: cena.nome,
+        nome: cr.nome,
+        narrada: narrada,
+      };
+    },
+
     criarCombateViagem: function (nomeViagem, evento, viagemId) {
       const NOME = '🐎 Combates de Viagem';
       let s = dados.sessoes.find(x => x.nome === NOME);

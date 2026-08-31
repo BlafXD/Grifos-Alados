@@ -1,0 +1,859 @@
+/* ══════════════════════════════════════════════════════════════════
+   CRIAR-AMEACA_STYLE.CSS — aba "⚗ Criar Ameaça"
+   Oficina do Manual de Criação de Ameaças (Ameaças de Arton, cap. 2).
+   Reaproveita o vocabulário da gazeta (--parchment, --rust, --gold) e
+   as classes compartilhadas .cr-cabecalho, .prog-table e .npc-linha.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── SUB-ABAS ────────────────────────────────────────────────────── */
+.ca-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0 0 1.2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--parchment3);
+}
+.ca-subtab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0.42rem 0.85rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  color: var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.ca-subtab:hover { background: var(--parchment3); color: var(--ink); }
+.ca-subtab--ativa,
+.ca-subtab--ativa:hover {
+  background: var(--ink);
+  color: var(--parchment);
+  border-color: var(--ink);
+}
+
+/* ── BARRA "MINHAS AMEAÇAS" ──────────────────────────────────────── */
+.ca-barra {
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-left: 4px solid var(--rust);
+  border-radius: var(--raio);
+  padding: 0.7rem 0.85rem;
+  margin-bottom: 1.1rem;
+}
+.ca-barra-cab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.ca-barra-tit {
+  font-family: 'Cinzel', serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+.ca-barra-tit em { font-weight: 400; color: var(--text-dim); font-size: 0.8rem; }
+.ca-barra-acoes { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.ca-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+.ca-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 17rem;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment);
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 0.88rem;
+  color: var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ca-chip:hover { background: var(--gold-pale); border-color: var(--gold-dim); }
+.ca-chip--ativo {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--parchment);
+}
+.ca-chip-icone { font-size: 0.7rem; color: var(--rust); }
+.ca-chip--ativo .ca-chip-icone { color: var(--gold-light); }
+.ca-chip-nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ca-chip-nd {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 0.05rem 0.3rem;
+  border-radius: var(--raio);
+  background: var(--parchment3);
+  color: var(--ink);
+}
+.ca-chip--ativo .ca-chip-nd { background: var(--gold); }
+
+/* ── BOTÕES ──────────────────────────────────────────────────────── */
+.ca-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0.38rem 0.7rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment);
+  color: var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.ca-btn:hover { background: var(--parchment3); color: var(--ink); }
+.ca-btn--nova { background: var(--rust); border-color: var(--rust); color: var(--parchment); }
+.ca-btn--nova:hover { background: var(--rust-dark); color: var(--parchment); }
+.ca-btn--perigo { border-color: var(--carmim); color: var(--carmim); }
+.ca-btn--perigo:hover { background: var(--carmim); color: var(--parchment); }
+.ca-btn--arquivo { display: inline-flex; align-items: center; }
+
+.ca-mini {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  padding: 0.22rem 0.45rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment);
+  color: var(--ink-faded);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ca-mini:hover { background: var(--parchment3); color: var(--ink); }
+.ca-mini--ok { border-color: var(--verde); color: var(--verde); }
+.ca-mini--ok:hover { background: var(--verde); color: var(--parchment); }
+.ca-mini--perigo { border-color: var(--carmim); color: var(--carmim); }
+.ca-mini--perigo:hover { background: var(--carmim); color: var(--parchment); }
+
+/* ── LAYOUT DA OFICINA (passos + prévia grudada) ─────────────────── */
+.ca-oficina {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: 1.2rem;
+  align-items: start;
+}
+.ca-passos { display: flex; flex-direction: column; gap: 1.1rem; min-width: 0; }
+.ca-previa-col { position: sticky; top: calc(var(--nav-h, 3rem) + 0.8rem); }
+
+@media (max-width: 60rem) {
+  .ca-oficina { grid-template-columns: 1fr; }
+  .ca-previa-col { position: static; }
+}
+
+/* ── UM PASSO ────────────────────────────────────────────────────── */
+.ca-passo {
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  padding: 0.9rem 1rem 0.8rem;
+  box-shadow: 0 1px 0 var(--shadow);
+}
+.ca-passo-cab {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.8rem;
+  border-bottom: 1px solid var(--parchment3);
+}
+.ca-passo-num {
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--gold-light);
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.ca-passo-tit h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin: 0.1rem 0 0.15rem;
+}
+.ca-passo-tit p {
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--text-dim);
+  line-height: 1.35;
+}
+.ca-passo-corpo { display: flex; flex-direction: column; gap: 0.65rem; }
+
+/* ── "O QUE O LIVRO DIZ" ─────────────────────────────────────────── */
+.ca-livro {
+  margin-top: 0.9rem;
+  border-top: 1px dashed var(--parchment3);
+  padding-top: 0.5rem;
+}
+.ca-livro > summary {
+  list-style: none;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--gold-deep);
+  padding: 0.2rem 0;
+}
+.ca-livro > summary::-webkit-details-marker { display: none; }
+.ca-livro > summary::before { content: '▸ '; }
+.ca-livro[open] > summary::before { content: '▾ '; }
+.ca-livro > summary:hover { color: var(--rust); }
+.ca-livro-txt {
+  padding: 0.5rem 0 0.2rem 0.9rem;
+  border-left: 2px solid var(--gold-dim);
+  margin-top: 0.4rem;
+}
+
+/* ── TEXTO DO MANUAL ─────────────────────────────────────────────── */
+.ca-man-p, .ca-man-ex {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ink-faded);
+  margin-bottom: 0.6rem;
+  text-align: justify;
+}
+.ca-man-ex {
+  font-style: italic;
+  padding-left: 0.7rem;
+  border-left: 2px solid var(--parchment3);
+  color: var(--text-dim);
+}
+.ca-man-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--rust-dark);
+  margin: 0.8rem 0 0.35rem;
+}
+.ca-man-lista { margin: 0 0 0.7rem 1.1rem; }
+.ca-man-lista li { font-size: 0.94rem; line-height: 1.5; color: var(--ink-faded); margin-bottom: 0.15rem; }
+
+.ca-quadro {
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-top: 3px double var(--gold);
+  border-radius: var(--raio);
+  padding: 0.7rem 0.85rem;
+  margin: 0.8rem 0;
+}
+.ca-quadro-tit {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--rust-dark);
+  margin-bottom: 0.4rem;
+}
+.ca-quadro p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ink-faded);
+  margin-bottom: 0.45rem;
+}
+.ca-quadro p:last-child { margin-bottom: 0; }
+
+/* referência a outra página/livro: a nuvem 📖 */
+.ca-ref { white-space: normal; }
+.ca-ref-selo {
+  font-size: 0.7em;
+  vertical-align: super;
+  margin-left: 0.1em;
+  opacity: 0.75;
+}
+/* Duas melhorias na nuvem COMPARTILHADA (.ga-tip-pop, desenhada pelo
+   itens-descricoes.js). As regras trazidas de outros livros são longas e
+   têm parágrafos; sem isto elas viravam um bloco só e podiam passar da
+   altura da tela. Tooltip de uma linha (o resto do site) não muda: sem
+   quebra de linha, `pre-line` não faz nada, e a altura não chega ao teto.
+   O corte fica no TEXTO, não na nuvem — senão a setinha some. Clicar na
+   nuvem a fixa, e aí ela rola e dá para copiar. */
+.ga-tip-pop-txt {
+  white-space: pre-line;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+/* ── CAMPOS ──────────────────────────────────────────────────────── */
+.ca-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.6rem;
+}
+.ca-grade--3 { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); }
+
+.ca-campo { display: flex; flex-direction: column; gap: 0.22rem; }
+.ca-campo-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ca-campo-rot em {
+  font-family: 'Crimson Pro', Georgia, serif;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  margin-left: 0.3rem;
+}
+
+.ca-input, .ca-select, .ca-area {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: #fffaf0;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  padding: 0.34rem 0.5rem;
+  width: 100%;
+}
+.ca-area { resize: vertical; line-height: 1.45; }
+.ca-input:focus, .ca-select:focus, .ca-area:focus {
+  outline: none;
+  border-color: var(--rust);
+  box-shadow: 0 0 0 2px rgba(139,44,10,0.12);
+}
+.ca-input--num  { width: 4.2rem; text-align: center; }
+.ca-input--num2 { width: 6rem; }
+.ca-input--mini { max-width: 9rem; }
+.ca-input--sentidos { flex: 1 1 16rem; width: auto; }
+.ca-select--mini { width: auto; font-size: 0.88rem; padding: 0.25rem 0.4rem; }
+.ca-select--add  { max-width: 20rem; margin-top: 0.5rem; }
+
+.ca-chk {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--ink-faded);
+  cursor: pointer;
+}
+.ca-chk--mini { font-size: 0.82rem; color: var(--text-dim); }
+.ca-chk em { font-style: italic; color: var(--text-dim); }
+
+.ca-sub-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-top: 0.45rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--parchment3);
+}
+.ca-sub-rot em { text-transform: none; letter-spacing: 0; color: var(--text-dim); font-weight: 400; }
+
+.ca-nota {
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+  font-style: italic;
+}
+.ca-nota--inline { font-style: normal; white-space: nowrap; }
+.ca-nota--auto {
+  font-style: normal;
+  background: var(--gold-pale);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--raio);
+  padding: 0.4rem 0.6rem;
+  color: var(--ink-faded);
+}
+.ca-nota--info {
+  font-style: normal;
+  background: var(--parchment2);
+  border-left: 3px solid var(--azul);
+  border-radius: var(--raio);
+  padding: 0.4rem 0.6rem;
+  color: var(--ink-faded);
+}
+.ca-vazio {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-dim);
+  padding: 0.6rem 0.2rem;
+}
+
+/* ── PAPÉIS DE COMBATE ───────────────────────────────────────────── */
+.ca-papeis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.45rem;
+}
+.ca-papel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ca-papel:hover { background: var(--gold-pale); border-color: var(--gold-dim); }
+.ca-papel--ativo,
+.ca-papel--ativo:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.ca-papel-icone { font-size: 0.75rem; color: var(--rust); }
+.ca-papel--ativo .ca-papel-icone { color: var(--gold-light); }
+.ca-papel-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+.ca-papel--ativo .ca-papel-nome { color: var(--parchment); }
+.ca-papel-curto { font-size: 0.8rem; line-height: 1.3; color: var(--text-dim); }
+.ca-papel--ativo .ca-papel-curto { color: var(--parchment3); }
+
+/* ── DESLOCAMENTOS ESPECIAIS ─────────────────────────────────────── */
+.ca-desl-extras {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.4rem;
+}
+.ca-desl-extra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px dashed var(--parchment3);
+  border-radius: var(--raio);
+}
+.ca-desl-extra--on { border-style: solid; background: var(--parchment2); }
+
+/* ── GRADE DE ND ─────────────────────────────────────────────────── */
+.ca-nd-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3.1rem, 1fr));
+  gap: 0.25rem;
+}
+.ca-nd {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.4rem 0.2rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  color: var(--ink-faded);
+  cursor: pointer;
+  border-bottom-width: 3px;
+  transition: background 0.12s, color 0.12s;
+}
+.ca-nd:hover { background: var(--gold-pale); }
+.ca-nd--iniciante { border-bottom-color: #7aa87f; }
+.ca-nd--veterano  { border-bottom-color: var(--azul); }
+.ca-nd--campeao   { border-bottom-color: var(--gold); }
+.ca-nd--lenda     { border-bottom-color: var(--carmim); }
+.ca-nd--ativo,
+.ca-nd--ativo:hover {
+  background: var(--ink);
+  color: var(--gold-light);
+  border-color: var(--ink);
+}
+
+/* ── ESTATÍSTICAS DE COMBATE ─────────────────────────────────────── */
+.ca-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.4rem;
+}
+.ca-stat {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-areas: 'rot val aj' 'nd nd nd';
+  align-items: center;
+  gap: 0.2rem 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.ca-stat-rot {
+  grid-area: rot;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ca-stat-val {
+  grid-area: val;
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--rust-dark);
+  line-height: 1;
+}
+.ca-stat-aj {
+  grid-area: aj;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.2rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment);
+  color: var(--ink-faded);
+  cursor: pointer;
+}
+.ca-stat-nd {
+  grid-area: nd;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+
+/* ── ATAQUES ─────────────────────────────────────────────────────── */
+.ca-conta-dano {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  border-left: 3px solid var(--parchment3);
+  font-size: 0.88rem;
+  color: var(--ink-faded);
+}
+.ca-conta-dano--ok  { border-left-color: var(--verde); background: rgba(47,111,63,0.09); }
+.ca-conta-dano--dif { border-left-color: var(--rust); background: rgba(139,44,10,0.07); }
+.ca-conta-dano .ca-alerta { color: var(--carmim); font-style: italic; }
+
+.ca-ataques { display: flex; flex-direction: column; gap: 0.55rem; }
+.ca-ataque {
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--rust);
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  padding: 0.5rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.ca-ataque-topo { display: flex; gap: 0.4rem; align-items: center; }
+.ca-ataque-nome { flex: 1 1 auto; font-weight: 600; }
+.ca-ataque-linha { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: flex-end; }
+.ca-mini-campo { display: flex; flex-direction: column; gap: 0.12rem; }
+.ca-mini-campo > span {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ca-mini-campo--larga { flex: 1 1 12rem; }
+.ca-passo-dado { display: inline-flex; gap: 0.15rem; padding-bottom: 0.12rem; }
+.ca-ataque-pe {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--parchment3);
+}
+.ca-ataque-conta { font-size: 0.82rem; font-style: italic; color: var(--gold-deep); }
+
+/* ── HABILIDADES ─────────────────────────────────────────────────── */
+.ca-cota {
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  border-left: 3px solid var(--parchment3);
+  font-size: 0.88rem;
+  color: var(--ink-faded);
+}
+.ca-cota--ok   { border-left-color: var(--verde); background: rgba(47,111,63,0.09); }
+.ca-cota--fora { border-left-color: var(--rust); background: rgba(139,44,10,0.07); }
+
+.ca-habs { display: flex; flex-direction: column; gap: 0.5rem; }
+.ca-hab {
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  padding: 0.5rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.ca-hab-topo { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.ca-hab-nome { flex: 1 1 12rem; width: auto; font-weight: 600; }
+.ca-hab-acoes { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+
+.ca-bib { margin-top: 0.5rem; }
+.ca-bib > summary {
+  list-style: none;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--gold-deep);
+}
+.ca-bib > summary::-webkit-details-marker { display: none; }
+.ca-bib > summary::before { content: '▸ '; }
+.ca-bib[open] > summary::before { content: '▾ '; }
+.ca-bib > summary em { font-family: 'Crimson Pro', Georgia, serif; letter-spacing: 0; font-weight: 400; }
+.ca-bib-lista { display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.4rem; }
+.ca-bib-grupo { display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: baseline; }
+.ca-bib-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rust);
+  min-width: 5.5rem;
+}
+.ca-bib-item {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 0.85rem;
+  padding: 0.18rem 0.45rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment);
+  color: var(--ink-faded);
+  cursor: pointer;
+}
+.ca-bib-item:hover { background: var(--gold-pale); border-color: var(--gold-dim); color: var(--ink); }
+
+/* ── ATRIBUTOS E PERÍCIAS ────────────────────────────────────────── */
+.ca-atribs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.4rem;
+}
+.ca-atrib {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: 'rot inp' 'cat inp';
+  align-items: center;
+  gap: 0 0.4rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.ca-atrib-rot {
+  grid-area: rot;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.ca-atrib-cat { grid-area: cat; font-size: 0.78rem; font-style: italic; color: var(--gold-deep); }
+.ca-atrib input { grid-area: inp; }
+
+.ca-fixas, .ca-pers { display: flex; flex-direction: column; gap: 0.35rem; }
+.ca-per {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.ca-per-nome {
+  min-width: 8rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.ca-per-nome em {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-left: 0.35rem;
+}
+.ca-per-val {
+  margin-left: auto;
+  font-family: 'Cinzel', serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--rust-dark);
+  min-width: 2.6rem;
+  text-align: right;
+}
+
+/* ── PRÉVIA DA FICHA ─────────────────────────────────────────────── */
+.ca-previa {
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-top: 3px double var(--gold);
+  border-radius: var(--raio);
+  box-shadow: 0 2px 6px var(--shadow);
+  max-height: calc(100vh - var(--nav-h, 3rem) - 3rem);
+  display: flex;
+  flex-direction: column;
+}
+.ca-previa-cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  background: var(--ink);
+  color: var(--parchment);
+}
+.ca-previa-tit {
+  font-family: 'Cinzel', serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+.ca-previa-acoes { display: flex; gap: 0.25rem; }
+.ca-previa-corpo {
+  padding: 0.7rem 0.8rem;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+.ca-ficha-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--rust-dark);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.45rem;
+  border-bottom: 2px solid var(--gold-dim);
+}
+.ca-avisos { padding: 0 0.8rem 0.7rem; }
+.ca-aviso {
+  font-size: 0.82rem;
+  line-height: 1.4;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--raio);
+  margin-top: 0.3rem;
+}
+.ca-aviso--info  { background: var(--parchment2); border-left: 3px solid var(--azul); color: var(--text-dim); }
+.ca-aviso--aviso { background: rgba(139,44,10,0.08); border-left: 3px solid var(--rust); color: var(--ink-faded); }
+
+/* ── PAINEL DO MANUAL ────────────────────────────────────────────── */
+.ca-manual { max-width: 52rem; }
+.ca-man-abertura {
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+.ca-man-secao {
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--rust);
+  border-radius: var(--raio);
+  margin-bottom: 0.5rem;
+}
+.ca-man-secao > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.6rem 0.85rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+.ca-man-secao > summary::-webkit-details-marker { display: none; }
+.ca-man-secao > summary::before { content: '▸ '; color: var(--rust); }
+.ca-man-secao[open] > summary::before { content: '▾ '; }
+.ca-man-secao > summary:hover { background: var(--gold-pale); }
+.ca-man-corpo { padding: 0.2rem 1.1rem 0.9rem; }
+.ca-ficha-livro {
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-top: 3px double var(--gold);
+  border-radius: var(--raio);
+  padding: 0.7rem 0.85rem;
+  margin-top: 0.8rem;
+}
+.ca-fonte {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.09em;
+  color: var(--text-dim);
+  margin: 1.4rem 0 0.5rem;
+}
+
+/* ── PAINEL DE TABELAS ───────────────────────────────────────────── */
+.ca-tabelas { display: flex; flex-direction: column; gap: 1.4rem; }
+.ca-tabs-param { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.5rem; }
+.ca-tab-param {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.32rem 0.7rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  color: var(--ink-faded);
+  cursor: pointer;
+}
+.ca-tab-param:hover { background: var(--parchment3); }
+.ca-tab-param--ativa,
+.ca-tab-param--ativa:hover { background: var(--rust); border-color: var(--rust); color: var(--parchment); }
+
+/* a linha do ND escolhido, destacada dentro da Tabela 2-3 */
+.prog-table tbody tr.ca-linha-atual td {
+  background: var(--gold-pale);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px var(--gold-dim);
+}
+.prog-table tbody tr.ca-linha-atual:hover td { background: var(--gold-pale); }
+
+/* a coluna "O que é" da tabela de funções é texto longo */
+.ca-tabelas .prog-table td { vertical-align: top; }
+
+@media (max-width: 40rem) {
+  .ca-barra-acoes { width: 100%; }
+  .ca-stat { grid-template-columns: 1fr auto auto; }
+  .ca-per-nome { min-width: 6.5rem; }
+}
