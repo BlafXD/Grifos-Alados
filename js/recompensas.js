@@ -2174,7 +2174,10 @@ function descBlocoPergaminho(perg, meta) {
       `Pergaminho — ${meta}`,
     ]);
   }
-  const puro = M.textoPuro(perg.nome, linhasPrecoPergaminho(perg));
+  // mesmo arranjo do ⧉ Copiar da Loja: é o mesmo pergaminho, e copiado de
+  // um lugar ou do outro tem de sair igual
+  const puro = M.textoPuro(perg.nome, linhasPrecoPergaminho(perg),
+    { extrasNoCabecalho: true, aprimoramentosSoltos: true });
   return `<details class="ga-desc mag-texto"><summary>Descrição completa</summary>`
        + `<div class="ga-desc-corpo">${M.htmlCorpo(perg.nome)}`
        + `<button type="button" class="ga-desc-copiar" data-ga-copiar="${gaEscAttr(puro)}"`
