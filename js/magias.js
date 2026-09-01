@@ -623,17 +623,32 @@ const Magias = (function () {
   // Versão em texto puro, para o botão "⧉ Copiar".
   //  `extras` entra logo depois das estatísticas — a Loja usa para os
   //  preços do pergaminho, a aba de Magias não passa nada.
-  function textoPuro(nome, extras) {
+  //
+  //  `opts` muda o arranjo. Quem usa é a nuvem de descrição (GA_Tip), que
+  //  lê num espaço estreito e sem a moldura da Loja em volta:
+  //    extrasNoCabecalho    → os `extras` sobem para logo abaixo da linha
+  //                           do nome, colados no custo em PM. Numa nuvem
+  //                           pendurada num trecho é o que diz de cara que
+  //                           aquilo ali é um pergaminho, e por quanto.
+  //    aprimoramentosSoltos → uma linha em branco entre os aprimoramentos.
+  //                           Colados eles viram um bloco só quando a
+  //                           largura é pouca.
+  function textoPuro(nome, extras, opts) {
     const t = TEXTO[nome];
     if (!t) return '';
-    return [
-      `${t.nome} — ${t.tipo} ${t.circulo} (${t.escola}) · ${t.pm} PM`,
-      estatisticas(nome).map(([rot, val]) => `${rot}: ${val}`).join('; ') + '.',
-    ].concat(extras || [], [
+    opts = opts || {};
+    const cabecalho = `${t.nome} — ${t.tipo} ${t.circulo} (${t.escola}) · ${t.pm} PM`;
+    const stats = estatisticas(nome).map(([rot, val]) => `${rot}: ${val}`).join('; ') + '.';
+    const lista = extras || [];
+    const emenda = opts.aprimoramentosSoltos ? '\n\n' : '\n';
+    return (opts.extrasNoCabecalho
+      ? [cabecalho].concat(lista, [stats])
+      : [cabecalho, stats].concat(lista)
+    ).concat([
       '',
       t.descricao.join('\n'),
       t.truque ? `\nTruque: ${t.truque}` : '',
-      t.aprimoramentos.length ? '\n' + t.aprimoramentos.map(_aprimoramentoTexto).join('\n') : '',
+      t.aprimoramentos.length ? '\n' + t.aprimoramentos.map(_aprimoramentoTexto).join(emenda) : '',
     ]).join('\n').replace(/\n{3,}/g, '\n\n').trim();
   }
 
