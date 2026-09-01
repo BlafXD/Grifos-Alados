@@ -34,13 +34,16 @@ vai abrir a Loja paga por ele. O conserto de verdade é carregar os dados de
 cada aba sob demanda; é reforma grande e segue sem urgência enquanto o uso
 for local.
 
-**NOVO · BAIXA — `data/magias.json` é cópia morta.** 434 KB que nenhum script
-carrega (o site lê `js/magias-data.js`). Em 1º de setembro as 254 magias ainda
-batiam byte a byte entre os dois. O risco é o dia em que não baterem, porque
-nada avisa.
+**NOVO · BAIXA — `data/magias.json` é cópia morta.** ~~434 KB que nenhum
+script carrega (o site lê `js/magias-data.js`).~~ **RESOLVIDO em 1º de
+setembro:** arquivo apagado. As 254 magias ainda batiam byte a byte com o
+`.js` na hora de apagar, então nada se perdeu — e some o risco do dia em que
+os dois divergissem sem nada avisar.
 
-**NOVO · BAIXA — `README.md` e `README.txt` dizem a mesma coisa** em dois
-formatos. Dois lugares para atualizar; um vai ficar para trás.
+**NOVO · BAIXA — `README.md` e `README.txt` dizem a mesma coisa.**
+**RESOLVIDO em 1º de setembro:** o `.txt` foi apagado. Tudo o que ele tinha
+(o que é, como editar as notícias pelo `server.py`, a estrutura de pastas e
+onde os dados ficam salvos) já estava no `README.md`, e mais atualizado.
 
 **NOVO · BAIXA — a pasta `Inútil/` não é versionada** (só o `.gitkeep`). É
 decisão deliberada — é rascunho pessoal —, mas é lá que vivem as ferramentas
