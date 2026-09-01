@@ -3,12 +3,15 @@
 //  Localização: /grifos-alados/js/magias-data.js
 //
 //  Fonte: Inútil/Regras.txt (descrição das magias dos dois livros).
-//  Cópia legível em JSON: data/magias.json — os dois arquivos têm o
-//  mesmo conteúdo; este é o que o site carrega (funciona offline).
+//  Este arquivo é a ÚNICA cópia das magias no projeto. Houve um
+//  data/magias.json espelhando o mesmo conteúdo "para leitura"; ninguém
+//  carregava, e manter dois arquivos com as mesmas 254 magias era só
+//  esperar que um divergisse do outro sem nada avisar.
 //
 //  Consumidores:
 //    • magias.js / loja.js  — descrição completa nos pergaminhos
-//    • (futuro) aba de Magias
+//    • magias-aba.js        — sub-aba "✨ Magias" das Consultas
+//    • descricoes-custom.js — a magia pendurada num trecho (nuvem)
 //
 //  Cada magia:
 //    id            slug do nome ("bola-de-fogo")
