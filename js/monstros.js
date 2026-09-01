@@ -33,7 +33,7 @@
   ];
 
   // Caixas de texto livre (uma caixa só, para CTRL+C / CTRL+V).
-  // `rico: true` → vira caixa de texto rico (grifos, ▣ caixa, 📖 descrição,
+  // `rico: true` → vira caixa de texto rico (grifos, ▣ caixa, ※ descrição,
   // Ctrl+B / Ctrl+I) em vez de textarea. As demais continuam texto simples.
   const CAIXAS = [
     { chave: 'condicoes',   rotulo: 'Condições especiais', rico: true,
@@ -869,7 +869,7 @@
     ).join('');
     return `<span class="mz-toolbar-rot">Grifar</span>${sw}
             <button type="button" class="mz-grifo mz-grifo--box" ${attr}="grifar" data-cor="mz-leitura" ${ds} title="Marcar o trecho como caixa de leitura (boxed, estilo livro de aventura)">▣ Caixa</button>
-            <button type="button" class="mz-grifo mz-grifo--desc" ${attr}="descrever" ${ds} title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖 Descrição</button>
+            <button type="button" class="mz-grifo mz-grifo--desc" ${attr}="descrever" ${ds} title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">※ Descrição</button>
             <button type="button" class="mz-grifo mz-grifo--limpa" ${attr}="desgrifar" ${ds}>✦ Remover</button>`;
   }
 
@@ -913,7 +913,7 @@
 
   // Caixa de texto RICO menor (Tags · sentidos, Condições especiais,
   // Recompensas, Descrição): mesma caixa das anotações/ataques — grifos,
-  // ▣ caixa, 📖 descrição, Ctrl+B / Ctrl+I, ⛶ expandir — só que baixinha.
+  // ▣ caixa, ※ descrição, Ctrl+B / Ctrl+I, ⛶ expandir — só que baixinha.
   // `cls` escolhe a altura: 'mz-rich-linha' (uma linha) ou 'mz-rich-mini'.
   function caixaTextoRica(campo, html, ds, dica, cls) {
     return `
@@ -3285,7 +3285,7 @@
     const editor = btn.closest('.mz-campo').querySelector('.mz-ataques');
     if (!editor) return;
     if (btn.dataset.acao === 'descrever') {
-      // 📖 pendura uma descrição no trecho selecionado (GA_Tip abre o
+      // ※ pendura uma descrição no trecho selecionado (GA_Tip abre o
       // modal; ao concluir, salva o HTML da caixa como qualquer edição)
       if (window.GA_Tip) window.GA_Tip.editarSelecao(editor, () => salvarRich(editor));
       return;

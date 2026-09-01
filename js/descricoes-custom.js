@@ -3,11 +3,19 @@
 //  Localização: /grifos-alados/js/descricoes-custom.js
 //
 //  O mestre seleciona um trecho ("Espada") numa caixa de texto rico e
-//  clica em "📖 Descrição": abre um modal para ESCREVER a descrição ou
+//  clica em "※ Descrição": abre um modal para ESCREVER a descrição ou
 //  BUSCAR uma pronta na base (itens, magias, condições, culinária,
 //  poderes concedidos). O trecho vira <span class="ga-tip" data-tip="…">
 //  — a mesma nuvem dos termos de regra (itens-descricoes.js): aparece ao
 //  passar o mouse e FIXA ao clicar (para copiar).
+//
+//  MAGIAS têm caminho próprio. Quando o trecho É o nome de uma magia (ou
+//  quando se escolhe uma na busca), o modal abre com o TEXTO INTEGRAL
+//  dela — estatísticas, descrição, truque e aprimoramentos, montados por
+//  Magias.textoPuro — e com dois interruptores que refazem o texto:
+//    • "É um pergaminho?"  → acrescenta o preço do pergaminho (30 × PM²),
+//                            o custo de aprender (250 × PM) e o trabalho.
+//    • "Texto completo"    → desmarcado, cai no resumo de uma linha.
 //
 //  Consumidores: monstros.js (caixas do Combate) e mapa.js (nós do Mapa).
 //  API: GA_Tip.editarSelecao(editorEl, aoConcluir) → true se abriu;
@@ -19,9 +27,25 @@ window.GA_Tip = (function () {
   const esc = window.GA_esc;
 
   // Colagens (PDF etc.) entram SEM quebras de linha: tudo vira um
-  // parágrafo único — é assim que a nuvem exibe o texto.
+  // parágrafo único — o PDF quebra no meio da frase, e emendar é o que
+  // deixa o texto legível na nuvem.
   function limparColagem(t) {
     return String(t == null ? '' : t).replace(/\s+/g, ' ').trim();
+  }
+
+  // Ao APLICAR, porém, as quebras que ESTÃO na caixa são de propósito —
+  // o texto integral de uma magia vem em linhas, e é assim que ele tem
+  // de chegar na nuvem. Aqui só se apara o fim de cada linha, se juntam
+  // os espaços repetidos de dentro dela e se somem as linhas vazias
+  // repetidas. O RECUO do começo fica: é ele que alinha os itens de um
+  // aprimoramento. (A nuvem respeita tudo: white-space:pre-wrap em
+  // .ga-tip-pop-txt.)
+  function limparTexto(t) {
+    return String(t == null ? '' : t)
+      .replace(/\r\n?/g, '\n')
+      .split('\n').map(l => l.replace(/\s+$/, '').replace(/(\S)[ \t]{2,}/g, '$1 ')).join('\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
   }
 
   // Formata preço em Tibares do mesmo jeito que o resto do site (loja.js,
@@ -51,19 +75,19 @@ window.GA_Tip = (function () {
       if (st.alcance)       p.push(st.alcance);
       if (st.peso != null)  p.push(st.peso + ' esp.');
       if (st.preco != null) p.push('T$ ' + precoTexto(st.preco));
-      return p.length ? '⚔ ' + p.join(' · ') : '';
+      return p.join(' · ');
     }
     if (st.kind === 'armor') {
       if (st.bonus != null)  p.push('Defesa +' + st.bonus);
       if (st.penalidade)     p.push('Penalidade ' + st.penalidade);
       if (st.peso != null)   p.push(st.peso + ' esp.');
       if (st.preco != null)  p.push('T$ ' + precoTexto(st.preco));
-      return p.length ? '🛡 ' + p.join(' · ') : '';
+      return p.join(' · ');
     }
     if (st.kind === 'misc') {
       if (st.peso != null)   p.push(st.peso + ' esp.');
       if (st.preco != null)  p.push('T$ ' + precoTexto(st.preco));
-      return p.length ? '🎒 ' + p.join(' · ') : '';
+      return p.join(' · ');
     }
     return '';
   }
@@ -109,14 +133,24 @@ window.GA_Tip = (function () {
       if (usados[chave]) return;
       add(lore[chave].nome, lore[chave].texto, 'item');
     });
-    (((window.Magias || {}).TODAS) || []).forEach(m => add(m.nome, m.descricao, 'magia'));
+    // Magias entram com o resumo de uma linha; o texto de verdade é
+    // montado ao escolher (magiaTexto). Uma entrada por NOME: a magia que
+    // está nas duas listas aparece duas vezes em TODAS, e na busca isso
+    // era só uma linha repetida.
+    const vistas = {};
+    (((window.Magias || {}).TODAS) || []).forEach(m => {
+      const k = window.GA_semAcento(m.nome);
+      if (vistas[k]) return;
+      vistas[k] = true;
+      add(m.nome, m.descricao, 'magia');
+    });
     const C = window.GA_CULINARIA;
     if (C) {
       (C.INGREDIENTES || []).forEach(i => add(i.nome, i.desc, 'ingrediente'));
       (C.PRATOS || []).forEach(p => add(p.nome, (p.flavor || '') + ' Benefício: ' + (p.beneficio || '') + '.', 'prato'));
     }
     (((window.GA_DEVOTOS || {}).poderes) || []).forEach(p =>
-      add(p.nome, (p.magica ? '✨ Habilidade mágica. ' : '') + p.texto, 'poder concedido'));
+      add(p.nome, (p.magica ? 'Habilidade mágica. ' : '') + p.texto, 'poder concedido'));
 
     _indice = lista;
     return lista;
@@ -133,35 +167,136 @@ window.GA_Tip = (function () {
     return comeca.concat(contem).slice(0, 12);
   }
 
+  // ── MAGIAS ──────────────────────────────────────────────────────────
+  //  O índice guarda só o resumo de uma linha; o texto de verdade é
+  //  montado na hora (magiaTexto), para os interruptores do modal
+  //  poderem trocá-lo sem nova busca. Tudo vem de js/magias.js — sem ele
+  //  carregado, o caminho de magia simplesmente não aparece.
+  function _M() { return (typeof Magias !== 'undefined') ? Magias : window.Magias; }
+
+  // Registro da magia pelo nome, sem acento. A mesma magia pode estar nas
+  // listas arcana E divina (duas entradas em TODAS); guardamos a primeira
+  // — nome, círculo e escola são os mesmos, e é só isso que se usa aqui.
+  let _porNome = null;
+  function magiaDe(nome) {
+    const M = _M();
+    if (!M || !M.TODAS) return null;
+    if (!_porNome) {
+      _porNome = {};
+      M.TODAS.forEach(m => {
+        const k = window.GA_semAcento(m.nome);
+        if (!_porNome[k]) _porNome[k] = m;
+      });
+    }
+    // o trecho grifado costuma vir com a pontuação da frase junto
+    const limpo = String(nome || '').replace(/^[\s"'“”«»(\[]+|[\s"'“”«»)\].,;:!?]+$/g, '');
+    return _porNome[window.GA_semAcento(limpo)] || null;
+  }
+
+  // As MESMAS linhas de preço da Loja (loja.js, _linhasPrecoMagia):
+  // comprar o pergaminho (30 × PM²), aprender a magia (250 × PM, poder
+  // Escriba Arcano) e o trabalho que isso custa (1 dia por PM).
+  function linhasPergaminho(reg) {
+    const M = _M();
+    if (!reg || !M || !M.montarPergaminho) return [];
+    const p = M.montarPergaminho(reg);
+    const fmt = n => Number(n).toLocaleString('pt-BR');
+    const dias = `${p.diasAprender} dia${p.diasAprender !== 1 ? 's' : ''}`;
+    return [
+      `Pergaminho: T$ ${fmt(p.precoPergaminho)} · Peso: ½ espaço`,
+      `Aprender: +T$ ${fmt(p.precoAprender)} (total T$ ${fmt(p.precoTotal)}) · ${dias} de trabalho`,
+    ];
+  }
+
+  // Texto da magia para a nuvem.
+  //  completo   → Magias.textoPuro: cabeçalho, estatísticas, a descrição
+  //               integral, o truque e os aprimoramentos.
+  //  compacto   → cabeçalho + o resumo de uma linha.
+  //  pergaminho → as duas linhas de preço entram logo após as
+  //               estatísticas, do mesmo jeito que na Loja.
+  function magiaTexto(reg, opts) {
+    const M = _M();
+    if (!reg || !M) return '';
+    opts = opts || {};
+    const extras = opts.pergaminho ? linhasPergaminho(reg) : [];
+    const t = M.textoDe ? M.textoDe(reg.nome) : null;
+    if (opts.completo && t && M.textoPuro) return M.textoPuro(reg.nome, extras);
+
+    const cab = t
+      ? `${t.nome} — ${t.tipo} ${t.circulo} (${t.escola}) · ${t.pm} PM`
+      : `${reg.nome} — ${(M.TIPO_LABEL || {})[reg.tipo] || ''} ${reg.circulo} (${reg.escola})`.replace(/ {2,}/g, ' ');
+    return [cab].concat(extras, ['', (t && t.resumo) || reg.descricao || ''])
+      .join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+
   // ── Modal de edição ─────────────────────────────────────────────────
   //  opts: { termo, atual, onSalvar(texto), onRemover() }
+  //  `termo` vem INTEIRO (só o rótulo é encurtado): é por ele que se
+  //  descobre se o trecho é o nome de uma magia.
   function abrirEditor(opts) {
     opts = opts || {};
     // a nuvem pode estar fixada no próprio termo — solta antes de abrir
     // o modal, para não ficar flutuando por cima dele
     if (window.ItensDescricoes && window.ItensDescricoes.fecharNuvem) window.ItensDescricoes.fecharNuvem();
+    const termoCurto = String(opts.termo || '');
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
-        <strong>📖 Descrição do trecho</strong>
+        <strong>Descrição do trecho</strong>
         <button class="ga-modal-x" data-ga-fechar title="Fechar (Esc)">✕</button>
       </div>
-      <p class="gd-termo">Trecho: <strong>${esc(opts.termo || '')}</strong></p>
+      <p class="gd-termo">Trecho: <strong>${esc(termoCurto.length > 80 ? termoCurto.slice(0, 80) + '…' : termoCurto)}</strong></p>
       <input class="gd-busca" type="text" autocomplete="off"
-             placeholder="🔎 Buscar descrição pronta (itens, magias, condições, pratos, poderes…)">
+             placeholder="Buscar descrição pronta (itens, magias, condições, pratos, poderes…)">
       <div class="gd-resultados"></div>
+      <div class="gd-magia" hidden>
+        <span class="gd-magia-rot">Magia</span>
+        <strong class="gd-magia-nome"></strong>
+        <label class="gd-opt" title="Acrescenta o preço do pergaminho (T$ 30 × PM²), o custo de aprender a magia (T$ 250 × PM, poder Escriba Arcano) e os dias de trabalho">
+          <input type="checkbox" data-gd-opt="pergaminho"> É um pergaminho?
+        </label>
+        <label class="gd-opt" title="Completo: estatísticas, descrição integral, truque e aprimoramentos. Compacto: só o cabeçalho e o resumo de uma linha">
+          <input type="checkbox" data-gd-opt="completo" checked>
+          <span class="gd-opt-rot">Texto completo</span>
+        </label>
+      </div>
       <textarea class="gd-texto"
                 placeholder="…ou escreva aqui a descrição com as suas palavras.">${esc(opts.atual || '')}</textarea>
-      <p class="gd-dica">Cole textos à vontade — as quebras de linha são juntadas sozinhas.
-        No texto, passe o mouse no trecho para ver a nuvem e CLIQUE no trecho para fixá-la (e copiar dela).</p>
+      <p class="gd-dica">Cole textos à vontade — a colagem entra emendada num parágrafo só.
+        As quebras que você deixar aqui a nuvem respeita.
+        No texto, passe o mouse no trecho para ver a nuvem e CLIQUE no trecho para fixá-la (rolar e copiar).</p>
       <div class="gd-acoes">
-        ${opts.atual ? '<button type="button" class="gd-btn gd-btn--remover" data-gd="remover">🗑 Remover descrição</button>' : ''}
-        <button type="button" class="gd-btn" data-gd="aplicar">💾 Aplicar</button>
+        ${opts.atual ? '<button type="button" class="gd-btn gd-btn--remover" data-gd="remover">Remover descrição</button>' : ''}
+        <button type="button" class="gd-btn" data-gd="aplicar">Aplicar</button>
       </div>`);
     overlay.classList.add('gd-overlay');
 
     const busca = overlay.querySelector('.gd-busca');
     const resultados = overlay.querySelector('.gd-resultados');
     const ta = overlay.querySelector('.gd-texto');
+
+    // ── Painel da magia ──────────────────────────────────────────────
+    //  Só aparece quando há uma magia em jogo (o trecho é o nome de uma,
+    //  ou uma foi escolhida na busca). Os dois interruptores REFAZEM o
+    //  texto da caixa; `refazer` fica false na abertura de uma descrição
+    //  que já existia, para não apagar o que o mestre escreveu antes.
+    const painel  = overlay.querySelector('.gd-magia');
+    const cxPerg  = painel.querySelector('[data-gd-opt="pergaminho"]');
+    const cxComp  = painel.querySelector('[data-gd-opt="completo"]');
+    const rotComp = painel.querySelector('.gd-opt-rot');
+    let magiaSel = null;
+
+    function ligarMagia(reg, refazer) {
+      magiaSel = reg || null;
+      painel.hidden = !magiaSel;
+      if (!magiaSel) return;
+      painel.querySelector('.gd-magia-nome').textContent = magiaSel.nome;
+      rotComp.textContent = cxComp.checked ? 'Texto completo' : 'Texto compacto';
+      if (refazer) {
+        ta.value = magiaTexto(magiaSel, { pergaminho: cxPerg.checked, completo: cxComp.checked });
+        ta.scrollTop = 0;
+      }
+    }
+    painel.addEventListener('change', () => ligarMagia(magiaSel, true));
 
     // busca na base → lista clicável; clicar preenche a caixa de texto
     busca.addEventListener('input', () => {
@@ -177,8 +312,21 @@ window.GA_Tip = (function () {
       const btn = e.target.closest('[data-gd-res]');
       if (!btn || !resultados._achados) return;
       const it = resultados._achados[+btn.dataset.gdRes];
-      if (it) { ta.value = it.texto; ta.focus(); }
+      if (!it) return;
+      // magia escolhida → entra o texto INTEGRAL dela (e os interruptores);
+      // qualquer outra fonte → o texto do índice, como sempre foi.
+      const reg = it.fonte === 'magia' ? magiaDe(it.nome) : null;
+      if (reg) ligarMagia(reg, true);
+      else { ligarMagia(null); ta.value = it.texto; }
+      ta.focus();
     });
+
+    // Trecho que É o nome de uma magia: o painel já abre ligado. Sem
+    // descrição anterior, a caixa também já vem com o texto integral —
+    // grifar "Bola de Fogo" na ficha e ter a magia inteira na nuvem é o
+    // caminho comum. Havendo descrição, o texto dela é preservado até o
+    // mestre mexer num dos interruptores.
+    ligarMagia(magiaDe(opts.termo), !opts.atual);
 
     // colagem SEM quebras de linha (junta tudo num parágrafo)
     ta.addEventListener('paste', e => {
@@ -198,7 +346,7 @@ window.GA_Tip = (function () {
         return;
       }
       if (btn.dataset.gd === 'aplicar') {
-        const texto = limparColagem(ta.value);
+        const texto = limparTexto(ta.value);
         if (!texto) {
           // aplicar vazio = tirar a descrição (se havia uma)
           if (opts.atual && opts.onRemover) opts.onRemover();
@@ -209,7 +357,9 @@ window.GA_Tip = (function () {
       }
     });
 
-    (opts.atual ? ta : busca).focus();
+    // caixa em foco quando já há texto nela (descrição antiga ou a magia
+    // que o trecho trouxe sozinha); busca em foco quando ela está vazia
+    (ta.value ? ta : busca).focus();
     return overlay;
   }
 
@@ -243,7 +393,7 @@ window.GA_Tip = (function () {
     if (!termo) return false;
 
     abrirEditor({
-      termo: termo.length > 80 ? termo.slice(0, 80) + '…' : termo,
+      termo,                       // inteiro: é por ele que se acha a magia
       atual: alvo ? (alvo.getAttribute('data-tip') || '') : '',
       onSalvar: texto => {
         if (alvo) {
@@ -274,5 +424,10 @@ window.GA_Tip = (function () {
     return true;
   }
 
-  return { editarSelecao, abrirEditor, buscar, _limparColagem: limparColagem };
+  return {
+    editarSelecao, abrirEditor, buscar,
+    magiaDe, magiaTexto,                  // usados pelo painel de magia
+    _limparColagem: limparColagem,
+    _limparTexto: limparTexto,
+  };
 })();

@@ -177,7 +177,7 @@ window.GA_GRIFO_SELETOR = window.GA_GRIFOS.map(g => '.' + g.cls).join(', ') + ',
 
 // ── TEXTO RICO (contenteditable) — sanitização compartilhada ─────────
 // Mantém só formatação inline segura e preserva as descrições penduradas
-// (📖: span.ga-tip[data-tip]) e os grifos (span.mz-*). Vital ao renderizar
+// (※: span.ga-tip[data-tip]) e os grifos (span.mz-*). Vital ao renderizar
 // conteúdo vindo de um backup .json (evita HTML malicioso) ou da caixa que
 // os jogadores escrevem. Usado pelo Mapa, Ramos, Viagem, Bases e Combates.
 window.GA_limparHtml = (function () {
@@ -213,7 +213,7 @@ window.GA_limparHtml = (function () {
             return;
           }
           const estilo = filtrarEstilo(n.getAttribute('style') || '');
-          // preserva as descrições penduradas (📖): span.ga-tip[data-tip]
+          // preserva as descrições penduradas (※): span.ga-tip[data-tip]
           // — a nuvem é desenhada pelo itens-descricoes.js (texto puro) —
           // e os grifos/caixas de leitura aplicados pela barra (span.mz-*)
           const classes = String(n.getAttribute('class') || '')
@@ -238,7 +238,7 @@ window.GA_limparHtml = (function () {
   };
 })();
 
-// ── CAMPOS RICOS COM 📖 DESCRIÇÃO (Ramos, Viagem, Bases) ─────────────
+// ── CAMPOS RICOS COM ※ DESCRIÇÃO (Ramos, Viagem, Bases) ─────────────
 // Handlers compartilhados: cada aba os registra nos listeners da própria
 // seção. Ao concluir qualquer mudança, disparam 'input' no campo — o
 // handler de input da aba salva, como numa digitação normal.
@@ -275,7 +275,7 @@ window.GA_aplicarGrifo = function (editor, acao, cor) {
 };
 
 // HTML da barra de formatação de um campo rico (cores + caixa de leitura +
-// 📖 descrição + remover). Vai DENTRO do .ga-rich-wrap, antes do editor —
+// ※ descrição + remover). Vai DENTRO do .ga-rich-wrap, antes do editor —
 // é assim que o handler de mousedown acha o campo a que ela pertence.
 window.GA_barraRica = function () {
   const esc = window.GA_esc;
@@ -289,14 +289,14 @@ window.GA_barraRica = function () {
         <button type="button" class="ga-barra-btn ga-barra-btn--box" data-rich-acao="grifar" data-cor="${window.GA_GRIFO_CAIXA}"
                 title="Marcar o trecho como caixa de leitura (boxed, estilo livro de aventura)">▣ Caixa</button>
         <button type="button" class="ga-barra-btn ga-barra-btn--desc" data-rich-acao="descrever"
-                title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖 Descrição</button>
+                title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">※ Descrição</button>
         <button type="button" class="ga-barra-btn ga-barra-btn--limpa" data-rich-acao="desgrifar"
                 title="Tirar o grifo / a caixa do trecho selecionado">✦ Remover</button>
         <span class="ga-barra-dica">selecione · grife ou Ctrl+B / Ctrl+I</span>
       </div>`;
 };
 
-// Clique no 📖 flutuante (.ga-rich-btn) ou em qualquer botão da barra rica:
+// Clique no ※ flutuante (.ga-rich-btn) ou em qualquer botão da barra rica:
 // mousedown + preventDefault para NÃO perder a seleção (o truque do
 // aoMousedownToolbar do Combate).
 window.GA_richDescMousedown = function (e) {
@@ -313,7 +313,7 @@ window.GA_richDescMousedown = function (e) {
     if (window.GA_aplicarGrifo(editor, acao, btn.dataset.cor)) avisar();
     return;
   }
-  // 📖 Descrição (botão flutuante ou o da barra)
+  // ※ Descrição (botão flutuante ou o da barra)
   if (!window.GA_Tip) return;
   const abriu = window.GA_Tip.editarSelecao(editor, avisar);
   if (!abriu) editor.focus();   // sem trecho selecionado: devolve o cursor

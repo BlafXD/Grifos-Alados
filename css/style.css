@@ -1792,6 +1792,10 @@ footer {
   pointer-events: none;
 }
 .ga-tip-pop[hidden] { display: none; }
+/* As quebras de linha do texto valem: é o que deixa o texto integral de
+   uma magia (cabeçalho, estatísticas, aprimoramentos) legível em vez de
+   virar um bloco só. Quem escreve à mão continua sem quebra nenhuma. */
+.ga-tip-pop-txt { white-space: pre-wrap; }
 .ga-tip-pop-seta {
   position: absolute;
   top: 100%;
@@ -1806,16 +1810,30 @@ footer {
   border-top-color: transparent;
   border-bottom-color: var(--gold);
 }
+/* Nuvem LONGA (o texto integral de uma magia e afins): mais larga, com
+   teto de altura, o texto rolando por dentro e o rodapé fora da rolagem. */
+.ga-tip-pop--longo {
+  max-width: min(420px, calc(100vw - 24px));
+  max-height: min(62vh, 560px);
+  display: flex;
+  flex-direction: column;
+}
+.ga-tip-pop--longo .ga-tip-pop-txt { overflow-y: auto; min-height: 0; }
+/* nem abaixo do termo ela coube: encostou na borda e a seta, sem alvo, sai */
+.ga-tip-pop--solto .ga-tip-pop-seta { display: none; }
 /* nuvem FIXADA por clique: aceita o mouse e deixa selecionar/copiar */
 .ga-tip-pop--fixado {
   pointer-events: auto;
   user-select: text;
   cursor: auto;
 }
-/* rodapé da nuvem fixada: aviso do 📌 + botão "⧉ Copiar" */
+/* rodapé: aviso de fixada + botão "⧉ Copiar". Aparece com a nuvem fixada
+   e também nas longas (ali ele avisa que o clique libera a rolagem). */
 .ga-tip-pop-pe { display: none; }
-.ga-tip-pop--fixado .ga-tip-pop-pe {
+.ga-tip-pop--fixado .ga-tip-pop-pe,
+.ga-tip-pop--longo .ga-tip-pop-pe {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 0.6rem;
   margin-top: 0.4rem;
@@ -1831,6 +1849,7 @@ footer {
   user-select: none;
 }
 .ga-tip-pop-copiar {
+  display: none;              /* só com a nuvem FIXADA: solta ela não pega o mouse */
   flex: 0 0 auto;
   padding: 0.16rem 0.42rem;
   font-family: 'Cinzel', serif;
@@ -1845,18 +1864,23 @@ footer {
   user-select: none;
   transition: background 0.15s, color 0.15s;
 }
+.ga-tip-pop--fixado .ga-tip-pop-copiar { display: inline-block; }
 .ga-tip-pop-copiar:hover { background: var(--gold); color: var(--ink); }
 
-/* ── CAMPOS RICOS COM 📖 DESCRIÇÃO (Ramos, Viagem, Bases) ──────────
+/* ── CAMPOS RICOS COM ※ DESCRIÇÃO (Ramos, Viagem, Bases) ──────────
    O textarea virou contenteditable para aceitar a descrição pendurada
    (span.ga-tip) — cada aba mantém a classe visual antiga (.an-texto,
    .vg-textarea, .bs-textarea); aqui ficam só o embrulho, o placeholder
-   e o 📖 flutuante (irmão do ⛶ das caixas do Combate). */
+   e o ※ flutuante (irmão do ⛶ das caixas do Combate). */
 .ga-rich-wrap { position: relative; flex: 1 1 auto; min-width: 0; }
 .ga-rich-wrap .ga-rich {
-  padding-right: 2.2rem;      /* espaço para o 📖 */
+  padding-right: 2.2rem;      /* espaço para o ※ */
   overflow-wrap: break-word;
-  cursor: text;
+  /* o I-beam desenhado da casa, o MESMO das caixas do Combate. Sem esta
+     linha o seletor (0,2,0) vencia o [contenteditable="true"] lá de cima
+     (0,1,0) e devolvia o traço fino do sistema — que some no pergaminho
+     justo nas caixas das Bases, da Viagem e dos Ramos. */
+  cursor: var(--cursor-texto);
 }
 .ga-rich[data-ph]:empty::before {
   content: attr(data-ph);
@@ -1874,7 +1898,7 @@ footer {
   align-items: center;
   justify-content: center;
   padding: 0;
-  font-size: 0.85rem;
+  font-size: 0.95rem;         /* o ※ é miúdo: pede um ponto a mais que o texto */
   line-height: 1;
   background: var(--parchment2);
   border: 1px solid var(--ink-faded);
@@ -1891,7 +1915,7 @@ footer {
 /* ── BARRA DE FORMATAÇÃO DOS CAMPOS RICOS (js: GA_barraRica) ───────
    Irmã da .mz-toolbar do Combate, para as abas que usam .ga-rich.
    Fica DENTRO do .ga-rich-wrap, logo acima do editor. O modificador
-   --barra marca os campos que NÃO têm o 📖 flutuante (ele virou um
+   --barra marca os campos que NÃO têm o ※ flutuante (ele virou um
    botão da própria barra), então dispensam a folga à direita. */
 .ga-rich-wrap--barra .ga-rich { padding-right: 0.7rem; }
 .ga-barra {
@@ -1966,7 +1990,7 @@ footer {
   font-style: italic;
 }
 
-/* ── MODAL "📖 Descrição do trecho" (js/descricoes-custom.js) ──────
+/* ── MODAL "Descrição do trecho" (js/descricoes-custom.js) ──────
    Escrever/buscar uma descrição e pendurá-la num trecho selecionado
    (vira <span class="ga-tip" data-tip="…">). Usado pelo Combate, Mapa
    e pelos campos ricos dos Ramos, da Viagem e das Bases. */
@@ -2025,6 +2049,47 @@ footer {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* Painel da MAGIA: só aparece quando o trecho é o nome de uma (ou quando
+   uma é escolhida na busca). Os dois interruptores refazem o texto da
+   caixa abaixo — pergaminho acrescenta os preços, completo × compacto
+   troca o texto integral pelo resumo de uma linha. */
+.gd-magia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  margin: 0 0 0.6rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+}
+.gd-magia[hidden] { display: none; }
+.gd-magia-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+.gd-magia-nome {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  margin-right: auto;
+}
+.gd-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.86rem;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+}
+.gd-opt input { cursor: pointer; }
+
 .gd-texto {
   width: 100%;
   min-height: 7rem;
@@ -2317,8 +2382,11 @@ footer {
 .ga-jogador section:not(#perigos) input[type="number"] { pointer-events: none; opacity: 0.75; }
 .ga-jogador section:not(#perigos) .ga-rich { cursor: default; }
 /* exceção: as caixas [data-jog-edita] são DELES (Residentes, Inventário da
-   base e o Inventário dos jogadores) — escrevem e formatam normalmente. Só
-   o 📖 Descrição sai (o modal de descrições não é carregado no
+   base e o Inventário dos jogadores) — escrevem e formatam normalmente, e
+   por isso ganham o I-beam da casa. O seletor repete o `section:not(…)` de
+   propósito: sem ele o `cursor: default` de cima vencia (o #perigos dentro
+   do :not() conta como ID) e a caixa que ELES editam ficava com seta. Só
+   o ※ Descrição sai (o modal de descrições não é carregado no
    jogadores.html). */
-.ga-jogador [data-jog-edita] .ga-rich { cursor: text; }
+.ga-jogador section:not(#perigos) [data-jog-edita] .ga-rich { cursor: var(--cursor-texto); }
 .ga-jogador .ga-barra-btn--desc { display: none; }
