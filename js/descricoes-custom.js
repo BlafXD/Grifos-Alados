@@ -212,15 +212,22 @@ window.GA_Tip = (function () {
   //  completo   → Magias.textoPuro: cabeçalho, estatísticas, a descrição
   //               integral, o truque e os aprimoramentos.
   //  compacto   → cabeçalho + o resumo de uma linha.
-  //  pergaminho → as duas linhas de preço entram logo após as
-  //               estatísticas, do mesmo jeito que na Loja.
+  //  pergaminho → as duas linhas de preço entram logo abaixo do nome,
+  //               coladas no custo em PM (extrasNoCabecalho): a nuvem é
+  //               estreita e não tem a moldura da Loja em volta, então o
+  //               "isto é um pergaminho" tem de vir de cara.
+  //  Os aprimoramentos saem separados por linha em branco pelo mesmo
+  //  motivo — colados, viram um bloco só nessa largura.
   function magiaTexto(reg, opts) {
     const M = _M();
     if (!reg || !M) return '';
     opts = opts || {};
     const extras = opts.pergaminho ? linhasPergaminho(reg) : [];
     const t = M.textoDe ? M.textoDe(reg.nome) : null;
-    if (opts.completo && t && M.textoPuro) return M.textoPuro(reg.nome, extras);
+    if (opts.completo && t && M.textoPuro) {
+      return M.textoPuro(reg.nome, extras,
+        { extrasNoCabecalho: true, aprimoramentosSoltos: true });
+    }
 
     const cab = t
       ? `${t.nome} — ${t.tipo} ${t.circulo} (${t.escola}) · ${t.pm} PM`
