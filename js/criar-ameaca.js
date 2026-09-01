@@ -72,8 +72,7 @@
     clearTimeout(_timerSalvar);
     const c = criaturaAtual();
     if (c) c.alteradoEm = Date.now();
-    try { localStorage.setItem(CHAVE, JSON.stringify(dados)); }
-    catch (e) { console.warn('[criar-ameaca] não foi possível salvar:', e.message); }
+    window.GA_guardar(CHAVE, JSON.stringify(dados));
   }
 
   let _seq = 0;
@@ -1707,9 +1706,12 @@
   // ── PASSO 6 ───────────────────────────────────────────────────────
   function passo6(c) {
     const atribs = D.ATRIBUTOS.map(function (a) {
+      // o rótulo está no <span> ao lado, que o leitor de tela não associa
+      // sozinho: sem o aria-label ele anuncia seis "campo numérico" iguais
       return '<div class="ca-atrib">' +
         '<span class="ca-atrib-rot">' + esc(a.nome) + '</span>' +
-        '<input type="number" class="ca-input ca-input--num" data-atrib="' + a.id + '" value="' +
+        '<input type="number" class="ca-input ca-input--num" data-atrib="' + a.id + '"' +
+          ' aria-label="' + esc(a.nome) + '" value="' +
           (parseInt(c.atributos[a.id], 10) || 0) + '">' +
         '<span class="ca-atrib-cat" data-calc="atrib-' + a.id + '"></span>' +
       '</div>';
@@ -1762,7 +1764,8 @@
       '</div>' +
       '<div class="ca-sub-rot">Outras perícias</div>' +
       '<div class="ca-pers">' + (linhas || '<p class="ca-vazio">Nenhuma perícia listada — as não listadas valem metade do ND + atributo-chave.</p>') + '</div>' +
-      '<select class="ca-select ca-select--add" data-acao="add-per">' + opcoes + '</select>' +
+      '<select class="ca-select ca-select--add" data-acao="add-per"' +
+        ' aria-label="Adicionar perícia à ameaça">' + opcoes + '</select>' +
       '<p class="ca-nota" data-calc="per-formula"></p>');
   }
 

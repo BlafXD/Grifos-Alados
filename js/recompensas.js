@@ -2530,10 +2530,8 @@ function carregarModoRecomp() {
 }
 
 function salvarModoRecomp() {
-  try {
-    localStorage.setItem(MODO_RECOMP_KEY, MODO_RECOMP);
-    localStorage.setItem(CUSTOM_FILTROS_KEY, JSON.stringify(CUSTOM_FILTROS));
-  } catch (e) {}
+  window.GA_guardar(MODO_RECOMP_KEY, MODO_RECOMP);
+  window.GA_guardar(CUSTOM_FILTROS_KEY, JSON.stringify(CUSTOM_FILTROS));
 }
 
 // Aplica o estado dos filtros ao catálogo de tesouros (blocos esmaecidos
@@ -2618,11 +2616,7 @@ function carregarLogRecompensas() {
 }
 
 function salvarLogRecompensas() {
-  try {
-    localStorage.setItem(RECOMP_LOG_KEY, JSON.stringify(recompLog));
-  } catch (e) {
-    console.warn('[recompensas] Não foi possível salvar o log:', e.message);
-  }
+  window.GA_guardar(RECOMP_LOG_KEY, JSON.stringify(recompLog));
 }
 
 function registrarLogRecompensa(entrada) {

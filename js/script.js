@@ -94,6 +94,58 @@ window.htmlParaTexto = function (html) {
   return txt.replace(/ /g, ' ').replace(/[ \t]+\n/g, '\n').trim();
 };
 
+// ── GRAVAR NO NAVEGADOR (compartilhado) ──────────────────────────────
+//  Todo save do site passa por aqui. O localStorage tem teto (~5 MB por
+//  origem, somando as 22 chaves do app) e, cheio, o setItem LEVANTA. Cada
+//  chamada já vivia num try/catch, então o site nunca quebrava — o
+//  problema era o silêncio depois: o mestre seguia a sessão inteira
+//  achando que estava salvando. As chaves que crescem sem teto com o uso
+//  são monstros, bases, anotacoes, anotacoesMapa, criarAmeaca e viagens.
+//
+//  Devolve true se gravou. Cheio, mostra uma tarja que FICA (não é um
+//  toast que some) até o mestre fechá-la ou recarregar a página — perda
+//  de dados não pode passar despercebida.
+window.GA_guardar = (function () {
+  // O nome do erro varia entre navegadores; o código 22/1014 é o legado.
+  function semEspaco(e) {
+    if (!e) return false;
+    return e.name === 'QuotaExceededError'
+        || e.name === 'NS_ERROR_DOM_QUOTA_REACHED'   // Firefox
+        || e.code === 22 || e.code === 1014;
+  }
+
+  // A tarja que já está na tela é o próprio controle de "já avisei" — não
+  // há variável para dessincronizar com o DOM. Fechada (pelo ✕ ou por um
+  // re-render que a leve junto), a próxima falha avisa de novo.
+  function avisar(chave) {
+    if (document.querySelector('.ga-tarja')) return;
+    const tarja = document.createElement('div');
+    tarja.className = 'ga-tarja';
+    tarja.setAttribute('role', 'alert');
+    tarja.innerHTML =
+      '<strong>O armazenamento do navegador está cheio.</strong> ' +
+      'A partir de agora <em>nada mais está sendo salvo</em>' +
+      (chave ? ' (falhou em <code>' + window.GA_esc(chave) + '</code>)' : '') + '. ' +
+      'Faça o backup das abas que importam (cada uma tem o seu botão) e ' +
+      'apague o que não usa mais — fichas antigas do Combate e anotações ' +
+      'velhas são o que mais ocupa.' +
+      '<button type="button" class="ga-tarja-x" title="Fechar">✕</button>';
+    tarja.querySelector('.ga-tarja-x').addEventListener('click', () => tarja.remove());
+    document.body.appendChild(tarja);
+  }
+
+  return function (chave, valor) {
+    try {
+      localStorage.setItem(chave, valor);
+      return true;
+    } catch (e) {
+      if (semEspaco(e)) avisar(chave);
+      else console.warn('[' + chave + '] não foi possível salvar:', e.message);
+      return false;
+    }
+  };
+})();
+
 // ── CAIXA DE ENTRADA DOS JOGADORES (compartilhada) ───────────────────
 // Estamos na visão dos jogadores (jogadores.html)? Lá quase tudo é só
 // leitura, mas alguns campos são editáveis de propósito.
@@ -127,7 +179,7 @@ window.GA_Inbox = (function () {
     const entrada = de(id, m);
     entrada[campo] = html;
     m[id] = entrada;
-    try { localStorage.setItem(CHAVE, JSON.stringify(m)); } catch (e) {}
+    window.GA_guardar(CHAVE, JSON.stringify(m));
     try {
       if (window.GA_SyncJogador && window.GA_SyncJogador.escreverInbox) {
         window.GA_SyncJogador.escreverInbox(id, campo, html);
@@ -143,7 +195,7 @@ window.GA_Inbox = (function () {
     delete entrada[campo];
     if (Object.keys(entrada).length) m[id] = entrada;
     else delete m[id];
-    try { localStorage.setItem(CHAVE, JSON.stringify(m)); } catch (e) {}
+    window.GA_guardar(CHAVE, JSON.stringify(m));
     try { window.GA_SyncMestre && window.GA_SyncMestre.limparInbox &&
           window.GA_SyncMestre.limparInbox(id, campo); } catch (e) {}
     return true;

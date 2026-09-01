@@ -70,15 +70,11 @@
   }
 
   function salvarLog() {
-    try {
-      localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(_log));
-    } catch (e) {
-      console.warn('[loja] Não foi possível salvar o histórico:', e.message);
-    }
+    window.GA_guardar(LOG_STORAGE_KEY, JSON.stringify(_log));
   }
 
   function salvarLogSel() {
-    try { localStorage.setItem(LOG_SEL_KEY, _logSel || ''); } catch (e) {}
+    window.GA_guardar(LOG_SEL_KEY, _logSel || '');
   }
 
   function entradaSelecionada() {
@@ -231,14 +227,7 @@
   }
 
   function salvarConfig() {
-    try {
-      localStorage.setItem(
-        CONFIG_STORAGE_KEY,
-        JSON.stringify(LojaCompleta.obterConfig())
-      );
-    } catch (e) {
-      console.warn('[loja] Não foi possível salvar os ajustes:', e.message);
-    }
+    window.GA_guardar(CONFIG_STORAGE_KEY, JSON.stringify(LojaCompleta.obterConfig()));
   }
 
   // ── PERSISTÊNCIA DOS AJUSTES DE MAGIAS ───────────────────────────
@@ -254,11 +243,7 @@
 
   function salvarConfigMagias() {
     if (typeof Magias === 'undefined') return;
-    try {
-      localStorage.setItem(MAGIAS_CONFIG_KEY, JSON.stringify(Magias.obterConfig()));
-    } catch (e) {
-      console.warn('[loja] Não foi possível salvar os ajustes de magias:', e.message);
-    }
+    window.GA_guardar(MAGIAS_CONFIG_KEY, JSON.stringify(Magias.obterConfig()));
   }
 
   // ── PERSISTÊNCIA DA CLASSIFICAÇÃO DA COMUNIDADE ──────────────────
@@ -272,11 +257,7 @@
   }
 
   function salvarComunidade() {
-    try {
-      localStorage.setItem(COMUN_STORAGE_KEY, JSON.stringify(LojaCompleta.obterComunidade()));
-    } catch (e) {
-      console.warn('[loja] Não foi possível salvar a classificação:', e.message);
-    }
+    window.GA_guardar(COMUN_STORAGE_KEY, JSON.stringify(LojaCompleta.obterComunidade()));
   }
 
   // ══════════════════════════════════════════════════════════════════

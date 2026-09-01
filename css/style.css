@@ -1511,6 +1511,51 @@ footer {
 #recompensas .shake { animation: recomp-diceShake 0.4s ease; }
 
 /* ══════════════════════════════════════════════════════════════════
+   TARJA DE AVISO (js: GA_guardar) — o armazenamento do navegador
+   encheu e o site parou de salvar. Não é um toast: fica presa no topo
+   até o mestre fechá-la, porque perder uma sessão de anotações sem
+   nunca ter visto um aviso é a única perda de dados possível aqui.
+   ══════════════════════════════════════════════════════════════════ */
+.ga-tarja {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10060;              /* acima da nuvem de descrição (10050) */
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  padding: 0.6rem 1rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--parchment);
+  background: var(--carmim);
+  border-bottom: 2px solid var(--ink);
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.35);
+}
+.ga-tarja strong { font-family: 'Cinzel', serif; font-size: 0.86rem; letter-spacing: 0.02em; }
+.ga-tarja code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+  padding: 0 0.25rem;
+  background: rgba(0, 0, 0, 0.25);
+}
+.ga-tarja-x {
+  flex: 0 0 auto;
+  margin-left: auto;
+  align-self: flex-start;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  color: var(--parchment);
+  background: transparent;
+  border: 1px solid var(--parchment);
+  cursor: pointer;
+}
+.ga-tarja-x:hover { background: var(--parchment); color: var(--carmim); }
+
+/* ══════════════════════════════════════════════════════════════════
    MODAL GENÉRICO (GA_abrirModal) — usado pelos exports .txt
    (Gerador de Loja e Gerador de Recompensas). Tema pergaminho.
    ══════════════════════════════════════════════════════════════════ */

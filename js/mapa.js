@@ -102,8 +102,7 @@
 
   let _timer = null;
   function _gravar() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(dados)); }
-    catch (e) { console.warn('[mapa] Não foi possível salvar:', e.message); }
+    window.GA_guardar(STORAGE_KEY, JSON.stringify(dados));
   }
   function salvar() { clearTimeout(_timer); _timer = setTimeout(_gravar, 250); }
   function salvarAgora() { clearTimeout(_timer); _gravar(); }
