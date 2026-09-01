@@ -79,8 +79,7 @@
     return tab;
   }
   function salvarTabela(tab) {
-    try { localStorage.setItem(CHAVE_TABELA, JSON.stringify(tab)); }
-    catch (e) { console.warn('[criacao-itens] não foi possível salvar a tabela:', e.message); }
+    window.GA_guardar(CHAVE_TABELA, JSON.stringify(tab));
   }
 
   let TAB = null; // carregada no init()
@@ -179,39 +178,43 @@
         <div class="ci-bloco">
           <div class="ci-bloco-titulo"><span class="ci-bloco-passo">2</span> Melhorias, encantos e CD</div>
 
+          <!-- Os rótulos existiam mas soltos, sem atributo for: quem usa
+               leitor de tela ouvia só "campo numérico", e o clique no
+               rótulo não levava o foco ao campo. O par for/id resolve. -->
           <div class="ci-calc-linha">
-            <label>Categoria (define a CD base de fabricação)</label>
-            <select class="ci-select ci-categoria">${catOpts}</select>
+            <label for="ci-categoria">Categoria (define a CD base de fabricação)</label>
+            <select class="ci-select ci-categoria" id="ci-categoria">${catOpts}</select>
           </div>
           <div class="ci-calc-linha ci-cd-custom-linha" hidden>
-            <label>CD base (personalizada)</label>
-            <input type="number" class="ci-input ci-cd-custom" value="15" step="1">
+            <label for="ci-cd-custom">CD base (personalizada)</label>
+            <input type="number" class="ci-input ci-cd-custom" id="ci-cd-custom" value="15" step="1">
           </div>
 
           <div class="ci-calc-grade">
             <div class="ci-campo">
-              <label>Melhorias</label>
-              <select class="ci-select ci-melhorias"></select>
+              <label for="ci-melhorias">Melhorias</label>
+              <select class="ci-select ci-melhorias" id="ci-melhorias"></select>
             </div>
             <div class="ci-campo">
-              <label>Encantos</label>
-              <select class="ci-select ci-encantos"></select>
+              <label for="ci-encantos">Encantos</label>
+              <select class="ci-select ci-encantos" id="ci-encantos"></select>
             </div>
             <div class="ci-campo">
-              <label>Outros CD</label>
-              <input type="number" class="ci-input ci-outros-cd" value="0" step="1">
+              <label for="ci-outros-cd">Outros CD</label>
+              <input type="number" class="ci-input ci-outros-cd" id="ci-outros-cd" value="0" step="1">
             </div>
             <div class="ci-campo">
-              <label>Fração p/ fabricar</label>
+              <label for="ci-fracao">Fração p/ fabricar</label>
               <div class="ci-fracao-wrap">
-                <select class="ci-select ci-fracao">
+                <select class="ci-select ci-fracao" id="ci-fracao">
                   <option value="3">1/3 (padrão)</option>
                   <option value="4">1/4</option>
                   <option value="5">1/5</option>
                   <option value="6">1/6</option>
                   <option value="custom">Outra…</option>
                 </select>
-                <input type="number" class="ci-input ci-fracao-custom" hidden min="1" step="1" value="3">
+                <input type="number" class="ci-input ci-fracao-custom" hidden min="1" step="1" value="3"
+                       aria-label="Fração personalizada para fabricar (1 dividido por)">
               </div>
             </div>
           </div>
@@ -227,12 +230,21 @@
   }
 
   function htmlAjustes() {
-    const linha = (arr, rotuloSingular) => arr.map(x => `
+    // Numa tabela o rótulo do campo é o cruzamento da linha com a coluna, e
+    // isso um leitor de tela não monta sozinho: sem o aria-label ele anuncia
+    // catorze "campo numérico" iguais. O texto repete o que se lê na tela.
+    const linha = (arr, rotuloSingular) => arr.map(x => {
+      const tipo = rotuloSingular === 'melhoria' ? 'melhorias' : 'encantos';
+      const quantas = `${x.n} ${rotuloSingular}${x.n > 1 ? 's' : ''}`;
+      return `
       <tr>
-        <td>${x.n} ${rotuloSingular}${x.n > 1 ? 's' : ''}${x.estimado ? ' <span class="ci-ajustes-estimado">⚠ estimado</span>' : ''}</td>
-        <td><input type="number" class="ci-aj-preco" data-tipo="${rotuloSingular === 'melhoria' ? 'melhorias' : 'encantos'}" data-n="${x.n}" value="${x.preco}" min="0" step="1"></td>
-        <td><input type="number" class="ci-aj-cd" data-tipo="${rotuloSingular === 'melhoria' ? 'melhorias' : 'encantos'}" data-n="${x.n}" value="${x.cd}" min="0" step="1"></td>
-      </tr>`).join('');
+        <td>${quantas}${x.estimado ? ' <span class="ci-ajustes-estimado">⚠ estimado</span>' : ''}</td>
+        <td><input type="number" class="ci-aj-preco" data-tipo="${tipo}" data-n="${x.n}" value="${x.preco}" min="0" step="1"
+                   aria-label="Aumento no preço com ${quantas} (T$)"></td>
+        <td><input type="number" class="ci-aj-cd" data-tipo="${tipo}" data-n="${x.n}" value="${x.cd}" min="0" step="1"
+                   aria-label="Aumento na CD com ${quantas}"></td>
+      </tr>`;
+    }).join('');
     return `
       <p class="ci-ajustes-nota">Valores da Tabela 3-7 (Melhorias) e Tabela 8-7 (Encantos) do seu Regras.txt. Se sua mesa usa números diferentes (outra edição, regra da casa), corrija aqui — fica salvo automaticamente neste navegador.</p>
       <div class="ci-ajustes-tabela-wrap">

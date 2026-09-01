@@ -52,7 +52,7 @@
       let atual = null;
       try { atual = localStorage.getItem(CHAVES[nome]); } catch (e) {}
       if (atual !== v) {
-        try { localStorage.setItem(CHAVES[nome], v); mods.add(MODULO[nome]); } catch (e) {}
+        if (window.GA_guardar(CHAVES[nome], v)) mods.add(MODULO[nome]);
       }
     });
     // o mestre retransmite logo depois de absorver uma edição dos jogadores
@@ -133,7 +133,7 @@
     try { atual = localStorage.getItem(CHAVE_INV_JOGADORES); } catch (e) {}
     const v = JSON.stringify(dados || {});
     if (atual === v) return;   // nada mudou (inclui o "eco" da própria escrita) → não redesenha
-    try { localStorage.setItem(CHAVE_INV_JOGADORES, v); } catch (e) {}
+    window.GA_guardar(CHAVE_INV_JOGADORES, v);
 
     // Se o jogador está digitando numa dessas caixas agora, não arranca o
     // foco dele: atualiza só as OUTRAS caixas no lugar, sem re-render, e

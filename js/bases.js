@@ -29,8 +29,7 @@
 
   let _t = null;
   function _gravar() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(dados)); }
-    catch (e) { console.warn('[bases] não salvou:', e.message); }
+    window.GA_guardar(STORAGE_KEY, JSON.stringify(dados));
   }
   function salvar()      { clearTimeout(_t); _t = setTimeout(_gravar, 250); }
   function salvarAgora() { clearTimeout(_t); _gravar(); }

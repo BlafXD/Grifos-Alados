@@ -6,6 +6,63 @@
 
 ---
 
+## 0. Estado dos achados — conferido em 1º de setembro de 2026
+
+> Este documento é um retrato de 4 de agosto. **Leia esta tabela antes do
+> resto**: quatro dos seis achados já foram resolvidos, e a seção 4 continua
+> descrevendo-os como se estivessem abertos. O que valia naquela data está
+> preservado ali de propósito — o histórico é útil —, mas é aqui que se
+> descobre o que ainda importa.
+
+| Achado | Estado hoje |
+|---|---|
+| 4.1 · Sala do sync previsível | **ABERTO.** A sala padrão continua `mesa`. Não é código: é escolher um nome não adivinhável em `localStorage['grifosAlados.syncSala']` e passar `jogadores.html?sala=<nome>` para a mesa. |
+| 4.2 · `backend/loja_completa.py` morto | **RESOLVIDO** — arquivo apagado. |
+| 4.3 · 2,36 MB síncronos | **RESOLVIDO em parte.** Os `defer` estão em todos os scripts das duas páginas. O peso, porém, **cresceu**: veja o achado novo abaixo. |
+| 4.4 · Falha silenciosa do `localStorage` | **RESOLVIDO.** Todo save passa por `GA_guardar` (`js/script.js`), que reconhece o erro de espaço e mostra uma tarja fixa. O único `setItem` cru que sobrou é o de dentro do próprio helper. |
+| 4.5 · 10 melhorias com `p. ??` | **RESOLVIDO** — nenhuma ocorrência restante. |
+| 4.6 · Campos sem rótulo | **RESOLVIDO.** Eram 34 no `index` e 23 no `jogadores`; hoje são **0 e 0**, medidos depois dos scripts rodarem. |
+
+### Achados novos de 1º de setembro
+
+**NOVO · MÉDIA — O peso da página triplicou: 2,36 MB → 7,65 MB.** O favicon
+sozinho eram 2,31 MB (a arte de 1024 px servida como ícone de aba); isso foi
+resolvido na mesma data com um `favicon.png` de 64 px e 9,5 KB. Restam **5,34
+MB**, quase todos de dados de livro que entram inteiros no primeiro
+carregamento — `fichas-ameacas-arton-data.js` sozinho tem 1,2 MB, e quem só
+vai abrir a Loja paga por ele. O conserto de verdade é carregar os dados de
+cada aba sob demanda; é reforma grande e segue sem urgência enquanto o uso
+for local.
+
+**NOVO · BAIXA — `data/magias.json` é cópia morta.** 434 KB que nenhum script
+carrega (o site lê `js/magias-data.js`). Em 1º de setembro as 254 magias ainda
+batiam byte a byte entre os dois. O risco é o dia em que não baterem, porque
+nada avisa.
+
+**NOVO · BAIXA — `README.md` e `README.txt` dizem a mesma coisa** em dois
+formatos. Dois lugares para atualizar; um vai ficar para trás.
+
+**NOVO · BAIXA — a pasta `Inútil/` não é versionada** (só o `.gitkeep`). É
+decisão deliberada — é rascunho pessoal —, mas é lá que vivem as ferramentas
+que leem os PDFs dos livros e os `.txt` extraídos deles. Se o disco morrer, o
+caminho de importar um livro novo vai junto.
+
+### O que foi medido de novo em 1º de setembro
+
+| | |
+|---|---|
+| Erros de sintaxe | 0 / 71 arquivos JS |
+| Erros ao carregar as duas páginas | 0 (nenhum `console.error`, nenhum `warn`) |
+| Colisões no escopo global | 0 / 152 declarações |
+| `<script>`/`<link>` apontando para arquivo inexistente | 0 |
+| `console.log` esquecidos | 0 |
+| Campos sem rótulo acessível | 0 / 117 (index) · 0 / 40 (jogadores) |
+| Botões sem rótulo acessível | 0 / 384 (index) · 0 / 90 (jogadores) |
+| Chaves de `localStorage` | 22 (eram 19) |
+| `localStorage.setItem` fora do `GA_guardar` | 0 |
+
+---
+
 ## 1. Sumário
 
 O projeto está **saudável**. Não há erro de sintaxe, erro de carregamento,

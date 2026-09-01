@@ -317,11 +317,7 @@
 
   let _saveTimer = null;
   function _gravar() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
-    } catch (e) {
-      console.warn('[monstros] Não foi possível salvar:', e.message);
-    }
+    window.GA_guardar(STORAGE_KEY, JSON.stringify(dados));
   }
   // gravação adiada — evita escrever no disco a cada tecla digitada
   function salvar() {
@@ -3137,7 +3133,7 @@
       if (e.target.closest('[data-ler-mais]'))       _lerFonte = Math.min(_lerFonte + 0.15, 3.2);
       else if (e.target.closest('[data-ler-menos]')) _lerFonte = Math.max(_lerFonte - 0.15, 0.9);
       else return;
-      try { localStorage.setItem('grifosAlados.lerFonte', String(_lerFonte)); } catch (err) {}
+      window.GA_guardar('grifosAlados.lerFonte', String(_lerFonte));
       aplicarFonte();
     });
   }

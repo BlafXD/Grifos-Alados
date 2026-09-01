@@ -156,7 +156,7 @@
     }
     if (acao === 'mostrar') {
       selecionada = alvo.dataset.id;
-      try { localStorage.setItem(SEL_KEY, selecionada); } catch (e2) {}
+      window.GA_guardar(SEL_KEY, selecionada);
       render(); return;
     }
     if (acao === 'remover') {
@@ -166,7 +166,7 @@
       apagarFicha(f.id);
       fichas = fichas.filter(x => x.id !== f.id);
       if (selecionada === f.id) selecionada = fichas.length ? fichas[0].id : null;
-      try { localStorage.setItem(SEL_KEY, selecionada || ''); } catch (e2) {}
+      window.GA_guardar(SEL_KEY, selecionada || '');
       render(); return;
     }
   }
@@ -197,7 +197,7 @@
         fichas.push(rec);
         gravarFicha(rec);
         selecionada = rec.id;
-        try { localStorage.setItem(SEL_KEY, selecionada); } catch (e2) {}
+        window.GA_guardar(SEL_KEY, selecionada);
         if (--restantes === 0) render();
       };
       leitor.onerror = () => {

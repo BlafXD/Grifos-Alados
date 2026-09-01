@@ -97,10 +97,8 @@
 
   function lembrarCampanha() {
     const c = campanhaAtual();
-    try {
-      if (c) localStorage.setItem(CAMP_KEY, c.id);
-      else   localStorage.removeItem(CAMP_KEY);
-    } catch (e) {}
+    if (c) window.GA_guardar(CAMP_KEY, c.id);
+    else   { try { localStorage.removeItem(CAMP_KEY); } catch (e) {} }
   }
 
   // ── SALVAR ───────────────────────────────────────────────────────

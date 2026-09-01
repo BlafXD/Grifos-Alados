@@ -115,7 +115,7 @@
     try { atual = localStorage.getItem(CHAVE_INV_JOGADORES); } catch (e) {}
     const v = JSON.stringify(dados || {});
     if (atual === v) return;
-    try { localStorage.setItem(CHAVE_INV_JOGADORES, v); } catch (e) {}
+    window.GA_guardar(CHAVE_INV_JOGADORES, v);
 
     // Se o mestre está digitando em algum campo agora, não re-renderiza a
     // aba (arrancaria o foco). Atualiza só as caixas de leitura no lugar e
@@ -305,7 +305,7 @@
         const email = (document.getElementById('gaSyncEmail') || {}).value || '';
         const senha = (document.getElementById('gaSyncSenha') || {}).value || '';
         const s = ((document.getElementById('gaSyncSala') || {}).value || '').trim();
-        try { localStorage.setItem(SALA_KEY, s || 'mesa'); } catch (err) {}
+        window.GA_guardar(SALA_KEY, s || 'mesa');
         ultimoErro = '';
         firebase.auth().signInWithEmailAndPassword(email.trim(), senha)
           .catch(err => { ultimoErro = err.message; atualizarBotao(); });
