@@ -1313,7 +1313,13 @@
     const temTexto = typeof Magias !== 'undefined' && Magias.textoDe && Magias.textoDe(p.nome);
     if (!temTexto) return p.descricao ? `<p class="mag-desc">${p.descricao}</p>` : '';
 
-    const puro = Magias.textoPuro(p.nome, _linhasPrecoMagia(p));
+    // O texto COPIADO sai no arranjo de pergaminho: preços colados no
+    // custo em PM e um respiro entre os aprimoramentos. Fora daqui ele
+    // perde o card em volta (vai para o Discord, para a ficha do
+    // jogador), e é a primeira linha que tem de dizer o que é e quanto
+    // custa. O mesmo arranjo da nuvem de descrição (GA_Tip).
+    const puro = Magias.textoPuro(p.nome, _linhasPrecoMagia(p),
+      { extrasNoCabecalho: true, aprimoramentosSoltos: true });
     return `<p class="mag-desc">${p.descricao || ''}</p>`
          + `<details class="ga-desc mag-texto"><summary>Descrição completa</summary>`
          + `<div class="ga-desc-corpo">${Magias.htmlCorpo(p.nome)}`

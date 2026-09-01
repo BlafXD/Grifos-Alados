@@ -624,15 +624,19 @@ const Magias = (function () {
   //  `extras` entra logo depois das estatísticas — a Loja usa para os
   //  preços do pergaminho, a aba de Magias não passa nada.
   //
-  //  `opts` muda o arranjo. Quem usa é a nuvem de descrição (GA_Tip), que
-  //  lê num espaço estreito e sem a moldura da Loja em volta:
+  //  `opts` muda o arranjo — é o "arranjo de pergaminho", ligado onde o
+  //  texto sai SEM moldura em volta (a nuvem de descrição do GA_Tip e o
+  //  ⧉ Copiar da Loja e das Recompensas):
   //    extrasNoCabecalho    → os `extras` sobem para logo abaixo da linha
-  //                           do nome, colados no custo em PM. Numa nuvem
-  //                           pendurada num trecho é o que diz de cara que
-  //                           aquilo ali é um pergaminho, e por quanto.
+  //                           do nome, colados no custo em PM. É o que diz
+  //                           de cara que aquilo é um pergaminho, e por
+  //                           quanto, antes de qualquer estatística.
   //    aprimoramentosSoltos → uma linha em branco entre os aprimoramentos.
   //                           Colados eles viram um bloco só quando a
   //                           largura é pouca.
+  //  Sem opts fica o arranjo antigo — é o que a sub-aba "✨ Magias" das
+  //  Consultas usa (lá a magia não é um pergaminho, e não há preço) e o
+  //  que o .txt da Loja indenta (aquele apaga as linhas vazias mesmo).
   function textoPuro(nome, extras, opts) {
     const t = TEXTO[nome];
     if (!t) return '';
