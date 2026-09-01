@@ -305,7 +305,7 @@
         <button class="mp-fmt-btn" data-mp-fmt="i" title="Itálico (só no trecho selecionado)"><i>I</i></button>
         <button class="mp-fmt-btn" data-mp-fmt="menor" title="Diminuir o trecho selecionado">A−</button>
         <button class="mp-fmt-btn" data-mp-fmt="maior" title="Aumentar o trecho selecionado">A+</button>
-        <button class="mp-fmt-btn" data-mp-fmt="desc" title="Pendurar uma descrição no trecho selecionado — a nuvem aparece ao passar o mouse; clique no trecho para fixá-la e copiar">📖</button>
+        <button class="mp-fmt-btn" data-mp-fmt="desc" title="Pendurar uma descrição no trecho selecionado — a nuvem aparece ao passar o mouse; clique no trecho para fixá-la e copiar">※</button>
         <label class="mp-fmt-cor" title="Cor do bloco"><input type="color" class="mp-no-cor" value="${cor}" ${dis}></label>
         <span class="mp-fmt-sep"></span>
         <button class="mp-fmt-btn ${no.recolhido ? 'mp-fmt-on' : ''}" data-mp-fmt="recolher" title="Recolher / expandir">${no.recolhido ? '⊞' : '⊟'}</button>
@@ -618,7 +618,7 @@
     if (!corpo) return;
     if (!selecaoDentro(corpo)) { corpo.focus(); return; }   // precisa de cursor/seleção no texto
     if (tipo === 'desc') {
-      // 📖 descrição pendurada — o modal é assíncrono; salva ao concluir
+      // ※ descrição pendurada — o modal é assíncrono; salva ao concluir
       if (window.GA_Tip) window.GA_Tip.editarSelecao(corpo, () => {
         no.texto = corpo.innerHTML;
         desenharLigacoes();
@@ -1073,7 +1073,7 @@
       const no = {
         id: uid('n'), cat, w: LARGURA_NO, h: 0,
         titulo: typeof ramo.titulo === 'string' ? ramo.titulo : '',
-        // o corpo do Ramo agora também é rico (textoHtml, com grifos e 📖)
+        // o corpo do Ramo agora também é rico (textoHtml, com grifos e ※)
         // — vem como está (o normalizar/render sanitiza). Ramos antigos, só
         // com texto puro, viram HTML seguro com as quebras de linha.
         texto: (typeof ramo.textoHtml === 'string') ? ramo.textoHtml

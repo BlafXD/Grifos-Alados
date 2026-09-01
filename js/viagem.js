@@ -136,7 +136,7 @@
     if (typeof v.dias !== 'number') v.dias = parseInt(v.dias, 10) || 0;
     if (!Array.isArray(v.diario)) v.diario = [];
     if (!Array.isArray(v.paradas)) v.paradas = [];
-    // diário/paradas: texto rico (grifos e 📖) com espelho PURO em .texto
+    // diário/paradas: texto rico (grifos e ※) com espelho PURO em .texto
     // (o export .txt lê o puro). Migração idempotente de dados antigos.
     v.diario.forEach(d => {
       if (!d.id) d.id = uid('d');
@@ -391,7 +391,7 @@
                    data-campo="diario-texto" data-v="${vi}" data-d="${di}"
                    data-ph="O que aconteceu…">${d.textoHtml}</div>
               <button type="button" class="ga-rich-btn" data-rich-desc
-                      title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖</button>
+                      title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">※</button>
             </div>
             ${botaoVisivel(d, 'toggle-visivel-diario', `data-v="${vi}" data-d="${di}"`,
                            'os jogadores não veem esta linha até você revelar')}
@@ -431,7 +431,7 @@
                    data-campo="parada-texto" data-v="${vi}" data-p="${pi}"
                    data-ph="Narração / efeito desta parada…">${pa.textoHtml}</div>
               <button type="button" class="ga-rich-btn" data-rich-desc
-                      title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖</button>
+                      title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">※</button>
             </div>
           </div>`;
       });
@@ -841,7 +841,7 @@
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoEntrada);
     secao.addEventListener('change', aoMudar);
-    // campos ricos: 📖 descrição pendurada + colar limpo (handlers globais)
+    // campos ricos: ※ descrição pendurada + colar limpo (handlers globais)
     secao.addEventListener('mousedown', window.GA_richDescMousedown);
     secao.addEventListener('paste', window.GA_richPaste);
     window.addEventListener('beforeunload', salvarAgora);

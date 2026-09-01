@@ -45,7 +45,7 @@
   function normalizarRamo(r) {
     if (typeof r.titulo !== 'string') r.titulo = '';
     if (typeof r.texto !== 'string')  r.texto = '';
-    // texto rico (grifos e 📖 descrições penduradas) com espelho PURO em
+    // texto rico (grifos e ※ descrições penduradas) com espelho PURO em
     // r.texto — o export .txt e o "Trazer dos Ramos" antigos seguem lendo
     // o puro. Migração idempotente: ramos antigos ganham o HTML na hora.
     r.textoHtml = (typeof r.textoHtml === 'string')
@@ -187,7 +187,7 @@
                  data-ph="Anote a ideia, o encontro, a narração, o segredo…"
                  data-campo="texto" data-caminho="${caminho}">${r.textoHtml}</div>
             <button type="button" class="ga-rich-btn" data-rich-desc
-                    title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">📖</button>
+                    title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">※</button>
           </div>
           ${r.filhos.length ? `<div class="an-filhos">${filhosHtml}</div>` : ''}
           <button class="an-add an-add--sub" data-acao="add-sub" data-caminho="${caminho}">＋ Ramificar</button>
@@ -422,7 +422,7 @@
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoDigitar);
     secao.addEventListener('change', aoEscolherBackup);
-    // campos ricos: 📖 descrição pendurada + colar limpo (handlers globais)
+    // campos ricos: ※ descrição pendurada + colar limpo (handlers globais)
     secao.addEventListener('mousedown', window.GA_richDescMousedown);
     secao.addEventListener('paste', window.GA_richPaste);
 

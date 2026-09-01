@@ -258,7 +258,7 @@ window.ItensDescricoes = (function () {
     pe.className = 'ga-tip-pop-pe';
     const pin = document.createElement('span');
     pin.className = 'ga-tip-pop-pin';
-    pin.textContent = '📌 clique fora (ou Esc) para soltar';
+    pin.textContent = 'clique fora (ou Esc) para soltar';
     const copiar = document.createElement('button');
     copiar.type = 'button';
     copiar.className = 'ga-tip-pop-copiar';
@@ -275,13 +275,20 @@ window.ItensDescricoes = (function () {
     return _pop;
   }
 
+  // Acima disto a nuvem vira "longa": mais larga, com teto de altura e o
+  // texto rolando por dentro. É o caso do texto integral de uma magia
+  // pendurada num trecho (GA_Tip) — a definição de uma regra do glossário
+  // nunca chega perto.
+  const LIMITE_LONGO = 420;
+
   function _mostrarTip(span) {
     const def = span.getAttribute('data-tip');
     if (!def) return;
     const pop = _popEl();
     _tipAtual = span;
     pop.querySelector('.ga-tip-pop-txt').textContent = def;
-    pop.classList.remove('ga-tip-pop--abaixo');
+    pop.classList.remove('ga-tip-pop--abaixo', 'ga-tip-pop--solto');
+    pop.classList.toggle('ga-tip-pop--longo', def.length > LIMITE_LONGO || def.indexOf('\n') >= 0);
     pop.hidden = false;
 
     // o botão do rodapé leva o TRECHO grifado (nome do item, da magia…)
@@ -298,6 +305,21 @@ window.ItensDescricoes = (function () {
     pop.style.top  = '0px';
     const r  = span.getBoundingClientRect();
     const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
+
+    // Aviso do rodapé. Nas nuvens longas ele aparece já com a nuvem
+    // SOLTA — que é quando o mestre precisa saber que o clique a fixa
+    // (solta, ela não pega o mouse, então não rola nem copia).
+    const txt = pop.querySelector('.ga-tip-pop-txt');
+    const pin = pop.querySelector('.ga-tip-pop-pin');
+    if (pin) {
+      pin.textContent = pop.classList.contains('ga-tip-pop--fixado')
+        ? 'clique fora (ou Esc) para soltar'
+        : (txt.scrollHeight > txt.clientHeight + 1
+          ? 'clique no trecho para fixar e rolar o texto'
+          : 'clique no trecho para fixar e copiar');
+    }
+
     const pw = pop.offsetWidth;
     const ph = pop.offsetHeight;
 
@@ -308,6 +330,10 @@ window.ItensDescricoes = (function () {
     if (top < 6) {                             // sem espaço → abre abaixo
       top = Math.round(r.bottom + 8);
       pop.classList.add('ga-tip-pop--abaixo');
+      if (top + ph > vh - 6) {                 // nem abaixo cabe: encosta e
+        top = Math.max(6, vh - ph - 6);        // solta a seta, que perdeu o alvo
+        pop.classList.add('ga-tip-pop--solto');
+      }
     }
 
     // a seta persegue o centro do termo mesmo com o balão preso na borda
@@ -329,7 +355,7 @@ window.ItensDescricoes = (function () {
   // para o mestre poder COPIAR o conteúdo. Clique fora ou Esc solta.
   function _fixarTip(span) {
     _mostrarTip(span);                          // garante a nuvem visível
-    _pop.classList.add('ga-tip-pop--fixado');   // rodapé "📌 fixada" aparece…
+    _pop.classList.add('ga-tip-pop--fixado');   // rodapé da nuvem fixada aparece…
     _mostrarTip(span);                          // …então re-mede e reposiciona
     _fixado = true;
   }
