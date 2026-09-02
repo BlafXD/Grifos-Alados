@@ -870,7 +870,8 @@ Vistas à distância, estas criaturas feitas de pura sombra lembram vultos usand
 Morto-vivo Médio
 Iniciativa +10, Percepção +6, visão no escuro
 Defesa 23, Fort +5, Ref +17, Von +11, incorpóreo
-Pontos de Vida 110 Deslocamento Voo 18m (12q)
+Pontos de Vida 110
+Deslocamento Voo 18m (12q)
 Corpo a Corpo Toque drenante +18 (3d8+6 trevas). Uma criatura viva atingida deve fazer um teste de Fortitude (CD 21). Se falhar, fica fraca e a aparição recebe 20 PV temporários cumulativos.
 Vulnerabilidade à Luz do Dia Uma aparição exposta a luz solar natural fica debilitada.
 For —, Des 6, Con 0, Int 0, Sab 2, Car 2
