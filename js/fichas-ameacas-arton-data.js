@@ -3913,7 +3913,7 @@ Pontos de Vida 2.450
 Deslocamento 15m (10q), voo 12m (8q)
 Corpo a Corpo Armamento adaptativo x3 +59.
 À Ddistância Balística Avançada +59.
-Armamento AdaptativoA cada rodada, o Kishinauros escolhe uma das seguintes armas mágicas para seus ataques corpo a corpo. Quando usa a ação agredir, ele pode aumentar sua sobrecarga em 1 para energizar a arma por um turno.
+Armamento Adaptativo A cada rodada, o Kishinauros escolhe uma das seguintes armas mágicas para seus ataques corpo a corpo. Quando usa a ação agredir, ele pode aumentar sua sobrecarga em 1 para energizar a arma por um turno.
 • Malho Relampejante (martelo de guerra, 6d6+44, x3). Se foi energizado, criaturas atingidas ficam atordoadas por 1 rodada (Fort CD 51 evita; só pode ser atordoada uma vez por cena).
 • Perfuratriz Sibilante (alabarda, 4d10+42, x4). Se foi energizado, seus ataques ignoram redução de dano e imunidade a acertos críticos.
 • Vingadora e Impérvio (espada bastarda e escudo pesado, 6d8+38, 19). O Kishinauros recebe +2 na Defesa. Se foi energizado, uma vez na rodada, quando é alvo de uma magia, pode refleti-la de volta ao conjurador. As características da magia (efeitos, CD…) se mantêm, mas o conjurador se torna seu novo alvo e o Kishinauros faz quaisquer escolhas exigidas.
@@ -4126,7 +4126,7 @@ Magias Como um mago de 5º nível (CD 22).
 • Campo de Força (Reação, 4 PM) Quando sofre dano, o dracomante recebe redução de dano 30 contra este dano.
 • Explosão de Chamas (Padrão, 4 PM) O dracomante causa 5d6+6 pontos de dano de fogo a criaturas em um cone de 6m (Ref reduz à metade).
 For –1, Des 3, Con 2, Int 6, Sab 2, Car 3
-Perícias Conhecimento +12, Intimidação +8, Misticismo +12. EquipamentoPergaminho de armadura arcana, pergaminho de explosão de chamas, pergaminho de bola de fogo ×2.
+Perícias Conhecimento +12, Intimidação +8, Misticismo +12. Equipamento Pergaminho de armadura arcana, pergaminho de explosão de chamas, pergaminho de bola de fogo ×2.
 Tesouro Metade.`
         },
         {
@@ -4156,7 +4156,7 @@ Magias Como um mago de 14º nível (CD 38, limite de PM 23).
 • Transformação em Dragão (Completa, 23 PM) O dracomante recebe +2 em Força, Constituição, Inteligência e Carisma, +5 na Defesa, redução de fogo 30, deslocamento de voo 18m e um ataque de mordida (ataque +30, dano 1d6+15, 19/x3) que pode ser usado com sua adaga. Além disso, uma vez por rodada, ele pode gastar uma ação padrão para soprar fogo, causando 10d6+10 pontos de dano de fogo em um cone de 9m (Ref reduz à metade).
 • Velocidade (Padrão, 10 PM, sustentada) O dracomante pode executar uma ação padrão adicional por turno.
 For –1, Des 4, Con 4, Int 8, Sab 2, Car 5
-Perícias Conhecimento +22, Intimidação+19, Misticismo +24.
+Perícias Conhecimento +22, Intimidação +19, Misticismo +24.
 Equipamento Adaga, cetro elemental de couro de dragão (fogo), pergaminho de Transformação em Dragão. Tesouro Nenhum.`
         },
         {
@@ -5823,7 +5823,7 @@ Três Cabeças Uma quimera tem três cabeças distintas que concedem habilidades
 • Dragão. A quimera pode gastar uma ação padrão para cuspir fogo em um cone de 6m. Criaturas na área sofrem 10d6+20 pontos de dano de fogo (Ref CD 26 reduz à metade). Recarga (movimento).
 • Gorlogg. Se acertar um ataque de mordida com esta cabeça, a quimera pode usar a manobra derrubar como ação livre (teste +28).
 • Hidra. A quimera ganha cura acelerada 20/ácido ou fogo.
-• Leão. Quando acerta um ataque de mordida com esta cabeça, a quimera pode usar a manobra agarrar como ação livre (teste+28).
+• Leão. Quando acerta um ataque de mordida com esta cabeça, a quimera pode usar a manobra agarrar como ação livre (teste +28).
 • Javali. Se sofrer dano, a quimera recebe +5 em testes de ataque e rolagens de dano até o fim de seu próximo turno.
 • Serpente. Uma criatura atingida por uma mordida desta cabeça perde 2d12 pontos de vida durante 3 rodadas (Fort CD 26 reduz para 1 rodada). Veneno.
 • Tigre. Se acertar os dois ataques de garra em uma mesma criatura na mesma rodada, a quimera causa mais 4d6+20 pontos de dano.
@@ -7765,7 +7765,7 @@ Iniciativa +8, Percepção +4
 Defesa 18, Fort +6, Ref +12, Von +4
 Pontos de Vida 63
 Deslocamento 9m (6q)
-Corpo a Corpo Adaga+12 (1d4+5, 19).
+Corpo a Corpo Adaga +12 (1d4+5, 19).
 À Distância Pistola +12 (2d6+10, 19/x3).
 Disparo Preciso O pistoleiro pode fazer ataques à distância contra oponentes envolvidos em combate corpo a corpo sem a penalidade padrão de –5 no teste de ataque.
 Saque Rápido O pistoleiro pode sacar ou guardar itens como uma ação livre e recarregar sua pistola como uma ação de movimento.
@@ -7785,7 +7785,7 @@ Iniciativa +10, Percepção +5
 Defesa 22, Fort +9, Ref +15, Von +6, imunidade a medo
 Pontos de Vida 120
 Deslocamento 9m (6q)
-Corpo a Corpo Adaga+16 (1d4+7, 19).
+Corpo a Corpo Adaga +16 (1d4+7, 19).
 À Distância Pistola +16 (2d6+15, 19/x3).
 Dedo no Gatilho Quando faz um ataque de pistola contra um oponente desprevenido, o líder pistoleiro recebe +5 na rolagem de dano e na margem de ameaça.
 Disparo Preciso O líder pode fazer ataques à distância contra oponentes envolvidos em combate corpo a corpo sem a penalidade padrão de –5 no teste de ataque.
@@ -7848,15 +7848,15 @@ Tesouro Padrão.`
 — Paul Kersey, osteon xerife de Azgher
 Assim que o recém-chegado entra na taverna, o bardo cessa de tocar, tudo silencia. Grandes cintos de couro cruzam-se sobre seu peito. Na cintura, pistolas desgastadas pelo uso intenso. Mesmo na escuridão sob o chapéu largo e negro pode-se ver as feições embrutecidas de um elfo, cujo olhar ninguém no recinto ousa encarar. O chapéu-preto é um bucaneiro ou pistoleiro sanguinário, de alma endurecida e presença aterradora, capaz de matar sem o menor motivo ou provocação. Após uma vida de crimes ou algum evento trágico, ele desistiu de qualquer noção de camaradagem, honra, piedade ou redenção, vivendo apenas pela lei do mais rápido no gatilho. Chapéus-pretos estão entre os maiores assassinos do mundo: quando um destes chega à cidade, todos se trancam em casa, os comércios fecham, as tavernas esvaziam enquanto podem — pois, quando não o fazem, alguém morrerá ali. Alguns chapéus-pretos são realmente dignos do nome, assaltando caravanas, matando guardas e assassinando por dinheiro. Outros são justiceiros implacáveis, liquidando “infratores” conforme seus próprios códigos, sem se importar com leis locais. Outros ainda são duelistas, buscando testar suas habilidades contra adversários fortes, pouco importando se são bons ou maus. Por sua perícia lendária, chapéus-pretos podem ser contratados por vilões ou nobres corruptos para eliminar “heróis intrometidos”. Em geral agem sozinhos, mas podem ser acompanhados por jagunços ou pistoleiros de Smokestone (que não se importam em sacrificar caso seja conveniente). Não é raro que um chapéu-preto tenha feito um pacto com um demônio da pólvora, sendo este o motivo de sua eficiência em matar e sua desistência de tudo mais.
 Humanoide (meio-orc) Médio
-Iniciativa +20, Percepção+12 (+14 em subterrâneo), visão no escuro
+Iniciativa +20, Percepção +12 (+14 em subterrâneo), visão no escuro
 Defesa 42, Fort +20, Ref +26, Von +12, evasão aprimorada, imunidade a medo
 Pontos de Vida 480
 Deslocamento 9m (6q)
 Corpo a Corpo Adaga +32 (1d4+6, 19).
 À Distância Pistola +36 (6d6+50, 17/x3).
-Bala nas CostasO chapéu-preto recebe +10 na margem de ameaça do primeiro ataque que fizer contra cada oponente na cena.
+Bala nas Costas O chapéu-preto recebe +10 na margem de ameaça do primeiro ataque que fizer contra cada oponente na cena.
 Duro como o Inferno Todo dano de corte, impacto e perfuração que o chapéu-preto sofre é reduzido à metade.
-Mão FirmeO chapéu-preto pode fazer ataques de pistola contra oponentes envolvidos em combate corpo a corpo sem sofrer a penalidade padrão de –5 no teste de ataque e, quando faz um ataque de pistola, rola dois dados e usa o melhor resultado.
+Mão Firme O chapéu-preto pode fazer ataques de pistola contra oponentes envolvidos em combate corpo a corpo sem sofrer a penalidade padrão de –5 no teste de ataque e, quando faz um ataque de pistola, rola dois dados e usa o melhor resultado.
 Reputação Uma criatura que comece seu turno em alcance médio do chápeu-preto fica abalada (Von CD 33 evita e a criatura não pode mais ser abalada por esta habilidade até o fim da cena).
 Saque Rápido O chapéu-preto pode sacar ou guardar itens como uma ação livre e recarregar sua pistola como uma ação de movimento.
 Tiro à Traição Quando faz um ataque de pistola contra um oponente desprevenido, o chápeu-preto recebe +5 na margem de ameaça e causa +6d6 pontos de dano.
@@ -8044,7 +8044,8 @@ Equipamento Pó azul x2, ramo verdejante x1d3, símbolo sagrado de Anikka (Wynna
           texto:
 `Velocis Caçador ND 4
 Humanoide (velocis) Médio
-Iniciativa +7, Percepção +8, faro, visão na penumbra Defesa 21 (23 contra ataques à distância), Fort +6, Ref +15, Von +9, redução a corte e perfuração 2
+Iniciativa +7, Percepção +8, faro, visão na penumbra
+Defesa 21 (23 contra ataques à distância), Fort +6, Ref +15, Von +9, redução a corte e perfuração 2
 Pontos de Vida 25
 Deslocamento 12m (8q), sem redução por terreno difícil natural
 Corpo a Corpo Lança +17 (1d6+9 mais veneno).
@@ -8122,7 +8123,7 @@ Caça em Bando (Movimento) Uma vez por cena, a voracis rainha invoca 1d6+2 vorac
 Eviscerar Quando acerta um ataque de garra, a rainha rasga a carne da vítima, que fica desprevenida e sangrando (Fort CD 31 evita). Essas condições persistem até que a vítima receba cura mágica ou primeiros socorros (veja a perícia Cura). Criaturas imunes a acertos críticos e/ou sangramentos ou usando armaduras pesadas são imunes a esta habilidade. Metabolismo.
 Fúria Primeva (Livre) A rainha entra em um estado de frenesi. Ela ganha 50 PV temporários e todas as criaturas em alcance médio ficam abaladas (Von CD 31 evita). Além disso, enquanto esta habilidade estiver ativa, a rainha recebe +4 em testes de ataque e rolagens de dano, mas não pode realizar ações que exigem calma e concentração. A fúria termina se, ao fim da rodada, a rainha não tiver atacado nem for alvo de um efeito hostil. Recarga (matar uma criatura).
 For 3, Des 7, Con 3, Int –1, Sab 2, Car 1
-Perícias Atletismo +12, Furtividade +16, Intimidação +10, Sobrevivência+13.
+Perícias Atletismo +12, Furtividade +16, Intimidação +10, Sobrevivência +13.
 Equipamento Azagaia x3, bálsamo da drogadora x2, garra feroz maciça, presa de serpente, rede.
 Tesouro Dobro.`
         },
@@ -8797,7 +8798,7 @@ Magias Como um mago de 18º nível (CD 46, limite de PM 30).
 • Velocidade (Padrão, 10 PM, sustentada) O lich pode executar uma ação padrão adicional por turno.
 Filactério Um lich morto retorna completamente recuperado em 1d10 dias. A única forma de derrotá-lo permanentemente é destruir seu filactério (veja a caixa de texto).
 For –1, Des 4, Con 2, Int 12, Sab 2, Car 7
-Perícias Conhecimento +29, Cura +17, Diplomacia +22, Intimidação +22, Intuição +17, Misticismo +32, Nobreza +29, Ofício (alquimista) +29. EquipamentoCoroa majestosa, essência de mana x5, robe do arquimago.
+Perícias Conhecimento +29, Cura +17, Diplomacia +22, Intimidação +22, Intuição +17, Misticismo +32, Nobreza +29, Ofício (alquimista) +29. Equipamento Coroa majestosa, essência de mana x5, robe do arquimago.
 Tesouro Dobro e fragmento de filactério.`
         },
         {
@@ -9049,7 +9050,7 @@ Defesa 18, Fort +7, Ref +14, Von +1, evasão
 Pontos de Vida 46
 Deslocamento 12m (8q)
 Corpo a Corpo Pistola-punhal +12 (1d6+4, 19).
-À DistânciaPistola-punhal +10 (2d6+6, 19/x3).
+À Distância Pistola-punhal +10 (2d6+6, 19/x3).
 Audácia Uma vez por rodada, a bucaneira soma seu Carisma em um teste de perícia (exceto em ataque).
 Cobrir de Pólvora (Movimento) A bucaneira joga um punhado de pólvora em um alvo em alcance curto. Até o fim da cena, o próximo ataque contra esse alvo causa +1d6 pontos de dano de fogo e o deixa em chamas.
 Estampido Ensurdecedor Quando a bucaneira dispara com sua pistola-punhal (à distância ou em corpo a corpo), todas as criaturas adjacentes a ela ficam abaladas e surdas (Fort CD 18 reduz a duração para 1 rodada).
@@ -10292,10 +10293,10 @@ Pontos de Mana 83
 Corpo a Corpo Punhal sszzaazita +44 (1d4+20, 19, mais veneno).
 Assassinar (Movimento) O sszzaazita celebrante analisa uma criatura em alcance curto. Até o fim de seu próximo turno, ele dobra os dados de dano extras por Ataque Furtivo em seu primeiro Ataque Furtivo que causar dano contra essa criatura.
 Ataque Furtivo +8d8.
-Cobra em Pele de CordeiroO celebrante é considerado um respeitado membro do clero de outro deus e recebe +5 em testes de Enganação e Intimidação com seus devotos.
+Cobra em Pele de Cordeiro O celebrante é considerado um respeitado membro do clero de outro deus e recebe +5 em testes de Enganação e Intimidação com seus devotos.
 Falso Amigo Médico veterano.
 Ritual Disfarçado (Livre) O celebrante disfarça suas magias como se fossem de outra divindade. Uma criatura que veja o celebrante lançar uma magia deve fazer um teste de Intuição ou Misticismo (CD 38) para perceber sua verdadeira natureza. Se falhar, sofre –5 em seu teste de resistência contra ela.
-Manto do TraidorO celebrante pode se esconder mesmo sem camuflagem ou cobertura disponíveis, não sofre penalidade em testes de Furtividade por se mover ao seu deslocamento normal e reduz a penalidade em Furtividade por atacar e fazer outras ações chamativas para –5.
+Manto do Traidor O celebrante pode se esconder mesmo sem camuflagem ou cobertura disponíveis, não sofre penalidade em testes de Furtividade por se mover ao seu deslocamento normal e reduz a penalidade em Furtividade por atacar e fazer outras ações chamativas para –5.
 Magias Como um clérigo de Sszzaas de 16º nível (CD 38).
 • Curar Ferimentos (Padrão, 12 PM) Uma criatura adjacente cura 13d8+13 PV.
 • Libertação (Padrão, 14 PM) O celebrante fica imune a efeitos de movimento, ignora qualquer efeito que impeça ou restrinja seu deslocamento, pode escolher 20 em testes de Atletismo e Acrobacia, e pode fazer todas as manobras desta perícia mesmo sem treinamento.
@@ -10303,7 +10304,7 @@ Magias Como um clérigo de Sszzaas de 16º nível (CD 38).
 • Silêncio (Padrão, 3 PM, sustentada) O celebrante cria uma esfera de 6m em alcance médio. Criaturas nessa área ficam surdas e por isso não podem lançar magias.
 Veneno Perde 2d12 pontos de vida durante 3 rodadas (Fort CD 38 reduz para 1 rodada).
 For 0, Des 7, Con 4, Int 2, Sab 3, Car 5
-Perícias Enganação +26 (+27 para disfarces), Furtividade +28, Intimidação +26, Intuição +24, Religião +24. EquipamentoEstojo de disfarces aprimorado, punhal sszzaazita, símbolo sagrado (qualquer, exceto Sszzaas). Tesouro Nenhum.`
+Perícias Enganação +26 (+27 para disfarces), Furtividade +28, Intimidação +26, Intuição +24, Religião +24. Equipamento Estojo de disfarces aprimorado, punhal sszzaazita, símbolo sagrado (qualquer, exceto Sszzaas). Tesouro Nenhum.`
         },
       ],
       regras: [
@@ -10660,7 +10661,7 @@ Monstro (finntroll) Médio
 Iniciativa +9, Percepção +9, visão no escuro
 Defesa 25, Fort +13, Ref +8, Von +19
 Pontos de Vida 162
-Deslocamento 6m (6q)
+Deslocamento 6m (4q)
 Pontos de Mana 49
 Corpo a Corpo Açoite finntroll +18 (1d8+6).
 Urro Divino (Livre, 1 PM) Quando faz um ataque ou lança uma magia, o sacerdote finntroll soma sua Constituição à rolagem de dano desse ataque ou magia.
@@ -10686,7 +10687,7 @@ Monstro (finntroll) Médio
 Iniciativa +18, Percepção +17, visão no escuro
 Defesa 39, Fort +19, Ref +11, Von +27, imunidade a magia de adivinhação e encantamento, redução de dano 5
 Pontos de Vida 413
-Deslocamento 6m (6q)
+Deslocamento 6m (4q)
 Pontos de Mana 77
 Corpo a Corpo Adaga +27 (1d4+6).
 Arrogância Divina O alto sacerdote finntroll se considera a representação suprema da maior obra dos deuses. Criaturas que falhem em testes de resistência contra suas magias ficam frustradas.

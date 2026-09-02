@@ -280,7 +280,7 @@ Orar Gregor pode lançar as seguintes magias divinas (CD 33).
 • Escudo da Fé (Reação, 3 PM) Quando uma criatura em alcance curto sofre um ataque, ela recebe +3 na Defesa por 1 turno.
 Varrer (Livre) Uma vez por rodada, quando Gregor faz um ataque corpo a corpo e reduz os pontos de vida do alvo para 0 ou menos, pode realizar um ataque adicional contra outra criatura dentro do seu alcance.
 For 5, Des 1, Con 3, Int 1, Sab 1, Car 3
-Perícias Atletismo +15, Cavalgar +11, Cura +11, Diplomacia +15, Nobreza +11, Religião +11. EquipamentoArmadura completa defensora, escudo de Azgher, espada bastarda certeira, manto do fascínio, símbolo sagrado de Thyatis, tabardo aprimorado. Tesouro Metade.`
+Perícias Atletismo +15, Cavalgar +11, Cura +11, Diplomacia +15, Nobreza +11, Religião +11. Equipamento Armadura completa defensora, escudo de Azgher, espada bastarda certeira, manto do fascínio, símbolo sagrado de Thyatis, tabardo aprimorado. Tesouro Metade.`
       },
       {
         chave: "gwenHaggenfar", nome: "Gwen Haggenfar", nd: "15", tipo: "Humanoide (humana) Média",
@@ -605,7 +605,8 @@ Iniciativa +4, Percepção +13, visão no escuro
 Defesa 28, Fort +15, Ref +9, Von +21, imunidade a fogo, proteção divina, redução de corte, frio e perfuração 5
 Pontos de Vida 232
 Deslocamento 9m (6q)
-Pontos de Mana 150 Almejar o Impossível Quando Khorr’benn faz um teste de perícia, um resultado de 19 ou mais no dado sempre é um sucesso.
+Pontos de Mana 150
+Almejar o Impossível Quando Khorr’benn faz um teste de perícia, um resultado de 19 ou mais no dado sempre é um sucesso.
 ✦ Dom da Imortalidade Khorr’benn é imortal. Sempre que morre, não importando o motivo, volta à vida após 3d6 dias.
 ✦ Previsões Astrológicas Khorr’benn pode gastar 1 hora para vislumbrar o futuro de uma criatura em alcance curto. A criatura recebe 6d6 que duram até serem usados ou até o fim da aventura. Sempre que for realizar um teste de perícia, ela pode gastar até 2d6 e adicionar o resultado como um bônus no teste.
 ✦ Protetores Duyshidakk (Completa, 2 PM) Khorr’benn invoca 2d4 guardiões goblinoides em espaços desocupados em alcance médio. Eles agem a partir da próxima rodada de Khorr’benn, têm deslocamento 9m e podem gastar uma ação padrão para causar 2d4+3 pontos de dano de corte em uma criatura adjacente. Os goblinoides têm For 1, Des 1, Defesa 21, 1 PV e falham automaticamente em qualquer teste de resistência ou oposto. Eles desaparecem quando morrem ou no fim da cena.
@@ -744,7 +745,8 @@ Iniciativa +20, Percepção +18, visão no escuro
 Defesa 63, Fort +22, Ref +30, Von +36, imunidade a efeitos mentais e medo, redução de dano 20, resistência a magia +5
 Pontos de Vida 740
 Deslocamento 9m (6q)
-Pontos de Mana 400 Arcano de Batalha Vectorius soma sua Inteligência nas rolagens de dano quando lança magias ou usa seu Raio Arcano (já contabilizado).
+Pontos de Mana 400
+Arcano de Batalha Vectorius soma sua Inteligência nas rolagens de dano quando lança magias ou usa seu Raio Arcano (já contabilizado).
 Contingência Arcana (Reação) Uma vez por cena, quando é alvo de um efeito hostil, Vectorius lança uma magia arcana a sua escolha.
 Contramágica Aprimorada (Reação) Uma vez por rodada, Vectorius faz uma contramágica.
 ✦ Escudo Místico (Reação) Quando lança uma magia, para cada PM gasto Vectorius recebe 5 PV temporários cumulativos.
@@ -1198,7 +1200,7 @@ Magias Como um mago de 15º nível (CD 43, limite de PM 16).
 • Toque Vampírico* (Padrão, 16 PM) Narsogg faz um ataque com Avir. Se acertar, além do dano normal, causa 18d6+16 pontos de dano de trevas e recupera metade desse dano de trevas em pontos de vida.
 For 6, Des 0, Con 5, Int 5, Sab 1, Car 2
 Perícias Atletismo +19, Diplomacia +15, Enganação +17, Intimidação +23, Misticismo +20, Nobreza +18, Guerra +18.
-EquipamentoAvir (veja p. 55), traje da corte banhado a ouro e cravejado de gemas. Tesouro Padrão.`
+Equipamento Avir (veja p. 55), traje da corte banhado a ouro e cravejado de gemas. Tesouro Padrão.`
       },
       {
         chave: "sislachRawia", nome: "Sislach Rawia", nd: "16", tipo: "Monstro (medusa) Média",
@@ -1273,7 +1275,7 @@ Corpo a Corpo Adaga x2 +24 (2d4+10, 19).
 Forma Dracônica (Movimento) Stridnix se transforma em um dragão do fogo. Nessa forma, suas estatísticas mudam para Defesa 35; deslocamento 12m (8q), voo 18m (12q); corpo a corpo: mordida +27 (2d6+16, 19) e duas garras +27 (1d8+16, 19); For 7. Além disso, ela recebe a habilidade a seguir.
 • Sopro (Padrão) Todas as criaturas em um cone de 9m sofrem 6d12+6 pontos de dano de fogo e ficam em chamas (Ref CD 26 reduz à metade e evita a condição). Recarga (movimento). Stridnix pode voltar à forma kallyanach com uma ação de movimento. Contudo, ela ainda não controla totalmente sua transformação. Se rolar 1 natural em qualquer teste enquanto estiver na forma dracônica, ela reverte à forma kallyanach no final do turno e não pode se transformar novamente na mesma cena.
 For 2, Des 0, Con 4, Int 3, Sab 2, Car 5
-Perícias Atuação +12, Diplomacia +12, Guerra +10, Intimidação +12, Nobreza +10. EquipamentoAdaga formidável, traje da corte. Tesouro Dobro.`
+Perícias Atuação +12, Diplomacia +12, Guerra +10, Intimidação +12, Nobreza +10. Equipamento Adaga formidável, traje da corte. Tesouro Dobro.`
       },
       {
         chave: "tannara", nome: "Tannara", nd: "12", tipo: "Monstro (kallyanach) Média",
@@ -1433,7 +1435,7 @@ Magias Como um mago de 17º nível (CD 46, limite de PM 23).
 • Salto Dimensional (Reação, 5 PM) Vlad recebe +5 na Defesa e em testes de Reflexos contra um ataque ou efeito que esteja prestes a atingi-lo e, após a resolução desse efeito, salta para um espaço adjacente desocupado.
 • Tentáculos de Trevas* (Padrão, 13 PM) Até o fim da cena, tentáculos surgem em uma esfera de 9m em alcance médio e tentam agarrar todas as criaturas na área. Ao lançar a magia e no início de cada um de seus turnos, Vlad faz um teste da manobra agarrar (usando Misticismo) contra cada criatura na área. Se ele passar, a criatura é agarrada; se a vítima já está agarrada, é esmagada, sofrendo 10d6 pontos de dano de trevas. A área conta como terreno difícil e os tentáculos são imunes a dano.
 For 0, Des 2, Con 2, Int 7, Sab 4, Car 3
-Perícias Conhecimento +20, Cura +15, Diplomacia +14, Investigação +18, Misticismo +23, Nobreza +18, Ofício (alquimista) +18, Religião +15. EquipamentoAnel da proteção, braceletes de ouro, essência de mana x2, instrumentos de Ofício (alquimista) aprimorados, manto da resistência, poção de curar ferimentos (7d8+7), terra de cemitério x4. Tesouro Padrão.`
+Perícias Conhecimento +20, Cura +15, Diplomacia +14, Investigação +18, Misticismo +23, Nobreza +18, Ofício (alquimista) +18, Religião +15. Equipamento Anel da proteção, braceletes de ouro, essência de mana x2, instrumentos de Ofício (alquimista) aprimorados, manto da resistência, poção de curar ferimentos (7d8+7), terra de cemitério x4. Tesouro Padrão.`
       },
       {
         chave: "goBlinn", nome: "Go Blinn", nd: "1", tipo: "Humanoide (goblin) Pequeno",

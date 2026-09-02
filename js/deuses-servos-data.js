@@ -519,7 +519,8 @@ Iniciativa +6, Percepção +13, visão no escuro
 Defesa 21, Fort +5, Ref +12, Von +17, evasão
 Pontos de Vida 132
 Deslocamento 9m (6q)
-Pontos de Mana 25 Aura de Marah O aspecto de Marah emana uma aura de calmaria de 9m de raio. Criaturas nessa área sofrem –5 em testes de ataque e em rolagens de dano.
+Pontos de Mana 25
+Aura de Marah O aspecto de Marah emana uma aura de calmaria de 9m de raio. Criaturas nessa área sofrem –5 em testes de ataque e em rolagens de dano.
 Eclético (Reação, 1 PM) Quando vai fazer um teste de perícia, o aspecto recebe os benefícios de ser treinado nessa perícia para esse teste.
 Presença Divina No início de seu turno, cada personagem em alcance curto do aspecto deve fazer um teste de Reflexos (CD 20). Se passar, desvia o olhar. Se falhar, fica fascinado. Se já estiver fascinado, fica enfeitiçado. Um personagem pode fechar os olhos como uma reação para ficar imune a esta habilidade, mas sofrerá os efeitos de estar cego por uma rodada.
 Magias Como uma barda de 5º nível (CD 22). O custo de Luz é reduzido em –1 PM (já contabilizado).
@@ -528,7 +529,7 @@ Magias Como uma barda de 5º nível (CD 22). O custo de Luz é reduzido em –1 
 • Luz (Padrão, 5 PM) Uma criatura adjacente é envolta por um halo de luz e recebe +10 em testes de Diplomacia e redução de trevas 10 até o fim da cena.
 • Tranquilidade (Padrão, 4 PM) Até três criaturas em alcance curto têm sua atitude mudada para indiferente e não podem atacar ou realizar qualquer ação hostil (Von reduz para penalidade de –2 em testes de ataque) até o fim da cena. Ações hostis contra um alvo dissipam a magia.
 For 0, Des 2, Con 1, Int 2, Sab 3, Car 5
-Perícias Acrobacia +12, Atuação+16, Conhecimento+6, Diplomacia +13, Enganação +11, Intuição +9, Misticismo +6.
+Perícias Acrobacia +12, Atuação +16, Conhecimento +6, Diplomacia +13, Enganação +11, Intuição +9, Misticismo +6.
 Equipamento Camisa bufante aprimorada, capa esvoaçante aprimorada, instrumento musical (varia por aspecto) aprimorado, sapatos de camurça aprimorados.
 Tesouro Padrão.
 Parceiro O aspecto de Marah é um parceiro veterano que fornece +2 em Atuação e Diplomacia e na CD de suas habilidades que causem as condições enfeitiçado, fascinado e pasmo sem causar dano. Também permite que você utilize Músicas de bardo sem precisar empunhar um instrumento. Caso você viole as Obrigações & Restrições de Marah, o aspecto deixa de apoiá-lo.`
@@ -757,7 +758,8 @@ Construto (inevitável) Médio
 Iniciativa +10, Percepção +15, visão no escuro
 Defesa 44, Fort +22, Ref +14, Von +28, cura acelerada 10, imunidade a eletricidade e trevas, resistência a magia +5, redução de dano 15
 Pontos de Vida 700
-Deslocamento 12m (8q) Corpo a Corpo Dois punhos trovejantes x2 +34 (2d8+12 impacto, 19/x3, mais 2d8 eletricidade).
+Deslocamento 12m (8q)
+Corpo a Corpo Dois punhos trovejantes x2 +34 (2d8+12 impacto, 19/x3, mais 2d8 eletricidade).
 Aura de Luz No início de cada turno do parcus, todas as criaturas em um raio de 9m dele sofrem 8d6 pontos de dano de luz.
 Aura Antimagia O parcus está permanentemente cercado por uma aura de 9m de raio que gera um efeito semelhante ao da magia Campo Antimagia.
 Corrente de Relâmpagos (Padrão) Criaturas à escolha do parcus em alcance médio sofrem 8d8 pontos de dano de eletricidade e 8d8 pontos de dano de luz (Ref CD 37 reduz à metade). Recarga (movimento).
@@ -947,7 +949,8 @@ Iniciativa +7, Percepção +12, visão no escuro
 Defesa 21, Fort +4, Ref +11, Von +15, imunidade a efeitos mentais, redução de dano 5/adamante
 Pontos de Vida 98
 Deslocamento 9m (6q), sem redução por terreno difícil natural
-Pontos de Mana 24 Caminhar em Árvores (Completa) A dríade entra em uma árvore adjacente que seja maior do que ela, e pode permanecer dentro da árvore livremente, percebendo os arredores de forma normal (mas sem poder executar outras ações). Também pode sair na mesma árvore ou em qualquer outra árvore em um raio de 1km como uma ação livre. Se estiver dentro de uma árvore que seja destruída, a dríade reaparece e perde 10d6 pontos de vida.
+Pontos de Mana 24
+Caminhar em Árvores (Completa) A dríade entra em uma árvore adjacente que seja maior do que ela, e pode permanecer dentro da árvore livremente, percebendo os arredores de forma normal (mas sem poder executar outras ações). Também pode sair na mesma árvore ou em qualquer outra árvore em um raio de 1km como uma ação livre. Se estiver dentro de uma árvore que seja destruída, a dríade reaparece e perde 10d6 pontos de vida.
 Simbiose A verdadeira forma de uma dríade é uma enorme árvore. Quando sua forma humanoide é destruída, outra surge em poucos dias nessa árvore. A forma humanoide de uma dríade não pode se afastar mais de 1km da floresta onde repousa sua árvore, ou perde 8d6 pontos de vida por hora. Essa perda de vida só pode ser curada após a dríade retornar para sua árvore. A única forma de matar uma dríade é destruir sua árvore.
 Magias Como uma conjuradora de 4º nível (CD 20).
 • Comando (Padrão, 4 PM) No início do seu próximo turno, duas criaturas em alcance curto ficam pasmas por 1 rodada (Von evita; cada criatura só pode ficar pasma por esta magia uma vez por cena).
@@ -1055,7 +1058,8 @@ Iniciativa +7, Percepção +7, visão no escuro
 Defesa 19, Fort +7, Ref +13, Von +9, imunidade a encantamento e frio
 Pontos de Vida 74
 Deslocamento 9m (6q), natação 18m (12q)
-Pontos de Mana 18 Abraço das Águas (Movimento) A náiade faz um teste de Agarrar (bônus +12) oposto contra uma criatura adjacente. Uma criatura agarrada pela náiade deve fazer um teste de Fortitude por rodada (CD 19) para não se afogar. A cada falha, sofre 1 ponto de dano temporário de Constituição até morrer ou até respirar novamente. Uma criatura agarrada não percebe o que está acontecendo e se sente confortável no abraço da náiade. Para fazer qualquer ação em seu turno, deve ser bem-sucedida em um teste de Vontade (CD 19).
+Pontos de Mana 18
+Abraço das Águas (Movimento) A náiade faz um teste de Agarrar (bônus +12) oposto contra uma criatura adjacente. Uma criatura agarrada pela náiade deve fazer um teste de Fortitude por rodada (CD 19) para não se afogar. A cada falha, sofre 1 ponto de dano temporário de Constituição até morrer ou até respirar novamente. Uma criatura agarrada não percebe o que está acontecendo e se sente confortável no abraço da náiade. Para fazer qualquer ação em seu turno, deve ser bem-sucedida em um teste de Vontade (CD 19).
 Linguagem Natural A náiade pode falar com animais livremente.
 Magias Como uma conjuradora arcana de 3º nível (CD 19).
 • Criar Ilusão (Padrão, 1 PM) A náiade cria uma ilusão com imagens em alcance médio, que ocupa até 4 cubos de 1,5m. Criaturas e objetos atravessam a ilusão sem sofrer dano (Von desacredita e permite atravessar as ilusões).
@@ -1748,7 +1752,8 @@ Humanoide (gigante) Colossal
 Iniciativa +7, Percepção +16, visão na penumbra
 Defesa 70, Fort +38, Ref +25, Von +33, imunidade a atordoamento, encantamento, dano mental (exceto cabeça), metamorfose e efeitos de movimento
 Pontos de Vida Especial (veja Grande Demais)
-Deslocamento 45m (30q), sem redução por terreno difícil Ataques Colossais (Padrão) O gigante máximo usa duas habilidades diferentes entre as seguintes.
+Deslocamento 45m (30q), sem redução por terreno difícil
+Ataques Colossais (Padrão) O gigante máximo usa duas habilidades diferentes entre as seguintes.
 • Agarrar (braço) O gigante agarra uma criatura em seu alcance (teste +75). Uma criatura agarrada pode se soltar com uma ação padrão e um teste de manobra ou Acrobacia oposto ao gigante, ou causando 100 pontos de dano contra o braço.
 • Apertar (braço) O gigante causa 1d100+50 pontos de dano de impacto a uma criatura que esteja agarrando.
 • Arremessar (braço) O gigante arremessa uma criatura que esteja agarrando em um ponto em alcance longo. O alvo sofre 30d6 pontos de dano de impacto e fica caído (Acrobacia ou Ref CD 55 reduz à metade).
