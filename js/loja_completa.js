@@ -1097,11 +1097,14 @@ const LojaCompleta = (function () {
     const alvo = norm(nome);
     for (const it of ITENS_BASE) {
       if (norm(it.name) !== alvo) continue;
+      // `categoria` é a seção da tabela do livro ("Corpo a Corpo — Leves",
+      // "Armaduras Pesadas", "Escudos", "Ferramentas"…). É por ela que o
+      // Gerador de Recompensas sabe que melhoria cabe em que item.
       if (it.kind === 'weapon')
-        return { kind: 'weapon', dano: it.damage, critico: it.crit, tipo: it.tipo, alcance: it.alcance, peso: it.peso, preco: it.price };
+        return { kind: 'weapon', categoria: it.category, dano: it.damage, critico: it.crit, tipo: it.tipo, alcance: it.alcance, peso: it.peso, preco: it.price };
       if (it.kind === 'armor')
-        return { kind: 'armor', bonus: it.armor_bonus, penalidade: it.armor_penalty, peso: it.armor_weight, preco: it.price };
-      return { kind: 'misc', peso: it.weight, preco: it.price };
+        return { kind: 'armor', categoria: it.category, bonus: it.armor_bonus, penalidade: it.armor_penalty, peso: it.armor_weight, preco: it.price };
+      return { kind: 'misc', categoria: it.category, peso: it.weight, preco: it.price };
     }
     return null;
   }
