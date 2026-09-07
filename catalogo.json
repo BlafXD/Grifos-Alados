@@ -39,7 +39,7 @@
    "category": "Corpo a Corpo — Leves",
    "price": 5,
    "damage": "1d6",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Corpo a corpo",
    "tipo": "Impacto",
    "peso": 1
@@ -50,7 +50,7 @@
    "category": "Corpo a Corpo — Leves",
    "price": 2,
    "damage": "1d6",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Corpo a corpo",
    "tipo": "Impacto",
    "peso": 1
@@ -193,7 +193,7 @@
    "category": "Ataque à Distância — Uma Mão",
    "price": 5,
    "damage": "1d3",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Curto",
    "tipo": "Perfuração",
    "peso": 1
@@ -292,7 +292,7 @@
    "category": "Corpo a Corpo — Leves",
    "price": 2,
    "damage": "1d4",
-   "crit": "X4",
+   "crit": "x4",
    "alcance": "Curto",
    "tipo": "Impacto",
    "peso": 1
@@ -402,7 +402,7 @@
    "category": "Corpo a Corpo — Uma Mão",
    "price": 8,
    "damage": "2d4",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Corpo a corpo",
    "tipo": "Corte",
    "peso": 1
@@ -413,7 +413,7 @@
    "category": "Corpo a Corpo — Uma Mão",
    "price": 300,
    "damage": "1d8",
-   "crit": "X2",
+   "crit": "20",
    "alcance": "Corpo a corpo",
    "tipo": "Corte",
    "peso": 1
@@ -424,7 +424,7 @@
    "category": "Corpo a Corpo — Uma Mão",
    "price": 12,
    "damage": "1d6",
-   "crit": "19/X3",
+   "crit": "19/x3",
    "alcance": "Corpo a corpo",
    "tipo": "Perfuração",
    "peso": 1
@@ -435,7 +435,7 @@
    "category": "Corpo a Corpo — Uma Mão",
    "price": 20,
    "damage": "2d4",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Corpo a corpo",
    "tipo": "Impacto e perfuração",
    "peso": 1
@@ -556,7 +556,7 @@
    "category": "Corpo a Corpo — Duas Mãos",
    "price": 15,
    "damage": "1d8",
-   "crit": "X3",
+   "crit": "x3",
    "alcance": "Corpo a corpo",
    "tipo": "Impacto/perfuração",
    "peso": 2
@@ -578,7 +578,7 @@
    "category": "Corpo a Corpo — Duas Mãos",
    "price": 75,
    "damage": "2d6",
-   "crit": "18/X4",
+   "crit": "18/x4",
    "alcance": "Corpo a corpo",
    "tipo": "Corte",
    "peso": 2
@@ -589,7 +589,7 @@
    "category": "Corpo a Corpo — Duas Mãos",
    "price": 3,
    "damage": "1d8",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Corpo a corpo",
    "tipo": "Perfuração",
    "peso": 2
@@ -600,7 +600,7 @@
    "category": "Corpo a Corpo — Duas Mãos",
    "price": 8,
    "damage": "1d10",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Corpo a corpo",
    "tipo": "Impacto",
    "peso": 2
@@ -611,7 +611,7 @@
    "category": "Corpo a Corpo — Duas Mãos",
    "price": 12,
    "damage": "2d4",
-   "crit": "X4",
+   "crit": "x4",
    "alcance": "Corpo a corpo",
    "tipo": "Impacto/perfuração",
    "peso": 2
@@ -622,7 +622,7 @@
    "category": "Corpo a Corpo — Duas Mãos",
    "price": 40,
    "damage": "1d8",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Corpo a corpo",
    "tipo": "Impacto",
    "peso": 2
@@ -644,9 +644,9 @@
    "category": "Ataque à Distância — Uma Mão",
    "price": 60,
    "damage": "2d4",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Médio",
-   "tipo": "Perfuração",
+   "tipo": "Impacto",
    "peso": 2
   },
   {
@@ -688,7 +688,7 @@
    "category": "Ataque à Distância — Duas Mãos",
    "price": 45,
    "damage": "1d6",
-   "crit": "X3",
+   "crit": "x3",
    "alcance": "Médio",
    "tipo": "Perfuração",
    "peso": 2
@@ -765,7 +765,7 @@
    "category": "Corpo a Corpo — Uma Mão",
    "price": 30,
    "damage": "1d8",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Corpo a corpo",
    "tipo": "Corte",
    "peso": 1
@@ -809,7 +809,7 @@
    "category": "Corpo a Corpo — Uma Mão",
    "price": 15,
    "damage": "1d8",
-   "crit": "X3",
+   "crit": "x3",
    "alcance": "Curto",
    "tipo": "Perfuração",
    "peso": 1
@@ -820,7 +820,7 @@
    "category": "Corpo a Corpo — Uma Mão",
    "price": 40,
    "damage": "1d8/1d10",
-   "crit": "X3",
+   "crit": "x3",
    "alcance": "Corpo a corpo",
    "tipo": "Corte",
    "peso": 1
@@ -908,7 +908,7 @@
    "category": "Corpo a Corpo — Duas Mãos",
    "price": 50,
    "damage": "4d4",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Corpo a corpo",
    "tipo": "Impacto",
    "peso": 2
@@ -919,7 +919,7 @@
    "category": "Corpo a Corpo — Duas Mãos",
    "price": 3000,
    "damage": "2d6",
-   "crit": "19/X4",
+   "crit": "19/x4",
    "alcance": "Corpo a corpo",
    "tipo": "Corte",
    "peso": 2
@@ -941,7 +941,7 @@
    "category": "Ataque à Distância — Uma Mão",
    "price": 30,
    "damage": "1d10",
-   "crit": "X3",
+   "crit": "x3",
    "alcance": "Curto",
    "tipo": "Perfuração",
    "peso": 1
@@ -952,7 +952,7 @@
    "category": "Ataque à Distância — Uma Mão",
    "price": 12,
    "damage": "1d4",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Curto",
    "tipo": "Impacto",
    "peso": 1
@@ -963,7 +963,7 @@
    "category": "Ataque à Distância — Uma Mão",
    "price": 15,
    "damage": "1d6",
-   "crit": "X3",
+   "crit": "x3",
    "alcance": "Curto",
    "tipo": "Corte",
    "peso": 1
@@ -974,7 +974,7 @@
    "category": "Ataque à Distância — Leve",
    "price": 1,
    "damage": "1d4",
-   "crit": "X2",
+   "crit": "x2",
    "alcance": "Curto",
    "tipo": "Perfuração",
    "peso": 0.5
@@ -985,7 +985,7 @@
    "category": "Ataque à Distância — Duas Mãos",
    "price": 200,
    "damage": "1d12",
-   "crit": "X3",
+   "crit": "x3",
    "alcance": "Médio",
    "tipo": "Perfuração",
    "peso": 2
@@ -1084,7 +1084,7 @@
    "category": "Ataque à Distância — Leve",
    "price": 250,
    "damage": "2d4",
-   "crit": "19/X3",
+   "crit": "19/x3",
    "alcance": "Curto",
    "tipo": "Perfuração",
    "peso": 1
@@ -1095,7 +1095,7 @@
    "category": "Ataque à Distância — Leve",
    "price": 75,
    "damage": "2d6",
-   "crit": "19/X3",
+   "crit": "19/x3",
    "alcance": "Curto",
    "tipo": "Perfuração",
    "peso": 1
@@ -1128,7 +1128,7 @@
    "category": "Ataque à Distância — Duas Mãos",
    "price": 800,
    "damage": "2d10",
-   "crit": "19/X3",
+   "crit": "19/x3",
    "alcance": "Médio",
    "tipo": "Perfuração",
    "peso": 2
@@ -1139,7 +1139,7 @@
    "category": "Ataque à Distância — Duas Mãos",
    "price": 450,
    "damage": "4d6",
-   "crit": "19/X3",
+   "crit": "19/x3",
    "alcance": "Especial",
    "tipo": "Perfuração",
    "peso": 2
@@ -1150,7 +1150,7 @@
    "category": "Ataque à Distância — Duas Mãos",
    "price": 3000,
    "damage": "4d10",
-   "crit": "19/X3",
+   "crit": "19/x3",
    "alcance": "Curto",
    "tipo": "Impacto",
    "peso": 2
@@ -1224,7 +1224,7 @@
   },
   {
    "kind": "armor",
-   "name": "Armadura Sensual",
+   "name": "Armadura sensual",
    "category": "Armaduras Leves",
    "price": 55,
    "armor_bonus": 1,
@@ -1233,7 +1233,7 @@
   },
   {
    "kind": "armor",
-   "name": "Armadura de Folhas",
+   "name": "Armadura de folhas",
    "category": "Armaduras Leves",
    "price": 75,
    "armor_bonus": 2,
@@ -1251,7 +1251,7 @@
   },
   {
    "kind": "armor",
-   "name": "Armadura de Ossos",
+   "name": "Armadura de ossos",
    "category": "Armaduras Leves",
    "price": 120,
    "armor_bonus": 3,
@@ -1262,14 +1262,14 @@
    "kind": "armor",
    "name": "Veste de teia de aranha",
    "category": "Armaduras Leves",
-   "price": 3,
+   "price": 3000,
    "armor_bonus": 4,
    "armor_penalty": "0",
    "armor_weight": 2
   },
   {
    "kind": "armor",
-   "name": "Cota de Moedas",
+   "name": "Cota de moedas",
    "category": "Armaduras Leves",
    "price": 350,
    "armor_bonus": 4,
@@ -1278,7 +1278,7 @@
   },
   {
    "kind": "armor",
-   "name": "Colete fora da Lei",
+   "name": "Colete fora da lei",
    "category": "Armaduras Leves",
    "price": 750,
    "armor_bonus": 5,
@@ -1556,8 +1556,8 @@
    "kind": "misc",
    "name": "Tocha",
    "category": "Equipamento de Aventura",
-   "price": 0.11,
-   "weight": null
+   "price": 0.1,
+   "weight": 1
   },
   {
    "kind": "misc",
@@ -1668,8 +1668,8 @@
    "kind": "misc",
    "name": "Cajado de pastor",
    "category": "Equipamento de Aventura",
-   "price": 100,
-   "weight": 1
+   "price": 12,
+   "weight": 2
   },
   {
    "kind": "misc",
@@ -1689,7 +1689,7 @@
    "kind": "misc",
    "name": "Colar do suplicante",
    "category": "Equipamento de Aventura",
-   "price": 30,
+   "price": 100,
    "weight": 1
   },
   {
@@ -1822,7 +1822,7 @@
    "kind": "misc",
    "name": "Panfleto de aforismos",
    "category": "Equipamento de Aventura",
-   "price": 30,
+   "price": 60,
    "weight": 1
   },
   {
@@ -2030,7 +2030,7 @@
   },
   {
    "kind": "misc",
-   "name": "Carcaça do predador...",
+   "name": "Carcaça do predador primal",
    "category": "Vestuário",
    "price": 150,
    "weight": 1
@@ -2072,7 +2072,7 @@
   },
   {
    "kind": "misc",
-   "name": "Garras do predador...",
+   "name": "Garras do predador primal",
    "category": "Vestuário",
    "price": 300,
    "weight": 1
@@ -2116,7 +2116,7 @@
    "kind": "misc",
    "name": "Manto de alto sacerdote",
    "category": "Vestuário",
-   "price": 300,
+   "price": 100,
    "weight": 1
   },
   {
@@ -2184,7 +2184,7 @@
   },
   {
    "kind": "misc",
-   "name": "Penas do predador",
+   "name": "Penas do predador primal",
    "category": "Vestuário",
    "price": 100,
    "weight": 1
@@ -2257,7 +2257,7 @@
    "name": "Tonsura",
    "category": "Vestuário",
    "price": 3,
-   "weight": 1
+   "weight": null
   },
   {
    "kind": "misc",
@@ -2550,7 +2550,7 @@
    "kind": "misc",
    "name": "Frasco purificador",
    "category": "Esotéricos",
-   "price": 300,
+   "price": 100,
    "weight": 1
   },
   {
@@ -2578,7 +2578,7 @@
    "kind": "misc",
    "name": "Rede de almas",
    "category": "Esotéricos",
-   "price": 1000,
+   "price": 600,
    "weight": 1
   },
   {
@@ -3229,7 +3229,7 @@
    "kind": "misc",
    "name": "Bombas de saber",
    "category": "Alimentação",
-   "price": 3,
+   "price": 4,
    "weight": null
   },
   {
@@ -3292,7 +3292,7 @@
    "kind": "misc",
    "name": "Justos de Khalmyr",
    "category": "Alimentação",
-   "price": 6,
+   "price": 2,
    "weight": null
   },
   {
@@ -3320,7 +3320,7 @@
    "kind": "misc",
    "name": "Ouro de dragão",
    "category": "Alimentação",
-   "price": 3,
+   "price": 6,
    "weight": null
   },
   {
@@ -3332,7 +3332,7 @@
   },
   {
    "kind": "misc",
-   "name": "Pão de Thorw",
+   "name": "Pão de Thwor",
    "category": "Alimentação",
    "price": 1,
    "weight": null
@@ -3362,7 +3362,7 @@
    "kind": "misc",
    "name": "Suflê rubro",
    "category": "Alimentação",
-   "price": 4,
+   "price": 3,
    "weight": null
   },
   {

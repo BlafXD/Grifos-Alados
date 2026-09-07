@@ -2,6 +2,10 @@
 
 **Data:** 02/09/2026 · **Fonte:** os PDFs em `C:/Users/caiqu/Desktop/RPG/Tormenta 20/Livros`
 
+**Estado do conserto:** etapa 1 **feita** em 06/09/2026 (os 16 valores, os 4
+nomes, a caixa e o `X`→`x`); etapas 2 (os 58 encantos) e 3 (os 8 itens mágicos
+do *Ameaças*) **pendentes**. O plano de cada uma está em §6.
+
 Mesma ideia da conferência das fichas: em vez de comparar o projeto com um TXT
 colado, cada tabela de equipamento foi **lida do PDF** e cruzada com os dados do
 site. O que vale como verdade é a tabela impressa no livro.
@@ -244,18 +248,39 @@ Cota de **M**oedas · Colete fora da **L**ei
 
 ---
 
-## 6. Pendente — o que fazer (decidido em 02/09/2026)
+## 6. O conserto — o que fazer (decidido em 02/09/2026)
 
-Nada foi corrigido nesta varredura. O Caique vai aplicar depois, **nesta ordem**
-(risco crescente, esforço crescente):
+O plano é **nesta ordem** (risco crescente, esforço crescente):
 
-**Etapa 1 — os 16 valores e os 4 nomes.** Tudo no `ITENS_BASE`, em
-`js/loja_completa.js:22` (o array inteiro é uma linha só). Risco baixo, é troca
-de literal. As tabelas de §3 e §4.1 têm valor de origem e valor de destino de
-cada um. Comece pela **Veste de teia de aranha** (T$ 3 → T$ 3.000), que é a
-única com efeito de jogo real. Na mesma passada dá para resolver a caixa das 5
-armaduras (§4.2) e o `X`/`x` do crítico (§5, item 1) — mas **o Tetsubo fica com
-`X2`**, que é o que o livro imprime.
+**Etapa 1 — os 16 valores e os 4 nomes. ✅ FEITA EM 06/09/2026.** Tudo no
+`ITENS_BASE`, em `js/loja_completa.js:22` (o array inteiro é uma linha só).
+Foram **56 trocas em 53 itens**: os 12 preços e os 3 espaços de §3, o crítico do
+Espadim e o tipo do Tai-tai, os 4 nomes de §4.1, a caixa das 5 armaduras (§4.2)
+e 30 críticos `X`→`x` (§5, item 1) — **o Tetsubo ficou com `X2`**, que é o que o
+livro imprime. Antes de trocar, cada valor foi **reconferido no PDF** (veja o
+quadro abaixo). Junto saíram mais duas coisas que a etapa exigia:
+
+- **As 4 chaves de descrição** em `js/itens-descricoes-data.js`
+  (`carcaca do predador` → `carcaca do predador primal`, idem garras e penas, e
+  `pao de thorw` → `pao de thwor`). A chave é o nome normalizado: sem isso, o
+  item renomeado perderia a nuvem "📖 Descrição". Conferido com o `get()` real —
+  **458 de 458 itens continuam com descrição, zero buraco novo**.
+- **O `catalogo.json`**, que é um despejo dos dois literais (ITENS_BASE e
+  ENCANTAMENTOS) e **não é lido por nada no site**. Foi regravado para não ficar
+  contradizendo os livros. Vale decidir se ele continua existindo.
+
+*Reconferência no PDF, item por item (06/09/2026):* os 10 valores do **Deuses de
+Arton** saem limpos da Tab. 1-3 no `pdftotext -layout` (Cajado de pastor T$ 12/2
+espaços, Colar T$ 100, Panfleto T$ 60, Manto T$ 100, Frasco T$ 100, Rede T$ 600,
+Bombas T$ 4, Justos T$ 2, Ouro T$ 6, Suflê T$ 3, Tonsura "—" espaços) e o nome
+do pão é **Pão de Thwor**. A **Veste de teia de aranha T$ 3.000** e a **Tocha
+T$ 0,1 · 1 espaço** também. Já o **Heróis** só se lê pela geometria: no
+`-layout` a Tabela 3-1 sai com nome e valores de linhas diferentes emparelhados,
+o que faz o Espadim parecer "T$ 10 · 1d4 · 19". Agrupando por y exato, a linha
+verdadeira é **`Espadim T$ 300 · 1d8 · 20 · — · Corte · 1`** e
+**`Tai-tai T$ 60 · 2d4 · x2 · Médio · Impacto · 2`**. E o **X do Tetsubo é mesmo
+só dele**: no run cru da tabela do Ameaças (`"TetsuboT$ 201d10X2—Impacto2"`) as
+vizinhas saem `x2`, `x3`, `19/x3` em minúscula.
 
 **Etapa 2 — os 58 encantos.** Copiar de `MAGICO_ARMA`, `MAGICO_ARMADURA` e
 `MAGICO_ESOTER` (`js/recompensas.js`) para o `ENCANTAMENTOS` de
