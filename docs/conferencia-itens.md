@@ -2,16 +2,19 @@
 
 **Data:** 02/09/2026 · **Fonte:** os PDFs em `C:/Users/caiqu/Desktop/RPG/Tormenta 20/Livros`
 
-**Estado do conserto: acabou — as cinco etapas estão feitas.** Etapa 1 em
+**Estado do conserto: acabou — as seis etapas estão feitas.** Etapa 1 em
 06/09/2026 (os 16 valores, os 4 nomes, a caixa e o `X`→`x`); etapas 2 e 3 em
 07/09/2026 (os 58 encantos com a separação armadura × escudo, e os 8 itens
 mágicos do *Ameaças*), mais o preço dos 84 itens específicos, que a etapa 3
 revelou faltando; a **etapa 4**, também em 07/09/2026, que fechou as duas pontas
 que sempre estiveram fora do plano — a melhoria **"Aprimorado"** (§2.4) e os
-**Serviços** (§2.1), agora uma sub-aba da Loja; e a **etapa 5**, que ela mesma
-revelou: o gerador não conhecia as **restrições de tipo** das melhorias e podia
-pôr mira telescópica em espada. O que cada uma fez está em §6. **Nada continua
-em aberto** — o que sobra é uma decisão de gosto, no fim de §6.
+**Serviços** (§2.1), agora uma sub-aba da Loja; a **etapa 5**, que ela mesma
+revelou — o gerador não conhecia as **restrições de tipo** das melhorias e podia
+pôr mira telescópica em espada; e a **etapa 6**, a conferência completa das
+melhorias contra os quatro livros, que achou uma melhoria inteira faltando
+(*Multifuncional*, do *Ameaças*), pôs cada uma exatamente nas categorias que os
+livros permitem e desfez duas atribuições erradas. O que cada uma fez está em
+§6. **Nada continua em aberto.**
 
 Mesma ideia da conferência das fichas: em vez de comparar o projeto com um TXT
 colado, cada tabela de equipamento foi **lida do PDF** e cruzada com os dados do
@@ -29,7 +32,7 @@ item** — o Atlas só cita a Tabela 8-1 do básico.
 |---|---|
 | **Tormenta 20** (Ed. Jogo do Ano) | 3-3 Armas · 3-4 Munições · 3-5 Armaduras & Escudos · 3-6 Itens Gerais · 3-8 Melhorias · 8-8 a 8-15 (encantos, itens específicos, poções, acessórios) |
 | **Heróis de Arton** v1.1 | 3-1 Armas · 3-2 Munições · 3-3 Armaduras & Escudos · 3-4 Itens Gerais · 3-5 Novas Melhorias · 3-9 a 3-12 · as quatro seções de **Encantos** (armas, armaduras & escudos, esotéricos, acessórios) |
-| **Ameaças de Arton** | 3-1 Novas Armas · 3-2 Novas Armaduras e Escudos · 3-3 Novos Itens Gerais · Novos Itens Mágicos e Artefatos |
+| **Ameaças de Arton** | 3-1 Novas Armas · 3-2 Novas Armaduras e Escudos · 3-3 Novos Itens Gerais · **Novas Melhorias (p. 399)** · Novos Itens Mágicos e Artefatos |
 | **Deuses de Arton** v1.1 | 1-3 Itens Gerais · 1-4 Melhorias · Itens Litúrgicos |
 
 ### Contagem
@@ -39,16 +42,20 @@ item** — o Atlas só cita a Tabela 8-1 do básico.
 | Equipamento (nomes distintos) | 508 | 455 (458 linhas) | 0 (as 53 diferenças são Animais/Veículos/Serviços — §2.1) |
 | Encantos (vagas por categoria) | 168 | 96 → **168** ✔ | **72 vagas / 58 nomes** — feito em 07/09 |
 | Itens mágicos nomeados | 265 | 257 → **263** ✔ | **8** — feito em 07/09 (6 nas tabelas + 2 artefatos só com descrição) |
-| Melhorias (nomes distintos) | 47 | 46 → **47** ✔ | **1** ("Aprimorado") — feito em 07/09 |
+| Melhorias (nomes distintos) | 48 | 46 → **48** ✔ | **2** ("Aprimorado" e "Multifuncional") — feito em 07/09 |
 
 *A conta de encantos é por vaga: armadura e escudo têm listas próprias — hoje
 com conteúdo diferente (§5, item 4), o que tira 6 vagas das 174 do cálculo
 antigo. São 58 nomes distintos, 20 deles valendo para as listas de proteção.
-Em melhorias o projeto guarda 49 verbetes porque separa as formas feminina e
-masculina (macabra/macabro) e traz uma extra do Suplemento do Mestre
-("Penetrante"). As 46 do sorteio continuam sendo 46 — "Aprimorado" não entrou
-em tabela d% nenhuma, porque não existe sorteio de ferramenta superior; ele
-entrou onde o livro o põe, na Tabela 3-8 da aba "🔨 Criação de Itens" (§2.4).*
+Em melhorias o projeto guarda mais verbetes do que nomes porque separa as formas
+feminina e masculina (macabra/macabro), e guarda um registro a menos porque
+junta num só a *Espinhosa (armadura)* e o *Espinhoso (escudo)* do T20 — daí 47
+nomes cobrindo as 48 dos livros. Das 48, **quatro não entram em tabela d%
+nenhuma**: Aprimorado (T20), Brasonado e Usado (Heróis) e Multifuncional
+(Ameaças) são de **ferramenta e vestuário**, e não existe sorteio de ferramenta
+superior. As quatro moram na aba "🔨 Criação de Itens" e no "📖 Descrição". O
+sorteio ficou com **54 vagas em 43 nomes**: 23 em arma, 20 em armadura e escudo,
+11 em esotérico (§6, etapa 6).*
 
 **Descrições: 100%.** Usando o `ItensDescricoes.get()` real (com `ALIASES` e o
 recurso às magias), **458/458** itens do catálogo, **168/168** encantos (eram
@@ -163,12 +170,13 @@ para a nuvem "📖 Descrição" funcionar nas fichas que os carregam.
 
 Os 257 demais itens mágicos nomeados (T20, Heróis e Deuses) já estavam lá.
 
-### 2.4 Melhorias: faltava uma — ✅ resolvido em 07/09/2026
+### 2.4 Melhorias: faltavam duas — ✅ resolvido em 07/09/2026
 
-As melhorias de `recompensas.js` cobrem T20, Heróis, Deuses e até o Suplemento
-do Mestre. A única dos livros que não estava em tabela nenhuma do projeto era
-**"Aprimorado"** (T20, Tabela 3-8, "Melhorias para ferramentas e vestuário") —
-coerente com o gerador só rolar melhoria de arma/armadura/esotérico.
+O projeto conhecia 47 das **48** melhorias dos quatro livros. Faltavam duas, as
+duas de **ferramenta e vestuário**: **"Aprimorado"** (T20, Tab. 3-8) e
+**"Multifuncional"** (*Ameaças de Arton*, p. 399 — uma seção que a varredura de
+02/09 não tinha lido; veja a etapa 6 em §6). Nenhuma das duas entra em tabela de
+sorteio, porque o gerador só rola melhoria de arma, armadura e esotérico.
 
 **Correção de um erro deste relatório:** a versão de 02/09 dizia que a nuvem
 "📖 Descrição" também não a encontrava. **Encontra** — `aprimorado` está no
@@ -181,12 +189,13 @@ categorias do livro — virou card da sub-aba **🔨 Criação de Itens**
 (`js/criacao-itens-data.js`), logo abaixo da Tabela 3-7, que já morava lá. É
 onde o próprio livro manda olhar ("as melhorias para cada categoria de item
 estão listadas na Tabela 3-8") e onde a calculadora já aceitava *ferramenta* e
-*vestuário* como categoria de fabricação. A nota do card lista o que os outros
-três livros acrescentam em cada categoria.
+*vestuário* como categoria de fabricação. Na etapa 6 ele ganhou um irmão: um
+segundo card com as **19 melhorias dos outros três livros**, nas categorias de
+cada um.
 
-**"Aprimorado" não entrou em tabela d%,** e não deve entrar: o livro só tem
-tabela de tesouro para item superior de arma, armadura e esotérico. Rolar
-ferramenta superior seria regra inventada.
+**Nem "Aprimorado" nem "Multifuncional" entram em tabela d%,** e não devem
+entrar: o livro só tem tabela de tesouro para item superior de arma, armadura e
+esotérico. Rolar ferramenta superior seria regra inventada.
 
 #### Duas melhorias na tabela errada — ✅ resolvido em 07/09/2026 (etapa 5)
 
@@ -221,16 +230,16 @@ Duas coisas menores que a mesma leitura mostrou:
   armaduras e vestuários". O projeto o tem só em armadura — que as duas versões
   aceitam —, e agora com a restrição `so:"armadura"`, que é a leitura mais
   estrita das duas.
-- **Os oito `pag:"??"` do `recompensas.js` tinham resposta**, fora um — todos
-  corrigidos na etapa 5. As do *Heróis* estão na Tab. 3-5 (p. 240), com o
-  verbete em **p. 239** (Fósforo, Brasonado) ou **p. 240** (Usado, Prudente);
-  Devotado está na Tab. 1-4 do *Deuses*, **p. 54**. Só **Penetrante** continua
-  sem página: ele só existe no *Suplemento do Mestre*, que não é paginado. O
-  `livro:` do Fósforo também mudou — dizia "Suplemento do Mestre" e agora diz
-  *Heróis de Arton*, que é livro conferido (ele está nos dois).
-- **O Suplemento tem uma melhoria que o projeto não tem:** *Multifuncional*
-  (ferramenta ou vestuário). Ficou de fora de propósito — o projeto só importa
-  dos oito livros; do Suplemento entrou apenas o Penetrante, que já estava lá.
+- **Os oito `pag:"??"` do `recompensas.js` tinham resposta** — todos corrigidos.
+  As do *Heróis* estão na Tab. 3-5 (p. 240), com o verbete em **p. 239**
+  (Fósforo, Brasonado) ou **p. 240** (Usado, Prudente); Devotado está na Tab. 1-4
+  do *Deuses*, **p. 54**; e **Penetrante** é do ***Ameaças de Arton*, p. 399**
+  (etapa 6) — não do Suplemento, que só o reimprime. O `livro:` do Fósforo também
+  mudou: dizia "Suplemento do Mestre" e agora diz *Heróis de Arton*.
+- **O Suplemento não é fonte, é compilado.** Ele reimprime a Tab. 3-5 inteira do
+  *Heróis* e as melhorias do *Ameaças*, e chega a introduzir erro de cópia (troca
+  "ataques com escudo" por "ataques com socos" no Balístico). Serve para
+  conferir; a categoria oficial de cada melhoria é a do livro dela.
 
 ---
 
@@ -574,11 +583,54 @@ restrito do gerador ainda aceita 12 melhorias.
 A restrição aparece na tela, junto da melhoria rolada ("⚠ Só armas de
 disparo"), no texto do "⧉ Copiar" e no Catálogo de Tesouros.
 
-**Ficou de fora, para o Caique decidir:** três melhorias que os livros marcam
-como "para qualquer das categorias acima" moram numa tabela só — **Canônico**
-(hoje só em esotérico), **Devotado** e **Deslumbrante** (hoje só em armadura).
-Pelos livros elas também poderiam sair em arma. Botá-las nas outras tabelas é
-acrescentar linha, o que mexe de novo nas faixas do d%.
+*Três melhorias marcadas como "para qualquer das categorias acima" ficaram, na
+etapa 5, cada uma numa tabela só. A etapa 6 resolveu as três.*
+
+**Etapa 6 — a conferência completa das melhorias. ✅ FEITA EM 07/09/2026.** As
+quatro tabelas de melhoria dos livros foram lidas do PDF **pela geometria** (o
+`-layout` embaralha nas duas primeiras) e cruzadas, uma a uma, com as 47 do
+projeto. Quatro consertos:
+
+**1. Faltava uma melhoria inteira: MULTIFUNCIONAL.** Ela está no *Ameaças de
+Arton*, **p. 399**, numa seção "Itens Superiores → Novas Melhorias" que a
+conferência de 02/09 não tinha varrido — o §1 dizia que o *Ameaças* só trazia
+armas, armaduras, itens gerais e itens mágicos. A seção tem exatamente duas
+melhorias, e ambas trazem a categoria no próprio nome: *Multifuncional
+(ferramenta ou vestuário)* e *Penetrante (arma)*. A descrição de Multifuncional
+entrou no `js/itens-descricoes-extra-data.js`.
+
+**2. PENETRANTE não é do "Suplemento do Mestre".** É do *Ameaças*, p. 399 — o
+`livro:` e o `pag:"??"` dele foram corrigidos, e agora **nenhuma** linha das
+tabelas de melhoria tem página desconhecida. O Suplemento é um **compilado**: ele
+reimprime o que está nos livros (inclusive a Tab. 3-5 inteira do *Heróis*), e por
+isso não vale como fonte de categoria — a categoria oficial é a do livro.
+
+**3. CANÔNICO estava na tabela errada.** A Tab. 1-4 do *Deuses* (lida pela
+geometria: cabeçalho 2,3 unidades acima do primeiro nome) tem três grupos —
+*armas*; *armaduras, escudos, ferramentas e vestuários*; e *todas as categorias
+acima*. **Esotérico não aparece em lugar nenhum dela.** Canônico e Devotado estão
+no terceiro grupo, então:
+
+| melhoria | onde estava | onde está agora | por quê |
+|---|---|---|---|
+| **Canônico** | só esotérico | **arma + armadura/escudo** | "todas as categorias acima" da Tab. 1-4 — que não inclui esotérico |
+| **Devotado** | armadura | armadura (sem mudança) | mesma linha da tabela, mas exige **Inscrito**, que é de armadura, escudo, ferramenta e vestuário: numa arma o pré-requisito é impossível |
+| **Deslumbrante** | armadura | armadura (sem mudança) | a Tab. 3-5 diz "qualquer categoria", mas o verbete dele manda mais: "só pode ser aplicada em armaduras e vestuários" |
+
+**4. As faixas do d% foram reescaladas de novo** (maior resto), com as tabelas
+reordenadas em ordem alfabética: **arma 23 linhas, armadura 20, esotérico 11** —
+54 vagas em 43 nomes, todas fechando em 100 sem buraco.
+
+E a aba 🔨 Criação de Itens ganhou um **segundo card**, "Melhorias dos outros
+três livros", com as 19 do *Heróis*, do *Deuses* e do *Ameaças* nas categorias
+de cada livro — o efeito curto de cada uma saiu da própria tabela do livro,
+lido pela geometria (foi assim que se viu que o compilado do Suplemento troca
+"ataques com **escudo**" por "ataques com **socos**" no Balístico).
+
+**A prova, de novo:** 20.000 itens superiores + 8.000 pelo caminho "Superior +
+Encantado", nenhuma combinação impossível; as 42 duplas conferidas à mão batem
+com os livros; e nenhuma das quatro melhorias de ferramenta/vestuário (Aprimorado,
+Brasonado, Usado, Multifuncional) aparece em tabela de sorteio.
 
 ---
 
@@ -599,6 +651,14 @@ acrescentar linha, o que mexe de novo nas faixas do d%.
   munição incendiária em maça. E, quando o livro quer armadura **e** escudo, ele
   escreve os dois ("A armadura ou escudo…", "Se for uma armadura… Se for um
   escudo…"); onde escreve só "armadura", o escudo está fora.
+- **Compilado não é fonte.** O "Suplemento do Mestre" reúne num arquivo só o que
+  está nos livros — serve para conferir e foi o que confirmou o Brasonado —, mas
+  erra na cópia (o Balístico virou "ataques com socos") e mistura as categorias
+  de livros diferentes. A categoria e o texto que valem são os do livro.
+- **Uma seção pode escapar da varredura por não ter tabela.** As duas melhorias
+  do *Ameaças* (p. 399) só se acham lendo os títulos do capítulo: não há tabela
+  nenhuma ali, e a busca de 02/09 procurava tabelas. Quando um livro é
+  "suplemento de outro", vale varrer os TÍTULOS de seção, não só as tabelas.
 - **Tabela com cabeçalho de categoria no meio: o cabeçalho fica ACIMA da
   primeira linha do grupo.** Na Tab. 3-5 do *Heróis* o `-layout` cola o
   cabeçalho na linha do primeiro nome ("Farpada  Melhorias para armas") e

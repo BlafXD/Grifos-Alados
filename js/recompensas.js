@@ -758,80 +758,95 @@ const EQUIP_ESOTER = [
 //   "só escudos", "só armaduras pesadas"…). Ver RESTRICAO_MELHORIA, logo
 //   abaixo das tabelas: é ela que impede a mira telescópica na espada.
 //
-// As três tabelas seguem as categorias dos livros — Tormenta20 Tab. 3-8,
-// Heróis de Arton Tab. 3-5 e Deuses de Arton Tab. 1-4. Duas coisas que a
-// conferência de 07/09/2026 acertou aqui:
+// Cada tabela tem EXATAMENTE as melhorias que os quatro livros permitem
+// naquela categoria — Tormenta20 Tab. 3-8 (p. 165), Heróis de Arton Tab.
+// 3-5 (p. 240), Deuses de Arton Tab. 1-4 (p. 54) e Ameaças de Arton
+// (p. 399, "Itens Superiores → Novas Melhorias", sem tabela). As quatro
+// foram lidas do PDF pela GEOMETRIA, porque nas duas primeiras o
+// cabeçalho de categoria fica na mesma linha do primeiro nome e o
+// `pdftotext -layout` embaralha os grupos.
+//
+// O que a conferência de 07/09/2026 acertou aqui:
 //   • BRASONADO e USADO saíram das três tabelas: a Tab. 3-5 do Heróis os
 //     lista em "melhorias para ferramentas e vestuário", e o gerador não
 //     sorteia ferramenta superior (o livro não tem tabela de tesouro
-//     para isso). Eles continuam no site, na Tabela 3-8 da aba "🔨 Criação
-//     de Itens" e no "📖 Descrição". Com a saída dos dois, as faixas do d%
-//     foram REESCALADAS proporcionalmente: cada melhoria manteve a mesma
-//     chance relativa e as tabelas voltaram a fechar em 100 sem buraco.
-//   • Os pag:"??" foram localizados: Fósforo é do Heróis (p. 239, e não do
-//     Suplemento), Prudente p. 240, Devotado é do Deuses (p. 54). Só
-//     Penetrante fica sem página — ele só existe no Suplemento do Mestre,
-//     que não tem numeração.
+//     para isso). O mesmo vale para APRIMORADO (T20) e MULTIFUNCIONAL
+//     (Ameaças), que nunca estiveram aqui. Os quatro vivem na Tabela 3-8
+//     da aba "🔨 Criação de Itens" e no "📖 Descrição".
+//   • CANÔNICO saiu do esotérico e entrou em arma e armadura: a Tab. 1-4
+//     do Deuses o põe em "todas as categorias acima", e as categorias
+//     dela são armas / armaduras, escudos, ferramentas e vestuários —
+//     esotérico não está lá. DEVOTADO, da mesma linha da tabela, ficou só
+//     em armadura: ele exige Inscrito, que é de armadura, escudo,
+//     ferramenta e vestuário — numa arma o pré-requisito é impossível.
+//   • Sempre que uma linha entra ou sai, as faixas do d% são REESCALADAS
+//     proporcionalmente (maior resto): cada melhoria mantém a mesma
+//     chance relativa e a tabela volta a fechar em 100 sem buraco.
+//   • Os pag:"??" foram localizados: Fósforo é do Heróis (p. 239, e não
+//     do Suplemento), Prudente p. 240, Devotado é do Deuses (p. 54) e
+//     PENETRANTE é do Ameaças de Arton (p. 399) — não do Suplemento do
+//     Mestre, que só reimprime o que está nos livros.
 const MELHORIA_ARMA = [
-  {max:10, item:"Atroz",               livro:"Tormenta20",            pag:164, obs:"* Ver regra especial"},
-  {max:12, item:"Banhada a ouro",      livro:"Tormenta20",            pag:164},
-  {max:20, item:"Certeira",            livro:"Tormenta20",            pag:164},
-  {max:21, item:"Conduíte",            livro:"Deuses de Arton",       pag:54},
-  {max:23, item:"Cravejada de gemas",  livro:"Tormenta20",            pag:164},
-  {max:31, item:"Cruel",               livro:"Tormenta20",            pag:164},
-  {max:33, item:"Discreta",            livro:"Tormenta20",            pag:164},
-  {max:38, item:"Equilibrada",         livro:"Tormenta20",            pag:165},
-  {max:42, item:"Farpada",             livro:"Heróis de Arton",       pag:239, so:"corteOuPerfuracao"},
-  {max:45, item:"Fósforo",             livro:"Heróis de Arton",       pag:239, so:"municao"},
-  {max:47, item:"Guarda",              livro:"Heróis de Arton",       pag:239, so:"corpoACorpo"},
-  {max:51, item:"Harmonizada",         livro:"Tormenta20",            pag:165},
-  {max:53, item:"Incendiária",         livro:"Heróis de Arton",       pag:239, so:"municao"},
-  {max:57, item:"Injeção alquímica",   livro:"Tormenta20",            pag:165},
-  {max:59, item:"Macabra",             livro:"Tormenta20",            pag:165},
-  {max:69, item:"Maciça",              livro:"Tormenta20",            pag:165},
-  {max:79, item:"Material especial",   livro:"Tormenta20",            pag:165, obs:"** Mestre define o material"},
-  {max:82, item:"Mira telescópica",    livro:"Tormenta20",            pag:166, so:"disparo"},
-  {max:86, item:"Penetrante",          livro:"Suplemento do Mestre",  pag:"??"},
-  {max:94, item:"Precisa",             livro:"Tormenta20",            pag:166},
-  {max:96, item:"Pressurizada",        livro:"Heróis de Arton",       pag:240, so:"impactoOuFogo"},
-  {max:100,item:"Pungente",            livro:"Tormenta20",            pag:166, obs:"* Ver regra especial"},
+  {max:9,  item:"Atroz",              livro:"Tormenta20",       pag:164, obs:"* Ver regra especial"},
+  {max:11, item:"Banhada a ouro",     livro:"Tormenta20",       pag:164},
+  {max:13, item:"Canônico",           livro:"Deuses de Arton",  pag:54},
+  {max:21, item:"Certeira",           livro:"Tormenta20",       pag:164},
+  {max:23, item:"Conduíte",           livro:"Deuses de Arton",  pag:54},
+  {max:25, item:"Cravejada de gemas", livro:"Tormenta20",       pag:164},
+  {max:33, item:"Cruel",              livro:"Tormenta20",       pag:164},
+  {max:35, item:"Discreta",           livro:"Tormenta20",       pag:164},
+  {max:40, item:"Equilibrada",        livro:"Tormenta20",       pag:165},
+  {max:44, item:"Farpada",            livro:"Heróis de Arton",  pag:239, so:"corteOuPerfuracao"},
+  {max:47, item:"Fósforo",            livro:"Heróis de Arton",  pag:239, so:"municao"},
+  {max:49, item:"Guarda",             livro:"Heróis de Arton",  pag:239, so:"corpoACorpo"},
+  {max:53, item:"Harmonizada",        livro:"Tormenta20",       pag:165},
+  {max:55, item:"Incendiária",        livro:"Heróis de Arton",  pag:239, so:"municao"},
+  {max:59, item:"Injeção alquímica",  livro:"Tormenta20",       pag:165},
+  {max:61, item:"Macabra",            livro:"Tormenta20",       pag:165},
+  {max:70, item:"Maciça",             livro:"Tormenta20",       pag:165},
+  {max:79, item:"Material especial",  livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
+  {max:82, item:"Mira telescópica",   livro:"Tormenta20",       pag:166, so:"disparo"},
+  {max:86, item:"Penetrante",         livro:"Ameaças de Arton", pag:399},
+  {max:94, item:"Precisa",            livro:"Tormenta20",       pag:166},
+  {max:96, item:"Pressurizada",       livro:"Heróis de Arton",  pag:240, so:"impactoOuFogo"},
+  {max:100,item:"Pungente",           livro:"Tormenta20",       pag:166, obs:"* Ver regra especial"},
 ];
 
 const MELHORIA_ARMADURA = [
-  {max:11, item:"Ajustada",            livro:"Tormenta20",       pag:164},
-  {max:15, item:"Balístico",           livro:"Heróis de Arton",  pag:239, so:"escudo"},
-  {max:19, item:"Banhada a ouro",      livro:"Tormenta20",       pag:164},
-  {max:23, item:"Cravejada de gemas",  livro:"Tormenta20",       pag:164},
-  {max:28, item:"Delicada",            livro:"Tormenta20",       pag:164, so:"armaduraPesada"},
-  {max:30, item:"Deslumbrante",        livro:"Heróis de Arton",  pag:239, so:"armadura", obs:"* Ver regra especial"},
-  {max:32, item:"Diligente",           livro:"Deuses de Arton",  pag:54},
-  {max:36, item:"Discreta",            livro:"Tormenta20",       pag:164},
-  {max:40, item:"Espinhos",            livro:"Tormenta20",       pag:165},
-  {max:44, item:"Injetora",            livro:"Heróis de Arton",  pag:240, so:"armadura"},
-  {max:48, item:"Inscrito",            livro:"Deuses de Arton",  pag:54},
-  {max:50, item:"Macabra",             livro:"Tormenta20",       pag:165},
-  {max:61, item:"Material especial",   livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
-  {max:66, item:"Polida",              livro:"Tormenta20",       pag:166},
-  {max:79, item:"Reforçada",           livro:"Tormenta20",       pag:166},
-  {max:81, item:"Prudente",            livro:"Heróis de Arton",  pag:240, so:"armadura"},
-  {max:83, item:"Devotado",            livro:"Deuses de Arton",  pag:54},
-  {max:95, item:"Selada",              livro:"Tormenta20",       pag:166, so:"armaduraPesada"},
-  {max:100,item:"Sob medida",          livro:"Tormenta20",       pag:166, so:"armadura", obs:"* Ver regra especial"},
+  {max:11, item:"Ajustada",           livro:"Tormenta20",       pag:164},
+  {max:15, item:"Balístico",          livro:"Heróis de Arton",  pag:239, so:"escudo"},
+  {max:19, item:"Banhada a ouro",     livro:"Tormenta20",       pag:164},
+  {max:21, item:"Canônico",           livro:"Deuses de Arton",  pag:54},
+  {max:25, item:"Cravejada de gemas", livro:"Tormenta20",       pag:164},
+  {max:30, item:"Delicada",           livro:"Tormenta20",       pag:164, so:"armaduraPesada"},
+  {max:32, item:"Deslumbrante",       livro:"Heróis de Arton",  pag:239, so:"armadura", obs:"* Ver regra especial"},
+  {max:34, item:"Devotado",           livro:"Deuses de Arton",  pag:54},
+  {max:36, item:"Diligente",          livro:"Deuses de Arton",  pag:54},
+  {max:40, item:"Discreta",           livro:"Tormenta20",       pag:164},
+  {max:44, item:"Espinhos",           livro:"Tormenta20",       pag:165},
+  {max:48, item:"Injetora",           livro:"Heróis de Arton",  pag:240, so:"armadura"},
+  {max:52, item:"Inscrito",           livro:"Deuses de Arton",  pag:54},
+  {max:54, item:"Macabra",            livro:"Tormenta20",       pag:165},
+  {max:65, item:"Material especial",  livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
+  {max:70, item:"Polida",             livro:"Tormenta20",       pag:166},
+  {max:72, item:"Prudente",           livro:"Heróis de Arton",  pag:240, so:"armadura"},
+  {max:84, item:"Reforçada",          livro:"Tormenta20",       pag:166},
+  {max:95, item:"Selada",             livro:"Tormenta20",       pag:166, so:"armaduraPesada"},
+  {max:100,item:"Sob medida",         livro:"Tormenta20",       pag:166, so:"armadura", obs:"* Ver regra especial"},
 ];
 
 const MELHORIA_ESOTER = [
-  {max:3,  item:"Banhado a ouro",       livro:"Tormenta20",       pag:164},
-  {max:19, item:"Canalizador",          livro:"Tormenta20",       pag:164},
-  {max:22, item:"Canônico",             livro:"Deuses de Arton",  pag:54},
-  {max:25, item:"Cravejado de gemas",   livro:"Tormenta20",       pag:164},
-  {max:29, item:"Discreto",             livro:"Tormenta20",       pag:164},
-  {max:45, item:"Energético",           livro:"Tormenta20",       pag:165},
-  {max:61, item:"Harmonizado",          livro:"Tormenta20",       pag:165},
-  {max:64, item:"Macabro",              livro:"Tormenta20",       pag:165},
-  {max:74, item:"Material especial",    livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
-  {max:85, item:"Poderoso",             livro:"Tormenta20",       pag:166},
-  {max:96, item:"Potencializador",      livro:"Heróis de Arton",  pag:240, obs:"* Ver regra especial"},
-  {max:100,item:"Vigilante",            livro:"Tormenta20",       pag:166},
+  {max:3,  item:"Banhado a ouro",     livro:"Tormenta20",       pag:164},
+  {max:20, item:"Canalizador",        livro:"Tormenta20",       pag:164},
+  {max:23, item:"Cravejado de gemas", livro:"Tormenta20",       pag:164},
+  {max:27, item:"Discreto",           livro:"Tormenta20",       pag:164},
+  {max:44, item:"Energético",         livro:"Tormenta20",       pag:165},
+  {max:61, item:"Harmonizado",        livro:"Tormenta20",       pag:165},
+  {max:64, item:"Macabro",            livro:"Tormenta20",       pag:165},
+  {max:74, item:"Material especial",  livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
+  {max:85, item:"Poderoso",           livro:"Tormenta20",       pag:166},
+  {max:96, item:"Potencializador",    livro:"Heróis de Arton",  pag:240, obs:"* Ver regra especial"},
+  {max:100,item:"Vigilante",          livro:"Tormenta20",       pag:166},
 ];
 
 /* ── QUE ITEM CADA MELHORIA ACEITA ─────────────────────────────────
