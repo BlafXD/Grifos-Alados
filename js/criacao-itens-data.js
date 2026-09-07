@@ -72,6 +72,39 @@ window.GA_CRIACAO_ITENS = (function () {
     ['',                       'Macabro',             '+2 em Intimidação, –2 em Diplomacia'],
   ];
 
+  // ── AS 19 MELHORIAS DOS OUTROS TRÊS LIVROS ───────────────────────
+  //  Heróis de Arton, Tab. 3-5 (p. 240) e Deuses de Arton, Tab. 1-4
+  //  (p. 54) — as duas lidas do PDF pela posição de cada texto, porque
+  //  o cabeçalho de categoria cai na linha do primeiro nome do grupo e
+  //  o extrator de texto embaralha os grupos. Ameaças de Arton (p. 399)
+  //  não tem tabela: os dois trazem a categoria no próprio nome.
+  //  As categorias são as DE CADA LIVRO — o "todas as categorias acima"
+  //  do Deuses não inclui esotérico, porque a tabela dele não lista
+  //  esotérico em lugar nenhum.
+  const MELHORIAS_OUTROS_LIVROS = [
+    ['Heróis de Arton', 'Armas',                    'Farpada',         'Acertos críticos provocam sangramento'],
+    ['',                '',                         'Fósforo',         'Munição ofusca o alvo'],
+    ['',                '',                         'Guarda',          '+1 na Defesa e em testes contra manobras'],
+    ['',                '',                         'Incendiária',     'Munição causa dano por fogo e pode deixar em chamas'],
+    ['',                '',                         'Pressurizada',    '+2 em ataque e dano ao acionar mecanismo'],
+    ['',                'Armaduras e escudos',      'Balístico',       'Ataques com escudo podem causar dano adicional'],
+    ['',                '',                         'Injetora',        'Usa um efeito de preparado ou poção'],
+    ['',                '',                         'Prudente',        'Atenua uma falha crítica'],
+    ['',                'Esotéricos',               'Potencializador', '+2 no limite de PM'],
+    ['',                'Ferramentas e vestuário',  'Brasonado',       'Usa a perícia do item para mudar atitude'],
+    ['',                '',                         'Usado',           'Pode rolar novamente 1 natural'],
+    ['',                'Qualquer das acima',       'Deslumbrante',    '+1 na CD de habilidades baseadas em Carisma'],
+
+    ['Deuses de Arton', 'Armas',                    'Conduíte',        'Reduz em –1 PM o custo de Abençoar Arma'],
+    ['',                'Armaduras, escudos, ferramentas e vestuários', 'Diligente', 'Reduz em –1 PM o custo de Prece de Combate'],
+    ['',                '',                         'Inscrito',        'Conta como símbolo sagrado'],
+    ['',                'Todas as categorias acima', 'Canônico',       '+1 na CD para resistir a habilidades mágicas divinas'],
+    ['',                '',                         'Devotado',        'Reduz em –1 PM o custo de um poder concedido'],
+
+    ['Ameaças de Arton', 'Armas',                   'Penetrante',      'Ignora 5 pontos da redução de dano'],
+    ['',                'Ferramentas e vestuário',  'Multifuncional',  'O item passa a valer para uma segunda perícia'],
+  ];
+
   // ── TABELA 8-7: PREÇO DE ENCANTOS (confirmada, completa) ──────────
   const ENCANTOS_PADRAO = [
     { n: 1, preco: 18000, cd: 10 },
@@ -157,11 +190,19 @@ Quais melhorias cada categoria pode receber está no card seguinte (Tabela 3-8).
         linhas: MELHORIAS_PADRAO.map(m => [String(m.n), '+ T$ ' + m.preco.toLocaleString('pt-BR'), '+' + m.cd]) } },
 
     { grupo: '⚒ Itens Superiores', titulo: 'Melhorias por categoria (Tabela 3-8)', texto:
-`Cada categoria de item tem as suas melhorias; as quatro do fim da tabela valem para qualquer uma delas. Só a categoria manda: uma arma não pode receber uma melhoria de armadura, por mais que o preço seja o mesmo.
-Repare na linha de FERRAMENTAS E VESTUÁRIO: no Tormenta 20 ela tem uma única melhoria, "Aprimorado" — a que faz uma maleta de medicamentos dar +1 em Cura ou uma luva de pelica dar +2 em Ladinagem. É a única melhoria dos livros que o Gerador de Recompensas não rola, porque ele sorteia item superior de arma, armadura e esotérico (as três tabelas do livro), e ferramenta não é uma delas.`,
+`Cada categoria de item tem as suas melhorias; as quatro do fim da tabela valem para qualquer uma delas. Só a categoria manda: uma arma não pode receber uma melhoria de armadura, nem ser brasonada, por mais que o preço seja o mesmo.
+E a categoria não é a regra inteira — o texto de várias melhorias restringe mais ainda ("só em munições", "só em escudos", "só em armaduras pesadas", "só em armas de disparo"). Quem gera recompensa já respeita as duas coisas: veja a restrição escrita ao lado da melhoria no Catálogo de Tesouros da aba 🎁 Recompensas.
+Repare na linha de FERRAMENTAS E VESTUÁRIO: no Tormenta 20 ela tem uma única melhoria, "Aprimorado" — a que faz uma maleta de medicamentos dar +1 em Cura ou uma luva de pelica dar +2 em Ladinagem.`,
       tabela: { cab: ['Categoria', 'Melhoria', 'Efeito'], titulo: 'Tabela 3-8: Melhorias', destaque: 1,
         linhas: MELHORIAS_3_8,
-        nota: 'Esta é a tabela do Tormenta 20. Os outros livros acrescentam, nas mesmas categorias: Heróis de Arton (Tab. 3-5, p. 240) — Farpada, Fósforo, Guarda, Incendiária e Pressurizada em armas; Balístico, Injetora e Prudente em armaduras e escudos; Potencializador em esotéricos; Brasonado e Usado em ferramentas e vestuário; Deslumbrante em qualquer categoria. Deuses de Arton (Tab. 1-4, p. 54) — Conduíte em armas; Diligente e Inscrito em armaduras, escudos, ferramentas e vestuários; Canônico e Devotado em todas essas. Suplemento do Mestre — Penetrante em armas. Todas têm descrição no "📖 Descrição".' } },
+        nota: 'Esta é a tabela do Tormenta 20; o card seguinte traz o que os outros três livros acrescentam, com as categorias de cada um. Todas as melhorias têm descrição no "📖 Descrição".' } },
+
+    { grupo: '⚒ Itens Superiores', titulo: 'Melhorias dos outros três livros', texto:
+`Heróis de Arton, Deuses de Arton e Ameaças de Arton acrescentam 19 melhorias, cada uma com a sua categoria — e as categorias NÃO se repetem entre os livros: o "todas as categorias acima" do Deuses são as dele (armas, armaduras, escudos, ferramentas e vestuários), sem esotérico, enquanto o do Heróis inclui esotérico.
+As tabelas do Heróis e do Deuses saem desalinhadas do PDF (o cabeçalho de categoria cai na linha do primeiro nome), então estas foram lidas pela posição de cada texto na página. O Ameaças não tem tabela: os dois dele vêm com a categoria no próprio nome ("Multifuncional (ferramenta ou vestuário)", "Penetrante (arma)").`,
+      tabela: { cab: ['Livro', 'Categoria', 'Melhoria', 'Efeito'], titulo: 'Novas melhorias (Heróis 3-5 · Deuses 1-4 · Ameaças p. 399)', destaque: 2,
+        linhas: MELHORIAS_OUTROS_LIVROS,
+        nota: 'Quatro destas melhorias — Brasonado, Usado (Heróis), Multifuncional (Ameaças) e o Aprimorado do Tormenta 20 — são de ferramenta e vestuário, e por isso NÃO saem no Gerador de Recompensas: o livro não tem tabela de tesouro para ferramenta superior. Elas existem aqui e no "📖 Descrição".' } },
 
     { grupo: '⚒ Itens Superiores', titulo: 'Fabricando itens superiores', texto:
 `Itens superiores só podem ser fabricados por personagens com a habilidade Fabricar Item Superior. A fabricação segue a mesma regra de itens normais, porém, de acordo com o número de melhorias, o preço e a CD do teste de Ofício aumentam (Tabela 3-7 acima).
