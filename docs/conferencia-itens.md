@@ -2,7 +2,7 @@
 
 **Data:** 02/09/2026 · **Fonte:** os PDFs em `C:/Users/caiqu/Desktop/RPG/Tormenta 20/Livros`
 
-**Estado do conserto: acabou — as seis etapas estão feitas.** Etapa 1 em
+**Estado do conserto: acabou — as sete etapas estão feitas.** Etapa 1 em
 06/09/2026 (os 16 valores, os 4 nomes, a caixa e o `X`→`x`); etapas 2 e 3 em
 07/09/2026 (os 58 encantos com a separação armadura × escudo, e os 8 itens
 mágicos do *Ameaças*), mais o preço dos 84 itens específicos, que a etapa 3
@@ -14,7 +14,8 @@ pôr mira telescópica em espada; e a **etapa 6**, a conferência completa das
 melhorias contra os quatro livros, que achou uma melhoria inteira faltando
 (*Multifuncional*, do *Ameaças*), pôs cada uma exatamente nas categorias que os
 livros permitem e desfez duas atribuições erradas. O que cada uma fez está em
-§6. **Nada continua em aberto.**
+§6 — inclusive a **etapa 7**, que fez a mesma pergunta aos 232 itens mágicos
+nomeados e achou quatro fora de categoria. **Nada continua em aberto.**
 
 Mesma ideia da conferência das fichas: em vez de comparar o projeto com um TXT
 colado, cada tabela de equipamento foi **lida do PDF** e cruzada com os dados do
@@ -67,10 +68,12 @@ extras e os 6 itens novos da etapa 3.)*
 **Tabelas d%: íntegras.** As 17 tabelas de `js/recompensas.js` cobrem sua faixa
 inteira sem buraco e sem retroceder. As que não param em 100 param onde devem:
 `MAGICO_*` vão até 90 (91-100 é "item específico"); `POCAO_TABLE` vai até 120
-porque a mesa estendeu a tabela com poções de outros livros; e desde a etapa 3
-`ESPEC_ARMA` e `ACESSORIO_MAIOR` vão até 102, `ESPEC_ARMADURA` e
-`ACESSORIO_MEDIO` até 101 — o dado cresceu junto com os itens do *Ameaças*
-(veja §6), como já acontecia no `d120` das poções e no `d104` das munições.
+porque a mesa estendeu a tabela com poções de outros livros; e o resto cresceu
+com os itens que foram entrando — `ACESSORIO_MAIOR` a **d102** e
+`ESPEC_ARMADURA` a **d101** desde a etapa 3, `ESPEC_ARMA` a **d105** e
+`ACESSORIO_MEDIO` a **d102** desde a etapa 7. É a regra da casa: item que entra
+em tabela cheia leva uma vaga e o **dado cresce**, ninguém perde faixa — como já
+acontecia no `d120` das poções e no `d104` das munições.
 
 ---
 
@@ -631,6 +634,54 @@ lido pela geometria (foi assim que se viu que o compilado do Suplemento troca
 Encantado", nenhuma combinação impossível; as 42 duplas conferidas à mão batem
 com os livros; e nenhuma das quatro melhorias de ferramenta/vestuário (Aprimorado,
 Brasonado, Usado, Multifuncional) aparece em tabela de sorteio.
+
+**Etapa 7 — a categoria dos 232 itens mágicos nomeados. ✅ FEITA EM
+07/09/2026.** Depois das melhorias, a mesma pergunta para os itens mágicos: a
+descrição de cada um bate com a tabela em que o projeto o guarda? Foram
+conferidos **os 232**, cada um contra a fonte do seu livro:
+
+| fonte | o que ela diz | itens |
+|---|---|---|
+| T20, Tab. 8-9, 8-11, 8-13, 8-14 e 8-15 | a tabela em que o item é impresso | 87 |
+| *Heróis*, Tab. 3-9, 3-10, 3-11 e 3-12 | idem (3-12 lida pela geometria) | 84 |
+| *Deuses* e *Ameaças* | a frase que fecha o verbete: "*Arma específica média, preço T$ 54.000*" | 61 |
+
+**228 batiam. Os 4 que não batiam eram todos do esotérico** — e foram movidos
+para a categoria do livro, por decisão do Caique em 07/09/2026:
+
+| item | estava em | foi para | o que o livro diz |
+|---|---|---|---|
+| **Cajado da destruição** | esotérico | **ESPEC_ARMA** | T20, Tab. 8-9: **Armas** Específicas |
+| **Cajado da vida** | esotérico | **ESPEC_ARMA** | idem |
+| **Cajado do poder** | esotérico | **ESPEC_ARMA** | idem |
+| **Varinha da generosidade** | esotérico | **ACESSORIO_MEDIO** | "*Acessório médio, preço T$ 30.000*" (Deuses p. 59) |
+
+A dúvida era real, e por isso a decisão está escrita também no `recompensas.js`:
+o verbete dos cajados começa em "*Este **bordão**…*" e continua "*Conta como um
+**cajado arcano**. Além dos benefícios desse esotérico…*" — eles funcionam como
+esotérico, mas isso é **poder do item**, não a categoria dele. A regra que
+explica tudo está no próprio T20 (p. 341): "*todos os itens mágicos que não são
+armas, armaduras, escudos, poções ou pergaminhos são acessórios*" — o T20 não
+tem a categoria "esotérico específico", e o *Deuses* segue essa taxonomia. Quem
+criou a categoria foi o *Heróis*, com a Tab. 3-11 — e é por isso que
+`ESPEC_ESOTER` ficou com exatamente os **4 itens dela**.
+
+Ao mover, valeram as duas regras que o arquivo já usava: quem **entra** em
+tabela cheia leva uma vaga e o **dado cresce** (`ESPEC_ARMA` foi a **d105**,
+`ACESSORIO_MEDIO` a **d102**, ninguém perdeu faixa); quem **perde** linha tem as
+faixas **reescaladas** proporcionalmente (`ESPEC_ESOTER`, d100 com 4 entradas).
+
+**Três alarmes falsos**, que valem por documentação: a *Frigideira do chef anão*
+("também pode ser usada como uma maça maciça ou um escudo pesado"), o *Chifre de
+unicórnio* ("pode ser empunhado como uma espada curta") e o *Manto do morcego*
+("uma arma natural de mordida") continuam **acessórios** nos livros — usar como
+arma é poder do item, como nos cajados.
+
+**E um resultado que não era garantido:** os **64 acessórios do *Heróis*** batem
+com a Tab. 3-12 em **categoria e preço**, um a um. Não era garantido porque o
+`pdftotext -layout` embaralha aquela tabela inteira — nela ele casa "Amuleto da
+visão etérea" com "Média/T$ 10.500" quando o certo é "Menor/T$ 3.000". Quem a
+transcreveu não caiu na armadilha.
 
 ---
 
