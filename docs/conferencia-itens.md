@@ -3,8 +3,9 @@
 **Data:** 02/09/2026 · **Fonte:** os PDFs em `C:/Users/caiqu/Desktop/RPG/Tormenta 20/Livros`
 
 **Estado do conserto:** etapa 1 **feita** em 06/09/2026 (os 16 valores, os 4
-nomes, a caixa e o `X`→`x`); etapas 2 (os 58 encantos) e 3 (os 8 itens mágicos
-do *Ameaças*) **pendentes**. O plano de cada uma está em §6.
+nomes, a caixa e o `X`→`x`) e etapa 2 **feita** em 07/09/2026 (os 58 encantos e
+a separação armadura × escudo); etapa 3 (os 8 itens mágicos do *Ameaças*)
+**pendente**. O plano de cada uma está em §6.
 
 Mesma ideia da conferência das fichas: em vez de comparar o projeto com um TXT
 colado, cada tabela de equipamento foi **lida do PDF** e cruzada com os dados do
@@ -30,20 +31,21 @@ item** — o Atlas só cita a Tabela 8-1 do básico.
 | | livros | projeto | falta |
 |---|---|---|---|
 | Equipamento (nomes distintos) | 508 | 455 (458 linhas) | 0 (as 53 diferenças são Animais/Veículos/Serviços — §2.1) |
-| Encantos (vagas por categoria) | 174 | 96 | **78 vagas / 58 nomes** |
+| Encantos (vagas por categoria) | 168 | 96 → **168** ✔ | **72 vagas / 58 nomes** — feito em 07/09 |
 | Itens mágicos nomeados | 265 | 257 | **8** |
 | Melhorias (nomes distintos) | 46 | 46 | **1** ("Aprimorado") |
 
-*A conta de encantos é por vaga: armadura e escudo têm listas próprias, com o
-mesmo conteúdo. São 58 nomes distintos, 20 deles valendo para as duas listas.
+*A conta de encantos é por vaga: armadura e escudo têm listas próprias — hoje
+com conteúdo diferente (§5, item 4), o que tira 6 vagas das 174 do cálculo
+antigo. São 58 nomes distintos, 20 deles valendo para as listas de proteção.
 Em melhorias o projeto guarda 49 verbetes porque separa as formas feminina e
 masculina (macabra/macabro) e traz uma extra do Suplemento do Mestre
 ("Penetrante").*
 
 **Descrições: 100%.** Usando o `ItensDescricoes.get()` real (com `ALIASES` e o
-recurso às magias), **458/458** itens do catálogo, **96/96** encantos e
-**720/720** entradas das tabelas de recompensa têm verbete. Nenhuma nuvem
-"📖 Descrição" sai vazia.
+recurso às magias), **458/458** itens do catálogo, **168/168** encantos (eram
+96/96 antes da etapa 2) e **720/720** entradas das tabelas de recompensa têm
+verbete. Nenhuma nuvem "📖 Descrição" sai vazia.
 
 **Tabelas d%: íntegras.** As 17 tabelas de `js/recompensas.js` cobrem 1–100 sem
 buraco e sem retroceder. As três exceções são de propósito e conferem com o
@@ -80,22 +82,26 @@ Fora do catálogo ficaram 50 linhas, todas das seções **Animais**, **Veículos
 > Vale decidir se os **Serviços** (23 linhas, com preço) merecem uma sub-aba
 > própria — hoje eles não existem em lugar nenhum do site.
 
-### 2.2 Encantos: **58 faltam na loja** ⚠ o maior buraco
+### 2.2 Encantos: **58 faltavam na loja** ⚠ era o maior buraco — ✅ resolvido em 07/09/2026
 
-O `js/recompensas.js` já conhece os encantos dos três livros (50 de arma, 45 de
-armadura/escudo, 26 de esotérico). O `js/loja_completa.js` só tem os do
+O `js/recompensas.js` já conhecia os encantos dos três livros (50 de arma, 45 de
+armadura/escudo, 26 de esotérico). O `js/loja_completa.js` só tinha os do
 **Tormenta 20** — e, nos esotéricos, só 10 dos 26.
 
-| categoria | loja | livros | faltam |
-|---|---|---|---|
-| arma | 28 | 50 | **22** |
-| armadura | 25 | 45 | **20** |
-| escudo | 25 | 45 | **20** |
-| esotérico | 10 | 26 | **16** |
-| acessório | 8 | 8 | 0 ✔ |
+| categoria | loja (antes) | livros | faltavam | loja (agora) |
+|---|---|---|---|---|
+| arma | 28 | 50 | **22** | 50 ✔ |
+| armadura | 25 | 45 | **20** | 43 ✔ |
+| escudo | 25 | 45 | **20** | 41 ✔ |
+| esotérico | 10 | 26 | **16** | 26 ✔ |
+| acessório | 8 | 8 | 0 ✔ | 8 ✔ |
 
-Todos os 58 vêm do **Heróis de Arton** (p. 256-261) e **todos já têm descrição
-no projeto** — falta só entrarem no `ENCANTAMENTOS`:
+Armadura e escudo não fecham em 45 porque a lista deixou de ser a mesma para os
+dois (veja §5, item 4): 39 valem para ambos, 4 são só de armadura e 2 só de
+escudo.
+
+Todos os 58 vêm do **Heróis de Arton** (p. 256-261) e **todos já tinham
+descrição no projeto** — faltava só entrarem no `ENCANTAMENTOS`:
 
 - **Arma:** Alvorada · Anátema · Brumosa · Cantante · Ciclônica · Crescente ·
   Cristalina · Cronal · Cuidadora · Espreitadora · Frenética · Gárgula ·
@@ -109,9 +115,10 @@ no projeto** — falta só entrarem no `ENCANTAMENTOS`:
   Implacável · Incriminador · Inflamável · Inquisidor · Insistente ·
   Khalmyrita · Pulverizante · Retaliador · Sanguessuga · Traiçoeiro · Verdugo
 
-**Consequência prática:** a loja especial sorteia hoje sobre 1/3 do repertório
-de encantos que o gerador de recompensas usa. Os dois lugares do site discordam
-sobre o que existe no mundo.
+**Consequência prática (antes do conserto):** a loja especial sorteava sobre 1/3
+do repertório de encantos que o gerador de recompensas usa. Os dois lugares do
+site discordavam sobre o que existe no mundo. **Hoje as duas abas sorteiam sobre
+o mesmo repertório.**
 
 ### 2.3 Itens mágicos: 8 de *Ameaças de Arton* ausentes
 
@@ -228,11 +235,14 @@ Cota de **M**oedas · Colete fora da **L**ei
    `_montarLinhaItem()` normaliza os três na hora de exibir, então funciona —
    mas qualquer código novo que leia `ITENS_BASE` direto precisa saber disso.
 
-4. **Encantos só de escudo aplicáveis a armadura.** O livro marca **Animado** e
-   **Esmagador** como "Apenas escudos. Para armaduras, role novamente" (T20,
-   Tab. 8-10). O `recompensas.js` respeita isso (`obs:"** Apenas escudos"`); o
-   `loja_completa.js` usa a **mesma lista de 25 encantos** para armadura e
-   escudo, então a loja pode oferecer uma armadura *animada*.
+4. **Encantos só de escudo aplicáveis a armadura.** ✅ **Resolvido em
+   07/09/2026.** O livro marca **Animado** e **Esmagador** como "Apenas escudos.
+   Para armaduras, role novamente" (T20, Tab. 8-10). O `recompensas.js`
+   respeitava isso (`obs:"** Apenas escudos"`); o `loja_completa.js` usava a
+   **mesma lista de 25 encantos** para armadura e escudo, então a loja podia
+   oferecer uma armadura *animada*. Agora são duas listas: **43 de armadura** (as
+   39 comuns + Ancorada, Densa, Enraizada e Ligeira, que no *Heróis* falam só de
+   armadura) e **41 de escudo** (as 39 comuns + Animado e Esmagador).
 
 5. **Encantos que contam dobrado sem marca.** **Magnífica** (arma) e
    **Guardião** (armadura/escudo) contam como dois encantos no livro; na loja
@@ -265,9 +275,10 @@ quadro abaixo). Junto saíram mais duas coisas que a etapa exigia:
   `pao de thorw` → `pao de thwor`). A chave é o nome normalizado: sem isso, o
   item renomeado perderia a nuvem "📖 Descrição". Conferido com o `get()` real —
   **458 de 458 itens continuam com descrição, zero buraco novo**.
-- **O `catalogo.json`**, que é um despejo dos dois literais (ITENS_BASE e
-  ENCANTAMENTOS) e **não é lido por nada no site**. Foi regravado para não ficar
-  contradizendo os livros. Vale decidir se ele continua existindo.
+- **O `catalogo.json`**, que era um despejo dos dois literais (ITENS_BASE e
+  ENCANTAMENTOS) e **não era lido por nada no site**. Foi regravado para não
+  ficar contradizendo os livros e, em **07/09/2026, apagado** — decisão do
+  Caique. Um despejo que ninguém lê só serve para envelhecer e mentir.
 
 *Reconferência no PDF, item por item (06/09/2026):* os 10 valores do **Deuses de
 Arton** saem limpos da Tab. 1-3 no `pdftotext -layout` (Cajado de pastor T$ 12/2
@@ -282,13 +293,28 @@ verdadeira é **`Espadim T$ 300 · 1d8 · 20 · — · Corte · 1`** e
 só dele**: no run cru da tabela do Ameaças (`"TetsuboT$ 201d10X2—Impacto2"`) as
 vizinhas saem `x2`, `x3`, `19/x3` em minúscula.
 
-**Etapa 2 — os 58 encantos.** Copiar de `MAGICO_ARMA`, `MAGICO_ARMADURA` e
-`MAGICO_ESOTER` (`js/recompensas.js`) para o `ENCANTAMENTOS` de
-`js/loja_completa.js:24`. Os nomes estão em §2.2; todos já têm descrição, então
-não é preciso escrever texto nenhum. Dois cuidados: o campo do encanto na loja é
-`{name, effect}` com o efeito curto (a coluna "Efeito" da tabela do livro), e
-**`Animado` e `Esmagador` não deveriam entrar na lista de armadura** (§5, item 4)
-— hoje as listas de armadura e escudo são idênticas, e essa é a hora de separá-las.
+**Etapa 2 — os 58 encantos. ✅ FEITA EM 07/09/2026.** Os três `MAGICO_*` de
+`js/recompensas.js` viraram a ordem e o repertório do `ENCANTAMENTOS` de
+`js/loja_completa.js` — as listas passaram de 28/25/25/10/8 para
+**50/43/41/26/8**, e a de armadura deixou de ser cópia da de escudo (§5, item 4).
+Conferido depois de gravar: as 168 entradas geram sem erro, **nenhuma ficou sem
+efeito e nenhuma ficou sem descrição** no `ItensDescricoes.get()` real, e os dois
+únicos nomes que saíram de alguma lista foram Animado e Esmagador, da armadura.
+
+Duas coisas que a etapa mostrou e que o plano não previa:
+
+- **O "efeito curto" só existe como coluna no Tormenta 20.** A Tab. 8-8 e a
+  8-10 têm mesmo uma coluna *Efeito* ("Duplica margem de ameaça"), e é dela que
+  vieram os 61 encantos que a loja já tinha. **O *Heróis de Arton* não tem tabela
+  nenhuma de encanto** — as quatro seções dele são texto corrido ("*Alvorada.* A
+  arma brilha como o sol matinal..."). Então os 58 efeitos novos foram
+  **resumidos da descrição conferida**, no mesmo registro de cada categoria — que
+  é exatamente o que já se tinha feito com os 10 esotéricos que a loja tinha.
+- **Quem restringe o encanto ao escudo é a tabela; quem o restringe à armadura é
+  a frase.** O T20 marca Animado e Esmagador com a nota "¹Apenas escudos". No
+  *Heróis* não há nota: Ancorada, Densa, Enraizada e Ligeira se reconhecem por
+  começarem com "*A armadura...*" / "*Esta armadura...*", enquanto as outras 16
+  dizem "*O item...*" ou falam direto com o portador.
 
 **Etapa 3 — os 8 itens mágicos do *Ameaças de Arton*.** É a mais trabalhosa:
 além da entrada nas tabelas de `js/recompensas.js`, cada um precisa de
@@ -326,3 +352,9 @@ decidir se entra no sorteio de recompensa ou fica só como item consultável.
   normalização sua.** Minha primeira conta acusou 63 itens sem verbete; o
   `ItensDescricoes.get()` de verdade — com `ALIASES` e o recurso às magias —
   acha todos os 720.
+- **Nem todo livro traz a mesma coisa em tabela.** O mesmo assunto sai como
+  tabela com coluna de resumo no básico e como texto corrido no suplemento (os
+  encantos: Tab. 8-8/8-10 no T20, quatro seções de prosa no *Heróis*). Antes de
+  procurar a coluna, confirme que ela existe naquele livro — e, quando não
+  existir, a restrição que a tabela daria numa nota de rodapé vai estar dita
+  dentro da frase ("*A armadura...*" em vez de "*O item...*").
