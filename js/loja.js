@@ -747,6 +747,13 @@
       const cab = grid.previousElementSibling;            // .loja-divisor-cat
       if (cab && cab.classList.contains('loja-divisor-cat')) cab.style.display = algum ? '' : 'none';
     });
+    // Serviços: a seção inteira some junto — o cabeçalho dela e o texto
+    // de abertura ficam FORA do .loja-grid-itens, então não bastaria
+    // esconder o grid (é o caso da Hospedagem e dos Mercenários).
+    painel.querySelectorAll('.serv-secao').forEach(sec => {
+      const algum = Array.from(sec.querySelectorAll('.item-card')).some(el => el.style.display !== 'none');
+      sec.style.display = algum ? '' : 'none';
+    });
     painel.querySelectorAll('.loja-bloco-tipo').forEach(bloco => {
       const algum = Array.from(bloco.querySelectorAll('.item-card')).some(el => el.style.display !== 'none');
       bloco.style.display = algum ? '' : 'none';
@@ -763,6 +770,8 @@
     const perm        = magicosPermitidos(ent);
     const totalEncs   = perm.encantos ? contarEncantamentos(ent.especial) : 0;
     const totalMagias = pergaminhosEfetivos(ent).lista.length;
+    // Serviços não são sorteados: a lista é a mesma dos livros, sempre.
+    const totalServ   = totalServicos();
 
     container.innerHTML = `
       <div class="loja-cabecalho">
@@ -784,6 +793,10 @@
         <button class="loja-aba" data-painel="painel-magias">
           📜 Magias
           <span class="loja-aba-count">${totalMagias} pergaminho${totalMagias !== 1 ? 's' : ''}</span>
+        </button>
+        <button class="loja-aba" data-painel="painel-servicos">
+          🛎 Serviços
+          <span class="loja-aba-count">${totalServ} serviço${totalServ !== 1 ? 's' : ''}</span>
         </button>
       </div>
 
@@ -810,6 +823,9 @@
       <div id="painel-magias" class="loja-painel">
         ${construirAjustesMagias()}
         ${construirLojaMagias(ent)}
+      </div>
+      <div id="painel-servicos" class="loja-painel">
+        ${construirServicos()}
       </div>
     `;
 
@@ -1359,8 +1375,183 @@
   }
 
   // ══════════════════════════════════════════════════════════════════
+  //  LOJA — SERVIÇOS (js/servicos-data.js)
+  //  O que a cidade oferece e a loja não vende como item: cama, condução,
+  //  cura, magia paga, mercenário, casamento. São 24 linhas com preço,
+  //  das tabelas de Itens Gerais de três livros.
+  //
+  //  Serviço NÃO é sorteado, não tem desconto e não tem estoque: a lista
+  //  é sempre a mesma, igual à do livro. Também não obedece ao teto de
+  //  preço da comunidade — o teto vale para o que está na prateleira, e
+  //  os livros não dizem que aldeia nenhuma deixa de ter estalagem. Onde
+  //  o livro FALA de disponibilidade (estadia luxuosa, ópera, templo), a
+  //  frase dele vai escrita no próprio card, em "Onde".
+  // ══════════════════════════════════════════════════════════════════
+  const ICONE_SECAO_SERVICO = {
+    'Hospedagem':          '🛏',
+    'Outros Serviços':     '🧾',
+    'Mercenários':         '⚔',
+    'Serviços religiosos': '⛪',
+  };
+
+  // Quantas LINHAS DE PREÇO os livros têm (é o que a aba conta): as com
+  // faixas — Condução, Magia, Mercenário — valem uma linha por faixa.
+  function totalServicos() {
+    return (window.GA_SERVICOS || []).reduce((tot, livro) =>
+      tot + livro.secoes.reduce((t, sec) =>
+        t + sec.itens.reduce((n, it) => n + (it.faixas ? it.faixas.length : 1), 0), 0), 0);
+  }
+
+  function _precoServicoTexto(preco, unidade) {
+    return `T$ ${formatarPreco(preco)}${unidade ? ' ' + unidade : ''}`;
+  }
+
+  // O benefício do tipo de parceiro que o livro dá ao mercenário
+  // (Tormenta20, p. 260) vira nuvem de mouse — é o que ele compra.
+  function _tipTipoParceiro(m) {
+    if (m.capanga) {
+      return m.stats ? `${m.tipo} ${m.nivel} (capangas, Heróis de Arton p. 241): ${m.stats}` : '';
+    }
+    const tipos = window.PARCEIRO_TIPOS || [];
+    const t = tipos.find(p => p.nome === m.tipo);
+    if (!t) return '';
+    // O benefício de veterano é escrito como "como acima…" — depende do
+    // de iniciante, então os dois vão juntos na nuvem.
+    const beneficio = /^veteran/.test(m.nivel)
+      ? `Iniciante: ${t.ini} Veterano: ${t.vet}`
+      : `Iniciante: ${t.ini}`;
+    const pericias  = m.pericias ? ` Perícias: ${m.pericias}.` : '';
+    const obs       = t.obs ? ` ${t.obs}` : '';
+    return `${t.nome} ${m.nivel} — ${t.desc} ${beneficio}${pericias}${obs}`;
+  }
+
+  function construirListaMercenarios(item) {
+    const merc = item.mercenarios || [];
+    if (!merc.length) return '';
+
+    const linhas = merc.map(m => {
+      const tip  = _tipTipoParceiro(m);
+      const alvo = m.pericias ? `${m.tipo} (${m.pericias}) ${m.nivel}` : `${m.tipo} ${m.nivel}`;
+      const tipoHtml = tip
+        ? `<span class="ga-tip" tabindex="0" data-tip="${GA_esc(tip)}">${alvo}</span>`
+        : alvo;
+      return `
+        <div class="serv-merc">
+          <div class="serv-merc-topo">
+            <span class="serv-merc-nome">${m.nome}</span>
+            <span class="item-preco-final">T$ ${formatarPreco(m.preco)}</span>
+          </div>
+          <div class="serv-merc-tipo">${tipoHtml}${m.capanga ? ' · capangas' : ''}</div>
+          <div class="serv-merc-desc">${m.desc}</div>
+        </div>`;
+    }).join('');
+
+    return `
+      <details class="ga-desc serv-merc-lista">
+        <summary>Os ${merc.length} mercenários de contrato</summary>
+        <div class="ga-desc-corpo">
+          <p class="serv-merc-nota">O livro não põe preço no verbete de cada um: quem paga é a
+             faixa da tabela, achada pelo tipo e nível que a última frase do verbete indica.
+             Passe o mouse no tipo para ver o que o parceiro faz.</p>
+          <div class="serv-merc-grade">${linhas}</div>
+        </div>
+      </details>`;
+  }
+
+  function construirCardServico(item) {
+    // Linhas de preço: uma só, ou uma por faixa da tabela do livro.
+    let precosHtml, linhasCopia;
+    if (item.faixas) {
+      precosHtml = `<div class="serv-faixas">` + item.faixas.map(f => `
+        <div class="serv-faixa">
+          <span class="serv-faixa-nome">${f.nome}</span>
+          <span class="item-preco-final">T$ ${formatarPreco(f.preco)}</span>
+        </div>`).join('') + `</div>`;
+      linhasCopia = item.faixas.map(f => `${f.nome}: ${_precoServicoTexto(f.preco, item.unidade)}`);
+    } else {
+      precosHtml = `
+        <div class="item-precos">
+          <span class="item-preco-final">T$ ${formatarPreco(item.preco)}</span>
+          ${item.unidade ? `<span class="serv-unidade">${item.unidade}</span>` : ''}
+        </div>`;
+      linhasCopia = [`Preço: ${_precoServicoTexto(item.preco, item.unidade)}`];
+    }
+
+    const onde = item.onde
+      ? `<div class="item-stats"><span class="item-stat"><strong>Onde:</strong> ${item.onde}</span></div>`
+      : '';
+    const desc = window.ItensDescricoes
+      ? ItensDescricoes.bloco(item.nome, null, { linhas: linhasCopia })
+      : '';
+
+    // Quem carrega os 16 mercenários ocupa a linha inteira do grid —
+    // a lista não cabe numa coluna de card.
+    const largo = item.mercenarios ? ' item-card--largo' : '';
+
+    return `
+      <div class="item-card${largo}">
+        <div class="item-topo">
+          <span class="item-nome">${item.nome}</span>
+          ${item.faixas && item.unidade ? `<span class="serv-unidade">${item.unidade}</span>` : ''}
+        </div>
+        ${precosHtml}
+        ${onde ? `<hr class="item-linha"/>${onde}` : ''}
+        ${desc}
+        ${construirListaMercenarios(item)}
+      </div>`;
+  }
+
+  function construirServicos() {
+    const livros = window.GA_SERVICOS || [];
+    if (!livros.length) {
+      return `<p class="loja-vazia">Os serviços vivem em <code>js/servicos-data.js</code> —
+              verifique se o arquivo é carregado antes de <code>loja.js</code>.</p>`;
+    }
+
+    let html = `
+      <div class="loja-resumo">
+        <span class="loja-resumo-item">🛎 <strong>${totalServicos()}</strong> serviços</span>
+        <span class="loja-resumo-item">Preço fixo do livro — sem sorteio, sem desconto</span>
+      </div>`;
+    html += buscaHTML('servicos', '🔍 Buscar serviço — nome, preço ou efeito…');
+
+    livros.forEach(livro => {
+      const fonte = `${livro.tabela} (p. ${livro.pagTabela})`;
+      html += `
+        <div class="loja-bloco-tipo">
+          <div class="loja-divisor-tipo">
+            <hr/>
+            <h3>📖 ${livro.livro}</h3>
+            <hr/>
+          </div>
+          <p class="serv-fonte">${fonte} · descrições na p. ${livro.pagTexto}</p>`;
+
+      livro.secoes.forEach(sec => {
+        const icone = ICONE_SECAO_SERVICO[sec.titulo] || '•';
+        html += `
+          <div class="serv-secao">
+            <div class="loja-divisor-cat">
+              <hr/>
+              <h4>${icone} ${sec.titulo}</h4>
+              <hr/>
+            </div>
+            ${sec.intro ? `<p class="serv-intro">${sec.intro}</p>` : ''}
+            <div class="loja-grid-itens">
+              ${sec.itens.map(construirCardServico).join('')}
+            </div>
+          </div>`;
+      });
+
+      html += `</div>`;
+    });
+
+    return html;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
   //  EXPORTAÇÃO — .txt para os jogadores (Discord)
-  //  O mestre escolhe quais seções entram (Normal / Especial / Magias).
+  //  O mestre escolhe quais seções entram (Normal / Especial / Magias /
+  //  Serviços).
   // ══════════════════════════════════════════════════════════════════
   function _expPreco(item) {
     const desc = item.desconto_pct;
@@ -1391,6 +1582,40 @@
   }
 
   // Quebra um texto longo em linhas indentadas, para o .txt dos jogadores.
+  //  Serviços: lista fixa dos livros. Não depende da loja gerada — é a
+  //  tabela de preços que a cidade cobra, com a descrição de cada um.
+  function _expSecaoServicos() {
+    const livros = window.GA_SERVICOS || [];
+    if (!livros.length) return '';
+
+    const total = totalServicos();
+    let out = `\n🛎 SERVIÇOS — ${total} preço${total !== 1 ? 's' : ''}\n${'═'.repeat(46)}\n`;
+
+    livros.forEach(livro => {
+      out += `\n${livro.livro} — ${livro.tabela}, p. ${livro.pagTabela}\n${'─'.repeat(30)}\n`;
+      livro.secoes.forEach(sec => {
+        out += `  ${sec.titulo}:\n`;
+        sec.itens.forEach(item => {
+          if (item.faixas) {
+            out += `    • ${item.nome}${item.unidade ? ` (${item.unidade})` : ''}\n`;
+            item.faixas.forEach(f => {
+              out += `        ${f.nome} — T$ ${formatarPreco(f.preco)}\n`;
+            });
+          } else {
+            out += `    • ${item.nome} — ${_precoServicoTexto(item.preco, item.unidade)}\n`;
+          }
+          if (item.onde) out += _expWrap('Onde: ' + item.onde, 74, '        ');
+          out += _expDesc(item.nome);
+          (item.mercenarios || []).forEach(m => {
+            const alvo = m.pericias ? `${m.tipo} (${m.pericias}) ${m.nivel}` : `${m.tipo} ${m.nivel}`;
+            out += `        · ${m.nome} — T$ ${formatarPreco(m.preco)} · ${alvo}\n`;
+          });
+        });
+      });
+    });
+    return out;
+  }
+
   function _expWrap(texto, largura, indent) {
     const linhas = [];
     let atual = '';
@@ -1541,6 +1766,7 @@
     if (secoes.normal)   txt += _expSecaoNormal(ent.normal);
     if (secoes.especial) txt += _expSecaoEspecial(ent);
     if (secoes.magias)   txt += _expSecaoMagias(ent);
+    if (secoes.servicos) txt += _expSecaoServicos();
 
     baixarTxt(`loja_${carimboArquivo()}.txt`, txt + '\n');
   }
@@ -1559,6 +1785,8 @@
           <span><strong>✨ Loja Especial</strong> — encantamentos</span></label>
         <label class="ga-check"><input type="checkbox" data-ga-sec="magias" checked>
           <span><strong>📜 Magias</strong> — pergaminhos</span></label>
+        <label class="ga-check"><input type="checkbox" data-ga-sec="servicos" checked>
+          <span><strong>🛎 Serviços</strong> — estadia, condução, mercenários…</span></label>
       </div>
       <div class="ga-modal-acoes">
         <button class="ga-btn-principal" data-ga-baixar>⬇ Baixar .txt</button>
@@ -1568,7 +1796,9 @@
       if (e.target.closest('[data-ga-baixar]')) {
         const sec = {};
         overlay.querySelectorAll('input[data-ga-sec]').forEach(c => { sec[c.dataset.gaSec] = c.checked; });
-        if (!sec.normal && !sec.especial && !sec.magias) { alert('Selecione ao menos uma seção.'); return; }
+        if (!sec.normal && !sec.especial && !sec.magias && !sec.servicos) {
+          alert('Selecione ao menos uma seção.'); return;
+        }
         exportarLoja(sec);
         overlay._fechar();
       }

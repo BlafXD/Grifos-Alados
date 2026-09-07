@@ -1140,3 +1140,120 @@
   .comun-fogo { margin-left: 0; }
   .comun-caixa-info { flex-direction: column; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   SERVIÇOS (aba 🛎)
+   Lista fixa dos livros: preço sem desconto, sem estoque e sem
+   sorteio. Reaproveita o card de item; o que muda é o miolo — a
+   unidade que o livro imprime ao lado do preço ("por km", "por
+   cena"), as faixas de preço de uma mesma linha e os mercenários.
+   ══════════════════════════════════════════════════════════════════ */
+.serv-fonte {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  margin: -0.6rem 0 0.2rem;
+}
+
+.serv-intro {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink-faded);
+  text-align: justify;
+  border-left: 3px solid var(--gold-dim);
+  padding-left: 0.8rem;
+  margin: 0 0 0.9rem;
+}
+
+/* unidade do preço ("por noite", "por km", "por cena") */
+.serv-unidade {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  white-space: nowrap;
+}
+
+/* linhas de preço de um mesmo serviço (Condução, Magia, Mercenário) */
+.serv-faixas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.45rem;
+}
+
+.serv-faixa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  border-bottom: 1px dotted var(--parchment3);
+  padding-bottom: 0.28rem;
+}
+.serv-faixa:last-child { border-bottom: none; padding-bottom: 0; }
+
+.serv-faixa-nome {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+/* ── os 16 mercenários de contrato (Heróis de Arton) ────────────── */
+.serv-merc-lista > summary::before { content: '⚔'; }
+
+.serv-merc-nota {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  text-align: left;
+  margin: 0 0 0.6rem;
+}
+
+/* o card do Mercenário ocupa a linha inteira do grid: são 16 verbetes */
+.item-card--largo { grid-column: 1 / -1; }
+
+.serv-merc-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0 1.4rem;
+}
+
+.serv-merc {
+  border-top: 1px solid var(--parchment3);
+  padding: 0.45rem 0;
+}
+
+.serv-merc-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.serv-merc-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.serv-merc-tipo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  margin-top: 0.15rem;
+}
+
+.serv-merc-desc {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-faded);
+  text-align: left;
+  margin-top: 0.15rem;
+}
