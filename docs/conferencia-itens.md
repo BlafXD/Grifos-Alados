@@ -2,13 +2,14 @@
 
 **Data:** 02/09/2026 · **Fonte:** os PDFs em `C:/Users/caiqu/Desktop/RPG/Tormenta 20/Livros`
 
-**Estado do conserto: as três etapas estão feitas.** Etapa 1 em 06/09/2026 (os
-16 valores, os 4 nomes, a caixa e o `X`→`x`); etapas 2 e 3 em 07/09/2026 (os 58
-encantos com a separação armadura × escudo, e os 8 itens mágicos do *Ameaças*),
-mais o preço dos 84 itens específicos, que a etapa 3 revelou faltando.
-O que cada uma fez está em §6; o que continua **em aberto** é só o que sempre
-esteve fora do plano: a melhoria "Aprimorado" (§2.4) e as 23 linhas de
-**Serviços** (§2.1).
+**Estado do conserto: acabou — as quatro etapas estão feitas.** Etapa 1 em
+06/09/2026 (os 16 valores, os 4 nomes, a caixa e o `X`→`x`); etapas 2 e 3 em
+07/09/2026 (os 58 encantos com a separação armadura × escudo, e os 8 itens
+mágicos do *Ameaças*), mais o preço dos 84 itens específicos, que a etapa 3
+revelou faltando; e a **etapa 4**, também em 07/09/2026, que fechou as duas
+pontas que sempre estiveram fora do plano: a melhoria **"Aprimorado"** (§2.4) e
+os **Serviços** (§2.1), agora uma sub-aba da Loja. O que cada uma fez está
+em §6. **Nada continua em aberto.**
 
 Mesma ideia da conferência das fichas: em vez de comparar o projeto com um TXT
 colado, cada tabela de equipamento foi **lida do PDF** e cruzada com os dados do
@@ -36,14 +37,16 @@ item** — o Atlas só cita a Tabela 8-1 do básico.
 | Equipamento (nomes distintos) | 508 | 455 (458 linhas) | 0 (as 53 diferenças são Animais/Veículos/Serviços — §2.1) |
 | Encantos (vagas por categoria) | 168 | 96 → **168** ✔ | **72 vagas / 58 nomes** — feito em 07/09 |
 | Itens mágicos nomeados | 265 | 257 → **263** ✔ | **8** — feito em 07/09 (6 nas tabelas + 2 artefatos só com descrição) |
-| Melhorias (nomes distintos) | 46 | 46 | **1** ("Aprimorado") |
+| Melhorias (nomes distintos) | 47 | 46 → **47** ✔ | **1** ("Aprimorado") — feito em 07/09 |
 
 *A conta de encantos é por vaga: armadura e escudo têm listas próprias — hoje
 com conteúdo diferente (§5, item 4), o que tira 6 vagas das 174 do cálculo
 antigo. São 58 nomes distintos, 20 deles valendo para as listas de proteção.
 Em melhorias o projeto guarda 49 verbetes porque separa as formas feminina e
 masculina (macabra/macabro) e traz uma extra do Suplemento do Mestre
-("Penetrante").*
+("Penetrante"). As 46 do sorteio continuam sendo 46 — "Aprimorado" não entrou
+em tabela d% nenhuma, porque não existe sorteio de ferramenta superior; ele
+entrou onde o livro o põe, na Tabela 3-8 da aba "🔨 Criação de Itens" (§2.4).*
 
 **Descrições: 100%.** Usando o `ItensDescricoes.get()` real (com `ALIASES` e o
 recurso às magias), **458/458** itens do catálogo, **168/168** encantos (eram
@@ -86,8 +89,11 @@ Fora do catálogo ficaram 50 linhas, todas das seções **Animais**, **Veículos
   Elefante, Hiena, Leão, Rinoceronte, Urso pardo
 - **Deuses** — Serviços: Casamento (por pessoa), Cerimônia religiosa, Sacramento
 
-> Vale decidir se os **Serviços** (23 linhas, com preço) merecem uma sub-aba
-> própria — hoje eles não existem em lugar nenhum do site.
+> **✅ Os Serviços viraram sub-aba da Loja em 07/09/2026** — veja a etapa 4, em
+> §6. Ao transcrevê-los, a conta saiu **24**, não 23 (e o total de linhas fora
+> do catálogo, **51**, não 50): são 11 do T20, 10 do *Heróis* — contando as
+> quatro faixas do Mercenário — e 3 do *Deuses*. Animais e Veículos continuam
+> fora do catálogo de propósito: têm aba própria nas Consultas.
 
 ### 2.2 Encantos: **58 faltavam na loja** ⚠ era o maior buraco — ✅ resolvido em 07/09/2026
 
@@ -155,13 +161,66 @@ para a nuvem "📖 Descrição" funcionar nas fichas que os carregam.
 
 Os 257 demais itens mágicos nomeados (T20, Heróis e Deuses) já estavam lá.
 
-### 2.4 Melhorias: falta uma
+### 2.4 Melhorias: faltava uma — ✅ resolvido em 07/09/2026
 
-As 47 melhorias de `recompensas.js` cobrem T20, Heróis, Deuses e até o
-Suplemento do Mestre. A única do livro que não existe em lugar nenhum é
+As melhorias de `recompensas.js` cobrem T20, Heróis, Deuses e até o Suplemento
+do Mestre. A única dos livros que não estava em tabela nenhuma do projeto era
 **"Aprimorado"** (T20, Tabela 3-8, "Melhorias para ferramentas e vestuário") —
-coerente com o gerador só rolar melhoria de arma/armadura/esotérico, mas a nuvem
-"📖 Descrição" também não a encontra.
+coerente com o gerador só rolar melhoria de arma/armadura/esotérico.
+
+**Correção de um erro deste relatório:** a versão de 02/09 dizia que a nuvem
+"📖 Descrição" também não a encontrava. **Encontra** — `aprimorado` está no
+`js/itens-descricoes-extra-data.js` desde o primeiro commit, e o
+`ItensDescricoes.get('Aprimorado')` devolve o verbete inteiro. O que faltava era
+só o *lugar*: nenhuma tabela do site dizia que ela existe, nem em que categoria.
+
+**O conserto (etapa 4).** A Tabela 3-8 inteira — as 31 linhas, nas cinco
+categorias do livro — virou card da sub-aba **🔨 Criação de Itens**
+(`js/criacao-itens-data.js`), logo abaixo da Tabela 3-7, que já morava lá. É
+onde o próprio livro manda olhar ("as melhorias para cada categoria de item
+estão listadas na Tabela 3-8") e onde a calculadora já aceitava *ferramenta* e
+*vestuário* como categoria de fabricação. A nota do card lista o que os outros
+três livros acrescentam em cada categoria.
+
+**"Aprimorado" não entrou em tabela d%,** e não deve entrar: o livro só tem
+tabela de tesouro para item superior de arma, armadura e esotérico. Rolar
+ferramenta superior seria regra inventada.
+
+#### Achado novo, ainda NÃO consertado: duas melhorias na tabela errada
+
+Transcrever a Tabela 3-8 obrigou a ler as categorias das outras três tabelas de
+melhoria, e a do *Heróis* (**Tab. 3-5**, p. 240) só se lê pela geometria — o
+`-layout` embaralha nome e cabeçalho. Lida pelo `_pdf.js`, com o y de cada
+texto, ela diz:
+
+| categoria (Heróis, Tab. 3-5) | melhorias |
+|---|---|
+| armas | Farpada, Fósforo, Guarda, Incendiária, Pressurizada |
+| armaduras e escudos | Balístico, Injetora, Prudente |
+| esotéricos | Potencializador |
+| **ferramentas e vestuário** | **Brasonado, Usado** |
+| qualquer das categorias acima | Deslumbrante |
+
+Ou seja: **Brasonado e Usado são melhorias de ferramenta e vestuário**, e no
+`js/recompensas.js` elas estão nas **três** tabelas de sorteio (arma, armadura e
+esotérico). O efeito das duas confirma o livro — ambas mexem em *teste de
+perícia com o item*, que é o que ferramenta e vestuário fazem. Tirá-las das três
+tabelas mexe nas faixas do d%, então fica para uma decisão à parte.
+
+Duas coisas menores que a mesma leitura mostrou, e que também ficaram para
+depois:
+
+- **O *Heróis* se contradiz no Deslumbrante.** A Tab. 3-5 o põe em "qualquer das
+  categorias acima"; o verbete dele (p. 239) diz "só pode ser aplicada em
+  armaduras e vestuários". O projeto o tem só em armadura — que as duas versões
+  aceitam.
+- **Os oito `pag:"??"` do `recompensas.js` têm resposta**, fora um. Todas as do
+  *Heróis* estão na Tab. 3-5 (p. 240), com o verbete em **p. 239** (Fósforo,
+  Brasonado) ou **p. 240** (Usado, Prudente); Devotado está na Tab. 1-4 do
+  *Deuses*, **p. 54**. Só **Penetrante** continua fora dos quatro livros — ele
+  existe mesmo no *Suplemento do Mestre*, para onde o `livro:` dele já aponta.
+  (O `livro:` do Fósforo, porém, diz "Suplemento do Mestre" e devia dizer
+  *Heróis de Arton*: ele está nos dois, e o *Heróis* é livro conferido.)
 
 ---
 
@@ -400,9 +459,54 @@ foram lidas à mão no PDF.
   "Armadura das   Maior   T$ 40.500" e o "sombras profundas" fica na linha de
   baixo. Vale a mesma regra de §7: o fragmento em minúscula continua o de cima.
 
-**Continua em aberto (sempre esteve fora do plano):** a melhoria "Aprimorado"
-(§2.4) e as 23 linhas de **Serviços** (§2.1), que hoje não existem em canto
-nenhum do site.
+**Etapa 4 — as duas pontas soltas. ✅ FEITA EM 07/09/2026.** Eram o que sempre
+esteve fora do plano: a melhoria "Aprimorado" (§2.4) e os Serviços (§2.1).
+
+*A melhoria* virou a **Tabela 3-8 inteira** (31 linhas, cinco categorias) num
+card novo da sub-aba 🔨 Criação de Itens — o detalhe está em §2.4, inclusive a
+correção do que este relatório dizia de errado sobre a nuvem "📖 Descrição".
+
+*Os Serviços* viraram a **sub-aba 🛎 Serviços da Loja**, em `js/servicos-data.js`
+(dados) + `js/loja.js` (painel, busca e exportação). São as **24 linhas de
+preço** dos três livros que têm serviço, com a descrição de cada uma transcrita
+da prosa:
+
+| livro | tabela → prosa | linhas |
+|---|---|---|
+| **Tormenta 20** | Tab. 3-6 (p. 157) → p. 163 | 11 — estadia (3), condução (3), curandeiro, magia (3), mensageiro |
+| **Heróis de Arton** | Tab. 3-4 (p. 229) → pp. 238-239 | 10 — mercenário (4 faixas), banho quente, bigode encerado, instrução marcial, maquiagem, ópera, sarau |
+| **Deuses de Arton** | Tab. 1-3 (p. 50) → p. 54 | 3 — casamento, cerimônia religiosa, sacramento |
+
+Cinco decisões que a etapa exigiu, e o porquê de cada uma:
+
+1. **Serviço não é item sorteado.** A lista é fixa e igual à do livro: sem
+   desconto, sem estoque, sem teto de preço da comunidade (o teto vale para o
+   que está na prateleira; e nenhum livro diz que aldeia não tem estalagem).
+   Onde o livro **fala** de disponibilidade — estadia luxuosa "só nas melhores
+   estalagens", ópera "só em grandes cidades", cerimônia "num templo da sua
+   divindade" —, a frase dele vai escrita no card, no campo *Onde*.
+2. **Uma linha do livro pode ter várias faixas de preço.** Condução, Magia e
+   Mercenário são cabeçalhos com preços embaixo. Viraram um card com as faixas
+   listadas, e é por isso que 17 cards valem 24 linhas de preço.
+3. **As descrições entram na base do site.** O `servicos-data.js` registra cada
+   uma em `GA_ITENS_DESC_EXTRA` (sem sobrescrever nada), então o serviço é achado
+   pelo mesmo "📖 Descrição" dos itens — na aba e na busca das caixas de texto.
+   Fonte única: o texto mora num arquivo só.
+4. **Os 16 mercenários do *Heróis* entraram junto** (p. 238). O livro não põe
+   preço no verbete de cada um — quem paga é a faixa da tabela, achada pelo
+   tipo e nível que a última frase do verbete indica (*"Guardião iniciante"* →
+   parceiro iniciante, T$ 30). O tipo virou **nuvem de mouse** com o benefício
+   do parceiro (`PARCEIRO_TIPOS`, de `js/animais-data.js`); nos três que são
+   capangas, a nuvem traz o tamanho e as estatísticas do grupo (*Capangas*,
+   p. 241). Como o texto de veterano começa em "como acima", a nuvem mostra
+   iniciante **e** veterano.
+5. **Os mercenários não viram verbete do site.** "Sombra", "Matador" e
+   "Arauto" são palavras comuns demais para entrar na base de descrições — eles
+   vivem dentro do card do Mercenário.
+
+Conferência: preço e nome de **cada uma das 24 linhas** foram lidos em duas
+extrações independentes de cada PDF (`-layout` e `-raw`), como nas etapas
+anteriores.
 
 ---
 
@@ -417,6 +521,14 @@ nenhum do site.
   escalado). Tolerância proporcional ao `tam` da fonte **não** resolve, porque
   o `tam` vem da matriz `Tm` e ignora o `cm`. O que resolve é **y exato**
   (tolerância 0,35): as células de uma linha saem do PDF com o mesmo y.
+- **Tabela com cabeçalho de categoria no meio: o cabeçalho fica ACIMA da
+  primeira linha do grupo.** Na Tab. 3-5 do *Heróis* o `-layout` cola o
+  cabeçalho na linha do primeiro nome ("Farpada  Melhorias para armas") e
+  espalha os efeitos por outras alturas — dá para ler tudo errado sem parecer
+  errado. Pelo `_pdf.js`, o y resolve em dez linhas de script: cada cabeçalho
+  está ~2,2 unidades acima do primeiro nome do seu grupo, e os nomes distam
+  ~2,2 entre si. Foi assim que se descobriu que Brasonado e Usado são melhorias
+  de **ferramenta e vestuário** (§2.4).
 - **O *Ameaças de Arton* desenha cada linha de tabela como um único run**
   (`"Neko-teT$ 101d419—Corte1"`). Não há coluna nenhuma para ler; as três
   tabelas dele foram transcritas à mão do PDF.

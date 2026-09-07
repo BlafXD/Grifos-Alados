@@ -27,6 +27,51 @@ window.GA_CRIACAO_ITENS = (function () {
     { n: 4, preco: 18000, cd: 20 },
   ];
 
+  // ── TABELA 3-8: MELHORIAS POR CATEGORIA (Tormenta20, p. 165) ──────
+  //  Transcrita como o livro imprime: cada categoria com as suas, mais
+  //  as quatro do fim, que valem para qualquer uma. A categoria só é
+  //  repetida na primeira linha do grupo, como na tabela impressa.
+  //  É aqui que mora a única melhoria de FERRAMENTA e VESTUÁRIO do
+  //  Tormenta 20 — "Aprimorado" —, que não cabia em nenhuma das três
+  //  tabelas do Gerador de Recompensas (arma, armadura e esotérico).
+  const MELHORIAS_3_8 = [
+    ['Armas',                  'Certeira',            '+1 nos testes de ataque'],
+    ['',                       'Pungente',            '+2 nos testes de ataque'],
+    ['',                       'Cruel',               '+1 nas rolagens de dano'],
+    ['',                       'Atroz',               '+2 nas rolagens de dano'],
+    ['',                       'Equilibrada',         '+2 em testes de manobras'],
+    ['',                       'Harmonizada',         'Custo de habilidades de ataque diminui em –1 PM'],
+    ['',                       'Injeção alquímica',   'Gera efeito de preparado'],
+    ['',                       'Maciça',              '+1 no multiplicador de crítico'],
+    ['',                       'Material especial',   'Conforme o material'],
+    ['',                       'Mira telescópica',    'Aumenta alcance da arma'],
+    ['',                       'Precisa',             '+1 na margem de ameaça'],
+
+    ['Armaduras e escudos',    'Ajustada',            '–1 na penalidade de armadura'],
+    ['',                       'Sob medida',          '–2 na penalidade de armadura'],
+    ['',                       'Delicada',            'Aplica 1 ponto de Des na Defesa'],
+    ['',                       'Espinhosa (armadura)', 'Causa dano com agarrar'],
+    ['',                       'Espinhoso (escudo)',  'Aumenta dano do escudo'],
+    ['',                       'Material especial',   'Conforme o material'],
+    ['',                       'Polida',              '+5 na Defesa na primeira rodada'],
+    ['',                       'Reforçada',           '+1 na Defesa, +1 na penalidade de armadura'],
+    ['',                       'Selada',              '+1 nos testes de resistência'],
+
+    ['Esotéricos',             'Canalizador',         '+1 no limite de PM'],
+    ['',                       'Energético',          '+1d6 no dano de magias'],
+    ['',                       'Harmonizado',         'Custo de uma magia diminui em –1 PM'],
+    ['',                       'Material especial',   'Conforme o material'],
+    ['',                       'Poderoso',            '+1 na CD de suas magias'],
+    ['',                       'Vigilante',           '+2 na Defesa'],
+
+    ['Ferramentas e vestuário', 'Aprimorado',         '+1 em testes de perícia'],
+
+    ['Qualquer das acima',     'Banhado a ouro',      '+2 em Diplomacia'],
+    ['',                       'Cravejado de gemas',  '+2 em Enganação'],
+    ['',                       'Discreto',            '–1 espaço, +5 para ocultar'],
+    ['',                       'Macabro',             '+2 em Intimidação, –2 em Diplomacia'],
+  ];
+
   // ── TABELA 8-7: PREÇO DE ENCANTOS (confirmada, completa) ──────────
   const ENCANTOS_PADRAO = [
     { n: 1, preco: 18000, cd: 10 },
@@ -107,9 +152,16 @@ Itens com uma melhoria são caros, mas ainda relativamente comuns (ex.: guardas 
 
     { grupo: '⚒ Itens Superiores', titulo: 'Melhorias — quem pode receber', texto:
 `Apenas itens das categorias armas, armaduras e escudos, ferramentas, vestuário e esotéricos podem receber melhorias. Cada melhoria só pode ser aplicada uma vez a um mesmo item.
-A lista completa de melhorias (o que cada uma faz) já está disponível no site: selecione o nome de uma melhoria em qualquer caixa de texto (ex. na ficha de uma criatura) e clique em "📖 Descrição" para buscar — ou digite o nome dela lá.`,
+Quais melhorias cada categoria pode receber está no card seguinte (Tabela 3-8). O texto completo de cada uma (o que ela faz, pré-requisitos e restrições) sai pelo "📖 Descrição": selecione o nome dela em qualquer caixa de texto (ex. na ficha de uma criatura) e clique em "📖 Descrição" — ou digite o nome lá.`,
       tabela: { cab: ['Nº de melhorias', 'Aumento no preço', 'Aumento na CD'], titulo: 'Tabela 3-7: Preço de Melhorias', destaque: 0,
         linhas: MELHORIAS_PADRAO.map(m => [String(m.n), '+ T$ ' + m.preco.toLocaleString('pt-BR'), '+' + m.cd]) } },
+
+    { grupo: '⚒ Itens Superiores', titulo: 'Melhorias por categoria (Tabela 3-8)', texto:
+`Cada categoria de item tem as suas melhorias; as quatro do fim da tabela valem para qualquer uma delas. Só a categoria manda: uma arma não pode receber uma melhoria de armadura, por mais que o preço seja o mesmo.
+Repare na linha de FERRAMENTAS E VESTUÁRIO: no Tormenta 20 ela tem uma única melhoria, "Aprimorado" — a que faz uma maleta de medicamentos dar +1 em Cura ou uma luva de pelica dar +2 em Ladinagem. É a única melhoria dos livros que o Gerador de Recompensas não rola, porque ele sorteia item superior de arma, armadura e esotérico (as três tabelas do livro), e ferramenta não é uma delas.`,
+      tabela: { cab: ['Categoria', 'Melhoria', 'Efeito'], titulo: 'Tabela 3-8: Melhorias', destaque: 1,
+        linhas: MELHORIAS_3_8,
+        nota: 'Esta é a tabela do Tormenta 20. Os outros livros acrescentam, nas mesmas categorias: Heróis de Arton (Tab. 3-5, p. 240) — Farpada, Fósforo, Guarda, Incendiária e Pressurizada em armas; Balístico, Injetora e Prudente em armaduras e escudos; Potencializador em esotéricos; Brasonado e Usado em ferramentas e vestuário; Deslumbrante em qualquer categoria. Deuses de Arton (Tab. 1-4, p. 54) — Conduíte em armas; Diligente e Inscrito em armaduras, escudos, ferramentas e vestuários; Canônico e Devotado em todas essas. Suplemento do Mestre — Penetrante em armas. Todas têm descrição no "📖 Descrição".' } },
 
     { grupo: '⚒ Itens Superiores', titulo: 'Fabricando itens superiores', texto:
 `Itens superiores só podem ser fabricados por personagens com a habilidade Fabricar Item Superior. A fabricação segue a mesma regra de itens normais, porém, de acordo com o número de melhorias, o preço e a CD do teste de Ofício aumentam (Tabela 3-7 acima).
