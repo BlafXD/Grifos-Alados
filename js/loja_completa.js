@@ -21,11 +21,25 @@ const LojaCompleta = (function () {
   //  ficam aqui — são controlados por tipo, no objeto _config abaixo.
   const ITENS_BASE = [{"kind": "weapon","name": "Adaga","category": "Corpo a Corpo — Leves","price": 2.0,"damage": "1d4","crit": "19","alcance": "Curto","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Espada curta","category": "Corpo a Corpo — Leves","price": 10.0,"damage": "1d6","crit": "19","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Foice","category": "Corpo a Corpo — Leves","price": 4.0,"damage": "1d6","crit": "x3","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Bastão lúdico","category": "Corpo a Corpo — Leves","price": 5.0,"damage": "1d6","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 1.0},{"kind": "weapon","name": "Porrete","category": "Corpo a Corpo — Leves","price": 2.0,"damage": "1d6","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 1.0},{"kind": "weapon","name": "Clava","category": "Corpo a Corpo — Uma Mão","price": null,"damage": "1d6","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 1.0},{"kind": "weapon","name": "Lança","category": "Corpo a Corpo — Uma Mão","price": 2.0,"damage": "1d6","crit": "x2","alcance": "Curto","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Maça","category": "Corpo a Corpo — Uma Mão","price": 12.0,"damage": "1d8","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 1.0},{"kind": "weapon","name": "Bordão","category": "Corpo a Corpo — Duas Mãos","price": null,"damage": "1d6/1d6","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 2.0},{"kind": "weapon","name": "Pique","category": "Corpo a Corpo — Duas Mãos","price": 2.0,"damage": "1d8","crit": "x2","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Tacape","category": "Corpo a Corpo — Duas Mãos","price": null,"damage": "1d10","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 2.0},{"kind": "weapon","name": "Azagaia","category": "Ataque à Distância — Uma Mão","price": 1.0,"damage": "1d6","crit": "x2","alcance": "Médio","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Besta leve","category": "Ataque à Distância — Uma Mão","price": 35.0,"damage": "1d8","crit": "19","alcance": "Médio","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Virotes (20)","category": "Ataque à Distância — Uma Mão","price": 2.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Funda","category": "Ataque à Distância — Uma Mão","price": null,"damage": "1d4","crit": "x2","alcance": "Médio","tipo": "Impacto","peso": 1.0},{"kind": "weapon","name": "Pedras (20)","category": "Ataque à Distância — Uma Mão","price": 0.5,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Besta de mão","category": "Ataque à Distância — Uma Mão","price": 30.0,"damage": "1d6","crit": "19","alcance": "Curto","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Zarabatana","category": "Ataque à Distância — Uma Mão","price": 5.0,"damage": "1d3","crit": "x2","alcance": "Curto","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Dardos (20)","category": "Ataque à Distância — Uma Mão","price": 2.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 0.5},{"kind": "weapon","name": "Arco curto","category": "Ataque à Distância — Duas Mãos","price": 30.0,"damage": "1d6","crit": "x3","alcance": "Médio","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Flechas (20)","category": "Ataque à Distância — Duas Mãos","price": 1.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Machadinha","category": "Corpo a Corpo — Leves","price": 6.0,"damage": "1d6","crit": "x3","alcance": "Curto","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Adaga oposta","category": "Corpo a Corpo — Leves","price": 12.0,"damage": "1d4","crit": "19","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Agulha de Ahlen","category": "Corpo a Corpo — Leves","price": 10.0,"damage": "1d4","crit": "19","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Cinquedea","category": "Corpo a Corpo — Leves","price": 18.0,"damage": "1d4","crit": "19","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Dirk","category": "Corpo a Corpo — Leves","price": 15.0,"damage": "1d4","crit": "19","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Martelo leve","category": "Corpo a Corpo — Leves","price": 2.0,"damage": "1d4","crit": "x4","alcance": "Curto","tipo": "Impacto","peso": 1.0},{"kind": "weapon","name": "Neko-te","category": "Corpo a Corpo — Leves","price": 10.0,"damage": "1d4","crit": "19","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Cimitarra","category": "Corpo a Corpo — Uma Mão","price": 15.0,"damage": "1d6","crit": "18","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Espada longa","category": "Corpo a Corpo — Uma Mão","price": 15.0,"damage": "1d8","crit": "19","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Florete","category": "Corpo a Corpo — Uma Mão","price": 20.0,"damage": "1d6","crit": "18","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Machado de batalha","category": "Corpo a Corpo — Uma Mão","price": 10.0,"damage": "1d8","crit": "x3","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Mangual","category": "Corpo a Corpo — Uma Mão","price": 8.0,"damage": "1d8","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 1.0},{"kind": "weapon","name": "Martelo de guerra","category": "Corpo a Corpo — Uma Mão","price": 12.0,"damage": "1d8","crit": "x3","alcance": "Corpo a corpo","tipo": "Impacto","peso": 1.0},{"kind": "weapon","name": "Picareta","category": "Corpo a Corpo — Uma Mão","price": 8.0,"damage": "1d6","crit": "x4","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Tridente","category": "Corpo a Corpo — Uma Mão","price": 15.0,"damage": "1d8","crit": "x2","alcance": "Curto","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Espada larga","category": "Corpo a Corpo — Uma Mão","price": 8.0,"damage": "2d4","crit": "x2","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Espadim","category": "Corpo a Corpo — Uma Mão","price": 300.0,"damage": "1d8","crit": "20","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Gládio","category": "Corpo a Corpo — Uma Mão","price": 12.0,"damage": "1d6","crit": "19/x3","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Maça-estrela","category": "Corpo a Corpo — Uma Mão","price": 20.0,"damage": "2d4","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto e perfuração","peso": 1.0},{"kind": "weapon","name": "Clava-grão","category": "Corpo a Corpo — Uma Mão","price": 90.0,"damage": "1d6","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 1.0},{"kind": "weapon","name": "Espada canora","category": "Corpo a Corpo — Uma Mão","price": 50.0,"damage": "1d6","crit": "19","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Serrilheira","category": "Corpo a Corpo — Uma Mão","price": 25.0,"damage": "1d6","crit": "19","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Alabarda","category": "Corpo a Corpo — Duas Mãos","price": 10.0,"damage": "1d10","crit": "x3","alcance": "Corpo a corpo","tipo": "Corte/perfuração","peso": 2.0},{"kind": "weapon","name": "Alfange","category": "Corpo a Corpo — Duas Mãos","price": 75.0,"damage": "2d4","crit": "18","alcance": "Corpo a corpo","tipo": "Corte","peso": 2.0},{"kind": "weapon","name": "Gadanho","category": "Corpo a Corpo — Duas Mãos","price": 18.0,"damage": "2d4","crit": "x4","alcance": "Corpo a corpo","tipo": "Corte","peso": 2.0},{"kind": "weapon","name": "Lança montada","category": "Corpo a Corpo — Duas Mãos","price": 10.0,"damage": "1d8","crit": "x3","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Machado de guerra","category": "Corpo a Corpo — Duas Mãos","price": 20.0,"damage": "1d12","crit": "x3","alcance": "Corpo a corpo","tipo": "Corte","peso": 2.0},{"kind": "weapon","name": "Marreta","category": "Corpo a Corpo — Duas Mãos","price": 20.0,"damage": "3d4","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 2.0},{"kind": "weapon","name": "Montante","category": "Corpo a Corpo — Duas Mãos","price": 50.0,"damage": "2d6","crit": "19","alcance": "Corpo a corpo","tipo": "Corte","peso": 2.0},{"kind": "weapon","name": "Bico de corvo","category": "Corpo a Corpo — Duas Mãos","price": 15.0,"damage": "1d8","crit": "x3","alcance": "Corpo a corpo","tipo": "Impacto/perfuração","peso": 2.0},{"kind": "weapon","name": "Desmontador","category": "Corpo a Corpo — Duas Mãos","price": 20.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 2.0},{"kind": "weapon","name": "Espada de execução","category": "Corpo a Corpo — Duas Mãos","price": 75.0,"damage": "2d6","crit": "18/x4","alcance": "Corpo a corpo","tipo": "Corte","peso": 2.0},{"kind": "weapon","name": "Lança de justa","category": "Corpo a Corpo — Duas Mãos","price": 3.0,"damage": "1d8","crit": "x2","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Malho","category": "Corpo a Corpo — Duas Mãos","price": 8.0,"damage": "1d10","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 2.0},{"kind": "weapon","name": "Martelo longo","category": "Corpo a Corpo — Duas Mãos","price": 12.0,"damage": "2d4","crit": "x4","alcance": "Corpo a corpo","tipo": "Impacto/perfuração","peso": 2.0},{"kind": "weapon","name": "Tan-korak","category": "Corpo a Corpo — Duas Mãos","price": 40.0,"damage": "1d8","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 2.0},{"kind": "weapon","name": "Tetsubo","category": "Corpo a Corpo — Duas Mãos","price": 20.0,"damage": "1d10","crit": "X2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 2.0},{"kind": "weapon","name": "Tai-tai","category": "Ataque à Distância — Uma Mão","price": 60.0,"damage": "2d4","crit": "x2","alcance": "Médio","tipo": "Impacto","peso": 2.0},{"kind": "weapon","name": "Arco longo","category": "Ataque à Distância — Duas Mãos","price": 100.0,"damage": "1d8","crit": "x3","alcance": "Médio","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Besta pesada","category": "Ataque à Distância — Duas Mãos","price": 50.0,"damage": "1d12","crit": "19","alcance": "Médio","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Virotes (20)","category": "Ataque à Distância — Duas Mãos","price": 2.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Arco montado","category": "Ataque à Distância — Duas Mãos","price": 45.0,"damage": "1d6","crit": "x3","alcance": "Médio","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Besta dupla","category": "Ataque à Distância — Duas Mãos","price": 125.0,"damage": "1d8","crit": "19","alcance": "Médio","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Chicote","category": "Corpo a Corpo — Uma Mão","price": 2.0,"damage": "1d3","crit": "x2","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Espada bastarda","category": "Corpo a Corpo — Uma Mão","price": 35.0,"damage": "1d10/1d12","crit": "19","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Katana","category": "Corpo a Corpo — Uma Mão","price": 100.0,"damage": "1d8/1d10","crit": "19","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Machado anão","category": "Corpo a Corpo — Uma Mão","price": 30.0,"damage": "1d10","crit": "x3","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Kimbata","category": "Corpo a Corpo — Leves","price": 12.0,"damage": "1d4","crit": "18","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Açoite finntroll","category": "Corpo a Corpo — Uma Mão","price": 30.0,"damage": "1d8","crit": "x2","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Espada vespa","category": "Corpo a Corpo — Uma Mão","price": 75.0,"damage": "2d4","crit": "18","alcance": "Corpo a corpo","tipo": "Corte ou perfuração","peso": 1.0},{"kind": "weapon","name": "Espada-gadanho","category": "Corpo a Corpo — Uma Mão","price": 40.0,"damage": "1d6","crit": "18","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Khopesh","category": "Corpo a Corpo — Uma Mão","price": 20.0,"damage": "1d8","crit": "19/x3","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Lança de falange","category": "Corpo a Corpo — Uma Mão","price": 15.0,"damage": "1d8","crit": "x3","alcance": "Curto","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Machado de haste","category": "Corpo a Corpo — Uma Mão","price": 40.0,"damage": "1d8/1d10","crit": "x3","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Mordida do diabo","category": "Corpo a Corpo — Uma Mão","price": 30.0,"damage": "1d4","crit": "x2","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Pistola-punhal","category": "Corpo a Corpo — Uma Mão","price": 300.0,"damage": "**","crit": "**","alcance": "**","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Presa de serpente","category": "Corpo a Corpo — Uma Mão","price": 1000.0,"damage": "1d8","crit": "17","alcance": "Corpo a corpo","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Rapieira","category": "Corpo a Corpo — Uma Mão","price": 50.0,"damage": "1d8","crit": "18","alcance": "Corpo a corpo","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Corrente de espinhos","category": "Corpo a Corpo — Duas Mãos","price": 25.0,"damage": "2d4/2d4","crit": "19","alcance": "Corpo a corpo","tipo": "Corte","peso": 2.0},{"kind": "weapon","name": "Machado táurico","category": "Corpo a Corpo — Duas Mãos","price": 50.0,"damage": "2d8","crit": "x3","alcance": "Corpo a corpo","tipo": "Corte","peso": 2.0},{"kind": "weapon","name": "Lança de fogo","category": "Corpo a Corpo — Duas Mãos","price": 1000.0,"damage": "**","crit": "**","alcance": "**","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Marrão","category": "Corpo a Corpo — Duas Mãos","price": 50.0,"damage": "4d4","crit": "x2","alcance": "Corpo a corpo","tipo": "Impacto","peso": 2.0},{"kind": "weapon","name": "Montante cinético","category": "Corpo a Corpo — Duas Mãos","price": 3000.0,"damage": "2d6","crit": "19/x4","alcance": "Corpo a corpo","tipo": "Corte","peso": 2.0},{"kind": "weapon","name": "Rede","category": "Ataque à Distância — Uma Mão","price": 20.0,"damage": "-","crit": "-","alcance": "Curto","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Arpão","category": "Ataque à Distância — Uma Mão","price": 30.0,"damage": "1d10","crit": "x3","alcance": "Curto","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Boleadeira","category": "Ataque à Distância — Uma Mão","price": 12.0,"damage": "1d4","crit": "x2","alcance": "Curto","tipo": "Impacto","peso": 1.0},{"kind": "weapon","name": "Chakram","category": "Ataque à Distância — Uma Mão","price": 15.0,"damage": "1d6","crit": "x3","alcance": "Curto","tipo": "Corte","peso": 1.0},{"kind": "weapon","name": "Shuriken","category": "Ataque à Distância — Leve","price": 1.0,"damage": "1d4","crit": "x2","alcance": "Curto","tipo": "Perfuração","peso": 0.5},{"kind": "weapon","name": "Arco de guerra","category": "Ataque à Distância — Duas Mãos","price": 200.0,"damage": "1d12","crit": "x3","alcance": "Médio","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Balestra","category": "Ataque à Distância — Duas Mãos","price": 180.0,"damage": "1d12","crit": "19","alcance": "Médio","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Besta de repetição","category": "Ataque à Distância — Duas Mãos","price": 250.0,"damage": "1d8","crit": "19","alcance": "Médio","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Flechas assobiadoras (20)","category": "Ataque à Distância — Duas Mãos","price": 20.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Flechas de caça (20)","category": "Ataque à Distância — Duas Mãos","price": 10.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Flechas pesadas (20)","category": "Ataque à Distância — Duas Mãos","price": 10.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Virotes pesados (20)","category": "Ataque à Distância — Duas Mãos","price": 20.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Pistola","category": "Ataque à Distância — Leve","price": 250.0,"damage": "2d6","crit": "19/x3","alcance": "Curto","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Balas (20)","category": "Ataque à Distância — Leve","price": 20.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Garrucha","category": "Ataque à Distância — Leve","price": 250.0,"damage": "2d4","crit": "19/x3","alcance": "Curto","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Traque","category": "Ataque à Distância — Leve","price": 75.0,"damage": "2d6","crit": "19/x3","alcance": "Curto","tipo": "Perfuração","peso": 1.0},{"kind": "weapon","name": "Mosquete","category": "Ataque à Distância — Duas Mãos","price": 500.0,"damage": "2d8","crit": "19/x3","alcance": "Médio","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Balas (20)","category": "Ataque à Distância — Duas Mãos","price": 20.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 1.0},{"kind": "weapon","name": "Arcabuz","category": "Ataque à Distância — Duas Mãos","price": 800.0,"damage": "2d10","crit": "19/x3","alcance": "Médio","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Bacamarte","category": "Ataque à Distância — Duas Mãos","price": 450.0,"damage": "4d6","crit": "19/x3","alcance": "Especial","tipo": "Perfuração","peso": 2.0},{"kind": "weapon","name": "Canhão portátil","category": "Ataque à Distância — Duas Mãos","price": 3000.0,"damage": "4d10","crit": "19/x3","alcance": "Curto","tipo": "Impacto","peso": 2.0},{"kind": "weapon","name": "Bola de ferro (1)","category": "Ataque à Distância — Duas Mãos","price": 5.0,"damage": "-","crit": "-","alcance": "Corpo a corpo","tipo": "-","peso": 0.5},{"kind": "weapon","name": "Sifão cáustico","category": "Ataque à Distância — Duas Mãos","price": 600.0,"damage": "4d6","crit": "x2","alcance": "Especial","tipo": "Ácido","peso": 2.0},{"kind": "armor","name": "Armadura acolchoada","category": "Armaduras Leves","price": 5.0,"armor_bonus": 1,"armor_penalty": "0","armor_weight": 2.0},{"kind": "armor","name": "Armadura de couro","category": "Armaduras Leves","price": 20.0,"armor_bonus": 2,"armor_penalty": "0","armor_weight": 2.0},{"kind": "armor","name": "Couro batido","category": "Armaduras Leves","price": 35.0,"armor_bonus": 3,"armor_penalty": "-1","armor_weight": 2.0},{"kind": "armor","name": "Gibão de peles","category": "Armaduras Leves","price": 25.0,"armor_bonus": 4,"armor_penalty": "-3","armor_weight": 2.0},{"kind": "armor","name": "Couraça","category": "Armaduras Leves","price": 500.0,"armor_bonus": 5,"armor_penalty": "-4","armor_weight": 2.0},{"kind": "armor","name": "Armadura sensual","category": "Armaduras Leves","price": 55.0,"armor_bonus": 1,"armor_penalty": "0","armor_weight": 2.0},{"kind": "armor","name": "Armadura de folhas","category": "Armaduras Leves","price": 75.0,"armor_bonus": 2,"armor_penalty": "0","armor_weight": 2.0},{"kind": "armor","name": "Armadura de engenhoqueiro goblin","category": "Armaduras Leves","price": 85.0,"armor_bonus": 3,"armor_penalty": "-2 a -10","armor_weight": 2.0},{"kind": "armor","name": "Armadura de ossos","category": "Armaduras Leves","price": 120.0,"armor_bonus": 3,"armor_penalty": "-2","armor_weight": 2.0},{"kind": "armor","name": "Veste de teia de aranha","category": "Armaduras Leves","price": 3000.0,"armor_bonus": 4,"armor_penalty": "0","armor_weight": 2.0},{"kind": "armor","name": "Cota de moedas","category": "Armaduras Leves","price": 350.0,"armor_bonus": 4,"armor_penalty": "-3","armor_weight": 2.0},{"kind": "armor","name": "Colete fora da lei","category": "Armaduras Leves","price": 750.0,"armor_bonus": 5,"armor_penalty": "-5","armor_weight": 2.0},{"kind": "armor","name": "Brunea","category": "Armaduras Pesadas","price": 50.0,"armor_bonus": 5,"armor_penalty": "-2","armor_weight": 5.0},{"kind": "armor","name": "Cota de malha","category": "Armaduras Pesadas","price": 150.0,"armor_bonus": 6,"armor_penalty": "-2","armor_weight": 5.0},{"kind": "armor","name": "Loriga segmentada","category": "Armaduras Pesadas","price": 250.0,"armor_bonus": 7,"armor_penalty": "-3","armor_weight": 5.0},{"kind": "armor","name": "Meia armadura","category": "Armaduras Pesadas","price": 600.0,"armor_bonus": 8,"armor_penalty": "-4","armor_weight": 5.0},{"kind": "armor","name": "Armadura completa","category": "Armaduras Pesadas","price": 3000.0,"armor_bonus": 10,"armor_penalty": "-5","armor_weight": 5.0},{"kind": "armor","name": "Brigantina","category": "Armaduras Pesadas","price": 75.0,"armor_bonus": 6,"armor_penalty": "0","armor_weight": 5.0},{"kind": "armor","name": "Armadura de quitina","category": "Armaduras Pesadas","price": 350.0,"armor_bonus": 7,"armor_penalty": "-3","armor_weight": 5.0},{"kind": "armor","name": "Armadura de chumbo","category": "Armaduras Pesadas","price": 750.0,"armor_bonus": 7,"armor_penalty": "-5","armor_weight": 5.0},{"kind": "armor","name": "Armadura de justa","category": "Armaduras Pesadas","price": 1200.0,"armor_bonus": 9,"armor_penalty": "-5","armor_weight": 5.0},{"kind": "armor","name": "Armadura de hussardo alado","category": "Armaduras Pesadas","price": 4500.0,"armor_bonus": 10,"armor_penalty": "-6","armor_weight": 5.0},{"kind": "armor","name": "Armadura de pedra","category": "Armaduras Pesadas","price": 5500.0,"armor_bonus": 12,"armor_penalty": "-5","armor_weight": 5.0},{"kind": "armor","name": "Escudo leve","category": "Escudos","price": 5.0,"armor_bonus": 1,"armor_penalty": "-1","armor_weight": 1.0},{"kind": "armor","name": "Escudo pesado","category": "Escudos","price": 15.0,"armor_bonus": 2,"armor_penalty": "-2","armor_weight": 2.0},{"kind": "armor","name": "Broquel","category": "Escudos","price": 25.0,"armor_bonus": null,"armor_penalty": "-1","armor_weight": 0.5},{"kind": "armor","name": "Escudo de couro","category": "Escudos","price": 3.0,"armor_bonus": 1,"armor_penalty": "-1","armor_weight": 1.0},{"kind": "armor","name": "Escudo de vime","category": "Escudos","price": 15.0,"armor_bonus": 2,"armor_penalty": "-2","armor_weight": 2.0},{"kind": "armor","name": "Escudo torre","category": "Escudos","price": 45.0,"armor_bonus": 2,"armor_penalty": "-4","armor_weight": 2.0},{"kind": "armor","name": "Sagna","category": "Escudos","price": 20.0,"armor_bonus": 2,"armor_penalty": "-3","armor_weight": 2.0},{"kind": "misc","name": "Água benta","category": "Equipamento de Aventura","price": 10.0,"weight": 0.5},{"kind": "misc","name": "Algemas","category": "Equipamento de Aventura","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Arpéu","category": "Equipamento de Aventura","price": 5.0,"weight": 1.0},{"kind": "misc","name": "Bandoleira de poções","category": "Equipamento de Aventura","price": 20.0,"weight": 1.0},{"kind": "misc","name": "Barraca","category": "Equipamento de Aventura","price": 10.0,"weight": 1.0},{"kind": "misc","name": "Corda","category": "Equipamento de Aventura","price": 1.0,"weight": 1.0},{"kind": "misc","name": "Espelho","category": "Equipamento de Aventura","price": 10.0,"weight": 1.0},{"kind": "misc","name": "Lampião","category": "Equipamento de Aventura","price": 7.0,"weight": 1.0},{"kind": "misc","name": "Mochila","category": "Equipamento de Aventura","price": 2.0,"weight": null},{"kind": "misc","name": "Mochila de aventureiro","category": "Equipamento de Aventura","price": 50.0,"weight": null},{"kind": "misc","name": "Óleo","category": "Equipamento de Aventura","price": 0.1,"weight": 0.5},{"kind": "misc","name": "Organizador de pergaminhos","category": "Equipamento de Aventura","price": 25.0,"weight": 1.0},{"kind": "misc","name": "Pé de cabra","category": "Equipamento de Aventura","price": 2.0,"weight": 1.0},{"kind": "misc","name": "Saco de dormir","category": "Equipamento de Aventura","price": 1.0,"weight": 1.0},{"kind": "misc","name": "Símbolo sagrado","category": "Equipamento de Aventura","price": 5.0,"weight": 1.0},{"kind": "misc","name": "Tocha","category": "Equipamento de Aventura","price": 0.1,"weight": 1.0},{"kind": "misc","name": "Vara de madeira (3m)","category": "Equipamento de Aventura","price": 0.2,"weight": 1.0},{"kind": "misc","name": "Ábaco","category": "Equipamento de Aventura","price": 45.0,"weight": 1.0},{"kind": "misc","name": "Água benta concentrada","category": "Equipamento de Aventura","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Ampulheta","category": "Equipamento de Aventura","price": 45.0,"weight": 1.0},{"kind": "misc","name": "Amuleto de Khalmyr","category": "Equipamento de Aventura","price": 30.0,"weight": 1.0},{"kind": "misc","name": "Amuleto de Nimb","category": "Equipamento de Aventura","price": 30.0,"weight": 1.0},{"kind": "misc","name": "Apanhador de sonhos","category": "Equipamento de Aventura","price": 40.0,"weight": 1.0},{"kind": "misc","name": "Aparelho de chá","category": "Equipamento de Aventura","price": 30.0,"weight": 1.0},{"kind": "misc","name": "Armação para mochila","category": "Equipamento de Aventura","price": 50.0,"weight": null},{"kind": "misc","name": "Asas do texugo","category": "Equipamento de Aventura","price": 200.0,"weight": 2.0},{"kind": "misc","name": "Aspersório","category": "Equipamento de Aventura","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Astrolábio","category": "Equipamento de Aventura","price": 90.0,"weight": 1.0},{"kind": "misc","name": "Bainha adornada","category": "Equipamento de Aventura","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Bússola","category": "Equipamento de Aventura","price": 45.0,"weight": 1.0},{"kind": "misc","name": "Caixa de voz","category": "Equipamento de Aventura","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Cajado de pastor","category": "Equipamento de Aventura","price": 12.0,"weight": 2.0},{"kind": "misc","name": "Cálice consagrado","category": "Equipamento de Aventura","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Cinto de utilidades","category": "Equipamento de Aventura","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Colar do suplicante","category": "Equipamento de Aventura","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Condecoração militar","category": "Equipamento de Aventura","price": null,"weight": 1.0},{"kind": "misc","name": "Corda de teia","category": "Equipamento de Aventura","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Dente de wisphago","category": "Equipamento de Aventura","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Dente falso","category": "Equipamento de Aventura","price": 300.0,"weight": null},{"kind": "misc","name": "Diagrama anatômico","category": "Equipamento de Aventura","price": 75.0,"weight": 1.0},{"kind": "misc","name": "Emblema religioso","category": "Equipamento de Aventura","price": 30.0,"weight": 1.0},{"kind": "misc","name": "Espelho refletor","category": "Equipamento de Aventura","price": 45.0,"weight": 1.0},{"kind": "misc","name": "Estetoscópio","category": "Equipamento de Aventura","price": 60.0,"weight": 1.0},{"kind": "misc","name": "Estrepes (bolsa para 3m)","category": "Equipamento de Aventura","price": 5.0,"weight": 1.0},{"kind": "misc","name": "Favor da pessoa amada","category": "Equipamento de Aventura","price": null,"weight": 1.0},{"kind": "misc","name": "Férula","category": "Equipamento de Aventura","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Lampião de foco","category": "Equipamento de Aventura","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Leque","category": "Equipamento de Aventura","price": 3.0,"weight": 1.0},{"kind": "misc","name": "Livro de métodos anti-Nimb","category": "Equipamento de Aventura","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Lupa","category": "Equipamento de Aventura","price": 30.0,"weight": 1.0},{"kind": "misc","name": "Mapa","category": "Equipamento de Aventura","price": 30.0,"weight": 1.0},{"kind": "misc","name": "Mecanismo de mola","category": "Equipamento de Aventura","price": 25.0,"weight": 1.0},{"kind": "misc","name": "Mochila discreta","category": "Equipamento de Aventura","price": 20.0,"weight": 1.0},{"kind": "misc","name": "Panfleto de aforismos","category": "Equipamento de Aventura","price": 60.0,"weight": 1.0},{"kind": "misc","name": "Patuá","category": "Equipamento de Aventura","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Prancheta","category": "Equipamento de Aventura","price": 5.0,"weight": 1.0},{"kind": "misc","name": "Sinete","category": "Equipamento de Aventura","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Texto sagrado","category": "Equipamento de Aventura","price": 60.0,"weight": 1.0},{"kind": "misc","name": "Andrajos de aldeão","category": "Vestuário","price": 1.0,"weight": 1.0},{"kind": "misc","name": "Bandana","category": "Vestuário","price": 5.0,"weight": 1.0},{"kind": "misc","name": "Botas reforçadas","category": "Vestuário","price": 20.0,"weight": 1.0},{"kind": "misc","name": "Camisa bufante","category": "Vestuário","price": 25.0,"weight": 1.0},{"kind": "misc","name": "Capa esvoaçante","category": "Vestuário","price": 25.0,"weight": 1.0},{"kind": "misc","name": "Capa pesada","category": "Vestuário","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Casaco longo","category": "Vestuário","price": 20.0,"weight": 1.0},{"kind": "misc","name": "Chapéu arcano","category": "Vestuário","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Enfeite de elmo","category": "Vestuário","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Farrapos de ermitão","category": "Vestuário","price": 1.0,"weight": 1.0},{"kind": "misc","name": "Gorro de ervas","category": "Vestuário","price": 75.0,"weight": 1.0},{"kind": "misc","name": "Luva de pelica","category": "Vestuário","price": 5.0,"weight": 1.0},{"kind": "misc","name": "Manopla","category": "Vestuário","price": 10.0,"weight": 1.0},{"kind": "misc","name": "Manto camuflado","category": "Vestuário","price": 12.0,"weight": 1.0},{"kind": "misc","name": "Manto eclesiástico","category": "Vestuário","price": 20.0,"weight": 1.0},{"kind": "misc","name": "Robe místico","category": "Vestuário","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Sapatos de camurça","category": "Vestuário","price": 8.0,"weight": 1.0},{"kind": "misc","name": "Tabardo","category": "Vestuário","price": 10.0,"weight": 1.0},{"kind": "misc","name": "Traje da corte","category": "Vestuário","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Traje de viajante","category": "Vestuário","price": 10.0,"weight": null},{"kind": "misc","name": "Veste de seda","category": "Vestuário","price": 25.0,"weight": 1.0},{"kind": "misc","name": "Anel eclesiástico","category": "Vestuário","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Avental de forja","category": "Vestuário","price": 75.0,"weight": 1.0},{"kind": "misc","name": "Camisolão","category": "Vestuário","price": 12.0,"weight": 1.0},{"kind": "misc","name": "Capa com dragonas","category": "Vestuário","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Carcaça do predador primal","category": "Vestuário","price": 150.0,"weight": 1.0},{"kind": "misc","name": "Casaca de apetrechos","category": "Vestuário","price": 75.0,"weight": null},{"kind": "misc","name": "Chapéu emplumado","category": "Vestuário","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Elmo leve","category": "Vestuário","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Elmo pesado","category": "Vestuário","price": 200.0,"weight": 1.0},{"kind": "misc","name": "Garra feroz","category": "Vestuário","price": 60.0,"weight": 1.0},{"kind": "misc","name": "Garras do predador primal","category": "Vestuário","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Hábito monástico","category": "Vestuário","price": 30.0,"weight": 1.0},{"kind": "misc","name": "Hábito sacerdotal","category": "Vestuário","price": 30.0,"weight": 1.0},{"kind": "misc","name": "Jaqueta de couro","category": "Vestuário","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Luva de falcoaria","category": "Vestuário","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Luva magnética","category": "Vestuário","price": 20.0,"weight": 1.0},{"kind": "misc","name": "Manto de alto sacerdote","category": "Vestuário","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Manto do mantor","category": "Vestuário","price": 450.0,"weight": 1.0},{"kind": "misc","name": "Manto pesado","category": "Vestuário","price": 10.0,"weight": 1.0},{"kind": "misc","name": "Máscara bucal","category": "Vestuário","price": 3.0,"weight": 1.0},{"kind": "misc","name": "Máscara completa","category": "Vestuário","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Máscara de baile","category": "Vestuário","price": 25.0,"weight": 1.0},{"kind": "misc","name": "Máscara de soldador","category": "Vestuário","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Monóculo","category": "Vestuário","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Óculos de aeronauta","category": "Vestuário","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Palmar","category": "Vestuário","price": 12.0,"weight": 1.0},{"kind": "misc","name": "Penas do predador primal","category": "Vestuário","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Peruca","category": "Vestuário","price": 20.0,"weight": 1.0},{"kind": "misc","name": "Piercing de umbigo","category": "Vestuário","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Rondel","category": "Vestuário","price": 150.0,"weight": 1.0},{"kind": "misc","name": "Roupão elegante","category": "Vestuário","price": 150.0,"weight": 1.0},{"kind": "misc","name": "Rufo","category": "Vestuário","price": 25.0,"weight": 1.0},{"kind": "misc","name": "Sandálias","category": "Vestuário","price": 9.0,"weight": 1.0},{"kind": "misc","name": "Sapatos confortáveis","category": "Vestuário","price": 6.0,"weight": 1.0},{"kind": "misc","name": "Sapatos de salto alto","category": "Vestuário","price": 18.0,"weight": 1.0},{"kind": "misc","name": "Sombreiro","category": "Vestuário","price": 10.0,"weight": 1.0},{"kind": "misc","name": "Tonsura","category": "Vestuário","price": 3.0,"weight": null},{"kind": "misc","name": "Traje selako","category": "Vestuário","price": 90.0,"weight": 1.0},{"kind": "misc","name": "Túnica do Virtuoso","category": "Vestuário","price": 25.0,"weight": 1.0},{"kind": "misc","name": "Veste acolchoada","category": "Vestuário","price": 60.0,"weight": 1.0},{"kind": "misc","name": "Alaúde élfico","category": "Ferramentas","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Coleção de livros","category": "Ferramentas","price": 75.0,"weight": 1.0},{"kind": "misc","name": "Equipamento de viagem","category": "Ferramentas","price": 10.0,"weight": 1.0},{"kind": "misc","name": "Estojo de disfarces","category": "Ferramentas","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Flauta mística","category": "Ferramentas","price": 150.0,"weight": 1.0},{"kind": "misc","name": "Gazua","category": "Ferramentas","price": 5.0,"weight": 1.0},{"kind": "misc","name": "Instrumentos de <ofício>","category": "Ferramentas","price": 30.0,"weight": 1.0},{"kind": "misc","name": "Instrumento musical","category": "Ferramentas","price": 35.0,"weight": 1.0},{"kind": "misc","name": "Luneta","category": "Ferramentas","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Maleta de medicamentos","category": "Ferramentas","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Sela","category": "Ferramentas","price": 20.0,"weight": 1.0},{"kind": "misc","name": "Tambor das profundezas","category": "Ferramentas","price": 80.0,"weight": 1.0},{"kind": "misc","name": "Apito de caça","category": "Ferramentas","price": 6.0,"weight": 1.0},{"kind": "misc","name": "Baralho marcado","category": "Ferramentas","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Espelho cirúrgico","category": "Ferramentas","price": 12.0,"weight": 1.0},{"kind": "misc","name": "Estandarte","category": "Ferramentas","price": 15.0,"weight": 1.0},{"kind": "misc","name": "Estandarte portátil","category": "Ferramentas","price": 20.0,"weight": 1.0},{"kind": "misc","name": "Molde pré-fabricado","category": "Ferramentas","price": 500.0,"weight": 1.0},{"kind": "misc","name": "Trombeta do cruzado","category": "Ferramentas","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Bolsa de pó","category": "Esotéricos","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Cajado arcano","category": "Esotéricos","price": 1000.0,"weight": 2.0},{"kind": "misc","name": "Cetro elemental","category": "Esotéricos","price": 750.0,"weight": 1.0},{"kind": "misc","name": "Costela de lich","category": "Esotéricos","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Dedo de ente","category": "Esotéricos","price": 200.0,"weight": 1.0},{"kind": "misc","name": "Luva de ferro","category": "Esotéricos","price": 150.0,"weight": 1.0},{"kind": "misc","name": "Medalhão de prata","category": "Esotéricos","price": 750.0,"weight": 1.0},{"kind": "misc","name": "Orbe cristalino","category": "Esotéricos","price": 750.0,"weight": 1.0},{"kind": "misc","name": "Tomo hermético","category": "Esotéricos","price": 1500.0,"weight": 1.0},{"kind": "misc","name": "Ankh solar","category": "Esotéricos","price": 450.0,"weight": 1.0},{"kind": "misc","name": "Tomo de guerra","category": "Esotéricos","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Tomo do rancor","category": "Esotéricos","price": 750.0,"weight": 1.0},{"kind": "misc","name": "Varinha arcana","category": "Esotéricos","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Afiador solar","category": "Esotéricos","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Báculo da retribuição","category": "Esotéricos","price": 200.0,"weight": 1.0},{"kind": "misc","name": "Compasso místico","category": "Esotéricos","price": 600.0,"weight": 1.0},{"kind": "misc","name": "Contas de oração","category": "Esotéricos","price": 500.0,"weight": 1.0},{"kind": "misc","name": "Estola","category": "Esotéricos","price": 150.0,"weight": 1.0},{"kind": "misc","name": "Flauta convocadora","category": "Esotéricos","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Frasco purificador","category": "Esotéricos","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Mandala onírica","category": "Esotéricos","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Medalhão afiado","category": "Esotéricos","price": 900.0,"weight": 1.0},{"kind": "misc","name": "Ostensório santificado","category": "Esotéricos","price": 750.0,"weight": 1.0},{"kind": "misc","name": "Rede de almas","category": "Esotéricos","price": 600.0,"weight": 1.0},{"kind": "misc","name": "Turíbulo ungido","category": "Esotéricos","price": 100.0,"weight": 1.0},{"kind": "misc","name": "Varinha armamentista","category": "Esotéricos","price": 600.0,"weight": 1.0},{"kind": "misc","name": "Ácido","category": "Alquímicos — Preparados","price": 10.0,"weight": 0.5},{"kind": "misc","name": "Bálsamo restaurador","category": "Alquímicos — Preparados","price": 10.0,"weight": 0.5},{"kind": "misc","name": "Bomba","category": "Alquímicos — Preparados","price": 50.0,"weight": 0.5},{"kind": "misc","name": "Cosmético","category": "Alquímicos — Preparados","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Elixir do amor","category": "Alquímicos — Preparados","price": 100.0,"weight": 0.5},{"kind": "misc","name": "Essência de mana","category": "Alquímicos — Preparados","price": 50.0,"weight": 0.5},{"kind": "misc","name": "Fogo alquímico","category": "Alquímicos — Preparados","price": 10.0,"weight": 0.5},{"kind": "misc","name": "Pó do desaparecimento","category": "Alquímicos — Preparados","price": 100.0,"weight": 0.5},{"kind": "misc","name": "Ácido concentrado","category": "Alquímicos — Preparados","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Análgésico","category": "Alquímicos — Preparados","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Bálsamo de drogadora","category": "Alquímicos — Preparados","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Bomba de fumaça","category": "Alquímicos — Preparados","price": 15.0,"weight": 0.5},{"kind": "misc","name": "Elixir quimérico","category": "Alquímicos — Preparados","price": 120.0,"weight": 0.5},{"kind": "misc","name": "Estalinho Gury","category": "Alquímicos — Preparados","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Éter elemental","category": "Alquímicos — Preparados","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Extrato de gelo eterno","category": "Alquímicos — Preparados","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Extrato de oxxdon","category": "Alquímicos — Preparados","price": 180.0,"weight": 0.5},{"kind": "misc","name": "Frasco abissal","category": "Alquímicos — Preparados","price": 300.0,"weight": 0.5},{"kind": "misc","name": "Granada redentora","category": "Alquímicos — Preparados","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Incenso","category": "Alquímicos — Preparados","price": 12.0,"weight": 0.5},{"kind": "misc","name": "Isca putrefata","category": "Alquímicos — Preparados","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Lágrima pétrea","category": "Alquímicos — Preparados","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Lucidílico","category": "Alquímicos — Preparados","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Óleo de baleia","category": "Alquímicos — Preparados","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Óleo de besouro","category": "Alquímicos — Preparados","price": 50.0,"weight": 0.5},{"kind": "misc","name": "Pó azul","category": "Alquímicos — Preparados","price": 150.0,"weight": 0.5},{"kind": "misc","name": "Pó de cinza","category": "Alquímicos — Preparados","price": 5.0,"weight": 0.5},{"kind": "misc","name": "Pó do aparecimento","category": "Alquímicos — Preparados","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Santa granada de mão","category": "Alquímicos — Preparados","price": 150.0,"weight": 0.5},{"kind": "misc","name": "Visco persistente","category": "Alquímicos — Preparados","price": 25.0,"weight": 0.5},{"kind": "misc","name": "Baga-de-fogo","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Dente-de-dragão","category": "Alquímicos — Catalisadores","price": 45.0,"weight": 0.5},{"kind": "misc","name": "Essência abissal","category": "Alquímicos — Catalisadores","price": 150.0,"weight": 0.5},{"kind": "misc","name": "Líquen lilás","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Musgo púrpura","category": "Alquímicos — Catalisadores","price": 45.0,"weight": 0.5},{"kind": "misc","name": "Ossos de monstro","category": "Alquímicos — Catalisadores","price": 45.0,"weight": 0.5},{"kind": "misc","name": "Pó de cristal","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Pó de giz","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Ramo verdejante","category": "Alquímicos — Catalisadores","price": 45.0,"weight": 0.5},{"kind": "misc","name": "Saco de sal","category": "Alquímicos — Catalisadores","price": 45.0,"weight": 0.5},{"kind": "misc","name": "Seixo de âmbar","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Terra de cemitério","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Água benta","category": "Alquímicos — Catalisadores","price": 10.0,"weight": 0.5},{"kind": "misc","name": "Corrosivo mineral","category": "Alquímicos — Catalisadores","price": 150.0,"weight": 0.5},{"kind": "misc","name": "Cristal reflexivo","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Essência fantasmal","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Favo de mel","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Fitilho consagrado","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Flor de orlyn","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Frasco de luz","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Gelo extremo","category": "Alquímicos — Catalisadores","price": 150.0,"weight": 0.5},{"kind": "misc","name": "Lantejoula","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Noz saltadora","category": "Alquímicos — Catalisadores","price": 90.0,"weight": 0.5},{"kind": "misc","name": "Pedaço de língua","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Pedra de sombras","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Pena de anjo","category": "Alquímicos — Catalisadores","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Presa de Hyninn","category": "Alquímicos — Catalisadores","price": 45.0,"weight": 0.5},{"kind": "misc","name": "Raio cristalizado","category": "Alquímicos — Catalisadores","price": 150.0,"weight": 0.5},{"kind": "misc","name": "Vela eclesiástica","category": "Alquímicos — Catalisadores","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Beladona","category": "Alquímicos — Venenos","price": 1500.0,"weight": 0.5},{"kind": "misc","name": "Bruma sonolenta","category": "Alquímicos — Venenos","price": 150.0,"weight": 0.5},{"kind": "misc","name": "Cicuta","category": "Alquímicos — Venenos","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Essência de sombra","category": "Alquímicos — Venenos","price": 100.0,"weight": 0.5},{"kind": "misc","name": "Névoa tóxica","category": "Alquímicos — Venenos","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Peçonha comum","category": "Alquímicos — Venenos","price": 15.0,"weight": 0.5},{"kind": "misc","name": "Peçonha concentrada","category": "Alquímicos — Venenos","price": 90.0,"weight": 0.5},{"kind": "misc","name": "Peçonha potente","category": "Alquímicos — Venenos","price": 600.0,"weight": 0.5},{"kind": "misc","name": "Pó de lich","category": "Alquímicos — Venenos","price": 3000.0,"weight": 0.5},{"kind": "misc","name": "Riso de Nimb","category": "Alquímicos — Venenos","price": 150.0,"weight": 0.5},{"kind": "misc","name": "Bolor hemorrágico","category": "Alquímicos — Venenos","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Esporos de cogumelo","category": "Alquímicos — Venenos","price": 75.0,"weight": 0.5},{"kind": "misc","name": "Fumaça onírica","category": "Alquímicos — Venenos","price": 150.0,"weight": 0.5},{"kind": "misc","name": "Gás moroso","category": "Alquímicos — Venenos","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Peçonha anciã","category": "Alquímicos — Venenos","price": 1800.0,"weight": 0.5},{"kind": "misc","name": "Peçonha irritante","category": "Alquímicos — Venenos","price": 10.0,"weight": 0.5},{"kind": "misc","name": "Seiva necrótica","category": "Alquímicos — Venenos","price": 120.0,"weight": 0.5},{"kind": "misc","name": "Veneno batráquio","category": "Alquímicos — Venenos","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Batata valkariana","category": "Alimentação","price": 2.0,"weight": 0.5},{"kind": "misc","name": "Gorad quente","category": "Alimentação","price": 18.0,"weight": 0.5},{"kind": "misc","name": "Macarrão de Yuvalin","category": "Alimentação","price": 6.0,"weight": 0.5},{"kind": "misc","name": "Prato do aventureiro","category": "Alimentação","price": 1.0,"weight": 0.5},{"kind": "misc","name": "Ração de viagem (por dia)","category": "Alimentação","price": 0.5,"weight": 0.5},{"kind": "misc","name": "Refeição comum","category": "Alimentação","price": 0.3,"weight": 0.5},{"kind": "misc","name": "Sopa de peixe","category": "Alimentação","price": 1.0,"weight": 0.5},{"kind": "misc","name": "Abraço da noite","category": "Alimentação","price": 3.0,"weight": null},{"kind": "misc","name": "Algravia","category": "Alimentação","price": 3.0,"weight": null},{"kind": "misc","name": "Assado de entranhas","category": "Alimentação","price": 2.0,"weight": null},{"kind": "misc","name": "Banquete de canceronte","category": "Alimentação","price": 36.0,"weight": null},{"kind": "misc","name": "Bênção dos mares","category": "Alimentação","price": 4.0,"weight": null},{"kind": "misc","name": "Bolinho de jade","category": "Alimentação","price": 4.0,"weight": null},{"kind": "misc","name": "Bombas de saber","category": "Alimentação","price": 4.0,"weight": null},{"kind": "misc","name": "Caldo de Lena","category": "Alimentação","price": 3.0,"weight": null},{"kind": "misc","name": "Coc-au-triz","category": "Alimentação","price": 54.0,"weight": null},{"kind": "misc","name": "Coragem de sangue","category": "Alimentação","price": 4.0,"weight": null},{"kind": "misc","name": "Cozido de serpe","category": "Alimentação","price": 12.0,"weight": null},{"kind": "misc","name": "Deleite mágico","category": "Alimentação","price": 18.0,"weight": null},{"kind": "misc","name": "Frescor de Nimb","category": "Alimentação","price": 1.0,"weight": null},{"kind": "misc","name": "Gorlogg ensopado","category": "Alimentação","price": 6.0,"weight": null},{"kind": "misc","name": "Joia do deserto","category": "Alimentação","price": 5.0,"weight": null},{"kind": "misc","name": "Justos de Khalmyr","category": "Alimentação","price": 2.0,"weight": null},{"kind": "misc","name": "Justos virtuosos","category": "Alimentação","price": 6.0,"weight": null},{"kind": "misc","name": "Manjar da paz","category": "Alimentação","price": 7.0,"weight": null},{"kind": "misc","name": "Omelete monstruosa","category": "Alimentação","price": 3.0,"weight": null},{"kind": "misc","name": "Ouro de dragão","category": "Alimentação","price": 6.0,"weight": null},{"kind": "misc","name": "Ovos de raposa","category": "Alimentação","price": 3.0,"weight": null},{"kind": "misc","name": "Pão de Thwor","category": "Alimentação","price": 1.0,"weight": null},{"kind": "misc","name": "Presente da terra","category": "Alimentação","price": 3.0,"weight": null},{"kind": "misc","name": "Renascer gentil","category": "Alimentação","price": 30.0,"weight": null},{"kind": "misc","name": "Sashimi de kraken","category": "Alimentação","price": 60.0,"weight": null},{"kind": "misc","name": "Suflê rubro","category": "Alimentação","price": 3.0,"weight": null},{"kind": "misc","name": "Tesouro de Valkaria","category": "Alimentação","price": 2.0,"weight": null},{"kind": "misc","name": "Baga celeste cozida","category": "Alimentação — Pratos Especiais","price": 15.0,"weight": null},{"kind": "misc","name": "Cozido de pimenta","category": "Alimentação — Pratos Especiais","price": 10.0,"weight": null},{"kind": "misc","name": "Manjar de sombras","category": "Alimentação — Pratos Especiais","price": 20.0,"weight": null},{"kind": "misc","name": "Baba de troll","category": "Alimentação — Bebidas","price": 30.0,"weight": 0.5},{"kind": "misc","name": "Barba queimada","category": "Alimentação — Bebidas","price": 45.0,"weight": 0.5},{"kind": "misc","name": "Cerveja deheoni","category": "Alimentação — Bebidas","price": 15.0,"weight": 0.5},{"kind": "misc","name": "Dilínio","category": "Alimentação — Bebidas","price": 600.0,"weight": 0.5},{"kind": "misc","name": "Grogue negro","category": "Alimentação — Bebidas","price": 15.0,"weight": 0.5},{"kind": "misc","name": "Grogue rubro","category": "Alimentação — Bebidas","price": 45.0,"weight": 0.5},{"kind": "misc","name": "Hidromel uivante","category": "Alimentação — Bebidas","price": 21.0,"weight": 0.5},{"kind": "misc","name": "Licor feérico","category": "Alimentação — Bebidas","price": 450.0,"weight": 0.5},{"kind": "misc","name": "Sidra ahleniense","category": "Alimentação — Bebidas","price": 45.0,"weight": 0.5},{"kind": "misc","name": "Vinho Pruss","category": "Alimentação — Bebidas","price": 60.0,"weight": 0.5},{"kind": "misc","name": "Vinho élfico","category": "Alimentação — Bebidas","price": 90.0,"weight": 0.5},{"kind": "misc","name": "Armadura de montaria leve","category": "Animais — Armaduras & Vestimentas","price": 600.0,"weight": 2.0},{"kind": "misc","name": "Armadura de montaria pesada","category": "Animais — Armaduras & Vestimentas","price": 3000.0,"weight": 5.0},{"kind": "misc","name": "Arreios namalkahnianos","category": "Animais — Armaduras & Vestimentas","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Caparazão","category": "Animais — Armaduras & Vestimentas","price": 75.0,"weight": 1.0},{"kind": "misc","name": "Estribos","category": "Animais — Armaduras & Vestimentas","price": 60.0,"weight": 1.0},{"kind": "misc","name": "Ornamento","category": "Animais — Armaduras & Vestimentas","price": 50.0,"weight": 1.0},{"kind": "misc","name": "Cítara heptatônica","category": "Instrumentos Musicais","price": 250.0,"weight": 1.0},{"kind": "misc","name": "Clarim deheoni","category": "Instrumentos Musicais","price": 150.0,"weight": 1.0},{"kind": "misc","name": "Cornamusa de Doherimm","category": "Instrumentos Musicais","price": 750.0,"weight": 2.0},{"kind": "misc","name": "Flauta sar-allan","category": "Instrumentos Musicais","price": 150.0,"weight": 1.0},{"kind": "misc","name": "Gaita de foles","category": "Instrumentos Musicais","price": 500.0,"weight": 1.0},{"kind": "misc","name": "Lira de casco de tartaruga","category": "Instrumentos Musicais","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Marionetes","category": "Instrumentos Musicais","price": 90.0,"weight": 1.0},{"kind": "misc","name": "Pandeiro das estradas","category": "Instrumentos Musicais","price": 200.0,"weight": 1.0},{"kind": "misc","name": "Tamborete marcial","category": "Instrumentos Musicais","price": 80.0,"weight": 1.0},{"kind": "misc","name": "Trombeta tapistana","category": "Instrumentos Musicais","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Violino soprano","category": "Instrumentos Musicais","price": 300.0,"weight": 1.0},{"kind": "misc","name": "Captador de luz","category": "Aparatos","price": 450.0,"weight": null},{"kind": "misc","name": "Comutador","category": "Aparatos","price": 300.0,"weight": null},{"kind": "misc","name": "Conversor-alimentador","category": "Aparatos","price": 300.0,"weight": null},{"kind": "misc","name": "Engenho de automação","category": "Aparatos","price": 600.0,"weight": null},{"kind": "misc","name": "Espera para melhorias","category": "Aparatos","price": 150.0,"weight": null},{"kind": "misc","name": "Estabilizador","category": "Aparatos","price": 900.0,"weight": null},{"kind": "misc","name": "Estimulador de sobrecarga","category": "Aparatos","price": 750.0,"weight": null},{"kind": "misc","name": "Gatilho de corda","category": "Aparatos","price": 1500.0,"weight": null},{"kind": "misc","name": "Giroscópio","category": "Aparatos","price": 450.0,"weight": null},{"kind": "misc","name": "Ligação de convergência","category": "Aparatos","price": 300.0,"weight": null},{"kind": "misc","name": "Remontagem de portabilidade","category": "Aparatos","price": 300.0,"weight": null},{"kind": "misc","name": "Sequenciador de ativação","category": "Aparatos","price": 600.0,"weight": null},{"kind": "misc","name": "Sistema de refrigeração","category": "Aparatos","price": 900.0,"weight": null},{"kind": "misc","name": "Supressor de segurança","category": "Aparatos","price": 300.0,"weight": null},{"kind": "misc","name": "Transformador místico","category": "Aparatos","price": 600.0,"weight": null}];
 
+  // ── ENCANTOS (T20, Tab. 8-8 e 8-10; Heróis de Arton, p. 256-262) ─────
+  //  Mesmo repertório das tabelas MAGICO_* de recompensas.js: 50 de arma,
+  //  45 de armadura/escudo, 26 de esotérico e 8 de acessório. As listas de
+  //  armadura e escudo NÃO são iguais — o livro marca Animado e Esmagador
+  //  como só de escudo (T20, Tab. 8-10), e Ancorada, Densa, Enraizada e
+  //  Ligeira falam só de armadura (Heróis, p. 258-259).
   const ENCANTAMENTOS = {
   "arma": [
     {
+      "name": "Alvorada",
+      "effect": "+1d8 de dano de luz contra mortos-vivos"
+    },
+    {
       "name": "Ameaçadora",
       "effect": "Duplica margem de ameaça"
+    },
+    {
+      "name": "Anátema",
+      "effect": "Enfraquece a magia do alvo"
     },
     {
       "name": "Anticriatura",
@@ -40,8 +54,20 @@ const LojaCompleta = (function () {
       "effect": "Aumenta ataque furtivo"
     },
     {
+      "name": "Brumosa",
+      "effect": "Acerto dá camuflagem leve"
+    },
+    {
       "name": "Caçadora",
       "effect": "Ignora camuflagem leve/total e cobertura leve"
+    },
+    {
+      "name": "Cantante",
+      "effect": "Bônus em Atuação; +1 de ataque em grupo"
+    },
+    {
+      "name": "Ciclônica",
+      "effect": "Bônus contra manobras; rajada de vento"
     },
     {
       "name": "Congelante",
@@ -54,6 +80,22 @@ const LojaCompleta = (function () {
     {
       "name": "Corrosiva",
       "effect": "+1d6 de dano de ácido"
+    },
+    {
+      "name": "Crescente",
+      "effect": "Cresce: +1 passo de dano e alcance"
+    },
+    {
+      "name": "Cristalina",
+      "effect": "+1d6 de dano de luz; ofusca"
+    },
+    {
+      "name": "Cronal",
+      "effect": "Rola dois dados no ataque e na defesa"
+    },
+    {
+      "name": "Cuidadora",
+      "effect": "Erro dá Defesa +2; RD 10 ao sofrer dano"
     },
     {
       "name": "Dançarina",
@@ -84,6 +126,10 @@ const LojaCompleta = (function () {
       "effect": "Bônus em ataque"
     },
     {
+      "name": "Espreitadora",
+      "effect": "Deixa o oponente desprevenido"
+    },
+    {
       "name": "Excruciante",
       "effect": "Causa fraqueza"
     },
@@ -96,12 +142,36 @@ const LojaCompleta = (function () {
       "effect": "Ataque e dano +2"
     },
     {
+      "name": "Frenética",
+      "effect": "Acumula +1 de ataque e dano (até +5)"
+    },
+    {
+      "name": "Gárgula",
+      "effect": "Convoca uma gárgula parceira"
+    },
+    {
+      "name": "Horrenda",
+      "effect": "Bônus em Intimidação e em efeitos de medo"
+    },
+    {
+      "name": "Indignada",
+      "effect": "Erro dá +2 no próximo ataque"
+    },
+    {
+      "name": "Infestada",
+      "effect": "Enxame causa veneno e enjoo"
+    },
+    {
       "name": "Lancinante",
       "effect": "Causa crítico terrível"
     },
     {
       "name": "Magnífica",
       "effect": "Ataque e dano +4"
+    },
+    {
+      "name": "Manáfaga",
+      "effect": "Drena PM do alvo"
     },
     {
       "name": "Piedosa",
@@ -112,6 +182,18 @@ const LojaCompleta = (function () {
       "effect": "Bônus contra devotos do Bem"
     },
     {
+      "name": "Rebote",
+      "effect": "Acumula cargas: +1d6 de dano cada"
+    },
+    {
+      "name": "Reflexiva",
+      "effect": "Reflete magia"
+    },
+    {
+      "name": "Ressonante",
+      "effect": "Onda de choque em outro alvo"
+    },
+    {
       "name": "Sagrada",
       "effect": "Bônus contra devotos do Mal"
     },
@@ -120,12 +202,24 @@ const LojaCompleta = (function () {
       "effect": "Causa sangramento"
     },
     {
+      "name": "Sepulcral",
+      "effect": "Impede o alvo de recuperar PV"
+    },
+    {
+      "name": "Sombria",
+      "effect": "Bônus em Furtividade; lança Escuridão"
+    },
+    {
       "name": "Trovejante",
       "effect": "Causa atordoamento"
     },
     {
       "name": "Tumular",
       "effect": "+1d8 de dano de trevas"
+    },
+    {
+      "name": "Vampírica",
+      "effect": "+2d6 de dano de trevas e cura você"
     },
     {
       "name": "Veloz",
@@ -146,6 +240,10 @@ const LojaCompleta = (function () {
       "effect": "Resistência contra trevas"
     },
     {
+      "name": "Abissal",
+      "effect": "Resistência contra ácido e fogo"
+    },
+    {
       "name": "Acrobático",
       "effect": "Bônus em Acrobacia"
     },
@@ -154,12 +252,24 @@ const LojaCompleta = (function () {
       "effect": "Deslocamento de voo 12m"
     },
     {
-      "name": "Animado",
-      "effect": "Escudo defende sozinho"
+      "name": "Ancorada",
+      "effect": "Bônus para escalar; escalada 12m"
+    },
+    {
+      "name": "Anulador",
+      "effect": "Anula magias"
+    },
+    {
+      "name": "Arbóreo",
+      "effect": "Resistência contra magia divina"
     },
     {
       "name": "Assustador",
       "effect": "Causa efeito de medo"
+    },
+    {
+      "name": "Astuto",
+      "effect": "Bônus em Intuição e Percepção"
     },
     {
       "name": "Cáustica",
@@ -170,12 +280,32 @@ const LojaCompleta = (function () {
       "effect": "Defesa +2"
     },
     {
+      "name": "Densa",
+      "effect": "Reduz o deslocamento de inimigos"
+    },
+    {
+      "name": "Égide",
+      "effect": "Defesa +5 contra ataques à distância"
+    },
+    {
+      "name": "Enraizada",
+      "effect": "Resiste a derrubar e empurrar"
+    },
+    {
       "name": "Escorregadio",
       "effect": "Bônus para escapar"
     },
     {
-      "name": "Esmagador",
-      "effect": "Escudo causa mais dano"
+      "name": "Esmérico",
+      "effect": "Resistência contra ácido e veneno"
+    },
+    {
+      "name": "Estígio",
+      "effect": "Evita cair a 0 PV uma vez por cena"
+    },
+    {
+      "name": "Etéreo",
+      "effect": "Torna você incorpóreo por 1 rodada"
     },
     {
       "name": "Fantasmagórico",
@@ -188,6 +318,10 @@ const LojaCompleta = (function () {
     {
       "name": "Gélido",
       "effect": "Resistência contra frio"
+    },
+    {
+      "name": "Geomântico",
+      "effect": "Redução de dano 10/impacto"
     },
     {
       "name": "Guardião",
@@ -210,12 +344,32 @@ const LojaCompleta = (function () {
       "effect": "Redução de dano"
     },
     {
+      "name": "Ligeira",
+      "effect": "Vestir/remover ação livre"
+    },
+    {
+      "name": "Luminescente",
+      "effect": "Lança Luz; cega sensíveis à luz"
+    },
+    {
       "name": "Opaco",
       "effect": "Redução de energia"
     },
     {
+      "name": "Prístino",
+      "effect": "Resistência contra necromancia e veneno"
+    },
+    {
       "name": "Protetor",
       "effect": "Resistência +2"
+    },
+    {
+      "name": "Purificador",
+      "effect": "Resistência contra medo e mental"
+    },
+    {
+      "name": "Reanimador",
+      "effect": "Lança Curar Ferimentos"
     },
     {
       "name": "Refletor",
@@ -230,8 +384,20 @@ const LojaCompleta = (function () {
       "effect": "Causa efeito de cegueira"
     },
     {
+      "name": "Replicante",
+      "effect": "Devolve dano ao atacante"
+    },
+    {
+      "name": "Resiliente",
+      "effect": "Resistência contra atordoamento e paralisia"
+    },
+    {
       "name": "Sombrio",
       "effect": "Bônus em Furtividade"
+    },
+    {
+      "name": "Vórtice",
+      "effect": "Puxa inimigo para perto"
     },
     {
       "name": "Zeloso",
@@ -248,6 +414,10 @@ const LojaCompleta = (function () {
       "effect": "Resistência contra trevas"
     },
     {
+      "name": "Abissal",
+      "effect": "Resistência contra ácido e fogo"
+    },
+    {
       "name": "Acrobático",
       "effect": "Bônus em Acrobacia"
     },
@@ -260,8 +430,20 @@ const LojaCompleta = (function () {
       "effect": "Escudo defende sozinho"
     },
     {
+      "name": "Anulador",
+      "effect": "Anula magias"
+    },
+    {
+      "name": "Arbóreo",
+      "effect": "Resistência contra magia divina"
+    },
+    {
       "name": "Assustador",
       "effect": "Causa efeito de medo"
+    },
+    {
+      "name": "Astuto",
+      "effect": "Bônus em Intuição e Percepção"
     },
     {
       "name": "Cáustica",
@@ -272,12 +454,28 @@ const LojaCompleta = (function () {
       "effect": "Defesa +2"
     },
     {
+      "name": "Égide",
+      "effect": "Defesa +5 contra ataques à distância"
+    },
+    {
       "name": "Escorregadio",
       "effect": "Bônus para escapar"
     },
     {
       "name": "Esmagador",
       "effect": "Escudo causa mais dano"
+    },
+    {
+      "name": "Esmérico",
+      "effect": "Resistência contra ácido e veneno"
+    },
+    {
+      "name": "Estígio",
+      "effect": "Evita cair a 0 PV uma vez por cena"
+    },
+    {
+      "name": "Etéreo",
+      "effect": "Torna você incorpóreo por 1 rodada"
     },
     {
       "name": "Fantasmagórico",
@@ -290,6 +488,10 @@ const LojaCompleta = (function () {
     {
       "name": "Gélido",
       "effect": "Resistência contra frio"
+    },
+    {
+      "name": "Geomântico",
+      "effect": "Redução de dano 10/impacto"
     },
     {
       "name": "Guardião",
@@ -312,12 +514,28 @@ const LojaCompleta = (function () {
       "effect": "Redução de dano"
     },
     {
+      "name": "Luminescente",
+      "effect": "Lança Luz; cega sensíveis à luz"
+    },
+    {
       "name": "Opaco",
       "effect": "Redução de energia"
     },
     {
+      "name": "Prístino",
+      "effect": "Resistência contra necromancia e veneno"
+    },
+    {
       "name": "Protetor",
       "effect": "Resistência +2"
+    },
+    {
+      "name": "Purificador",
+      "effect": "Resistência contra medo e mental"
+    },
+    {
+      "name": "Reanimador",
+      "effect": "Lança Curar Ferimentos"
     },
     {
       "name": "Refletor",
@@ -332,8 +550,20 @@ const LojaCompleta = (function () {
       "effect": "Causa efeito de cegueira"
     },
     {
+      "name": "Replicante",
+      "effect": "Devolve dano ao atacante"
+    },
+    {
+      "name": "Resiliente",
+      "effect": "Resistência contra atordoamento e paralisia"
+    },
+    {
       "name": "Sombrio",
       "effect": "Bônus em Furtividade"
+    },
+    {
+      "name": "Vórtice",
+      "effect": "Puxa inimigo para perto"
     },
     {
       "name": "Zeloso",
@@ -366,12 +596,56 @@ const LojaCompleta = (function () {
       "effect": "1PM: converte dano em não letal"
     },
     {
+      "name": "Embusteiro",
+      "effect": "Parece item mundano; Magia Discreta"
+    },
+    {
       "name": "Emergencial",
       "effect": "4PM: reação cura aliado ao sofrer dano"
     },
     {
+      "name": "Encadeado",
+      "effect": "Ao abater: metade do dano em outro alvo"
+    },
+    {
+      "name": "Escultor",
+      "effect": "1PM: troca cone por linha e vice-versa"
+    },
+    {
+      "name": "Frugal",
+      "effect": "CD -2 para custar -2 PM"
+    },
+    {
       "name": "Glacial",
       "effect": "Frio: +1d; alvo vulnerável 1r"
+    },
+    {
+      "name": "Imperioso",
+      "effect": "Comandar efeito custa 1 ação a menos"
+    },
+    {
+      "name": "Implacável",
+      "effect": "+2PM: afeta alvo sem linha de efeito"
+    },
+    {
+      "name": "Incriminador",
+      "effect": "3PM: ilusão põe a magia em outro"
+    },
+    {
+      "name": "Inflamável",
+      "effect": "Fogo: +1d; deixa em chamas"
+    },
+    {
+      "name": "Inquisidor",
+      "effect": "CD+1 magias divinas contra não devotos"
+    },
+    {
+      "name": "Insistente",
+      "effect": "Efeitos de lançar valem na 2ª rodada"
+    },
+    {
+      "name": "Khalmyrita",
+      "effect": "Troca a rolagem pela média"
     },
     {
       "name": "Majestoso",
@@ -380,6 +654,26 @@ const LojaCompleta = (function () {
     {
       "name": "Nímbico",
       "effect": "Rerolls; pares custam 1PM"
+    },
+    {
+      "name": "Pulverizante",
+      "effect": "2PM: desintegra o alvo abatido"
+    },
+    {
+      "name": "Retaliador",
+      "effect": "Dano evitado por RD vira CD+1"
+    },
+    {
+      "name": "Sanguessuga",
+      "effect": "Falha do inimigo: +10 PV temporários"
+    },
+    {
+      "name": "Traiçoeiro",
+      "effect": "Acertar aliado: -2 nos testes de todos"
+    },
+    {
+      "name": "Verdugo",
+      "effect": "1ª morte na cena: +1 de dano por dado"
     }
   ],
   "acessorio": [
