@@ -2,14 +2,16 @@
 
 **Data:** 02/09/2026 · **Fonte:** os PDFs em `C:/Users/caiqu/Desktop/RPG/Tormenta 20/Livros`
 
-**Estado do conserto: acabou — as quatro etapas estão feitas.** Etapa 1 em
+**Estado do conserto: acabou — as cinco etapas estão feitas.** Etapa 1 em
 06/09/2026 (os 16 valores, os 4 nomes, a caixa e o `X`→`x`); etapas 2 e 3 em
 07/09/2026 (os 58 encantos com a separação armadura × escudo, e os 8 itens
 mágicos do *Ameaças*), mais o preço dos 84 itens específicos, que a etapa 3
-revelou faltando; e a **etapa 4**, também em 07/09/2026, que fechou as duas
-pontas que sempre estiveram fora do plano: a melhoria **"Aprimorado"** (§2.4) e
-os **Serviços** (§2.1), agora uma sub-aba da Loja. O que cada uma fez está
-em §6. **Nada continua em aberto.**
+revelou faltando; a **etapa 4**, também em 07/09/2026, que fechou as duas pontas
+que sempre estiveram fora do plano — a melhoria **"Aprimorado"** (§2.4) e os
+**Serviços** (§2.1), agora uma sub-aba da Loja; e a **etapa 5**, que ela mesma
+revelou: o gerador não conhecia as **restrições de tipo** das melhorias e podia
+pôr mira telescópica em espada. O que cada uma fez está em §6. **Nada continua
+em aberto** — o que sobra é uma decisão de gosto, no fim de §6.
 
 Mesma ideia da conferência das fichas: em vez de comparar o projeto com um TXT
 colado, cada tabela de equipamento foi **lida do PDF** e cruzada com os dados do
@@ -186,7 +188,7 @@ três livros acrescentam em cada categoria.
 tabela de tesouro para item superior de arma, armadura e esotérico. Rolar
 ferramenta superior seria regra inventada.
 
-#### Achado novo, ainda NÃO consertado: duas melhorias na tabela errada
+#### Duas melhorias na tabela errada — ✅ resolvido em 07/09/2026 (etapa 5)
 
 Transcrever a Tabela 3-8 obrigou a ler as categorias das outras três tabelas de
 melhoria, e a do *Heróis* (**Tab. 3-5**, p. 240) só se lê pela geometria — o
@@ -204,23 +206,31 @@ texto, ela diz:
 Ou seja: **Brasonado e Usado são melhorias de ferramenta e vestuário**, e no
 `js/recompensas.js` elas estão nas **três** tabelas de sorteio (arma, armadura e
 esotérico). O efeito das duas confirma o livro — ambas mexem em *teste de
-perícia com o item*, que é o que ferramenta e vestuário fazem. Tirá-las das três
-tabelas mexe nas faixas do d%, então fica para uma decisão à parte.
+perícia com o item*, que é o que ferramenta e vestuário fazem.
 
-Duas coisas menores que a mesma leitura mostrou, e que também ficaram para
-depois:
+**Uma quarta leitura, independente, fechou a questão.** O *Suplemento do Mestre*
+(o compilado que o projeto já cita em Penetrante) reimprime a Tab. 3-5 com as
+mesmas cinco categorias, e lá está, com todas as letras: *melhorias para
+ferramentas e vestuário — Brasonado, Diligente, Inscrito, Multifuncional,
+Usado*. As duas saíram das três tabelas de sorteio na etapa 5 (§6).
+
+Duas coisas menores que a mesma leitura mostrou:
 
 - **O *Heróis* se contradiz no Deslumbrante.** A Tab. 3-5 o põe em "qualquer das
   categorias acima"; o verbete dele (p. 239) diz "só pode ser aplicada em
   armaduras e vestuários". O projeto o tem só em armadura — que as duas versões
-  aceitam.
-- **Os oito `pag:"??"` do `recompensas.js` têm resposta**, fora um. Todas as do
-  *Heróis* estão na Tab. 3-5 (p. 240), com o verbete em **p. 239** (Fósforo,
-  Brasonado) ou **p. 240** (Usado, Prudente); Devotado está na Tab. 1-4 do
-  *Deuses*, **p. 54**. Só **Penetrante** continua fora dos quatro livros — ele
-  existe mesmo no *Suplemento do Mestre*, para onde o `livro:` dele já aponta.
-  (O `livro:` do Fósforo, porém, diz "Suplemento do Mestre" e devia dizer
-  *Heróis de Arton*: ele está nos dois, e o *Heróis* é livro conferido.)
+  aceitam —, e agora com a restrição `so:"armadura"`, que é a leitura mais
+  estrita das duas.
+- **Os oito `pag:"??"` do `recompensas.js` tinham resposta**, fora um — todos
+  corrigidos na etapa 5. As do *Heróis* estão na Tab. 3-5 (p. 240), com o
+  verbete em **p. 239** (Fósforo, Brasonado) ou **p. 240** (Usado, Prudente);
+  Devotado está na Tab. 1-4 do *Deuses*, **p. 54**. Só **Penetrante** continua
+  sem página: ele só existe no *Suplemento do Mestre*, que não é paginado. O
+  `livro:` do Fósforo também mudou — dizia "Suplemento do Mestre" e agora diz
+  *Heróis de Arton*, que é livro conferido (ele está nos dois).
+- **O Suplemento tem uma melhoria que o projeto não tem:** *Multifuncional*
+  (ferramenta ou vestuário). Ficou de fora de propósito — o projeto só importa
+  dos oito livros; do Suplemento entrou apenas o Penetrante, que já estava lá.
 
 ---
 
@@ -508,6 +518,68 @@ Conferência: preço e nome de **cada uma das 24 linhas** foram lidos em duas
 extrações independentes de cada PDF (`-layout` e `-raw`), como nas etapas
 anteriores.
 
+**Etapa 5 — que melhoria cabe em que item. ✅ FEITA EM 07/09/2026.** Saiu do
+achado de §2.4 e cresceu: não era só o Brasonado na tabela errada — o gerador
+não sabia **nenhuma** das restrições de tipo dos verbetes. Ele podia entregar
+mira telescópica numa espada, munição incendiária numa maça, armadura de couro
+selada. Três consertos, todos em `js/recompensas.js`:
+
+**1. Brasonado e Usado saíram das três tabelas.** São melhorias de ferramenta e
+vestuário (§2.4), e o gerador não sorteia ferramenta superior — o livro não tem
+tabela de tesouro para isso. Com a saída dos dois, as faixas do d% foram
+**reescaladas proporcionalmente**: cada melhoria manteve a mesma chance
+relativa e as três tabelas voltaram a fechar em 100 sem buraco (arma 24→22
+linhas, armadura 21→19, esotérico 14→12). O par "Brasonado × Discreto" saiu
+junto de `MELHORIA_EXCLUI`, que ficou sem uso.
+
+**2. As páginas que faltavam entraram** (os oito `pag:"??"`), e o Fósforo mudou
+de livro — veja §2.4.
+
+**3. Cada melhoria restrita ganhou um campo `so:`**, testado contra o item-base
+já sorteado. Só entrou o que o livro restringe com todas as letras:
+
+| melhoria | `so:` | o que o livro diz |
+|---|---|---|
+| Fósforo, Incendiária | `municao` | "só pode ser aplicada em munições" |
+| Farpada | `corteOuPerfuracao` | "só em armas de corte ou perfuração" |
+| Guarda | `corpoACorpo` | "só em armas corpo a corpo" |
+| Pressurizada | `impactoOuFogo` | "só a armas corpo a corpo de impacto e armas de fogo" |
+| Mira telescópica | `disparo` | "só em armas de disparo (exceto fundas)" |
+| Balístico | `escudo` | "só pode ser aplicada em escudos" |
+| Delicada, Selada | `armaduraPesada` | "só pode ser aplicada em armaduras pesadas" |
+| Deslumbrante, Injetora, Prudente, Sob medida | `armadura` | o verbete fala só de "armadura" |
+
+A última linha é a única leitura que não vem de um "só": o livro é cuidadoso em
+escrever **"armadura ou escudo"** quando quer as duas (Polida, Reforçada,
+Ajustada), então onde ele diz só "armadura" o escudo fica de fora. Onde o livro
+descreve sem proibir, nada foi restringido — a injeção alquímica continua
+cabendo em qualquer arma, e a polida em armadura ou escudo.
+
+**Quem responde "cabe ou não" é o catálogo da Loja.** O `statsDeItem()` passou a
+devolver também a `categoria` do item ("Corpo a Corpo — Leves", "Armaduras
+Pesadas", "Escudos"), e é ela que decide. Duas coisas o catálogo não separa, e
+por isso viraram listas nominais em `recompensas.js`: **munição** (o catálogo a
+guarda como arma sem dano, mas Rede e Desmontador também são armas sem dano) e
+**arma de disparo × de arremesso** (a diferença não está em coluna nenhuma das
+tabelas de arma; é o verbete de cada uma que diz).
+
+**A prova.** 20.000 itens superiores sorteados + 8.000 pelo caminho "Superior +
+Encantado": **nenhuma** combinação impossível, nenhum Brasonado ou Usado. Nas
+42 duplas conferidas à mão o resultado bate com o livro em todas — mira
+telescópica sai em arco e besta mas não em espada nem em funda, selada sai em
+completa mas não em couro, couraça (que o T20 lista como armadura **leve**) não
+recebe selada nem delicada. E ninguém ficou sem opção: o item-base mais
+restrito do gerador ainda aceita 12 melhorias.
+
+A restrição aparece na tela, junto da melhoria rolada ("⚠ Só armas de
+disparo"), no texto do "⧉ Copiar" e no Catálogo de Tesouros.
+
+**Ficou de fora, para o Caique decidir:** três melhorias que os livros marcam
+como "para qualquer das categorias acima" moram numa tabela só — **Canônico**
+(hoje só em esotérico), **Devotado** e **Deslumbrante** (hoje só em armadura).
+Pelos livros elas também poderiam sair em arma. Botá-las nas outras tabelas é
+acrescentar linha, o que mexe de novo nas faixas do d%.
+
 ---
 
 ## 7. O que fica de método
@@ -521,6 +593,12 @@ anteriores.
   escalado). Tolerância proporcional ao `tam` da fonte **não** resolve, porque
   o `tam` vem da matriz `Tm` e ignora o `cm`. O que resolve é **y exato**
   (tolerância 0,35): as células de uma linha saem do PDF com o mesmo y.
+- **A categoria da tabela não é a regra inteira: o verbete restringe mais.** A
+  Tab. 3-8 põe a mira telescópica em "melhorias para armas", e é o texto dela
+  que diz "só em armas de disparo (exceto fundas)". Ler só a tabela deixa passar
+  munição incendiária em maça. E, quando o livro quer armadura **e** escudo, ele
+  escreve os dois ("A armadura ou escudo…", "Se for uma armadura… Se for um
+  escudo…"); onde escreve só "armadura", o escudo está fora.
 - **Tabela com cabeçalho de categoria no meio: o cabeçalho fica ACIMA da
   primeira linha do grupo.** Na Tab. 3-5 do *Heróis* o `-layout` cola o
   cabeçalho na linha do primeiro nome ("Farpada  Melhorias para armas") e

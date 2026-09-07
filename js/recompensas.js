@@ -753,79 +753,174 @@ const EQUIP_ESOTER = [
 
 // * = Melhoria com asterisco (ver livro para regra especial)
 // ** = Material especial — Mestre decide o material
-// TODO (melhoria futura): as entradas com pag:"??" (Fósforo, Penetrante e
-//   Brasonado em arma; Prudente, Usado, Brasonado e Devotado em armadura;
-//   Usado e Brasonado em esotérico) ainda não têm a numeração de página
-//   confirmada no livro indicado. Quando a página for localizada, trocar o
-//   "??" pelo número correto (some também aparece no campo livro de Fósforo/
-//   Penetrante como "Suplemento do Mestre", a revisar).
+// so: = a que TIPO de item aquela melhoria pode ser aplicada, quando o
+//   verbete restringe mais do que a categoria da tabela ("só munições",
+//   "só escudos", "só armaduras pesadas"…). Ver RESTRICAO_MELHORIA, logo
+//   abaixo das tabelas: é ela que impede a mira telescópica na espada.
+//
+// As três tabelas seguem as categorias dos livros — Tormenta20 Tab. 3-8,
+// Heróis de Arton Tab. 3-5 e Deuses de Arton Tab. 1-4. Duas coisas que a
+// conferência de 07/09/2026 acertou aqui:
+//   • BRASONADO e USADO saíram das três tabelas: a Tab. 3-5 do Heróis os
+//     lista em "melhorias para ferramentas e vestuário", e o gerador não
+//     sorteia ferramenta superior (o livro não tem tabela de tesouro
+//     para isso). Eles continuam no site, na Tabela 3-8 da aba "🔨 Criação
+//     de Itens" e no "📖 Descrição". Com a saída dos dois, as faixas do d%
+//     foram REESCALADAS proporcionalmente: cada melhoria manteve a mesma
+//     chance relativa e as tabelas voltaram a fechar em 100 sem buraco.
+//   • Os pag:"??" foram localizados: Fósforo é do Heróis (p. 239, e não do
+//     Suplemento), Prudente p. 240, Devotado é do Deuses (p. 54). Só
+//     Penetrante fica sem página — ele só existe no Suplemento do Mestre,
+//     que não tem numeração.
 const MELHORIA_ARMA = [
-  {max:9,  item:"Atroz",               livro:"Tormenta20",            pag:164, obs:"* Ver regra especial"},
-  {max:11, item:"Banhada a ouro",      livro:"Tormenta20",            pag:164},
-  {max:18, item:"Certeira",            livro:"Tormenta20",            pag:164},
-  {max:19, item:"Conduíte",            livro:"Deuses de Arton",       pag:54},
-  {max:21, item:"Cravejada de gemas",  livro:"Tormenta20",            pag:164},
-  {max:28, item:"Cruel",               livro:"Tormenta20",            pag:164},
-  {max:30, item:"Discreta",            livro:"Tormenta20",            pag:164},
-  {max:35, item:"Equilibrada",         livro:"Tormenta20",            pag:165},
-  {max:39, item:"Farpada",             livro:"Heróis de Arton",       pag:239},
-  {max:42, item:"Fósforo",             livro:"Suplemento do Mestre",  pag:"??", obs:"* Apenas Munição"},
-  {max:44, item:"Guarda",              livro:"Heróis de Arton",       pag:239},
-  {max:48, item:"Harmonizada",         livro:"Tormenta20",            pag:165},
-  {max:50, item:"Incendiária",         livro:"Heróis de Arton",       pag:239, obs:"* Apenas Munição"},
-  {max:54, item:"Injeção alquímica",   livro:"Tormenta20",            pag:165},
-  {max:56, item:"Macabra",             livro:"Tormenta20",            pag:165},
-  {max:65, item:"Maciça",              livro:"Tormenta20",            pag:165},
-  {max:74, item:"Material especial",   livro:"Tormenta20",            pag:165, obs:"** Mestre define o material"},
-  {max:77, item:"Mira telescópica",    livro:"Tormenta20",            pag:166},
-  {max:81, item:"Penetrante",          livro:"Suplemento do Mestre",  pag:"??"},
-  {max:88, item:"Precisa",             livro:"Tormenta20",            pag:166},
-  {max:90, item:"Pressurizada",        livro:"Heróis de Arton",       pag:240},
-  {max:93, item:"Usado",               livro:"Heróis de Arton",       pag:"??"},
-  {max:96, item:"Brasonado",           livro:"Heróis de Arton",       pag:"??"},
+  {max:10, item:"Atroz",               livro:"Tormenta20",            pag:164, obs:"* Ver regra especial"},
+  {max:12, item:"Banhada a ouro",      livro:"Tormenta20",            pag:164},
+  {max:20, item:"Certeira",            livro:"Tormenta20",            pag:164},
+  {max:21, item:"Conduíte",            livro:"Deuses de Arton",       pag:54},
+  {max:23, item:"Cravejada de gemas",  livro:"Tormenta20",            pag:164},
+  {max:31, item:"Cruel",               livro:"Tormenta20",            pag:164},
+  {max:33, item:"Discreta",            livro:"Tormenta20",            pag:164},
+  {max:38, item:"Equilibrada",         livro:"Tormenta20",            pag:165},
+  {max:42, item:"Farpada",             livro:"Heróis de Arton",       pag:239, so:"corteOuPerfuracao"},
+  {max:45, item:"Fósforo",             livro:"Heróis de Arton",       pag:239, so:"municao"},
+  {max:47, item:"Guarda",              livro:"Heróis de Arton",       pag:239, so:"corpoACorpo"},
+  {max:51, item:"Harmonizada",         livro:"Tormenta20",            pag:165},
+  {max:53, item:"Incendiária",         livro:"Heróis de Arton",       pag:239, so:"municao"},
+  {max:57, item:"Injeção alquímica",   livro:"Tormenta20",            pag:165},
+  {max:59, item:"Macabra",             livro:"Tormenta20",            pag:165},
+  {max:69, item:"Maciça",              livro:"Tormenta20",            pag:165},
+  {max:79, item:"Material especial",   livro:"Tormenta20",            pag:165, obs:"** Mestre define o material"},
+  {max:82, item:"Mira telescópica",    livro:"Tormenta20",            pag:166, so:"disparo"},
+  {max:86, item:"Penetrante",          livro:"Suplemento do Mestre",  pag:"??"},
+  {max:94, item:"Precisa",             livro:"Tormenta20",            pag:166},
+  {max:96, item:"Pressurizada",        livro:"Heróis de Arton",       pag:240, so:"impactoOuFogo"},
   {max:100,item:"Pungente",            livro:"Tormenta20",            pag:166, obs:"* Ver regra especial"},
 ];
 
 const MELHORIA_ARMADURA = [
-  {max:10, item:"Ajustada",            livro:"Tormenta20",       pag:164},
-  {max:14, item:"Balístico",           livro:"Heróis de Arton",  pag:239},
-  {max:18, item:"Banhada a ouro",      livro:"Tormenta20",       pag:164},
-  {max:22, item:"Cravejada de gemas",  livro:"Tormenta20",       pag:164},
-  {max:27, item:"Delicada",            livro:"Tormenta20",       pag:164},
-  {max:29, item:"Deslumbrante",        livro:"Heróis de Arton",  pag:239, obs:"* Ver regra especial"},
-  {max:31, item:"Diligente",           livro:"Deuses de Arton",  pag:54},
-  {max:35, item:"Discreta",            livro:"Tormenta20",       pag:164},
-  {max:39, item:"Espinhos",            livro:"Tormenta20",       pag:165},
-  {max:43, item:"Injetora",            livro:"Heróis de Arton",  pag:240},
-  {max:47, item:"Inscrito",            livro:"Deuses de Arton",  pag:54},
-  {max:49, item:"Macabra",             livro:"Tormenta20",       pag:165},
-  {max:59, item:"Material especial",   livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
-  {max:64, item:"Polida",              livro:"Tormenta20",       pag:166},
-  {max:76, item:"Reforçada",           livro:"Tormenta20",       pag:166},
-  {max:78, item:"Prudente",            livro:"Heróis de Arton",  pag:"??"},
-  {max:80, item:"Usado",               livro:"Heróis de Arton",  pag:"??"},
-  {max:82, item:"Brasonado",           livro:"Heróis de Arton",  pag:"??"},
-  {max:84, item:"Devotado",            livro:"Deuses de Arton",  pag:"??"},
-  {max:95, item:"Selada",              livro:"Tormenta20",       pag:166},
-  {max:100,item:"Sob medida",          livro:"Tormenta20",       pag:166, obs:"* Ver regra especial"},
+  {max:11, item:"Ajustada",            livro:"Tormenta20",       pag:164},
+  {max:15, item:"Balístico",           livro:"Heróis de Arton",  pag:239, so:"escudo"},
+  {max:19, item:"Banhada a ouro",      livro:"Tormenta20",       pag:164},
+  {max:23, item:"Cravejada de gemas",  livro:"Tormenta20",       pag:164},
+  {max:28, item:"Delicada",            livro:"Tormenta20",       pag:164, so:"armaduraPesada"},
+  {max:30, item:"Deslumbrante",        livro:"Heróis de Arton",  pag:239, so:"armadura", obs:"* Ver regra especial"},
+  {max:32, item:"Diligente",           livro:"Deuses de Arton",  pag:54},
+  {max:36, item:"Discreta",            livro:"Tormenta20",       pag:164},
+  {max:40, item:"Espinhos",            livro:"Tormenta20",       pag:165},
+  {max:44, item:"Injetora",            livro:"Heróis de Arton",  pag:240, so:"armadura"},
+  {max:48, item:"Inscrito",            livro:"Deuses de Arton",  pag:54},
+  {max:50, item:"Macabra",             livro:"Tormenta20",       pag:165},
+  {max:61, item:"Material especial",   livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
+  {max:66, item:"Polida",              livro:"Tormenta20",       pag:166},
+  {max:79, item:"Reforçada",           livro:"Tormenta20",       pag:166},
+  {max:81, item:"Prudente",            livro:"Heróis de Arton",  pag:240, so:"armadura"},
+  {max:83, item:"Devotado",            livro:"Deuses de Arton",  pag:54},
+  {max:95, item:"Selada",              livro:"Tormenta20",       pag:166, so:"armaduraPesada"},
+  {max:100,item:"Sob medida",          livro:"Tormenta20",       pag:166, so:"armadura", obs:"* Ver regra especial"},
 ];
 
 const MELHORIA_ESOTER = [
   {max:3,  item:"Banhado a ouro",       livro:"Tormenta20",       pag:164},
-  {max:18, item:"Canalizador",          livro:"Tormenta20",       pag:164},
-  {max:21, item:"Canônico",             livro:"Deuses de Arton",  pag:54},
-  {max:24, item:"Cravejado de gemas",   livro:"Tormenta20",       pag:164},
-  {max:28, item:"Discreto",             livro:"Tormenta20",       pag:164},
-  {max:43, item:"Energético",           livro:"Tormenta20",       pag:165},
-  {max:58, item:"Harmonizado",          livro:"Tormenta20",       pag:165},
-  {max:61, item:"Macabro",              livro:"Tormenta20",       pag:165},
-  {max:70, item:"Material especial",    livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
-  {max:80, item:"Poderoso",             livro:"Tormenta20",       pag:166},
-  {max:90, item:"Potencializador",      livro:"Heróis de Arton",  pag:240, obs:"* Ver regra especial"},
-  {max:93, item:"Usado",                livro:"Heróis de Arton",  pag:"??"},
-  {max:96, item:"Brasonado",            livro:"Heróis de Arton",  pag:"??"},
+  {max:19, item:"Canalizador",          livro:"Tormenta20",       pag:164},
+  {max:22, item:"Canônico",             livro:"Deuses de Arton",  pag:54},
+  {max:25, item:"Cravejado de gemas",   livro:"Tormenta20",       pag:164},
+  {max:29, item:"Discreto",             livro:"Tormenta20",       pag:164},
+  {max:45, item:"Energético",           livro:"Tormenta20",       pag:165},
+  {max:61, item:"Harmonizado",          livro:"Tormenta20",       pag:165},
+  {max:64, item:"Macabro",              livro:"Tormenta20",       pag:165},
+  {max:74, item:"Material especial",    livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
+  {max:85, item:"Poderoso",             livro:"Tormenta20",       pag:166},
+  {max:96, item:"Potencializador",      livro:"Heróis de Arton",  pag:240, obs:"* Ver regra especial"},
   {max:100,item:"Vigilante",            livro:"Tormenta20",       pag:166},
 ];
+
+/* ── QUE ITEM CADA MELHORIA ACEITA ─────────────────────────────────
+   A tabela do livro diz a CATEGORIA (é por isso que existem três
+   tabelas aqui), mas o verbete de várias melhorias restringe mais:
+   "só pode ser aplicada em munições", "em escudos", "em armaduras
+   pesadas", "em armas de disparo (exceto fundas)". Sem isso o gerador
+   entrega coisas impossíveis — mira telescópica numa espada, munição
+   incendiária numa maça, armadura de couro selada.
+
+   Quem responde é o catálogo da Loja (categoria e tipo de dano de cada
+   item), com duas listas fechadas para o que o catálogo não separa:
+   munição e arma de fogo. Elas cobrem as tabelas de equipamento daqui.
+
+   Só entra aqui o que o livro RESTRINGE com todas as letras. Onde ele
+   descreve sem proibir, o item continua elegível — é o caso da injeção
+   alquímica (qualquer arma) e da polida (armadura ou escudo). As quatro
+   leituras que fogem disso são Deslumbrante, Injetora, Prudente e Sob
+   medida: o verbete delas fala só de "armadura", e o livro é cuidadoso em
+   dizer "armadura ou escudo" quando quer as duas (Polida, Reforçada,
+   Ajustada). */
+
+// Munições: o catálogo as guarda como arma sem dano próprio, mas Rede e
+// Desmontador também são armas sem dano — por isso a lista é nominal.
+const MUNICOES = new Set([
+  'Flechas (20)', 'Flechas de caça (20)', 'Flechas assobiadoras (20)',
+  'Flechas pesadas (20)', 'Virotes (20)', 'Virotes pesados (20)',
+  'Balas (20)', 'Pedras (20)', 'Dardos (20)', 'Bola de ferro (1)',
+]);
+
+// Armas de fogo — a mesma lista da Loja (js/loja_completa.js), que a usa
+// para a proibição do Reinado. Inclui as híbridas e as munições delas.
+const ARMAS_FOGO_MELHORIA = new Set([
+  'Pistola', 'Garrucha', 'Traque', 'Mosquete', 'Arcabuz', 'Bacamarte',
+  'Canhão portátil', 'Pistola-punhal', 'Lança de fogo', 'Sifão cáustico',
+  'Balas (20)', 'Bola de ferro (1)',
+]);
+
+// Armas de DISPARO (atiram um projétil), por oposição às de arremesso (a
+// própria arma é atirada). A diferença não está em nenhuma coluna das
+// tabelas de arma: é o texto de cada verbete que diz, então a lista é
+// nominal e cobre as armas à distância das tabelas deste arquivo.
+const ARMAS_DISPARO = new Set([
+  'Arco curto', 'Arco longo', 'Arco de guerra', 'Arco montado',
+  'Balestra', 'Besta de mão', 'Besta leve', 'Besta pesada',
+  'Besta de repetição', 'Besta dupla', 'Zarabatana', 'Tai-tai',
+  'Funda', 'Arcabuz', 'Bacamarte', 'Canhão portátil', 'Garrucha',
+  'Mosquete', 'Pistola', 'Pistola-punhal', 'Traque', 'Lança de fogo',
+  'Sifão cáustico',
+]);
+
+// Rótulo de cada restrição — aparece no catálogo de tesouros e no texto
+// que o botão "⧉ Copiar" leva junto do item.
+const RESTRICAO_ROTULO = {
+  municao:           'Só munições',
+  corteOuPerfuracao: 'Só armas de corte ou perfuração',
+  corpoACorpo:       'Só armas corpo a corpo',
+  impactoOuFogo:     'Só armas corpo a corpo de impacto e armas de fogo',
+  disparo:           'Só armas de disparo (exceto fundas)',
+  escudo:            'Só escudos',
+  armadura:          'Só armaduras (não escudos)',
+  armaduraPesada:    'Só armaduras pesadas',
+};
+
+// Cada teste recebe o NOME do item-base sorteado e os atributos dele no
+// catálogo da Loja (categoria, tipo de dano). Sem catálogo carregado,
+// `melhoriaCabe` deixa passar: melhor uma melhoria improvável do que uma
+// aba que não gera nada.
+const RESTRICAO_MELHORIA = {
+  municao:           (nome)     => MUNICOES.has(nome),
+  corteOuPerfuracao: (nome, st) => !MUNICOES.has(nome) && /corte|perfura/i.test(st.tipo || ''),
+  corpoACorpo:       (nome, st) => /^Corpo a Corpo/.test(st.categoria || ''),
+  impactoOuFogo:     (nome, st) => ARMAS_FOGO_MELHORIA.has(nome) ||
+                                   (/^Corpo a Corpo/.test(st.categoria || '') && /impacto/i.test(st.tipo || '')),
+  disparo:           (nome)     => ARMAS_DISPARO.has(nome) && nome !== 'Funda',
+  escudo:            (nome, st) => st.categoria === 'Escudos',
+  armadura:          (nome, st) => /^Armaduras/.test(st.categoria || ''),
+  armaduraPesada:    (nome, st) => st.categoria === 'Armaduras Pesadas',
+};
+
+// A melhoria `row` cabe no item-base `nome`? Sem restrição, sempre cabe.
+function melhoriaCabe(row, nome) {
+  if (!row || !row.so) return true;
+  const teste = RESTRICAO_MELHORIA[row.so];
+  if (!teste || !nome) return true;
+  const st = statsDaLoja(nome);
+  if (!st) return true;              // item fora do catálogo: não barra
+  return !!teste(nome, st);
+}
 
 /* ── Munições extras (Heróis de Arton, p. 223) ───────────────────────
    A tabela oficial de armas tem exatamente 100 entradas — uma por número
@@ -897,8 +992,8 @@ const MELHORIA_PREREQ = {
 const MELHORIA_EXCLUI = [
   ['Precisa',   'Maciça'],
   ['Delicada',  'Reforçada'],
-  ['Brasonado', 'Discreta'],   // arma/armadura
-  ['Brasonado', 'Discreto'],   // esotérico
+  // O par Brasonado × Discreto saiu junto com o Brasonado: ele é melhoria
+  // de ferramenta e vestuário, categoria que o gerador não sorteia.
 ];
 function melhoriaPrereqFalta(nome, usados) {
   const req = MELHORIA_PREREQ[nome];
@@ -1494,7 +1589,13 @@ function lookupPocao(d120) {
 // respeitando pré-requisitos, incompatibilidades e sem repetir. Usado pelo
 // item Superior e — no modo Customizável "Superior + Encantado" — pelo item
 // mágico (que também ganha melhorias). Lógica idêntica à que vivia em superior().
-function rolarMelhorias(tipo, qtd) {
+//
+// `nomeBase` é o item que vai RECEBER as melhorias (a espada, o escudo, o
+// cajado). É por ele que se descarta o que não cabe: mira telescópica só
+// em arma de disparo, incendiária só em munição, selada só em armadura
+// pesada. Sem o nome, só a categoria da tabela filtra — que é como esta
+// função se comportava antes.
+function rolarMelhorias(tipo, qtd, nomeBase) {
   const melhorias = [];
   const usados = new Set();
   for (let i = 0; i < qtd; i++) {
@@ -1508,7 +1609,8 @@ function rolarMelhorias(tipo, qtd) {
       (
         usados.has(item.item) ||
         melhoriaPrereqFalta(item.item, usados) ||   // pré-requisito ausente
-        melhoriaExclui(item.item, usados)           // par incompatível (Precisa/Maciça etc.)
+        melhoriaExclui(item.item, usados) ||        // par incompatível (Precisa/Maciça etc.)
+        !melhoriaCabe(item, nomeBase)               // não serve para ESTE item
       )
     );
     usados.add(item.item);
@@ -1545,7 +1647,7 @@ const TABELAS = {
   // ─── Superior ─────────────────────────────────────────
   superior(qtd) {
     const equip = TABELAS.equipamento();
-    return { equip, melhorias: rolarMelhorias(equip.tipo, qtd) };
+    return { equip, melhorias: rolarMelhorias(equip.tipo, qtd, equip.item && equip.item.item) };
   },
 
   // ─── Mágico ───────────────────────────────────────────
@@ -1600,7 +1702,7 @@ const TABELAS = {
     // melhorias (vira superior E encantado). Quantidade por tier: 1 / 2 / 3.
     if (custom && CUSTOM_FILTROS.superiorEncantado) {
       const qtdMel = tier === 'menor' ? 1 : tier === 'medio' ? 2 : 3;
-      out.melhorias = rolarMelhorias(tipo, qtdMel);
+      out.melhorias = rolarMelhorias(tipo, qtdMel, rb.item && rb.item.item);
     }
     return out;
   },
@@ -1921,6 +2023,7 @@ function linhasCopiaItem(it) {
     preco ? `Preço: ${preco} T$` : '',
     statsItemTexto(it.item),
     it.livro ? `Fonte: ${it.livro}${it.pag ? `, p. ${it.pag}` : ''}` : '',
+    it.so && RESTRICAO_ROTULO[it.so] ? `Aplica-se a: ${RESTRICAO_ROTULO[it.so]}` : '',
     it.obs ? `Obs.: ${it.obs}` : '',
   ];
 }
@@ -2236,8 +2339,12 @@ function blockPergaminho(perg, idx, total) {
 function blockSuperior(sup, prefixo='') {
   let s = blockEquip(sup.equip, prefixo);
   sup.melhorias.forEach((m, i) => {
-    const obsHtml = m.item?.obs
-      ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${m.item.obs}</span>`
+    // A restrição de tipo entra na mesma tarja da obs: ela explica por que
+    // aquela melhoria pôde cair NESTE item (e não em qualquer um).
+    const avisos = [m.item?.so ? RESTRICAO_ROTULO[m.item.so] : '', m.item?.obs]
+      .filter(Boolean).join(' · ');
+    const obsHtml = avisos
+      ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${avisos}</span>`
       : '';
     s += `<div class="sub-indent">
       <span class="bullet">◇</span>
@@ -2378,8 +2485,10 @@ function blockMagico(mag, prefixo='') {
     });
     // Modo Customizável "Superior + Encantado": melhorias no item mágico.
     (mag.melhorias || []).forEach((m, i) => {
-      const obsHtml = m.item?.obs
-        ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${m.item.obs}</span>`
+      const avisos = [m.item?.so ? RESTRICAO_ROTULO[m.item.so] : '', m.item?.obs]
+        .filter(Boolean).join(' · ');
+      const obsHtml = avisos
+        ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${avisos}</span>`
         : '';
       s += `<div class="sub-indent" style="margin-top:3px">
         <span class="bullet">◇</span>
@@ -3156,8 +3265,11 @@ function catSecaoHTML(titulo, icone, rows, opts) {
   const lis = rows.map(r => {
     const ref   = r.livro ? `<span class="cat-ref">${catEsc(r.livro)}${r.pag ? ' p.' + r.pag : ''}</span>` : '';
     const preco = r.preco ? `<span class="cat-preco">T$ ${catEsc(r.preco)}</span>` : '';
+    // `so` só existe nas melhorias: é o tipo de item que aquela aceita.
+    const so    = (r.so && RESTRICAO_ROTULO[r.so])
+      ? `<span class="cat-obs cat-obs--so">${catEsc(RESTRICAO_ROTULO[r.so])}</span>` : '';
     const obs   = r.obs   ? `<span class="cat-obs">${catEsc(r.obs)}</span>` : '';
-    return `<li class="cat-item"><span class="cat-item-nome">${catEsc(r.item)}</span>${preco}${ref}${obs}</li>`;
+    return `<li class="cat-item"><span class="cat-item-nome">${catEsc(r.item)}</span>${preco}${ref}${so}${obs}</li>`;
   }).join('');
   return `<details class="cat-sec${padraoCls}"${filtroAttr}>
     <summary class="cat-sec-cab">

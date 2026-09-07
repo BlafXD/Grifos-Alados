@@ -810,6 +810,8 @@ footer {
 #recompensas .cat-preco { font-family: 'Cinzel', serif; font-size: 0.66rem; color: var(--rust-dark); margin-left: 0.3rem; white-space: nowrap; }
 #recompensas .cat-ref   { font-style: italic; font-size: 0.74rem; color: var(--ink-faded); margin-left: 0.3rem; }
 #recompensas .cat-obs   { font-size: 0.74rem; color: var(--gold-dim); margin-left: 0.3rem; }
+/* a que TIPO de item a melhoria pode ser aplicada (só munições, só escudos…) */
+#recompensas .cat-obs--so { color: var(--rust-dark); font-style: italic; }
 
 /* modo Customizável: blocos cujo filtro está desligado entram esmaecidos */
 #recompensas #catalogoTesouros .cat-sec--off { opacity: 0.4; }
