@@ -2,10 +2,13 @@
 
 **Data:** 02/09/2026 · **Fonte:** os PDFs em `C:/Users/caiqu/Desktop/RPG/Tormenta 20/Livros`
 
-**Estado do conserto:** etapa 1 **feita** em 06/09/2026 (os 16 valores, os 4
-nomes, a caixa e o `X`→`x`) e etapa 2 **feita** em 07/09/2026 (os 58 encantos e
-a separação armadura × escudo); etapa 3 (os 8 itens mágicos do *Ameaças*)
-**pendente**. O plano de cada uma está em §6.
+**Estado do conserto: as três etapas estão feitas.** Etapa 1 em 06/09/2026 (os
+16 valores, os 4 nomes, a caixa e o `X`→`x`); etapas 2 e 3 em 07/09/2026 (os 58
+encantos com a separação armadura × escudo, e os 8 itens mágicos do *Ameaças*),
+mais o preço dos 84 itens específicos, que a etapa 3 revelou faltando.
+O que cada uma fez está em §6; o que continua **em aberto** é só o que sempre
+esteve fora do plano: a melhoria "Aprimorado" (§2.4) e as 23 linhas de
+**Serviços** (§2.1).
 
 Mesma ideia da conferência das fichas: em vez de comparar o projeto com um TXT
 colado, cada tabela de equipamento foi **lida do PDF** e cruzada com os dados do
@@ -32,7 +35,7 @@ item** — o Atlas só cita a Tabela 8-1 do básico.
 |---|---|---|---|
 | Equipamento (nomes distintos) | 508 | 455 (458 linhas) | 0 (as 53 diferenças são Animais/Veículos/Serviços — §2.1) |
 | Encantos (vagas por categoria) | 168 | 96 → **168** ✔ | **72 vagas / 58 nomes** — feito em 07/09 |
-| Itens mágicos nomeados | 265 | 257 | **8** |
+| Itens mágicos nomeados | 265 | 257 → **263** ✔ | **8** — feito em 07/09 (6 nas tabelas + 2 artefatos só com descrição) |
 | Melhorias (nomes distintos) | 46 | 46 | **1** ("Aprimorado") |
 
 *A conta de encantos é por vaga: armadura e escudo têm listas próprias — hoje
@@ -44,14 +47,18 @@ masculina (macabra/macabro) e traz uma extra do Suplemento do Mestre
 
 **Descrições: 100%.** Usando o `ItensDescricoes.get()` real (com `ALIASES` e o
 recurso às magias), **458/458** itens do catálogo, **168/168** encantos (eram
-96/96 antes da etapa 2) e **720/720** entradas das tabelas de recompensa têm
-verbete. Nenhuma nuvem "📖 Descrição" sai vazia.
+96/96 antes da etapa 2) e **736/736** entradas das tabelas de recompensa têm
+verbete. Nenhuma nuvem "📖 Descrição" sai vazia. *(A conta de 02/09 dizia
+720/720; esta soma as 18 tabelas de `js/recompensas.js`, inclusive as munições
+extras e os 6 itens novos da etapa 3.)*
 
-**Tabelas d%: íntegras.** As 17 tabelas de `js/recompensas.js` cobrem 1–100 sem
-buraco e sem retroceder. As três exceções são de propósito e conferem com o
-livro: `MAGICO_*` param em 90 (91-100 é "item específico") e `POCAO_TABLE` vai
-até 120 porque a mesa estendeu a tabela com poções de outros livros — o
-`lookupPocao` rola `d120` de acordo.
+**Tabelas d%: íntegras.** As 17 tabelas de `js/recompensas.js` cobrem sua faixa
+inteira sem buraco e sem retroceder. As que não param em 100 param onde devem:
+`MAGICO_*` vão até 90 (91-100 é "item específico"); `POCAO_TABLE` vai até 120
+porque a mesa estendeu a tabela com poções de outros livros; e desde a etapa 3
+`ESPEC_ARMA` e `ACESSORIO_MAIOR` vão até 102, `ESPEC_ARMADURA` e
+`ACESSORIO_MEDIO` até 101 — o dado cresceu junto com os itens do *Ameaças*
+(veja §6), como já acontecia no `d120` das poções e no `d104` das munições.
 
 ---
 
@@ -120,17 +127,33 @@ do repertório de encantos que o gerador de recompensas usa. Os dois lugares do
 site discordavam sobre o que existe no mundo. **Hoje as duas abas sorteiam sobre
 o mesmo repertório.**
 
-### 2.3 Itens mágicos: 8 de *Ameaças de Arton* ausentes
+### 2.3 Itens mágicos: 8 de *Ameaças de Arton* ausentes — ✅ resolvido em 07/09/2026
 
 O livro tem um bloco "Novos Itens Mágicos" + "Novos Artefatos" (p. 402-403) que
-não entrou em `js/recompensas.js` nem nas descrições. Os oito nomes só aparecem
-como equipamento **dentro de fichas** em `js/fichas-ameacas-arton-data.js`:
+não entrou em `js/recompensas.js` nem nas descrições. Os oito nomes só apareciam
+como equipamento **dentro de fichas** em `js/fichas-ameacas-arton-data.js`.
 
-Chifre de Unicórnio · Fragmento de Filactério · Grilhão de Descrença ·
-Pilão Conspurcado · Pistola Demoníaca · Rompedor da Realidade ·
-Uyzrrak Da'ukthra · **Amuleto do Abutre** (artefato)
+**Cada um deles tem categoria impressa no livro** — é ela que diz em que tabela
+do projeto o item entra:
 
-Os 257 demais itens mágicos nomeados (T20, Heróis e Deuses) estão todos lá.
+| Item | O que o livro diz | Onde entrou | Preço |
+|---|---|---|---|
+| Chifre de unicórnio | Acessório maior | `ACESSORIO_MAIOR` | T$ 120.000 |
+| Fragmento de filactério | Acessório maior | `ACESSORIO_MAIOR` | T$ 90.000 |
+| Pilão conspurcado | Acessório médio | `ACESSORIO_MEDIO` | T$ 21.000 |
+| Grilhão de descrença | Armadura específica menor | `ESPEC_ARMADURA` | T$ 24.000 |
+| Pistola demoníaca | Arma específica média | `ESPEC_ARMA` | T$ 72.250 |
+| Uyzrrak Da'ukthra | Arma específica média | `ESPEC_ARMA` | T$ 78.050 |
+| **Amuleto do Abutre** | **Artefato** | — só descrição | (o livro não dá) |
+| **Rompedor da Realidade** | **Artefato** | — só descrição | (o livro não dá) |
+
+**São dois artefatos, não um.** O *Rompedor da Realidade* também está sob o
+título "Novos Artefatos", e o próprio texto o chama de "*Este artefato lefeu*".
+Como o sistema não tem categoria para artefato (não há tabela em que ele caiba,
+e artefato não tem preço nem se fabrica), os dois ficaram **só com a descrição**,
+para a nuvem "📖 Descrição" funcionar nas fichas que os carregam.
+
+Os 257 demais itens mágicos nomeados (T20, Heróis e Deuses) já estavam lá.
 
 ### 2.4 Melhorias: falta uma
 
@@ -316,14 +339,70 @@ Duas coisas que a etapa mostrou e que o plano não previa:
   começarem com "*A armadura...*" / "*Esta armadura...*", enquanto as outras 16
   dizem "*O item...*" ou falam direto com o portador.
 
-**Etapa 3 — os 8 itens mágicos do *Ameaças de Arton*.** É a mais trabalhosa:
-além da entrada nas tabelas de `js/recompensas.js`, cada um precisa de
-**descrição nova** em `js/itens-descricoes-extra-data.js` (nenhum dos oito tem).
-O texto está no PDF, p. 402-403 — e o *Amuleto do Abutre* é artefato, então cabe
-decidir se entra no sorteio de recompensa ou fica só como item consultável.
+**Etapa 3 — os 8 itens mágicos do *Ameaças de Arton*. ✅ FEITA EM 07/09/2026.**
+Os **seis** que têm categoria entraram nas tabelas de `js/recompensas.js` pela
+categoria que o livro lhes dá (o quadro está em §2.3); os **dois artefatos**
+ficaram só com descrição. As oito descrições foram transcritas do PDF
+(p. 402-403) para `js/itens-descricoes-extra-data.js` — o bloco de específicos
+passou de 81 para 84 verbetes, e nasceram duas seções, "Acessórios mágicos
+(Ameaças de Arton)" e "Artefatos".
 
-**Fora de escopo, a decidir:** a melhoria "Aprimorado" (§2.4) e as 23 linhas de
-**Serviços** (§2.1), que hoje não existem em canto nenhum do site.
+**O dado da tabela cresce; ninguém perde faixa.** Um item novo numa tabela d%
+cheia obriga a escolher entre espremer as faixas de quem já está lá e aumentar o
+dado. O projeto já tinha respondido isso duas vezes — o **d120** das poções e o
+**d104** das munições extras —, então cada item novo virou **uma face a mais**:
+
+| tabela | antes | agora |
+|---|---|---|
+| `ESPEC_ARMA` | 49 itens, d% | 51 itens, **d102** |
+| `ESPEC_ARMADURA` | 24 itens, d% | 25 itens, **d101** |
+| `ACESSORIO_MEDIO` | 61 itens, d% | 62 itens, **d101** |
+| `ACESSORIO_MAIOR` | 37 itens, d% | 39 itens, **d102** |
+
+Quem rola o dado passou a perguntar à tabela quantas faces ela tem
+(`ladosDaTabela`), e a rolagem que aparece na tela mostra o dado certo
+(`rotuloDado`: "d%" enquanto forem 100 faces, "d102" quando não forem). O
+`ESPEC_ESOTER` e o `ACESSORIO_MENOR` continuam em d% — o *Ameaças* não lhes
+acrescentou nada.
+
+**Etapa 3-bis — o preço dos 84 específicos. ✅ FEITA EM 07/09/2026.** A etapa 3
+deixou à vista que as tabelas `ESPEC_*` não guardavam preço nenhum: os livros
+imprimem, mas o projeto só guardava preço de acessório e de poção, então a linha
+"Preço" não saía para nenhum item nomeado. Agora os **84 têm `preco`**, no mesmo
+formato das tabelas de acessório, e o preço aparece nos três lugares que já o
+mostravam para acessório: a linha da rolagem, o "⧉ Copiar" e o catálogo.
+
+Cada preço saiu do livro, por **três leituras diferentes conforme o livro**:
+
+| livro | onde está o preço | como foi lido |
+|---|---|---|
+| **Tormenta 20** (31) | Tab. 8-9 (armas e esotéricos) e 8-11 (armaduras) | a tabela d%, no `-layout` |
+| **Heróis de Arton** (31) | Tab. 3-9, 3-10 e 3-11, coluna *Preço* | a tabela, no `-layout` |
+| **Deuses de Arton** (19) | última frase do verbete | prosa, no `-raw` |
+| **Ameaças de Arton** (3) | última frase do verbete | prosa, no `-raw` |
+
+E **cada leitura foi reconferida por outro caminho**: as tabelas do T20 são
+ordenadas por preço, então a sequência lida tem de subir — sobe, nas 19 linhas;
+as do *Heróis* foram relidas no `-raw` (30 de 31 batendo, a 31ª é a de nome
+quebrado); e as do *Deuses* foram relidas cortando o `-layout` na calha entre as
+colunas, 18 de 19 batendo. As duas que ficaram de fora dessas reconferências
+foram lidas à mão no PDF.
+
+**Duas armadilhas cobraram caro aqui** (e explicam por que a segunda leitura não
+é luxo):
+
+- **A palavra quebrada no fim da linha esconde a frase inteira.** O *Deuses*
+  imprime "Armadura es-\npecífica média, preço T$ 54.000." — a busca por
+  "Armadura específica" não acha, e o item herda o preço do verbete seguinte.
+  Foi o caso da **Armadura do julgamento**, que quase entrou com T$ 25.000 em vez
+  de **T$ 54.000**. Emende os hífens de fim de linha antes de procurar.
+- **Nome quebrado em duas linhas, de novo.** Na Tab. 3-10 do *Heróis* a linha sai
+  "Armadura das   Maior   T$ 40.500" e o "sombras profundas" fica na linha de
+  baixo. Vale a mesma regra de §7: o fragmento em minúscula continua o de cima.
+
+**Continua em aberto (sempre esteve fora do plano):** a melhoria "Aprimorado"
+(§2.4) e as 23 linhas de **Serviços** (§2.1), que hoje não existem em canto
+nenhum do site.
 
 ---
 
@@ -352,6 +431,11 @@ decidir se entra no sorteio de recompensa ou fica só como item consultável.
   normalização sua.** Minha primeira conta acusou 63 itens sem verbete; o
   `ItensDescricoes.get()` de verdade — com `ALIASES` e o recurso às magias —
   acha todos os 720.
+- **A categoria de um item mágico está na última frase do verbete.** No
+  *Ameaças* não há tabela de itens mágicos: cada verbete termina dizendo o que
+  o item é e quanto custa ("*Acessório maior, preço T$ 120.000.*"). É essa
+  frase que decide em qual tabela do projeto ele entra — e é ela que denuncia
+  o artefato, que não tem nem categoria nem preço.
 - **Nem todo livro traz a mesma coisa em tabela.** O mesmo assunto sai como
   tabela com coluna de resumo no básico e como texto corrido no suplemento (os
   encantos: Tab. 8-8/8-10 no T20, quatro seções de prosa no *Heróis*). Antes de

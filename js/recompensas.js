@@ -1079,106 +1079,121 @@ function lookupMagico(tipo, dp) {
    ═══════════════════════════════════════════════════════ */
 
 const ESPEC_ARMA = [
-  {max:  2, item:"Adaga da bruma"         , livro:"Heróis de Arton", pag:257},
-  {max:  3, item:"Adaga ofídica"          , livro:"Deuses de Arton", pag:58},
-  {max:  4, item:"Adaga sorrateira"       , livro:"Deuses de Arton", pag:56},
-  {max:  5, item:"Alabarda da coragem"    , livro:"Deuses de Arton", pag:57},
-  {max:  6, item:"Alfange dourado"        , livro:"Deuses de Arton", pag:56},
-  {max:  7, item:"Alguma coisa de Nimb...", livro:"Deuses de Arton", pag:58},
-  {max: 10, item:"Arco das sombras"       , livro:"Heróis de Arton", pag:257},
-  {max: 12, item:"Arco do crepúsculo"     , livro:"Heróis de Arton", pag:257},
-  {max: 15, item:"Arco do poder"          , livro:"Tormenta20", pag:336},
-  {max: 18, item:"Avalanche"              , livro:"Tormenta20", pag:337},
-  {max: 21, item:"Azagaia dos relâmpagos" , livro:"Tormenta20", pag:337},
-  {max: 23, item:"Azagaia fantasma"       , livro:"Heróis de Arton", pag:257},
-  {max: 26, item:"Besta estelar"          , livro:"Heróis de Arton", pag:257},
-  {max: 29, item:"Besta explosiva"        , livro:"Tormenta20", pag:337},
-  {max: 30, item:"Bordão sabichão"        , livro:"Deuses de Arton", pag:58},
-  {max: 31, item:"Cajado das matas"       , livro:"Deuses de Arton", pag:55},
-  {max: 32, item:"Cimitarra solar"        , livro:"Deuses de Arton", pag:56},
-  {max: 34, item:"Clava de lava"          , livro:"Heróis de Arton", pag:257},
-  {max: 37, item:"Espada baronial"        , livro:"Tormenta20", pag:337},
-  {max: 39, item:"Espada da tempestade"   , livro:"Heróis de Arton", pag:257},
-  {max: 42, item:"Espada do guardião"     , livro:"Heróis de Arton", pag:257},
-  {max: 43, item:"Espada imaculada"       , livro:"Deuses de Arton", pag:59},
-  {max: 44, item:"Espada monástica"       , livro:"Deuses de Arton", pag:57},
-  {max: 46, item:"Espada solar"           , livro:"Heróis de Arton", pag:257},
-  {max: 49, item:"Espada sortuda"         , livro:"Tormenta20", pag:337},
-  {max: 51, item:"Florete do vendaval"    , livro:"Heróis de Arton", pag:258},
-  {max: 54, item:"Florete fugaz"          , livro:"Tormenta20", pag:337},
-  {max: 55, item:"Katana da determinação" , livro:"Deuses de Arton", pag:57},
-  {max: 58, item:"Lâmina da luz"          , livro:"Tormenta20", pag:338},
-  {max: 61, item:"Lança animalesca"       , livro:"Tormenta20", pag:338},
-  {max: 62, item:"Lança da dominação"     , livro:"Deuses de Arton", pag:56},
-  {max: 64, item:"Lança da fênix"         , livro:"Heróis de Arton", pag:258},
-  {max: 67, item:"Língua do deserto"      , livro:"Tormenta20", pag:338},
-  {max: 70, item:"Maça do terror"         , livro:"Tormenta20", pag:338},
-  {max: 71, item:"Maça monstruosa"        , livro:"Deuses de Arton", pag:58},
-  {max: 72, item:"Machado da bravura"     , livro:"Deuses de Arton", pag:55},
-  {max: 74, item:"Machado da natureza"    , livro:"Heróis de Arton", pag:258},
-  {max: 76, item:"Machado do abismo"      , livro:"Heróis de Arton", pag:258},
-  {max: 79, item:"Machado do vulcão"      , livro:"Heróis de Arton", pag:258},
-  {max: 80, item:"Machado lamnoriano"     , livro:"Deuses de Arton", pag:59},
-  {max: 83, item:"Machado silvestre"      , livro:"Tormenta20", pag:338},
-  {max: 84, item:"Mangual aventureiro"    , livro:"Deuses de Arton", pag:59},
-  {max: 86, item:"Martelo da terra"       , livro:"Heróis de Arton", pag:258},
-  {max: 89, item:"Martelo de Doherimm"    , livro:"Tormenta20", pag:338},
-  {max: 91, item:"Martelo do titã"        , livro:"Heróis de Arton", pag:258},
-  {max: 93, item:"Punhal das profundezas" , livro:"Heróis de Arton", pag:258},
-  {max: 96, item:"Punhal sszzaazita"      , livro:"Tormenta20", pag:338},
-  {max: 97, item:"Tridente aquoso"        , livro:"Deuses de Arton", pag:58},
-  {max:100, item:"Vingadora sagrada"      , livro:"Tormenta20", pag:338},
+  {max:  2, item:"Adaga da bruma",            preco:"27.000",   livro:"Heróis de Arton",  pag:257},
+  {max:  3, item:"Adaga ofídica",             preco:"36.000",   livro:"Deuses de Arton",  pag:58},
+  {max:  4, item:"Adaga sorrateira",          preco:"22.500",   livro:"Deuses de Arton",  pag:56},
+  {max:  5, item:"Alabarda da coragem",       preco:"36.000",   livro:"Deuses de Arton",  pag:57},
+  {max:  6, item:"Alfange dourado",           preco:"36.000",   livro:"Deuses de Arton",  pag:56},
+  {max:  7, item:"Alguma coisa de Nimb...",   preco:"54.000",   livro:"Deuses de Arton",  pag:58},
+  {max: 10, item:"Arco das sombras",          preco:"27.000",   livro:"Heróis de Arton",  pag:257},
+  {max: 12, item:"Arco do crepúsculo",        preco:"22.500",   livro:"Heróis de Arton",  pag:257},
+  {max: 15, item:"Arco do poder",             preco:"90.000",   livro:"Tormenta20",       pag:336},
+  {max: 18, item:"Avalanche",                 preco:"140.000",  livro:"Tormenta20",       pag:337},
+  {max: 21, item:"Azagaia dos relâmpagos",    preco:"30.000",   livro:"Tormenta20",       pag:337},
+  {max: 23, item:"Azagaia fantasma",          preco:"30.000",   livro:"Heróis de Arton",  pag:257},
+  {max: 26, item:"Besta estelar",             preco:"30.000",   livro:"Heróis de Arton",  pag:257},
+  {max: 29, item:"Besta explosiva",           preco:"100.000",  livro:"Tormenta20",       pag:337},
+  {max: 30, item:"Bordão sabichão",           preco:"72.000",   livro:"Deuses de Arton",  pag:58},
+  {max: 31, item:"Cajado das matas",          preco:"27.000",   livro:"Deuses de Arton",  pag:55},
+  {max: 32, item:"Cimitarra solar",           preco:"54.000",   livro:"Deuses de Arton",  pag:56},
+  {max: 34, item:"Clava de lava",             preco:"45.000",   livro:"Heróis de Arton",  pag:257},
+  {max: 37, item:"Espada baronial",           preco:"30.000",   livro:"Tormenta20",       pag:337},
+  {max: 39, item:"Espada da tempestade",      preco:"45.000",   livro:"Heróis de Arton",  pag:257},
+  {max: 42, item:"Espada do guardião",        preco:"54.000",   livro:"Heróis de Arton",  pag:257},
+  {max: 43, item:"Espada imaculada",          preco:"45.000",   livro:"Deuses de Arton",  pag:59},
+  {max: 44, item:"Espada monástica",          preco:"54.000",   livro:"Deuses de Arton",  pag:57},
+  {max: 46, item:"Espada solar",              preco:"45.000",   livro:"Heróis de Arton",  pag:257},
+  {max: 49, item:"Espada sortuda",            preco:"110.000",  livro:"Tormenta20",       pag:337},
+  {max: 51, item:"Florete do vendaval",       preco:"27.000",   livro:"Heróis de Arton",  pag:258},
+  {max: 54, item:"Florete fugaz",             preco:"50.000",   livro:"Tormenta20",       pag:337},
+  {max: 55, item:"Katana da determinação",    preco:"54.000",   livro:"Deuses de Arton",  pag:57},
+  {max: 58, item:"Lâmina da luz",             preco:"45.000",   livro:"Tormenta20",       pag:338},
+  {max: 61, item:"Lança animalesca",          preco:"45.000",   livro:"Tormenta20",       pag:338},
+  {max: 62, item:"Lança da dominação",        preco:"45.000",   livro:"Deuses de Arton",  pag:56},
+  {max: 64, item:"Lança da fênix",            preco:"100.000",  livro:"Heróis de Arton",  pag:258},
+  {max: 67, item:"Língua do deserto",         preco:"90.000",   livro:"Tormenta20",       pag:338},
+  {max: 70, item:"Maça do terror",            preco:"45.000",   livro:"Tormenta20",       pag:338},
+  {max: 71, item:"Maça monstruosa",           preco:"27.000",   livro:"Deuses de Arton",  pag:58},
+  {max: 72, item:"Machado da bravura",        preco:"25.000",   livro:"Deuses de Arton",  pag:55},
+  {max: 74, item:"Machado da natureza",       preco:"22.500",   livro:"Heróis de Arton",  pag:258},
+  {max: 76, item:"Machado do abismo",         preco:"36.000",   livro:"Heróis de Arton",  pag:258},
+  {max: 79, item:"Machado do vulcão",         preco:"54.000",   livro:"Heróis de Arton",  pag:258},
+  {max: 80, item:"Machado lamnoriano",        preco:"22.500",   livro:"Deuses de Arton",  pag:59},
+  {max: 83, item:"Machado silvestre",         preco:"70.000",   livro:"Tormenta20",       pag:338},
+  {max: 84, item:"Mangual aventureiro",       preco:"40.000",   livro:"Deuses de Arton",  pag:59},
+  {max: 86, item:"Martelo da terra",          preco:"33.000",   livro:"Heróis de Arton",  pag:258},
+  {max: 89, item:"Martelo de Doherimm",       preco:"70.000",   livro:"Tormenta20",       pag:338},
+  {max: 91, item:"Martelo do titã",           preco:"22.500",   livro:"Heróis de Arton",  pag:258},
+  {max: 92, item:"Pistola demoníaca",         preco:"72.250",   livro:"Ameaças de Arton", pag:403},
+  {max: 94, item:"Punhal das profundezas",    preco:"36.000",   livro:"Heróis de Arton",  pag:258},
+  {max: 97, item:"Punhal sszzaazita",         preco:"100.000",  livro:"Tormenta20",       pag:338},
+  {max: 98, item:"Tridente aquoso",           preco:"54.000",   livro:"Deuses de Arton",  pag:58},
+  {max: 99, item:"Uyzrrak Da’ukthra",         preco:"78.050",   livro:"Ameaças de Arton", pag:403},
+  {max:102, item:"Vingadora sagrada",         preco:"200.000",  livro:"Tormenta20",       pag:338},
 ];
 
 const ESPEC_ARMADURA = [
-  {max:  4, item:"Armadura da luz"               , livro:"Tormenta20", pag:340},
-  {max:  8, item:"Armadura das sombras profundas", livro:"Heróis de Arton", pag:259},
-  {max: 12, item:"Armadura do dragão ancião"     , livro:"Heróis de Arton", pag:259},
-  {max: 16, item:"Armadura do inverno perene"    , livro:"Heróis de Arton", pag:259},
-  {max: 18, item:"Armadura do julgamento"        , livro:"Deuses de Arton", pag:57},
-  {max: 22, item:"Baluarte anão"                 , livro:"Tormenta20", pag:340},
-  {max: 26, item:"Carapaça demoníaca"            , livro:"Tormenta20", pag:340},
-  {max: 30, item:"Cota da serpente marinha"      , livro:"Heróis de Arton", pag:259},
-  {max: 40, item:"Cota élfica"                   , livro:"Tormenta20", pag:340},
-  {max: 44, item:"Couraça do comando"            , livro:"Tormenta20", pag:340},
-  {max: 48, item:"Couraça do guardião celeste"   , livro:"Heróis de Arton", pag:259},
-  {max: 52, item:"Couro de monstro"              , livro:"Tormenta20", pag:340},
-  {max: 56, item:"Escudo da ira vulcânica"       , livro:"Heróis de Arton", pag:260},
-  {max: 60, item:"Escudo da luz estelar"         , livro:"Heróis de Arton", pag:260},
-  {max: 64, item:"Escudo da natureza viva"       , livro:"Heróis de Arton", pag:260},
-  {max: 68, item:"Escudo de Azgher"              , livro:"Tormenta20", pag:340},
-  {max: 72, item:"Escudo do conjurador"          , livro:"Tormenta20", pag:340},
-  {max: 76, item:"Escudo do eclipse"             , livro:"Tormenta20", pag:340},
-  {max: 80, item:"Escudo do grifo"               , livro:"Heróis de Arton", pag:260},
-  {max: 86, item:"Escudo do leão"                , livro:"Tormenta20", pag:340},
-  {max: 90, item:"Escudo do trovão"              , livro:"Heróis de Arton", pag:260},
-  {max: 94, item:"Escudo espinhoso"              , livro:"Tormenta20", pag:340},
-  {max: 98, item:"Loriga do centurião"           , livro:"Tormenta20", pag:340},
-  {max:100, item:"Manto da noite"                , livro:"Tormenta20", pag:340},
+  {max:  4, item:"Armadura da luz",                  preco:"150.000",  livro:"Tormenta20",       pag:340},
+  {max:  8, item:"Armadura das sombras profundas",   preco:"40.500",   livro:"Heróis de Arton",  pag:259},
+  {max: 12, item:"Armadura do dragão ancião",        preco:"100.000",  livro:"Heróis de Arton",  pag:259},
+  {max: 16, item:"Armadura do inverno perene",       preco:"40.500",   livro:"Heróis de Arton",  pag:259},
+  {max: 18, item:"Armadura do julgamento",           preco:"54.000",   livro:"Deuses de Arton",  pag:57},
+  {max: 22, item:"Baluarte anão",                    preco:"50.000",   livro:"Tormenta20",       pag:340},
+  {max: 26, item:"Carapaça demoníaca",               preco:"63.000",   livro:"Tormenta20",       pag:340},
+  {max: 30, item:"Cota da serpente marinha",         preco:"27.000",   livro:"Heróis de Arton",  pag:259},
+  {max: 40, item:"Cota élfica",                      preco:"30.000",   livro:"Tormenta20",       pag:340},
+  {max: 44, item:"Couraça do comando",               preco:"45.000",   livro:"Tormenta20",       pag:340},
+  {max: 48, item:"Couraça do guardião celeste",      preco:"54.000",   livro:"Heróis de Arton",  pag:259},
+  {max: 52, item:"Couro de monstro",                 preco:"36.000",   livro:"Tormenta20",       pag:340},
+  {max: 56, item:"Escudo da ira vulcânica",          preco:"54.000",   livro:"Heróis de Arton",  pag:260},
+  {max: 60, item:"Escudo da luz estelar",            preco:"27.000",   livro:"Heróis de Arton",  pag:260},
+  {max: 64, item:"Escudo da natureza viva",          preco:"27.000",   livro:"Heróis de Arton",  pag:260},
+  {max: 68, item:"Escudo de Azgher",                 preco:"140.000",  livro:"Tormenta20",       pag:340},
+  {max: 72, item:"Escudo do conjurador",             preco:"45.000",   livro:"Tormenta20",       pag:340},
+  {max: 76, item:"Escudo do eclipse",                preco:"70.000",   livro:"Tormenta20",       pag:340},
+  {max: 80, item:"Escudo do grifo",                  preco:"27.000",   livro:"Heróis de Arton",  pag:260},
+  {max: 86, item:"Escudo do leão",                   preco:"50.000",   livro:"Tormenta20",       pag:340},
+  {max: 90, item:"Escudo do trovão",                 preco:"54.000",   livro:"Heróis de Arton",  pag:260},
+  {max: 94, item:"Escudo espinhoso",                 preco:"50.000",   livro:"Tormenta20",       pag:340},
+  {max: 95, item:"Grilhão de descrença",             preco:"24.000",   livro:"Ameaças de Arton", pag:402},
+  {max: 99, item:"Loriga do centurião",              preco:"45.000",   livro:"Tormenta20",       pag:340},
+  {max:101, item:"Manto da noite",                   preco:"45.000",   livro:"Tormenta20",       pag:340},
 ];
 
 const ESPEC_ESOTER = [
-  {max: 20, item:"Cajado da destruição"   , livro:"Tormenta20", pag:337},
-  {max: 40, item:"Cajado da vida"         , livro:"Tormenta20", pag:337},
-  {max: 45, item:"Cajado das marés"       , livro:"Heróis de Arton", pag:262},
-  {max: 60, item:"Cajado do poder"        , livro:"Tormenta20", pag:337},
-  {max: 75, item:"Cálice sagrado"         , livro:"Heróis de Arton", pag:262},
-  {max: 85, item:"Relógio do arcanista"   , livro:"Heróis de Arton", pag:262},
-  {max: 95, item:"Varinha da generosidade", livro:"Deuses de Arton", pag:59},
-  {max:100, item:"Varinha milenar"        , livro:"Heróis de Arton", pag:262},
+  {max: 20, item:"Cajado da destruição",      preco:"60.000",   livro:"Tormenta20",      pag:337},
+  {max: 40, item:"Cajado da vida",            preco:"60.000",   livro:"Tormenta20",      pag:337},
+  {max: 45, item:"Cajado das marés",          preco:"27.000",   livro:"Heróis de Arton", pag:262},
+  {max: 60, item:"Cajado do poder",           preco:"180.000",  livro:"Tormenta20",      pag:337},
+  {max: 75, item:"Cálice sagrado",            preco:"150.000",  livro:"Heróis de Arton", pag:262},
+  {max: 85, item:"Relógio do arcanista",      preco:"60.000",   livro:"Heróis de Arton", pag:262},
+  {max: 95, item:"Varinha da generosidade",   preco:"30.000",   livro:"Deuses de Arton", pag:59},
+  {max:100, item:"Varinha milenar",           preco:"200.000",  livro:"Heróis de Arton", pag:262},
 ];
 
+function tabelaEspecifica(tipo) {
+  return tipo === "Arma"     ? ESPEC_ARMA
+       : tipo === "Armadura" ? ESPEC_ARMADURA
+       : ESPEC_ESOTER;
+}
+
+// Faces do dado de uma tabela = o último `max`. As tabelas do T20 param em 100,
+// mas onde um suplemento acrescentou item o dado cresce junto, em vez de
+// espremer as faixas de quem já estava — mesma solução do d120 das poções e do
+// d104 das munições extras. Hoje: armas específicas d102, armaduras d101,
+// acessórios médios d101 e maiores d102 (os itens do Ameaças de Arton).
+function ladosDaTabela(tab) { return tab[tab.length - 1].max; }
+function rotuloDado(lados)  { return lados === 100 ? 'd%' : 'd' + lados; }
+
 function lookupEspecifico(tipo, dp) {
-  const tab = tipo === "Arma"     ? ESPEC_ARMA
-            : tipo === "Armadura" ? ESPEC_ARMADURA
-            : ESPEC_ESOTER;
+  const tab = tabelaEspecifica(tipo);
   for (const row of tab) if (dp <= row.max) return row;
   return tab[tab.length - 1];
 }
 
 // Rola os encantos do item; a 1ª rolagem em 91-100 transforma o resultado num
 // item mágico específico (encerra: o item nomeado já é o prêmio, sem encantos
-// avulsos). Retorna { especifico:{dp,dpE,item} } OU { encantos:[…] }.
+// avulsos). Retorna { especifico:{dp,dpE,dadoE,item} } OU { encantos:[…] }.
 //   permiteEspec = false (modo Customizável, tipo com específicos desligados):
 //   a faixa 91-100 é tratada como "sem específico" e simplesmente relança,
 //   devolvendo só encantos (item base + encantos), como manda a tabela 01-90.
@@ -1190,8 +1205,9 @@ function sorteiaMagicoPadrao(tipo, rolls, permiteEspec = true) {
     do {
       dp = rolarPercent();
       if (permiteEspec && dp >= 91) {                   // 91-100 = item específico
-        const dpE = rolarPercent();
-        return { especifico: { dp, dpE, item: lookupEspecifico(tipo, dpE) } };
+        const lados = ladosDaTabela(tabelaEspecifica(tipo));
+        const dpE   = rolarDado(lados);
+        return { especifico: { dp, dpE, dadoE: rotuloDado(lados), item: lookupEspecifico(tipo, dpE) } };
       }
       // dp 01-90 → encanto; dp 91-100 com específico desligado → null (relança)
       item = lookupMagico(tipo, dp);
@@ -1263,113 +1279,120 @@ const ACESSORIO_MENOR = [
 ];
 
 const ACESSORIO_MEDIO = [
-  {max:1,   item:"Anel de telecinesia",              preco:"10.500",  livro:"Tormenta20",      pag:342},
-  {max:2,   item:"Bola de cristal",                  preco:"10.500",  livro:"Tormenta20",      pag:342},
-  {max:3,   item:"Caveira maldita",                  preco:"10.500",  livro:"Tormenta20",      pag:343},
-  {max:4,   item:"Instrumento da alegria",           preco:"10.500",  livro:"Deuses de Arton", pag:57},
-  {max:5,   item:"Ampulheta da harmonia temporal",   preco:"10.500",  livro:"Heróis de Arton", pag:263},
-  {max:6,   item:"Amuleto do amparo",                preco:"10.500",  livro:"Heróis de Arton", pag:263},
-  {max:7,   item:"Caixa dos ecos perdidos",          preco:"10.500",  livro:"Heróis de Arton", pag:264},
-  {max:8,   item:"Colar da perseverança",            preco:"10.500",  livro:"Heróis de Arton", pag:264},
-  {max:9,   item:"Colar do tirano",                  preco:"10.500",  livro:"Heróis de Arton", pag:265},
-  {max:10,  item:"Óculos da revelação",              preco:"10.500",  livro:"Heróis de Arton", pag:266},
-  {max:11,  item:"Colar das bolas de fogo",          preco:"12.000",  livro:"Heróis de Arton", pag:265},
-  {max:12,  item:"Sandálias de Valkaria",            preco:"12.000",  livro:"Heróis de Arton", pag:267},
-  {max:13,  item:"Véu diáfano",                      preco:"13.500",  livro:"Deuses de Arton", pag:57},
-  {max:14,  item:"Botas aladas",                     preco:"15.000",  livro:"Tormenta20",      pag:342},
-  {max:15,  item:"Botas inquietas",                  preco:"15.000",  livro:"Deuses de Arton", pag:59},
-  {max:16,  item:"Pira póstera",                     preco:"15.000",  livro:"Deuses de Arton", pag:59},
-  {max:17,  item:"Anel do pacto oneroso",            preco:"15.000",  livro:"Heróis de Arton", pag:263},
-  {max:18,  item:"Botas do andarilho das sombras",   preco:"15.000",  livro:"Heróis de Arton", pag:263},
-  {max:19,  item:"Cálice das marés",                 preco:"15.000",  livro:"Heróis de Arton", pag:264},
-  {max:20,  item:"Cinto dos caminhos cruzados",      preco:"15.000",  livro:"Heróis de Arton", pag:264},
-  {max:21,  item:"Pedra da passagem",                preco:"15.000",  livro:"Heróis de Arton", pag:267},
-  {max:22,  item:"Pingente da dor partilhada",       preco:"15.000",  livro:"Heróis de Arton", pag:267},
-  {max:26,  item:"Braceletes de bronze",             preco:"16.500",  livro:"Tormenta20",      pag:342},
-  {max:27,  item:"Capa nebulosa",                    preco:"16.500",  livro:"Heróis de Arton", pag:264},
-  {max:28,  item:"Espelho do outro lado",            preco:"18.000",  livro:"Heróis de Arton", pag:265},
-  {max:30,  item:"Gema da purificação",              preco:"18.000",  livro:"Heróis de Arton", pag:266},
-  {max:32,  item:"Máscara da raposa",                preco:"18.000",  livro:"Heróis de Arton", pag:266},
-  {max:36,  item:"Anel da energia",                  preco:"21.000",  livro:"Tormenta20",      pag:342},
-  {max:40,  item:"Anel da vitalidade",               preco:"21.000",  livro:"Tormenta20",      pag:342},
-  {max:42,  item:"Anel de invisibilidade",           preco:"21.000",  livro:"Tormenta20",      pag:342},
-  {max:44,  item:"Braçadeiras do arqueiro",          preco:"21.000",  livro:"Tormenta20",      pag:342},
-  {max:46,  item:"Brincos de Marah",                 preco:"21.000",  livro:"Tormenta20",      pag:343},
-  {max:48,  item:"Faixas do pugilista",              preco:"21.000",  livro:"Tormenta20",      pag:344},
-  {max:50,  item:"Manto da aranha",                  preco:"21.000",  livro:"Tormenta20",      pag:344},
-  {max:52,  item:"Vassoura voadora",                 preco:"21.000",  livro:"Tormenta20",      pag:345},
-  {max:54,  item:"Símbolo abençoado",                preco:"21.000",  livro:"Tormenta20",      pag:345},
-  {max:55,  item:"Colar de presas",                  preco:"21.000",  livro:"Deuses de Arton", pag:57},
-  {max:56,  item:"Vestido noturno",                  preco:"21.000",  livro:"Deuses de Arton", pag:58},
-  {max:57,  item:"Anel da beleza ilusória",          preco:"21.000",  livro:"Heróis de Arton", pag:263},
-  {max:58,  item:"Bastão do sonhador",               preco:"21.000",  livro:"Heróis de Arton", pag:263},
-  {max:59,  item:"Colar da fúria monstruosa",        preco:"21.000",  livro:"Heróis de Arton", pag:264},
-  {max:60,  item:"Coroa da floresta sussurrante",    preco:"21.000",  livro:"Heróis de Arton", pag:265},
-  {max:61,  item:"Espelho da verdade",               preco:"21.000",  livro:"Heróis de Arton", pag:265},
-  {max:62,  item:"Instrumentos da celeridade",       preco:"22.500",  livro:"Heróis de Arton", pag:266},
-  {max:63,  item:"Máscara do predador",              preco:"22.500",  livro:"Heróis de Arton", pag:266},
-  {max:65,  item:"Frigideira do chef anão",          preco:"24.000",  livro:"Heróis de Arton", pag:266},
-  {max:66,  item:"Gema da santificação",             preco:"24.000",  livro:"Heróis de Arton", pag:266},
-  {max:67,  item:"Cubo armadilha",                   preco:"25.000",  livro:"Deuses de Arton", pag:56},
-  {max:68,  item:"Caldeirão da vida",                preco:"25.000",  livro:"Deuses de Arton", pag:57},
-  {max:72,  item:"Amuleto da robustez",              preco:"25.500",  livro:"Tormenta20",      pag:342},
-  {max:74,  item:"Botas velozes",                    preco:"25.500",  livro:"Tormenta20",      pag:342},
-  {max:78,  item:"Cinto da força do gigante",        preco:"25.500",  livro:"Tormenta20",      pag:343},
-  {max:82,  item:"Coroa majestosa",                  preco:"25.500",  livro:"Tormenta20",      pag:344},
-  {max:86,  item:"Estola da serenidade",             preco:"25.500",  livro:"Tormenta20",      pag:344},
-  {max:87,  item:"Manto do morcego",                 preco:"25.500",  livro:"Tormenta20",      pag:344},
-  {max:91,  item:"Pulseiras da celeridade",          preco:"25.500",  livro:"Tormenta20",      pag:345},
-  {max:95,  item:"Tiara da sapiência",               preco:"25.500",  livro:"Tormenta20",      pag:345},
-  {max:97,  item:"Argolas místicas",                 preco:"25.500",  livro:"Deuses de Arton", pag:59},
-  {max:98,  item:"Bastão da grande harmonia",        preco:"25.500",  livro:"Heróis de Arton", pag:263},
-  {max:99,  item:"Coroa da majestade distorcida",    preco:"25.500",  livro:"Heróis de Arton", pag:265},
-  {max:100, item:"Bracelete do coração vivaz",       preco:"27.000",  livro:"Heróis de Arton", pag:264},
+  {max:1,   item:"Anel de telecinesia",              preco:"10.500",  livro:"Tormenta20",       pag:342},
+  {max:2,   item:"Bola de cristal",                  preco:"10.500",  livro:"Tormenta20",       pag:342},
+  {max:3,   item:"Caveira maldita",                  preco:"10.500",  livro:"Tormenta20",       pag:343},
+  {max:4,   item:"Instrumento da alegria",           preco:"10.500",  livro:"Deuses de Arton",  pag:57},
+  {max:5,   item:"Ampulheta da harmonia temporal",   preco:"10.500",  livro:"Heróis de Arton",  pag:263},
+  {max:6,   item:"Amuleto do amparo",                preco:"10.500",  livro:"Heróis de Arton",  pag:263},
+  {max:7,   item:"Caixa dos ecos perdidos",          preco:"10.500",  livro:"Heróis de Arton",  pag:264},
+  {max:8,   item:"Colar da perseverança",            preco:"10.500",  livro:"Heróis de Arton",  pag:264},
+  {max:9,   item:"Colar do tirano",                  preco:"10.500",  livro:"Heróis de Arton",  pag:265},
+  {max:10,  item:"Óculos da revelação",              preco:"10.500",  livro:"Heróis de Arton",  pag:266},
+  {max:11,  item:"Colar das bolas de fogo",          preco:"12.000",  livro:"Heróis de Arton",  pag:265},
+  {max:12,  item:"Sandálias de Valkaria",            preco:"12.000",  livro:"Heróis de Arton",  pag:267},
+  {max:13,  item:"Véu diáfano",                      preco:"13.500",  livro:"Deuses de Arton",  pag:57},
+  {max:14,  item:"Botas aladas",                     preco:"15.000",  livro:"Tormenta20",       pag:342},
+  {max:15,  item:"Botas inquietas",                  preco:"15.000",  livro:"Deuses de Arton",  pag:59},
+  {max:16,  item:"Pira póstera",                     preco:"15.000",  livro:"Deuses de Arton",  pag:59},
+  {max:17,  item:"Anel do pacto oneroso",            preco:"15.000",  livro:"Heróis de Arton",  pag:263},
+  {max:18,  item:"Botas do andarilho das sombras",   preco:"15.000",  livro:"Heróis de Arton",  pag:263},
+  {max:19,  item:"Cálice das marés",                 preco:"15.000",  livro:"Heróis de Arton",  pag:264},
+  {max:20,  item:"Cinto dos caminhos cruzados",      preco:"15.000",  livro:"Heróis de Arton",  pag:264},
+  {max:21,  item:"Pedra da passagem",                preco:"15.000",  livro:"Heróis de Arton",  pag:267},
+  {max:22,  item:"Pingente da dor partilhada",       preco:"15.000",  livro:"Heróis de Arton",  pag:267},
+  {max:26,  item:"Braceletes de bronze",             preco:"16.500",  livro:"Tormenta20",       pag:342},
+  {max:27,  item:"Capa nebulosa",                    preco:"16.500",  livro:"Heróis de Arton",  pag:264},
+  {max:28,  item:"Espelho do outro lado",            preco:"18.000",  livro:"Heróis de Arton",  pag:265},
+  {max:30,  item:"Gema da purificação",              preco:"18.000",  livro:"Heróis de Arton",  pag:266},
+  {max:32,  item:"Máscara da raposa",                preco:"18.000",  livro:"Heróis de Arton",  pag:266},
+  {max:36,  item:"Anel da energia",                  preco:"21.000",  livro:"Tormenta20",       pag:342},
+  {max:40,  item:"Anel da vitalidade",               preco:"21.000",  livro:"Tormenta20",       pag:342},
+  {max:42,  item:"Anel de invisibilidade",           preco:"21.000",  livro:"Tormenta20",       pag:342},
+  {max:44,  item:"Braçadeiras do arqueiro",          preco:"21.000",  livro:"Tormenta20",       pag:342},
+  {max:46,  item:"Brincos de Marah",                 preco:"21.000",  livro:"Tormenta20",       pag:343},
+  {max:48,  item:"Faixas do pugilista",              preco:"21.000",  livro:"Tormenta20",       pag:344},
+  {max:50,  item:"Manto da aranha",                  preco:"21.000",  livro:"Tormenta20",       pag:344},
+  {max:52,  item:"Vassoura voadora",                 preco:"21.000",  livro:"Tormenta20",       pag:345},
+  {max:54,  item:"Símbolo abençoado",                preco:"21.000",  livro:"Tormenta20",       pag:345},
+  {max:55,  item:"Colar de presas",                  preco:"21.000",  livro:"Deuses de Arton",  pag:57},
+  {max:56,  item:"Vestido noturno",                  preco:"21.000",  livro:"Deuses de Arton",  pag:58},
+  {max:57,  item:"Anel da beleza ilusória",          preco:"21.000",  livro:"Heróis de Arton",  pag:263},
+  {max:58,  item:"Bastão do sonhador",               preco:"21.000",  livro:"Heróis de Arton",  pag:263},
+  {max:59,  item:"Colar da fúria monstruosa",        preco:"21.000",  livro:"Heróis de Arton",  pag:264},
+  {max:60,  item:"Coroa da floresta sussurrante",    preco:"21.000",  livro:"Heróis de Arton",  pag:265},
+  {max:61,  item:"Espelho da verdade",               preco:"21.000",  livro:"Heróis de Arton",  pag:265},
+  {max:62,  item:"Pilão conspurcado",                preco:"21.000",  livro:"Ameaças de Arton", pag:403},
+  {max:63,  item:"Instrumentos da celeridade",       preco:"22.500",  livro:"Heróis de Arton",  pag:266},
+  {max:64,  item:"Máscara do predador",              preco:"22.500",  livro:"Heróis de Arton",  pag:266},
+  {max:66,  item:"Frigideira do chef anão",          preco:"24.000",  livro:"Heróis de Arton",  pag:266},
+  {max:67,  item:"Gema da santificação",             preco:"24.000",  livro:"Heróis de Arton",  pag:266},
+  {max:68,  item:"Cubo armadilha",                   preco:"25.000",  livro:"Deuses de Arton",  pag:56},
+  {max:69,  item:"Caldeirão da vida",                preco:"25.000",  livro:"Deuses de Arton",  pag:57},
+  {max:73,  item:"Amuleto da robustez",              preco:"25.500",  livro:"Tormenta20",       pag:342},
+  {max:75,  item:"Botas velozes",                    preco:"25.500",  livro:"Tormenta20",       pag:342},
+  {max:79,  item:"Cinto da força do gigante",        preco:"25.500",  livro:"Tormenta20",       pag:343},
+  {max:83,  item:"Coroa majestosa",                  preco:"25.500",  livro:"Tormenta20",       pag:344},
+  {max:87,  item:"Estola da serenidade",             preco:"25.500",  livro:"Tormenta20",       pag:344},
+  {max:88,  item:"Manto do morcego",                 preco:"25.500",  livro:"Tormenta20",       pag:344},
+  {max:92,  item:"Pulseiras da celeridade",          preco:"25.500",  livro:"Tormenta20",       pag:345},
+  {max:96,  item:"Tiara da sapiência",               preco:"25.500",  livro:"Tormenta20",       pag:345},
+  {max:98,  item:"Argolas místicas",                 preco:"25.500",  livro:"Deuses de Arton",  pag:59},
+  {max:99,  item:"Bastão da grande harmonia",        preco:"25.500",  livro:"Heróis de Arton",  pag:263},
+  {max:100, item:"Coroa da majestade distorcida",    preco:"25.500",  livro:"Heróis de Arton",  pag:265},
+  {max:101, item:"Bracelete do coração vivaz",       preco:"27.000",  livro:"Heróis de Arton",  pag:264},
 ];
 
 const ACESSORIO_MAIOR = [
-  {max:2,   item:"Elmo do teletransporte",             preco:"30.000",   livro:"Tormenta20",      pag:344},
-  {max:4,   item:"Gema da telepatia",                  preco:"30.000",   livro:"Tormenta20",      pag:344},
-  {max:6,   item:"Gema elemental",                     preco:"30.000",   livro:"Tormenta20",      pag:344},
-  {max:11,  item:"Manual da saúde corporal",           preco:"30.000",   livro:"Tormenta20",      pag:345},
-  {max:16,  item:"Manual do bom exercício",            preco:"30.000",   livro:"Tormenta20",      pag:345},
-  {max:21,  item:"Manual dos movimentos precisos",     preco:"30.000",   livro:"Tormenta20",      pag:345},
-  {max:26,  item:"Medalhão de Lena",                   preco:"30.000",   livro:"Tormenta20",      pag:345},
-  {max:31,  item:"Tomo da compreensão",                preco:"30.000",   livro:"Tormenta20",      pag:345},
-  {max:36,  item:"Tomo da liderança e influência",     preco:"30.000",   livro:"Tormenta20",      pag:345},
-  {max:41,  item:"Tomo dos grandes pensamentos",       preco:"30.000",   livro:"Tormenta20",      pag:345},
-  {max:44,  item:"Anel da chama dançante",             preco:"30.000",   livro:"Heróis de Arton", pag:263},
-  {max:46,  item:"Chapéu pensador",                    preco:"30.000",   livro:"Heróis de Arton", pag:264},
-  {max:48,  item:"Cinto da flecha veloz",              preco:"30.000",   livro:"Heróis de Arton", pag:264},
-  {max:50,  item:"Gema da profanação",                 preco:"30.000",   livro:"Heróis de Arton", pag:266},
-  {max:53,  item:"Tomo da técnica definitiva",         preco:"30.000",   livro:"Heróis de Arton", pag:267},
-  {max:55,  item:"Tapeçaria da guerra",                preco:"35.000",   livro:"Deuses de Arton", pag:55},
-  {max:57,  item:"Braceletes da amizade intensa",      preco:"36.000",   livro:"Heróis de Arton", pag:264},
-  {max:58,  item:"Cilício vivo",                       preco:"37.000",   livro:"Deuses de Arton", pag:55},
-  {max:59,  item:"Coração corrompido",                 preco:"45.000",   livro:"Deuses de Arton", pag:55},
-  {max:61,  item:"Coração do inverno",                 preco:"45.000",   livro:"Heróis de Arton", pag:265},
-  {max:63,  item:"Tomo dos companheiros",              preco:"45.000",   livro:"Heróis de Arton", pag:267},
-  {max:65,  item:"Anel refletor",                      preco:"51.000",   livro:"Tormenta20",      pag:342},
-  {max:67,  item:"Cinto do campeão",                   preco:"51.000",   livro:"Tormenta20",      pag:343},
-  {max:71,  item:"Colar guardião",                     preco:"51.000",   livro:"Tormenta20",      pag:343},
-  {max:73,  item:"Estatueta animista",                 preco:"51.000",   livro:"Tormenta20",      pag:344},
-  {max:75,  item:"Anel da liberdade",                  preco:"60.000",   livro:"Tormenta20",      pag:342},
-  {max:77,  item:"Tapete voador",                      preco:"60.000",   livro:"Tormenta20",      pag:345},
-  {max:79,  item:"Chave dos planos",                   preco:"60.000",   livro:"Heróis de Arton", pag:264},
-  {max:81,  item:"Cinto da desmaterialização",         preco:"60.000",   livro:"Heróis de Arton", pag:264},
-  {max:85,  item:"Braceletes de ouro",                 preco:"64.500",   livro:"Tormenta20",      pag:342},
-  {max:87,  item:"Espelho da oposição",                preco:"75.000",   livro:"Tormenta20",      pag:344},
-  {max:91,  item:"Robe do arquimago",                  preco:"90.000",   livro:"Tormenta20",      pag:345},
-  {max:93,  item:"Ossos dracônicos",                   preco:"90.000",   livro:"Deuses de Arton", pag:56},
-  {max:95,  item:"Orbe das tempestades",               preco:"97.500",   livro:"Tormenta20",      pag:345},
-  {max:97,  item:"Braçadeiras da força do colosso",    preco:"120.000",  livro:"Heróis de Arton", pag:264},
-  {max:99,  item:"Anel da regeneração",                preco:"150.000",  livro:"Tormenta20",      pag:342},
-  {max:100, item:"Espelho do aprisionamento",          preco:"150.000",  livro:"Tormenta20",      pag:344},
+  {max:2,   item:"Elmo do teletransporte",             preco:"30.000",   livro:"Tormenta20",       pag:344},
+  {max:4,   item:"Gema da telepatia",                  preco:"30.000",   livro:"Tormenta20",       pag:344},
+  {max:6,   item:"Gema elemental",                     preco:"30.000",   livro:"Tormenta20",       pag:344},
+  {max:11,  item:"Manual da saúde corporal",           preco:"30.000",   livro:"Tormenta20",       pag:345},
+  {max:16,  item:"Manual do bom exercício",            preco:"30.000",   livro:"Tormenta20",       pag:345},
+  {max:21,  item:"Manual dos movimentos precisos",     preco:"30.000",   livro:"Tormenta20",       pag:345},
+  {max:26,  item:"Medalhão de Lena",                   preco:"30.000",   livro:"Tormenta20",       pag:345},
+  {max:31,  item:"Tomo da compreensão",                preco:"30.000",   livro:"Tormenta20",       pag:345},
+  {max:36,  item:"Tomo da liderança e influência",     preco:"30.000",   livro:"Tormenta20",       pag:345},
+  {max:41,  item:"Tomo dos grandes pensamentos",       preco:"30.000",   livro:"Tormenta20",       pag:345},
+  {max:44,  item:"Anel da chama dançante",             preco:"30.000",   livro:"Heróis de Arton",  pag:263},
+  {max:46,  item:"Chapéu pensador",                    preco:"30.000",   livro:"Heróis de Arton",  pag:264},
+  {max:48,  item:"Cinto da flecha veloz",              preco:"30.000",   livro:"Heróis de Arton",  pag:264},
+  {max:50,  item:"Gema da profanação",                 preco:"30.000",   livro:"Heróis de Arton",  pag:266},
+  {max:53,  item:"Tomo da técnica definitiva",         preco:"30.000",   livro:"Heróis de Arton",  pag:267},
+  {max:55,  item:"Tapeçaria da guerra",                preco:"35.000",   livro:"Deuses de Arton",  pag:55},
+  {max:57,  item:"Braceletes da amizade intensa",      preco:"36.000",   livro:"Heróis de Arton",  pag:264},
+  {max:58,  item:"Cilício vivo",                       preco:"37.000",   livro:"Deuses de Arton",  pag:55},
+  {max:59,  item:"Coração corrompido",                 preco:"45.000",   livro:"Deuses de Arton",  pag:55},
+  {max:61,  item:"Coração do inverno",                 preco:"45.000",   livro:"Heróis de Arton",  pag:265},
+  {max:63,  item:"Tomo dos companheiros",              preco:"45.000",   livro:"Heróis de Arton",  pag:267},
+  {max:65,  item:"Anel refletor",                      preco:"51.000",   livro:"Tormenta20",       pag:342},
+  {max:67,  item:"Cinto do campeão",                   preco:"51.000",   livro:"Tormenta20",       pag:343},
+  {max:71,  item:"Colar guardião",                     preco:"51.000",   livro:"Tormenta20",       pag:343},
+  {max:73,  item:"Estatueta animista",                 preco:"51.000",   livro:"Tormenta20",       pag:344},
+  {max:75,  item:"Anel da liberdade",                  preco:"60.000",   livro:"Tormenta20",       pag:342},
+  {max:77,  item:"Tapete voador",                      preco:"60.000",   livro:"Tormenta20",       pag:345},
+  {max:79,  item:"Chave dos planos",                   preco:"60.000",   livro:"Heróis de Arton",  pag:264},
+  {max:81,  item:"Cinto da desmaterialização",         preco:"60.000",   livro:"Heróis de Arton",  pag:264},
+  {max:85,  item:"Braceletes de ouro",                 preco:"64.500",   livro:"Tormenta20",       pag:342},
+  {max:87,  item:"Espelho da oposição",                preco:"75.000",   livro:"Tormenta20",       pag:344},
+  {max:91,  item:"Robe do arquimago",                  preco:"90.000",   livro:"Tormenta20",       pag:345},
+  {max:93,  item:"Ossos dracônicos",                   preco:"90.000",   livro:"Deuses de Arton",  pag:56},
+  {max:94,  item:"Fragmento de filactério",            preco:"90.000",   livro:"Ameaças de Arton", pag:402},
+  {max:96,  item:"Orbe das tempestades",               preco:"97.500",   livro:"Tormenta20",       pag:345},
+  {max:98,  item:"Braçadeiras da força do colosso",    preco:"120.000",  livro:"Heróis de Arton",  pag:264},
+  {max:99,  item:"Chifre de unicórnio",                preco:"120.000",  livro:"Ameaças de Arton", pag:402},
+  {max:101, item:"Anel da regeneração",                preco:"150.000",  livro:"Tormenta20",       pag:342},
+  {max:102, item:"Espelho do aprisionamento",          preco:"150.000",  livro:"Tormenta20",       pag:344},
 ];
 
+function tabelaAcessorio(tier) {
+  return tier === "menor" ? ACESSORIO_MENOR
+       : tier === "medio" ? ACESSORIO_MEDIO
+       : ACESSORIO_MAIOR;
+}
+
 function lookupAcessorio(tier, dp) {
-  const tab = tier === "menor" ? ACESSORIO_MENOR
-            : tier === "medio" ? ACESSORIO_MEDIO
-            : ACESSORIO_MAIOR;
+  const tab = tabelaAcessorio(tier);
   for (const row of tab) if (dp <= row.max) return row;
   return tab[tab.length - 1];
 }
@@ -1548,9 +1571,10 @@ const TABELAS = {
 
     // Acessório → acessório mágico nomeado (com preço), pela categoria do tier
     if (tipo === "Acessório") {
-      const dpBase    = rolarPercent();
+      const lados     = ladosDaTabela(tabelaAcessorio(tier));
+      const dpBase    = rolarDado(lados);
       const acessorio = lookupAcessorio(tier, dpBase);
-      return { modo, d6, tipo, tier, subTipo: 'nomeado', dpBase, acessorio };
+      return { modo, d6, tipo, tier, subTipo: 'nomeado', dpBase, dadoBase: rotuloDado(lados), acessorio };
     }
 
     // Específicos (item nomeado pronto) permitidos para ESTE tipo?
@@ -2246,15 +2270,18 @@ function blockMagico(mag, prefixo='') {
   // ── Padrão — item mágico específico (item nomeado pronto) ──
   if (mag.subTipo === 'especifico') {
     const e = mag.especifico;
+    const precoEsp = e.item?.preco
+      ? `<span style="color:var(--text-dim);font-size:0.82rem"> (${e.item.preco} T$)</span>`
+      : '';
     s += `<div class="sub-indent" style="font-style:italic;color:var(--text-dim);font-size:0.82rem">
       <span class="bullet">◇</span>
       <span>Encanto ${diceInline('d%')} = ${e.dp} (91-100) → <strong>Item Específico</strong></span>
     </div>
     <div class="sub-indent">
       <span class="bullet">◇</span>
-      Item específico: ${diceInline('d%')} = ${e.dpE}
+      Item específico: ${diceInline(e.dadoE || 'd%')} = ${e.dpE}
       &nbsp;→&nbsp;
-      <strong style="color:var(--text)">${e.item?.item ?? '—'}</strong>
+      <strong style="color:var(--text)">${e.item?.item ?? '—'}</strong>${precoEsp}
     </div>
     ${e.item ? `<div class="sub-indent" style="padding-left:24px">
       <span class="bullet">◇</span>
@@ -2299,7 +2326,7 @@ function blockMagico(mag, prefixo='') {
       : '';
     s += `<div class="sub-indent">
       <span class="bullet">◇</span>
-      Acessório: ${diceInline('d%')} = ${mag.dpBase}
+      Acessório: ${diceInline(mag.dadoBase || 'd%')} = ${mag.dpBase}
       &nbsp;→&nbsp;
       <strong style="color:var(--text)">${ac?.item ?? '—'}</strong>${precoFmt}
     </div>
@@ -2681,7 +2708,8 @@ function _recTxtMagico(mag, prefixo = '') {
   let s = `  • ${prefixo}Item Mágico ${tn} — ${mag.tipo}`;
   if (mag.subTipo === 'especifico') {
     const e = mag.especifico;
-    s += `\n    – Item específico: ${e.item?.item ?? '—'}${_recRef(e.item)}`;
+    const preco = e.item?.preco ? ` (${e.item.preco} T$)` : '';
+    s += `\n    – Item específico: ${e.item?.item ?? '—'}${preco}${_recRef(e.item)}`;
   } else if (mag.subTipo === 'soEncantos') {
     (mag.encantos || []).forEach((enc, i) => {
       const dois = enc.item?.doisEncantos ? ' (conta como 2 encantos)' : '';
