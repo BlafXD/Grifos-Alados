@@ -7,9 +7,10 @@
 //
 //  Sem js/firebase-config.js preenchido (ou sem internet/CDN), tudo
 //  aqui fica quieto e o site segue 100% offline como sempre foi.
-//  Segurança: LER é público (quem tiver o link da sala); ESCREVER só o
-//  mestre logado — garantido pelas REGRAS do banco (ver MODO-JOGADOR.md),
-//  não por esconder botão.
+//  Segurança: LER é público (quem tiver o link da sala); ESCREVER na mesa
+//  só o mestre logado, e na caixa de entrada dos jogadores só as contas
+//  Google que ele listou — garantido pelas REGRAS do banco (ver
+//  MODO-JOGADOR.md), não por esconder botão.
 // ═══════════════════════════════════════════════════════════════════
 (function () {
   'use strict';

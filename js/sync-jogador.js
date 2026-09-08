@@ -5,6 +5,11 @@
 //  local e RE-RENDERIZA só a aba afetada (sem recarregar a página — nada
 //  de piscar a tela nem perder a sub-aba aberta da Loja).
 //  Sala: jogadores.html?sala=nome (padrão "mesa").
+//
+//  LER a mesa é aberto a quem tem o link — de propósito, é o ".read": true
+//  das regras. ESCREVER exige entrar com o Google: só as contas que o
+//  mestre listou nas regras do banco passam (ver MODO-JOGADOR.md). Daí o
+//  bloco "QUEM PODE ESCREVER", lá embaixo.
 // ═══════════════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -32,15 +37,33 @@
 
   const sala = (new URLSearchParams(location.search).get('sala') || 'mesa').trim() || 'mesa';
 
-  function chip(texto, classe) {
+  // O chip do rodapé tem duas partes que mudam em horas diferentes: o
+  // estado da sala (o sync escreve) e a linha de login (o bloco "QUEM PODE
+  // ESCREVER" escreve). Por isso ele não é mais um innerHTML só — uma parte
+  // não pode apagar a outra.
+  function chipRaiz() {
     let el = document.getElementById('gaJogChip');
     if (!el) {
       el = document.createElement('div');
       el.id = 'gaJogChip';
+      el.className = 'ga-jog-chip';
+      el.innerHTML = '<span class="ga-jog-chip-txt"></span><span class="ga-jog-chip-auth"></span>';
+      el.addEventListener('click', e => {
+        if (!(e.target instanceof Element)) return;
+        if (e.target.closest('[data-jog-entrar]')) entrar();
+        else if (e.target.closest('[data-jog-sair]')) sair();
+      });
       document.body.appendChild(el);
     }
+    return el;
+  }
+  function chip(texto, classe) {
+    const el = chipRaiz();
     el.className = 'ga-jog-chip ' + (classe || '');
-    el.innerHTML = texto;
+    el.querySelector('.ga-jog-chip-txt').innerHTML = texto;
+  }
+  function chipAuth(html) {
+    chipRaiz().querySelector('.ga-jog-chip-auth').innerHTML = html;
   }
 
   // Escreve o que mudou no localStorage e redesenha as abas afetadas.
@@ -166,7 +189,12 @@
       if (!dbRef) return;
       Object.keys(paraEnviar).forEach(id => {
         dbRef.child(id).update(paraEnviar[id])
-          .catch(e => console.warn('[sync-jogador] não deu para escrever:', e && e.message));
+          .catch(e => {
+            // o banco recusou: ou ninguém entrou, ou a conta não está na
+            // lista da regra. Em vez de morrer no console, o chip conta.
+            if (ehSemPermissao(e)) marcarSemPermissao();
+            console.warn('[sync-jogador] não deu para escrever:', e && e.message);
+          });
       });
     }, 900);
   }
@@ -174,7 +202,102 @@
     escreverInbox: escreverInbox,
     // nome antigo, mantido para não quebrar chamadas soltas
     escreverInventario: (baseId, html) => escreverInbox(baseId, 'jogadores', html),
+    podeEscrever: () => podeEscrever(),
   };
+
+  // ═══ QUEM PODE ESCREVER — login com o Google ══════════════════════
+  //  A garantia DURA é do banco: a regra de `jogadores/inventario` só
+  //  aceita as contas que o mestre listou (ver MODO-JOGADOR.md). Aqui a
+  //  página só REFLETE essa regra, para ninguém escrever num campo que vai
+  //  ser recusado: sem login, as caixas [data-jog-edita] ficam travadas.
+  //  A leitura da mesa continua aberta — quem só quer ver a Loja e a
+  //  gazeta não precisa entrar em conta nenhuma.
+  //  Sem Firebase configurado (ou com o CDN fora do ar) nada disso existe:
+  //  a página vira a cópia local de sempre e as caixas continuam como
+  //  eram, porque não há banco nenhum para proteger.
+  const esc = window.GA_esc;
+  let auth = null, usuario = null, semPermissao = false, erroLogin = '';
+  let authResolvida = false;   // o Firebase já disse se havia sessão salva?
+
+  function podeEscrever() { return !auth ? true : (!!usuario && !semPermissao); }
+
+  // Trava/destrava as caixas e redesenha a linha de login do chip.
+  function refletirLogin() {
+    if (window.GA_ModoJogador && window.GA_ModoJogador.permitirEdicao) {
+      // o cadeado só aparece depois que o Firebase responde: piscar
+      // "travado" para quem já estava logado seria mentira de meio segundo
+      window.GA_ModoJogador.permitirEdicao(podeEscrever(), authResolvida);
+    }
+    desenharAuth();
+  }
+
+  function desenharAuth() {
+    if (!auth) return chipAuth('');
+    if (usuario && semPermissao) {
+      return chipAuth('<span class="ga-jog-auth-erro">🔒 <strong>' + esc(usuario.email || 'esta conta') +
+        '</strong> não está nesta mesa — peça ao mestre para incluir seu e-mail (e recarregue depois)</span>' +
+        '<button type="button" class="ga-jog-auth-sair" data-jog-sair>trocar de conta</button>');
+    }
+    if (usuario) {
+      return chipAuth('<span class="ga-jog-auth-quem">✍ escrevendo como <strong>' +
+        esc(usuario.email || 'você') + '</strong></span>' +
+        '<button type="button" class="ga-jog-auth-sair" data-jog-sair>sair</button>');
+    }
+    chipAuth('<button type="button" class="ga-jog-auth-btn" data-jog-entrar>🔑 Entrar com o Google para escrever</button>' +
+      (erroLogin ? '<span class="ga-jog-auth-erro">' + esc(erroLogin) + '</span>' : ''));
+  }
+
+  // O que cada erro do Google quer dizer para quem está do outro lado.
+  const MSG_LOGIN = {
+    'auth/popup-blocked': 'o navegador bloqueou a janela do Google — libere os pop-ups deste site e tente de novo',
+    'auth/unauthorized-domain': 'este endereço não está autorizado no Firebase — avise o mestre',
+    'auth/operation-not-allowed': 'o login com o Google ainda não foi ligado no Firebase — avise o mestre',
+    'auth/network-request-failed': 'sem conexão com o Google agora — tente daqui a pouco',
+  };
+
+  function entrar() {
+    if (!auth) return;
+    erroLogin = '';
+    const prov = new firebase.auth.GoogleAuthProvider();
+    prov.setCustomParameters({ prompt: 'select_account' });
+    auth.signInWithPopup(prov).catch(err => {
+      const cod = (err && err.code) || '';
+      // fechou a janelinha ou clicou duas vezes: não é erro, é desistir
+      if (cod === 'auth/popup-closed-by-user' || cod === 'auth/cancelled-popup-request') return;
+      erroLogin = MSG_LOGIN[cod] || ('não deu para entrar (' + (cod || (err && err.message) || 'erro') + ')');
+      desenharAuth();
+      console.warn('[sync-jogador] login:', cod, err && err.message);
+    });
+  }
+
+  function sair() {
+    if (!auth) return;
+    semPermissao = false; erroLogin = '';
+    auth.signOut().catch(e => console.warn('[sync-jogador] sair:', e && e.message));
+  }
+
+  function ehSemPermissao(e) {
+    const c = ((e && (e.code || e.message)) || '').toString().toLowerCase();
+    return c.indexOf('permission') >= 0;
+  }
+  function marcarSemPermissao() {
+    if (semPermissao) return;
+    semPermissao = true;
+    refletirLogin();   // re-trava: não adianta continuar escrevendo
+  }
+
+  // Clique numa caixa travada não pode cair no vazio: o botão de entrar
+  // pisca para dizer por onde se resolve. Fase de captura, como o resto do
+  // modo-jogador — as caixas usam listeners delegados.
+  function aoClicarTravado(e) {
+    if (podeEscrever() || !(e.target instanceof Element)) return;
+    if (!e.target.closest('[data-jog-edita]')) return;
+    const btn = document.querySelector('[data-jog-entrar]');
+    if (!btn) return;
+    btn.classList.remove('ga-jog-auth-btn--pisca');
+    void btn.offsetWidth;                      // reinicia a animação
+    btn.classList.add('ga-jog-auth-btn--pisca');
+  }
 
   function init() {
     if (typeof firebase === 'undefined' || !window.GA_FIREBASE || !window.GA_FIREBASE.apiKey) {
@@ -185,10 +308,22 @@
     try {
       firebase.initializeApp(window.GA_FIREBASE);
       db = firebase.database();
+      if (firebase.auth) {
+        auth = firebase.auth();
+        auth.onAuthStateChanged(u => {
+          usuario = u;
+          authResolvida = true;
+          semPermissao = false;   // conta nova, chance nova
+          erroLogin = '';
+          refletirLogin();
+        });
+      }
     } catch (e) {
       chip('⚠ Não deu para falar com a mesa: ' + e.message, 'ga-jog-chip--off');
       return;
     }
+    document.addEventListener('click', aoClicarTravado, true);
+    refletirLogin();   // trava as caixas já, antes de o Google responder
 
     chip('📡 Conectando à sala <strong>' + sala + '</strong>…');
 

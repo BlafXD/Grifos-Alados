@@ -1,8 +1,70 @@
-# Quem pode escrever na mesa — decisão em aberto
+# Quem pode escrever na mesa — decidido
 
 **Aberto em:** 1º de setembro de 2026
-**Estado:** só análise. Nada foi mudado no código nem nas regras do Firebase.
-**Quem decide:** você.
+**Decidido em:** 8 de setembro de 2026
+**Estado:** o site já está pronto. **Falta a sua parte no console do Firebase** —
+ver "O que falta você fazer", logo abaixo.
+
+---
+
+## 0. A decisão, e o que já foi feito
+
+> Leia esta seção e a próxima. O resto do documento é a análise de 1º de
+> setembro, preservada como está: é dela que as decisões saíram.
+
+**O que você decidiu (8 de setembro de 2026):**
+
+| Pergunta | Resposta |
+|---|---|
+| De onde você abre o `index.html`? | Do **site publicado** (`blafxd.github.io/Grifos-Alados/`), não do disco |
+| Fecha a leitura também? | **Não.** Ler a mesa continua aberto a quem tem o link |
+| Fecha a escrita? | **Sim** — só quem entrar com o Google e estiver na lista |
+| Trocar o nome da sala? | **Não** — a sala `mesa` fica até a campanha acabar |
+| Onde mora a lista? | **Opção A**: os e-mails na própria regra do banco |
+
+Como você abre o site publicado, o login do Google **funcionaria** também para o
+mestre — a pegadinha do `file://` (§1) não te pega. Mesmo assim o mestre segue no
+**e-mail/senha**: já funciona, e é o que continua funcionando no dia em que você
+abrir o `index.html` do disco (offline, no meio de uma sessão, num outro
+computador). Não há nada a ganhar em trocar.
+
+**O que já está no código** (nada disso depende do Firebase para ser verdade):
+
+| Onde | O quê |
+|---|---|
+| `jogadores.html` | entrou o SDK `firebase-auth-compat.js`, que faltava na página deles |
+| `js/sync-jogador.js` | bloco "QUEM PODE ESCREVER": botão **🔑 Entrar com o Google**, quem está logado, sair/trocar de conta, e a tradução dos erros do Google para o português |
+| `js/sync-jogador.js` | escrita recusada pelo banco vira recado na tela ("*fulano@gmail.com não está nesta mesa — peça ao mestre*") e **re-trava** as caixas, em vez de morrer no console |
+| `js/modo-jogador.js` | `permitirEdicao()`: as caixas `[data-jog-edita]` seguem o login, travando e destravando nos dois sentidos |
+| `css/style.css` | o selinho do rodapé virou duas partes (estado da sala + login); caixa travada perde a barra de formatação e ganha o selo "🔒 entre para escrever" |
+| `MODO-JOGADOR.md` | as regras novas, o passo do provedor Google, os domínios autorizados, como tirar alguém da mesa e cinco problemas comuns a mais |
+
+Sem Firebase configurado — ou com o CDN fora do ar — nada disso aparece e a
+página volta a ser a cópia local de sempre: não há banco do outro lado para
+proteger.
+
+## 0.1 O que falta VOCÊ fazer (console do Firebase, ~10 min)
+
+O site já está pronto para isso; o que falta é do lado do serviço. O passo a
+passo detalhado está no `MODO-JOGADOR.md` (partes 1.4 e 1.5):
+
+1. **Authentication → Método de login → ativar `Google`.** O e-mail/senha do
+   mestre continua ligado, como está.
+2. **Authentication → Settings → Domínios autorizados**: confirmar que
+   `blafxd.github.io` está lá (o `localhost` já vem de fábrica).
+3. **Realtime Database → Regras**: trocar o `".write": true` do
+   `jogadores/inventario` pela lista de e-mails — o bloco pronto está no
+   `MODO-JOGADOR.md`, parte 1.4. **Junte os Gmails dos seus jogadores antes**:
+   é o único dado que só você tem.
+4. **Simulador de regras** (no próprio console), antes de fechar: uma escrita em
+   `mesas/mesa/jogadores/inventario` com um e-mail da lista tem de passar, e com
+   um de fora tem de falhar.
+5. `git push` do site e um teste no link dos jogadores.
+
+Enquanto o passo 3 não for publicado, a regra antiga continua valendo: as caixas
+pedem login (isso é do site, já está no ar assim que você publicar), mas o banco
+ainda aceita a escrita de quem entrar com qualquer conta Google. **É o passo 3
+que fecha a porta**, não o botão.
 
 ---
 
@@ -191,16 +253,22 @@ nenhuma. Se alguém apagar, apagou. Vale considerar um backup periódico dele
 
 ---
 
-## Resumo para quando você voltar
+## Resumo — respondido em 8 de setembro de 2026
 
 - A ideia está certa, e é o conserto de verdade. ✅
-- **Mestre fica no e-mail/senha** — o Google quebraria o "abrir do disco".
-- **Google só para os jogadores.**
-- Decida se fecha **só a escrita** (recomendo) ou também a leitura.
-- Comece pela lista de e-mails na regra (**opção A**); o **B** fica para
-  quando a mesa girar de gente.
-- **Enquanto isso: troque o nome da sala hoje.** É grátis e corta quem já
-  tem o link.
+- **Mestre fica no e-mail/senha** ✅ — não porque o Google quebraria (ele abre
+  o site publicado, então funcionaria), mas porque não há o que ganhar
+  trocando, e o e-mail/senha é o que sobrevive a abrir o site do disco.
+- **Google só para os jogadores.** ✅ Feito.
+- Fecha **só a escrita**; a leitura fica aberta a quem tem o link. ✅
+- **Opção A** (e-mails na própria regra). ✅ O bloco pronto está no
+  `MODO-JOGADOR.md`, parte 1.4.
+- **Trocar o nome da sala: não.** A sala `mesa` fica até a campanha acabar —
+  decisão dele, sabendo que o link velho continua valendo para LER. Com a
+  escrita fechada, o estrago que sobra é o que se lê, não o que se apaga.
+- Continua valendo a **segunda coisa barata** da seção acima: o nó
+  `jogadores/inventario` não tem cópia nenhuma. Se alguém da mesa apagar,
+  apagou.
 
-**Ainda a responder:** de onde você abre o `index.html` — disco, localhost
-ou site publicado?
+**O que ainda falta:** os três passos no console do Firebase (§0.1) — e os
+Gmails dos jogadores, que só você tem.

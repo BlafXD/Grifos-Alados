@@ -1,9 +1,10 @@
 // ═══════════════════════════════════════════════════════════════════
 //  MODO-JOGADOR.JS — trava de "só visualizar" do jogadores.html
 //  Os jogadores navegam, buscam, abrem descrições e nuvens — mas não
-//  rolam, não editam e não apagam nada. A garantia DURA é do banco
-//  (só o mestre escreve); aqui é a experiência: esconder/bloquear os
-//  controles de mestre para ninguém se confundir.
+//  rolam, não editam e não apagam nada. A garantia DURA é do banco (a
+//  mesa só o mestre escreve; as caixas que são deles, só as contas
+//  Google que ele listou nas regras); aqui é a experiência: esconder e
+//  bloquear os controles de mestre para ninguém se confundir.
 //
 //  Política: Consultas (#perigos) é livre (é tudo material de regra,
 //  incluindo a calculadora de Culinária, que não guarda nada). Loja,
@@ -17,6 +18,14 @@
   'use strict';
 
   document.documentElement.classList.add('ga-jogador');
+
+  // As caixas [data-jog-edita] são deles — mas só depois de entrar com o
+  // Google: quem escreve na mesa é a conta que o mestre listou nas regras
+  // do banco (ver MODO-JOGADOR.md). Quem avisa desse login é o
+  // sync-jogador.js, pelo permitirEdicao() do fim do arquivo. Se ele nunca
+  // chamar — Firebase não configurado, CDN fora do ar —, fica como sempre
+  // foi: liberadas, porque aí não há banco nenhum do outro lado.
+  let edicaoLiberada = true;
 
   // sempre permitidos, em qualquer aba. As caixas marcadas com
   // [data-jog-edita] são as que os jogadores escrevem de propósito (na aba
@@ -58,6 +67,13 @@
       if (el.closest('[data-jog-edita]')) return;
       el.setAttribute('contenteditable', 'false');
     });
+    // as deles seguem o login, nos dois sentidos: destravam quando alguém
+    // entra e voltam a travar quando sai. Por isso o seletor pega
+    // [contenteditable] inteiro, e não só o ="true" de cima — uma caixa
+    // travada não se acharia sozinha para ser destravada.
+    document.querySelectorAll('[data-jog-edita] [contenteditable]').forEach(el => {
+      el.setAttribute('contenteditable', edicaoLiberada ? 'true' : 'false');
+    });
   }
 
   function init() {
@@ -85,6 +101,19 @@
     }
     if (scroll) setTimeout(() => window.scrollTo({ top: scroll, behavior: 'auto' }), 60);
   }
+
+  // O sync-jogador.js chama isto sempre que o login muda.
+  //  `comCadeado` = já dá para mostrar na tela que está travado. No primeiro
+  //  instante da página ainda não se sabe se a sessão do Google vai ser
+  //  retomada; travar já é certo, mas desenhar o cadeado para quem estava
+  //  logado seria uma mentira de meio segundo.
+  window.GA_ModoJogador = {
+    permitirEdicao: function (pode, comCadeado) {
+      edicaoLiberada = !!pode;
+      document.documentElement.classList.toggle('ga-jog-travado', !pode && comCadeado !== false);
+      travarEdicao();
+    },
+  };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
