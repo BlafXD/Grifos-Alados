@@ -236,7 +236,9 @@
   background: var(--teal);
   border-color: var(--teal);
 }
-.me-chip--atual::after { content: ' ·  aberta'; font-size: 0.7rem; opacity: 0.85; }
+/* só nos chips de MESA — no seletor de entrada isso viraria
+   "Porta aberta · aberta" */
+.me-chips .me-chip--atual::after { content: ' ·  aberta'; font-size: 0.7rem; opacity: 0.85; }
 
 /* ── O LINK DA MESA ────────────────────────────────────────────── */
 .me-link {
