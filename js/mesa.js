@@ -325,6 +325,7 @@
       mesaId:      mesaId(),
       mesa:        est.mesa,
       souMembro:   !!p,
+      membros:     est.membros,   // quem está na mesa (a iniciativa monta com eles)
       souMestre:   est.papel === 'mestre',
       transmite:   !!(p && p.transmite),   // mestre e auxiliar
       escreve:     !!(p && p.escreve),     // todos, menos espectador
