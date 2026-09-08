@@ -30,7 +30,7 @@ uma hospedagem para o site (**GitHub Pages**).
            ".write": "auth != null && auth.token.email === 'SEU-EMAIL@AQUI.com'",
            "jogadores": {
              "inventario": {
-               ".write": "auth != null && auth.token.email_verified && (auth.token.email === 'SEU-EMAIL@AQUI.com' || auth.token.email === 'JOGADOR1@gmail.com' || auth.token.email === 'JOGADOR2@gmail.com')"
+               ".write": "auth != null && auth.token.email_verified == true && (auth.token.email === 'SEU-EMAIL@AQUI.com' || auth.token.email === 'JOGADOR1@gmail.com' || auth.token.email === 'JOGADOR2@gmail.com')"
              }
            }
          }
@@ -48,6 +48,26 @@ uma hospedagem para o site (**GitHub Pages**).
    **diário** e das **paradas** de uma viagem — ver "O que os jogadores editam",
    abaixo.)
 
+   > ⚠ **São DUAS linhas de `.write`, e elas não se trocam.** A de cima
+   > (`$sala`) é a mesa inteira e é só sua; a de baixo (`jogadores/inventario`)
+   > é a caixa de entrada e leva a lista. Pôr a lista na de cima dá a cada
+   > jogador o poder de reescrever a loja, as bases e as viagens — no Firebase
+   > a permissão de um nó **desce para todos os filhos**, e regra de filho não
+   > revoga a do pai.
+   >
+   > ⚠ **Não ponha `auth.token.email_verified` na linha do mestre.** Usuário de
+   > e-mail/senha criado na mão pelo console nasce **não verificado**, então
+   > essa condição bloquearia justamente você (o 📡 passa a dar "permission
+   > denied"). Na linha dos jogadores ela é boa: conta do Google já vem
+   > verificada — e ela existe porque, com o e-mail/senha ligado no projeto,
+   > qualquer um consegue criar uma conta com o e-mail de outra pessoa; o que
+   > o Google confirma é a posse.
+   >
+   > ⚠ **É `email_verified == true`, com o `== true` escrito.** Sem ele o
+   > console recusa com *"Left operand of && must be boolean"*: cada pedaço de
+   > um `&&` precisa ser booleano, e o verificador não deduz o tipo dos campos
+   > de `auth.token` sozinho.
+   >
    > A linha do `.write` é comprida e sem quebras **de propósito**: quebrar uma
    > linha no meio do texto entre aspas faz o console recusar as regras. Para
    > acrescentar um jogador depois, é só somar mais um
