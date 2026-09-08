@@ -66,6 +66,14 @@ uma hospedagem para o site (**GitHub Pages**).
              }
            },
 
+           "rolagens": {
+             ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
+             ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'",
+             "$rolagem": {
+               ".write": "auth != null && !data.exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador' && newData.child('uid').val() === auth.uid"
+             }
+           },
+
            "dados": {
              ".read":  true,
              ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"

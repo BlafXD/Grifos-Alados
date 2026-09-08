@@ -1,0 +1,160 @@
+/* ═══════════════════════════════════════════════════════════════════
+   ROLAGENS AO VIVO (rolagens.js) — o painel que a mesa inteira vê
+   Canto de baixo à ESQUERDA, de propósito: o 📡 mora no canto direito
+   e o selinho da página dos jogadores fica embaixo, no meio.
+   ═══════════════════════════════════════════════════════════════════ */
+.ga-rol {
+  position: fixed;
+  left: 0.7rem;
+  bottom: 0.7rem;
+  z-index: 8500;
+  width: min(19rem, 88vw);
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim, var(--ink-faded));
+  border-radius: var(--raio);
+  box-shadow: 0 2px 10px rgba(26, 16, 8, 0.3);
+}
+
+/* ── CABEÇALHO ─────────────────────────────────────────────────── */
+.ga-rol-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.3rem 0.25rem 0.5rem;
+  background: var(--ink);
+  border-radius: var(--raio) var(--raio) 0 0;
+}
+.ga-rol--fechado .ga-rol-cab { border-radius: var(--raio); }
+.ga-rol-tit {
+  flex: 1 1 auto;
+  text-align: left;
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem 0;
+}
+.ga-rol-cont {
+  display: inline-block;
+  min-width: 1.1rem;
+  padding: 0 0.25rem;
+  font-size: 0.6rem;
+  text-align: center;
+  color: var(--ink);
+  background: var(--gold-light);
+  border-radius: 999px;
+}
+.ga-rol-x {
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  cursor: pointer;
+  color: var(--parchment);
+  background: none;
+  border: none;
+  opacity: 0.75;
+}
+.ga-rol-x:hover { opacity: 1; }
+
+/* ── A LISTA ───────────────────────────────────────────────────── */
+.ga-rol-lista {
+  max-height: min(22rem, 45vh);
+  overflow-y: auto;
+  padding: 0.4rem 0.55rem;
+}
+.ga-rol-item {
+  padding: 0.35rem 0;
+  border-bottom: 1px dotted var(--parchment3);
+}
+.ga-rol-item:last-child { border-bottom: none; }
+.ga-rol-quem {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+.ga-rol-alvo {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.74rem;
+  font-weight: normal;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-dim);
+}
+.ga-rol-pericia {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--rust-dark);
+}
+.ga-rol-formula {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+.ga-rol-vazio {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.84rem;
+  color: var(--text-dim);
+  margin: 0.2rem 0;
+}
+
+/* ── O CAMPO DE ROLAR ──────────────────────────────────────────── */
+.ga-rol-chat {
+  display: flex;
+  gap: 0.3rem;
+  padding: 0.4rem 0.55rem 0.2rem;
+  border-top: 1px solid var(--parchment3);
+}
+.ga-rol-chat input {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  padding: 0.28rem 0.45rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+}
+.ga-rol-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.6rem;
+  cursor: pointer;
+  color: var(--parchment);
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: var(--raio);
+}
+.ga-rol-btn:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
+.ga-rol-aviso {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.78rem;
+  color: var(--carmim);
+  margin: 0;
+  padding: 0 0.55rem 0.4rem;
+  min-height: 1rem;
+}
+
+/* Em tela estreita o painel deita no rodapé inteiro, e fechado ele é
+   só a barrinha — para não comer a página de quem está jogando pelo
+   celular. */
+@media (max-width: 560px) {
+  .ga-rol { left: 0.4rem; right: 0.4rem; width: auto; bottom: 3.2rem; }
+  .ga-rol-lista { max-height: 35vh; }
+}
