@@ -2402,6 +2402,88 @@ footer {
 .ga-jog-chip--on  { border-color: var(--teal); }
 .ga-jog-chip--off { border-color: var(--ink-faded); color: var(--ink-faded); }
 
+/* ── ENTRAR PARA ESCREVER (a linha de login dentro do chip) ────────
+   Ler a mesa é aberto a quem tem o link; escrever exige a conta Google
+   estar na lista das regras do banco (ver MODO-JOGADOR.md). O chip
+   ganhou uma segunda parte, que quebra para baixo quando não couber
+   na linha — daí o flex-wrap e o cantinho arredondado maior. */
+.ga-jog-chip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem 0.6rem;
+  border-radius: 1.1rem;
+}
+.ga-jog-chip-auth:empty { display: none; }
+.ga-jog-chip-auth {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+.ga-jog-auth-quem { color: var(--ink-faded); }
+.ga-jog-auth-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.24rem 0.6rem;
+  cursor: pointer;
+  color: var(--parchment);
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  transition: background 0.15s, color 0.15s;
+}
+.ga-jog-auth-btn:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
+/* clicou numa caixa travada: o botão diz "é por aqui" */
+@keyframes ga-jog-pisca {
+  0%, 100% { transform: scale(1);    box-shadow: none; }
+  50%      { transform: scale(1.09); box-shadow: 0 0 0 3px var(--gold-pale); }
+}
+.ga-jog-auth-btn--pisca { animation: ga-jog-pisca 0.45s ease-in-out 3; }
+.ga-jog-auth-sair {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.76rem;
+  padding: 0 0.15rem;
+  cursor: pointer;
+  color: var(--ink-faded);
+  background: none;
+  border: none;
+  border-bottom: 1px dotted var(--ink-faded);
+}
+.ga-jog-auth-sair:hover { color: var(--ink); border-bottom-color: var(--ink); }
+.ga-jog-auth-erro { color: var(--carmim); }
+
+/* Caixa que é deles, mas ainda travada (ninguém entrou, ou a conta não
+   está na mesa): dá para ler, não para escrever. Some a barra de
+   formatação — que sem edição não faz nada — e entra um selo no lugar
+   onde ela estava. */
+.ga-jog-travado [data-jog-edita] .ga-barra { display: none; }
+.ga-jog-travado section:not(#perigos) [data-jog-edita] .ga-rich {
+  cursor: pointer;
+  opacity: 0.82;
+}
+.ga-jog-travado [data-jog-edita]::after {
+  content: '🔒 entre para escrever';
+  position: absolute;
+  top: 0.15rem;
+  right: 0.3rem;
+  z-index: 2;
+  padding: 0.05rem 0.4rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.7rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim, var(--ink-faded));
+  border-radius: 999px;
+  pointer-events: none;
+}
+
 /* MODO JOGADOR — esconde os controles de mestre nas abas só-leitura.
    (O bloqueio de verdade é o modo-jogador.js + as regras do banco;
    isto aqui é para a página nem oferecer o que não se pode usar.) */

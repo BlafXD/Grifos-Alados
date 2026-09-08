@@ -62,6 +62,11 @@ O mestre liga a transmissão pelo botão **📡** (canto inferior direito) e ent
 mestre. A sincronização em tempo real usa o **Firebase** — a configuração (uma vez só) está
 detalhada em **[`MODO-JOGADOR.md`](MODO-JOGADOR.md)**.
 
+> 🔑 **Ver a mesa não pede login** — é só abrir o link. Já para **escrever** nas poucas caixas que
+> são dos jogadores (o inventário do grupo, os residentes de uma base, o diário da viagem), eles
+> entram com o **Google** pelo selinho do rodapé: só as contas que o mestre listou nas regras do
+> banco passam. Quem não entrou vê as caixas com um "🔒 entre para escrever".
+
 > 💾 **Seus dados** (bestiário, anotações, bases, fichas em PDF…) ficam guardados no **seu**
 > navegador (`localStorage` e `IndexedDB`): sobrevivem a fechar a aba e reiniciar, mas são
 > individuais por dispositivo. Use os botões **Backup (.json)** de cada aba para guardar/transferir.
