@@ -26,10 +26,16 @@
   const SALA_KEY = 'grifosAlados.syncSala';
 
   // ── QUEM É O DONO DA CASA ────────────────────────────────────────
-  // Só este uid cria campanha e mesa (a chave do Firebase é pública, e
-  // sem isso um estranho criaria salas no banco dele). Jogador nunca
-  // cria: jogador PEDE. Ver docs/mesa-de-verdade.md §6.
-  const DONOS = ['uxcc4lwMDceDqGFRrMwctv1Gi9D2'];
+  // Só o dono cria campanha e mesa (a chave do Firebase é pública, e sem
+  // isso um estranho criaria salas no banco dele). Jogador nunca cria:
+  // jogador PEDE. Ver docs/mesa-de-verdade.md §6.
+  //  São duas listas porque o mestre tem DUAS contas com o mesmo e-mail:
+  //  a de senha, criada no console, e a do Google — provedores diferentes
+  //  dão uid diferente. Reconhecer as duas evita a dança de descobrir com
+  //  qual delas ele entrou. Quem manda de verdade continua sendo a regra
+  //  do banco, que também aceita as duas.
+  const DONOS  = ['uxcc4lwMDceDqGFRrMwctv1Gi9D2'];
+  const DONOS_EMAIL = ['mestret20@gmail.com'];
 
   let est = {
     pronto:    false,   // o Firebase já disse se havia sessão salva
@@ -238,7 +244,11 @@
   }
 
   // ── CRIAR CAMPANHA E MESA (só o dono) ────────────────────────────
-  function souDono() { return !!(est.usuario && DONOS.indexOf(est.usuario.uid) >= 0); }
+  function souDono() {
+    const u = est.usuario;
+    if (!u) return false;
+    return DONOS.indexOf(u.uid) >= 0 || DONOS_EMAIL.indexOf((u.email || '').toLowerCase()) >= 0;
+  }
 
   function criarCampanha(nome) {
     const b = db(), u = est.usuario; if (!b || !u || !nome) return;
@@ -341,7 +351,10 @@
                 : '<span class="me-selo me-selo--fora">fora da mesa</span>';
     return cartao('🔑 Sua conta', '' +
       '<p class="me-p"><strong>' + esc(nomeDe(u)) + '</strong> ' + papel + '</p>' +
-      '<p class="me-mini">' + esc(u.email || '') + '</p>' +
+      // o uid aparece aqui de propósito: é o que vai nas regras do banco e
+      // na lista de quem cria mesa, e ir buscá-lo no console do Firebase
+      // toda vez é viagem à toa
+      '<p class="me-mini">' + esc(u.email || '') + ' · <code>' + esc(u.uid) + '</code></p>' +
       '<div class="me-acoes"><button type="button" class="me-btn" data-mesa="sair">Sair</button></div>' +
       (est.erro ? '<p class="me-erro">⚠ ' + esc(est.erro) + '</p>' : '') +
       (est.aviso ? '<p class="me-aviso">' + esc(est.aviso) + '</p>' : ''));

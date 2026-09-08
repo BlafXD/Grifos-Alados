@@ -27,20 +27,20 @@ uma hospedagem para o site (**GitHub Pages**).
        "campanhas": {
          ".read": "auth != null",
          "$campanha": {
-           ".write": "auth != null && auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2'"
+           ".write": "auth != null && (auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' || auth.token.email === 'mestret20@gmail.com')"
          }
        },
        "mesas": {
          "$sala": {
-           ".write": "auth != null && !data.exists() && auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' && newData.child('membros').child(auth.uid).child('papel').val() === 'mestre'",
+           ".write": "auth != null && !data.exists() && (auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' || auth.token.email === 'mestret20@gmail.com') && newData.child('membros').child(auth.uid).child('papel').val() === 'mestre'",
 
-           "nome":       { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
-           "campanhaId": { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
+           "nome":       { ".read": true, ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || auth.token.email === 'mestret20@gmail.com')" },
+           "campanhaId": { ".read": true, ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || auth.token.email === 'mestret20@gmail.com')" },
            "criadaEm":   { ".read": true },
 
            "membros": {
              ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || (!data.exists() && auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2'))",
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || ((!data.exists() || auth.token.email === 'mestret20@gmail.com') && (auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' || auth.token.email === 'mestret20@gmail.com')))",
              "$uid": { ".read": "auth != null && $uid === auth.uid" }
            },
 
@@ -98,10 +98,15 @@ uma hospedagem para o site (**GitHub Pages**).
    > (`!data.exists()`): qualquer `.write` largo ali em cima entregaria a mesa
    > inteira, fichas e rolagens junto.
    >
-   > ⚠ **O `|| auth.token.email === 'mestret20@gmail.com'` é um cinto de
-   > segurança temporário**, para a transmissão do 📡 não cair no minuto entre
-   > publicar a regra e você assumir a mesa na aba. Depois que o seu nome
-   > aparecer em "Quem está na mesa", pode apagar as duas ocorrências.
+   > ⚠ **O `|| auth.token.email === 'mestret20@gmail.com'` aparece várias vezes,
+   > e é de propósito.** O mestre tem **duas contas com o mesmo e-mail** — a de
+   > senha, criada no console, e a do Google. Provedores diferentes dão **`uid`
+   > diferente**, então a regra reconhece o e-mail além do `uid`: assim funciona
+   > por qualquer um dos dois logins, e a transmissão do 📡 não cai no minuto
+   > entre publicar a regra e assumir a mesa na aba.
+   >
+   > Para apertar depois: veja o `uid` que a aba 🎲 Mesa mostra embaixo do seu
+   > e-mail, acrescente-o à lista de `uid` e aí sim apague as linhas do e-mail.
    >
    > ⚠ **`email_verified == true`, com o `== true` escrito.** Sem ele o console
    > recusa com *"Left operand of && must be boolean"*: cada pedaço de um `&&`

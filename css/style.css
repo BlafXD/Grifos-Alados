@@ -2505,11 +2505,14 @@ footer {
 .ga-jogador .bs-add-linha,
 .ga-jogador .ga-rich-btn,
 .ga-jogador #ncBtnEdicao { display: none !important; }
-/* campos que sobram viram vitrine: sem aparência de formulário ativo */
-.ga-jogador section:not(#perigos) select,
-.ga-jogador section:not(#perigos) input[type="checkbox"],
-.ga-jogador section:not(#perigos) input[type="number"] { pointer-events: none; opacity: 0.75; }
-.ga-jogador section:not(#perigos) .ga-rich { cursor: default; }
+/* campos que sobram viram vitrine: sem aparência de formulário ativo.
+   Fora de #perigos (material de regra) e de #mesa, que é a aba de todo
+   mundo — lá o jogador entra na conta e o mestre escolhe a campanha num
+   <select> de verdade. */
+.ga-jogador section:not(#perigos):not(#mesa) select,
+.ga-jogador section:not(#perigos):not(#mesa) input[type="checkbox"],
+.ga-jogador section:not(#perigos):not(#mesa) input[type="number"] { pointer-events: none; opacity: 0.75; }
+.ga-jogador section:not(#perigos):not(#mesa) .ga-rich { cursor: default; }
 /* exceção: as caixas [data-jog-edita] são DELES (Residentes, Inventário da
    base e o Inventário dos jogadores) — escrevem e formatam normalmente, e
    por isso ganham o I-beam da casa. O seletor repete o `section:not(…)` de
