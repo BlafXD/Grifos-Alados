@@ -6140,6 +6140,35 @@
     salvar(); render();
   }
 
+  // ── O QUE A INICIATIVA PERGUNTA AO COMBATE ───────────────────────
+  //  A lista de iniciativa (js/iniciativa.js) monta-se com as criaturas
+  //  da cena que o mestre está narrando. Daqui sai o MÍNIMO: o nome e o
+  //  modificador de Iniciativa de cada uma. PV, defesa, condições e o
+  //  resto da ficha não passam por aqui — os jogadores veem essa lista.
+  function cenaParaIniciativa() {
+    let ref = cenaNarradaRef();
+    if (!ref) {
+      // ninguém narrando: a primeira cena da primeira sessão visível
+      const vis = sessoesVisiveis();
+      for (let i = 0; i < vis.length; i++) {
+        if (vis[i].s.cenas.length) { ref = { si: vis[i].si, ci: 0 }; break; }
+      }
+    }
+    if (!ref) return null;
+    const c = dados.sessoes[ref.si].cenas[ref.ci];
+    if (!c) return null;
+    return {
+      nome: c.nome || 'Cena',
+      criaturas: (c.criaturas || []).map(cr => ({
+        nome: cr.nome || '(criatura sem nome)',
+        // o modificador de Iniciativa da ficha; em T20 ele é o valor de
+        // Destreza da criatura, então serve também de desempate
+        mod: parseInt(((cr.stats || {}).iniciativa || {}).padrao, 10) || 0,
+      })),
+    };
+  }
+  window.GA_Combates = { cenaParaIniciativa: cenaParaIniciativa };
+
   // ── INICIALIZAÇÃO ────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     const secao = document.getElementById('monstros');

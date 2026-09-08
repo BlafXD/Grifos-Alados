@@ -226,6 +226,22 @@
   //  Fica no canto de baixo à ESQUERDA, longe do 📡 (canto direito) e do
   //  selinho da página dos jogadores (embaixo, no meio). Aparece só para
   //  quem é da mesa — visitante não tem o que ver aqui.
+  // A coluna do canto de baixo à esquerda, dividida com a Iniciativa:
+  //  dois painéis fixos no mesmo canto se cobririam, então eles moram
+  //  numa pilha só. Quem chegar primeiro cria; a iniciativa entra por
+  //  cima (é o que se olha durante o combate).
+  function coluna() {
+    let col = document.getElementById('gaColunaMesa');
+    if (!col) {
+      col = document.createElement('div');
+      col.id = 'gaColunaMesa';
+      col.className = 'ga-coluna-mesa';
+      document.body.appendChild(col);
+    }
+    return col;
+  }
+  window.GA_ColunaMesa = coluna;
+
   let painel = null, aberto = true;
   const ABERTO_KEY = 'grifosAlados.rolagensAberto';
   try { aberto = localStorage.getItem(ABERTO_KEY) !== '0'; } catch (e) {}
@@ -235,7 +251,7 @@
     painel = document.createElement('div');
     painel.id = 'gaRolagens';
     painel.className = 'ga-rol';
-    document.body.appendChild(painel);
+    coluna().appendChild(painel);
     painel.addEventListener('click', e => {
       if (e.target.closest('[data-rol-toggle]')) {
         aberto = !aberto;

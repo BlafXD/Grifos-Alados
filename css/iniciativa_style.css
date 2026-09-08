@@ -1,0 +1,208 @@
+/* ═══════════════════════════════════════════════════════════════════
+   INICIATIVA (iniciativa.js) — a ordem do combate, ao vivo
+   Mora na mesma coluna flutuante das rolagens, por cima delas: é o
+   que se olha o tempo todo durante o combate.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* a pilha de painéis do canto de baixo à esquerda (dividida com o
+   rolagens.js — dois `position: fixed` no mesmo canto se cobririam) */
+.ga-coluna-mesa {
+  position: fixed;
+  left: 0.7rem;
+  bottom: 0.7rem;
+  z-index: 8500;
+  width: min(19rem, 88vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.ga-coluna-mesa .ga-rol { position: static; width: auto; left: auto; bottom: auto; }
+
+.ga-ini {
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim, var(--ink-faded));
+  border-radius: var(--raio);
+  box-shadow: 0 2px 10px rgba(26, 16, 8, 0.3);
+}
+
+/* ── CABEÇALHO ─────────────────────────────────────────────────── */
+.ga-ini-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.3rem 0.25rem 0.5rem;
+  background: var(--rust-dark);
+  border-radius: var(--raio) var(--raio) 0 0;
+}
+.ga-ini--fechado .ga-ini-cab { border-radius: var(--raio); }
+.ga-ini-tit {
+  flex: 1 1 auto;
+  text-align: left;
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem 0;
+}
+.ga-ini-rodada {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.85;
+}
+.ga-ini-x, .ga-ini-passar {
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  cursor: pointer;
+  color: var(--parchment);
+  background: none;
+  border: none;
+  opacity: 0.8;
+}
+.ga-ini-x:hover { opacity: 1; }
+.ga-ini-passar {
+  font-size: 0.9rem;
+  border: 1px solid rgba(242, 232, 213, 0.5);
+  border-radius: var(--raio);
+  opacity: 1;
+}
+.ga-ini-passar:hover { background: rgba(242, 232, 213, 0.18); }
+
+/* ── A LISTA ───────────────────────────────────────────────────── */
+.ga-ini-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0.4rem;
+  max-height: min(18rem, 38vh);
+  overflow-y: auto;
+}
+.ga-ini-linha {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.15rem;
+  border-radius: var(--raio);
+}
+.ga-ini-nome {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-align: left;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  background: none;
+  border: none;
+  padding: 0.18rem 0.1rem;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ga-ini-nome[disabled] { cursor: default; }
+.ga-ini-pos {
+  flex: 0 0 auto;
+  min-width: 1.2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+/* a vez de quem: a linha inteira acende */
+.ga-ini-linha--vez {
+  background: var(--gold-pale);
+  box-shadow: inset 3px 0 0 var(--gold-deep);
+}
+.ga-ini-linha--vez .ga-ini-nome { font-weight: 700; }
+.ga-ini-linha--vez .ga-ini-pos { color: var(--gold-deep); }
+
+.ga-ini-val {
+  flex: 0 0 2.6rem;
+  width: 2.6rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 0.1rem 0.15rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.ga-ini-mini {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.18rem 0.25rem;
+  cursor: pointer;
+  color: var(--ink-faded);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.ga-ini-mini:hover { background: var(--gold-pale); color: var(--ink); }
+.ga-ini-mini--x:hover { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
+
+.ga-ini-vazio {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.84rem;
+  color: var(--text-dim);
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+}
+
+/* ── AÇÕES DO MESTRE ───────────────────────────────────────────── */
+.ga-ini-acoes, .ga-ini-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 0.35rem 0.5rem;
+  border-top: 1px solid var(--parchment3);
+}
+.ga-ini-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+}
+.ga-ini-btn:hover { background: var(--gold-pale); }
+.ga-ini-btn--forte { color: var(--parchment); background: var(--ink); border-color: var(--ink); }
+.ga-ini-btn--forte:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
+.ga-ini-btn--x:hover { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
+.ga-ini-add input {
+  min-width: 0;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  padding: 0.22rem 0.4rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+}
+.ga-ini-add input[type="text"]   { flex: 1 1 6rem; }
+.ga-ini-add input[type="number"] { flex: 0 0 3.2rem; text-align: center; }
+
+@media (max-width: 560px) {
+  .ga-coluna-mesa { left: 0.4rem; right: 0.4rem; width: auto; bottom: 3.2rem; }
+  .ga-ini-lista { max-height: 30vh; }
+}

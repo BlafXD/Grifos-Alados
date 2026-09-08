@@ -554,3 +554,52 @@ ORIGINAL, e o `render` usa esse `si`.
 O teste que fecha isso: com o filtro em Nuevo Sol, renomear a única sessão
 visível (que é a de índice 1) tem de mudar `sessoes[1]`, e não `sessoes[0]`.
 Conferido.
+
+---
+
+## 17. Etapa 3 — a iniciativa (8 de setembro de 2026)
+
+Feita, e com ela a mesa ao vivo fica de pé: sala, papéis, rolagens e a ordem do
+combate. Falta só a ficha (§8).
+
+### O que entrou
+
+| Arquivo | O quê |
+|---|---|
+| `js/iniciativa.js` (novo) | a lista, a ordem, o turno e o painel |
+| `css/iniciativa_style.css` (novo) | o painel, e a **coluna** que ele divide com as rolagens |
+| `js/monstros.js` | expõe `GA_Combates.cenaParaIniciativa()` — o **mínimo** da cena narrada |
+| `js/mesa.js` | o estado passa a incluir `membros` (a lista monta com eles) |
+| `js/rolagens.js` | o painel dele passou a morar na coluna compartilhada |
+| regras | `iniciativa` (membros leem) e `iniciativaValores` (só quem manda) |
+
+**"⚔ Montar com a cena"** pega as criaturas da cena que ele está narrando na aba
+Combates, rola `1d20 + modificador` para cada uma, e põe junto todo mundo da
+mesa (menos os espectadores). Os jogadores entram **sem valor** — o mestre
+digita o que cada um rolou, no campo ao lado do nome.
+
+**A ordem sai do valor, o desempate sai do modificador.** O livro desempata por
+Destreza; na ficha de criatura deste projeto não há campo de Destreza, mas o
+modificador de Iniciativa **é** o valor de Destreza dela — então desempatar por
+ele é a mesma regra, com o dado que existe. Conferido no teste: Goblin (mod 4) e
+Ogro (mod 1) empatados em 8, e o Goblin ficou na frente.
+
+**Quem manda arrasta.** ↑ e ↓ em qualquer linha, inclusive a de um jogador — é
+como se atrasa ou se prepara uma ação. Clicar num nome dá a vez a ele. O ▶ passa
+o turno, e quando dá a volta a **rodada** sobe sozinha.
+
+**O jogador vê nome e ordem, e nada mais** — sem valores, sem botões, sem poder
+clicar. Testado nas duas telas.
+
+### A armadilha desta etapa (e ela era séria)
+
+O primeiro desenho guardava os valores em `iniciativa/valores`, aninhado. **No
+Firebase a permissão de LEITURA desce para os filhos**, e `iniciativa` é legível
+por qualquer membro — ou seja, o nó "secreto" seria lido por todos, e a regra
+filha não teria como restringir (regra de filho só ACRESCENTA permissão, nunca
+tira). Os valores viraram um nó **irmão**, `mesas/<sala>/iniciativaValores`,
+com regra própria de mestre e auxiliar.
+
+É a mesma armadilha da cascata que já tinha aparecido na escrita (§12) — desta
+vez do lado da leitura, que é mais silenciosa: nada falha, o segredo só não é
+segredo.

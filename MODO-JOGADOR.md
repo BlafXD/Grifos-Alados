@@ -74,6 +74,15 @@ uma hospedagem para o site (**GitHub Pages**).
              }
            },
 
+           "iniciativa": {
+             ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
+           },
+           "iniciativaValores": {
+             ".read":  "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')",
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
+           },
+
            "dados": {
              ".read":  true,
              ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
