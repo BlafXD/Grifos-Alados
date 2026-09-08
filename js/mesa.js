@@ -273,6 +273,24 @@
       .catch(e => { est.erro = recado(e, 'não deu para criar a mesa'); avisar(); });
   }
 
+  // Nome e campanha de uma mesa QUE JÁ EXISTE. O id da sala não muda —
+  // ele está no link que os jogadores guardaram, e renomear seria puxar
+  // o tapete deles. O nome é de tela; quem identifica é o id.
+  function salvarMesa(nome, campanhaId) {
+    const b = db(); if (!b) return;
+    const id = mesaId();
+    const antiga = (est.mesa && est.mesa.campanhaId) || '';
+    const patch = {};
+    patch['mesas/' + id + '/nome'] = nome || id;
+    patch['mesas/' + id + '/campanhaId'] = campanhaId || null;
+    // o índice da campanha é o que faz a mesa aparecer na lista dela
+    if (campanhaId) patch['campanhas/' + campanhaId + '/mesas/' + id] = true;
+    if (antiga && antiga !== campanhaId) patch['campanhas/' + antiga + '/mesas/' + id] = null;
+    b.ref().update(patch)
+      .then(() => { est.aviso = 'Mesa salva.'; avisar(); })
+      .catch(e => { est.erro = recado(e, 'não deu para salvar a mesa'); avisar(); });
+  }
+
   // Troca a mesa que este aparelho está usando (só faz sentido no lado
   // do mestre — do lado dos jogadores quem manda é o ?sala= do link).
   function abrirMesa(id) {
@@ -414,8 +432,12 @@
           '<button type="button" class="me-btn me-btn--mini me-btn--perigo" data-mesa="remover" data-uid="' + esc(uid) + '">tirar da mesa</button>' +
         '</span>';
       }
+      // nome, "(você)" e selo na MESMA linha: empilhados viravam três
+      // andares para dizer uma coisa só
       return '<li class="me-linha">' +
-        '<span class="me-linha-nome">' + esc(m.nome || uid) + (eu ? ' <em>(você)</em>' : '') + ' ' + selo + '</span>' + acoes +
+        '<span class="me-linha-nome me-linha-nome--deitada">' +
+          esc(m.nome || uid) + (eu ? ' <em>(você)</em>' : '') + ' ' + selo +
+        '</span>' + acoes +
       '</li>';
     }).join('');
     return cartao('🧑‍🤝‍🧑 Quem está na mesa <span class="me-cont">' + uids.length + '</span>',
@@ -430,6 +452,35 @@
       'para escrever, entra com o Google e pede para entrar aqui na aba.</p>' +
       '<p class="me-link"><code>' + esc(l) + '</code>' +
       '<button type="button" class="me-btn me-btn--mini" data-mesa="copiar" data-link="' + esc(l) + '">copiar</button></p>');
+  }
+
+  // Opções de campanha para os <select> — sempre com a saída "nenhuma",
+  // porque uma mesa pode viver fora de campanha (e as duas primeiras
+  // deste projeto nasceram assim, antes de a aba existir).
+  function opcoesDeCampanha(selecionada) {
+    const camps = est.campanhas || {};
+    return '<option value="">— sem campanha —</option>' +
+      Object.keys(camps).map(cid => '<option value="' + esc(cid) + '"' +
+        (cid === selecionada ? ' selected' : '') + '>' +
+        esc((camps[cid] || {}).nome || cid) + '</option>').join('');
+  }
+
+  // Esta mesa: nome e campanha. Vale para QUALQUER mestre da mesa — quem
+  // mestra uma sala pode batizá-la —, e não só para o dono da casa.
+  function blocoEstaMesa() {
+    if (est.papel !== 'mestre') return '';
+    const id = mesaId();
+    const nome = (est.mesa && est.mesa.nome) || '';
+    return cartao('✒ Esta mesa',
+      '<div class="me-form">' +
+        '<label class="me-campo">Nome<input type="text" id="meNomeMesa" value="' + esc(nome) +
+          '" placeholder="' + esc(id) + '"></label>' +
+        '<label class="me-campo me-campo--sel">Campanha<select id="meCampDaMesa">' +
+          opcoesDeCampanha((est.mesa && est.mesa.campanhaId) || '') + '</select></label>' +
+        '<button type="button" class="me-btn me-btn--principal" data-mesa="salvar-mesa">Salvar</button>' +
+      '</div>' +
+      '<p class="me-mini">O id da sala continua <code>' + esc(id) + '</code> e não muda: ' +
+      'ele está no link que os seus jogadores já guardaram. O nome é só de tela.</p>');
   }
 
   function blocoSalas() {
@@ -451,7 +502,7 @@
         }).join('') + '</ul>'
       : '<p class="me-vazio">Nenhuma campanha ainda. A primeira é o mundo onde tudo acontece.</p>';
 
-    const opcoes = idsC.map(cid => '<option value="' + esc(cid) + '">' + esc((camps[cid] || {}).nome || cid) + '</option>').join('');
+    const opcoes = opcoesDeCampanha('');
 
     // A mesa de antes das campanhas não está no índice de nenhuma. Em vez
     // de sumir da tela, ela aparece à parte — e o mestre decide se a
@@ -469,7 +520,7 @@
       '<div class="me-form">' +
         '<label class="me-campo">Nova mesa<input type="text" id="meMesaNome" placeholder="Os Grifos de Valkaria"></label>' +
         '<label class="me-campo me-campo--sel">na campanha<select id="meMesaCamp">' + opcoes + '</select></label>' +
-        '<button type="button" class="me-btn" data-mesa="criar-mesa"' + (idsC.length ? '' : ' disabled') + '>Criar mesa</button>' +
+        '<button type="button" class="me-btn" data-mesa="criar-mesa">Criar mesa</button>' +
       '</div>' +
       '<p class="me-mini">Uma campanha é o mundo; as mesas são os grupos que jogam nele. ' +
       'Com uma mesa só, é só criar a campanha e a mesa e esquecer que existem duas coisas.</p>');
@@ -503,7 +554,8 @@
       return;
     }
     alvo.innerHTML = cabecalho() + '<div class="me-grade">' +
-      blocoConta() + blocoEntrada() + blocoPedidos() + blocoMembros() + blocoLink() + blocoSalas() + '</div>';
+      blocoConta() + blocoEntrada() + blocoPedidos() + blocoMembros() +
+      blocoLink() + blocoEstaMesa() + blocoSalas() + '</div>';
   }
 
   function valorDe(id) {
@@ -536,6 +588,7 @@
       if (n) criarMesa(n, valorDe('meMesaCamp'));
       return;
     }
+    if (acao === 'salvar-mesa') return salvarMesa(valorDe('meNomeMesa'), valorDe('meCampDaMesa'));
     if (acao === 'copiar') {
       const txt = btn.dataset.link || '';
       if (navigator.clipboard) navigator.clipboard.writeText(txt).catch(() => {});
