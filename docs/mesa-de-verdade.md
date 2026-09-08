@@ -1,8 +1,12 @@
 # Mesa de verdade — salas, papéis, rolagens ao vivo e iniciativa
 
 **Aberto em:** 8 de setembro de 2026
-**Estado:** desenho fechado; **etapa 1 construída em 8 de setembro** (§11) e
-esperando as regras serem publicadas. As etapas 2 a 4 seguem no papel.
+**Estado:** etapa 1 construída em 8 de setembro (§11) e **revista no mesmo dia**
+(§12): não há dono do site, há dono de cada mesa. Esperando as regras serem
+publicadas. Etapas 2 a 4 seguem no papel; as notícias viraram a §13.
+
+> **Leia a §12 antes das §§5-6.** Elas são o desenho da primeira versão, com um
+> `uid` autorizado no meio; o que vale hoje é a §12.
 
 ---
 
@@ -338,3 +342,60 @@ link, os membros e o painel de campanhas.
 
 Rolagem ao vivo, iniciativa e ficha. A aba hoje resolve **quem é quem** — que
 era o que faltava para tudo o mais poder existir.
+
+---
+
+## 12. A virada de dono — 8 de setembro de 2026 (segunda revisão)
+
+A etapa 1 nasceu com um desenho de **casa com porteiro**: um `uid` autorizado
+criava campanhas e mesas, e todo mundo pedia para entrar. Bastou usar para ficar
+claro que era burocracia demais. O pedido dele, nas palavras dele: *"quem tem o
+email logado pudesse já criar a sua própria campanha… quero menos burocracia e
+mais liberdade, sem ter que eu ficar mexendo"*.
+
+**Não há dono do site. Há dono de cada mesa.**
+
+| Antes | Agora |
+|---|---|
+| Só um `uid` cria campanha e mesa | **Qualquer pessoa logada** cria as suas, e vira mestre delas |
+| Jogador pede, mestre aprova (sempre) | **Porta aberta é o padrão**: entra com um clique. A aprovação vira uma opção por mesa (`entradaLivre`) |
+| O nome da sala saía do nome da mesa | O mestre **escolhe o nome da sala**, que é o que vai no link; vale primeiro a chegar |
+| As regras tinham o `uid` dele escrito | As regras não têm nome próprio nenhum — só `dono` e `membros` |
+| `campanhas` só para quem está logado | `campanhas` é **público** (preparando as notícias, §13) |
+
+**Como a mesa sabe quem é o dono:** o campo `dono`, escrito na criação. Ele é
+público de propósito, junto com `nome`, `campanhaId` e `entradaLivre` — é a
+placa na porta, que alguém precisa ler ANTES de entrar em conta nenhuma. Nada
+disso é conteúdo de jogo.
+
+**Mesa órfã é a que não tem `dono`** — as salas anteriores a esta aba, e
+qualquer nome de sala que ninguém usou. Quem chegar logado assume. É como as
+salas antigas voltam a ter mestre, e é uma porta que se fecha sozinha no
+instante em que alguém a atravessa.
+
+> ⚠ **Consequência prática: assuma as suas salas hoje.** Enquanto uma sala sua
+> estiver sem `dono`, quem souber o nome dela pode virar mestre no seu lugar — e
+> `mesa` é o nome mais adivinhável que existe. Depois de assumida, tranca.
+
+**O erro que a banca de teste pegou:** eu deduzia "mesa sem mestre" de
+`membros` estar vazio. Mas `membros` só quem já está na mesa consegue ler, então
+para um visitante ele vem **sempre** vazio — e o botão "Assumir esta mesa"
+aparecia para qualquer estranho, em cima de mesa cheia. A regra do banco teria
+recusado a escrita, mas a tela mentia. Lição que vale para as próximas etapas:
+**um estado que a tela mostra a quem está de fora tem de vir de um nó que quem
+está de fora consegue ler.**
+
+## 13. As notícias, quando chegarem (etapa 5)
+
+Ele já disse aonde isso vai, e vale anotar antes de esquecer:
+
+- as notícias de uma campanha só o **mestre daquela campanha** edita;
+- **qualquer pessoa que entrar nos Grifos Alados vê as notícias de todas as
+  campanhas** — *"porque ficam nas memórias"*: a gazeta é o registro do mundo,
+  não o mural de um grupo.
+
+Hoje elas vivem em `js/noticias-data.js`, um arquivo do repositório, e só ele
+edita — o que ele aceita por enquanto. Quando virar etapa, mudam para
+`campanhas/<c>/noticias` no banco, com `.read: true` e escrita do dono da
+campanha. **O `campanhas` já foi aberto para leitura pública nesta revisão**,
+exatamente para esse dia.

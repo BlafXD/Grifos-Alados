@@ -18,30 +18,35 @@ uma hospedagem para o site (**GitHub Pages**).
 3. No menu lateral: **Criação (Build) → Realtime Database** → **Criar banco de dados**
    → local `United States` → comece em **modo bloqueado** → ativar.
 4. Ainda no Realtime Database, abra a aba **Regras (Rules)**, apague o que estiver
-   lá e cole isto — trocando o `uid` pelo SEU (Authentication → Users) e o e-mail
-   pelo do seu usuário de mestre:
+   lá e cole isto **como está** — não há nada para trocar, fora o e-mail do
+   paraquedas na penúltima seção (veja o aviso abaixo):
 
    ```json
    {
      "rules": {
        "campanhas": {
-         ".read": "auth != null",
+         ".read": true,
          "$campanha": {
-           ".write": "auth != null && (auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' || auth.token.email === 'mestret20@gmail.com')"
+           ".write": "auth != null && ((!data.exists() && newData.child('dono').val() === auth.uid) || data.child('dono').val() === auth.uid)"
          }
        },
        "mesas": {
          "$sala": {
-           ".write": "auth != null && !data.exists() && (auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' || auth.token.email === 'mestret20@gmail.com') && newData.child('membros').child(auth.uid).child('papel').val() === 'mestre'",
+           ".write": "auth != null && !data.exists() && newData.child('dono').val() === auth.uid && newData.child('membros').child(auth.uid).child('papel').val() === 'mestre'",
 
-           "nome":       { ".read": true, ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || auth.token.email === 'mestret20@gmail.com')" },
-           "campanhaId": { ".read": true, ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || auth.token.email === 'mestret20@gmail.com')" },
-           "criadaEm":   { ".read": true },
+           "nome":         { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
+           "campanhaId":   { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
+           "entradaLivre": { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
+           "dono":         { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
+           "criadaEm":     { ".read": true },
 
            "membros": {
              ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || ((!data.exists() || auth.token.email === 'mestret20@gmail.com') && (auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' || auth.token.email === 'mestret20@gmail.com')))",
-             "$uid": { ".read": "auth != null && $uid === auth.uid" }
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || (!data.exists() && !root.child('mesas').child($sala).child('dono').exists()))",
+             "$uid": {
+               ".read":  "auth != null && $uid === auth.uid",
+               ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || ($uid === auth.uid && !data.exists() && auth.token.email_verified == true && root.child('mesas').child($sala).child('entradaLivre').val() === true && newData.child('papel').val() === 'jogador'))"
+             }
            },
 
            "pedidos": {
@@ -64,7 +69,7 @@ uma hospedagem para o site (**GitHub Pages**).
            "jogadores": {
              "inventario": {
                ".read":  true,
-               ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).exists() || auth.token.email === 'mestret20@gmail.com')"
+               ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()"
              }
            }
          }
@@ -75,38 +80,44 @@ uma hospedagem para o site (**GitHub Pages**).
 
    → **Publicar**.
 
-   **Como ler isto.** Quem pode o quê não está mais escrito na regra: está no
-   banco, em `mesas/<sala>/membros/<uid>`, e quem escreve lá é o mestre pela
-   aba 🎲 Mesa. A regra só pergunta ao banco.
+   **Como ler isto.** Quem pode o quê não está escrito na regra: está no banco,
+   em `mesas/<sala>/membros/<uid>` e no campo `dono`. A regra só pergunta ao
+   banco. **Não há dono do site — há dono de cada mesa**, e é quem a criou.
 
    | Nó | Quem lê | Quem escreve |
    |---|---|---|
-   | `dados` (loja, viagens, bases), `meta` | qualquer um com o link | o mestre |
+   | `dados` (loja, viagens, bases), `meta` | qualquer um com o link | o mestre da mesa |
    | `jogadores/inventario` | qualquer um com o link | **membros da mesa** |
-   | `nome`, `campanhaId` da mesa | qualquer um | o mestre |
-   | `membros` | membros (e cada um sempre lê o próprio) | o mestre |
+   | `nome`, `campanhaId`, `entradaLivre`, `dono` | qualquer um | o mestre da mesa |
+   | `membros` | membros (e cada um sempre lê o próprio) | o mestre; e o próprio, entrando numa mesa de porta aberta |
    | `pedidos` | o mestre (e cada um o seu) | quem pede, e o mestre |
-   | `campanhas` | quem estiver logado | só o dono da casa |
+   | `campanhas` | **qualquer um** (é a memória de Arton) | quem criou aquela campanha |
 
-   > ⚠ **Criar mesa é só do seu `uid`.** A chave do Firebase é pública (está no
-   > `js/firebase-config.js`, num repositório aberto — e tudo bem, ela só
-   > identifica o projeto). Sem essa trava, um estranho logado criaria salas no
-   > seu banco. Jogador nunca cria: jogador **pede**.
+   > 🚪 **Porta aberta é o padrão.** Uma mesa nasce com `entradaLivre: true`:
+   > quem abre o link e entra com o Google vira jogador num clique, e o mestre
+   > vê o nome aparecer na lista (e pode tirar). Quem quiser mesa fechada troca
+   > para "com aprovação" no cartão ✒ Esta mesa, e aí volta o pede-e-aprova.
+   >
+   > 🎩 **Quem cria é dono.** Qualquer pessoa logada cria a campanha dela e a
+   > mesa dela, e vira mestre daquilo — ninguém precisa autorizar. O nome da
+   > sala é **primeiro a chegar**: se já existir, o banco recusa e a aba avisa.
+   >
+   > ⚠ **Mesa sem membro nenhum pode ser assumida por quem chegar.** É como as
+   > salas anteriores a esta aba voltam a ter dono. Consequência: **assuma as
+   > suas hoje** — enquanto uma sala sua estiver sem membros, quem souber o
+   > nome dela pode virar mestre no seu lugar. Depois de assumida, fecha.
    >
    > ⚠ **A permissão de um nó desce para todos os filhos** — regra de filho não
    > revoga a do pai. É por isso que `mesas/$sala` só é escrevível na CRIAÇÃO
    > (`!data.exists()`): qualquer `.write` largo ali em cima entregaria a mesa
    > inteira, fichas e rolagens junto.
    >
-   > ⚠ **O `|| auth.token.email === 'mestret20@gmail.com'` aparece várias vezes,
-   > e é de propósito.** O mestre tem **duas contas com o mesmo e-mail** — a de
-   > senha, criada no console, e a do Google. Provedores diferentes dão **`uid`
-   > diferente**, então a regra reconhece o e-mail além do `uid`: assim funciona
-   > por qualquer um dos dois logins, e a transmissão do 📡 não cai no minuto
-   > entre publicar a regra e assumir a mesa na aba.
-   >
-   > Para apertar depois: veja o `uid` que a aba 🎲 Mesa mostra embaixo do seu
-   > e-mail, acrescente-o à lista de `uid` e aí sim apague as linhas do e-mail.
+   > ⚠ **O `|| auth.token.email === 'mestret20@gmail.com'` em `dados` e `meta`
+   > é o último resquício de nome próprio nas regras** — um paraquedas para a
+   > transmissão do 📡 não cair enquanto o mestre da casa não confirmar por qual
+   > conta transmite (a de senha e a do Google têm **`uid` diferente**, mesmo com
+   > o mesmo e-mail). Troque pelo seu e-mail, ou **apague as duas linhas** depois
+   > de conferir que o 📡 fica verde logado pelo Google.
    >
    > ⚠ **`email_verified == true`, com o `== true` escrito.** Sem ele o console
    > recusa com *"Left operand of && must be boolean"*: cada pedaço de um `&&`

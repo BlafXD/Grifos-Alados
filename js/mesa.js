@@ -8,12 +8,16 @@
 //  Firebase direto. O sync-mestre.js e o sync-jogador.js fazem isso.
 //
 //  Papel de cada um vem do banco, em `mesas/<mesa>/membros/<uid>`:
-//    • mestre  — transmite, aprova pedidos, mexe na mesa;
+//    • mestre  — transmite, mexe na mesa, tira quem não devia estar;
 //    • jogador — escreve nas caixas que são deles;
-//    • ninguém — lê a gazeta, a loja e as bases (isso continua aberto)
-//                e pode PEDIR para entrar.
-//  Quem aprova é o mestre, aqui na aba. Ninguém mais mexe em regra de
-//  banco para incluir gente — era assim até 08/09/2026 e doía.
+//    • ninguém — lê a gazeta, a loja e as bases (isso continua aberto).
+//  Numa mesa de PORTA ABERTA (o padrão), quem entra com o Google vira
+//  jogador num clique. Numa mesa fechada, pede e o mestre aprova aqui.
+//  Ninguém mexe em regra de banco para incluir gente — era assim até
+//  08/09/2026 e doía.
+//
+//  E QUALQUER PESSOA LOGADA cria a própria campanha e a própria mesa,
+//  virando mestre dela. Não há dono do site: há dono de cada mesa.
 //
 //  A sala é a mesma de sempre: `?sala=` no link dos jogadores,
 //  localStorage['grifosAlados.syncSala'] no lado do mestre. Uma mesa
@@ -25,17 +29,16 @@
   const esc = window.GA_esc;
   const SALA_KEY = 'grifosAlados.syncSala';
 
-  // ── QUEM É O DONO DA CASA ────────────────────────────────────────
-  // Só o dono cria campanha e mesa (a chave do Firebase é pública, e sem
-  // isso um estranho criaria salas no banco dele). Jogador nunca cria:
-  // jogador PEDE. Ver docs/mesa-de-verdade.md §6.
-  //  São duas listas porque o mestre tem DUAS contas com o mesmo e-mail:
-  //  a de senha, criada no console, e a do Google — provedores diferentes
-  //  dão uid diferente. Reconhecer as duas evita a dança de descobrir com
-  //  qual delas ele entrou. Quem manda de verdade continua sendo a regra
-  //  do banco, que também aceita as duas.
-  const DONOS  = ['uxcc4lwMDceDqGFRrMwctv1Gi9D2'];
-  const DONOS_EMAIL = ['mestret20@gmail.com'];
+  // ── QUEM CRIA ────────────────────────────────────────────────────
+  //  Qualquer pessoa logada. Entrou com o Gmail, cria a campanha dela,
+  //  escolhe o nome da sala e manda o link — e aquela mesa é dela, com
+  //  ela de mestre. Ninguém aprova ninguém para MESTRAR; o dono da mesa
+  //  é quem a criou (`dono`), e a regra do banco não deixa outro escrever.
+  //  Foi decidido assim em 08/09/2026, trocando o desenho anterior (uma
+  //  lista de uid autorizados) por menos burocracia: ver
+  //  docs/mesa-de-verdade.md §12.
+  //  O preço é o nome da sala ser primeiro-a-chegar: dois mestres não
+  //  podem ter salas com o mesmo id.
 
   let est = {
     pronto:    false,   // o Firebase já disse se havia sessão salva
@@ -127,9 +130,14 @@
     est.mesa = null; est.campanhas = {}; est.mesas = {};
     Object.keys(nomesLigados).forEach(k => delete nomesLigados[k]);
 
-    // o nome da mesa é público de propósito: quem cai no link sabe onde caiu
-    ligar('mesas/' + id + '/nome',       v => { est.mesa = Object.assign({}, est.mesa, { nome: v }); });
-    ligar('mesas/' + id + '/campanhaId', v => { est.mesa = Object.assign({}, est.mesa, { campanhaId: v }); });
+    // Estes quatro são públicos de propósito: quem cai no link precisa
+    // saber onde caiu e se a porta está aberta ANTES de entrar em conta
+    // nenhuma. Nada aqui é conteúdo de jogo — é a placa na porta.
+    ligar('mesas/' + id + '/nome',         v => { est.mesa = Object.assign({}, est.mesa, { nome: v }); });
+    ligar('mesas/' + id + '/campanhaId',   v => { est.mesa = Object.assign({}, est.mesa, { campanhaId: v }); });
+    ligar('mesas/' + id + '/entradaLivre', v => { est.mesa = Object.assign({}, est.mesa, { entradaLivre: v === true }); });
+    ligar('mesas/' + id + '/dono',         v => { est.mesa = Object.assign({}, est.mesa, { dono: v }); });
+    ligar('campanhas', v => { est.campanhas = v || {}; nomesDasMesas(); });
 
     const u = est.usuario;
     if (!u) return;
@@ -150,7 +158,6 @@
     ligar('mesas/' + id + '/membros', v => { est.membros = v || {}; });
     if (est.papel !== 'mestre') return;
     ligar('mesas/' + id + '/pedidos', v => { est.pedidos = v || {}; });
-    ligar('campanhas', v => { est.campanhas = v || {}; nomesDasMesas(); });
   }
 
   // A lista de mesas do seletor sai do ÍNDICE que cada campanha guarda
@@ -244,11 +251,14 @@
   }
 
   // ── CRIAR CAMPANHA E MESA (só o dono) ────────────────────────────
-  function souDono() {
-    const u = est.usuario;
-    if (!u) return false;
-    return DONOS.indexOf(u.uid) >= 0 || DONOS_EMAIL.indexOf((u.email || '').toLowerCase()) >= 0;
-  }
+  function podeCriar() { return !!est.usuario; }
+  // Mesa órfã é a que não tem `dono` — as de antes desta aba, e os nomes
+  // de sala que ninguém usou ainda. Quem chegar logado pode assumi-la.
+  //  O sinal tem de ser PÚBLICO: `membros` só quem já está na mesa lê, e
+  //  para quem está de fora ele vem sempre vazio — deduzir "sem mestre"
+  //  dali fazia o botão de assumir aparecer para qualquer estranho, em
+  //  cima de mesa cheia. O `dono` é lido por todos, justamente para isto.
+  function podeAssumir() { return !!est.usuario && !(est.mesa && est.mesa.dono); }
 
   function criarCampanha(nome) {
     const b = db(), u = est.usuario; if (!b || !u || !nome) return;
@@ -258,11 +268,16 @@
     }).catch(e => { est.erro = recado(e, 'não deu para criar a campanha'); avisar(); });
   }
 
-  function criarMesa(nome, campanhaId) {
+  //  `id` é o nome da sala que vai no link — quem escolhe é o mestre, e
+  //  vale primeiro a chegar. Se já existir, o banco recusa e a gente diz
+  //  isso com todas as letras em vez de deixar ele achar que criou.
+  function criarMesa(nome, campanhaId, idEscolhido) {
     const b = db(), u = est.usuario; if (!b || !u || !nome) return;
-    const id = idDe(nome, est.mesas);
+    const id = idDe(idEscolhido || nome, null);
     const mesa = {
       nome: nome, campanhaId: campanhaId || '',
+      dono: u.uid,
+      entradaLivre: true,          // sem burocracia: quem tem o link entra
       criadaEm: firebase.database.ServerValue.TIMESTAMP,
       membros: {},
     };
@@ -270,7 +285,32 @@
     b.ref('mesas/' + id).set(mesa)
       .then(() => { if (campanhaId) b.ref('campanhas/' + campanhaId + '/mesas/' + id).set(true); })
       .then(() => abrirMesa(id))
-      .catch(e => { est.erro = recado(e, 'não deu para criar a mesa'); avisar(); });
+      .catch(e => {
+        est.erro = ehSemPermissao(e)
+          ? 'a sala "' + id + '" já é de outra mesa — escolha outro nome'
+          : recado(e, 'não deu para criar a mesa');
+        avisar();
+      });
+  }
+  function ehSemPermissao(e) {
+    return (((e && (e.code || e.message)) || '') + '').toLowerCase().indexOf('permission') >= 0;
+  }
+
+  // Entrada livre: o jogador entra sozinho, com um clique, e o mestre vê
+  // o nome dele aparecer na lista. É o caminho normal; a aprovação existe
+  // para quem quiser fechar a mesa (ver `entradaLivre`).
+  function entrarNaMesa() {
+    const b = db(), u = est.usuario; if (!b || !u) return;
+    b.ref('mesas/' + mesaId() + '/membros/' + u.uid).set({
+      nome: nomeDe(u), papel: 'jogador', desde: firebase.database.ServerValue.TIMESTAMP,
+    }).catch(e => { est.erro = recado(e, 'não deu para entrar na mesa'); avisar(); });
+  }
+
+  // Abre ou fecha a porta desta mesa.
+  function mudarEntrada(livre) {
+    const b = db(); if (!b) return;
+    b.ref('mesas/' + mesaId() + '/entradaLivre').set(!!livre)
+      .catch(e => { est.erro = recado(e, 'não deu para mudar a entrada'); avisar(); });
   }
 
   // Nome e campanha de uma mesa QUE JÁ EXISTE. O id da sala não muda —
@@ -304,11 +344,17 @@
   // A mesa que já existia antes desta aba não tem membros, e a regra de
   // membros pede ser mestre — nó cego. O dono da casa pode reivindicar
   // uma mesa sem membros, e só ele; é a regra que garante.
+  //  Em dois tempos, e a ordem importa: primeiro o `membros` (que a regra
+  //  libera enquanto a mesa não tem ninguém), e só depois o `dono` e a
+  //  porta — que exigem já ser mestre. Assumida, a mesa deixa de ser órfã
+  //  e ninguém mais a toma.
   function reivindicar() {
-    const b = db(), u = est.usuario; if (!b || !u) return;
-    b.ref('mesas/' + mesaId() + '/membros/' + u.uid).set({
+    const b = db(), u = est.usuario, id = mesaId(); if (!b || !u) return;
+    b.ref('mesas/' + id + '/membros/' + u.uid).set({
       nome: nomeDe(u), papel: 'mestre', desde: firebase.database.ServerValue.TIMESTAMP,
-    }).catch(e => { est.erro = recado(e, 'não deu para assumir a mesa'); avisar(); });
+    })
+      .then(() => b.ref('mesas/' + id).update({ dono: u.uid, entradaLivre: true }))
+      .catch(e => { est.erro = recado(e, 'não deu para assumir a mesa'); avisar(); });
   }
 
   function recado(e, quando) {
@@ -384,15 +430,26 @@
       return cartao('⏳ Pedido enviado', '<p class="me-p">O mestre precisa aprovar você nesta mesa. ' +
         'Assim que ele aprovar, esta página se atualiza sozinha — não precisa recarregar.</p>');
     }
-    // o dono da casa numa mesa sem dono: assume em vez de pedir
-    if (souDono() && !Object.keys(est.membros).length) {
+    // mesa sem membro nenhum: quem chegar assume, em vez de pedir a quem
+    // não existe. É o caso das salas anteriores a esta aba.
+    if (podeAssumir()) {
       return cartao('🎩 Esta mesa ainda não tem mestre',
-        '<p class="me-p">É a mesa antiga, de antes desta aba. Assuma como mestre para começar.</p>' +
+        '<p class="me-p">Ninguém a assumiu ainda. Assuma como mestre para começar — ' +
+        'a partir daí ela é sua, e é o seu nome que manda nela.</p>' +
         '<div class="me-acoes"><button type="button" class="me-btn me-btn--principal" data-mesa="reivindicar">Assumir esta mesa</button></div>');
     }
+    const nome = esc((est.mesa && est.mesa.nome) || mesaId());
+    // porta aberta: entra com um clique. É o caminho normal.
+    if (est.mesa && est.mesa.entradaLivre) {
+      return cartao('🚪 Entrar nesta mesa',
+        '<p class="me-p">A mesa <strong>' + nome + '</strong> está de porta aberta. ' +
+        'Entre e o seu nome aparece na lista para todo mundo — inclusive para o mestre, ' +
+        'que pode tirar você se for engano.</p>' +
+        '<div class="me-acoes"><button type="button" class="me-btn me-btn--principal" data-mesa="entrar-mesa">Entrar nesta mesa</button></div>');
+    }
     return cartao('✋ Pedir para entrar',
-      '<p class="me-p">Você está vendo a mesa <strong>' + esc((est.mesa && est.mesa.nome) || mesaId()) +
-      '</strong> como visitante. Peça para entrar e o mestre aprova por aqui mesmo.</p>' +
+      '<p class="me-p">Você está vendo a mesa <strong>' + nome +
+      '</strong> como visitante, e ela pede aprovação. Peça para entrar e o mestre aprova por aqui mesmo.</p>' +
       '<div class="me-acoes"><button type="button" class="me-btn me-btn--principal" data-mesa="pedir">Pedir para entrar</button></div>');
   }
 
@@ -447,9 +504,11 @@
   function blocoLink() {
     if (est.papel !== 'mestre') return '';
     const l = linkDosJogadores();
+    const livre = !!(est.mesa && est.mesa.entradaLivre);
     return cartao('🔗 O link desta mesa',
       '<p class="me-p">Mande para os seus jogadores. Quem abrir vê a gazeta, a loja e as bases na hora; ' +
-      'para escrever, entra com o Google e pede para entrar aqui na aba.</p>' +
+      'para escrever, entra com o Google' +
+      (livre ? ' e já entra na mesa por um clique.' : ' e pede para entrar aqui na aba.') + '</p>' +
       '<p class="me-link"><code>' + esc(l) + '</code>' +
       '<button type="button" class="me-btn me-btn--mini" data-mesa="copiar" data-link="' + esc(l) + '">copiar</button></p>');
   }
@@ -457,12 +516,17 @@
   // Opções de campanha para os <select> — sempre com a saída "nenhuma",
   // porque uma mesa pode viver fora de campanha (e as duas primeiras
   // deste projeto nasceram assim, antes de a aba existir).
+  //  Só as campanhas de quem está logado: pôr uma mesa na campanha de
+  //  outra pessoa não é oferta que faça sentido, e o banco recusaria.
   function opcoesDeCampanha(selecionada) {
     const camps = est.campanhas || {};
+    const meu = est.usuario ? est.usuario.uid : '';
     return '<option value="">— sem campanha —</option>' +
-      Object.keys(camps).map(cid => '<option value="' + esc(cid) + '"' +
-        (cid === selecionada ? ' selected' : '') + '>' +
-        esc((camps[cid] || {}).nome || cid) + '</option>').join('');
+      Object.keys(camps)
+        .filter(cid => (camps[cid] || {}).dono === meu || cid === selecionada)
+        .map(cid => '<option value="' + esc(cid) + '"' +
+          (cid === selecionada ? ' selected' : '') + '>' +
+          esc((camps[cid] || {}).nome || cid) + '</option>').join('');
   }
 
   // Esta mesa: nome e campanha. Vale para QUALQUER mestre da mesa — quem
@@ -471,6 +535,7 @@
     if (est.papel !== 'mestre') return '';
     const id = mesaId();
     const nome = (est.mesa && est.mesa.nome) || '';
+    const livre = !!(est.mesa && est.mesa.entradaLivre);
     return cartao('✒ Esta mesa',
       '<div class="me-form">' +
         '<label class="me-campo">Nome<input type="text" id="meNomeMesa" value="' + esc(nome) +
@@ -480,18 +545,34 @@
         '<button type="button" class="me-btn me-btn--principal" data-mesa="salvar-mesa">Salvar</button>' +
       '</div>' +
       '<p class="me-mini">O id da sala continua <code>' + esc(id) + '</code> e não muda: ' +
-      'ele está no link que os seus jogadores já guardaram. O nome é só de tela.</p>');
+      'ele está no link que os seus jogadores já guardaram. O nome é só de tela.</p>' +
+      '<div class="me-form">' +
+        '<span class="me-campo">Entrada</span>' +
+        '<button type="button" class="me-chip' + (livre ? ' me-chip--atual' : '') +
+          '" data-mesa="entrada" data-livre="1">🚪 Porta aberta</button>' +
+        '<button type="button" class="me-chip' + (livre ? '' : ' me-chip--atual') +
+          '" data-mesa="entrada" data-livre="">✋ Com aprovação</button>' +
+      '</div>' +
+      '<p class="me-mini">' + (livre
+        ? 'Quem abrir o link e entrar com o Google já entra como jogador. Você vê o nome na lista e pode tirar quem não devia estar.'
+        : 'Quem abrir o link precisa pedir, e você aprova aqui. Mais trabalho, e a porta fica fechada para quem repassou o link.') +
+      '</p>');
   }
 
+  // O painel de quem MESTRA: as campanhas dela, as mesas de cada uma, e
+  // os dois formulários de criar. Vale para qualquer pessoa logada — é
+  // por aqui que alguém que nunca teve mesa cria a primeira.
   function blocoSalas() {
-    if (!souDono() || est.papel !== 'mestre') return '';
-    const camps = est.campanhas || {};
-    const idsC = Object.keys(camps);
+    if (!podeCriar()) return '';
+    const u = est.usuario;
+    const todas = est.campanhas || {};
+    // as campanhas DELA; as dos outros existem no banco e não são da conta
+    const idsC = Object.keys(todas).filter(cid => (todas[cid] || {}).dono === u.uid);
     const atual = mesaId();
 
     let listaC = idsC.length
       ? '<ul class="me-lista">' + idsC.map(cid => {
-          const c = camps[cid] || {};
+          const c = todas[cid] || {};
           const mesasDaCamp = Object.keys(est.mesas || {}).filter(mid => (est.mesas[mid] || {}).campanhaId === cid);
           const itens = mesasDaCamp.length
             ? mesasDaCamp.map(mid => '<button type="button" class="me-chip' + (mid === atual ? ' me-chip--atual' : '') +
@@ -500,30 +581,32 @@
           return '<li class="me-linha me-linha--camp"><span class="me-linha-nome">' + esc(c.nome || cid) +
             '<em>' + esc(cid) + '</em></span><span class="me-chips">' + itens + '</span></li>';
         }).join('') + '</ul>'
-      : '<p class="me-vazio">Nenhuma campanha ainda. A primeira é o mundo onde tudo acontece.</p>';
+      : '<p class="me-vazio">Nenhuma campanha sua ainda. A primeira é o mundo onde tudo acontece.</p>';
 
-    const opcoes = opcoesDeCampanha('');
-
-    // A mesa de antes das campanhas não está no índice de nenhuma. Em vez
-    // de sumir da tela, ela aparece à parte — e o mestre decide se a
-    // deixa assim ou cria uma campanha para ela.
-    if (!est.mesas[atual]) {
+    // A mesa aberta pode não estar no índice de campanha nenhuma (as que
+    // nasceram antes desta aba). Em vez de sumir da tela, aparece à parte.
+    if (est.papel === 'mestre' && !est.mesas[atual]) {
       listaC += '<p class="me-mini">Fora de campanha: <button type="button" class="me-chip me-chip--atual" ' +
         'data-mesa="abrir" data-id="' + esc(atual) + '">' + esc((est.mesa && est.mesa.nome) || atual) + '</button></p>';
     }
 
-    return cartao('🗺 Campanhas e mesas', listaC +
+    return cartao('🗺 Suas campanhas e mesas', listaC +
       '<div class="me-form">' +
         '<label class="me-campo">Nova campanha<input type="text" id="meCampNome" placeholder="Penitência de Azgher"></label>' +
         '<button type="button" class="me-btn" data-mesa="criar-campanha">Criar campanha</button>' +
       '</div>' +
       '<div class="me-form">' +
         '<label class="me-campo">Nova mesa<input type="text" id="meMesaNome" placeholder="Os Grifos de Valkaria"></label>' +
-        '<label class="me-campo me-campo--sel">na campanha<select id="meMesaCamp">' + opcoes + '</select></label>' +
-        '<button type="button" class="me-btn" data-mesa="criar-mesa">Criar mesa</button>' +
+        '<label class="me-campo me-campo--sel">na campanha<select id="meMesaCamp">' + opcoesDeCampanha('') + '</select></label>' +
       '</div>' +
-      '<p class="me-mini">Uma campanha é o mundo; as mesas são os grupos que jogam nele. ' +
-      'Com uma mesa só, é só criar a campanha e a mesa e esquecer que existem duas coisas.</p>');
+      '<div class="me-form">' +
+        '<label class="me-campo">Nome da sala (vai no link)<input type="text" id="meMesaId" placeholder="deixe em branco para tirar do nome"></label>' +
+        '<button type="button" class="me-btn me-btn--principal" data-mesa="criar-mesa">Criar mesa</button>' +
+      '</div>' +
+      '<p class="me-mini">Uma campanha é o mundo; as mesas são os grupos que jogam nele. Com uma mesa ' +
+      'só, crie as duas e esqueça que existem duas coisas. O <strong>nome da sala</strong> é o que vai ' +
+      'no link dos jogadores (<code>?sala=…</code>) e vale primeiro a chegar — se já for de outra mesa, ' +
+      'eu aviso e você escolhe outro.</p>');
   }
 
   function cabecalho() {
@@ -583,9 +666,11 @@
       if (n) criarCampanha(n);
       return;
     }
+    if (acao === 'entrar-mesa') return entrarNaMesa();
+    if (acao === 'entrada')     return mudarEntrada(btn.dataset.livre === '1');
     if (acao === 'criar-mesa') {
       const n = valorDe('meMesaNome');
-      if (n) criarMesa(n, valorDe('meMesaCamp'));
+      if (n) criarMesa(n, valorDe('meMesaCamp'), valorDe('meMesaId'));
       return;
     }
     if (acao === 'salvar-mesa') return salvarMesa(valorDe('meNomeMesa'), valorDe('meCampDaMesa'));
