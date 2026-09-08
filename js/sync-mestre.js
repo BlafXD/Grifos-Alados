@@ -8,9 +8,13 @@
 //  Sem js/firebase-config.js preenchido (ou sem internet/CDN), tudo
 //  aqui fica quieto e o site segue 100% offline como sempre foi.
 //  Segurança: LER é público (quem tiver o link da sala); ESCREVER na mesa
-//  só o mestre logado, e na caixa de entrada dos jogadores só as contas
-//  Google que ele listou — garantido pelas REGRAS do banco (ver
+//  só quem é MESTRE ou AUXILIAR dela, e na caixa de entrada dos jogadores
+//  só quem é membro — garantido pelas REGRAS do banco (ver
 //  MODO-JOGADOR.md), não por esconder botão.
+//
+//  O login daqui é o mesmo do site inteiro: a conta do Google, pelo
+//  mesa.js. Quem escreve o nome de uma campanha vira mestre dela — não há
+//  usuário de mestre criado à mão no console, como havia até 08/09/2026.
 // ═══════════════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -32,6 +36,8 @@
   let inicializado = false;
   let db = null;
   let usuario = null;
+  let podeTransmitir = false;   // mestre ou auxiliar DESTA sala (vem do GA_Mesa)
+  let papelAqui = null;
   let pendentes = new Set();
   let timer = null;
   let ultimoEnvio = null;     // Date do último push OK
@@ -53,25 +59,44 @@
       // o app é um só para o site inteiro (o mesa.js pode já ter criado)
       if (!(firebase.apps && firebase.apps.length)) firebase.initializeApp(window.GA_FIREBASE);
       db = firebase.database();
-      firebase.auth().onAuthStateChanged(u => {
-        usuario = u;
-        atualizarBotao();
-        if (u) enviarTudo();          // sessão retomada → foto completa
-      });
-      // "Inventário dos jogadores" (caixa livre, escrita por eles em
-      // jogadores.html — ver sync-jogador.js) é um espelho à parte, fora
-      // do pacote normal de 'bases': ninguém que não seja o mestre logado
-      // consegue tocar em dados.bases, então isolamos a escrita deles
-      // aqui, e só ESCUTAMOS (leitura é sempre pública nas regras do
-      // banco). Funciona mesmo sem o mestre estar logado.
-      db.ref('mesas/' + sala() + '/jogadores/inventario').on('value', snap => {
-        aplicarInventarioJogadores(snap.val() || {});
-      }, err => console.warn('[sync] leitura de inventário dos jogadores:', err && err.message));
+      // Conta e papel são assunto do mesa.js: aqui só se escuta. Só
+      // transmite quem é MESTRE ou AUXILIAR desta sala — um espectador
+      // logado não pode publicar a mesa dos outros.
+      if (window.GA_Mesa) {
+        window.GA_Mesa.aoMudar(e => {
+          const antes = podeTransmitir;
+          usuario = e.usuario;
+          podeTransmitir = e.transmite;
+          papelAqui = e.papel;
+          ligarInventario();          // trocou de campanha? a escuta segue junto
+          atualizarBotao();
+          if (podeTransmitir && !antes) enviarTudo();   // virou mestre → foto completa
+        });
+      }
+      ligarInventario();
       inicializado = true;
     } catch (e) {
       ultimoErro = e.message;
       console.warn('[sync] Firebase não inicializou:', e.message);
     }
+  }
+
+  // "Inventário dos jogadores" (caixa livre, escrita por eles em
+  // jogadores.html — ver sync-jogador.js) é um espelho à parte, fora do
+  // pacote normal de 'bases': só quem é membro toca nele, então isolamos
+  // a escrita deles aqui e só ESCUTAMOS (leitura é pública nas regras).
+  //  A escuta é presa a UMA sala; trocar de campanha tem de mudar a
+  //  escuta junto, senão o mestre continuaria vendo o inventário da mesa
+  //  anterior.
+  let salaEscutada = '', refInv = null, cbInv = null;
+  function ligarInventario() {
+    const s = sala();
+    if (!db || s === salaEscutada) return;
+    if (refInv && cbInv) { try { refInv.off('value', cbInv); } catch (e) {} }
+    salaEscutada = s;
+    refInv = db.ref('mesas/' + s + '/jogadores/inventario');
+    cbInv = refInv.on('value', snap => aplicarInventarioJogadores(snap.val() || {}),
+      err => console.warn('[sync] leitura de inventário dos jogadores:', err && err.message));
   }
 
   const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
@@ -189,7 +214,7 @@
   }
 
   function enviarPendentes() {
-    if (!db || !usuario || !pendentes.size) return;
+    if (!db || !podeTransmitir || !pendentes.size) return;
     const pacote = {};
     pendentes.forEach(nome => {
       let v = null;
@@ -221,7 +246,7 @@
   Storage.prototype.setItem = function (k, v) {
     setItemOriginal.apply(this, arguments);
     try {
-      if (this === window.localStorage && NOME_POR_CHAVE[k] && usuario) {
+      if (this === window.localStorage && NOME_POR_CHAVE[k] && podeTransmitir) {
         pendentes.add(NOME_POR_CHAVE[k]);
         clearTimeout(timer);
         timer = setTimeout(enviarPendentes, 2500);   // junta rajadas de edição
@@ -233,6 +258,7 @@
   function estado() {
     if (!temConfig()) return 'config';
     if (!usuario) return 'off';
+    if (!podeTransmitir) return 'sempapel';
     if (ultimoErro) return 'erro';
     return 'on';
   }
@@ -243,10 +269,11 @@
     const e = estado();
     btn.className = 'ga-sync-btn ga-sync-btn--' + e;
     btn.title = {
-      config: 'Mesa ao vivo — falta configurar o Firebase (clique para ver como)',
-      off:    'Mesa ao vivo — desconectado (clique para entrar)',
-      on:     'Mesa ao vivo — transmitindo para os jogadores' + (ultimoEnvio ? ' · último envio ' + ultimoEnvio.toLocaleTimeString('pt-BR') : ''),
-      erro:   'Mesa ao vivo — erro no último envio: ' + ultimoErro,
+      config:   'Mesa ao vivo — falta configurar o Firebase (clique para ver como)',
+      off:      'Mesa ao vivo — desconectado (clique para entrar com o Google)',
+      sempapel: 'Mesa ao vivo — você não mestra esta campanha (clique para escolher a sua)',
+      on:       'Mesa ao vivo — transmitindo para os jogadores' + (ultimoEnvio ? ' · último envio ' + ultimoEnvio.toLocaleTimeString('pt-BR') : ''),
+      erro:     'Mesa ao vivo — erro no último envio: ' + ultimoErro,
     }[e];
     // re-desenha o modal se estiver aberto (login concluiu, envio saiu…)
     const modal = document.querySelector('.ga-sync-modal');
@@ -271,28 +298,51 @@
 
     if (!usuario) {
       return cab + `
-        <p class="ga-sync-p">Entre com o usuário de mestre (criado no Firebase) para começar a transmitir.</p>
-        <label class="ga-sync-campo">E-mail
-          <input type="email" id="gaSyncEmail" autocomplete="username" placeholder="mestre@exemplo.com"></label>
-        <label class="ga-sync-campo">Senha
-          <input type="password" id="gaSyncSenha" autocomplete="current-password"></label>
-        <label class="ga-sync-campo">Sala
-          <input type="text" id="gaSyncSala" value="${esc(sala())}" placeholder="mesa">
-          <span class="ga-sync-mini">os jogadores usam jogadores.html?sala=<em>este nome</em></span></label>
+        <p class="ga-sync-p">Entre com a sua conta do <strong>Google</strong> para mestrar uma
+          campanha e transmitir para os seus jogadores. Não há cadastro nem senha nova:
+          quem escreve o nome da campanha vira o mestre dela.</p>
         ${ultimoErro ? `<p class="ga-sync-erro">⚠ ${esc(ultimoErro)}</p>` : ''}
-        <div class="ga-modal-acoes"><button class="ga-btn-principal" data-sync-entrar>🔑 Entrar e transmitir</button></div>`;
+        <div class="ga-modal-acoes"><button class="ga-btn-principal" data-sync-entrar>🔑 Entrar com o Google</button></div>`;
+    }
+
+    // as campanhas dele, para trocar sem sair do modal
+    const minhas = window.GA_Mesa ? window.GA_Mesa.minhasMesas() : {};
+    const chips = Object.keys(minhas).map(id =>
+      `<button type="button" class="ga-sync-chip${id === sala() ? ' ga-sync-chip--atual' : ''}"
+        data-sync-abrir="${esc(id)}">${esc(minhas[id] || id)}</button>`).join('');
+
+    const criar = `
+      <label class="ga-sync-campo">Nova campanha
+        <input type="text" id="gaSyncNovaCamp" placeholder="Purista">
+        <span class="ga-sync-mini">escreveu o nome, você é o mestre — e o link deles vira
+          jogadores.html?sala=<em>esse nome</em></span></label>
+      ${chips ? `<div class="ga-sync-chips">${chips}</div>` : ''}
+      <div class="ga-modal-acoes"><button class="ga-btn-principal" data-sync-criar>🎩 Criar e mestrar</button></div>`;
+
+    if (!podeTransmitir) {
+      return cab + `
+        <p class="ga-sync-p">Você está como <strong>${esc(usuario.email || 'você')}</strong>, mas
+          ${papelAqui ? 'nesta campanha o seu papel é <strong>' + esc(papelAqui) + '</strong>'
+                      : 'não mestra a campanha <strong>' + esc(sala()) + '</strong>'} —
+          então não há o que transmitir daqui.</p>
+        <p class="ga-sync-p ga-sync-p--dica">Escolha uma campanha sua abaixo, ou crie a sua.</p>
+        ${criar}
+        ${ultimoErro ? `<p class="ga-sync-erro">⚠ ${esc(ultimoErro)}</p>` : ''}
+        <div class="ga-modal-acoes"><button class="ga-btn-sec" data-sync-sair>Sair da conta</button></div>`;
     }
 
     return cab + `
-      <p class="ga-sync-p">✅ Transmitindo como <strong>${esc(usuario.email || 'mestre')}</strong>,
-        sala <strong>${esc(sala())}</strong>.</p>
+      <p class="ga-sync-p">✅ Transmitindo como <strong>${esc(usuario.displayName || usuario.email || 'mestre')}</strong>,
+        campanha <strong>${esc(sala())}</strong>${papelAqui === 'auxiliar' ? ' (você é auxiliar)' : ''}.</p>
       <p class="ga-sync-p">O que os jogadores veem: a <strong>Loja</strong> exibida (com encantamentos
         e pergaminhos), as <strong>Bases</strong> e as <strong>Viagens</strong> — atualizado sozinho
         segundos depois de você mexer. Consultas eles já têm por serem regras.</p>
       <p class="ga-sync-p ga-sync-p--dica">Link deles: <code>jogadores.html?sala=${esc(sala())}</code>
-        no endereço onde o site está publicado.</p>
+        no endereço onde o site está publicado. Quem entra e sai, e quem é jogador ou espectador,
+        se resolve na aba <strong>🎲 Mesa</strong>.</p>
       <p class="ga-sync-p">${ultimoEnvio ? 'Último envio: <strong>' + ultimoEnvio.toLocaleTimeString('pt-BR') + '</strong>' : 'Nenhum envio ainda nesta sessão.'}</p>
       ${ultimoErro ? `<p class="ga-sync-erro">⚠ ${esc(ultimoErro)}</p>` : ''}
+      ${criar}
       <div class="ga-modal-acoes">
         <button class="ga-btn-sec" data-sync-sair>Sair</button>
         <button class="ga-btn-principal" data-sync-enviar>📤 Enviar agora</button>
@@ -304,17 +354,24 @@
     const overlay = window.GA_abrirModal(`<div class="ga-sync-modal">${corpoModal()}</div>`);
     overlay.addEventListener('click', e => {
       if (e.target.closest('[data-sync-entrar]')) {
-        const email = (document.getElementById('gaSyncEmail') || {}).value || '';
-        const senha = (document.getElementById('gaSyncSenha') || {}).value || '';
-        const s = ((document.getElementById('gaSyncSala') || {}).value || '').trim();
-        window.GA_guardar(SALA_KEY, s || 'mesa');
         ultimoErro = '';
-        firebase.auth().signInWithEmailAndPassword(email.trim(), senha)
-          .catch(err => { ultimoErro = err.message; atualizarBotao(); });
+        if (window.GA_Mesa) window.GA_Mesa.entrar();
+        return;
+      }
+      if (e.target.closest('[data-sync-criar]')) {
+        const nome = ((document.getElementById('gaSyncNovaCamp') || {}).value || '').trim();
+        ultimoErro = '';
+        if (nome && window.GA_Mesa) window.GA_Mesa.criarCampanha(nome);
+        return;
+      }
+      const chip = e.target.closest('[data-sync-abrir]');
+      if (chip) {
+        if (window.GA_Mesa) window.GA_Mesa.abrirMesa(chip.dataset.syncAbrir);
+        atualizarBotao();
         return;
       }
       if (e.target.closest('[data-sync-sair]')) {
-        firebase.auth().signOut();
+        if (window.GA_Mesa) window.GA_Mesa.sair();
         return;
       }
       if (e.target.closest('[data-sync-enviar]')) {

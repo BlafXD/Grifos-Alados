@@ -24,28 +24,37 @@ uma hospedagem para o site (**GitHub Pages**).
    ```json
    {
      "rules": {
-       "campanhas": {
-         ".read": true,
-         "$campanha": {
-           ".write": "auth != null && ((!data.exists() && newData.child('dono').val() === auth.uid) || data.child('dono').val() === auth.uid)"
+       "usuarios": {
+         "$uid": {
+           ".read":  "auth != null && $uid === auth.uid",
+           ".write": "auth != null && $uid === auth.uid"
          }
        },
+
        "mesas": {
          "$sala": {
            ".write": "auth != null && !data.exists() && newData.child('dono').val() === auth.uid && newData.child('membros').child(auth.uid).child('papel').val() === 'mestre'",
 
-           "nome":         { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
-           "campanhaId":   { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
-           "entradaLivre": { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
-           "dono":         { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
-           "criadaEm":     { ".read": true },
+           "nome": {
+             ".read":  true,
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists())"
+           },
+           "dono": {
+             ".read":  true,
+             ".write": "auth != null && !root.child('mesas').child($sala).child('dono').exists() && newData.val() === auth.uid"
+           },
+           "entradaLivre": {
+             ".read":  true,
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists())"
+           },
+           "criadaEm": { ".read": true },
 
            "membros": {
              ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || (!data.exists() && !root.child('mesas').child($sala).child('dono').exists()))",
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists())",
              "$uid": {
                ".read":  "auth != null && $uid === auth.uid",
-               ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || ($uid === auth.uid && !data.exists() && auth.token.email_verified == true && root.child('mesas').child($sala).child('entradaLivre').val() === true && newData.child('papel').val() === 'jogador'))"
+               ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists() || ($uid === auth.uid && !data.exists() && auth.token.email_verified == true && root.child('mesas').child($sala).child('entradaLivre').val() === true && newData.child('papel').val() === 'jogador'))"
              }
            },
 
@@ -59,17 +68,17 @@ uma hospedagem para o site (**GitHub Pages**).
 
            "dados": {
              ".read":  true,
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || auth.token.email === 'mestret20@gmail.com')"
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
            },
            "meta": {
              ".read":  true,
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || auth.token.email === 'mestret20@gmail.com')"
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
            },
 
            "jogadores": {
              "inventario": {
                ".read":  true,
-               ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()"
+               ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador'"
              }
            }
          }

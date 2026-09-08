@@ -2522,3 +2522,18 @@ footer {
    jogadores.html). */
 .ga-jogador section:not(#perigos) [data-jog-edita] .ga-rich { cursor: var(--cursor-texto); }
 .ga-jogador .ga-barra-btn--desc { display: none; }
+/* As campanhas do mestre dentro do modal do 📡 — o mesmo chip da aba
+   Mesa, na escala do modal. */
+.ga-sync-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.5rem 0 0.2rem; }
+.ga-sync-chip {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.84rem;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: 999px;
+}
+.ga-sync-chip:hover { background: var(--gold-pale); }
+.ga-sync-chip--atual { color: var(--parchment); background: var(--teal); border-color: var(--teal); }
