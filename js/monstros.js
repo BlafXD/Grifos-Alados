@@ -3307,121 +3307,21 @@
   //  ROLAGENS E LOG
   // ═══════════════════════════════════════════════════════════════
 
-  const MAX_QTD_DADOS  = 100;    // máximo de dados numa única rolagem
-  const MAX_LADOS_DADO = 1000;   // máximo de lados de um dado
+  // O rolador mora em js/rolagens.js (GA_Dados), porque a página dos
+  // jogadores usa exatamente o mesmo — duas cópias divergiriam no
+  // primeiro conserto. Aqui ficam só os apelidos que os chamadores
+  // deste arquivo já usavam.
+  function rolarDado(lados) { return window.GA_Dados.rolar(lados); }
+  function formatarD20(v)   { return window.GA_Dados.formatarD20(v); }
 
-  function rolarDado(lados) { return 1 + Math.floor(Math.random() * lados); }
-
-  // Formata o valor de um d20: 20 natural fica verde, 1 natural fica vermelho.
-  function formatarD20(v) {
-    if (v === 20) return '<span class="mz-d20-max">20</span>';
-    if (v === 1)  return '<span class="mz-d20-min">1</span>';
-    return String(v);
-  }
-
-  // ── ROLADOR DE EXPRESSÕES (chat) ─────────────────────────────────
-  // Entende dados (XdY), números e os operadores + - * / com parênteses.
-  // Espaços são ignorados, então "1d20+3" e "1d20 + 3" funcionam igual.
-  function tokenizar(txt) {
-    const s = txt.replace(/\s+/g, '').toLowerCase();
-    if (s === '') throw new Error('Digite uma expressão.');
-
-    const re = /(\d*d\d+)|(\d+)|([+\-*/()])/y;
-    const tokens = [];
-    let m, pos = 0;
-    while ((m = re.exec(s)) !== null) {
-      pos = re.lastIndex;                           // posição já consumida
-      if (m[1]) {                                   // dado XdY
-        const partes = m[1].split('d');
-        const qtd   = partes[0] === '' ? 1 : parseInt(partes[0], 10);
-        const lados = parseInt(partes[1], 10);
-        if (qtd < 1 || qtd > MAX_QTD_DADOS)
-          throw new Error('Quantidade de dados deve ser de 1 a ' + MAX_QTD_DADOS + '.');
-        if (lados < 2 || lados > MAX_LADOS_DADO)
-          throw new Error('Tipo de dado inválido (use d2 até d' + MAX_LADOS_DADO + ').');
-        const rolls = [];
-        for (let i = 0; i < qtd; i++) rolls.push(rolarDado(lados));
-        rolls.sort((a, b) => b - a);                // ordem decrescente
-        tokens.push({ tipo: 'dado', qtd: qtd, lados: lados, rolls: rolls,
-                      total: rolls.reduce((a, b) => a + b, 0) });
-      } else if (m[2]) {
-        tokens.push({ tipo: 'num', valor: parseInt(m[2], 10) });
-      } else if (m[3] === '(') {
-        tokens.push({ tipo: 'abre' });
-      } else if (m[3] === ')') {
-        tokens.push({ tipo: 'fecha' });
-      } else {
-        tokens.push({ tipo: 'op', op: m[3] });
-      }
-    }
-    if (pos !== s.length)
-      throw new Error('Não entendi "' + s.slice(pos, pos + 8) + '"…');
-    if (tokens.length === 0) throw new Error('Digite uma expressão.');
-    return tokens;
-  }
-
-  // Avalia os tokens respeitando a ordem matemática (× e ÷ antes de + e −).
-  function avaliar(tokens) {
-    let i = 0;
-    function expr() {
-      let v = termo();
-      while (tokens[i] && tokens[i].tipo === 'op' &&
-             (tokens[i].op === '+' || tokens[i].op === '-')) {
-        const op = tokens[i++].op;
-        const r = termo();
-        v = (op === '+') ? v + r : v - r;
-      }
-      return v;
-    }
-    function termo() {
-      let v = fator();
-      while (tokens[i] && tokens[i].tipo === 'op' &&
-             (tokens[i].op === '*' || tokens[i].op === '/')) {
-        const op = tokens[i++].op;
-        const r = fator();
-        if (op === '/') {
-          if (r === 0) throw new Error('Divisão por zero.');
-          v = v / r;
-        } else { v = v * r; }
-      }
-      return v;
-    }
-    function fator() {
-      const t = tokens[i];
-      if (!t) throw new Error('Expressão incompleta.');
-      if (t.tipo === 'num')  { i++; return t.valor; }
-      if (t.tipo === 'dado') { i++; return t.total; }
-      if (t.tipo === 'op' && t.op === '-') { i++; return -fator(); }
-      if (t.tipo === 'op' && t.op === '+') { i++; return  fator(); }
-      if (t.tipo === 'abre') {
-        i++;
-        const v = expr();
-        if (!tokens[i] || tokens[i].tipo !== 'fecha')
-          throw new Error('Parêntese não fechado.');
-        i++;
-        return v;
-      }
-      throw new Error('Expressão malformada.');
-    }
-    const resultado = expr();
-    if (i !== tokens.length) throw new Error('Expressão malformada.');
-    return resultado;
-  }
-
-  // Monta a string de detalhamento da rolagem (com os dados coloridos).
-  function montarDetalhe(tokens) {
-    const simbolo = { '+': '+', '-': '−', '*': '×', '/': '÷' };
-    return tokens.map(t => {
-      if (t.tipo === 'num')   return String(t.valor);
-      if (t.tipo === 'op')    return simbolo[t.op] || t.op;
-      if (t.tipo === 'abre')  return '(';
-      if (t.tipo === 'fecha') return ')';
-      if (t.tipo === 'dado') {
-        const vals = t.rolls.map(r => t.lados === 20 ? formatarD20(r) : r).join(', ');
-        return `${t.qtd}d${t.lados} (${vals})`;
-      }
-      return '';
-    }).join(' ');
+  // Toda rolagem passa por aqui: entra no log local do mestre E vai para
+  // a mesa, se ele estiver numa. Quem não está numa mesa não perde nada
+  // — o log local é o de sempre.
+  function registrarLog(entrada) {
+    dados.log.push(entrada);
+    while (dados.log.length > MAX_LOG) dados.log.shift();
+    try { window.GA_Rolagens && window.GA_Rolagens.publicar(entrada); }
+    catch (e) { console.warn('[monstros] não deu para publicar a rolagem:', e && e.message); }
   }
 
   // Processa o que foi digitado no chat e registra a rolagem no log.
@@ -3430,13 +3330,9 @@
     const txt = (input.value || '').trim();
     if (txt === '') return;
     try {
-      const tokens   = tokenizar(txt);
-      const total    = avaliar(tokens);
-      const totalFmt = Number.isInteger(total) ? total : Math.round(total * 100) / 100;
-      const detalhe  = `${montarDetalhe(tokens)} = <strong>${totalFmt}</strong>`;
+      const r = window.GA_Dados.avaliar(txt);
 
-      dados.log.push({ criatura: '💬 Rolador', pericia: txt, formula: detalhe, tipo: 'chat' });
-      while (dados.log.length > MAX_LOG) dados.log.shift();
+      registrarLog({ criatura: '💬 Rolador', pericia: txt, formula: r.detalhe, tipo: 'chat' });
       salvar();
       renderLog();
 
@@ -3467,13 +3363,12 @@
     const sinal    = mod < 0 ? '−' : '+';
     const formula  = `1d20 (${formatarD20(dado)}) ${sinal} ${Math.abs(mod)} = <strong>${total}</strong>`;
 
-    dados.log.push({
+    registrarLog({
       criatura: cr.nome || '(criatura sem nome)',
       pericia:  info.rotulo + (sub === 'atual' ? ' · Atual' : ' · Padrão'),
       formula:  formula,
       tipo:     'pericia',
     });
-    while (dados.log.length > MAX_LOG) dados.log.shift();
 
     salvar();
     renderLog();
@@ -3496,13 +3391,12 @@
       formula = `1d100 (<strong>${d}</strong>) ${vivo ? '≤ 50 → SOBREVIVEU' : '&gt; 50 → MORTA'}`;
     }
     cr.statusMorte = { vivo: vivo, detalhe: detalhe };
-    dados.log.push({
+    registrarLog({
       criatura: cr.nome || '(criatura sem nome)',
       pericia:  'Teste de morte · ' + (papel.charAt(0).toUpperCase() + papel.slice(1)),
       formula:  formula,
       tipo:     'morte',
     });
-    while (dados.log.length > MAX_LOG) dados.log.shift();
     salvar();
     render();
     renderLog();
@@ -3512,13 +3406,12 @@
   // Encontro aleatório (dado conforme o barulho), ideia de masmorra
   // (Tabela 6-2) e descanso (2 rolagens). Tudo vai para o log lateral.
   function _masLog(c, pericia, formula) {
-    dados.log.push({
+    registrarLog({
       criatura: '🏰 ' + (c.nome || 'Masmorra'),
       pericia:  pericia,
       formula:  formula,
       tipo:     'masmorra',
     });
-    while (dados.log.length > MAX_LOG) dados.log.shift();
   }
 
   function rolarEncontroMasmorra(alvo) {
@@ -3600,13 +3493,12 @@
       cond: cond,
       aplicada: false,
     };
-    dados.log.push({
+    registrarLog({
       criatura: cr.nome || '(criatura sem nome)',
       pericia: `Efeito crítico · ${esc(_rotTipo(tipo))}`,
       formula: `${esc(locRot)}: ${esc(cell.txt)}`,
       tipo: 'critico',
     });
-    while (dados.log.length > MAX_LOG) dados.log.shift();
     salvar(); render(); renderLog();
   }
 
@@ -3624,13 +3516,12 @@
       cond: [],
       aplicada: false,
     };
-    dados.log.push({
+    registrarLog({
       criatura: cr.nome || '(criatura sem nome)',
       pericia: `Falha crítica · 1d100 (${d})`,
       formula: esc(efeito),
       tipo: 'critico',
     });
-    while (dados.log.length > MAX_LOG) dados.log.shift();
     salvar(); render(); renderLog();
   }
 

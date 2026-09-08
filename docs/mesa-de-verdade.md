@@ -458,3 +458,66 @@ campanhas dele, para trocar sem sair do modal.
 - o `js/firebase-config.js` continua igual;
 - o provedor **E-mail/senha** do Firebase não é mais necessário para nada; pode
   ficar ligado como paraquedas do `file://`, mas ninguém o usa no fluxo normal.
+
+### Anotado para depois: Combates por campanha
+
+Ele quer **sub-abas na aba ⚔ Combates, uma por campanha em que ele é mestre**.
+Hoje as sessões e cenas moram todas num blob só (`grifosAlados.monstros`), sem
+saber de que mesa são — o que já incomoda com duas campanhas rodando.
+
+É trabalho **local**, não de banco: o combate preparado continua sendo dele e do
+navegador dele. O caminho provável é um campo `mesa` em cada sessão, com a barra
+de sub-abas filtrando por ela (o mesmo desenho das campanhas nas Notícias).
+
+Vale fazer **antes da etapa 3**: a iniciativa nasce da cena do Combates, e é
+mais limpo puxar "as criaturas da cena aberta desta campanha" do que descobrir
+depois que a cena não sabe a que mesa pertence.
+
+---
+
+## 15. Etapa 2 — rolagens ao vivo (8 de setembro de 2026)
+
+Feita. Toda rolagem do site aparece na tela de quem está na mesa, em segundos.
+
+### O que entrou
+
+| Arquivo | O quê |
+|---|---|
+| `js/rolagens.js` (novo) | duas coisas: **`GA_Dados`**, o rolador; e **`GA_Rolagens`**, o log ao vivo + o painel flutuante |
+| `css/rolagens_style.css` (novo) | o painel, no canto de baixo à esquerda |
+| `js/monstros.js` | **−131 linhas**: a cópia do rolador saiu daqui; e todo registro no log passa por `registrarLog()`, que também publica na mesa |
+| `index.html`, `jogadores.html` | o módulo novo, logo depois do `statblock.js` |
+| regras | o nó `rolagens`, **só de acrescentar** |
+
+**O rolador virou compartilhado, e isso era o ponto.** Ele morava dentro do
+`monstros.js` (que só o `index.html` carrega) e a página dos jogadores precisava
+do MESMO — entender `1d20+3`, parênteses, o teto de 100 dados, o 20 verde e o 1
+vermelho. Duas cópias divergiriam no primeiro conserto, então ele saiu para
+`GA_Dados` e o Combates passou a chamá-lo. O chat de rolagens continua idêntico:
+`2d6 + 3 * 2` devolve `2d6 (6, 1) + 3 × 2 = 13`, e `1d20 +` ainda responde
+"⚠ Expressão incompleta".
+
+**Um só ponto de registro.** Os sete lugares do Combates que empurravam no log
+(`perícia`, chat, teste de morte, masmorra…) agora chamam `registrarLog()`, que
+guarda no log local **e** publica na mesa. Quem não está numa mesa não perde
+nada: o log local é o de sempre.
+
+**A rolagem é só de acrescentar.** A regra do banco recusa editar ou apagar uma
+rolagem já feita — ninguém "conserta" um 1 natural. Só o mestre limpa o log
+inteiro, pelo 🗑 do painel.
+
+**O painel fica no canto de baixo à ESQUERDA**, porque o 📡 mora no canto
+direito e o selinho da página dos jogadores fica embaixo, no meio. Recolhe com
+um clique no título, e lembra o estado. Espectador vê e não rola.
+
+### A armadilha do dia
+
+O `js/monstros.js` está em **CRLF**, e os scripts de troca em massa procuravam
+com `\n`. Nenhuma busca de mais de uma linha casava, sem erro nenhum — só
+"NÃO ACHEI". Quem for mexer em arquivo grande deste projeto por script:
+normalize para `\n`, faça a troca, e devolva o CRLF na hora de gravar.
+
+E a segunda: um `replace` global de `dados.log.push(` por `registrarLog(`
+pegou **a linha de dentro da própria `registrarLog`**, criando uma recursão
+infinita que o `node --check` não vê. Troca global em cima de código que você
+acabou de inserir pede uma conferida no que foi inserido.
