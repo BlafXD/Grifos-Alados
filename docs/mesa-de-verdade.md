@@ -521,3 +521,36 @@ E a segunda: um `replace` global de `dados.log.push(` por `registrarLog(`
 pegou **a linha de dentro da própria `registrarLog`**, criando uma recursão
 infinita que o `node --check` não vê. Troca global em cima de código que você
 acabou de inserir pede uma conferida no que foi inserido.
+
+---
+
+## 16. Combates por campanha (8 de setembro de 2026)
+
+Feito, e é **tudo local**: o combate que o mestre prepara continua no navegador
+dele. A campanha aqui é só a etiqueta que separa as mesas que ele mestra.
+
+**Cada sessão tem uma dona** (`sessao.mesa`, o id da sala). Uma barra de
+sub-abas no topo da aba ⚔ filtra por ela: **Todas**, uma por campanha, e
+**Sem campanha** quando houver sessões de antes desta divisão — nada se perde, e
+o seletor no cabeçalho de cada sessão adota uma órfã com um clique.
+
+A lista de campanhas sai do `GA_Mesa.minhasMesas()`. **Uma sessão pode apontar
+para uma campanha que este navegador não conhece** (backup restaurado de outro
+aparelho): ela entra na barra pelo id mesmo, senão a sessão ficaria inalcançável.
+
+**Sessão nova nasce na campanha aberta** — ou, em "Todas", na mesa que o 📡 está
+transmitindo.
+
+**O índice de cenas e o painel de combate seguem o mesmo filtro.** O painel é a
+mesa de agora; ficha de outra campanha ali seria engano na hora do combate.
+
+### A armadilha desta etapa
+
+Todo `data-s` do HTML é um **índice absoluto** em `dados.sessoes`. Filtrar a
+lista sem cuidado renumeraria tudo e faria o mestre editar a sessão errada — a
+de outra campanha. Por isso `sessoesVisiveis()` devolve `{s, si}` com o índice
+ORIGINAL, e o `render` usa esse `si`.
+
+O teste que fecha isso: com o filtro em Nuevo Sol, renomear a única sessão
+visível (que é a de índice 1) tem de mudar `sessoes[1]`, e não `sessoes[0]`.
+Conferido.
