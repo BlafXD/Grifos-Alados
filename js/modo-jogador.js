@@ -37,12 +37,18 @@
     '.loja-aba, .loja-busca, .cr-busca, .vg-toggle, .bs-toggle, .vg-regras, ' +
     '[data-jog-edita]';
 
+  // Seções onde a trava NÃO vale. Consultas é material de regra, e a Mesa
+  // é de todo mundo: é lá que o jogador entra na conta, pede para entrar e
+  // vê quem está na mesa. Travar a Mesa junto com o resto deixava os
+  // botões dela mudos — o que acontecia até 08/09/2026.
+  const SECOES_LIVRES = { perigos: true, mesa: true };
+
   function bloquearClique(e) {
     const t = e.target;
     if (!(t instanceof Element)) return;
     if (t.closest(PERMITIDOS)) return;
     const sec = t.closest('section');
-    if (!sec || sec.id === 'perigos') return;        // Consultas: à vontade
+    if (!sec || SECOES_LIVRES[sec.id]) return;
     if (t.closest('button, [data-acao], [data-rich-desc], [data-aj-toggle], ' +
                   '[data-log-ver], [data-log-limpar], select, input, label, [contenteditable]')) {
       e.preventDefault();
@@ -56,7 +62,7 @@
     if (t.closest('.loja-busca, .cr-busca')) return;   // buscar pode, sempre
     if (t.closest('[data-jog-edita]')) return;         // as caixas que são deles
     const sec = t.closest('section');
-    if (!sec || sec.id === 'perigos') return;
+    if (!sec || SECOES_LIVRES[sec.id]) return;
     e.stopPropagation();                             // nenhum handler salva nada
   }
 
