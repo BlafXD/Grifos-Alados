@@ -285,6 +285,9 @@
     dados.painelAmbientes = normalizarAmbientes(dados.painelAmbientes);
     if (typeof dados.cenaNarrada !== 'string') dados.cenaNarrada = null;
     if (dados.sessaoNarrada !== undefined) delete dados.sessaoNarrada;   // campo antigo (era por sessão)
+    // qual campanha está aberta na barra de sub-abas ('' = todas,
+    // 'sem' = as sessões que ainda não têm dona)
+    if (typeof dados.campanhaAberta !== 'string') dados.campanhaAberta = '';
     if (typeof dados.combateViagem !== 'boolean') dados.combateViagem = false;
     if (typeof dados.combateViagemId !== 'string') dados.combateViagemId = null;   // viagem ligada ao combate
 
@@ -292,6 +295,9 @@
     // (criaturas antigas não tinham os deslocamentos Escalada/Voo/etc.)
     dados.sessoes.forEach(s => {
       if (!Array.isArray(s.cenas)) s.cenas = [];
+      // a campanha da sessão (id da sala). As de antes disto ficam sem
+      // dona e aparecem em "Sem campanha" — nada se perde.
+      if (typeof s.mesa !== 'string') s.mesa = '';
       if (typeof s.notas !== 'string') s.notas = '';
       // notasHtml = versão RICA (com grifo) das anotações; notas continua
       // sendo o espelho em texto puro (usado no export .txt). Migração
@@ -370,6 +376,50 @@
   }
   function novaCena(n)   { return { id: uid('c'), aberto: true, nome: 'Cena ' + n, notas: '', notasHtml: '', notasMin: false, criaturas: [], perigos: [], ambientes: [], masmorra: novaMasmorra() }; }
   function novaSessao(n) { return { id: uid('s'), aberto: true, nome: 'Sessão ' + n, notas: '', notasHtml: '', notasMin: false, cenas: [] }; }
+
+  // ── COMBATES POR CAMPANHA ────────────────────────────────────────
+  //  Cada sessão pertence a uma campanha — o id da sala da aba 🎲 Mesa.
+  //  É tudo LOCAL: o combate que o mestre prepara continua sendo dele e
+  //  deste navegador; a campanha aqui é só a etiqueta que separa as
+  //  mesas que ele mestra, para não misturar duas na mesma tela.
+  function campanhasConhecidas() {
+    const mapa = {};
+    try {
+      const minhas = window.GA_Mesa ? window.GA_Mesa.minhasMesas() : {};
+      Object.keys(minhas).forEach(id => { mapa[id] = minhas[id] || id; });
+    } catch (e) {}
+    // uma sessão pode apontar para uma campanha que ESTE navegador não
+    // conhece (backup restaurado de outro aparelho): entra pelo id mesmo,
+    // senão ela sumiria da barra e a sessão ficaria inalcançável
+    dados.sessoes.forEach(s => { if (s.mesa && !mapa[s.mesa]) mapa[s.mesa] = s.mesa; });
+    return mapa;
+  }
+  function quantasSem() { return dados.sessoes.filter(s => !s.mesa).length; }
+
+  // Devolve {s, si} com o índice ORIGINAL: todo data-s do HTML aponta
+  // para dados.sessoes, então filtrar não pode renumerar nada.
+  function sessoesVisiveis() {
+    const f = dados.campanhaAberta || '';
+    const lista = [];
+    dados.sessoes.forEach((s, si) => {
+      if (f === '' || (f === 'sem' ? !s.mesa : s.mesa === f)) lista.push({ s: s, si: si });
+    });
+    return lista;
+  }
+
+  function construirAbasCampanha() {
+    const camps = campanhasConhecidas();
+    const ids = Object.keys(camps);
+    if (!ids.length) return '';        // sem campanha nenhuma, a barra não teria o que dizer
+    const f = dados.campanhaAberta || '';
+    const aba = (valor, rotulo, qtd) =>
+      `<button class="mz-camp-aba ${f === valor ? 'mz-camp-aba--ativa' : ''}" data-acao="aba-campanha"
+               data-camp="${esc(valor)}">${esc(rotulo)}<span class="mz-camp-cont">${qtd}</span></button>`;
+    let html = aba('', 'Todas', dados.sessoes.length);
+    ids.forEach(id => { html += aba(id, camps[id], dados.sessoes.filter(x => x.mesa === id).length); });
+    if (quantasSem()) html += aba('sem', 'Sem campanha', quantasSem());
+    return `<div class="mz-camp-abas">${html}</div>`;
+  }
 
   // ── DUPLICAR SESSÃO / CENA ───────────────────────────────────────
   // Cópia INDEPENDENTE: clona tudo (notas, ambientes, masmorra, fichas)
@@ -725,8 +775,14 @@
       if (dados.sessoes.length === 0) {
         html += `<p class="mz-vazio">Nenhuma sessão ainda. Crie a primeira para começar a montar seus combates.</p>`;
       } else {
+        html += construirAbasCampanha();
         html += construirNav();
-        dados.sessoes.forEach((s, si) => { html += construirSessao(s, si); });
+        const visiveis = sessoesVisiveis();
+        if (!visiveis.length) {
+          html += `<p class="mz-vazio">Nenhuma sessão nesta campanha. Crie uma, ou volte para "Todas".</p>`;
+        } else {
+          visiveis.forEach(v => { html += construirSessao(v.s, v.si); });
+        }
       }
       html += `<button class="mz-add mz-add--sessao" data-acao="add-sessao">＋ Adicionar Sessão</button>`;
     }
@@ -740,9 +796,12 @@
   // ── PAINEL DE COMBATE (fichas lado a lado, sem limite) ───────────
   // Lista plana de todas as fichas (criaturas E perigos) com seus
   // índices atuais. tipo: 'cr' = criatura, 'pg' = perigo complexo.
+  // Só as fichas da campanha aberta: o painel é a mesa de agora, e
+  // criatura de outra campanha ali seria engano na hora do combate.
   function catalogoFichas() {
     const lista = [];
-    dados.sessoes.forEach((s, si) => {
+    sessoesVisiveis().forEach(v => {
+      const s = v.s, si = v.si;
       s.cenas.forEach((c, ci) => {
         c.criaturas.forEach((cr, idx) => {
           lista.push({ id: cr.id, tipo: 'cr', si: si, ci: ci, idx: idx, sessao: s.nome, cena: c.nome, nome: cr.nome });
@@ -968,7 +1027,8 @@
     let indice = '';
     if (indiceAberto) {
       let grupos = '';
-      dados.sessoes.forEach(s => {
+      sessoesVisiveis().forEach(v => {
+        const s = v.s;
         const cenas = s.cenas.map(c =>
           `<button class="mz-idx-link mz-idx-link--cena" data-acao="ir-cena" data-sid="${esc(s.id)}" data-cid="${esc(c.id)}">▪ ${esc(c.nome || 'Cena')}</button>`
         ).join('');
@@ -1006,6 +1066,16 @@
     const btnCena =
       `<button class="mz-add mz-add--cena" data-acao="add-cena" data-s="${si}">＋ Adicionar Cena</button>`;
 
+    // a que campanha esta sessão pertence (só aparece se houver alguma)
+    const camps = campanhasConhecidas();
+    const idsCamp = Object.keys(camps);
+    const selCampanha = idsCamp.length ? `
+          <select class="mz-camp-sel" data-campo="mesa-sessao" data-s="${si}"
+                  title="A campanha desta sessão">
+            <option value="">— sem campanha —</option>
+            ${idsCamp.map(id => `<option value="${esc(id)}"${s.mesa === id ? ' selected' : ''}>${esc(camps[id])}</option>`).join('')}
+          </select>` : '';
+
     const semSubir  = (si === 0)                        ? 'disabled' : '';
     const semDescer = (si === dados.sessoes.length - 1) ? 'disabled' : '';
 
@@ -1018,6 +1088,7 @@
           <input class="mz-nome mz-nome--sessao" type="text" value="${esc(s.nome)}"
                  data-campo="nome-sessao" data-s="${si}" placeholder="Nome da sessão">
           <span class="mz-contador">${s.cenas.length} cena${s.cenas.length !== 1 ? 's' : ''}</span>
+          ${selCampanha}
           <button class="mz-mover" data-acao="subir-sessao" data-s="${si}" ${semSubir} title="Mover para cima">↑</button>
           <button class="mz-mover" data-acao="descer-sessao" data-s="${si}" ${semDescer} title="Mover para baixo">↓</button>
           <button class="mz-mover mz-levar" data-acao="dup-sessao" data-s="${si}"
@@ -2509,7 +2580,17 @@
     }
 
     if (acao === 'add-sessao') {
-      dados.sessoes.push(novaSessao(dados.sessoes.length + 1));
+      const nova = novaSessao(dados.sessoes.length + 1);
+      // nasce na campanha que está aberta; em "Todas", na mesa que o
+      // mestre tem aberta agora
+      const f = dados.campanhaAberta || '';
+      nova.mesa = (f && f !== 'sem') ? f
+        : (window.GA_Mesa && window.GA_Mesa.souMestre() ? window.GA_Mesa.mesaId() : '');
+      dados.sessoes.push(nova);
+      salvar(); render(); return;
+    }
+    if (acao === 'aba-campanha') {
+      dados.campanhaAberta = alvo.dataset.camp || '';
       salvar(); render(); return;
     }
     if (acao === 'add-cena') {
@@ -6049,6 +6130,16 @@
     lerFicha: function (texto) { return parsearFicha(texto); }
   };
 
+  // Trocar a campanha de uma sessão pelo seletor do cabeçalho.
+  function aoTrocarCampanhaDaSessao(e) {
+    const sel = e.target.closest('select[data-campo="mesa-sessao"]');
+    if (!sel) return;
+    const s = dados.sessoes[parseInt(sel.dataset.s, 10)];
+    if (!s) return;
+    s.mesa = sel.value || '';
+    salvar(); render();
+  }
+
   // ── INICIALIZAÇÃO ────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     const secao = document.getElementById('monstros');
@@ -6063,6 +6154,7 @@
     secao.addEventListener('click',     aoClicar);
     secao.addEventListener('input',     aoDigitar);
     secao.addEventListener('change',    aoEscolherBackup);
+    secao.addEventListener('change',    aoTrocarCampanhaDaSessao);
     secao.addEventListener('paste',     aoColar);
     secao.addEventListener('mousedown', aoMousedownToolbar);
     secao.addEventListener('keydown',   aoTeclar);

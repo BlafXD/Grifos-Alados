@@ -2869,3 +2869,60 @@
   border-color: var(--rust);
   color: var(--parchment);
 }
+
+/* ── SUB-ABAS DE CAMPANHA (monstros.js) ────────────────────────────
+   Uma aba por campanha em que o mestre mestra, mais "Todas" e, quando
+   houver, "Sem campanha" (as sessões de antes desta divisão). Mesmo
+   desenho das abas de campanha das Notícias — é a mesma ideia. */
+.mz-camp-abas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 0 0.75rem;
+  margin-bottom: 0.6rem;
+  border-bottom: 3px double var(--gold-dim);
+}
+.mz-camp-aba {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--raio);
+  padding: 0.45rem 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.mz-camp-aba:hover { background: var(--parchment3); color: var(--ink); }
+.mz-camp-aba--ativa {
+  color: var(--parchment);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.mz-camp-cont {
+  font-size: 0.62rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--gold-pale);
+}
+.mz-camp-aba--ativa .mz-camp-cont { background: var(--gold-light); }
+
+/* o seletor de campanha no cabeçalho de cada sessão */
+.mz-camp-sel {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.8rem;
+  max-width: 11rem;
+  padding: 0.12rem 0.3rem;
+  color: var(--ink-faded);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.mz-camp-sel:hover { border-color: var(--ink-faded); color: var(--ink); }
