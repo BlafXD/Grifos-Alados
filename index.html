@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="css/tempo_style.css">
   <link rel="stylesheet" href="css/fichas-prontas_style.css">
   <link rel="stylesheet" href="css/criar-ameaca_style.css">
+  <link rel="stylesheet" href="css/mesa_style.css">
 </head>
 <body>
 
@@ -57,6 +58,7 @@
     <a href="#" class="nav-link" data-section="fichas">📖 Fichas</a>
     <a href="#" class="nav-link" data-section="bases">🏰 Bases</a>
     <a href="#" class="nav-link" data-section="tempo">⏳ Tempo</a>
+    <a href="#" class="nav-link" data-section="mesa">🎲 Mesa</a>
   </div>
 </nav>
 
@@ -376,6 +378,15 @@
   </div>
 </section>
 
+<!-- ══════ MESA (campanhas, salas, papeis) ══════ -->
+<section id="mesa">
+  <div class="wrapper">
+    <div id="mesa-content">
+      <!-- Populado pelo mesa.js -->
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   ✦ GRIFOS ALADOS · ARTON · ANO DE <span id="mh-ano-rodape">1424</span> · TODOS OS DIREITOS RESERVADOS À COROA ✦
@@ -465,6 +476,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js" defer></script>
 <script src="js/firebase-config.js" defer></script>
+<script src="js/mesa.js" defer></script>
 <script src="js/sync-mestre.js" defer></script>
 
 </body>

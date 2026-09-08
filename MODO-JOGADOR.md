@@ -17,20 +17,54 @@ uma hospedagem para o site (**GitHub Pages**).
 2. **Criar projeto** → nome `grifos-alados` (pode desligar o Google Analytics) → criar.
 3. No menu lateral: **Criação (Build) → Realtime Database** → **Criar banco de dados**
    → local `United States` → comece em **modo bloqueado** → ativar.
-4. Ainda no Realtime Database, abra a aba **Regras (Rules)**, apague o que estiver lá
-   e cole isto — trocando `SEU-EMAIL@AQUI.com` pelo seu (o mesmo do passo 5) e
-   `JOGADOR1@gmail.com`, `JOGADOR2@gmail.com`… pelos **Gmails dos seus jogadores**:
+4. Ainda no Realtime Database, abra a aba **Regras (Rules)**, apague o que estiver
+   lá e cole isto — trocando o `uid` pelo SEU (Authentication → Users) e o e-mail
+   pelo do seu usuário de mestre:
 
    ```json
    {
      "rules": {
+       "campanhas": {
+         ".read": "auth != null",
+         "$campanha": {
+           ".write": "auth != null && auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2'"
+         }
+       },
        "mesas": {
          "$sala": {
-           ".read": true,
-           ".write": "auth != null && auth.token.email === 'SEU-EMAIL@AQUI.com'",
+           ".write": "auth != null && !data.exists() && auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' && newData.child('membros').child(auth.uid).child('papel').val() === 'mestre'",
+
+           "nome":       { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
+           "campanhaId": { ".read": true, ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'" },
+           "criadaEm":   { ".read": true },
+
+           "membros": {
+             ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || (!data.exists() && auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2'))",
+             "$uid": { ".read": "auth != null && $uid === auth.uid" }
+           },
+
+           "pedidos": {
+             ".read": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'",
+             "$uid": {
+               ".read":  "auth != null && $uid === auth.uid",
+               ".write": "auth != null && ((auth.uid === $uid && auth.token.email_verified == true) || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre')"
+             }
+           },
+
+           "dados": {
+             ".read":  true,
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || auth.token.email === 'mestret20@gmail.com')"
+           },
+           "meta": {
+             ".read":  true,
+             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || auth.token.email === 'mestret20@gmail.com')"
+           },
+
            "jogadores": {
              "inventario": {
-               ".write": "auth != null && auth.token.email_verified == true && (auth.token.email === 'SEU-EMAIL@AQUI.com' || auth.token.email === 'JOGADOR1@gmail.com' || auth.token.email === 'JOGADOR2@gmail.com')"
+               ".read":  true,
+               ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).exists() || auth.token.email === 'mestret20@gmail.com')"
              }
            }
          }
@@ -39,51 +73,62 @@ uma hospedagem para o site (**GitHub Pages**).
    }
    ```
 
-   → **Publicar**. (Tradução: qualquer um com o link **lê** tudo — isso é de
-   propósito, para o link continuar servindo de "abriu, está na mesa". Só você,
-   logado, **escreve** na mesa; e em `jogadores/inventario` escrevem **você e as
-   contas Google que estão nessa lista**, mais ninguém. É o único ponto de escrita
-   deles, de propósito: por ele passam a caixa "📝 Inventário dos jogadores", as
-   edições que eles fazem em **Residentes** e **Inventário da base** e as do
-   **diário** e das **paradas** de uma viagem — ver "O que os jogadores editam",
-   abaixo.)
+   → **Publicar**.
 
-   > ⚠ **São DUAS linhas de `.write`, e elas não se trocam.** A de cima
-   > (`$sala`) é a mesa inteira e é só sua; a de baixo (`jogadores/inventario`)
-   > é a caixa de entrada e leva a lista. Pôr a lista na de cima dá a cada
-   > jogador o poder de reescrever a loja, as bases e as viagens — no Firebase
-   > a permissão de um nó **desce para todos os filhos**, e regra de filho não
-   > revoga a do pai.
+   **Como ler isto.** Quem pode o quê não está mais escrito na regra: está no
+   banco, em `mesas/<sala>/membros/<uid>`, e quem escreve lá é o mestre pela
+   aba 🎲 Mesa. A regra só pergunta ao banco.
+
+   | Nó | Quem lê | Quem escreve |
+   |---|---|---|
+   | `dados` (loja, viagens, bases), `meta` | qualquer um com o link | o mestre |
+   | `jogadores/inventario` | qualquer um com o link | **membros da mesa** |
+   | `nome`, `campanhaId` da mesa | qualquer um | o mestre |
+   | `membros` | membros (e cada um sempre lê o próprio) | o mestre |
+   | `pedidos` | o mestre (e cada um o seu) | quem pede, e o mestre |
+   | `campanhas` | quem estiver logado | só o dono da casa |
+
+   > ⚠ **Criar mesa é só do seu `uid`.** A chave do Firebase é pública (está no
+   > `js/firebase-config.js`, num repositório aberto — e tudo bem, ela só
+   > identifica o projeto). Sem essa trava, um estranho logado criaria salas no
+   > seu banco. Jogador nunca cria: jogador **pede**.
    >
-   > ⚠ **Não ponha `auth.token.email_verified` na linha do mestre.** Usuário de
-   > e-mail/senha criado na mão pelo console nasce **não verificado**, então
-   > essa condição bloquearia justamente você (o 📡 passa a dar "permission
-   > denied"). Na linha dos jogadores ela é boa: conta do Google já vem
-   > verificada — e ela existe porque, com o e-mail/senha ligado no projeto,
-   > qualquer um consegue criar uma conta com o e-mail de outra pessoa; o que
-   > o Google confirma é a posse.
+   > ⚠ **A permissão de um nó desce para todos os filhos** — regra de filho não
+   > revoga a do pai. É por isso que `mesas/$sala` só é escrevível na CRIAÇÃO
+   > (`!data.exists()`): qualquer `.write` largo ali em cima entregaria a mesa
+   > inteira, fichas e rolagens junto.
    >
-   > ⚠ **É `email_verified == true`, com o `== true` escrito.** Sem ele o
-   > console recusa com *"Left operand of && must be boolean"*: cada pedaço de
-   > um `&&` precisa ser booleano, e o verificador não deduz o tipo dos campos
-   > de `auth.token` sozinho.
+   > ⚠ **O `|| auth.token.email === 'mestret20@gmail.com'` é um cinto de
+   > segurança temporário**, para a transmissão do 📡 não cair no minuto entre
+   > publicar a regra e você assumir a mesa na aba. Depois que o seu nome
+   > aparecer em "Quem está na mesa", pode apagar as duas ocorrências.
    >
-   > A linha do `.write` é comprida e sem quebras **de propósito**: quebrar uma
-   > linha no meio do texto entre aspas faz o console recusar as regras. Para
-   > acrescentar um jogador depois, é só somar mais um
-   > `|| auth.token.email === 'NOVO@gmail.com'` e publicar de novo.
-   >
-   > **Teste antes de fechar o console:** no botão **Simulador de regras**, faça
-   > uma escrita em `mesas/mesa/jogadores/inventario` autenticada com um e-mail
-   > da lista (tem de passar) e com um de fora (tem de falhar).
+   > ⚠ **`email_verified == true`, com o `== true` escrito.** Sem ele o console
+   > recusa com *"Left operand of && must be boolean"*: cada pedaço de um `&&`
+   > precisa ser booleano, e o verificador não deduz o tipo dos campos de
+   > `auth.token` sozinho. E ele fica só na linha de quem PEDE — nunca na do
+   > mestre, cujo usuário de e-mail/senha nasce não verificado.
+
+   **Teste no Simulador de regras antes de fechar o console:**
+
+   | Simulação | Esperado |
+   |---|---|
+   | ler `mesas/mesa/dados` sem autenticação | passa |
+   | escrever `mesas/mesa/dados` como jogador | **falha** |
+   | escrever `mesas/mesa/jogadores/inventario` como membro | passa |
+   | escrever `mesas/mesa/jogadores/inventario` sem login | **falha** |
+   | ler `mesas/mesa/membros` sem login | **falha** |
+
 5. Menu lateral: **Criação → Authentication** → **Vamos começar** → aba
    **Método de login**:
-   - ative **E-mail/senha** e, na aba **Usuários** → **Adicionar usuário**, crie o
-     SEU usuário de mestre (e-mail + uma senha boa). O mestre entra por aqui, e não
-     pelo Google, porque o login do Google exige domínio autorizado e **falha se
-     você abrir o `index.html` direto do disco** (`file://`);
-   - ative também **Google** (é só escolher um nome público e um e-mail de
-     suporte). É por ele que os **jogadores** entram para escrever.
+   - ative **Google** (é só escolher um nome público e um e-mail de suporte). É
+     por ele que **todo mundo** entra na aba 🎲 Mesa — mestre e jogadores, um
+     caminho só;
+   - ative também **E-mail/senha** e, na aba **Usuários** → **Adicionar usuário**,
+     crie um usuário de mestre (e-mail + uma senha boa). Ele é o seu paraquedas:
+     é o único login que funciona com o `index.html` aberto **do disco**
+     (`file://`), onde o popup do Google não abre. Cadastre os DOIS `uid` como
+     mestre na aba e você entra por qualquer um dos dois.
    - Ainda em Authentication, aba **Settings (Configurações) → Domínios
      autorizados**: confira que o endereço onde o site está publicado está na lista
      (algo como `SEU-USUARIO.github.io`). Sem isso o login dos jogadores devolve
@@ -123,10 +168,11 @@ uma hospedagem para o site (**GitHub Pages**).
   **🔑 Entrar com o Google**. Enquanto ninguém entra, as caixas que são deles
   ficam travadas, com um selo "🔒 entre para escrever"; depois de entrar, o
   selinho passa a dizer *"✍ escrevendo como fulano@gmail.com"* e elas abrem, com
-  a barra de formatação e tudo. Quem entrar com uma conta que **não está na lista
-  das regras** (parte 1.4) recebe, na hora em que tentar escrever, um recado
-  dizendo para pedir ao mestre — o banco recusa, e a página conta isso em vez de
-  fingir que salvou. O login fica guardado no navegador: é uma vez por aparelho.
+  a barra de formatação e tudo. Quem entra com uma conta que **ainda não é da
+  mesa** vê "🔒 você ainda não está nesta mesa" e um botão que leva à aba
+  🎲 **Mesa**, onde pede para entrar; o mestre aprova por lá e a caixa abre
+  sozinha, sem recarregar. O login fica guardado no navegador: é uma vez por
+  aparelho.
 - Continue preparando o jogo **onde quiser** (inclusive offline) — a transmissão
   só acontece quando você está no site publicado, logado no 📡.
 
@@ -166,7 +212,7 @@ que não são transmitidos de jeito nenhum.
 ## O que os jogadores editam
 
 Fora estas caixas, a página deles é só de leitura — e mesmo estas só abrem
-**depois de entrar com o Google** (parte 3), com a conta na lista das regras:
+**depois de entrar com o Google** e de o mestre aprovar o pedido na aba 🎲 Mesa:
 
 | Aba | Caixa | Quem escreve | Onde fica guardado |
 |---|---|---|---|
@@ -193,16 +239,15 @@ outro. Item 🙈 não aparece para eles, então também não tem como ser escrit
 > depois, a sua versão vence. Se preferir que uma das caixas das Bases volte a
 > ser só sua, é uma linha em `js/bases.js` (a lista `CAMPOS_JOGADOR`).
 >
-> O que a lista de e-mails garante é **quem** pode escrever: são as pessoas da
+> O que a lista de membros garante é **quem** pode escrever: são as pessoas da
 > sua mesa, não "quem tiver o link". Entre elas, continua sendo confiança —
 > qualquer uma pode apagar o que a outra escreveu.
 
 ### Tirar alguém da mesa
 
-Apague o `|| auth.token.email === '…'` daquela pessoa nas regras (parte 1.4) e
-publique. Vale na hora, sem precisar mexer no site nem trocar o link: a próxima
-tecla que ela digitar já vai ser recusada pelo banco. Ler ela continua podendo,
-como qualquer um com o link.
+Na aba 🎲 **Mesa**, em "Quem está na mesa", botão **tirar da mesa**. Vale na
+hora, sem console e sem trocar o link: a próxima tecla que ela digitar já vai ser
+recusada pelo banco. Ler ela continua podendo, como qualquer um com o link.
 
 ## Problemas comuns
 
@@ -213,10 +258,11 @@ como qualquer um com o link.
   `".read": true` foi alterado.
 - **"🔒 entre para escrever" nas caixas deles** → é o normal antes do login:
   clicar no **🔑 Entrar com o Google** do selinho do rodapé resolve.
-- **"fulano@gmail.com não está nesta mesa"** → esse e-mail não está na lista da
-  regra (parte 1.4). Acrescente `|| auth.token.email === 'fulano@gmail.com'`,
-  publique, e peça para a pessoa **recarregar a página**. Confira também se ela
-  entrou com a conta certa (o botão "trocar de conta" troca).
+- **"você ainda não está nesta mesa"** → é o normal antes de ser aprovado. A
+  pessoa clica no botão, cai na aba 🎲 Mesa e pede para entrar; você aprova lá,
+  e a caixa dela abre sozinha. Se o pedido não aparecer para você, confira se
+  vocês dois estão na **mesma sala** (o `?sala=` do link dela e a mesa aberta na
+  sua aba).
 - **"o navegador bloqueou a janela do Google"** → o pop-up do login foi barrado;
   liberar pop-ups para o endereço do site e clicar de novo.
 - **"este endereço não está autorizado no Firebase"** → falta o domínio publicado

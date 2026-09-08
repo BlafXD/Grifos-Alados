@@ -50,7 +50,8 @@
   function conectar() {
     if (inicializado || !temConfig()) return;
     try {
-      firebase.initializeApp(window.GA_FIREBASE);
+      // o app é um só para o site inteiro (o mesa.js pode já ter criado)
+      if (!(firebase.apps && firebase.apps.length)) firebase.initializeApp(window.GA_FIREBASE);
       db = firebase.database();
       firebase.auth().onAuthStateChanged(u => {
         usuario = u;

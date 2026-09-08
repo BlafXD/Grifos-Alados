@@ -52,6 +52,7 @@
         if (!(e.target instanceof Element)) return;
         if (e.target.closest('[data-jog-entrar]')) entrar();
         else if (e.target.closest('[data-jog-sair]')) sair();
+        else if (e.target.closest('[data-jog-mesa]')) irParaMesa();
       });
       document.body.appendChild(el);
     }
@@ -205,75 +206,64 @@
     podeEscrever: () => podeEscrever(),
   };
 
-  // ═══ QUEM PODE ESCREVER — login com o Google ══════════════════════
-  //  A garantia DURA é do banco: a regra de `jogadores/inventario` só
-  //  aceita as contas que o mestre listou (ver MODO-JOGADOR.md). Aqui a
-  //  página só REFLETE essa regra, para ninguém escrever num campo que vai
-  //  ser recusado: sem login, as caixas [data-jog-edita] ficam travadas.
-  //  A leitura da mesa continua aberta — quem só quer ver a Loja e a
+  // ═══ QUEM PODE ESCREVER — o papel na mesa ═════════════════════════
+  //  Conta e papel são assunto do mesa.js (GA_Mesa): aqui só se reflete
+  //  a resposta dele. A garantia DURA continua sendo do banco — a regra
+  //  de `jogadores/inventario` só aceita quem está em `membros`.
+  //  A leitura da mesa continua aberta: quem só quer ver a Loja e a
   //  gazeta não precisa entrar em conta nenhuma.
   //  Sem Firebase configurado (ou com o CDN fora do ar) nada disso existe:
   //  a página vira a cópia local de sempre e as caixas continuam como
   //  eram, porque não há banco nenhum para proteger.
   const esc = window.GA_esc;
-  let auth = null, usuario = null, semPermissao = false, erroLogin = '';
-  let authResolvida = false;   // o Firebase já disse se havia sessão salva?
+  let mesa = null;             // último estado que o GA_Mesa mandou
+  let semPermissao = false;    // o banco recusou uma escrita nossa
 
-  function podeEscrever() { return !auth ? true : (!!usuario && !semPermissao); }
+  function temMesa() { return !!(window.GA_Mesa && mesa && mesa.configurado); }
+  function podeEscrever() { return !temMesa() ? true : (mesa.souMembro && !semPermissao); }
 
   // Trava/destrava as caixas e redesenha a linha de login do chip.
   function refletirLogin() {
     if (window.GA_ModoJogador && window.GA_ModoJogador.permitirEdicao) {
       // o cadeado só aparece depois que o Firebase responde: piscar
       // "travado" para quem já estava logado seria mentira de meio segundo
-      window.GA_ModoJogador.permitirEdicao(podeEscrever(), authResolvida);
+      window.GA_ModoJogador.permitirEdicao(podeEscrever(), !!(mesa && mesa.pronto));
     }
     desenharAuth();
   }
 
+  const BOTAO_MESA = '<button type="button" class="ga-jog-auth-btn" data-jog-mesa>abrir a aba 🎲 Mesa</button>';
+
   function desenharAuth() {
-    if (!auth) return chipAuth('');
-    if (usuario && semPermissao) {
-      return chipAuth('<span class="ga-jog-auth-erro">🔒 <strong>' + esc(usuario.email || 'esta conta') +
-        '</strong> não está nesta mesa — peça ao mestre para incluir seu e-mail (e recarregue depois)</span>' +
-        '<button type="button" class="ga-jog-auth-sair" data-jog-sair>trocar de conta</button>');
+    if (!temMesa()) return chipAuth('');
+    if (!mesa.usuario) {
+      return chipAuth('<button type="button" class="ga-jog-auth-btn" data-jog-entrar>🔑 Entrar com o Google para escrever</button>');
     }
-    if (usuario) {
-      return chipAuth('<span class="ga-jog-auth-quem">✍ escrevendo como <strong>' +
-        esc(usuario.email || 'você') + '</strong></span>' +
-        '<button type="button" class="ga-jog-auth-sair" data-jog-sair>sair</button>');
+    if (semPermissao) {
+      return chipAuth('<span class="ga-jog-auth-erro">🔒 o banco recusou a escrita — confira o seu lugar na mesa</span>' + BOTAO_MESA);
     }
-    chipAuth('<button type="button" class="ga-jog-auth-btn" data-jog-entrar>🔑 Entrar com o Google para escrever</button>' +
-      (erroLogin ? '<span class="ga-jog-auth-erro">' + esc(erroLogin) + '</span>' : ''));
+    if (!mesa.souMembro) {
+      return chipAuth('<span class="ga-jog-auth-erro">🔒 você ainda não está nesta mesa</span>' +
+        (mesa.temPedido ? '<span class="ga-jog-auth-quem">pedido enviado, esperando o mestre</span>' : BOTAO_MESA));
+    }
+    chipAuth('<span class="ga-jog-auth-quem">✍ escrevendo como <strong>' +
+      esc((mesa.usuario.displayName || mesa.usuario.email || 'você')) + '</strong>' +
+      (mesa.souMestre ? ' · mestre' : '') + '</span>' +
+      '<button type="button" class="ga-jog-auth-sair" data-jog-sair>sair</button>');
   }
 
-  // O que cada erro do Google quer dizer para quem está do outro lado.
-  const MSG_LOGIN = {
-    'auth/popup-blocked': 'o navegador bloqueou a janela do Google — libere os pop-ups deste site e tente de novo',
-    'auth/unauthorized-domain': 'este endereço não está autorizado no Firebase — avise o mestre',
-    'auth/operation-not-allowed': 'o login com o Google ainda não foi ligado no Firebase — avise o mestre',
-    'auth/network-request-failed': 'sem conexão com o Google agora — tente daqui a pouco',
-  };
-
-  function entrar() {
-    if (!auth) return;
-    erroLogin = '';
-    const prov = new firebase.auth.GoogleAuthProvider();
-    prov.setCustomParameters({ prompt: 'select_account' });
-    auth.signInWithPopup(prov).catch(err => {
-      const cod = (err && err.code) || '';
-      // fechou a janelinha ou clicou duas vezes: não é erro, é desistir
-      if (cod === 'auth/popup-closed-by-user' || cod === 'auth/cancelled-popup-request') return;
-      erroLogin = MSG_LOGIN[cod] || ('não deu para entrar (' + (cod || (err && err.message) || 'erro') + ')');
-      desenharAuth();
-      console.warn('[sync-jogador] login:', cod, err && err.message);
-    });
-  }
-
+  function entrar() { if (window.GA_Mesa) window.GA_Mesa.entrar(); }
   function sair() {
-    if (!auth) return;
-    semPermissao = false; erroLogin = '';
-    auth.signOut().catch(e => console.warn('[sync-jogador] sair:', e && e.message));
+    semPermissao = false;
+    if (window.GA_Mesa) window.GA_Mesa.sair();
+  }
+  // O lugar de pedir para entrar é a aba 🎲 Mesa — leva a pessoa até lá
+  // em vez de explicar onde fica.
+  function irParaMesa() {
+    const link = document.querySelector('.nav-link[data-section="mesa"]');
+    if (link) link.click();
+    const sec = document.getElementById('mesa');
+    if (sec) sec.scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
 
   function ehSemPermissao(e) {
@@ -306,24 +296,29 @@
     }
     let db;
     try {
-      firebase.initializeApp(window.GA_FIREBASE);
+      // o app é um só para o site inteiro (o mesa.js pode já ter criado)
+      if (!(firebase.apps && firebase.apps.length)) firebase.initializeApp(window.GA_FIREBASE);
       db = firebase.database();
-      if (firebase.auth) {
-        auth = firebase.auth();
-        auth.onAuthStateChanged(u => {
-          usuario = u;
-          authResolvida = true;
-          semPermissao = false;   // conta nova, chance nova
-          erroLogin = '';
-          refletirLogin();
-        });
-      }
     } catch (e) {
       chip('⚠ Não deu para falar com a mesa: ' + e.message, 'ga-jog-chip--off');
       return;
     }
     document.addEventListener('click', aoClicarTravado, true);
-    refletirLogin();   // trava as caixas já, antes de o Google responder
+
+    // Quem manda no login e no papel é o mesa.js. `semPermissao` só se
+    // zera quando a PESSOA ou o PAPEL mudam — senão qualquer respiro do
+    // banco destravaria a caixa para outra escrita recusada.
+    let quemEra = '';
+    if (window.GA_Mesa) {
+      window.GA_Mesa.aoMudar(e => {
+        mesa = e;
+        const quem = (e.usuario ? e.usuario.uid : '') + '/' + (e.papel || '');
+        if (quem !== quemEra) { quemEra = quem; semPermissao = false; }
+        refletirLogin();
+      });
+    } else {
+      refletirLogin();
+    }
 
     chip('📡 Conectando à sala <strong>' + sala + '</strong>…');
 

@@ -1,8 +1,8 @@
 # Mesa de verdade — salas, papéis, rolagens ao vivo e iniciativa
 
 **Aberto em:** 8 de setembro de 2026
-**Estado:** desenho. Nada implementado — este documento existe para a gente
-concordar no formato antes de escrever a primeira linha.
+**Estado:** desenho fechado; **etapa 1 construída em 8 de setembro** (§11) e
+esperando as regras serem publicadas. As etapas 2 a 4 seguem no papel.
 
 ---
 
@@ -135,12 +135,6 @@ Três saídas, da melhor para a pior:
 > configuração de contas do projeto. O teste é de um minuto: entrar com o Google
 > uma vez e conferir em **Authentication → Users** se apareceu uma linha nova ou
 > se a antiga mudou de provedor.
-
-> ⚠ Com o provedor de e-mail/senha ligado e uma conta `mestret20@gmail.com` já
-> existente, entrar com o **Google** usando esse mesmo endereço pode devolver
-> `auth/account-exists-with-different-credential`, dependendo da configuração de
-> "uma conta por e-mail" do projeto. Se acontecer, é a saída 1 que resolve — cada
-> login é uma conta, e as duas são mestre.
 
 ## 6. O que é público e o que é da mesa
 
@@ -293,3 +287,54 @@ Cada etapa termina com algo que dá para usar na mesa da semana seguinte.
 5. **Jogador ausente: o mestre digita.** A linha entra na mão, com nome e valor —
    o mesmo caminho de uma criatura, sem `uid` nenhum. Quando a mesa rodar de
    verdade a gente vê se isso incomoda.
+
+---
+
+## 11. Etapa 1 — construída em 8 de setembro de 2026
+
+Sala, papéis e pedidos estão no código. **Ainda não estão no ar**: falta
+publicar as regras novas (§11.2) e você assumir a mesa.
+
+### 11.1 O que entrou
+
+| Arquivo | O quê |
+|---|---|
+| `js/mesa.js` (novo) | o módulo inteiro: conta, sala, papel, membros, pedidos, criar campanha e mesa, trocar de mesa. Expõe `GA_Mesa`, de quem todo o resto pergunta |
+| `css/mesa_style.css` (novo) | a aba na mesma gazeta das outras |
+| `index.html`, `jogadores.html` | a aba **🎲 Mesa** nas duas, com a mesma `<section id="mesa">` |
+| `js/sync-jogador.js` | o login saiu daqui: quem responde "posso escrever?" agora é o papel na mesa, não "está logado" |
+| `js/sync-mestre.js` | `initializeApp` só se ninguém tiver criado o app antes |
+| `MODO-JOGADOR.md` | as regras novas e o que mudou no dia a dia |
+
+**Um app do Firebase para o site inteiro.** Os três módulos que falam com o
+banco (`mesa`, `sync-mestre`, `sync-jogador`) agora dividem a mesma
+inicialização — `initializeApp` duas vezes estoura, e antes só não estourava
+porque nunca havia dois na mesma página.
+
+**A aba mostra o que o papel permite**, não o que o arquivo tem: a mesma
+`mesa.js` roda nas duas páginas. Visitante vê "entrar"; logado sem papel vê
+"pedir para entrar"; jogador vê quem está na mesa; mestre vê os pedidos, o
+link, os membros e o painel de campanhas.
+
+### 11.2 Como ligar (na ordem)
+
+1. **Publique as regras** do `MODO-JOGADOR.md`, parte 1.4. Elas já vêm com o
+   seu `uid` e com o cinto de segurança do e-mail do mestre, para a
+   transmissão não cair no meio do caminho.
+2. **`git push`** — só ele publica o site.
+3. Abra o site publicado, aba **🎲 Mesa**, **Entrar com o Google**.
+4. A mesa `mesa` não tem membros: aparece **"Assumir esta mesa"**. Clique.
+   Seu nome entra em "Quem está na mesa" como mestre.
+5. Confira que o **📡 continua transmitindo** (aro verde). Se você entrou pelo
+   Google e o 📡 estava no e-mail/senha, são duas contas: entre de novo pelo 📡
+   e, na aba, cadastre o segundo `uid` como mestre — ou deixe o cinto de
+   segurança da regra no lugar.
+6. Mande o link da aba para um jogador e peça para ele **pedir para entrar**.
+   O pedido aparece na sua aba em segundos; aprove como **jogador**.
+7. Só depois disso, se quiser, apague da regra as duas ocorrências de
+   `|| auth.token.email === 'mestret20@gmail.com'`.
+
+### 11.3 O que ainda NÃO faz (é a etapa 2 em diante)
+
+Rolagem ao vivo, iniciativa e ficha. A aba hoje resolve **quem é quem** — que
+era o que faltava para tudo o mais poder existir.

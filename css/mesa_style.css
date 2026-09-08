@@ -1,0 +1,262 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MESA (mesa.js) — campanhas, salas, papéis e pedidos
+   Mesma gazeta das outras abas: pergaminho, Cinzel nos rótulos e o
+   dourado só onde há hierarquia. Nada aqui é exclusivo do mestre no
+   CSS — quem esconde o que é o mesa.js, pelo papel.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── CABEÇALHO ─────────────────────────────────────────────────── */
+.me-cab {
+  text-align: center;
+  padding: 1.8rem 0 1.2rem;
+  border-bottom: 3px double var(--ink);
+  margin-bottom: 1.6rem;
+}
+.me-cab::before {
+  content: '✦ A Mesa ✦';
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 0.55rem;
+}
+.me-titulo {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: clamp(1.9rem, 4.5vw, 2.9rem);
+  font-weight: normal;
+  color: var(--ink);
+  line-height: 1;
+  margin: 0;
+}
+.me-sub {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--rust-dark);
+  margin: 0.35rem 0 0;
+}
+
+/* ── CARTÕES ───────────────────────────────────────────────────── */
+.me-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: 1.1rem;
+  align-items: start;
+}
+.me-cartao {
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-top: 3px solid var(--gold-dim);
+  border-radius: var(--raio);
+  padding: 0.9rem 1rem 1rem;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+.me-cartao-tit {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--parchment3);
+}
+.me-cont {
+  display: inline-block;
+  min-width: 1.2rem;
+  padding: 0 0.3rem;
+  margin-left: 0.3rem;
+  font-size: 0.66rem;
+  text-align: center;
+  color: var(--parchment);
+  background: var(--gold-dim);
+  border-radius: 999px;
+}
+.me-p    { font-family: 'Crimson Pro', serif; font-size: 0.94rem; margin: 0 0 0.6rem; }
+.me-mini { font-family: 'Crimson Pro', serif; font-size: 0.8rem; color: var(--text-dim); margin: 0.3rem 0 0; }
+.me-vazio {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--text-dim);
+  margin: 0.2rem 0;
+}
+.me-erro {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: var(--carmim);
+  background: rgba(139, 16, 32, 0.07);
+  border-left: 3px solid var(--carmim);
+  padding: 0.35rem 0.55rem;
+  margin: 0.6rem 0 0;
+}
+.me-aviso {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: var(--verde-dark);
+  background: rgba(47, 111, 63, 0.09);
+  border-left: 3px solid var(--verde);
+  padding: 0.35rem 0.55rem;
+  margin: 0.6rem 0 0;
+}
+
+/* ── SELOS DE PAPEL ────────────────────────────────────────────── */
+.me-selo {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--neutra);
+  border-radius: 999px;
+  vertical-align: middle;
+}
+.me-selo--mestre { background: var(--gold-deep); }
+.me-selo--fora   { background: transparent; color: var(--text-dim); border: 1px dashed var(--text-dim); }
+
+/* ── LISTAS DE GENTE ───────────────────────────────────────────── */
+.me-lista { list-style: none; margin: 0; padding: 0; }
+.me-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px dotted var(--parchment3);
+}
+.me-linha:last-child { border-bottom: none; }
+.me-linha-nome {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.94rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.me-linha-nome em {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.76rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+.me-linha-acoes { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.me-linha--camp { align-items: flex-start; }
+
+/* ── BOTÕES ────────────────────────────────────────────────────── */
+.me-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.42rem 0.9rem;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.me-btn:hover { background: var(--gold-pale); }
+.me-btn--principal { color: var(--parchment); background: var(--ink); border-color: var(--ink); }
+.me-btn--principal:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
+.me-btn--mini { font-size: 0.58rem; padding: 0.26rem 0.55rem; }
+.me-btn--perigo { color: var(--carmim); border-color: var(--carmim); background: transparent; }
+.me-btn--perigo:hover { color: var(--parchment); background: var(--carmim); }
+.me-btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.me-acoes { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.7rem; }
+
+/* ── FORMULÁRIOS (criar campanha / criar mesa) ─────────────────── */
+.me-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px dotted var(--parchment3);
+}
+.me-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1 1 11rem;
+  min-width: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.me-campo--sel { flex: 0 1 10rem; }
+.me-campo input,
+.me-campo select {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  padding: 0.36rem 0.5rem;
+  min-width: 0;
+}
+
+/* ── CHIPS DE MESA (o seletor de qual sala está aberta) ────────── */
+.me-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.me-chip {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.84rem;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: 999px;
+}
+.me-chip:hover { background: var(--gold-pale); }
+.me-chip--atual {
+  color: var(--parchment);
+  background: var(--teal);
+  border-color: var(--teal);
+}
+.me-chip--atual::after { content: ' ·  aberta'; font-size: 0.7rem; opacity: 0.85; }
+
+/* ── O LINK DA MESA ────────────────────────────────────────────── */
+.me-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.4rem 0 0;
+}
+.me-link code {
+  flex: 1 1 12rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.45rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+
+/* o id da sala é o que vai no link — merece cara de código, e não de
+   texto corrido colado no rótulo */
+.me-mini code,
+.me-cab code {
+  padding: 0.05rem 0.35rem;
+  margin-left: 0.15rem;
+  font-size: 0.78rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
