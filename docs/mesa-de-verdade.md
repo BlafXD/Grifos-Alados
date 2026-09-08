@@ -1,12 +1,15 @@
 # Mesa de verdade — salas, papéis, rolagens ao vivo e iniciativa
 
 **Aberto em:** 8 de setembro de 2026
-**Estado:** etapa 1 construída em 8 de setembro (§11) e **revista no mesmo dia**
-(§12): não há dono do site, há dono de cada mesa. Esperando as regras serem
-publicadas. Etapas 2 a 4 seguem no papel; as notícias viraram a §13.
+**Estado:** etapa 1 construída em 8 de setembro (§11) e revista **duas vezes** no
+mesmo dia — §12 (não há dono do site, há dono de cada mesa) e §14 (**uma mesa é
+uma campanha**, e o login do 📡 virou a conta do Google). Esperando as regras
+serem publicadas. Etapas 2 a 4 seguem no papel; as notícias viraram a §13.
 
-> **Leia a §12 antes das §§5-6.** Elas são o desenho da primeira versão, com um
-> `uid` autorizado no meio; o que vale hoje é a §12.
+> ⚠ **Comece pela §14 — é o desenho que vale.** As §§1-6, 11 e 12 são o caminho
+> até ele, preservadas porque explicam POR QUE cada simplificação aconteceu; mas
+> falam de coisas que não existem mais (o nó `campanhas`, o `uid` autorizado, o
+> usuário de mestre com senha).
 
 ---
 
@@ -399,3 +402,59 @@ edita — o que ele aceita por enquanto. Quando virar etapa, mudam para
 `campanhas/<c>/noticias` no banco, com `.read: true` e escrita do dono da
 campanha. **O `campanhas` já foi aberto para leitura pública nesta revisão**,
 exatamente para esse dia.
+
+---
+
+## 14. Uma mesa é uma campanha — 8 de setembro de 2026 (terceira revisão)
+
+A segunda revisão (§12) tirou o porteiro, mas deixou **duas entidades**: campanha
+por cima, mesa por baixo. Ao usar, virou passo a mais para nada — e a decisão da
+§1 ("uma campanha pode ter várias mesas") foi revogada por quem a tomou:
+*"esquece a parada de 'uma campanha ter várias mesas', uma mesa é uma campanha!"*
+
+**Agora há uma coisa só.** O nome que o mestre escreve é, ao mesmo tempo, o
+título da mesa, o id da sala e o link dos jogadores:
+
+```
+"Purista"  →  mesas/purista  →  jogadores.html?sala=purista
+```
+
+O nó `campanhas` **deixou de existir**. `mesas/{sala}` tem `nome`, `dono`,
+`entradaLivre`, `criadaEm`, `membros`, `pedidos`, `dados`, `meta` e
+`jogadores/inventario`. E cada pessoa guarda o próprio índice em
+`usuarios/{uid}/mesas` — é dali que sai a lista "Suas campanhas", sem ninguém
+precisar varrer o banco inteiro.
+
+**O `?sala=` é normalizado nos dois lados.** `?sala=Purista`, `?sala=purista` e
+`?sala=PURISTA` caem na mesma mesa. Antes, o link com maiúscula abria uma sala
+vazia — e é o tipo de link que uma pessoa escreve à mão.
+
+### Quatro papéis
+
+| Papel | Transmite (`dados`) | Escreve as caixas | Mexe em quem entra |
+|---|---|---|---|
+| **mestre** | sim | sim | sim |
+| **auxiliar** | sim | sim | não |
+| **jogador** | não | sim | não |
+| **espectador** | não | **não** | não |
+
+O espectador é membro — vê a mesa e, quando as etapas 2 e 3 chegarem, verá as
+rolagens e a iniciativa — mas não escreve nada.
+
+### O login do 📡 mudou (era a reclamação da print)
+
+O modal do botão 📡 pedia **e-mail e senha** de um usuário criado à mão no
+console do Firebase, e devolvia `auth/invalid-credential` para quem não tinha
+esse usuário. Agora ele pede a **conta do Google** — a mesma do site inteiro —
+e, logo abaixo, o nome da campanha. Escreveu o nome, é mestre dela. Não existe
+mais "usuário de mestre" separado.
+
+Quem entra logado mas não mestra aquela sala vê o porquê e a lista das
+campanhas dele, para trocar sem sair do modal.
+
+### O que isso apaga do que veio antes
+
+- as §§5-6 e §12 falam de `campanhas` como nó próprio — **não existe mais**;
+- o `js/firebase-config.js` continua igual;
+- o provedor **E-mail/senha** do Firebase não é mais necessário para nada; pode
+  ficar ligado como paraquedas do `file://`, mas ninguém o usa no fluxo normal.

@@ -270,3 +270,24 @@
   border: 1px solid var(--parchment3);
   border-radius: var(--raio);
 }
+
+/* chips de papel e de estado — o seletor de porta aberta/aprovação usa
+   --ligado (o --atual é dos chips de campanha, que dizem "aberta") */
+.me-chip--ligado {
+  color: var(--parchment);
+  background: var(--teal);
+  border-color: var(--teal);
+}
+.me-selo--mestre     { background: var(--gold-deep); }
+.me-selo--auxiliar   { background: var(--azul); }
+.me-selo--jogador    { background: var(--neutra); }
+.me-selo--espectador { background: transparent; color: var(--text-dim); border: 1px solid var(--text-dim); }
+.me-sel-papel {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  padding: 0.16rem 0.3rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+}

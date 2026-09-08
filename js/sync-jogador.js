@@ -220,7 +220,9 @@
   let semPermissao = false;    // o banco recusou uma escrita nossa
 
   function temMesa() { return !!(window.GA_Mesa && mesa && mesa.configurado); }
-  function podeEscrever() { return !temMesa() ? true : (mesa.souMembro && !semPermissao); }
+  // `escreve` já desconta o espectador, que é membro e mesmo assim não
+  // escreve nada — é o papel de quem só assiste à mesa.
+  function podeEscrever() { return !temMesa() ? true : (mesa.escreve && !semPermissao); }
 
   // Trava/destrava as caixas e redesenha a linha de login do chip.
   function refletirLogin() {
@@ -246,9 +248,13 @@
       return chipAuth('<span class="ga-jog-auth-erro">🔒 você ainda não está nesta mesa</span>' +
         (mesa.temPedido ? '<span class="ga-jog-auth-quem">pedido enviado, esperando o mestre</span>' : BOTAO_MESA));
     }
+    if (!mesa.escreve) {   // espectador: está na mesa, mas só olha
+      return chipAuth('<span class="ga-jog-auth-quem">👁 você está como <strong>espectador</strong></span>' +
+        '<button type="button" class="ga-jog-auth-sair" data-jog-sair>sair</button>');
+    }
     chipAuth('<span class="ga-jog-auth-quem">✍ escrevendo como <strong>' +
       esc((mesa.usuario.displayName || mesa.usuario.email || 'você')) + '</strong>' +
-      (mesa.souMestre ? ' · mestre' : '') + '</span>' +
+      (mesa.papelRotulo && mesa.papelRotulo !== 'jogador' ? ' · ' + esc(mesa.papelRotulo) : '') + '</span>' +
       '<button type="button" class="ga-jog-auth-sair" data-jog-sair>sair</button>');
   }
 
