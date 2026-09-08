@@ -139,6 +139,14 @@
   flex-direction: column;
   min-width: 0;
 }
+/* a linha de membro diz uma coisa só (fulano, você, papel) — não são
+   três andares como o par nome/e-mail de um pedido */
+.me-linha-nome--deitada {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+}
 .me-linha-nome em {
   font-family: 'Crimson Pro', serif;
   font-size: 0.76rem;
