@@ -77,9 +77,10 @@ mesas/{mesaId}
     fichas/{fichaId}   { dono: uid, nome, ... }
     rolagens/{id}      { uid, nome, rotulo, formula, total, quando }
     iniciativa/
-        linhas/{id}    { nome, valor, tipo: 'jogador'|'criatura', uid?, ref?, ordem }
+        linhas/{id}    { nome, tipo: 'jogador'|'criatura', ordem }   ← membros leem
         atual          {id da linha da vez}
         rodada         1, 2, 3…
+        valores/{id}   { valor, des }                    ← SÓ o mestre lê
     dados/             ← O QUE JÁ EXISTE: loja, viagens, bases (público)
     jogadores/inventario/   ← O QUE JÁ EXISTE
 ```
@@ -105,6 +106,10 @@ aprova o pedido, o app escreve o nó), e a página **lê** o papel de quem entro
 some a falha de aviso de hoje, em que a caixa abre para qualquer conta e só
 re-trava depois da primeira letra recusada.
 
+**Decidido em 08/09/2026: todo mundo entra com o Google, o mestre inclusive.**
+Um caminho de login só, para todos os papéis — menos código, menos regra, menos
+explicação. O papel vem do `membros`, não de como a pessoa entrou.
+
 ### A pegadinha do login do mestre
 
 Hoje o mestre entra por **e-mail/senha** (`mestret20@gmail.com`) e os jogadores
@@ -116,9 +121,20 @@ Três saídas, da melhor para a pior:
 
 1. **Registrar os DOIS `uid` como mestre** em `membros`. Custa nada, funciona
    nos dois logins, e o e-mail/senha continua sendo o que salva quando ele abrir
-   o site fora do publicado. **É o que eu recomendo.**
+   o site fora do publicado. **É o que eu recomendo, mesmo agora que o Google é o
+   caminho principal** — é o seguro contra o dia em que o popup do Google não
+   abrir no meio de uma sessão.
 2. Ele passa a entrar só pelo Google (aí o e-mail/senha vira decoração).
 3. Vincular as contas no Firebase — mais trabalho, mesmo resultado.
+
+> ⚠ **Testar isso ANTES de precisar.** Com o provedor de e-mail/senha ligado e
+> uma conta `mestret20@gmail.com` já existente, entrar com o Google no mesmo
+> endereço pode dar `auth/account-exists-with-different-credential` — ou, pior de
+> descobrir na hora, pode **substituir** o provedor de senha pelo do Google, e aí
+> o login antigo para de funcionar. Qual dos dois acontece depende da
+> configuração de contas do projeto. O teste é de um minuto: entrar com o Google
+> uma vez e conferir em **Authentication → Users** se apareceu uma linha nova ou
+> se a antiga mudou de provedor.
 
 > ⚠ Com o provedor de e-mail/senha ligado e uma conta `mestret20@gmail.com` já
 > existente, entrar com o **Google** usando esse mesmo endereço pode devolver
@@ -170,6 +186,28 @@ Duas coisas de propósito:
 - **A permissão de um nó desce para os filhos** (regra rasa vence regra funda —
   foi a armadilha de 08/09/2026). Por isso o `$mesa` só é escrevível na criação:
   qualquer `.write` largo ali em cima entregaria a mesa inteira.
+
+### Quem pode CRIAR uma campanha ou uma mesa
+
+Pergunta que não existia antes e passa a existir: hoje ninguém cria nada — a sala
+é um nome no `localStorage`. Com a aba nova, criar é escrever no banco.
+
+E a chave do Firebase **é pública** (está no `js/firebase-config.js`, num
+repositório público — e tudo bem, ela só identifica o projeto). Isso significa
+que uma regra do tipo "qualquer um logado cria campanha" deixa um estranho criar
+salas no banco dele e gastar a cota dele. Não é catastrófico, é sujeira — e é
+evitável com uma linha:
+
+```
+campanhas/$c  ".write": "!data.exists() && auth.uid === 'UID-DO-CAIQUE'"
+mesas/$m      ".write": "!data.exists() && auth.uid === 'UID-DO-CAIQUE'
+                          && newData.child('membros/'+auth.uid+'/papel').val() === 'mestre'"
+```
+
+**Quem cria é só ele.** Jogador nunca cria: jogador **pede para entrar**. No dia
+em que um amigo for mestrar no mesmo site, acrescenta-se o `uid` dele à lista —
+mesma manobra da lista de e-mails, agora com `uid` e para um punhado de pessoas
+que não muda.
 
 ### O passo de migração (uma vez)
 
@@ -235,13 +273,23 @@ Cada etapa termina com algo que dá para usar na mesa da semana seguinte.
    mais os membros da mesa; rolar, ordenar, passar turno, brilhar.
 4. **Ficha de personagem** — a longa.
 
-## 10. O que ainda falta responder
+## 10. As cinco de detalhe — respondidas em 8 de setembro
 
-1. **Um jogador pode ter mais de um personagem na mesma mesa?** (o desenho acima
-   já supõe que sim: `fichas/{fichaId}` com `dono`, em vez de `fichas/{uid}`)
-2. **A iniciativa é da cena** (some quando o combate acaba) **ou da mesa** (uma
-   lista solta que ele monta na hora)?
-3. **Empate na iniciativa** — desempata sozinho (maior Destreza, como o livro) ou
-   ele arrasta a linha na mão?
-4. **O jogador vê o quê da lista?** Nome e ordem só, ou também o PV das criaturas?
-5. **Quem rola a iniciativa do jogador** quando ele não está com o site aberto?
+1. **Um jogador pode ter mais de um personagem na mesma mesa: SIM.** Por isso
+   `fichas/{fichaId}` com um campo `dono`, e não `fichas/{uid}`.
+2. **A iniciativa é da CENA do combate.** Com uma ressalva que muda o desenho: a
+   cena é preparação dele e **continua local** (é onde moram os PV, as condições
+   e o que os jogadores não podem ver). O que sobe para a mesa é só a **lista
+   viva** — "o combate que está rolando agora". O botão é *"começar a iniciativa
+   com as criaturas desta cena"*; quando o combate acaba, ele limpa.
+3. **Desempate automático pela Destreza**, como o livro manda — mas **só o mestre
+   arrasta**, e arrasta qualquer linha, inclusive a dos jogadores. É o que
+   permite atrasar a ação, preparar e todo o resto que muda a ordem no meio do
+   combate.
+4. **O jogador não vê NADA da criatura: nome e ordem, só.** Daí o
+   `iniciativa/valores` separado, que só o mestre lê — a lista pública tem
+   `nome`, `tipo` (para o ícone) e `ordem`, mais o ponteiro do `atual`. Se um dia
+   ele quiser mostrar os números, é mudar de nó, não de desenho.
+5. **Jogador ausente: o mestre digita.** A linha entra na mão, com nome e valor —
+   o mesmo caminho de uma criatura, sem `uid` nenhum. Quando a mesa rodar de
+   verdade a gente vê se isso incomoda.
