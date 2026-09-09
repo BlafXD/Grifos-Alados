@@ -20,6 +20,23 @@
   <link rel="stylesheet" href="css/rolagens_style.css">
   <link rel="stylesheet" href="css/iniciativa_style.css">
   <link rel="stylesheet" href="css/ficha_style.css">
+  <!-- por último: tudo aqui é ajuste POR CIMA do que as abas desenharam -->
+  <link rel="stylesheet" href="css/acessibilidade.css">
+
+  <!-- As preferências de acessibilidade precisam valer ANTES da primeira
+       pintura: aplicadas pelo acessibilidade.js (que é `defer`) a página
+       piscaria no tamanho errado a cada F5. São as mesmas quatro chaves
+       que o painel ⚙ grava. -->
+  <script>
+    try {
+      var p = JSON.parse(localStorage.getItem('grifosAlados.acessibilidade') || '{}') || {};
+      var r = document.documentElement;
+      if (p.texto) r.setAttribute('data-ga-texto', p.texto);
+      if (p.contraste)    r.classList.add('ga-contraste');
+      if (p.semMovimento) r.classList.add('ga-sem-movimento');
+      if (p.focoForte)    r.classList.add('ga-foco-forte');
+    } catch (e) {}
+  </script>
 </head>
 <body>
 
@@ -52,6 +69,11 @@
     <a href="#" class="nav-link" data-section="mesa">🎲 Mesa</a>
   </div>
 </nav>
+
+<!-- O conteúdo inteiro num marco <main>: é o destino do "Pular para o
+     conteúdo" e é o que um leitor de tela usa para saltar o cabeçalho e
+     o menu de uma vez. tabindex=-1 porque marco não recebe foco sozinho. -->
+<main id="ga-conteudo" tabindex="-1">
 
 <!-- ══════════════════ NOTÍCIAS (a gazeta de Arton) ══════════════════ -->
 <section id="noticias" class="active">
@@ -140,6 +162,8 @@
   </div>
 </section>
 
+</main>
+
 <!-- FOOTER -->
 <footer>
   ✦ GRIFOS ALADOS · ARTON · ANO DE <span id="mh-ano-rodape">1424</span> · TODOS OS DIREITOS RESERVADOS À COROA ✦
@@ -147,6 +171,9 @@
 
 <!-- script.js primeiro: define utilitários globais (GA_esc, GA_abrirModal…) usados pelos demais -->
 <script src="js/script.js" defer></script>
+<!-- logo depois: a gaveta e a semântica das abas precisam existir antes
+     do estado-navegacao.js restaurar a aba clicando nos próprios links -->
+<script src="js/acessibilidade.js" defer></script>
 <script src="js/statblock.js" defer></script>
 <script src="js/rolagens.js" defer></script>
 <script src="js/iniciativa.js" defer></script>

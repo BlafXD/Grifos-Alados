@@ -47,6 +47,21 @@ navegador, e cada aba tem botão de **backup `.json`** para você não perder na
 Basta abrir **[o site](https://blafxd.github.io/Grifos-Alados/)** no navegador. Funciona em
 computador e celular. Mande o link para a sua mesa — qualquer pessoa abre e usa, sem login.
 
+### ♿ No celular, no teclado e no leitor de tela
+
+No **celular**, o menu das 13 seções vira uma **gaveta** (o ☰ da barra fixa, que também
+mostra em que seção você está) — antes cabiam três seções na tela, e as outras dez não
+existiam. O texto já começa um degrau maior, e as tabelas largas rolam sozinhas, com aviso.
+
+O **⚙ Acessibilidade** (no canto do cabeçalho, ou na barra ☰ do celular) ajusta **tamanho do
+texto** em cinco degraus, **mais contraste**, **menos movimento** e **foco sempre visível** —
+fica salvo no navegador e vale nas duas edições.
+
+Pelo **teclado**: `Tab` entra no menu uma vez só e as **setas** andam entre as seções;
+há um "Pular para o conteúdo" no topo, `Esc` fecha gaveta e janelas, e as tabelas que não
+cabem na tela podem ser roladas com as setas. Detalhes em
+**[`docs/acessibilidade.md`](docs/acessibilidade.md)**.
+
 ## 📡 Mesa ao vivo (os jogadores acompanham)
 
 Há uma **edição dos jogadores** que mostra, **só para ver**, a **Loja** que o mestre rolou (com

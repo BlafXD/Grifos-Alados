@@ -409,22 +409,82 @@ window.GA_richPaste = function (e) {
 
 // Abre um modal genérico com o HTML informado. Fecha ao clicar fora,
 // no botão [data-ga-fechar] ou com Esc. Retorna o elemento do overlay.
+//
+// O `aria-modal` sozinho é promessa vazia: ele DIZ que a página atrás
+// está fora do ar, mas quem cumpre a promessa é o foco. Sem isso, o
+// Tab passeava pelas abas por baixo do modal e o leitor de tela lia a
+// página inteira como se nada estivesse aberto. Aqui:
+//   · o foco entra no modal (primeiro campo, ou a própria caixa);
+//   · não sai dele enquanto estiver aberto;
+//   · volta EXATAMENTE para o botão que abriu, ao fechar;
+//   · a página atrás para de rolar (no celular era o pior sintoma:
+//     arrastar a folha escorregava o site inteiro por baixo).
+const SEL_FOCAVEL = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), ' +
+                    'select:not([disabled]), textarea:not([disabled]), summary, ' +
+                    '[contenteditable="true"], [tabindex]:not([tabindex="-1"])';
+
 window.GA_abrirModal = function (htmlInterno) {
+  const focoAnterior = document.activeElement;
+
   const overlay = document.createElement('div');
   overlay.className = 'ga-modal-overlay';
-  overlay.innerHTML = `<div class="ga-modal" role="dialog" aria-modal="true">${htmlInterno}</div>`;
+  overlay.innerHTML = `<div class="ga-modal" role="dialog" aria-modal="true" tabindex="-1">${htmlInterno}</div>`;
   document.body.appendChild(overlay);
+  document.body.classList.add('ga-modal-aberto');
+
+  const caixa = overlay.querySelector('.ga-modal');
+
+  // Sem nome, o leitor anuncia só "diálogo". O cabeçalho do modal
+  // (.ga-modal-cab) é o título em todos os que existem hoje.
+  if (!caixa.getAttribute('aria-label') && !caixa.getAttribute('aria-labelledby')) {
+    const cab = caixa.querySelector('.ga-modal-cab');
+    if (cab) {
+      if (!cab.id) cab.id = 'ga-modal-tit-' + Math.random().toString(36).slice(2, 8);
+      caixa.setAttribute('aria-labelledby', cab.id);
+    }
+  }
+
+  function focaveis() {
+    return Array.prototype.filter.call(
+      caixa.querySelectorAll(SEL_FOCAVEL),
+      el => el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+  }
 
   function fechar() {
     overlay.remove();
-    document.removeEventListener('keydown', aoTeclar);
+    document.body.classList.remove('ga-modal-aberto');
+    document.removeEventListener('keydown', aoTeclar, true);
+    // O botão que abriu pode ter sumido no meio do caminho (um
+    // re-render da aba por baixo) — aí não há para onde voltar.
+    if (focoAnterior && document.contains(focoAnterior)) focoAnterior.focus();
   }
-  function aoTeclar(e) { if (e.key === 'Escape') fechar(); }
+
+  function aoTeclar(e) {
+    if (e.key === 'Escape') { e.preventDefault(); fechar(); return; }
+    if (e.key !== 'Tab') return;
+    const lista = focaveis();
+    if (!lista.length) { e.preventDefault(); caixa.focus(); return; }
+    const primeiro = lista[0], ultimo = lista[lista.length - 1];
+    // o foco escapou para a página de baixo (clique no fundo, por ex.)
+    if (!caixa.contains(document.activeElement)) {
+      e.preventDefault();
+      (e.shiftKey ? ultimo : primeiro).focus();
+    } else if (e.shiftKey && document.activeElement === primeiro) {
+      e.preventDefault(); ultimo.focus();
+    } else if (!e.shiftKey && document.activeElement === ultimo) {
+      e.preventDefault(); primeiro.focus();
+    }
+  }
 
   overlay.addEventListener('click', e => {
     if (e.target === overlay || e.target.closest('[data-ga-fechar]')) fechar();
   });
-  document.addEventListener('keydown', aoTeclar);
+  document.addEventListener('keydown', aoTeclar, true);
+
+  // Entra no primeiro campo de verdade; não havendo nenhum, na caixa.
+  // O ✕ é pulado de propósito: ninguém abre um modal para fechá-lo.
+  const alvo = focaveis().filter(el => !el.hasAttribute('data-ga-fechar'))[0];
+  (alvo || caixa).focus();
 
   overlay._fechar = fechar;
   return overlay;
@@ -491,9 +551,17 @@ preencherMasthead();
 // ── ALTURA DO MENU ───────────────────────────────────────────────────
 // Publica a altura real do nav em --nav-h para as sub-abas (Consultas,
 // Anotações) grudarem logo abaixo dele — mesmo quando o menu quebra linha.
+//
+// No celular quem gruda no topo não é mais o menu (que virou gaveta de
+// tela cheia, ~800px de altura) e sim a barra ☰. Medir o nav ali
+// empurraria as sub-abas para fora da tela.
 function ajustarAlturaNav() {
   const nav = document.getElementById('main-nav');
-  if (nav) document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+  if (!nav) return;
+  const barra = document.querySelector('.ga-barra-movel');
+  const emGaveta = getComputedStyle(nav).position === 'fixed';
+  const alto = (emGaveta && barra) ? barra.offsetHeight : nav.offsetHeight;
+  document.documentElement.style.setProperty('--nav-h', alto + 'px');
 }
 ajustarAlturaNav();
 window.addEventListener('load', ajustarAlturaNav);
