@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="css/mesa_style.css">
   <link rel="stylesheet" href="css/rolagens_style.css">
   <link rel="stylesheet" href="css/iniciativa_style.css">
+  <link rel="stylesheet" href="css/ficha_style.css">
 </head>
 <body>
 
@@ -356,7 +357,16 @@
 <!-- ══════════════════ FICHAS DOS JOGADORES (PDF) ══════════════════ -->
 <section id="fichas">
   <div class="wrapper">
-    <div id="fichas-content">
+    <!-- duas coisas moram nesta aba: a ficha FEITA aqui (js/ficha.js) e os
+         PDFs importados de sempre (js/fichas.js, dono do #fichas-content) -->
+    <nav class="fi-subtabs" data-fi-subtabs aria-label="Fichas">
+      <button type="button" class="fi-subtab fi-subtab--ativa" data-fi-tab="ficha">✍ Ficha de Personagem</button>
+      <button type="button" class="fi-subtab" data-fi-tab="pdfs">📄 Fichas em PDF</button>
+    </nav>
+    <div id="ficha-content" data-fi-panel="ficha">
+      <!-- Populado pelo ficha.js -->
+    </div>
+    <div id="fichas-content" data-fi-panel="pdfs" hidden>
       <!-- Populado pelo fichas.js -->
     </div>
   </div>
@@ -399,6 +409,8 @@
 <script src="js/statblock.js" defer></script>
 <script src="js/rolagens.js" defer></script>
 <script src="js/iniciativa.js" defer></script>
+<script src="js/ficha-data.js" defer></script>
+<script src="js/ficha.js" defer></script>
 <script src="js/noticias-data.js" defer></script>
 <script src="js/noticias.js" defer></script>
 <script src="js/loja_completa.js" defer></script>

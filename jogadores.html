@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="css/mesa_style.css">
   <link rel="stylesheet" href="css/rolagens_style.css">
   <link rel="stylesheet" href="css/iniciativa_style.css">
+  <link rel="stylesheet" href="css/ficha_style.css">
 </head>
 <body>
 
@@ -43,6 +44,7 @@
 <nav id="main-nav" aria-label="Seções da gazeta">
   <div class="nav-inner">
     <a href="#" class="nav-link active" data-section="noticias">📰 Notícias</a>
+    <a href="#" class="nav-link" data-section="ficha">📖 Ficha</a>
     <a href="#" class="nav-link" data-section="loja">🏪 Loja</a>
     <a href="#" class="nav-link" data-section="perigos">📚 Consultas</a>
     <a href="#" class="nav-link" data-section="viagem">🐎 Viagem</a>
@@ -55,6 +57,15 @@
 <section id="noticias" class="active">
   <div class="wrapper">
     <!-- Populado pelo noticias.js -->
+  </div>
+</section>
+
+<!-- ══════════════════ FICHA DE PERSONAGEM ══════════════════ -->
+<section id="ficha">
+  <div class="wrapper">
+    <div id="ficha-content">
+      <!-- Populado pelo ficha.js -->
+    </div>
   </div>
 </section>
 
@@ -139,6 +150,8 @@
 <script src="js/statblock.js" defer></script>
 <script src="js/rolagens.js" defer></script>
 <script src="js/iniciativa.js" defer></script>
+<script src="js/ficha-data.js" defer></script>
+<script src="js/ficha.js" defer></script>
 <script src="js/noticias-data.js" defer></script>
 <script src="js/noticias.js" defer></script>
 <script src="js/loja_completa.js" defer></script>
