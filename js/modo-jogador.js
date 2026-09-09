@@ -41,7 +41,8 @@
   // é de todo mundo: é lá que o jogador entra na conta, pede para entrar e
   // vê quem está na mesa. Travar a Mesa junto com o resto deixava os
   // botões dela mudos — o que acontecia até 08/09/2026.
-  const SECOES_LIVRES = { perigos: true, mesa: true };
+  //  ficha: a folha do jogador é DELE — escreve, rola e apaga à vontade.
+  const SECOES_LIVRES = { perigos: true, mesa: true, ficha: true };
 
   function bloquearClique(e) {
     const t = e.target;
@@ -66,11 +67,20 @@
     e.stopPropagation();                             // nenhum handler salva nada
   }
 
+  // Uma seção LIVRE não é travada por nada — nem pela trava geral, nem
+  // pelo login. A ficha de personagem é o caso: ela mora no localStorage
+  // deste navegador e nunca chega ao banco, então exigir a conta do Google
+  // para escrever nela seria trancar a porta de uma casa vazia.
+  function emSecaoLivre(el) {
+    const sec = el.closest('section');
+    return !!(sec && SECOES_LIVRES[sec.id]);
+  }
+
   // as caixas ricas deixam de ser editáveis — menos as marcadas com
   // [data-jog-edita], que existem para eles escreverem
   function travarEdicao() {
     document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-      if (el.closest('[data-jog-edita]')) return;
+      if (el.closest('[data-jog-edita]') || emSecaoLivre(el)) return;
       el.setAttribute('contenteditable', 'false');
     });
     // as deles seguem o login, nos dois sentidos: destravam quando alguém
@@ -78,6 +88,7 @@
     // [contenteditable] inteiro, e não só o ="true" de cima — uma caixa
     // travada não se acharia sozinha para ser destravada.
     document.querySelectorAll('[data-jog-edita] [contenteditable]').forEach(el => {
+      if (emSecaoLivre(el)) return;
       el.setAttribute('contenteditable', edicaoLiberada ? 'true' : 'false');
     });
   }

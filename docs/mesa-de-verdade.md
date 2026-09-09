@@ -247,6 +247,11 @@ app.
 
 ## 8. A ficha, que é a etapa longa
 
+> **Feita em 08/09/2026, na primeira leva** — a ficha calculada, rolável e salva
+> no navegador. O desenho, a matemática conferida no livro e as armadilhas estão
+> em `docs/ficha-do-jogador.md`. O que segue abaixo é o texto de quando ela ainda
+> era plano.
+
 Ele quer a ficha **completa, feita no app, pelo livro** — não o PDF importado de
 hoje. É, sozinha, maior que sala + rolagens + iniciativa somadas, e merece o
 próprio documento. O que já está do lado dele:

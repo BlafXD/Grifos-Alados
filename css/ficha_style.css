@@ -1,0 +1,630 @@
+/* ═══════════════════════════════════════════════════════════════════
+   FICHA DE PERSONAGEM (js/ficha.js) — a folha do jogador
+   Sub-aba "✍ Ficha" da 📖 Fichas no index.html; aba inteira no
+   jogadores.html. Mesmo pergaminho do resto da gazeta: Cinzel nos
+   rótulos, Crimson Pro nos números, o rust nos títulos e o dourado
+   guardado para o que se procura com o olho no meio do combate.
+
+   ⚠ Nada aqui é compartilhado com o bestiário (mz-*) nem com a
+   ⚗ Criar Ameaça (ca-*): o prefixo é fi-, e é só dos jogadores.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── CABEÇALHO E ABAS ──────────────────────────────────────────── */
+.fi-cabecalho { text-align: center; margin-bottom: 1rem; }
+.fi-cabecalho h1 {
+  font-family: 'UnifrakturMaguntia', 'Cinzel', serif;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  font-weight: 400;
+  color: var(--ink);
+  margin: 0 0 0.15rem;
+}
+.fi-subtitulo {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.fi-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--gold-dim);
+  margin-bottom: 0.9rem;
+}
+.fi-aba {
+  font-family: 'Cinzel', serif;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-bottom: none;
+  border-radius: var(--raio) var(--raio) 0 0;
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fi-aba:hover { background: var(--gold-pale); }
+.fi-aba--ativa {
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border-color: var(--rust-dark);
+}
+.fi-add {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.38rem 0.8rem;
+  cursor: pointer;
+  color: var(--parchment);
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: var(--raio);
+}
+.fi-add:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
+.fi-add--menor { font-size: 0.62rem; padding: 0.3rem 0.6rem; }
+
+/* a faixa da última rolagem — some enquanto ninguém rolou nada */
+.fi-rolagem {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--gold-pale);
+  border-left: 3px solid var(--gold-deep);
+  border-radius: var(--raio);
+  margin: 0 0 0.9rem;
+  padding: 0.4rem 0.7rem;
+}
+
+.fi-vazio {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  text-align: center;
+  color: var(--text-dim);
+  padding: 2.5rem 1rem;
+}
+
+/* ── O CARTÃO, QUE É A UNIDADE DA FICHA ────────────────────────── */
+.fi-cartao {
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-top: 3px solid var(--rust-dark);
+  border-radius: var(--raio);
+  box-shadow: 0 1px 4px var(--shadow);
+  padding: 0.8rem 0.95rem 0.9rem;
+  margin-bottom: 0.9rem;
+}
+.fi-cartao-tit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--parchment3);
+}
+.fi-cartao-nota {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-dim);
+}
+.fi-nota {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+  margin: 0.6rem 0 0;
+}
+.fi-nota code {
+  font-family: 'Courier New', monospace;
+  font-style: normal;
+  background: var(--parchment2);
+  padding: 0 0.2rem;
+  border-radius: var(--raio);
+}
+.fi-conta {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text-dim);
+  margin: 0.4rem 0 0;
+}
+
+/* ── CAMPOS ────────────────────────────────────────────────────── */
+.fi-campo { display: flex; flex-direction: column; gap: 0.15rem; flex: 1 1 9rem; min-width: 0; }
+.fi-campo--largo { flex: 2 1 16rem; }
+.fi-campo--curto { flex: 0 1 7rem; }
+.fi-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.fi-txt, .fi-num, .fi-sel {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  padding: 0.28rem 0.45rem;
+  min-width: 0;
+  width: 100%;
+}
+.fi-txt:focus, .fi-num:focus, .fi-sel:focus { outline: 2px solid var(--foco); outline-offset: -1px; }
+.fi-txt--nome {
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--rust-dark);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--gold-dim);
+  border-radius: 0;
+  padding: 0.1rem 0.1rem 0.2rem;
+}
+.fi-num { text-align: center; }
+.fi-num--mini { width: 3rem; flex: 0 0 3rem; padding: 0.18rem 0.2rem; font-size: 0.88rem; }
+.fi-num--nivel { width: 3.4rem; flex: 0 0 3.4rem; }
+.fi-sel--mini { width: auto; font-size: 0.84rem; padding: 0.15rem 0.25rem; }
+
+.fi-mini {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.28rem 0.45rem;
+  cursor: pointer;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-mini:hover { background: var(--gold-pale); color: var(--ink); }
+.fi-mini--x:hover { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
+
+/* ── IDENTIDADE ────────────────────────────────────────────────── */
+.fi-ident-nomes, .fi-ident-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+.fi-ident-classes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--parchment3);
+}
+.fi-classes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.fi-classe { display: flex; align-items: center; gap: 0.2rem; }
+.fi-classe .fi-sel { width: auto; }
+.fi-nivel-selo {
+  margin-left: auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--gold-deep);
+  border-radius: var(--raio);
+  padding: 0.28rem 0.7rem;
+}
+.fi-nivel-selo strong { font-size: 1rem; }
+.fi-nivel-selo em {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: lowercase;
+  opacity: 0.85;
+}
+
+/* ── OS TRÊS CARTÕES DE NÚMEROS ────────────────────────────────── */
+.fi-numeros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 0.9rem;
+  align-items: start;
+}
+.fi-numeros .fi-cartao { margin-bottom: 0; }
+
+.fi-atr-grade {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+}
+.fi-atr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.4rem 0.2rem 0.35rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-atr-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+.fi-atr-val {
+  width: 100%;
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.fi-atr-val:focus { outline: 2px solid var(--foco); border-radius: var(--raio); }
+
+/* vida e mana */
+.fi-medidor {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+.fi-medidor-rot {
+  flex: 0 0 2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--rust-dark);
+}
+.fi-medidor-val {
+  /* o width é obrigatório: num <input>, o flex-basis sozinho não segura a
+     largura (o Chrome usa a largura intrínseca do campo) e o medidor
+     inteiro era empurrado para fora — o '/ 36' e o + sumiam */
+  flex: 0 0 4.2rem;
+  width: 4.2rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  padding: 0.15rem 0.2rem;
+}
+.fi-medidor-max {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  color: var(--text-dim);
+}
+.fi-medidor-max strong { color: var(--ink); font-size: 1.1rem; }
+.fi-passo {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  line-height: 1;
+  width: 1.6rem;
+  padding: 0.2rem 0;
+  cursor: pointer;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-passo:hover { background: var(--gold-pale); color: var(--ink); }
+.fi-barra-pv {
+  height: 6px;
+  background: var(--parchment3);
+  border-radius: var(--raio);
+  overflow: hidden;
+  margin: 0.15rem 0 0.55rem;
+}
+.fi-barra-pv span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--rust), var(--rust-dark));
+  transition: width 0.18s ease-out;
+}
+
+.fi-extras {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--parchment3);
+}
+.fi-extra { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.fi-extra > span {
+  font-family: 'Cinzel', serif;
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* defesa e carga */
+.fi-grande {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding-bottom: 0.15rem;
+}
+.fi-grande-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+.fi-grande-val {
+  font-family: 'Cinzel', serif;
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+}
+.fi-linhas { margin-top: 0.55rem; padding-top: 0.5rem; border-top: 1px solid var(--parchment3); }
+.fi-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  color: var(--ink);
+  padding: 0.18rem 0;
+}
+.fi-linha > span:first-child { color: var(--text-dim); }
+.fi-linha strong { font-family: 'Cinzel', serif; font-size: 1rem; }
+.fi-linha > span:last-child { display: flex; align-items: center; gap: 0.3rem; }
+
+/* ── PERÍCIAS ──────────────────────────────────────────────────── */
+.fi-per-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* COLUNAS, e não grade: com grid o alfabeto serpenteava pelas linhas
+     (Acrobacia, Adestramento, Atletismo lado a lado) e achar uma perícia
+     pelo nome virava caça. Em coluna, o olho desce o alfabeto. */
+  columns: 21rem;
+  column-gap: 1.4rem;
+}
+.fi-per-lista > .fi-per { break-inside: avoid; }
+.fi-per {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.2rem;
+  border-radius: var(--raio);
+  border-bottom: 1px dotted var(--parchment3);
+}
+.fi-per:hover { background: var(--linha-hover); }
+.fi-per--treinada { background: rgba(184, 151, 46, 0.09); }
+.fi-per--treinada:hover { background: var(--gold-pale); }
+
+.fi-per-check {
+  flex: 0 0 auto;
+  width: 1.15rem;
+  height: 1.15rem;
+  font-size: 0.72rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--parchment);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+}
+.fi-per-check[aria-pressed="true"] { background: var(--gold-deep); border-color: var(--gold-deep); }
+.fi-per-check:hover { border-color: var(--rust); }
+
+.fi-per-rolar {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  min-width: 0;
+  text-align: left;
+  font-family: 'Crimson Pro', serif;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.15rem 0.1rem;
+  color: var(--ink);
+}
+.fi-per-rolar:hover .fi-per-nome { color: var(--rust); text-decoration: underline dotted; }
+.fi-per-nome { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fi-per--treinada .fi-per-nome { font-weight: 700; }
+.fi-per-atr {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.fi-per-val {
+  margin-left: auto;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.fi-per--treinada .fi-per-val { color: var(--gold-deep); }
+
+.fi-per-marcas { display: flex; gap: 0.15rem; flex: 0 0 auto; }
+.fi-selo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.46rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  padding: 0.08rem 0.22rem;
+  white-space: nowrap;
+}
+.fi-selo--res { color: var(--azul);   border-color: var(--azul); }
+.fi-selo--atq { color: var(--rust);   border-color: var(--rust); }
+.fi-selo--arm { color: var(--carmim); border-color: var(--carmim); }
+
+/* ── ATAQUES ───────────────────────────────────────────────────── */
+.fi-atq-cab, .fi-atq {
+  display: grid;
+  grid-template-columns:
+    minmax(7rem, 2fr) 5.5rem 3rem 3.4rem minmax(4.5rem, 1fr) 2rem
+    minmax(4rem, 1fr) minmax(4rem, 1fr) minmax(5rem, 1fr) 2rem;
+  gap: 0.3rem;
+  align-items: center;
+}
+.fi-atq-cab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 0 0.1rem 0.25rem;
+  border-bottom: 1px solid var(--parchment3);
+}
+.fi-atq-lista { list-style: none; margin: 0 0 0.6rem; padding: 0; }
+.fi-atq { padding: 0.22rem 0.1rem; border-bottom: 1px dotted var(--parchment3); }
+.fi-atq:hover { background: var(--linha-hover); }
+.fi-atq .fi-txt, .fi-atq .fi-num, .fi-atq .fi-sel { padding: 0.18rem 0.3rem; font-size: 0.88rem; }
+.fi-txt--mini { font-size: 0.85rem; }
+.fi-atq .fi-num--mini { width: 100%; flex: 1 1 auto; }
+.fi-atq-vazio {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--text-dim);
+  padding: 0.5rem 0.2rem;
+  display: block;
+}
+.fi-atq-val {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border: 1px solid var(--rust-dark);
+  border-radius: var(--raio);
+  padding: 0.2rem 0.1rem;
+}
+.fi-atq-val:hover { background: var(--rust); }
+.fi-atq-dano {
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  padding: 0.22rem 0.1rem;
+}
+.fi-atq-dano:hover { background: var(--gold-pale); }
+
+/* ── OS BLOCOS DE TEXTO ────────────────────────────────────────── */
+.fi-texto {
+  min-height: 6rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: 0 0 var(--raio) var(--raio);
+  padding: 0.55rem 0.7rem;
+}
+.fi-texto:focus { outline: 2px solid var(--foco); outline-offset: -1px; }
+
+/* ── RODAPÉ ────────────────────────────────────────────────────── */
+.fi-rodape { display: flex; justify-content: flex-end; margin-bottom: 1.5rem; }
+.fi-remover {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.32rem 0.7rem;
+  cursor: pointer;
+  color: var(--carmim);
+  background: transparent;
+  border: 1px solid var(--carmim);
+  border-radius: var(--raio);
+}
+.fi-remover:hover { color: var(--parchment); background: var(--carmim); }
+
+/* ── SUB-ABAS DA 📖 FICHAS (só o index tem as duas) ─────────────── */
+.fi-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--gold-dim);
+  padding-bottom: 0.4rem;
+}
+.fi-subtab {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 0.4rem 0.95rem;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-subtab:hover { background: var(--gold-pale); }
+.fi-subtab--ativa {
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border-color: var(--rust-dark);
+}
+
+/* ── TELAS ESTREITAS ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .fi-atq-cab { display: none; }
+  .fi-atq {
+    grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+    gap: 0.25rem;
+    padding: 0.4rem 0.1rem;
+  }
+  .fi-nivel-selo { margin-left: 0; }
+}
+@media (max-width: 560px) {
+  .fi-atr-grade { grid-template-columns: repeat(2, 1fr); }
+  .fi-per-lista { columns: 1; }
+  .fi-per-marcas { display: none; }
+}

@@ -2509,10 +2509,10 @@ footer {
    Fora de #perigos (material de regra) e de #mesa, que é a aba de todo
    mundo — lá o jogador entra na conta e o mestre escolhe a campanha num
    <select> de verdade. */
-.ga-jogador section:not(#perigos):not(#mesa) select,
-.ga-jogador section:not(#perigos):not(#mesa) input[type="checkbox"],
-.ga-jogador section:not(#perigos):not(#mesa) input[type="number"] { pointer-events: none; opacity: 0.75; }
-.ga-jogador section:not(#perigos):not(#mesa) .ga-rich { cursor: default; }
+.ga-jogador section:not(#perigos):not(#mesa):not(#ficha) select,
+.ga-jogador section:not(#perigos):not(#mesa):not(#ficha) input[type="checkbox"],
+.ga-jogador section:not(#perigos):not(#mesa):not(#ficha) input[type="number"] { pointer-events: none; opacity: 0.75; }
+.ga-jogador section:not(#perigos):not(#mesa):not(#ficha) .ga-rich { cursor: default; }
 /* exceção: as caixas [data-jog-edita] são DELES (Residentes, Inventário da
    base e o Inventário dos jogadores) — escrevem e formatam normalmente, e
    por isso ganham o I-beam da casa. O seletor repete o `section:not(…)` de
@@ -2520,7 +2520,9 @@ footer {
    do :not() conta como ID) e a caixa que ELES editam ficava com seta. Só
    o ※ Descrição sai (o modal de descrições não é carregado no
    jogadores.html). */
-.ga-jogador section:not(#perigos) [data-jog-edita] .ga-rich { cursor: var(--cursor-texto); }
+.ga-jogador section:not(#perigos):not(#ficha) [data-jog-edita] .ga-rich { cursor: var(--cursor-texto); }
+/* a ficha é toda do jogador: texto, número, seletor e o I-beam da casa */
+.ga-jogador #ficha .ga-rich { cursor: var(--cursor-texto); }
 .ga-jogador .ga-barra-btn--desc { display: none; }
 /* As campanhas do mestre dentro do modal do 📡 — o mesmo chip da aba
    Mesa, na escala do modal. */
