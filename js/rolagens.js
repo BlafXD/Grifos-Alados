@@ -322,14 +322,25 @@
     if (cx) cx.scrollTop = cx.scrollHeight;
   }
 
-  function init() {
-    if (!window.GA_Mesa) return;
+  // ⚠ Mesma armadilha da iniciativa.js: o mesa.js é carregado DEPOIS
+  //  deste arquivo, e um script `defer` roda com readyState já em
+  //  "interactive" — não em "loading". O init() acontecia antes de o
+  //  GA_Mesa existir, dava o `return` mudo, e o painel de rolagens da
+  //  mesa não aparecia para ninguém, nunca.
+  function init(segundaChance) {
+    if (!window.GA_Mesa) {
+      // o mesa.js ainda pode estar na fila dos `defer`; o
+      // DOMContentLoaded só dispara depois que todos rodaram
+      if (!segundaChance && document.readyState !== 'complete') {
+        document.addEventListener('DOMContentLoaded', () => init(true), { once: true });
+      }
+      return;
+    }
     window.GA_Mesa.aoMudar(e => {
       mesa = e;
       ligar();
       render();
     });
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  init();
 })();
