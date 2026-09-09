@@ -92,6 +92,14 @@ uma hospedagem para o site (**GitHub Pages**).
              ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
            },
 
+           "fichas": {
+             ".read": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')",
+             "$uid": {
+               ".read":  "auth != null && ($uid === auth.uid || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')",
+               ".write": "auth != null && (($uid === auth.uid && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador') || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
+             }
+           },
+
            "jogadores": {
              "inventario": {
                ".read":  true,
@@ -113,11 +121,19 @@ uma hospedagem para o site (**GitHub Pages**).
    | Nó | Quem lê | Quem escreve |
    |---|---|---|
    | `dados` (loja, viagens, bases), `meta` | qualquer um com o link | o mestre da mesa |
+   | `fichas/<uid>` | **o dono dela e o mestre** — mais ninguém | o dono e o mestre |
    | `jogadores/inventario` | qualquer um com o link | **membros da mesa** |
    | `nome`, `campanhaId`, `entradaLivre`, `dono` | qualquer um | o mestre da mesa |
    | `membros` | membros (e cada um sempre lê o próprio) | o mestre; e o próprio, entrando numa mesa de porta aberta |
    | `pedidos` | o mestre (e cada um o seu) | quem pede, e o mestre |
    | `campanhas` | **qualquer um** (é a memória de Arton) | quem criou aquela campanha |
+
+   > 📖 **`fichas` é o único nó da mesa que não é público.** A loja, a gazeta e
+   > as bases são de leitura aberta a quem tem o link — a ficha de alguém não
+   > é. A regra dá leitura ao **dono dela** e ao **mestre/auxiliar**, e só: um
+   > jogador não lê a ficha do outro nem sabendo o `uid` dele, porque o pedido
+   > nunca chega ao banco. Escrever, idem — o dono escreve a sua, e o mestre
+   > escreve todas (é o que deixa ele baixar o PV no meio do combate).
 
    > 🚪 **Porta aberta é o padrão.** Uma mesa nasce com `entradaLivre: true`:
    > quem abre o link e entra com o Google vira jogador num clique, e o mestre
