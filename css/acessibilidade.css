@@ -1,0 +1,864 @@
+/* ═══════════════════════════════════════════════════════════════════
+   ACESSIBILIDADE — o último arquivo de estilo a entrar, de propósito:
+   tudo aqui é ajuste POR CIMA do que as abas já desenharam, e precisa
+   ganhar delas sem precisar de !important em toda linha.
+
+   Três públicos, um arquivo:
+
+   · QUEM ESTÁ NO CELULAR — o menu de 13 seções não cabia numa tela de
+     390px (aparecia três e meia, e a seção aberta podia estar FORA da
+     tela). Vira gaveta. A gazeta também parava de caber: o masthead
+     comia a primeira tela inteira antes de qualquer notícia.
+
+   · QUEM PRECISA DE TEXTO MAIOR — o site inteiro é escrito em `rem`
+     (869 declarações de font-size, ZERO em px). Isso é sorte grande:
+     mexer no font-size da raiz escala texto, respiro e botão juntos,
+     sem quebrar um layout sequer. É o que o painel ⚙ faz.
+
+   · QUEM NAVEGA PELO TECLADO OU POR LEITOR DE TELA — salto para o
+     conteúdo, o menu falando que é menu, e as tabelas largas viráveis
+     com as setas em vez de só com o dedo.
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════════════
+   1 · TAMANHO DO TEXTO
+   O passo escolhido no painel ⚙ mora no <html data-ga-texto="…">, e
+   um script de duas linhas no <head> o aplica ANTES da primeira
+   pintura — senão a página piscaria no tamanho errado a cada F5.
+
+   Sem escolha nenhuma, o celular já começa um degrau acima: 0,6rem
+   (o tamanho dos rótulos de tabela deste site) é 9,6px no padrão do
+   navegador — ilegível num aparelho na mão. A 112,5% vira 10,8px.
+   ══════════════════════════════════════════════════════════════════ */
+html[data-ga-texto="1"] { font-size: 87.5%;  }   /* 14px — cabe mais na tela */
+html[data-ga-texto="2"] { font-size: 100%;   }   /* 16px — padrão do navegador */
+html[data-ga-texto="3"] { font-size: 112.5%; }   /* 18px */
+html[data-ga-texto="4"] { font-size: 125%;   }   /* 20px */
+html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
+
+@media (max-width: 820px) {
+  html:not([data-ga-texto]) { font-size: 112.5%; }
+}
+
+/* Com a fonte grande, a margem do papel vira desperdício: no celular
+   cada 0,1rem a mais de padding é uma palavra a menos por linha. */
+@media (max-width: 820px) {
+  .wrapper { padding-left: 0.9rem; padding-right: 0.9rem; }
+}
+@media (max-width: 420px) {
+  .wrapper { padding-left: 0.7rem; padding-right: 0.7rem; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   2 · SÓ PARA LEITOR DE TELA
+   Texto que existe para ser ouvido, não visto. O clip de 1px é a
+   receita clássica: some da tela sem sair da árvore de acessibilidade
+   (display:none sairia, e o leitor não leria nada).
+   ══════════════════════════════════════════════════════════════════ */
+.ga-sr {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   3 · SALTO PARA O CONTEÚDO
+   Sem isto, quem navega por Tab atravessa as 13 seções do menu ANTES
+   de chegar em qualquer notícia — e atravessa de novo a cada troca de
+   aba. Fica escondido até receber o foco; aí desce como um selo.
+   ══════════════════════════════════════════════════════════════════ */
+.ga-salto {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  z-index: 10080;                 /* acima da tarja de aviso (10060) */
+  transform: translate(-50%, -120%);
+  padding: 0.7rem 1.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+  background: var(--gold-light);
+  border: 2px solid var(--ink);
+  border-top: none;
+  box-shadow: 0 4px 16px rgba(26, 16, 8, 0.45);
+  transition: transform 0.16s ease;
+}
+.ga-salto:focus {
+  transform: translate(-50%, 0);
+  outline: 2px solid var(--ink);
+  outline-offset: -6px;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   4 · A GAVETA DE SEÇÕES (celular)
+
+   Até 820px o menu deixa de ser uma faixa que rola de lado e vira uma
+   gaveta que abre pela esquerda. O motivo é medido, não estético: com
+   13 seções somando ~1500px, uma tela de 390px mostrava três — e a
+   faixa não tinha nenhum sinal de que rolava, então as outras dez
+   simplesmente não existiam para quem estava no celular.
+
+   A gaveta é o PRÓPRIO <nav id="main-nav"> reestilizado, não uma
+   cópia: os links continuam sendo os mesmos elementos, então o
+   estado-navegacao.js (que restaura a aba com link.click()) e o
+   script.js seguem funcionando sem saber que a gaveta existe.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Os dois pedaços que só existem em modo gaveta: a barra fixa que
+   substitui o menu (diz em que seção você está e abre a gaveta — é
+   ela que passa a valer como --nav-h) e o cabeçalho ✦ Seções ✦ ✕ que
+   mora dentro dela. Acima de 820px os dois somem: o menu volta a ser
+   a faixa de sempre e não tem cabeçalho nenhum. */
+.ga-barra-movel,
+.ga-gaveta-cab { display: none; }
+
+@media (max-width: 820px) {
+  .ga-barra-movel {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.28)),
+      var(--ink);
+    border-top: 1px solid var(--gold-dim);
+    border-bottom: 3px double var(--gold);
+  }
+
+  .ga-menu-btn {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 3rem;
+    padding: 0.5rem 0.9rem;
+    text-align: left;
+    font-family: 'Cinzel', serif;
+    color: var(--parchment);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .ga-menu-btn:hover { background: rgba(184, 151, 46, 0.10); }
+
+  .ga-menu-hamb {
+    flex: none;
+    font-size: 1.15rem;
+    line-height: 1;
+    color: var(--gold-light);
+  }
+  .ga-menu-atual {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+  }
+  .ga-menu-dica {
+    flex: none;
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--parchment3);
+    opacity: 0.75;
+  }
+
+  /* o ⚙ mora aqui no celular, não no masthead: a barra é fixa (está
+     sempre a um toque) e o canto do masthead, numa tela estreita, cai
+     em cima da linha "Licença da Coroa de Deheon" */
+  .ga-barra-acess {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    font-size: 1.05rem;
+    line-height: 1;
+    color: var(--gold-light);
+    background: none;
+    border: none;
+    border-left: 1px solid rgba(184, 151, 46, 0.25);
+    cursor: pointer;
+  }
+  .ga-barra-acess:hover { background: rgba(184, 151, 46, 0.14); }
+
+  /* ── a gaveta ── */
+  nav#main-nav {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(21rem, 87vw);
+    z-index: 10070;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-top: none;
+    border-right: 3px double var(--gold);
+    border-bottom: none;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+    transform: translateX(-102%);
+    transition: transform 0.22s ease;
+  }
+  body.ga-gaveta-aberta nav#main-nav { transform: none; }
+
+  /* Quem tira a gaveta fechada da ordem do Tab é o atributo `inert`,
+     posto pelo JS — e não um `visibility: hidden` daqui. A diferença
+     importa: com visibility em transição, o foco tentaria entrar num
+     elemento que o navegador ainda considera invisível e simplesmente
+     não entraria. `inert` é atributo, vale no mesmo instante, e ainda
+     esconde a gaveta do leitor de tela, que o visibility não fazia
+     de graça. Só o desenho do fantasma fica aqui: */
+  nav#main-nav[inert] { pointer-events: none; }
+
+  .ga-gaveta-cab {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.9rem 0.7rem 0.9rem 1.1rem;
+    border-bottom: 1px solid var(--gold-dim);
+  }
+  .ga-gaveta-tit {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .ga-gaveta-x {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--parchment);
+    background: none;
+    border: 1px solid rgba(184, 151, 46, 0.35);
+    border-radius: var(--raio);
+    cursor: pointer;
+  }
+  .ga-gaveta-x:hover { background: rgba(184, 151, 46, 0.14); color: var(--gold-light); }
+
+  .nav-inner {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    min-width: 0;
+    padding: 0.4rem 0 1rem;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    min-height: 3rem;                 /* ~54px na escala do celular */
+    padding: 0.75rem 1.1rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.09em;
+    white-space: normal;
+    border-bottom: 1px solid rgba(184, 151, 46, 0.12);
+    /* o trilho do sublinhado ativo vira uma barra na lateral */
+    border-left: 4px solid transparent;
+  }
+  .nav-link + .nav-link { border-left: 4px solid transparent; }
+  .nav-link.active {
+    border-bottom-color: rgba(184, 151, 46, 0.12);
+    border-left-color: var(--gold);
+  }
+
+  /* o véu que escurece a página e fecha a gaveta ao toque */
+  .ga-veu {
+    position: fixed;
+    inset: 0;
+    z-index: 10060;
+    background: rgba(26, 16, 8, 0.62);
+    border: none;
+    cursor: pointer;
+    animation: ga-veu-entra 0.18s ease;
+  }
+  @keyframes ga-veu-entra { from { opacity: 0; } to { opacity: 1; } }
+
+  /* com a gaveta aberta a página atrás não rola junto */
+  body.ga-gaveta-aberta { overflow: hidden; }
+}
+
+/* ── Acima de 820px o menu continua a faixa de sempre ──
+   … só que ela nunca coube: as 13 seções somam ~1600px, então numa
+   tela de 1536px "🎲 Mesa" ficava do lado de fora, atrás de um corte
+   limpo que parecia o fim da lista. A faixa rolava, mas nada dizia
+   isso — e a seção aberta podia estar fora da tela.
+
+   A saída não é sombra na ponta: é deixar o menu QUEBRAR LINHA. Num
+   jornal, um índice de seções em duas linhas é o normal — e assim
+   nenhuma seção fica escondida em largura nenhuma. O --nav-h que o
+   script.js publica já contava com essa possibilidade. */
+@media (min-width: 821px) {
+  .nav-inner {
+    flex-wrap: wrap;
+    min-width: 0;                    /* era max-content, que forçava a rolagem */
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   5 · O MASTHEAD NO CELULAR
+   A coroa da gazeta é a identidade do site e não vai sumir — mas numa
+   tela de 844px de altura ela ocupava ~340px, ou seja: a primeira
+   tela inteira era enfeite e a primeira notícia começava fora dela.
+   Aqui ela encolhe (não some) e a linha de rodapé do cabeçalho, que
+   quebrava em três colunas espremidas, passa a empilhar.
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 820px) {
+  header {
+    padding: 1.1rem 1rem 0.9rem;
+  }
+  .masthead-title { font-size: clamp(2.2rem, 13vw, 3.4rem); }
+  .masthead-ornament {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.3rem;
+  }
+  .masthead-sub { font-size: 0.82rem; margin-top: 0.15rem; }
+  .masthead-rule { margin: 0.6rem 0 0.4rem; }
+  .masthead-rule em { font-size: 0.58rem; letter-spacing: 0.12em; }
+  .masthead-meta {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.2rem 0.9rem;
+    font-size: 0.6rem;
+    padding-top: 0.4rem;
+    margin-top: 0.3rem;
+  }
+}
+
+/* Numa tela bem estreita, "VOL. VII, Nº 43" e "Preço: 3 Tibares" são
+   enfeite de jornal: quem está no celular precisa da data e do espaço. */
+@media (max-width: 460px) {
+  .masthead-meta > span:first-child,
+  .masthead-meta > span:last-child { display: none; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   6 · SUB-ABAS (Consultas, Anotações, Fichas, Criar Ameaça)
+   Elas já quebravam linha sozinhas, o que é certo — o problema era o
+   alvo: 28px de altura num dedo. E, grudadas embaixo de um menu que
+   no celular virou barra, o `top` delas precisa acompanhar.
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 820px) {
+  .cr-subtab,
+  .an-subtab,
+  .fi-subtab,
+  .ca-subtab {
+    min-height: 2.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* elas grudam no topo por conta própria; num celular isso rouba
+     metade da tela quando são 15, então rolam junto com a página */
+  .cr-subtabs,
+  .an-subtabs { position: static; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   7 · ALVOS DE TOQUE
+   A régra da WCAG (2.5.8) é 24×24 CSS px; a de quem usa o site com o
+   polegar é ~44px. Como TODO o site é rem, o degrau de fonte do item
+   1 já engorda quase tudo proporcionalmente — o que sobra aqui é a
+   lista curta dos controles que continuavam apertados mesmo assim:
+   os de navegação, os de ação principal e os ✕/✎ de um caractere só.
+   ══════════════════════════════════════════════════════════════════ */
+@media (pointer: coarse) {
+  /* botões de ação que aparecem em quase toda aba */
+  .mz-backup-btn,
+  .an-backup-btn,
+  .bs-backup-btn,
+  .ca-btn,
+  .ci-modo-btn,
+  .modo-btn,
+  .enc-btn,
+  .me-btn,
+  .ga-btn-principal,
+  .ga-btn-sec,
+  .lj-btn,
+  .vg-btn,
+  .tp-btn,
+  .fp-btn,
+  .fi-btn {
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* caixas de marcar: o quadradinho de 13px do sistema é o menor
+     alvo do site inteiro */
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-width: 1.35rem;
+    min-height: 1.35rem;
+  }
+  /* o rótulo inteiro já é clicável — só faltava ele ter altura */
+  .custom-chk,
+  .ga-check {
+    min-height: 2.5rem;
+    align-items: center;
+  }
+
+  /* campos e listas: no iOS, fonte abaixo de 16px faz a página dar
+     zoom sozinha ao focar o campo — e ela não volta */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    min-height: 2.6rem;
+    font-size: max(1rem, 16px);
+  }
+
+  /* o ✕ / ✎ / 🗑 de um caractere: o desenho fica igual, o alvo cresce
+     por baixo. Só nos que o site marcar com .ga-alvo (o JS marca). */
+  .ga-alvo { position: relative; }
+  .ga-alvo::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    transform: translate(-50%, -50%);
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   8 · TABELAS LARGAS
+   As tabelas de regras (arsenal, ações, culinária, tempo livre, criação
+   de itens) nascem com 447px numa coluna de 284px. Boa parte já vinha
+   dentro de um .prog-table-wrap que rolava — só que rolava em silêncio:
+   sem borda cortada, sem aviso, e SEM TECLADO (uma div que rola mas não
+   recebe foco é conteúdo trancado para quem não usa o dedo nem o mouse).
+
+   Por isso a classe não cria fundo nenhum: ela se soma ao invólucro que
+   a aba já desenhou. O JS aplica em quem já rolava e cria invólucro só
+   para a tabela que estava solta.
+   ══════════════════════════════════════════════════════════════════ */
+.ga-rola {
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+.ga-rola:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 2px;
+}
+/* a borda "rasgada" só existe enquanto sobra tabela do lado de fora */
+.ga-rola--corta {
+  box-shadow:
+    inset -16px 0 14px -14px rgba(26, 16, 8, 0.55),
+    inset  16px 0 14px -14px rgba(26, 16, 8, 0.28);
+}
+/* invólucro criado por nós (a tabela estava solta na página) */
+.ga-rola--nosso {
+  margin: 1rem 0 0.4rem;
+  border: 1px solid var(--parchment3);
+  border-top: 3px solid var(--gold);
+}
+.ga-rola--nosso > table { margin-bottom: 0; }
+
+/* a legenda que aparece só quando a tabela realmente não coube */
+.ga-rola-dica {
+  display: none;
+  margin: 0.25rem 0 0.8rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  opacity: 0.85;
+}
+.ga-rola--corta + .ga-rola-dica { display: block; }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   9 · O MODAL NO CELULAR
+   Vira folha colada embaixo: chega mais perto do polegar e o botão
+   de ação para de ficar a meia tela de distância.
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 560px) {
+  .ga-modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .ga-modal {
+    max-width: none;
+    max-height: 92vh;
+    border-width: 2px 0 0;
+    animation: ga-folha-sobe 0.2s ease;
+  }
+  @keyframes ga-folha-sobe {
+    from { transform: translateY(14px); opacity: 0.4; }
+    to   { transform: none; opacity: 1; }
+  }
+  .ga-modal-x {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    font-size: 1.3rem;
+  }
+}
+
+/* Com o modal aberto, a página atrás não rola junto (no celular era o
+   pior sintoma: você arrastava a folha e o site inteiro escorregava). */
+body.ga-modal-aberto { overflow: hidden; }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   10 · O SELO ⚙ E O PAINEL DE PREFERÊNCIAS
+   O selo mora no canto do masthead — os dois cantos de baixo já são
+   do 📡 (direita) e da coluna de rolagens/iniciativa (esquerda).
+   Desenhado como carimbo de repartição, que é o vocabulário da casa.
+   ══════════════════════════════════════════════════════════════════ */
+.ga-selo-acess {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.4rem;
+  padding: 0.35rem 0.7rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 1px solid var(--rust);
+  border-radius: var(--raio);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.ga-selo-acess:hover { background: var(--rust); color: var(--parchment); }
+.ga-selo-acess-icone { font-size: 0.95rem; line-height: 1; }
+
+/* No celular quem manda é o ⚙ da barra fixa — dois selos para a mesma
+   porta é ruído, e este cairia em cima do texto do masthead. */
+@media (max-width: 820px) {
+  .ga-selo-acess { display: none; }
+}
+
+/* ── o painel em si (conteúdo de um GA_abrirModal) ── */
+.ga-pref-grupo { margin-bottom: 1.3rem; }
+.ga-pref-grupo:last-of-type { margin-bottom: 0.4rem; }
+
+.ga-pref-rot {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 0.5rem;
+}
+.ga-pref-nota {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--ink-faded);
+  margin-top: 0.45rem;
+}
+
+/* a régua de tamanhos: cinco degraus, o A crescendo em cada um */
+.ga-pref-regua {
+  display: flex;
+  gap: 0.35rem;
+}
+.ga-pref-passo {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  min-height: 3.6rem;
+  padding: 0.5rem 0.2rem 0.45rem;
+  font-family: 'Cinzel', serif;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ga-pref-passo:hover { border-color: var(--ink-faded); background: var(--gold-pale); }
+.ga-pref-passo[aria-checked="true"] {
+  color: var(--parchment);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.ga-pref-passo-a { line-height: 1; font-weight: 700; }
+.ga-pref-passo-n {
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* os interruptores */
+.ga-pref-chave {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.ga-pref-chave + .ga-pref-chave { margin-top: 0.4rem; }
+.ga-pref-chave:hover { border-color: var(--ink-faded); }
+.ga-pref-chave-txt { flex: 1 1 auto; }
+.ga-pref-chave-txt small {
+  display: block;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--ink-faded);
+}
+.ga-pref-chave-luz {
+  flex: none;
+  width: 2.6rem;
+  height: 1.4rem;
+  padding: 2px;
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  border-radius: 999px;
+  transition: background 0.15s;
+}
+.ga-pref-chave-luz::before {
+  content: '';
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: 50%;
+  transition: transform 0.15s;
+}
+.ga-pref-chave[aria-pressed="true"] .ga-pref-chave-luz { background: var(--verde); }
+.ga-pref-chave[aria-pressed="true"] .ga-pref-chave-luz::before { transform: translateX(1.2rem); }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   11 · MAIS CONTRASTE
+   O pergaminho é bonito e é a cara do site — mas #6e5a44 sobre
+   #f2e8d5 dá 4,3:1, abaixo do 4,5:1 que a WCAG pede para texto
+   pequeno, e é justamente a cor dos rótulos miúdos. Ligando a chave,
+   os tons apagados encostam na tinta e as bordas engrossam.
+   ══════════════════════════════════════════════════════════════════ */
+html.ga-contraste {
+  --ink-faded:  #2a1a0e;   /* era #3d2b1f — os rótulos miúdos */
+  --text-mid:   #2a1a0e;
+  --text-dim:   #3a2716;   /* era #6e5a44 — o que reprovava em 4,5:1 */
+  --parchment3: #a08b62;   /* bordas: de bege claro para bege escuro */
+  --border:     #a08b62;
+  --gold-dim:   #6b5712;
+  --gold-deep:  #55450f;
+  --rust:       #7a2508;
+  --neutra:     #4c4238;
+}
+html.ga-contraste body { color: var(--ink); }
+html.ga-contraste :where(.ga-tip, a) { text-decoration-thickness: 2px; }
+html.ga-contraste :where(input, select, textarea, [contenteditable="true"]) {
+  border-color: var(--ink-faded) !important;
+}
+
+/* Quem já pediu mais contraste no sistema recebe sem precisar da chave. */
+@media (prefers-contrast: more) {
+  :root {
+    --ink-faded:  #2a1a0e;
+    --text-mid:   #2a1a0e;
+    --text-dim:   #3a2716;
+    --parchment3: #a08b62;
+    --gold-dim:   #6b5712;
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   12 · MENOS MOVIMENTO (a chave do painel)
+   O @media prefers-reduced-motion do style.css já atende quem pediu
+   no sistema; esta é para quem quer pedir só aqui.
+   ══════════════════════════════════════════════════════════════════ */
+html.ga-sem-movimento *,
+html.ga-sem-movimento *::before,
+html.ga-sem-movimento *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* A textura de ruído sobre a página inteira é enfeite caro para quem
+   tem sensibilidade visual — e some junto com o movimento. */
+html.ga-sem-movimento body::before { display: none; }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   13 · FOCO SEMPRE VISÍVEL
+   Por padrão o anel só aparece para quem navega por teclado
+   (:focus-visible). Quem liga a chave passa a vê-lo sempre — ajuda
+   quem usa switch, ponteiro de cabeça ou simplesmente se perde.
+   ══════════════════════════════════════════════════════════════════ */
+html.ga-foco-forte :where(a, button, summary, select, input, textarea,
+                          [role="button"], [contenteditable="true"],
+                          [tabindex]):focus {
+  outline: 3px solid var(--foco) !important;
+  outline-offset: 2px !important;
+  border-radius: var(--raio);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   14 · A REGIÃO QUE O LEITOR DE TELA ESCUTA
+   Trocar de aba não recarrega nada: para quem enxerga, a página
+   inteira muda; para quem ouve, nada acontecia. Esta caixa invisível
+   recebe a frase ("Seção Combates aberta") e o leitor a lê sozinho.
+   ══════════════════════════════════════════════════════════════════ */
+#ga-anuncio {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   15 · RESPIROS FINAIS DO CELULAR
+   Coisas que só apertam em tela estreita e não cabiam em nenhuma
+   das gavetas acima.
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 820px) {
+  /* palavras compridas de Arton (Wynlla, Tapista, Deheon…) em coluna
+     estreita: quebrar é melhor que estourar a caixa */
+  body { overflow-wrap: break-word; }
+
+  /* a coluna flutuante (rolagens + iniciativa) ocupava 88vw e cobria
+     a leitura; encolhe e encosta no canto */
+  .ga-coluna-mesa,
+  .ga-rol { width: min(17rem, 78vw); }
+
+  /* o rodapé em versalete de 0,7rem some no celular */
+  footer { font-size: 0.62rem; line-height: 1.7; padding: 1rem 0.9rem; }
+
+  /* ── os dois pontos que a varredura pegou ──
+     Uma passada por todas as 13 abas a 390px procurando quem estoura a
+     própria caixa devolveu exatamente estes dois — os dois por
+     `white-space: nowrap`. Cada um empurrava a página inteira uns
+     pixels para o lado, e página que rola de lado no celular é a
+     coisa mais irritante que existe.
+
+     O letreiro de tipo da Loja: 358px de letreiro numa coluna de
+     355px, por causa do letter-spacing de 0.28em somado a 1,2rem de
+     respiro de cada lado. */
+  .loja-divisor-tipo h3,
+  .loja-divisor-cat h4,
+  .year-header h2 {
+    white-space: normal;
+    letter-spacing: 0.16em;
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+  }
+
+  /* E o selo das Fichas Prontas, que é uma frase inteira ("🔒 aba só
+     do mestre — não existe na edição dos jogadores") presa em nowrap. */
+  .fp-selo { white-space: normal; }
+}
+
+/* ── COMBATES: a página inteira rolando de lado ────────────────────
+   Este é anterior a tudo o que está neste arquivo, e é o pior deles:
+   bastava existir UMA sessão para a aba Combates passar a rolar de
+   lado no celular — 503px de miolo numa tela de 380px.
+
+   A causa: `#monstros .wrapper` é `display: flex` com
+   `align-items: flex-start` (certo no computador, onde a barra
+   lateral fica ao lado e não deve esticar até o rodapé). Abaixo de
+   900px o próprio monstros_style.css o vira `flex-direction: column`
+   — e aí `flex-start` deixa de significar "não estique a ALTURA" e
+   passa a significar "não estique a LARGURA": os filhos passam a se
+   medir pelo conteúdo, não pela coluna.
+
+   `stretch` é o padrão do flex e é o que o layout em coluna quer. */
+@media (max-width: 900px) {
+  #monstros .wrapper { align-items: stretch; }
+}
+
+/* ── COMBATES: o nome da sessão espremido a 54px ───────────────────
+   O cabeçalho de sessão/cena/criatura é uma linha só com sete coisas:
+   ▾, o NOME, "0 cenas" e os quatro botões ↑ ↓ ⧉ ✕. Todos são
+   `flex: 0 0 auto` e o nome é o único que encolhe — então no celular
+   ele era o único a pagar a conta, e sobrava "Sessã" de "Sessão 1".
+
+   Deixando a linha quebrar, o nome fica com a primeira (ao lado do ▾)
+   e os botões descem para a segunda, inteiros. */
+@media (max-width: 620px) {
+  .mz-sessao-cabecalho,
+  .mz-cena-cabecalho,
+  .mz-criatura-cabecalho,
+  .mz-perigo-cabecalho { flex-wrap: wrap; }
+
+  .mz-sessao-cabecalho > .mz-nome,
+  .mz-cena-cabecalho > .mz-nome,
+  .mz-criatura-cabecalho > .mz-nome,
+  .mz-perigo-cabecalho > .mz-nome {
+    flex: 1 1 calc(100% - 3.4rem);   /* 100% menos o ▾ e o respiro */
+    overflow: visible;
+  }
+}
+
+/* Em pé e com o teclado aberto, a tela útil vira 300px de altura: um
+   painel fixo com 85vh some por baixo do teclado. */
+@media (max-height: 480px) {
+  .ga-modal { max-height: 96vh; }
+  .ga-coluna-mesa { max-height: 60vh; overflow-y: auto; }
+}
