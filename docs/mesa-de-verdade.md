@@ -603,3 +603,66 @@ com regra própria de mestre e auxiliar.
 É a mesma armadilha da cascata que já tinha aparecido na escrita (§12) — desta
 vez do lado da leitura, que é mais silenciosa: nada falha, o segredo só não é
 segredo.
+
+---
+
+## 18. A lista fora da mesa, e o botão que a chama (8 de setembro de 2026)
+
+A etapa 3 subiu com um defeito que só aparece de fora: **o painel de iniciativa
+não existia para quem não estava numa mesa.** O `render()` saía na primeira
+linha se `souMembro` fosse falso, então o mestre que abre o site e vai direto
+narrar — sem login, sem sala, sem banco — não via lista nenhuma e não tinha por
+onde pedir uma. Foi o que ele relatou: *"a lista de iniciativa que para mim não
+aparece"*.
+
+### Duas casas para a mesma lista
+
+| Onde ele está | Onde a lista mora | Quem vê |
+|---|---|---|
+| Numa mesa | `mesas/<sala>/iniciativa` (+ `iniciativaValores`) | a mesa inteira, ao vivo |
+| Fora de mesa | `localStorage` → `grifosAlados.iniciativaLocal` | só a tela dele |
+
+O resto do arquivo não sabe em qual das duas está: as escritas passam todas por
+`gravar()` / `gravarLista()`, e é lá dentro que a bifurcação acontece. O patch do
+Firebase (`'linhas/ID/ordem': 2`) é aplicado à mão na lista local pelo
+`aplicarLocal()` — mesmo formato, mesma chamada, duas casas.
+
+**A lista local só existe na página do MESTRE** (a que tem a aba ⚔ Combates —
+é assim que o `paginaDoMestre()` decide). No `jogadores.html` a iniciativa
+continua sendo só a da mesa: uma lista local ali daria a cada jogador uma ordem
+particular, que não é ordem nenhuma.
+
+### O botão
+
+Na barra "Narrando a cena" do **Painel de combate** (`js/monstros.js`,
+`construirPainel`), ao lado do "⚔ Combate em viagem": **⚔ Iniciativa**. Um
+clique só — abre o painel e, se a lista estiver vazia, já monta com a cena
+narrada. Ele nunca apaga um combate em andamento; para refazer há o "⚔ Montar
+de novo" de dentro do painel, que pergunta antes. O painel mora no canto de
+baixo à esquerda, longe de onde o olho estava, então ele **pisca** quando abre
+assim (`.ga-ini--chamou`).
+
+### Quando o painel aparece
+
+| Quem | Regra |
+|---|---|
+| Mestre/auxiliar no `index.html` | o que ele mandou — o ✕ fecha, o botão ⚔ traz de volta |
+| Auxiliar no `jogadores.html` | sempre (lá não há botão nenhum para reabrir) |
+| Jogador | só quando há combate |
+
+E **um combate que começa abre o painel sozinho**: o `conferirLista()` liga o
+`visivel` na transição de lista vazia para cheia — o que também cobre recarregar
+a página no meio do combate, e o auxiliar montando a lista do outro lado da mesa.
+
+### O grupo
+
+Os nomes digitados na mão (o campo aceita vários, separados por vírgula) ficam
+guardados em `grifosAlados.iniciativaGrupo` e **voltam sozinhos** na próxima
+montagem, sem valor, esperando o número. Mesa de amigos é a mesma gente toda
+semana. Tirar alguém com o ✕ da linha também o tira do grupo.
+
+### Criaturas repetidas
+
+Três goblins na cena viram "Goblin 1", "Goblin 2", "Goblin 3". A lista serve
+para saber **de quem** é a vez, e três linhas idênticas com valores diferentes
+não dizem isso. Nome que aparece uma vez só fica como está.

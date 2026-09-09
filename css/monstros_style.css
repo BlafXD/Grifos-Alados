@@ -1381,6 +1381,24 @@
 }
 .mz-painel-cv-toggle--ativo { background: var(--rust-dark); color: var(--parchment); border-color: var(--rust-dark); }
 
+/* botão "⚔ Iniciativa" — abre a lista da ordem do combate (iniciativa.js).
+   Vem cheio, e não vazado como o toggle ao lado: é a ação que se procura
+   com o combate já começando. */
+.mz-painel-ini {
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border: 1px solid var(--rust-dark);
+  border-radius: var(--raio);
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+}
+.mz-painel-ini:hover { background: var(--rust); border-color: var(--rust); }
+
 /* faixa "Combate em viagem" (abaixo de Ambiente em jogo) */
 .mz-combate-viagem { border-left-color: var(--rust); }
 .mz-combate-viagem .mz-amb-titulo {

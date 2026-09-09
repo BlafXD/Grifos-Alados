@@ -840,6 +840,8 @@
           ? `<button class="mz-painel-trazer" data-acao="trazer-ambientes-cena"
                      title="Substitui os ambientes em jogo pelos desta cena">↻ Trazer ${nAmbCena} ambiente${nAmbCena !== 1 ? 's' : ''} da cena</button>`
           : ''}
+        <button class="mz-painel-ini" data-acao="abrir-iniciativa"
+                title="Abre a lista de iniciativa no canto da tela. Vazia, ela se monta com as criaturas desta cena — 1d20 + a Iniciativa de cada uma — mais os jogadores">⚔ Iniciativa</button>
         <button class="mz-painel-cv-toggle ${dados.combateViagem ? 'mz-painel-cv-toggle--ativo' : ''}" data-acao="toggle-combate-viagem"
                 title="Mostra/esconde a faixa de regras de combate em viagem">⚔ Combate em viagem</button>
       </div>`;
@@ -2721,6 +2723,12 @@
     if (acao === 'mas-rolar-ideia')    { rolarIdeiaMasmorra(alvo);    return; }
     if (acao === 'mas-rolar-descanso') { rolarDescansoMasmorra(alvo); return; }
 
+    // A lista de iniciativa (js/iniciativa.js) mora num painel flutuante,
+    // fora desta aba; daqui só se pede que ela apareça.
+    if (acao === 'abrir-iniciativa') {
+      if (window.GA_Iniciativa) window.GA_Iniciativa.abrir();
+      return;
+    }
     if (acao === 'toggle-combate-viagem') {
       dados.combateViagem = !dados.combateViagem;
       salvar(); render(); return;
