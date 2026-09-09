@@ -115,9 +115,143 @@ Ou seja: **dados de regra ficam separados; ferramentas continuam comuns.**
   então exigir conta para escrever nela era trancar a porta de uma casa vazia.
   Agora `travarEdicao()` pula as seções livres.
 
-## O que vem depois
+---
 
-2. **A ficha sobe para a mesa** — cada uma num nó com dono; o jogador escreve a
-   dele, o mestre vê e edita todas.
-3. **A ficha empresta ao resto** — o PV aparecendo na lista de iniciativa, e o
-   item comprado na 🏪 Loja entrando no inventário com os espaços já contados.
+# A segunda leva — 9 de setembro de 2026
+
+A etapa 2 ("a ficha sobe para a mesa") saiu, e com ela seis pedidos dele numa
+conversa só. O que segue é o que mudou.
+
+## 1. O mestre vê a ficha dos jogadores, ao vivo
+
+> "eu permiti entrar uma pessoa e ela cria a ficha dela dentro do sistema, eu
+> como mestre gostaria de VER a ficha, consultar ela, rolar dados e etc...
+> Tudo em tempo real! Diminuir PV eu mesmo..."
+
+Cada ficha sobe para `mesas/<sala>/fichas/<uid>/<id>`. Na 📖 Fichas do mestre
+apareceu uma **segunda fileira de abas** — as fichas dos jogadores, com o nome
+de quem é dono. Ele abre, consulta, rola qualquer perícia e baixa o PV; a tela
+do jogador acompanha em segundos.
+
+**Quem vê o quê** — e isto é regra de banco, não botão escondido:
+
+| Quem | Lê | Escreve |
+|---|---|---|
+| o dono da ficha | a dele, em qualquer aparelho | a dele |
+| mestre e auxiliar | **todas** as da mesa | todas |
+| os outros jogadores | **nada** | nada |
+
+`fichas` é o primeiro nó da mesa que **não** é de leitura pública: a loja e a
+gazeta são abertas a quem tem o link, a ficha de alguém não. As regras estão em
+`MODO-JOGADOR.md` e **precisam ser republicadas no console do Firebase** — sem
+isso o banco recusa, e a linha 📡 da ficha mostra o erro em vez de fingir que
+foi.
+
+**Sem login, nada disso acontece**: a ficha continua sendo a folha local de
+sempre, e a linha 📡 diz o que fazer para o mestre passar a vê-la.
+
+### As duas decisões de engenharia
+
+- **A escrita é por GRUPO, não pela ficha inteira.** Quando o mestre baixa o PV
+  enquanto o jogador escreve no inventário, os dois escrevem no mesmo instante;
+  mandar a ficha toda faria o último a falar apagar o outro. O que sobe é só
+  `pv`, ou só `inventario`, e o banco junta. Quem marca o que sujou é o
+  `gravarCampo()`, pelo primeiro pedaço do `data-campo`.
+- **Toda ficha que chega passa pelo `normalizar`.** Ela vem do navegador de
+  outra pessoa, que pode estar numa versão mais velha do site — e um cartão que
+  lê `f.defesa.armadura` de um `f.defesa` que não existe derruba o *render*
+  inteiro. Quem pagaria seria o mestre, no meio do combate, com a tela travada
+  na ficha anterior e nenhum aviso. Foi um bug de verdade, pego no teste com uma
+  ficha de um campo só.
+
+## 2. PV e PM temporários, valendo de verdade
+
+> "(O que pode acontecer do jogador ao tomar dano, invés de descer os PV
+> temporários pode acabar acontecendo dele diminuir os PV atual!!!)"
+
+Ele estava certo, e o livro concorda (p. 105, no texto):
+
+> "Certos efeitos fornecem PV **ou PM** temporários. Eles são somados a seus
+> pontos atuais, mesmo que ultrapassem o máximo. Pontos temporários são
+> **sempre os primeiros a serem gastos**. Caso não seja especificado o
+> contrário, pontos temporários desaparecem no fim do dia."
+
+Antes, "PV temporários" era um número solto que não entrava em conta nenhuma.
+Agora:
+
+- **PM temporários** ganhou o bloco ao lado do de PV — é a mesma regra, e o
+  livro cita os dois na mesma frase;
+- o medidor tem um **selo dourado** (`⛨ 5 temp`) e a barra ganhou uma **faixa
+  hachurada** por cima da vida: dá para ver de longe que há escudo em pé;
+- todo dano passa por `gastarPontos()`, que **come o temporário primeiro** — e
+  o eco conta de onde saiu cada ponto: *"🩸 −9 PV: 6 dos temporários e 3 do PV"*;
+- **curar não devolve temporário** ("você nunca pode recuperar mais pontos do
+  que perdeu", p. 105 — e o temporário não é perda);
+- entrou uma caixa **Sofrer / curar** com 🩸 PV · ✚ PV · 🔥 PM · ✚ PM, para não
+  precisar clicar nove vezes no `−`.
+
+## 3. Um dado em cada perícia, e o rolador livre
+
+O 🎲 saiu do implícito: cada perícia tem o seu, e a rolagem vai para a mesa
+inteira. Ao lado, a mesma caixa de expressão do painel do mestre —
+`2d6+3`, `(2d8+4)×2` — com atalhos de d20, d%, 2d6, d8, d6 e d4. Enter rola.
+
+## 4. O inventário conta os espaços
+
+> "eu posso ter UMA armadura que pesa 5! Mas se eu pegar outra da mesma armadura
+> eu posso dizer que tenho DUAS armaduras que JUNTAS pesam 5!"
+
+O inventário deixou de ser uma caixa de texto e virou lista, com a conta da
+p. 141: **1 item = 1 espaço**; ½ para alquímicos, poções e pergaminhos; 2 para
+armas de duas mãos, armaduras leves e escudos pesados; 5 para armaduras pesadas
+e baús; 10 para o que for muito grande. **Cada mil moedas ocupam 1 espaço**,
+então o campo de T$ entra na conta sozinho.
+
+E o botão **cada / no total** é a resposta ao pedido dele: em `cada`, duas
+poções de ½ dão 1 espaço (a regra); em `no total`, o monte inteiro ocupa o que
+está escrito, quantas unidades forem — que é a decisão do mestre, e o próprio
+livro a autoriza ("em caso de dúvida, o mestre deve decidir o que achar mais
+coerente").
+
+A **Carga** parou de ser um número digitado à mão: sai daí. E o aviso de
+sobrecarga (−5 de armadura, −3m de deslocamento) aparece quando passa do limite.
+
+## 5. Magias vindas da base do site
+
+O "＋ Adicionar magia" busca nas **mesmas 254 magias** da aba 📚 Consultas
+(`window.GA_MAGIAS`) — nome, escola, círculo, tipo. O que entra já vem com
+círculo, PM, execução, alcance, alvo, duração e resistência preenchidos; o
+**🔥 gastar** desconta os PM do círculo (dos temporários primeiro) e o **👁 ver**
+abre o texto integral, com truque e aprimoramentos.
+
+A ficha **não guarda uma segunda cópia do livro**: guarda o `id` da magia e o
+que se lê na mesa. O texto inteiro é buscado na hora.
+
+## 6. Dois Ofícios (ou quantos quiser)
+
+> "posso ser um alquimista com um engenhoqueiro!"
+
+O livro é literal (p. 121): **"Ofício na verdade são várias perícias
+diferentes."** Então Ofício saiu do mapa de perícias — onde só cabia um — e
+virou lista: cada linha tem a sua especialidade, o seu treino e o seu bônus. Ser
+alquimista não faz de você um engenhoqueiro.
+
+O ＋ acrescenta outro; o campo tem a lista do livro (armeiro, artesão,
+alquimista, cozinheiro, alfaiate) como sugestão, porque o próprio livro manda
+inventar os que faltarem.
+
+## O que não se perdeu
+
+As caixas de texto de **Magias** e **Inventário** continuam existindo — desceram
+para dentro dos cartões novos, como anotação livre. O que já estava escrito
+segue onde estava.
+
+## O que ficou de fora
+
+- **A ficha ainda não empresta ao resto do site**: o PV não aparece na lista de
+  iniciativa, e o item comprado na 🏪 Loja não entra sozinho no inventário.
+- **Conflito de escrita é "o último ganha", por grupo.** Dois editando o mesmo
+  grupo ao mesmo tempo (os dois no PV) ainda é o último a falar. Basta para uma
+  mesa de amigos; não é um editor colaborativo.
+- **Sem histórico.** Quem baixou o PV não fica registrado. As rolagens ficam (no
+  log da mesa); as edições, não.

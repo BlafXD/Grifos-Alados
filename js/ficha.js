@@ -32,15 +32,44 @@
 
   let dados = { fichas: [], aberta: null };
   let ultimaRolagem = '';       // o detalhe da última rolagem, para a faixa
+  let ultimoDano = '';          // "−7 PV: 5 dos temporários e 2 do PV"
   let secao = null;             // a <section> que hospeda a aba
+
+  // ── AS FICHAS QUE VÊM DA MESA ────────────────────────────────────
+  //  `remotas` é uid → { fichaId: ficha }. Para o jogador vem só a
+  //  própria pasta (as fichas dele, de qualquer aparelho); para o
+  //  mestre vem a mesa inteira. Quem enche isto é o ficha-mesa.js —
+  //  aqui só se desenha e se escreve de volta. As MINHAS continuam
+  //  morando em dados.fichas: o localStorage é a verdade do que é meu,
+  //  e a mesa é o espelho.
+  let remotas = {};
+  let meuUid = '';
+  // O que mudou desde o último envio, por ficha: 'pv', 'pericias',
+  // 'inventario'… Publicar só os grupos sujos é o que deixa o mestre
+  // baixar o PV enquanto o jogador escreve no inventário sem um apagar
+  // o outro (ver o cabeçalho do ficha-mesa.js).
+  const sujos = {};
+  function sujar(id, grupo) {
+    (sujos[id] || (sujos[id] = new Set())).add(grupo);
+  }
 
   // ── PERSISTÊNCIA ─────────────────────────────────────────────────
   let _timer = null;
-  function salvar() { clearTimeout(_timer); _timer = setTimeout(gravar, 250); }
-  function salvarAgora() { clearTimeout(_timer); gravar(); }
+  function salvar() { clearTimeout(_timer); _timer = setTimeout(gravarTudo, 250); }
+  function salvarAgora() { clearTimeout(_timer); gravarTudo(); }
+  function gravarTudo() { gravar(); subir(); }
   function gravar() {
     try { window.GA_guardar(STORAGE_KEY, JSON.stringify(dados)); }
     catch (e) { console.warn('[ficha] não deu para salvar:', e && e.message); }
+  }
+  // Manda para a mesa a ficha que está aberta. Se for de outra pessoa
+  // (o mestre mexendo na ficha de um jogador), vai para a pasta DELA.
+  function subir() {
+    const f = fichaAberta();
+    if (!f || !window.GA_FichaMesa) return;
+    const g = sujos[f.id];
+    delete sujos[f.id];
+    window.GA_FichaMesa.publicar(f, donoDe(f.id), g);
   }
   function carregar() {
     try {
@@ -76,11 +105,15 @@
     D.ATRIBUTOS.forEach(a => {
       if (typeof f.atributos[a.chave] !== 'number') f.atributos[a.chave] = 0;
     });
+    // PV e PM: `atual` null quer dizer "cheio" (a ficha nova não precisa
+    // saber o máximo antes de ter classe). `temp` é a regra da p. 105 —
+    // ver gastarPontos(), que é onde ela de fato acontece.
     f.pv = f.pv || {}; f.pm = f.pm || {};
     if (typeof f.pv.atual  !== 'number') f.pv.atual  = null;   // null = cheio
     if (typeof f.pv.temp   !== 'number') f.pv.temp   = 0;
     if (typeof f.pv.outros !== 'number') f.pv.outros = 0;
     if (typeof f.pm.atual  !== 'number') f.pm.atual  = null;
+    if (typeof f.pm.temp   !== 'number') f.pm.temp   = 0;
     if (typeof f.pm.outros !== 'number') f.pm.outros = 0;
 
     f.defesa = f.defesa || {};
@@ -100,6 +133,67 @@
       };
     });
 
+    // ── OFÍCIOS ────────────────────────────────────────────────────
+    //  "Ofício na verdade são várias perícias diferentes" (p. 121): um
+    //  alquimista e um engenhoqueiro são DUAS perícias, com treino e
+    //  bônus separados. Por isso Ofício saiu do mapa de perícias (onde
+    //  só cabia um) e virou lista.
+    //  A ficha que já existia tinha um Ofício só, em pericias.oficio —
+    //  ele vira o primeiro da lista, com o treino e o bônus que tinha.
+    if (!Array.isArray(f.oficios)) {
+      const velho = f.pericias.oficio || {};
+      f.oficios = [{ id: novoId(), esp: '', treinada: !!velho.treinada, outros: velho.outros || 0 }];
+    }
+    f.oficios = f.oficios.map(o => ({
+      id: (o && o.id) || novoId(),
+      esp: String((o && o.esp) || ''),            // "alquimista", "engenhoqueiro"…
+      treinada: (o && o.treinada) === true,
+      outros: (o && typeof o.outros === 'number') ? o.outros : 0,
+    }));
+    if (!f.oficios.length) f.oficios = [{ id: novoId(), esp: '', treinada: false, outros: 0 }];
+
+    // ── INVENTÁRIO (p. 141) ────────────────────────────────────────
+    //  `cada: true`  → o número de espaços é POR UNIDADE (o normal: duas
+    //                  poções de ½ dão 1 espaço);
+    //  `cada: false` → é o total do monte, quantas unidades forem — é o
+    //                  "duas armaduras que JUNTAS ocupam 5" que o mestre
+    //                  pode conceder, e que o próprio livro autoriza:
+    //                  "em caso de dúvida, o mestre deve decidir o que
+    //                  achar mais coerente".
+    if (!Array.isArray(f.inventario)) f.inventario = [];
+    f.inventario = f.inventario.map(it => ({
+      id: (it && it.id) || novoId(),
+      nome: String((it && it.nome) || ''),
+      qtd: Math.max(0, parseInt((it && it.qtd), 10) || 0) || 1,
+      espacos: (it && typeof it.espacos === 'number') ? it.espacos : 1,
+      cada: (it && it.cada) !== false,
+      obs: String((it && it.obs) || ''),
+    }));
+    if (typeof f.tibares !== 'number') f.tibares = 0;
+
+    // ── MAGIAS ─────────────────────────────────────────────────────
+    //  Vêm da mesma base das Consultas (window.GA_MAGIAS): o que fica
+    //  guardado na ficha é o `mid` e uma cópia do que se lê na mesa. A
+    //  cópia é de propósito — uma ficha exportada num .json continua
+    //  legível sem o site do lado.
+    if (!Array.isArray(f.magias)) f.magias = [];
+    f.magias = f.magias.map(m => ({
+      id: (m && m.id) || novoId(),
+      mid: String((m && m.mid) || ''),
+      nome: String((m && m.nome) || ''),
+      circulo: (m && typeof m.circulo === 'number') ? m.circulo : 0,
+      pm: (m && typeof m.pm === 'number') ? m.pm : 0,
+      tipo: String((m && m.tipo) || ''),
+      escola: String((m && m.escola) || ''),
+      execucao: String((m && m.execucao) || ''),
+      alcance: String((m && m.alcance) || ''),
+      alvo: String((m && m.alvo) || ''),
+      duracao: String((m && m.duracao) || ''),
+      resistencia: String((m && m.resistencia) || ''),
+      resumo: String((m && m.resumo) || ''),
+      obs: String((m && m.obs) || ''),
+    }));
+
     if (!Array.isArray(f.ataques)) f.ataques = [];
     f.ataques = f.ataques.map(a => ({
       id: (a && a.id) || novoId(),
@@ -113,25 +207,77 @@
     }));
 
     f.blocos = f.blocos || {};
-    BLOCOS.forEach(b => { if (typeof f.blocos[b.campo] !== 'string') f.blocos[b.campo] = ''; });
+    TODOS_BLOCOS.forEach(b => { if (typeof f.blocos[b.campo] !== 'string') f.blocos[b.campo] = ''; });
     return f;
   }
 
   function novoId() { return 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
-  function fichaAberta() { return dados.fichas.find(f => f.id === dados.aberta) || null; }
 
+  // A ficha aberta pode ser minha (localStorage) ou de outra pessoa da
+  // mesa (só o mestre e o auxiliar chegam nessas). As duas se editam
+  // igual; o que muda é para onde o salvamento vai.
+  function fichaAberta() {
+    const minha = dados.fichas.find(f => f.id === dados.aberta);
+    if (minha) return minha;
+    let achada = null;
+    Object.keys(remotas).forEach(uid => {
+      if (uid === meuUid) return;                    // as minhas já foram
+      const m = remotas[uid] || {};
+      if (m[dados.aberta]) achada = m[dados.aberta];
+    });
+    return achada;
+  }
+  // null = é minha. Senão, o uid de quem é dono dela.
+  function donoDe(id) {
+    if (dados.fichas.some(f => f.id === id)) return null;
+    let dono = null;
+    Object.keys(remotas).forEach(uid => {
+      if (uid !== meuUid && (remotas[uid] || {})[id]) dono = uid;
+    });
+    return dono;
+  }
+  // As fichas de outra gente, agrupadas por dono, para a barra.
+  function fichasDaMesa() {
+    const saida = [];
+    Object.keys(remotas).forEach(uid => {
+      if (uid === meuUid) return;
+      const m = remotas[uid] || {};
+      Object.keys(m).forEach(id => {
+        if (m[id] && typeof m[id] === 'object') saida.push({ uid: uid, ficha: m[id] });
+      });
+    });
+    return saida;
+  }
+  // O nome de quem é dono, tirado da lista de membros da mesa; se ela
+  // ainda não chegou, o `autor` que veio carimbado na própria ficha.
+  function nomeDoDono(uid, ficha) {
+    const est = window.GA_Mesa ? window.GA_Mesa.estado() : null;
+    const m = est && est.membros && est.membros[uid];
+    return (m && m.nome) || (ficha && ficha.autor) || 'alguém da mesa';
+  }
+
+  // As caixas de texto rico que viram cartão próprio, na ordem em que
+  // aparecem. Magias e Inventário SAÍRAM daqui: viraram listas de
+  // verdade (com espaços contados e busca na base de magias), e a caixa
+  // livre de cada uma passou a morar dentro do cartão novo — o que
+  // alguém já tinha escrito continua onde estava.
   const BLOCOS = [
     { campo: 'racaOrigem',    titulo: '🌿 Habilidades de raça e origem',
       dica: 'O que a raça e a origem lhe deram — copie do livro ou escreva com suas palavras…' },
     { campo: 'classePoderes', titulo: '⚔ Habilidades de classe e poderes',
       dica: 'Habilidades de classe, poderes, capacidades de caminho…' },
-    { campo: 'magias',        titulo: '✨ Magias',
-      dica: 'Círculo, custo, execução, alcance, duração, efeito. A aba 📚 Consultas → ✨ Magias tem as 254 do livro para copiar.' },
-    { campo: 'inventario',    titulo: '🎒 Inventário',
-      dica: 'Armas, armaduras, itens e tibares. A 🏪 Loja traz preço e espaços de cada coisa.' },
     { campo: 'anotacoes',     titulo: '📜 Anotações',
       dica: 'História, aliados, contatos, dívidas, o que ficou pendente…' },
   ];
+  // Ficaram no modelo (nada do que foi escrito se perde), mas são
+  // desenhadas dentro dos cartões de Magias e Inventário.
+  const BLOCOS_EMBUTIDOS = [
+    { campo: 'magias',
+      dica: 'Anotações de magia: o que você preparou hoje, aprimoramentos que costuma usar, truques…' },
+    { campo: 'inventario',
+      dica: 'Anotações do inventário: o que ficou na base, o que é de outro personagem, dívidas…' },
+  ];
+  const TODOS_BLOCOS = BLOCOS.concat(BLOCOS_EMBUTIDOS);
 
   // ═══ AS CONTAS ════════════════════════════════════════════════════
   //  Todas saem do livro (Tormenta 20 — Edição Jogo do Ano). Nada disto
@@ -183,19 +329,103 @@
     return n >= 15 ? 6 : n >= 7 ? 4 : 2;
   }
   // Perícia = ⌊nível ÷ 2⌋ + atributo-chave + treino + outros − armadura
-  function valorPericia(f, chave) {
-    const P = D.pericia(chave);
+  //  `e` é a entrada da perícia nesta ficha ({treinada, outros}). Vem
+  //  separada porque Ofício tem uma entrada por especialidade, e todas
+  //  usam esta mesma conta.
+  function calcPericia(f, P, e) {
     if (!P) return 0;
-    const n = nivel(f), e = f.pericias[chave] || {};
-    let v = Math.floor(n / 2) + atr(f, P.atr) + treino(n, e.treinada) + (e.outros || 0);
+    const n = nivel(f);
+    let v = Math.floor(n / 2) + atr(f, P.atr) + treino(n, (e || {}).treinada) + ((e || {}).outros || 0);
     if (P.armadura) v -= Math.abs(f.defesa.penalidade || 0);
     return v;
+  }
+  function valorPericia(f, chave) {
+    return calcPericia(f, D.pericia(chave), f.pericias[chave]);
+  }
+  function valorOficio(f, i) {
+    return calcPericia(f, D.pericia('oficio'), f.oficios[i]);
+  }
+  // "Ofício (alquimista)" — como o livro escreve, e como o log da mesa
+  // precisa mostrar para não sair três "Ofício" iguais.
+  function nomeOficio(o) {
+    return 'Ofício' + (o && o.esp ? ' (' + o.esp + ')' : '');
   }
   // CD das suas habilidades = 10 + ⌊nível ÷ 2⌋ + atributo-chave
   function cdBase(f) { return 10 + Math.floor(nivel(f) / 2) + atr(f, f.cdAtributo); }
   function valorAtaque(f, a) { return valorPericia(f, a.pericia) + (a.extra || 0); }
   function pvAtual(f) { return f.pv.atual == null ? pvMax(f) : f.pv.atual; }
   function pmAtual(f) { return f.pm.atual == null ? pmMax(f) : f.pm.atual; }
+
+  // ── PONTOS TEMPORÁRIOS (p. 105) ─────────────────────────────────
+  //  A regra, no texto do livro: "Certos efeitos fornecem PV ou PM
+  //  temporários. Eles são somados a seus pontos atuais, mesmo que
+  //  ultrapassem o máximo. Pontos temporários são SEMPRE OS PRIMEIROS
+  //  A SEREM GASTOS. Caso não seja especificado o contrário, pontos
+  //  temporários desaparecem no fim do dia."
+  //
+  //  É a parte que a ficha errava: os temporários ficavam num campo
+  //  solto, sem entrar em conta nenhuma, e o dano descia direto do PV
+  //  atual — que é exatamente o engano que se comete na mesa também.
+  //  Agora todo dano e todo gasto de mana passam por aqui.
+  //
+  //  Devolve o que foi tirado de cada lado, para a mensagem poder
+  //  contar a história ("−7: 5 dos temporários e 2 do PV").
+  function gastarPontos(f, qual, quanto) {
+    const p = f[qual];                       // f.pv ou f.pm
+    const n = Math.max(0, Math.round(quanto || 0));
+    const doTemp = Math.min(p.temp || 0, n);
+    p.temp = (p.temp || 0) - doTemp;
+    const resto = n - doTemp;
+    if (resto) {
+      const agora = qual === 'pv' ? pvAtual(f) : pmAtual(f);
+      // PV negativo existe (a p. 236 trata disso); PM não desce de 0.
+      p.atual = qual === 'pv' ? agora - resto : Math.max(0, agora - resto);
+    }
+    return { temp: doTemp, atual: resto };
+  }
+  // Curar NÃO devolve temporário: "você nunca pode recuperar mais pontos
+  // de vida ou mana do que perdeu" (p. 105), e o temporário não é perda.
+  function curarPontos(f, qual, quanto) {
+    const n = Math.max(0, Math.round(quanto || 0));
+    const teto = qual === 'pv' ? pvMax(f) : pmMax(f);
+    const agora = qual === 'pv' ? pvAtual(f) : pmAtual(f);
+    f[qual].atual = Math.min(teto, agora + n);
+    return f[qual].atual - agora;
+  }
+  // O total à vista: atual + temporários. É este número que aparece
+  // grande, porque é o que o jogador tem de fato para gastar.
+  function pvTotal(f) { return pvAtual(f) + (f.pv.temp || 0); }
+  function pmTotal(f) { return pmAtual(f) + (f.pm.temp || 0); }
+
+  // ── CARGA (p. 141) ──────────────────────────────────────────────
+  //  Sai do inventário, não mais de um número digitado à mão. Cada
+  //  linha vale `espacos × qtd` (o normal) ou `espacos` fechado, se o
+  //  mestre disse que o monte inteiro ocupa aquilo.
+  //  As moedas entram por cima: "cada mil moedas ocupam 1 espaço".
+  function cargaItens(f) {
+    return f.inventario.reduce((s, it) => {
+      const n = it.cada ? (it.espacos || 0) * (it.qtd || 0) : (it.espacos || 0);
+      return s + n;
+    }, 0);
+  }
+  function cargaMoedas(f) {
+    return Math.floor(Math.max(0, f.tibares || 0) / (D.MOEDAS_POR_ESPACO || 1000));
+  }
+  function cargaUsada(f) {
+    return arredonda(cargaItens(f) + cargaMoedas(f));
+  }
+  // Meio espaço existe (poções, pergaminhos), então a soma é fracionária
+  // — mas 0.30000000000000004 não é número de ficha.
+  function arredonda(n) { return Math.round(n * 100) / 100; }
+
+  // Sobrecarregado: passou do limite → −5 de armadura e −3m. Acima do
+  // dobro, o livro diz que simplesmente não dá para carregar.
+  function estadoCarga(f) {
+    const u = cargaUsada(f), lim = cargaMax(f);
+    if (u > lim * 2) return 'demais';
+    if (u > lim)     return 'sobrecarregado';
+    return 'ok';
+  }
 
   function sinal(v) { return (v >= 0 ? '+' : '') + v; }
   // Os quatro patamares, com as faixas do livro (p. 39): iniciante 1–4,
@@ -223,6 +453,55 @@
   function d20(valor) { return valor === 0 ? '1d20' : '1d20' + sinal(valor); }
   function quem(f) { return f.nome || 'personagem sem nome'; }
 
+  // O que estiver na caixinha de dano/cura. Vazio vale 1 — assim o
+  // botão sozinho já serve para o dano de um ponto.
+  function lerDano() {
+    const el = secao && secao.querySelector('[data-fi-dano]');
+    const n = el ? parseInt(el.value, 10) : 1;
+    return (isFinite(n) && n > 0) ? n : 1;
+  }
+
+  // ── DANO E CURA ──────────────────────────────────────────────────
+  //  A conta está em gastarPontos(); aqui é a parte que a pessoa vê: o
+  //  eco que conta de onde saiu cada ponto. É o aviso que faltava — sem
+  //  ele ninguém percebe que os temporários foram consumidos, e é aí
+  //  que o PV atual cai sem precisar.
+  function aplicarDano(f, qual, n, porQue) {
+    const rot = qual === 'pv' ? 'PV' : 'PM';
+    const r = gastarPontos(f, qual, n);
+    sujar(f.id, qual);
+    const partes = [];
+    if (r.temp)  partes.push('<strong>' + r.temp + '</strong> dos temporários');
+    if (r.atual) partes.push('<strong>' + r.atual + '</strong> do ' + rot);
+    ultimoDano = '🩸 −' + n + ' ' + rot + (porQue ? ' (' + esc(porQue) + ')' : '') +
+                 (partes.length ? ': ' + partes.join(' e ') : '') +
+                 (r.temp && !r.atual ? ' — o ' + rot + ' nem foi tocado' : '') +
+                 ((f[qual].temp || 0) ? ' · ainda restam ' + f[qual].temp + ' temporários' : '');
+    atualizarDerivados();
+    salvar();
+  }
+  function aplicarCura(f, qual, n) {
+    const rot = qual === 'pv' ? 'PV' : 'PM';
+    const ganho = curarPontos(f, qual, n);
+    sujar(f.id, qual);
+    ultimoDano = ganho
+      ? '✚ +' + ganho + ' ' + rot + (ganho < n ? ' (o resto passaria do máximo)' : '')
+      : '✚ nada a recuperar — o ' + rot + ' já está cheio';
+    atualizarDerivados();
+    salvar();
+  }
+
+  // ── O ROLADOR LIVRE ──────────────────────────────────────────────
+  function rolarLivre(f) {
+    const campo = secao && secao.querySelector('[data-fi-expr]');
+    if (!campo) return;
+    const txt = (campo.value || '').trim();
+    if (!txt) return;
+    rolar(txt, quem(f));
+    campo.value = '';
+    campo.focus();
+  }
+
   // ═══ RENDER ═══════════════════════════════════════════════════════
   function render() {
     const cont = document.getElementById('ficha-content');
@@ -242,7 +521,23 @@
           </button>`).join('')}
         <button type="button" class="fi-add" data-acao="nova">＋ Nova ficha</button>
       </div>
+      ${barraDaMesa()}
       <p class="fi-rolagem" data-fi-rolagem ${ultimaRolagem ? '' : 'hidden'}>${ultimaRolagem ? '🎲 ' + ultimaRolagem : ''}</p>`;
+
+    // O rolador livre — o mesmo do painel do mestre, aqui dentro da
+    // ficha. Entende XdY e + − × ÷ com parênteses, e o que sair aparece
+    // na mesa inteira, como qualquer rolagem daqui.
+    if (f) html += `
+      <div class="fi-dadeira">
+        <span class="fi-dadeira-rot">🎲 Rolar</span>
+        <input class="fi-txt fi-dadeira-exp" type="text" data-fi-expr
+               placeholder="2d6+3, 1d20+7, (2d8+4)×2…" autocomplete="off"
+               title="Enter rola. Entende XdY e + − × ÷ com parênteses.">
+        <button type="button" class="fi-dadeira-btn" data-acao="rolar-livre">rolar</button>
+        ${[['1d20', 'd20'], ['1d100', 'd%'], ['2d6', '2d6'], ['1d8', 'd8'], ['1d6', 'd6'], ['1d4', 'd4']]
+          .map(([e, r]) => `<button type="button" class="fi-dadeira-atalho" data-acao="rolar-atalho"
+                 data-expr="${e}" title="Rolar ${e}">${r}</button>`).join('')}
+      </div>`;
 
     if (!f) {
       html += `
@@ -253,13 +548,68 @@
       return;
     }
 
-    html += bloqueIdentidade(f) + blocoNumeros(f) + blocoPericias(f) + blocoAtaques(f) + blocoTextos(f);
+    html += bloqueIdentidade(f) + blocoNumeros(f) + blocoPericias(f) + blocoAtaques(f) +
+            blocoMagias(f) + blocoInventario(f) + blocoTextos(f);
+    const donoAberta = donoDe(f.id);
     html += `
       <div class="fi-rodape">
         <button type="button" class="fi-remover" data-acao="remover" data-id="${esc(f.id)}"
-                title="Apagar esta ficha deste navegador">🗑 Apagar esta ficha</button>
+                title="${donoAberta
+                  ? 'Tirar da mesa a ficha de ' + esc(nomeDoDono(donoAberta, f)) + ' — some para ela também'
+                  : 'Apagar esta ficha deste navegador (e da mesa, se estiver nela)'}">
+          🗑 ${donoAberta ? 'Tirar esta ficha da mesa' : 'Apagar esta ficha'}</button>
       </div>`;
     cont.innerHTML = html;
+  }
+
+  // ── A BARRA DA MESA ──────────────────────────────────────────────
+  //  Para o MESTRE: as fichas de todo mundo, ao vivo, com o nome de
+  //  quem é dono. Ele abre, consulta, rola e baixa o PV — e a tela do
+  //  jogador acompanha.
+  //  Para o JOGADOR: nada de ficha dos outros (o banco nem manda), só
+  //  a linha dizendo que a dele está indo para o mestre — e isso é
+  //  informação, não enfeite: dá para saber se o mestre está vendo.
+  function barraDaMesa() {
+    const e = window.GA_FichaMesa ? window.GA_FichaMesa.estado() : null;
+    if (!e || !e.configurado) return '';       // site sem Firebase: a ficha é local e pronto
+
+    if (!e.ligado) {
+      return `<p class="fi-mesa-linha fi-mesa-linha--off">
+        📡 Esta ficha está só neste navegador.
+        ${e.usuario
+          ? 'Entre na mesa pela aba <strong>🎲 Mesa</strong> para o mestre poder vê-la.'
+          : 'Entre com o Google na aba <strong>🎲 Mesa</strong> para o mestre poder vê-la.'}</p>`;
+    }
+
+    const daMesa = fichasDaMesa();
+    let html = '';
+    if (e.vejoTodas) {
+      html += `
+        <div class="fi-barra fi-barra--mesa">
+          <span class="fi-barra-rot" title="Só o mestre e o auxiliar recebem estas fichas">👥 Da mesa, ao vivo</span>
+          ${daMesa.length ? daMesa.map(({ uid, ficha }) => `
+            <button type="button" class="fi-aba fi-aba--mesa ${ficha.id === dados.aberta ? 'fi-aba--ativa' : ''}"
+                    data-acao="abrir" data-id="${esc(ficha.id)}"
+                    title="Ficha de ${esc(nomeDoDono(uid, ficha))} — você pode consultar, rolar e mexer">
+              ${esc(ficha.nome || '(sem nome)')}
+              <em>${esc(nomeDoDono(uid, ficha))}</em>
+            </button>`).join('')
+            : '<span class="fi-barra-vazio">nenhum jogador subiu ficha ainda</span>'}
+        </div>`;
+    }
+
+    const daAberta = fichaAberta();
+    const dono = daAberta ? donoDe(daAberta.id) : null;
+    let onde;
+    if (dono) onde = '· mexendo na ficha de <strong>' + esc(nomeDoDono(dono, daAberta)) + '</strong>, e ela vê na hora';
+    else if (e.vejoTodas) onde = '· esta ficha é sua; as dos jogadores estão na fileira de cima';
+    else onde = '· a sua ficha vai para o mestre a cada mudança';
+
+    html += `<p class="fi-mesa-linha fi-mesa-linha--on">
+      📡 Mesa <strong>${esc(e.sala)}</strong>${e.papel ? ' · você é <strong>' + esc(e.papel) + '</strong>' : ''}
+      ${onde}
+      ${e.erro ? '<span class="fi-mesa-erro">⚠ ' + esc(e.erro) + '</span>' : ''}</p>`;
+    return html;
   }
 
   // ── IDENTIDADE ───────────────────────────────────────────────────
@@ -341,30 +691,40 @@
 
         <div class="fi-cartao fi-vida">
           <h2 class="fi-cartao-tit">Vida &amp; Mana</h2>
-          <div class="fi-medidor">
-            <span class="fi-medidor-rot">PV</span>
-            <button type="button" class="fi-passo" data-acao="pv-menos" title="−1 PV">−</button>
-            <input class="fi-medidor-val" type="number" value="${pvAtual(f)}" data-campo="pv.atual" title="PV atual">
-            <span class="fi-medidor-max">/ <strong data-der="pvmax">${pvMax(f)}</strong></span>
-            <button type="button" class="fi-passo" data-acao="pv-mais" title="+1 PV">+</button>
+          ${medidor(f, 'pv')}
+          ${medidor(f, 'pm')}
+
+          <div class="fi-dano">
+            <span class="fi-dano-rot">Sofrer / curar</span>
+            <input class="fi-dano-val" type="number" min="0" value="1" id="fiDano${esc(f.id)}"
+                   data-fi-dano title="Quanto de dano ou de cura">
+            <button type="button" class="fi-dano-btn fi-dano-btn--mal" data-acao="dano-pv"
+                    title="Tirar este tanto de PV — os temporários vão primeiro">🩸 PV</button>
+            <button type="button" class="fi-dano-btn fi-dano-btn--bem" data-acao="cura-pv"
+                    title="Recuperar este tanto de PV (sem passar do máximo)">✚ PV</button>
+            <button type="button" class="fi-dano-btn fi-dano-btn--mal" data-acao="dano-pm"
+                    title="Gastar este tanto de PM — os temporários vão primeiro">🔥 PM</button>
+            <button type="button" class="fi-dano-btn fi-dano-btn--bem" data-acao="cura-pm"
+                    title="Recuperar este tanto de PM">✚ PM</button>
           </div>
-          <div class="fi-barra-pv"><span data-der="pvbarra" style="width:${porcento(pvAtual(f), pvMax(f))}%"></span></div>
-          <div class="fi-medidor">
-            <span class="fi-medidor-rot">PM</span>
-            <button type="button" class="fi-passo" data-acao="pm-menos" title="−1 PM">−</button>
-            <input class="fi-medidor-val" type="number" value="${pmAtual(f)}" data-campo="pm.atual" title="PM atual">
-            <span class="fi-medidor-max">/ <strong data-der="pmmax">${pmMax(f)}</strong></span>
-            <button type="button" class="fi-passo" data-acao="pm-mais" title="+1 PM">+</button>
-          </div>
+          <p class="fi-dano-eco" data-der="danoeco" ${ultimoDano ? '' : 'hidden'}>${ultimoDano}</p>
+
           <div class="fi-extras">
-            <label class="fi-extra"><span>PV temporários</span>
-              <input class="fi-num" type="number" value="${f.pv.temp}" data-campo="pv.temp"></label>
+            <label class="fi-extra fi-extra--temp"><span>⛨ PV temporários</span>
+              <input class="fi-num" type="number" value="${f.pv.temp}" data-campo="pv.temp"
+                     title="Somam ao seu PV atual, mesmo passando do máximo — e são os primeiros a serem gastos (p. 105)"></label>
+            <label class="fi-extra fi-extra--temp"><span>✦ PM temporários</span>
+              <input class="fi-num" type="number" value="${f.pm.temp}" data-campo="pm.temp"
+                     title="Mesma regra dos PV temporários: entram por cima e saem primeiro"></label>
             <label class="fi-extra"><span>PV de outras fontes</span>
               <input class="fi-num" type="number" value="${f.pv.outros}" data-campo="pv.outros"
                      title="O que poderes e itens somam ao PV máximo"></label>
             <label class="fi-extra"><span>PM de outras fontes</span>
               <input class="fi-num" type="number" value="${f.pm.outros}" data-campo="pm.outros"></label>
           </div>
+          <p class="fi-nota fi-nota--temp">Os temporários entram <em>por cima</em> do seu total, mesmo passando do
+            máximo, e são <strong>sempre os primeiros a serem gastos</strong> — por isso o dano daqui desce
+            deles antes de tocar no seu PV. No fim do dia, somem.</p>
           <p class="fi-conta" data-der="pvconta">${contaPv(f)}</p>
         </div>
 
@@ -387,10 +747,11 @@
                      title="O número do livro (ex.: 5). Cai só em Acrobacia, Furtividade e Ladinagem."></label>
           </div>
           <div class="fi-linhas">
-            <div class="fi-linha">
+            <div class="fi-linha fi-linha--carga">
               <span>Carga</span>
-              <span><input class="fi-num fi-num--mini" type="number" value="${f.carga.usada}" data-campo="carga.usada"
-                     title="Espaços ocupados"> / <strong data-der="cargamax">${cargaMax(f)}</strong> espaços</span>
+              <span><strong data-der="cargausada">${cargaUsada(f)}</strong>
+                / <strong data-der="cargamax">${cargaMax(f)}</strong> espaços
+                <em class="fi-carga-estado" data-der="cargaestado">${rotuloCarga(f)}</em></span>
             </div>
             <div class="fi-linha">
               <span>CD das suas habilidades</span>
@@ -404,6 +765,42 @@
           </div>
         </div>
       </div>`;
+  }
+
+  // ── O MEDIDOR DE PV / PM ─────────────────────────────────────────
+  //  Os dois são iguais, fora a cor e o rótulo — e os dois precisam
+  //  mostrar o temporário. A barra tem DOIS pedaços: o atual (ferrugem
+  //  no PV, azul no PM) e o temporário logo depois, em ouro. É a
+  //  "marca" pedida: dá para ver de longe que há escudo em cima da
+  //  vida, e a etiqueta ao lado diz quantos são, por escrito.
+  function medidor(f, qual) {
+    const ehPv  = qual === 'pv';
+    const atual = ehPv ? pvAtual(f) : pmAtual(f);
+    const max   = ehPv ? pvMax(f)   : pmMax(f);
+    const temp  = f[qual].temp || 0;
+    const rot   = ehPv ? 'PV' : 'PM';
+    return `
+      <div class="fi-medidor">
+        <span class="fi-medidor-rot">${rot}</span>
+        <button type="button" class="fi-passo" data-acao="${qual}-menos" title="−1 ${rot}">−</button>
+        <input class="fi-medidor-val" type="number" value="${atual}" data-campo="${qual}.atual" title="${rot} atual">
+        <span class="fi-medidor-max">/ <strong data-der="${qual}max">${max}</strong></span>
+        <button type="button" class="fi-passo" data-acao="${qual}-mais" title="+1 ${rot}">+</button>
+        <span class="fi-temp-selo fi-temp-selo--${qual}" data-der="${qual}selo" ${temp ? '' : 'hidden'}
+              title="${rot} temporários — gastos antes do seu ${rot} de verdade">
+          ${ehPv ? '⛨' : '✦'} <strong>${temp}</strong> temp
+        </span>
+      </div>
+      <div class="fi-barra-pv fi-barra-pv--${qual}">
+        <span class="fi-barra-parte" data-der="${qual}barra" style="width:${fatia(atual, max, temp)}%"></span>
+        <span class="fi-barra-temp" data-der="${qual}barratemp" style="width:${fatia(temp, max, temp)}%"></span>
+      </div>`;
+  }
+  // A barra precisa caber atual + temporário, e o temporário pode passar
+  // do máximo (é o que a regra manda). Então a régua é o maior dos dois.
+  function fatia(parte, max, temp) {
+    const base = Math.max(1, max, (max || 0) + (temp || 0), parte + (temp || 0));
+    return Math.max(0, Math.min(100, Math.round(Math.max(0, parte) / base * 100)));
   }
 
   // O mapa é em quadrados de 1,5 m; os METROS é que mandam, e o quadrado
@@ -425,6 +822,16 @@
     return `PV = ${partes.join(' + ')}${f.pv.outros ? ' ' + sinal(f.pv.outros) : ''} · PM = ${pm}${f.pm.outros ? ' ' + sinal(f.pm.outros) : ''}`;
   }
   function sinalCon(con) { return con === 0 ? '' : (con > 0 ? ' + ' + con : ' − ' + Math.abs(con)); }
+  // O aviso da p. 141, com o preço já escrito: quem passa do limite
+  // sofre −5 de armadura e −3m de deslocamento; acima do dobro, não
+  // carrega. A ficha avisa e não impede — como o resto dela.
+  function rotuloCarga(f) {
+    const e = estadoCarga(f);
+    if (e === 'demais') return '⚠ acima do dobro do limite — o livro diz que não dá para carregar';
+    if (e === 'sobrecarregado') return '⚠ sobrecarregado: −5 de armadura e −3m de deslocamento';
+    return '';
+  }
+
   function contaDefesa(f) {
     const p = ['10', 'Des ' + sinal(atr(f, 'des'))];
     if (f.defesa.armadura) p.push('armadura ' + sinal(f.defesa.armadura));
@@ -434,30 +841,39 @@
   }
 
   // ── PERÍCIAS ─────────────────────────────────────────────────────
+  function marcasDe(p) {
+    return (p.resist   ? '<span class="fi-selo fi-selo--res" title="Teste de resistência">resistência</span>' : '') +
+           (p.ataque   ? '<span class="fi-selo fi-selo--atq" title="Teste de ataque ' + esc(p.ataque) + '">ataque</span>' : '') +
+           (p.treinada ? '<span class="fi-selo" title="Só pode ser usada se você for treinado nela">só treinada</span>' : '') +
+           (p.armadura ? '<span class="fi-selo fi-selo--arm" title="Sofre a penalidade de armadura">armadura</span>' : '');
+  }
+  function botaoTreinar(marcada, attrs) {
+    return `<button type="button" class="fi-per-check" ${attrs}
+              title="${marcada ? 'Treinada — clique para destreinar' : 'Marcar como treinada'}"
+              aria-pressed="${marcada}">${marcada ? '✓' : ''}</button>`;
+  }
+
   function blocoPericias(f) {
     const n = nivel(f);
     const linhas = D.PERICIAS.map(p => {
+      // Ofício não é UMA perícia: no lugar dela entram as especialidades
+      // que este personagem tem (p. 121). Ver linhasOficio().
+      if (p.multipla) return linhasOficio(f, p);
       const e = f.pericias[p.chave];
       const v = valorPericia(f, p.chave);
-      const marcas =
-        (p.resist   ? '<span class="fi-selo fi-selo--res" title="Teste de resistência">resistência</span>' : '') +
-        (p.ataque   ? '<span class="fi-selo fi-selo--atq" title="Teste de ataque ' + esc(p.ataque) + '">ataque</span>' : '') +
-        (p.treinada ? '<span class="fi-selo" title="Só pode ser usada se você for treinado nela">só treinada</span>' : '') +
-        (p.armadura ? '<span class="fi-selo fi-selo--arm" title="Sofre a penalidade de armadura">armadura</span>' : '');
       return `
         <li class="fi-per ${e.treinada ? 'fi-per--treinada' : ''}">
-          <button type="button" class="fi-per-check" data-acao="treinar" data-p="${p.chave}"
-                  title="${e.treinada ? 'Treinada — clique para destreinar' : 'Marcar como treinada'}"
-                  aria-pressed="${e.treinada}">${e.treinada ? '✓' : ''}</button>
+          ${botaoTreinar(e.treinada, 'data-acao="treinar" data-p="' + p.chave + '"')}
           <button type="button" class="fi-per-rolar" data-acao="rolar-pericia" data-p="${p.chave}"
-                  title="Rolar 1d20 + ${sinal(v)}">
+                  title="Rolar 1d20 ${sinal(v)} de ${esc(p.nome)}">
             <span class="fi-per-nome">${esc(p.nome)}</span>
             <span class="fi-per-atr">${esc(atrCurto(p.atr))}</span>
             <span class="fi-per-val" data-der="per:${p.chave}">${sinal(v)}</span>
+            <span class="fi-per-dado" aria-hidden="true">🎲</span>
           </button>
           <input class="fi-num fi-num--mini" type="number" value="${e.outros}"
                  data-campo="pericias.${p.chave}.outros" title="Outros bônus nesta perícia">
-          <span class="fi-per-marcas">${marcas}</span>
+          <span class="fi-per-marcas">${marcasDe(p)}</span>
         </li>`;
     }).join('');
 
@@ -467,9 +883,48 @@
           <span class="fi-cartao-nota">⌊nível ÷ 2⌋ + atributo + treino <span data-der="treino">${sinal(treino(n, true))}</span> − penalidade de armadura</span>
         </h2>
         <ul class="fi-per-lista">${linhas}</ul>
-        <p class="fi-nota">Clique no nome para rolar. O ✓ marca treinada — o site não confere quantas você pode treinar,
-          isso é escolha sua. As <em>só treinada</em> aparecem mesmo sem treino porque o livro proíbe o uso, não a rolagem.</p>
+        <p class="fi-nota">O <strong>🎲</strong> rola 1d20 com o bônus já somado, e a rolagem aparece na mesa.
+          O ✓ marca treinada — o site não confere quantas você pode treinar, isso é escolha sua.
+          As <em>só treinada</em> aparecem mesmo sem treino porque o livro proíbe o uso, não a rolagem.</p>
       </div>`;
+  }
+
+  // ── OS OFÍCIOS ───────────────────────────────────────────────────
+  //  "Ofício na verdade são várias perícias diferentes. Cada uma
+  //  permite fabricar itens de certas categorias" (p. 121) — armeiro,
+  //  artesão, alquimista, cozinheiro, alfaiate, "e você pode inventar
+  //  outros". Cada linha aqui é uma perícia inteira, com o treino e o
+  //  bônus dela; ser alquimista não faz de você um engenhoqueiro.
+  function linhasOficio(f, p) {
+    const lista = D.OFICIOS.map(o => `<option value="${esc(o.nome)}">`).join('');
+    return f.oficios.map((o, i) => {
+      const v = valorOficio(f, i);
+      return `
+        <li class="fi-per fi-per--oficio ${o.treinada ? 'fi-per--treinada' : ''}">
+          ${botaoTreinar(o.treinada, 'data-acao="treinar-oficio" data-i="' + i + '"')}
+          <span class="fi-per-nome fi-per-nome--of">Ofício</span>
+          <input class="fi-txt fi-of-esp" type="text" value="${esc(o.esp)}" list="fiOficios"
+                 data-campo="oficios.${i}.esp" placeholder="de quê? alquimista, engenhoqueiro…"
+                 autocomplete="off" title="A especialidade deste ofício">
+          <button type="button" class="fi-per-rolar fi-per-rolar--of" data-acao="rolar-oficio" data-i="${i}"
+                  title="Rolar 1d20 ${sinal(v)} de ${esc(nomeOficio(o))}">
+            <span class="fi-per-atr">${esc(atrCurto(p.atr))}</span>
+            <span class="fi-per-val" data-der="of:${i}">${sinal(v)}</span>
+            <span class="fi-per-dado" aria-hidden="true">🎲</span>
+          </button>
+          <input class="fi-num fi-num--mini" type="number" value="${o.outros}"
+                 data-campo="oficios.${i}.outros" title="Outros bônus neste ofício">
+          <span class="fi-per-marcas">
+            ${f.oficios.length > 1
+              ? `<button type="button" class="fi-mini fi-mini--x" data-acao="tira-oficio" data-i="${i}"
+                         title="Tirar este ofício">✕</button>` : ''}
+            ${i === f.oficios.length - 1
+              ? `<button type="button" class="fi-mini" data-acao="add-oficio"
+                         title="Acrescentar outro ofício — cada um é uma perícia à parte">＋</button>` : ''}
+          </span>
+        </li>`;
+    }).join('') +
+    `<datalist id="fiOficios">${lista}</datalist>`;
   }
   function atrCurto(chave) {
     const a = D.ATRIBUTOS.find(x => x.chave === chave);
@@ -518,17 +973,147 @@
       </div>`;
   }
 
+  // ── MAGIAS ───────────────────────────────────────────────────────
+  //  A lista é montada a partir da MESMA base das Consultas
+  //  (window.GA_MAGIAS, as 254 do livro): "＋ Adicionar magia" abre a
+  //  busca e o que entra já vem com círculo, PM, execução, alcance,
+  //  alvo, duração e resistência preenchidos — ninguém copia à mão.
+  function blocoMagias(f) {
+    const temBase = Array.isArray(window.GA_MAGIAS) && window.GA_MAGIAS.length;
+    const linhas = f.magias.map((m, i) => `
+      <li class="fi-mag">
+        <div class="fi-mag-cab">
+          <span class="fi-mag-circ" title="Círculo">${m.circulo ? m.circulo + 'º' : '—'}</span>
+          <strong class="fi-mag-nome">${esc(m.nome)}</strong>
+          <span class="fi-mag-pm" title="Custo em PM do círculo">${m.pm ? m.pm + ' PM' : ''}</span>
+          <button type="button" class="fi-mag-btn" data-acao="gastar-magia" data-i="${i}"
+                  title="Gastar ${m.pm} PM por esta magia — os temporários saem primeiro"
+                  ${m.pm ? '' : 'hidden'}>🔥 gastar</button>
+          <button type="button" class="fi-mag-btn" data-acao="ver-magia" data-i="${i}"
+                  title="Abrir o texto inteiro da magia">👁 ver</button>
+          <button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
+                  title="Tirar esta magia da ficha">✕</button>
+        </div>
+        <div class="fi-mag-linha">
+          ${m.escola ? `<span class="fi-mag-tag">${esc(m.escola)}</span>` : ''}
+          ${m.tipo ? `<span class="fi-mag-tag">${esc(m.tipo)}</span>` : ''}
+          ${campoMag('Execução', m.execucao)}${campoMag('Alcance', m.alcance)}
+          ${campoMag('Alvo', m.alvo)}${campoMag('Duração', m.duracao)}
+          ${campoMag('Resistência', m.resistencia)}
+        </div>
+        ${m.resumo ? `<p class="fi-mag-resumo">${esc(m.resumo)}</p>` : ''}
+        <input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
+               placeholder="sua anotação nesta magia (aprimoramento que usa, CD, alvo preferido…)" autocomplete="off">
+      </li>`).join('');
+
+    return `
+      <div class="fi-cartao fi-bloco fi-magias">
+        <h2 class="fi-cartao-tit">✨ Magias
+          <span class="fi-cartao-nota">a CD delas é a mesma da sua ficha:
+            <strong data-der="cd2">${cdBase(f)}</strong></span>
+        </h2>
+        <ul class="fi-mag-lista">${linhas || '<li class="fi-atq-vazio">Nenhuma magia ainda.</li>'}</ul>
+        <button type="button" class="fi-add fi-add--menor" data-acao="add-magia" ${temBase ? '' : 'disabled'}>
+          ＋ Adicionar magia${temBase ? '' : ' (base não carregada nesta página)'}</button>
+        <p class="fi-nota">Vêm das <strong>${temBase ? window.GA_MAGIAS.length : 254} magias do livro</strong>,
+          as mesmas da aba 📚 Consultas → ✨ Magias. O <strong>🔥 gastar</strong> desconta os PM do círculo
+          — dos temporários primeiro.</p>
+        ${caixaRica(f, BLOCOS_EMBUTIDOS[0])}
+      </div>`;
+  }
+  function campoMag(rot, v) {
+    return v ? `<span class="fi-mag-campo"><em>${esc(rot)}</em> ${esc(v)}</span>` : '';
+  }
+
+  // ── INVENTÁRIO ───────────────────────────────────────────────────
+  //  A conta de espaços é a da p. 141, e a coluna "cada / no total" é o
+  //  que faz a regra do livro E a decisão do mestre caberem na mesma
+  //  linha: duas poções de ½ dão 1 espaço (cada), e duas armaduras que
+  //  o mestre disse que juntas ocupam 5 dão 5 (no total).
+  function blocoInventario(f) {
+    const opsEsp = D.ESPACOS.map(e =>
+      `<option value="${e.v}">${e.rot} — ${esc(e.ex)}</option>`).join('');
+
+    const linhas = f.inventario.map((it, i) => {
+      const total = it.cada ? (it.espacos || 0) * (it.qtd || 0) : (it.espacos || 0);
+      return `
+        <li class="fi-inv">
+          <input class="fi-txt fi-inv-nome" type="text" value="${esc(it.nome)}" data-campo="inventario.${i}.nome"
+                 placeholder="espada longa, poção de cura…" autocomplete="off">
+          <span class="fi-inv-qtd">
+            <button type="button" class="fi-mini" data-acao="inv-menos" data-i="${i}" title="Uma a menos">−</button>
+            <input class="fi-num fi-num--mini" type="number" min="0" value="${it.qtd}" data-campo="inventario.${i}.qtd"
+                   title="Quantas unidades">
+            <button type="button" class="fi-mini" data-acao="inv-mais" data-i="${i}" title="Uma a mais">＋</button>
+          </span>
+          <span class="fi-inv-esp">
+            <input class="fi-num fi-num--mini" type="number" min="0" step="0.5" value="${it.espacos}"
+                   data-campo="inventario.${i}.espacos" list="fiEspacos" title="Espaços (½, 1, 2, 5, 10 — p. 141)">
+            <button type="button" class="fi-inv-modo ${it.cada ? '' : 'fi-inv-modo--total'}"
+                    data-acao="inv-modo" data-i="${i}" aria-pressed="${!it.cada}"
+                    title="${it.cada
+                      ? 'Agora: cada unidade ocupa esse tanto. Clique para dizer que o monte INTEIRO ocupa isso.'
+                      : 'Agora: o monte inteiro ocupa esse tanto, quantas unidades forem. Clique para voltar a contar por unidade.'}"
+              >${it.cada ? 'cada' : 'no total'}</button>
+          </span>
+          <span class="fi-inv-total" data-der="inv:${i}" title="Espaços que esta linha ocupa">${arredonda(total)}</span>
+          <input class="fi-txt fi-inv-obs" type="text" value="${esc(it.obs)}" data-campo="inventario.${i}.obs"
+                 placeholder="onde está, quem emprestou, encanto…" autocomplete="off">
+          <button type="button" class="fi-mini fi-mini--x" data-acao="tira-item" data-i="${i}" title="Tirar do inventário">✕</button>
+        </li>`;
+    }).join('');
+
+    return `
+      <div class="fi-cartao fi-bloco fi-inventario">
+        <h2 class="fi-cartao-tit">🎒 Inventário
+          <span class="fi-cartao-nota">
+            <strong data-der="cargausada2">${cargaUsada(f)}</strong> de
+            <strong data-der="cargamax2">${cargaMax(f)}</strong> espaços</span>
+        </h2>
+        <div class="fi-inv-cab">
+          <span>Item</span><span>Quantas</span><span>Espaços</span><span>Ocupa</span><span>Anotação</span><span></span>
+        </div>
+        <ul class="fi-inv-lista">${linhas || '<li class="fi-atq-vazio">Mochila vazia.</li>'}</ul>
+        <datalist id="fiEspacos">${opsEsp}</datalist>
+        <button type="button" class="fi-add fi-add--menor" data-acao="add-item">＋ Acrescentar item</button>
+
+        <div class="fi-inv-pe">
+          <label class="fi-extra fi-extra--tibar"><span>💰 Tibares (T$)</span>
+            <input class="fi-num" type="number" min="0" step="0.1" value="${f.tibares}" data-campo="tibares"
+                   title="Cada mil moedas ocupam 1 espaço (p. 141)"></label>
+          <span class="fi-inv-conta" data-der="invconta">${contaCarga(f)}</span>
+        </div>
+        <p class="fi-nota">Um item ocupa <strong>1 espaço</strong> por padrão. Meio espaço para alquímicos,
+          poções e pergaminhos; 2 para armas de duas mãos, armaduras leves e escudos pesados; 5 para armaduras
+          pesadas e baús; 10 para o que for muito grande. O botão <strong>cada / no total</strong> é para quando
+          o mestre disser que o monte inteiro ocupa aquilo — o livro deixa essa decisão com ele.</p>
+        ${caixaRica(f, BLOCOS_EMBUTIDOS[1])}
+      </div>`;
+  }
+
+  function contaCarga(f) {
+    const it = arredonda(cargaItens(f)), mo = cargaMoedas(f);
+    const p = [];
+    if (it) p.push(it + ' de itens');
+    if (mo) p.push(mo + ' das moedas (' + Math.floor(f.tibares) + ' T$ ÷ ' + D.MOEDAS_POR_ESPACO + ')');
+    return p.length ? p.join(' + ') + ' = ' + cargaUsada(f) + ' espaços' : 'Nada carregado ainda.';
+  }
+
   // ── OS BLOCOS DE TEXTO ───────────────────────────────────────────
-  function blocoTextos(f) {
+  function caixaRica(f, b) {
     const barra = window.GA_barraRica ? window.GA_barraRica() : '';
+    return `
+      <div class="ga-rich-wrap ga-rich-wrap--barra" data-jog-edita>
+        ${barra}
+        <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
+             data-campo="blocos.${b.campo}" data-ph="${esc(b.dica)}">${f.blocos[b.campo] || ''}</div>
+      </div>`;
+  }
+  function blocoTextos(f) {
     return BLOCOS.map(b => `
       <div class="fi-cartao fi-bloco">
         <h2 class="fi-cartao-tit">${b.titulo}</h2>
-        <div class="ga-rich-wrap ga-rich-wrap--barra" data-jog-edita>
-          ${barra}
-          <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
-               data-campo="blocos.${b.campo}" data-ph="${esc(b.dica)}">${f.blocos[b.campo] || ''}</div>
-        </div>
+        ${caixaRica(f, b)}
       </div>`).join('');
   }
 
@@ -543,19 +1128,48 @@
       const d = el.dataset.der;
       if (d.slice(0, 4) === 'per:') { el.textContent = sinal(valorPericia(f, d.slice(4))); return; }
       if (d.slice(0, 4) === 'atq:') { el.textContent = sinal(valorAtaque(f, f.ataques[+d.slice(4)] || {})); return; }
+      if (d.slice(0, 3) === 'of:')  { el.textContent = sinal(valorOficio(f, +d.slice(3))); return; }
+      if (d.slice(0, 4) === 'inv:') {
+        const it = f.inventario[+d.slice(4)];
+        if (it) el.textContent = arredonda(it.cada ? (it.espacos || 0) * (it.qtd || 0) : (it.espacos || 0));
+        return;
+      }
       if (d === 'nivel')     el.textContent = n;
       if (d === 'patamar')   el.textContent = patamar(n);
       if (d === 'treino')    el.textContent = sinal(treino(n, true));
       if (d === 'pvmax')     el.textContent = pvMax(f);
       if (d === 'pmmax')     el.textContent = pmMax(f);
       if (d === 'defesa')    el.textContent = defesa(f);
-      if (d === 'cargamax')  el.textContent = cargaMax(f);
-      if (d === 'cd')        el.textContent = cdBase(f);
+      if (d === 'cargamax' || d === 'cargamax2') el.textContent = cargaMax(f);
+      if (d === 'cargausada' || d === 'cargausada2') el.textContent = cargaUsada(f);
+      if (d === 'cargaestado') el.textContent = rotuloCarga(f);
+      if (d === 'invconta')  el.innerHTML = contaCarga(f);
+      if (d === 'cd' || d === 'cd2') el.textContent = cdBase(f);
       if (d === 'desloc')    el.textContent = f.deslocamento;
       if (d === 'quadrados') el.textContent = quadrados(f.deslocamento);
       if (d === 'pvconta')   el.innerHTML = contaPv(f);
       if (d === 'defconta')  el.innerHTML = contaDefesa(f);
-      if (d === 'pvbarra')   el.style.width = porcento(pvAtual(f), pvMax(f)) + '%';
+      if (d === 'danoeco')   { el.innerHTML = ultimoDano; el.hidden = !ultimoDano; }
+      // os dois medidores: barra, pedaço temporário e o selo ao lado
+      if (d === 'pvbarra')     el.style.width = fatia(pvAtual(f), pvMax(f), f.pv.temp) + '%';
+      if (d === 'pmbarra')     el.style.width = fatia(pmAtual(f), pmMax(f), f.pm.temp) + '%';
+      if (d === 'pvbarratemp') el.style.width = fatia(f.pv.temp, pvMax(f), f.pv.temp) + '%';
+      if (d === 'pmbarratemp') el.style.width = fatia(f.pm.temp, pmMax(f), f.pm.temp) + '%';
+      if (d === 'pvselo' || d === 'pmselo') {
+        const t = f[d.slice(0, 2)].temp || 0;
+        el.hidden = !t;
+        const forte = el.querySelector('strong');
+        if (forte) forte.textContent = t;
+      }
+    });
+    // os campos de PV/PM atuais também mudam sozinhos (dano, cura, ＋/−)
+    ['pv', 'pm'].forEach(q => {
+      const campo = secao.querySelector('[data-campo="' + q + '.atual"]');
+      if (campo && document.activeElement !== campo) {
+        campo.value = q === 'pv' ? pvAtual(f) : pmAtual(f);
+      }
+      const temp = secao.querySelector('[data-campo="' + q + '.temp"]');
+      if (temp && document.activeElement !== temp) temp.value = f[q].temp || 0;
     });
     // o botão de ataque não é [data-der] (é botão), mas o valor dele muda
     secao.querySelectorAll('[data-acao="rolar-ataque"]').forEach(b => {
@@ -574,6 +1188,7 @@
       if (!alvo) return;
     }
     alvo[p[p.length - 1]] = valor;
+    sujar(f.id, p[0]);      // 'pv', 'pericias', 'inventario'… → sobe só isso
   }
 
   function aoEntrada(e) {
@@ -642,10 +1257,23 @@
     if (!f) return;
 
     if (acao === 'remover') {
-      if (!confirm('Apagar a ficha de ' + (f.nome || 'sem nome') + '? Isto não tem volta.')) return;
-      dados.fichas = dados.fichas.filter(x => x.id !== f.id);
+      const dono = donoDe(f.id);
+      const nome = f.nome || 'sem nome';
+      const aviso = dono
+        ? 'Tirar da mesa a ficha "' + nome + '", de ' + nomeDoDono(dono, f) + '?\n\n' +
+          'Ela some da mesa para todo mundo, inclusive para quem a escreveu. ' +
+          'A cópia que essa pessoa tem no navegador dela continua lá.'
+        : 'Apagar a ficha de ' + nome + '? Isto não tem volta.';
+      if (!confirm(aviso)) return;
+      if (window.GA_FichaMesa) window.GA_FichaMesa.apagar(f.id, dono);
+      if (dono) {
+        if (remotas[dono]) delete remotas[dono][f.id];
+      } else {
+        dados.fichas = dados.fichas.filter(x => x.id !== f.id);
+      }
+      delete sujos[f.id];
       dados.aberta = dados.fichas.length ? dados.fichas[0].id : null;
-      salvar(); return render();
+      gravar(); return render();
     }
     if (acao === 'add-classe')  { f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
     if (acao === 'tira-classe') { f.classes.splice(+btn.dataset.i, 1); if (!f.classes.length) f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
@@ -655,19 +1283,81 @@
     if (acao === 'treinar') {
       const p = btn.dataset.p;
       f.pericias[p].treinada = !f.pericias[p].treinada;
+      sujar(f.id, 'pericias');
       salvar(); return render();
     }
-    if (acao === 'pv-menos' || acao === 'pv-mais' || acao === 'pm-menos' || acao === 'pm-mais') {
-      const ehPv = acao.slice(0, 2) === 'pv';
-      const passo = acao.slice(-4) === 'mais' ? 1 : -1;
-      const agora = ehPv ? pvAtual(f) : pmAtual(f);
-      const teto  = ehPv ? pvMax(f)   : pmMax(f);
-      const novo  = Math.min(teto, agora + passo);   // sem teto para baixo: PV negativo existe
-      if (ehPv) f.pv.atual = novo; else f.pm.atual = Math.max(0, novo);
-      const campo = secao.querySelector('[data-campo="' + (ehPv ? 'pv' : 'pm') + '.atual"]');
-      if (campo) campo.value = ehPv ? f.pv.atual : f.pm.atual;
+    // ── VIDA E MANA ────────────────────────────────────────────────
+    //  Tudo passa por gastarPontos/curarPontos: é lá que a regra dos
+    //  temporários mora, e é o que impede o engano de tirar do PV
+    //  atual enquanto ainda há escudo temporário em pé.
+    if (acao === 'pv-menos' || acao === 'pm-menos') {
+      aplicarDano(f, acao.slice(0, 2), 1); return;
+    }
+    if (acao === 'pv-mais' || acao === 'pm-mais') {
+      aplicarCura(f, acao.slice(0, 2), 1); return;
+    }
+    if (acao === 'dano-pv' || acao === 'dano-pm') {
+      aplicarDano(f, acao.slice(-2), lerDano()); return;
+    }
+    if (acao === 'cura-pv' || acao === 'cura-pm') {
+      aplicarCura(f, acao.slice(-2), lerDano()); return;
+    }
+
+    // ── OFÍCIOS ────────────────────────────────────────────────────
+    if (acao === 'treinar-oficio') {
+      const o = f.oficios[+btn.dataset.i];
+      if (o) { o.treinada = !o.treinada; sujar(f.id, 'oficios'); salvar(); render(); }
+      return;
+    }
+    if (acao === 'add-oficio') {
+      f.oficios.push({ id: novoId(), esp: '', treinada: false, outros: 0 });
+      salvar(); return render();
+    }
+    if (acao === 'tira-oficio') {
+      f.oficios.splice(+btn.dataset.i, 1);
+      if (!f.oficios.length) f.oficios.push({ id: novoId(), esp: '', treinada: false, outros: 0 });
+      salvar(); return render();
+    }
+    if (acao === 'rolar-oficio') {
+      const i = +btn.dataset.i, o = f.oficios[i];
+      if (o) rolar(d20(valorOficio(f, i)), quem(f) + ' · ' + nomeOficio(o));
+      return;
+    }
+
+    // ── INVENTÁRIO ─────────────────────────────────────────────────
+    if (acao === 'add-item') {
+      f.inventario.push({ id: novoId(), nome: '', qtd: 1, espacos: 1, cada: true, obs: '' });
+      salvar(); return render();
+    }
+    if (acao === 'tira-item') { f.inventario.splice(+btn.dataset.i, 1); salvar(); return render(); }
+    if (acao === 'inv-menos' || acao === 'inv-mais') {
+      const it = f.inventario[+btn.dataset.i];
+      if (!it) return;
+      it.qtd = Math.max(0, (it.qtd || 0) + (acao === 'inv-mais' ? 1 : -1));
+      sujar(f.id, 'inventario');
+      const campo = secao.querySelector('[data-campo="inventario.' + btn.dataset.i + '.qtd"]');
+      if (campo) campo.value = it.qtd;
       atualizarDerivados(); return salvar();
     }
+    if (acao === 'inv-modo') {
+      const it = f.inventario[+btn.dataset.i];
+      if (it) { it.cada = !it.cada; sujar(f.id, 'inventario'); salvar(); render(); }
+      return;
+    }
+
+    // ── MAGIAS ─────────────────────────────────────────────────────
+    if (acao === 'add-magia')  return abrirBuscaMagia(f);
+    if (acao === 'tira-magia') { f.magias.splice(+btn.dataset.i, 1); salvar(); return render(); }
+    if (acao === 'ver-magia')  return verMagia(f.magias[+btn.dataset.i]);
+    if (acao === 'gastar-magia') {
+      const m = f.magias[+btn.dataset.i];
+      if (m && m.pm) aplicarDano(f, 'pm', m.pm, m.nome);
+      return;
+    }
+
+    // ── O ROLADOR LIVRE ────────────────────────────────────────────
+    if (acao === 'rolar-livre')  return rolarLivre(f);
+    if (acao === 'rolar-atalho') return rolar(btn.dataset.expr, quem(f));
     if (acao === 'rolar-pericia') {
       const p = D.pericia(btn.dataset.p);
       if (p) rolar(d20(valorPericia(f, p.chave)), quem(f) + ' · ' + p.nome);
@@ -683,6 +1373,197 @@
       if (a && a.dano.trim()) rolar(a.dano.trim(), quem(f) + ' · dano de ' + (a.nome || 'ataque'));
       return;
     }
+  }
+
+  // ═══ O QUE CHEGA DA MESA ══════════════════════════════════════════
+  //  Chamado pelo ficha-mesa.js a cada mudança no banco. Duas coisas
+  //  chegam por aqui:
+  //   • as fichas dos OUTROS (só o mestre e o auxiliar recebem) — vão
+  //     para `remotas` e aparecem na barra;
+  //   • as MINHAS, quando o mestre mexeu nelas. Essas são aplicadas
+  //     por cima da cópia local: é o "o mestre baixou meu PV e eu vi
+  //     acontecer" — o motivo de tudo isto existir.
+  const CARIMBO = { dono: 1, autor: 1, atualizadoEm: 1 };
+
+  // Comparação estável: o Firebase devolve as chaves em outra ordem, e
+  // um JSON.stringify cru acharia diferença onde não há — o que faria a
+  // tela se redesenhar a cada eco da própria escrita.
+  function canon(v) {
+    if (v === null || typeof v !== 'object') return JSON.stringify(v === undefined ? null : v);
+    if (Array.isArray(v)) return '[' + v.map(canon).join(',') + ']';
+    return '{' + Object.keys(v).filter(k => !CARIMBO[k]).sort()
+      .map(k => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}';
+  }
+  function igual(a, b) { return canon(a) === canon(b); }
+
+  // Redesenhar por baixo do cursor arranca o foco no meio de uma
+  // palavra. Enquanto alguém escreve, o que chegou fica guardado e
+  // entra quando ela sair do campo.
+  function digitando() {
+    const a = document.activeElement;
+    return !!(a && secao && secao.contains(a) &&
+      (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.isContentEditable));
+  }
+  let ouvindoSaida = false, chegouAdiado = false;
+  function adiarChegada() {
+    chegouAdiado = true;
+    if (ouvindoSaida) return;
+    ouvindoSaida = true;
+    document.addEventListener('focusout', function sair() {
+      document.removeEventListener('focusout', sair);
+      ouvindoSaida = false;
+      setTimeout(() => {
+        if (digitando()) return adiarChegada();
+        if (chegouAdiado) { chegouAdiado = false; aplicarChegada(); }
+      }, 0);
+    });
+  }
+
+  let ultimoRecebido = null;
+  function receberDaMesa(mapa, uid) {
+    meuUid = uid || '';
+    ultimoRecebido = mapa || {};
+    if (digitando()) return adiarChegada();
+    aplicarChegada();
+  }
+
+  function aplicarChegada() {
+    const antes = canon(remotas);
+
+    // TODA ficha que chega passa pelo normalizar, não só as minhas. Ela
+    // vem do navegador de outra pessoa, que pode estar numa versão mais
+    // velha do site (sem `oficios`, sem `inventario`…) — e um cartão
+    // que lê `f.defesa.armadura` de um `f.defesa` que não existe derruba
+    // o render INTEIRO. Quem paga seria o mestre, no meio do combate,
+    // com a tela travada na ficha anterior sem nenhum aviso.
+    const mapa = {};
+    Object.keys(ultimoRecebido || {}).forEach(uid => {
+      const de = ultimoRecebido[uid] || {};
+      const para = mapa[uid] = {};
+      Object.keys(de).forEach(id => {
+        const f = de[id];
+        if (!f || typeof f !== 'object') return;
+        const n = normalizar(f);
+        n.id = id;                       // a chave do banco é a verdade
+        n.autor = f.autor || '';         // carimbo do ficha-mesa.js
+        para[id] = n;
+      });
+    });
+    remotas = mapa;
+
+    // as minhas, mexidas pelo mestre → entram na cópia local
+    const minhas = mapa[meuUid] || {};
+    let mudou = false;
+    Object.keys(minhas).forEach(id => {
+      const vinda = minhas[id];
+      if (!vinda || typeof vinda !== 'object') return;
+      const i = dados.fichas.findIndex(x => x.id === id);
+      if (i < 0) return;                       // ficha que só existe na mesa: não puxo
+      if (igual(dados.fichas[i], vinda)) return;   // é o eco da minha própria escrita
+      dados.fichas[i] = vinda;                     // já veio normalizada acima
+      mudou = true;
+    });
+    if (mudou) gravar();
+    if (mudou || antes !== canon(remotas)) render();
+  }
+
+  function mesaMudou() { render(); }
+
+  // ═══ AS MAGIAS, VINDAS DA BASE DO SITE ════════════════════════════
+  //  A ficha não guarda uma segunda cópia das 254 magias: ela busca na
+  //  MESMA window.GA_MAGIAS que a aba 📚 Consultas usa, e copia para
+  //  dentro da ficha só o que se lê na mesa (círculo, PM, execução,
+  //  alcance, alvo, duração, resistência e o resumo). O texto inteiro
+  //  fica de fora de propósito — 👁 ver vai buscar na hora, e uma ficha
+  //  não precisa carregar o livro junto para ser exportada.
+  const semAcento = window.GA_semAcento || (s => String(s || '').toLowerCase());
+
+  function daBase(mid) {
+    return (window.GA_MAGIAS || []).find(m => m.id === mid) || null;
+  }
+
+  function abrirBuscaMagia(f) {
+    const base = window.GA_MAGIAS || [];
+    if (!base.length || !window.GA_abrirModal) return;
+
+    const overlay = window.GA_abrirModal(`
+      <div class="ga-modal-cab">
+        <span>✨ Adicionar magia</span>
+        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
+      </div>
+      <p class="ga-modal-dica">As ${base.length} magias do livro, as mesmas das Consultas.
+        Busque pelo nome, pela escola ou pelo círculo (<code>3º</code>, <code>evocação</code>, <code>arcana</code>…).</p>
+      <input type="text" class="fi-busca-mag" id="fiBuscaMag" placeholder="bola de fogo, cura, ilusão…"
+             autocomplete="off" aria-label="Buscar magia">
+      <div class="fi-busca-res" id="fiBuscaRes"></div>`);
+
+    const campo = overlay.querySelector('#fiBuscaMag');
+    const res   = overlay.querySelector('#fiBuscaRes');
+
+    function desenhar() {
+      const q = semAcento((campo.value || '').trim());
+      const achadas = !q ? base.slice(0, 40) : base.filter(m => {
+        const alvo = semAcento(m.nome + ' ' + m.escola + ' ' + m.tipo + ' ' + m.circulo + 'º ' + (m.resumo || ''));
+        return alvo.indexOf(q) >= 0;
+      }).slice(0, 60);
+
+      res.innerHTML = achadas.length ? achadas.map(m => `
+        <button type="button" class="fi-busca-item" data-mid="${esc(m.id)}">
+          <span class="fi-busca-circ">${m.circulo}º</span>
+          <span class="fi-busca-nome">${esc(m.nome)}</span>
+          <span class="fi-busca-meta">${esc(m.escola)} · ${esc(m.tipo)} · ${m.pm} PM</span>
+          <span class="fi-busca-res-txt">${esc(m.resumo || '')}</span>
+        </button>`).join('')
+        : '<p class="fi-busca-vazio">Nenhuma magia com isso.</p>';
+    }
+
+    campo.addEventListener('input', desenhar);
+    res.addEventListener('click', e => {
+      const b = e.target.closest('[data-mid]');
+      if (!b) return;
+      const m = daBase(b.dataset.mid);
+      if (!m) return;
+      f.magias.push({
+        id: novoId(), mid: m.id, nome: m.nome, circulo: m.circulo, pm: m.pm,
+        tipo: m.tipo || '', escola: m.escola || '', execucao: m.execucao || '',
+        alcance: m.alcance || '', alvo: m.alvo || m.area || m.efeito || '',
+        duracao: m.duracao || '', resistencia: m.resistencia || '',
+        resumo: m.resumo || '', obs: '',
+      });
+      salvar();
+      overlay._fechar();
+      render();
+    });
+    desenhar();
+  }
+
+  // 👁 ver — o texto integral, buscado na base na hora.
+  function verMagia(m) {
+    if (!m || !window.GA_abrirModal) return;
+    const b = daBase(m.mid);
+    const corpo = b
+      ? (b.descricao || []).map(p => '<p>' + esc(p) + '</p>').join('') +
+        (b.truque ? '<p class="fi-mag-truque"><strong>Truque.</strong> ' + esc(b.truque) + '</p>' : '') +
+        ((b.aprimoramentos || []).length
+          ? '<div class="fi-mag-aprim"><strong>Aprimoramentos</strong>' +
+            b.aprimoramentos.map(a => '<p>+' + a.pm + ' PM: ' +
+              (a.condicao ? esc(a.condicao) + ' — ' : '') + esc(a.texto) +
+              (a.requer ? ' <em>(requer ' + a.requer + 'º círculo)</em>' : '') + '</p>').join('') + '</div>'
+          : '')
+      : '<p>' + esc(m.resumo || 'Sem texto guardado para esta magia.') + '</p>';
+
+    window.GA_abrirModal(`
+      <div class="ga-modal-cab">
+        <span>${esc(m.nome)}</span>
+        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
+      </div>
+      <p class="fi-mag-ficha">${m.circulo}º círculo · ${esc(m.escola)} · ${esc(m.tipo)} · <strong>${m.pm} PM</strong></p>
+      <div class="fi-mag-linha fi-mag-linha--modal">
+        ${campoMag('Execução', m.execucao)}${campoMag('Alcance', m.alcance)}
+        ${campoMag('Alvo', m.alvo)}${campoMag('Duração', m.duracao)}
+        ${campoMag('Resistência', m.resistencia)}
+      </div>
+      <div class="fi-mag-texto">${corpo}</div>`);
   }
 
   // ═══ AS SUB-ABAS DA 📖 FICHAS ═════════════════════════════════════
@@ -721,6 +1602,15 @@
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoEntrada);
     secao.addEventListener('change', aoMudar);
+    // Enter rola a caixa de dados e aplica o dano — quem está no meio de
+    // um combate não quer tirar a mão do teclado para achar o botão.
+    secao.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' || !e.target.dataset) return;
+      const f = fichaAberta();
+      if (!f) return;
+      if (e.target.hasAttribute('data-fi-expr')) { e.preventDefault(); rolarLivre(f); }
+      else if (e.target.hasAttribute('data-fi-dano')) { e.preventDefault(); aplicarDano(f, 'pv', lerDano()); }
+    });
     secao.addEventListener('mousedown', window.GA_richDescMousedown);
     secao.addEventListener('paste', window.GA_richPaste);
     window.addEventListener('beforeunload', salvarAgora);
@@ -728,6 +1618,15 @@
       if (document.visibilityState === 'hidden') salvarAgora();
     });
   }
+  // O que o ficha-mesa.js chama. Ele cuida do Firebase; a ficha cuida
+  // do modelo e da tela. Nenhum dos dois sabe do outro além disto.
+  window.GA_Ficha = {
+    receberDaMesa: receberDaMesa,      // o banco mudou
+    mesaMudou: mesaMudou,              // login/papel mudou → redesenhar a barra
+    minhasFichas: () => dados.fichas.slice(),
+    recarregar: () => { carregar(); render(); },
+  };
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();

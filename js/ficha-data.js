@@ -35,6 +35,11 @@
   //  armadura   sofre a penalidade de armadura — são só três
   //  resist     é um dos três testes de resistência (destaque próprio)
   //  ataque     é com ela que se faz teste de ataque (Luta / Pontaria)
+  //  multipla   pode ser tomada VÁRIAS vezes, cada uma com a sua
+  //             especialidade — só Ofício, e é o próprio livro que diz:
+  //             "Ofício na verdade são várias perícias diferentes"
+  //             (p. 121). Um alquimista e um engenhoqueiro são duas
+  //             perícias, com treino e bônus separados.
   const PERICIAS = [
     { chave: 'acrobacia',     nome: 'Acrobacia',     atr: 'des', treinada: false, armadura: true  },
     { chave: 'adestramento',  nome: 'Adestramento',  atr: 'car', treinada: true,  armadura: false },
@@ -57,7 +62,7 @@
     { chave: 'luta',          nome: 'Luta',          atr: 'for', treinada: false, armadura: false, ataque: 'corpo a corpo' },
     { chave: 'misticismo',    nome: 'Misticismo',    atr: 'int', treinada: true,  armadura: false },
     { chave: 'nobreza',       nome: 'Nobreza',       atr: 'int', treinada: true,  armadura: false },
-    { chave: 'oficio',        nome: 'Ofício',        atr: 'int', treinada: true,  armadura: false },
+    { chave: 'oficio',        nome: 'Ofício',        atr: 'int', treinada: true,  armadura: false, multipla: true },
     { chave: 'percepcao',     nome: 'Percepção',     atr: 'sab', treinada: false, armadura: false },
     { chave: 'pilotagem',     nome: 'Pilotagem',     atr: 'des', treinada: true,  armadura: false },
     { chave: 'pontaria',      nome: 'Pontaria',      atr: 'des', treinada: false, armadura: false, ataque: 'à distância' },
@@ -95,6 +100,34 @@
   // conta que a ficha não faz sozinha.
   const TAMANHOS = ['Minúsculo', 'Pequeno', 'Médio', 'Grande', 'Enorme', 'Colossal'];
 
+  // ── OS OFÍCIOS DO LIVRO (p. 121) ───────────────────────────────
+  //  São só uma sugestão de preenchimento: o livro diz "Você pode
+  //  inventar outros tipos de Ofício: carpinteiro, pedreiro, ourives,
+  //  fazendeiro, pescador, estalajadeiro, escriba, escultor, pintor…".
+  //  A ficha não policia — a lista é atalho, não regra.
+  const OFICIOS = [
+    { nome: 'armeiro',     faz: 'Armas e Armaduras & Escudos' },
+    { nome: 'artesão',     faz: 'Equipamento de Aventura, Ferramentas, Esotéricos e Veículos' },
+    { nome: 'alquimista',  faz: 'Alquímicos' },
+    { nome: 'cozinheiro',  faz: 'Alimentação' },
+    { nome: 'alfaiate',    faz: 'Vestuário' },
+  ];
+
+  // ── ESPAÇOS (p. 141) ───────────────────────────────────────────
+  //  "Por padrão, um item ocupa 1 espaço. Porém, há exceções" — e as
+  //  exceções são estas quatro. A conta usa espaços em vez de peso
+  //  para medir peso e volume ao mesmo tempo.
+  const ESPACOS = [
+    { v: 0.5, rot: '½',  ex: 'alquímicos, poções, pergaminhos e outros itens muito leves — dois deles ocupam 1 espaço' },
+    { v: 1,   rot: '1',  ex: 'o padrão: 1 item = 1 espaço' },
+    { v: 2,   rot: '2',  ex: 'armas de duas mãos, armaduras leves, escudos pesados, criaturas Minúsculas' },
+    { v: 5,   rot: '5',  ex: 'armaduras pesadas, criaturas Pequenas, um barril ou baú' },
+    { v: 10,  rot: '10', ex: 'itens extremamente pesados, como uma criatura Média' },
+  ];
+
+  // "Cada mil moedas, independentemente do tipo, ocupam 1 espaço" (p. 141).
+  const MOEDAS_POR_ESPACO = 1000;
+
   const PERICIA_POR_CHAVE = {}; PERICIAS.forEach(p => { PERICIA_POR_CHAVE[p.chave] = p; });
   const CLASSE_POR_CHAVE  = {}; CLASSES.forEach(c  => { CLASSE_POR_CHAVE[c.chave]  = c;  });
 
@@ -103,6 +136,9 @@
     PERICIAS: PERICIAS,
     CLASSES: CLASSES,
     TAMANHOS: TAMANHOS,
+    OFICIOS: OFICIOS,
+    ESPACOS: ESPACOS,
+    MOEDAS_POR_ESPACO: MOEDAS_POR_ESPACO,
     pericia: function (chave) { return PERICIA_POR_CHAVE[chave] || null; },
     classe:  function (chave) { return CLASSE_POR_CHAVE[chave]  || null; },
   };
