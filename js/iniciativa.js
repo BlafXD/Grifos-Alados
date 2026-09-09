@@ -529,15 +529,32 @@
     rodadaAtual: function () { return rodada; },
   };
 
-  function init() {
+  // ⚠ O GA_Mesa nasce no mesa.js, que é carregado DEPOIS deste arquivo
+  //  nas duas páginas (ele depende do Firebase, que vem do CDN). E um
+  //  script `defer` roda com document.readyState já em "interactive" —
+  //  não em "loading". Ou seja: o init() de baixo acontecia ANTES de o
+  //  mesa.js existir, caía no `else` e NUNCA registrava o aoMudar.
+  //
+  //  Para o mestre isso passava despercebido, porque a lista local dele
+  //  não depende do banco. Para o JOGADOR, era a iniciativa não aparecer
+  //  nunca — nem depois de entrar na mesa, nem com combate rolando.
+  //  Por isso a segunda chance: se o GA_Mesa ainda não chegou, tenta de
+  //  novo no fim da fila dos `defer`.
+  function init(segundaChance) {
     if (window.GA_Mesa) {
       window.GA_Mesa.aoMudar(function (e) { mesa = e; assinar(); render(); });
-    } else {
-      // sem Firebase (CDN fora do ar, config em branco) a lista local
-      // continua de pé — ela nunca dependeu do banco
-      assinar(); render();
+      return;
     }
+    // Ainda há `defer` na fila? O mesa.js é um deles. O DOMContentLoaded
+    // só dispara depois que TODOS rodaram — é lá que se sabe de verdade
+    // se este site tem mesa ou não.
+    if (!segundaChance && document.readyState !== 'complete') {
+      document.addEventListener('DOMContentLoaded', function () { init(true); }, { once: true });
+      return;
+    }
+    // sem Firebase (CDN fora do ar, config em branco) a lista local
+    // continua de pé — ela nunca dependeu do banco
+    assinar(); render();
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  init();
 })();

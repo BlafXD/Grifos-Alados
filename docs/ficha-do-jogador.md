@@ -253,5 +253,117 @@ segue onde estava.
 - **Conflito de escrita é "o último ganha", por grupo.** Dois editando o mesmo
   grupo ao mesmo tempo (os dois no PV) ainda é o último a falar. Basta para uma
   mesa de amigos; não é um editor colaborativo.
-- **Sem histórico.** Quem baixou o PV não fica registrado. As rolagens ficam (no
-  log da mesa); as edições, não.
+- **Sem registro de quem editou.** Quem baixou o PV não fica anotado.
+
+---
+
+# A revisão — 9 de setembro de 2026 (mesmo dia)
+
+Ele usou e voltou com sete apontamentos. Todos feitos; dois deles eram bug.
+
+## 1. 🐛 A iniciativa não aparecia para o jogador. Nunca.
+
+E o painel de rolagens da mesa, também não. **A causa é a mesma, e é a
+armadilha mais cara deste projeto:**
+
+> Um script com `defer` roda com `document.readyState` já em **`"interactive"`**,
+> não em `"loading"`.
+
+O `iniciativa.js` e o `rolagens.js` terminavam assim:
+
+```js
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();                       // ← é sempre este que roda
+```
+
+Como os dois são carregados **antes** do `mesa.js` (que depende do CDN do
+Firebase e por isso fica no fim), o `init()` acontecia com `window.GA_Mesa`
+ainda `undefined`. O `iniciativa.js` caía no `else` e o `rolagens.js` dava um
+`return` mudo — **nenhum dos dois chegava a registrar o `aoMudar`**. Depois
+disso, entrar na mesa não adiantava: ninguém estava escutando.
+
+Para o **mestre** passava despercebido, porque a lista dele é local e não
+depende do banco. Para o **jogador**, era a ordem do combate não existir.
+
+O conserto é uma segunda chance no `DOMContentLoaded` — que só dispara depois
+que **todos** os `defer` rodaram, e é lá que se sabe de verdade se este site tem
+mesa:
+
+```js
+function init(segundaChance) {
+  if (window.GA_Mesa) { …registrar…; return; }
+  if (!segundaChance && document.readyState !== 'complete') {
+    document.addEventListener('DOMContentLoaded', () => init(true), { once: true });
+    return;
+  }
+  …seguir sem mesa…
+}
+```
+
+**Conferido com um A/B**: servindo a versão antiga, o painel não aparece (0
+linhas); servindo a nova, aparece com a rodada e a ordem. O `ficha-mesa.js` já
+nascia com essa guarda — foi ela que fez a pergunta certa aqui.
+
+## 2. O resultado da rolagem, onde se clicou
+
+Era uma faixa no alto da ficha: rolar Percepção lá embaixo queria dizer **subir
+a página inteira** para ler o número. A faixa saiu. Agora cada botão que rola
+tem o seu lugar de resposta, ao lado dele, e o que saiu fica lá até a próxima
+rolagem daquele mesmo botão.
+
+Vale para as 28 perícias, os ofícios, o ataque, o dano, o crítico e o rolador
+livre.
+
+## 3. Histórico de rolagens
+
+Cartão novo no fim da ficha: as **30 últimas** rolagens daquele personagem, com
+hora, o que foi rolado e o detalhe dos dados. Fica no `localStorage`
+(`grifosAlados.fichaRolagens`), por ficha — sobrevive ao F5 e ao fechar o
+navegador. Não é o log da mesa (esse é do `GA_Rolagens`, mora no canto e é
+compartilhado): é o caderninho de quem está com a ficha aberta.
+
+## 4. Ataque, dano e crítico — e o crítico é à mão
+
+O botão de ataque virou `+5 🎲`, o de dano `🎲 dano`, e entrou um **`💥 ×N`**.
+O ×N sai do que estiver escrito no campo de crítico (`19/×3` → ×3; vazio → ×2,
+o padrão do livro) e acompanha o campo enquanto se digita.
+
+**A conta é a da p. 142, no texto:**
+
+> "Neste caso, multiplique **os dados** de dano por 2. Bônus numéricos e dados
+> extras **não são multiplicados**. Por exemplo, um dano de **1d8+3 torna-se
+> 2d8+3**."
+
+Então `1d12+3` com ×4 vira `4d12+3` — e o +3 **não** quadruplica. É rolado à
+mão de propósito: quem decide se o 20 virou crítico é a mesa.
+
+## 5. Dois Ofícios, sempre à vista
+
+O segundo estava atrás de um ＋. Agora a ficha nasce com **dois**, sempre
+visíveis — ter dois é o caso normal, e uma linha vazia não atrapalha. O ＋
+continua ali para o terceiro em diante, e o ✕ só aparece a partir do terceiro.
+
+## 6. A lista de magias
+
+Agrupada **por círculo**, como o livro lista e como se procura na mesa. O nome
+inteiro virou botão: clicou, abre o texto completo com truque e aprimoramentos —
+não precisa mais ir às Consultas com a ficha aberta do lado.
+
+E o **＋ Adicionar magia** ganhou um segundo passo: a busca leva à magia
+inteira, e só depois de lê-la há um "＋ Adicionar esta magia". Antes um toque na
+lista já jogava a magia na ficha, e o dedo escorregando numa lista de 254 nomes
+é fácil demais. A busca também marca o que **já está na ficha**.
+
+## 7. A moeda não pesa
+
+O livro diz que mil moedas ocupam 1 espaço (p. 141), mas a mesa dele não usa
+isso. Agora a conta **nasce desligada**, e um botão 🪶 ao lado do T$ liga a regra
+do livro para quem quiser. O rodapé do inventário diz qual das duas está valendo.
+
+## 8. Saiu: o bloco "Sofrer / curar"
+
+A pedido dele. O **−** e o **+** dos medidores continuam descontando dos
+temporários primeiro (a regra da p. 105 não mudou de lugar) — mas um golpe de 9
+agora é ou nove cliques no −, ou digitar o PV novo direto no campo, e **digitar
+direto não passa pela regra dos temporários**. Fica registrado aqui porque é o
+preço da simplificação, e é fácil de esquecer.

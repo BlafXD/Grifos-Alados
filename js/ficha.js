@@ -31,7 +31,6 @@
   const STORAGE_KEY = 'grifosAlados.fichasPersonagem';
 
   let dados = { fichas: [], aberta: null };
-  let ultimaRolagem = '';       // o detalhe da última rolagem, para a faixa
   let ultimoDano = '';          // "−7 PV: 5 dos temporários e 2 do PV"
   let secao = null;             // a <section> que hospeda a aba
 
@@ -150,7 +149,13 @@
       treinada: (o && o.treinada) === true,
       outros: (o && typeof o.outros === 'number') ? o.outros : 0,
     }));
-    if (!f.oficios.length) f.oficios = [{ id: novoId(), esp: '', treinada: false, outros: 0 }];
+    // DOIS ofícios sempre à vista, sem precisar de um ＋ para achar o
+    // segundo: ter dois é o caso normal ("um alquimista com um
+    // engenhoqueiro"), e uma linha vazia não atrapalha ninguém. O ＋
+    // continua ali para o terceiro em diante.
+    while (f.oficios.length < 2) {
+      f.oficios.push({ id: novoId(), esp: '', treinada: false, outros: 0 });
+    }
 
     // ── INVENTÁRIO (p. 141) ────────────────────────────────────────
     //  `cada: true`  → o número de espaços é POR UNIDADE (o normal: duas
@@ -170,6 +175,11 @@
       obs: String((it && it.obs) || ''),
     }));
     if (typeof f.tibares !== 'number') f.tibares = 0;
+    // "Cada mil moedas ocupam 1 espaço" é regra do livro (p. 141), mas é
+    // das primeiras que uma mesa dispensa — e a dele dispensa. Então a
+    // conta existe, e nasce DESLIGADA: quem quiser o peso da bolsa liga
+    // no botão ao lado do T$.
+    if (typeof f.moedasPesam !== 'boolean') f.moedasPesam = false;
 
     // ── MAGIAS ─────────────────────────────────────────────────────
     //  Vêm da mesma base das Consultas (window.GA_MAGIAS): o que fica
@@ -409,6 +419,7 @@
     }, 0);
   }
   function cargaMoedas(f) {
+    if (!f.moedasPesam) return 0;
     return Math.floor(Math.max(0, f.tibares || 0) / (D.MOEDAS_POR_ESPACO || 1000));
   }
   function cargaUsada(f) {
@@ -437,29 +448,88 @@
 
   // ═══ ROLAR ════════════════════════════════════════════════════════
   //  Passa pelo GA_Rolagens: se ele estiver numa mesa, a rolagem aparece
-  //  na tela de todo mundo; se não estiver, o publicar sai fora sozinho e
-  //  o resultado ainda volta para a faixa aqui de cima. Um caminho só.
-  function rolar(expr, rotulo) {
-    if (!window.GA_Rolagens || !window.GA_Dados) return;
+  //  na tela de todo mundo; se não estiver, o publicar sai fora sozinho.
+  //
+  //  O RESULTADO APARECE ONDE SE CLICOU. Antes ele ia para uma faixa no
+  //  alto da ficha, e no meio de um combate isso quer dizer rolar
+  //  Percepção lá embaixo e subir a página inteira para ler o número.
+  //  Agora cada botão que rola tem o seu lugar de resposta (o `slot`), e
+  //  o que sai fica lá até a próxima rolagem daquele mesmo botão.
+  //
+  //  `slot` é 'per:percepcao', 'of:0', 'atq:2', 'dano:2', 'crit:2' ou
+  //  'livre' — e é o mesmo texto do [data-res] no HTML.
+  let resultados = {};        // slot → { total, detalhe, erro }
+  let historico = [];         // as últimas rolagens desta ficha
+  const HIST_KEY = 'grifosAlados.fichaRolagens';
+  const HIST_MAX = 30;
+
+  function carregarHistorico(fichaId) {
     try {
-      const r = window.GA_Rolagens.rolarEPublicar(expr, rotulo);
-      ultimaRolagem = '<strong>' + esc(rotulo) + '</strong> — ' + r.detalhe;
+      const t = JSON.parse(localStorage.getItem(HIST_KEY) || '{}');
+      historico = Array.isArray(t[fichaId]) ? t[fichaId] : [];
+    } catch (e) { historico = []; }
+  }
+  function salvarHistorico(fichaId) {
+    try {
+      const t = JSON.parse(localStorage.getItem(HIST_KEY) || '{}');
+      t[fichaId] = historico.slice(0, HIST_MAX);
+      window.GA_guardar(HIST_KEY, JSON.stringify(t));
+    } catch (e) {}
+  }
+
+  function rolar(expr, rotulo, slot) {
+    if (!window.GA_Rolagens || !window.GA_Dados) return null;
+    let r = null;
+    try {
+      r = window.GA_Rolagens.rolarEPublicar(expr, rotulo);
+      resultados[slot] = { total: r.total, detalhe: r.detalhe };
+      historico.unshift({
+        quando: Date.now(), rotulo: rotulo, expr: expr,
+        total: r.total, detalhe: r.detalhe,
+      });
+      historico = historico.slice(0, HIST_MAX);
+      const f = fichaAberta();
+      if (f) salvarHistorico(f.id);
     } catch (err) {
-      ultimaRolagem = '⚠ ' + esc(err.message || 'não deu para rolar');
+      resultados[slot] = { erro: err.message || 'não deu para rolar' };
     }
-    const faixa = secao && secao.querySelector('[data-fi-rolagem]');
-    if (faixa) { faixa.innerHTML = '🎲 ' + ultimaRolagem; faixa.hidden = false; }
+    pintarResultado(slot);
+    pintarHistorico();
+    return r;
+  }
+
+  // Escreve o resultado no lugar dele, sem redesenhar a ficha (um
+  // re-render tiraria o cursor de quem estivesse digitando ao lado).
+  function pintarResultado(slot) {
+    if (!secao) return;
+    const el = secao.querySelector('[data-res="' + cssEsc(slot) + '"]');
+    if (!el) return;
+    const r = resultados[slot];
+    if (!r) { el.innerHTML = ''; el.hidden = true; return; }
+    el.hidden = false;
+    el.className = 'fi-res' + (r.erro ? ' fi-res--erro' : '');
+    el.innerHTML = r.erro
+      ? '⚠ ' + esc(r.erro)
+      : '<strong class="fi-res-num">' + r.total + '</strong>' +
+        '<span class="fi-res-det">' + r.detalhe + '</span>';
+  }
+  // os slots têm ':' no nome, que em seletor CSS precisa de escape
+  function cssEsc(s) { return String(s).replace(/:/g, '\\:'); }
+
+  function pintarHistorico() {
+    const cx = secao && secao.querySelector('[data-fi-hist]');
+    if (cx) cx.innerHTML = listaHistorico();
+  }
+
+  // Trocar de ficha troca o caderno: os resultados pendurados nas linhas
+  // e o histórico são daquele personagem, não desta tela.
+  function abrirFicha(id) {
+    dados.aberta = id;
+    resultados = {};
+    carregarHistorico(id);
   }
   function d20(valor) { return valor === 0 ? '1d20' : '1d20' + sinal(valor); }
   function quem(f) { return f.nome || 'personagem sem nome'; }
-
-  // O que estiver na caixinha de dano/cura. Vazio vale 1 — assim o
-  // botão sozinho já serve para o dano de um ponto.
-  function lerDano() {
-    const el = secao && secao.querySelector('[data-fi-dano]');
-    const n = el ? parseInt(el.value, 10) : 1;
-    return (isFinite(n) && n > 0) ? n : 1;
-  }
 
   // ── DANO E CURA ──────────────────────────────────────────────────
   //  A conta está em gastarPontos(); aqui é a parte que a pessoa vê: o
@@ -473,10 +543,11 @@
     const partes = [];
     if (r.temp)  partes.push('<strong>' + r.temp + '</strong> dos temporários');
     if (r.atual) partes.push('<strong>' + r.atual + '</strong> do ' + rot);
+    const sobra = f[qual].temp || 0;
     ultimoDano = '🩸 −' + n + ' ' + rot + (porQue ? ' (' + esc(porQue) + ')' : '') +
                  (partes.length ? ': ' + partes.join(' e ') : '') +
                  (r.temp && !r.atual ? ' — o ' + rot + ' nem foi tocado' : '') +
-                 ((f[qual].temp || 0) ? ' · ainda restam ' + f[qual].temp + ' temporários' : '');
+                 (sobra ? ' · ainda ' + (sobra === 1 ? 'resta 1 temporário' : 'restam ' + sobra + ' temporários') : '');
     atualizarDerivados();
     salvar();
   }
@@ -491,13 +562,70 @@
     salvar();
   }
 
+  // ── O HISTÓRICO ──────────────────────────────────────────────────
+  //  Fica no fim da ficha e guarda as 30 últimas rolagens DESTA ficha,
+  //  neste navegador. Não é o log da mesa (esse é do GA_Rolagens, mora
+  //  no canto e é compartilhado): é o seu caderninho, e sobrevive ao F5.
+  function listaHistorico() {
+    if (!historico.length) {
+      return '<p class="fi-hist-vazio">Nenhuma rolagem ainda nesta ficha.</p>';
+    }
+    return historico.map(h => `
+      <li class="fi-hist-item">
+        <span class="fi-hist-hora">${esc(hora(h.quando))}</span>
+        <span class="fi-hist-rot">${esc(curto(h.rotulo))}</span>
+        <span class="fi-hist-det">${h.detalhe}</span>
+      </li>`).join('');
+  }
+  function hora(t) {
+    try { return new Date(t).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }
+    catch (e) { return ''; }
+  }
+  // "Vex · Percepção" → "Percepção": o nome do personagem se repete em
+  // toda linha do histórico e só rouba a largura.
+  function curto(rot) {
+    const i = String(rot || '').indexOf(' · ');
+    return i >= 0 ? rot.slice(i + 3) : (rot || 'rolagem');
+  }
+  function blocoHistorico() {
+    return `
+      <div class="fi-cartao fi-hist">
+        <h2 class="fi-cartao-tit">🎲 Histórico de rolagens
+          <span class="fi-cartao-nota">as ${HIST_MAX} últimas desta ficha, neste navegador</span>
+          <button type="button" class="fi-mini fi-hist-limpar" data-acao="limpar-hist"
+                  title="Esvaziar o histórico desta ficha">🗑 Limpar</button>
+        </h2>
+        <ul class="fi-hist-lista" data-fi-hist>${listaHistorico()}</ul>
+      </div>`;
+  }
+
+  // ── O CRÍTICO, NA REGRA DO LIVRO ─────────────────────────────────
+  //  p. 142: "multiplique os DADOS de dano por 2. Bônus numéricos e
+  //  dados extras não são multiplicados. Por exemplo, um dano de 1d8+3
+  //  torna-se 2d8+3 com um acerto crítico."
+  //  Ou seja: multiplica a QUANTIDADE de cada dado e deixa os números
+  //  fixos quietos — 2d6+1d4+5 com ×3 vira 6d6+3d4+5.
+  //  É rolado à mão, de propósito: quem decide se o 20 virou crítico é
+  //  a mesa (margem de ameaça, alvo imune, confirmação da casa…).
+  function expressaoCritica(dano, mult) {
+    return String(dano || '').replace(/(\d*)d(\d+)/gi, (todo, qtd, lados) => {
+      const n = (parseInt(qtd, 10) || 1) * mult;
+      return n + 'd' + lados;
+    });
+  }
+  // "19/×3" → 3 · "x4" → 4 · "19" ou vazio → 2 (o padrão do livro)
+  function multiplicadorCritico(critico) {
+    const m = String(critico || '').match(/[x×]\s*(\d+)/i);
+    return m ? Math.max(2, Math.min(10, parseInt(m[1], 10))) : 2;
+  }
+
   // ── O ROLADOR LIVRE ──────────────────────────────────────────────
   function rolarLivre(f) {
     const campo = secao && secao.querySelector('[data-fi-expr]');
     if (!campo) return;
     const txt = (campo.value || '').trim();
     if (!txt) return;
-    rolar(txt, quem(f));
+    rolar(txt, quem(f), 'livre');
     campo.value = '';
     campo.focus();
   }
@@ -522,7 +650,7 @@
         <button type="button" class="fi-add" data-acao="nova">＋ Nova ficha</button>
       </div>
       ${barraDaMesa()}
-      <p class="fi-rolagem" data-fi-rolagem ${ultimaRolagem ? '' : 'hidden'}>${ultimaRolagem ? '🎲 ' + ultimaRolagem : ''}</p>`;
+`;
 
     // O rolador livre — o mesmo do painel do mestre, aqui dentro da
     // ficha. Entende XdY e + − × ÷ com parênteses, e o que sair aparece
@@ -537,6 +665,7 @@
         ${[['1d20', 'd20'], ['1d100', 'd%'], ['2d6', '2d6'], ['1d8', 'd8'], ['1d6', 'd6'], ['1d4', 'd4']]
           .map(([e, r]) => `<button type="button" class="fi-dadeira-atalho" data-acao="rolar-atalho"
                  data-expr="${e}" title="Rolar ${e}">${r}</button>`).join('')}
+        <span class="fi-res fi-res--livre" data-res="livre" hidden></span>
       </div>`;
 
     if (!f) {
@@ -549,7 +678,7 @@
     }
 
     html += bloqueIdentidade(f) + blocoNumeros(f) + blocoPericias(f) + blocoAtaques(f) +
-            blocoMagias(f) + blocoInventario(f) + blocoTextos(f);
+            blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico();
     const donoAberta = donoDe(f.id);
     html += `
       <div class="fi-rodape">
@@ -560,6 +689,8 @@
           🗑 ${donoAberta ? 'Tirar esta ficha da mesa' : 'Apagar esta ficha'}</button>
       </div>`;
     cont.innerHTML = html;
+    // o innerHTML apagou os resultados — recoloca cada um no seu lugar
+    Object.keys(resultados).forEach(pintarResultado);
   }
 
   // ── A BARRA DA MESA ──────────────────────────────────────────────
@@ -694,19 +825,6 @@
           ${medidor(f, 'pv')}
           ${medidor(f, 'pm')}
 
-          <div class="fi-dano">
-            <span class="fi-dano-rot">Sofrer / curar</span>
-            <input class="fi-dano-val" type="number" min="0" value="1" id="fiDano${esc(f.id)}"
-                   data-fi-dano title="Quanto de dano ou de cura">
-            <button type="button" class="fi-dano-btn fi-dano-btn--mal" data-acao="dano-pv"
-                    title="Tirar este tanto de PV — os temporários vão primeiro">🩸 PV</button>
-            <button type="button" class="fi-dano-btn fi-dano-btn--bem" data-acao="cura-pv"
-                    title="Recuperar este tanto de PV (sem passar do máximo)">✚ PV</button>
-            <button type="button" class="fi-dano-btn fi-dano-btn--mal" data-acao="dano-pm"
-                    title="Gastar este tanto de PM — os temporários vão primeiro">🔥 PM</button>
-            <button type="button" class="fi-dano-btn fi-dano-btn--bem" data-acao="cura-pm"
-                    title="Recuperar este tanto de PM">✚ PM</button>
-          </div>
           <p class="fi-dano-eco" data-der="danoeco" ${ultimoDano ? '' : 'hidden'}>${ultimoDano}</p>
 
           <div class="fi-extras">
@@ -874,6 +992,7 @@
           <input class="fi-num fi-num--mini" type="number" value="${e.outros}"
                  data-campo="pericias.${p.chave}.outros" title="Outros bônus nesta perícia">
           <span class="fi-per-marcas">${marcasDe(p)}</span>
+          <span class="fi-res" data-res="per:${p.chave}" hidden></span>
         </li>`;
     }).join('');
 
@@ -915,13 +1034,14 @@
           <input class="fi-num fi-num--mini" type="number" value="${o.outros}"
                  data-campo="oficios.${i}.outros" title="Outros bônus neste ofício">
           <span class="fi-per-marcas">
-            ${f.oficios.length > 1
+            ${f.oficios.length > 2
               ? `<button type="button" class="fi-mini fi-mini--x" data-acao="tira-oficio" data-i="${i}"
                          title="Tirar este ofício">✕</button>` : ''}
             ${i === f.oficios.length - 1
               ? `<button type="button" class="fi-mini" data-acao="add-oficio"
                          title="Acrescentar outro ofício — cada um é uma perícia à parte">＋</button>` : ''}
           </span>
+          <span class="fi-res" data-res="of:${i}" hidden></span>
         </li>`;
     }).join('') +
     `<datalist id="fiOficios">${lista}</datalist>`;
@@ -933,7 +1053,9 @@
 
   // ── ATAQUES ──────────────────────────────────────────────────────
   function blocoAtaques(f) {
-    const linhas = f.ataques.map((a, i) => `
+    const linhas = f.ataques.map((a, i) => {
+      const mult = multiplicadorCritico(a.critico);
+      return `
       <li class="fi-atq">
         <input class="fi-txt fi-txt--atq" type="text" value="${esc(a.nome)}" data-campo="ataques.${i}.nome"
                placeholder="espada longa" autocomplete="off">
@@ -944,19 +1066,25 @@
         <input class="fi-num fi-num--mini" type="number" value="${a.extra}" data-campo="ataques.${i}.extra"
                title="Bônus extra deste ataque (arma mágica, poder…)">
         <button type="button" class="fi-atq-val" data-acao="rolar-ataque" data-i="${i}"
-                title="Rolar o ataque">${sinal(valorAtaque(f, a))}</button>
+                title="Rolar 1d20 ${sinal(valorAtaque(f, a))} de ataque">${sinal(valorAtaque(f, a))} 🎲</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.dano)}" data-campo="ataques.${i}.dano"
                placeholder="1d8+3" autocomplete="off">
         <button type="button" class="fi-atq-dano" data-acao="rolar-dano" data-i="${i}"
-                title="Rolar o dano">🎲</button>
+                title="Rolar o dano">🎲 dano</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.critico)}" data-campo="ataques.${i}.critico"
                placeholder="19/×3" autocomplete="off">
+        <button type="button" class="fi-atq-crit" data-acao="rolar-critico" data-i="${i}"
+                title="Rolar o dano CRÍTICO: ${esc(expressaoCritica(a.dano || '—', mult))} (só os dados multiplicam, ×${mult})">💥 ×${mult}</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.tipo)}" data-campo="ataques.${i}.tipo"
                placeholder="corte" autocomplete="off">
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.alcance)}" data-campo="ataques.${i}.alcance"
                placeholder="corpo a corpo" autocomplete="off">
         <button type="button" class="fi-mini fi-mini--x" data-acao="tira-ataque" data-i="${i}" title="Tirar este ataque">✕</button>
-      </li>`).join('');
+        <span class="fi-res fi-res--atq" data-res="atq:${i}" hidden></span>
+        <span class="fi-res fi-res--atq" data-res="dano:${i}" hidden></span>
+        <span class="fi-res fi-res--atq fi-res--crit" data-res="crit:${i}" hidden></span>
+      </li>`;
+    }).join('');
 
     return `
       <div class="fi-cartao fi-ataques">
@@ -965,11 +1093,14 @@
         </h2>
         <div class="fi-atq-cab">
           <span>Arma</span><span>Perícia</span><span>Extra</span><span>Ataque</span>
-          <span>Dano</span><span></span><span>Crítico</span><span>Tipo</span><span>Alcance</span><span></span>
+          <span>Dano</span><span></span><span>Crítico</span><span></span><span>Tipo</span><span>Alcance</span><span></span>
         </div>
         <ul class="fi-atq-lista">${linhas || '<li class="fi-atq-vazio">Nenhum ataque ainda.</li>'}</ul>
         <button type="button" class="fi-add fi-add--menor" data-acao="add-ataque">＋ Acrescentar ataque</button>
-        <p class="fi-nota">O dano de corpo a corpo e de arremesso soma a Força — escreva o total aqui (ex.: <code>1d8+3</code>).</p>
+        <p class="fi-nota">O dano de corpo a corpo e de arremesso soma a Força — escreva o total aqui (ex.: <code>1d8+3</code>).
+          O <strong>💥</strong> rola o crítico <em>à mão</em>, porque quem decide se o 20 virou crítico é a mesa:
+          ele multiplica só os <strong>dados</strong>, como o livro manda (p. 142) — <code>1d8+3</code> com ×2 vira
+          <code>2d8+3</code>, e o +3 não dobra.</p>
       </div>`;
   }
 
@@ -980,46 +1111,67 @@
   //  alvo, duração e resistência preenchidos — ninguém copia à mão.
   function blocoMagias(f) {
     const temBase = Array.isArray(window.GA_MAGIAS) && window.GA_MAGIAS.length;
-    const linhas = f.magias.map((m, i) => `
+    // agrupadas por círculo, como o livro lista e como se procura na mesa
+    const porCirculo = {};
+    f.magias.forEach((m, i) => {
+      const c = m.circulo || 0;
+      (porCirculo[c] || (porCirculo[c] = [])).push({ m: m, i: i });
+    });
+
+    const grupos = Object.keys(porCirculo).sort((a, b) => a - b).map(c => `
+      <div class="fi-mag-grupo">
+        <h3 class="fi-mag-circulo-tit">
+          <span class="fi-mag-circ">${c === '0' ? '—' : c + 'º'}</span>
+          ${c === '0' ? 'sem círculo' : 'círculo'}
+          <em>${porCirculo[c].length} magia${porCirculo[c].length > 1 ? 's' : ''}</em>
+        </h3>
+        <ul class="fi-mag-lista">${porCirculo[c].map(({ m, i }) => cartaoMagia(m, i)).join('')}</ul>
+      </div>`).join('');
+
+    return `
+      <div class="fi-cartao fi-bloco fi-magias">
+        <h2 class="fi-cartao-tit">✨ Magias
+          <span class="fi-cartao-nota">${f.magias.length} na ficha · a CD delas é a sua:
+            <strong data-der="cd2">${cdBase(f)}</strong></span>
+          <button type="button" class="fi-add fi-add--menor fi-mag-add" data-acao="add-magia" ${temBase ? '' : 'disabled'}>
+            ＋ Adicionar magia</button>
+        </h2>
+        ${grupos || '<p class="fi-mag-vazia">Nenhuma magia ainda. O <strong>＋ Adicionar magia</strong> abre a busca nas ' +
+          (temBase ? window.GA_MAGIAS.length : 254) + ' magias do livro — as mesmas da aba 📚 Consultas.</p>'}
+        <p class="fi-nota">Clique no <strong>nome da magia</strong> para abrir o texto inteiro, com truque e
+          aprimoramentos. O <strong>🔥</strong> desconta os PM do círculo — dos temporários primeiro.</p>
+        ${caixaRica(f, BLOCOS_EMBUTIDOS[0])}
+      </div>`;
+  }
+
+  // O cartão de uma magia na ficha. O nome inteiro é botão: clicou,
+  // abre o texto completo — era o que faltava para não precisar ir às
+  // Consultas com a ficha aberta do lado.
+  function cartaoMagia(m, i) {
+    return `
       <li class="fi-mag">
-        <div class="fi-mag-cab">
-          <span class="fi-mag-circ" title="Círculo">${m.circulo ? m.circulo + 'º' : '—'}</span>
-          <strong class="fi-mag-nome">${esc(m.nome)}</strong>
-          <span class="fi-mag-pm" title="Custo em PM do círculo">${m.pm ? m.pm + ' PM' : ''}</span>
-          <button type="button" class="fi-mag-btn" data-acao="gastar-magia" data-i="${i}"
-                  title="Gastar ${m.pm} PM por esta magia — os temporários saem primeiro"
-                  ${m.pm ? '' : 'hidden'}>🔥 gastar</button>
-          <button type="button" class="fi-mag-btn" data-acao="ver-magia" data-i="${i}"
-                  title="Abrir o texto inteiro da magia">👁 ver</button>
-          <button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
-                  title="Tirar esta magia da ficha">✕</button>
-        </div>
-        <div class="fi-mag-linha">
+        <button type="button" class="fi-mag-abrir" data-acao="ver-magia" data-i="${i}"
+                title="Abrir o texto inteiro de ${esc(m.nome)}">
+          <span class="fi-mag-nome">${esc(m.nome)}</span>
           ${m.escola ? `<span class="fi-mag-tag">${esc(m.escola)}</span>` : ''}
-          ${m.tipo ? `<span class="fi-mag-tag">${esc(m.tipo)}</span>` : ''}
+          ${m.tipo ? `<span class="fi-mag-tag fi-mag-tag--tipo">${esc(m.tipo)}</span>` : ''}
+          <span class="fi-mag-lupa" aria-hidden="true">👁</span>
+        </button>
+        <span class="fi-mag-acoes">
+          ${m.pm ? `<button type="button" class="fi-mag-pm-btn" data-acao="gastar-magia" data-i="${i}"
+                  title="Gastar ${m.pm} PM — os temporários saem primeiro">🔥 ${m.pm} PM</button>` : ''}
+          <button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
+                  title="Tirar ${esc(m.nome)} da ficha">✕</button>
+        </span>
+        <div class="fi-mag-linha">
           ${campoMag('Execução', m.execucao)}${campoMag('Alcance', m.alcance)}
           ${campoMag('Alvo', m.alvo)}${campoMag('Duração', m.duracao)}
           ${campoMag('Resistência', m.resistencia)}
         </div>
         ${m.resumo ? `<p class="fi-mag-resumo">${esc(m.resumo)}</p>` : ''}
         <input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
-               placeholder="sua anotação nesta magia (aprimoramento que usa, CD, alvo preferido…)" autocomplete="off">
-      </li>`).join('');
-
-    return `
-      <div class="fi-cartao fi-bloco fi-magias">
-        <h2 class="fi-cartao-tit">✨ Magias
-          <span class="fi-cartao-nota">a CD delas é a mesma da sua ficha:
-            <strong data-der="cd2">${cdBase(f)}</strong></span>
-        </h2>
-        <ul class="fi-mag-lista">${linhas || '<li class="fi-atq-vazio">Nenhuma magia ainda.</li>'}</ul>
-        <button type="button" class="fi-add fi-add--menor" data-acao="add-magia" ${temBase ? '' : 'disabled'}>
-          ＋ Adicionar magia${temBase ? '' : ' (base não carregada nesta página)'}</button>
-        <p class="fi-nota">Vêm das <strong>${temBase ? window.GA_MAGIAS.length : 254} magias do livro</strong>,
-          as mesmas da aba 📚 Consultas → ✨ Magias. O <strong>🔥 gastar</strong> desconta os PM do círculo
-          — dos temporários primeiro.</p>
-        ${caixaRica(f, BLOCOS_EMBUTIDOS[0])}
-      </div>`;
+               placeholder="sua anotação (aprimoramento que usa, alvo preferido…)" autocomplete="off">
+      </li>`;
   }
   function campoMag(rot, v) {
     return v ? `<span class="fi-mag-campo"><em>${esc(rot)}</em> ${esc(v)}</span>` : '';
@@ -1080,13 +1232,21 @@
         <div class="fi-inv-pe">
           <label class="fi-extra fi-extra--tibar"><span>💰 Tibares (T$)</span>
             <input class="fi-num" type="number" min="0" step="0.1" value="${f.tibares}" data-campo="tibares"
-                   title="Cada mil moedas ocupam 1 espaço (p. 141)"></label>
+                   title="O dinheiro do personagem"></label>
+          <button type="button" class="fi-moeda-chave ${f.moedasPesam ? 'fi-moeda-chave--on' : ''}"
+                  data-acao="moedas-pesam" aria-pressed="${!!f.moedasPesam}"
+                  title="${f.moedasPesam
+                    ? 'Ligado: cada mil moedas ocupam 1 espaço, como o livro manda (p. 141). Clique para a moeda voltar a não pesar.'
+                    : 'A moeda não pesa — é a regra que a sua mesa usa. Clique para ligar a do livro: mil moedas = 1 espaço.'}"
+            >${f.moedasPesam ? '⚖ a moeda pesa' : '🪶 a moeda não pesa'}</button>
           <span class="fi-inv-conta" data-der="invconta">${contaCarga(f)}</span>
         </div>
         <p class="fi-nota">Um item ocupa <strong>1 espaço</strong> por padrão. Meio espaço para alquímicos,
           poções e pergaminhos; 2 para armas de duas mãos, armaduras leves e escudos pesados; 5 para armaduras
           pesadas e baús; 10 para o que for muito grande. O botão <strong>cada / no total</strong> é para quando
-          o mestre disser que o monte inteiro ocupa aquilo — o livro deixa essa decisão com ele.</p>
+          o mestre disser que o monte inteiro ocupa aquilo — o livro deixa essa decisão com ele.<br>
+          O livro também diz que <em>mil moedas ocupam 1 espaço</em>, mas a sua mesa não usa isso: por padrão a
+          <strong>moeda não pesa</strong>, e o 🪶 ao lado do T$ liga a regra do livro para quem quiser.</p>
         ${caixaRica(f, BLOCOS_EMBUTIDOS[1])}
       </div>`;
   }
@@ -1096,7 +1256,9 @@
     const p = [];
     if (it) p.push(it + ' de itens');
     if (mo) p.push(mo + ' das moedas (' + Math.floor(f.tibares) + ' T$ ÷ ' + D.MOEDAS_POR_ESPACO + ')');
-    return p.length ? p.join(' + ') + ' = ' + cargaUsada(f) + ' espaços' : 'Nada carregado ainda.';
+    if (!p.length) return 'Nada carregado ainda.';
+    const total = p.join(' + ') + ' = ' + cargaUsada(f) + ' espaços';
+    return total + (!f.moedasPesam && f.tibares ? ' · a moeda não está pesando' : '');
   }
 
   // ── OS BLOCOS DE TEXTO ───────────────────────────────────────────
@@ -1174,7 +1336,16 @@
     // o botão de ataque não é [data-der] (é botão), mas o valor dele muda
     secao.querySelectorAll('[data-acao="rolar-ataque"]').forEach(b => {
       const a = f.ataques[+b.dataset.i];
-      if (a) b.textContent = sinal(valorAtaque(f, a));
+      if (a) b.textContent = sinal(valorAtaque(f, a)) + ' 🎲';
+    });
+    // e o ×N do crítico segue o que está escrito no campo "19/×3"
+    secao.querySelectorAll('[data-acao="rolar-critico"]').forEach(b => {
+      const a = f.ataques[+b.dataset.i];
+      if (!a) return;
+      const mult = multiplicadorCritico(a.critico);
+      b.textContent = '💥 ×' + mult;
+      b.title = 'Rolar o dano CRÍTICO: ' + expressaoCritica(a.dano || '—', mult) +
+                ' (só os dados multiplicam, ×' + mult + ')';
     });
   }
 
@@ -1246,12 +1417,11 @@
     if (acao === 'nova') {
       const nova = normalizar({ nome: '' });
       dados.fichas.push(nova);
-      dados.aberta = nova.id;
+      abrirFicha(nova.id);
       salvar(); return render();
     }
     if (acao === 'abrir') {
-      dados.aberta = btn.dataset.id;
-      ultimaRolagem = '';
+      abrirFicha(btn.dataset.id);
       salvar(); return render();
     }
     if (!f) return;
@@ -1296,12 +1466,6 @@
     if (acao === 'pv-mais' || acao === 'pm-mais') {
       aplicarCura(f, acao.slice(0, 2), 1); return;
     }
-    if (acao === 'dano-pv' || acao === 'dano-pm') {
-      aplicarDano(f, acao.slice(-2), lerDano()); return;
-    }
-    if (acao === 'cura-pv' || acao === 'cura-pm') {
-      aplicarCura(f, acao.slice(-2), lerDano()); return;
-    }
 
     // ── OFÍCIOS ────────────────────────────────────────────────────
     if (acao === 'treinar-oficio') {
@@ -1315,12 +1479,12 @@
     }
     if (acao === 'tira-oficio') {
       f.oficios.splice(+btn.dataset.i, 1);
-      if (!f.oficios.length) f.oficios.push({ id: novoId(), esp: '', treinada: false, outros: 0 });
+      while (f.oficios.length < 2) f.oficios.push({ id: novoId(), esp: '', treinada: false, outros: 0 });
       salvar(); return render();
     }
     if (acao === 'rolar-oficio') {
       const i = +btn.dataset.i, o = f.oficios[i];
-      if (o) rolar(d20(valorOficio(f, i)), quem(f) + ' · ' + nomeOficio(o));
+      if (o) rolar(d20(valorOficio(f, i)), quem(f) + ' · ' + nomeOficio(o), 'of:' + i);
       return;
     }
 
@@ -1338,6 +1502,11 @@
       const campo = secao.querySelector('[data-campo="inventario.' + btn.dataset.i + '.qtd"]');
       if (campo) campo.value = it.qtd;
       atualizarDerivados(); return salvar();
+    }
+    if (acao === 'moedas-pesam') {
+      f.moedasPesam = !f.moedasPesam;
+      sujar(f.id, 'moedasPesam');
+      salvar(); return render();
     }
     if (acao === 'inv-modo') {
       const it = f.inventario[+btn.dataset.i];
@@ -1357,20 +1526,34 @@
 
     // ── O ROLADOR LIVRE ────────────────────────────────────────────
     if (acao === 'rolar-livre')  return rolarLivre(f);
-    if (acao === 'rolar-atalho') return rolar(btn.dataset.expr, quem(f));
+    if (acao === 'rolar-atalho') return rolar(btn.dataset.expr, quem(f), 'livre');
     if (acao === 'rolar-pericia') {
       const p = D.pericia(btn.dataset.p);
-      if (p) rolar(d20(valorPericia(f, p.chave)), quem(f) + ' · ' + p.nome);
+      if (p) rolar(d20(valorPericia(f, p.chave)), quem(f) + ' · ' + p.nome, 'per:' + p.chave);
       return;
     }
     if (acao === 'rolar-ataque') {
       const a = f.ataques[+btn.dataset.i];
-      if (a) rolar(d20(valorAtaque(f, a)), quem(f) + ' · ' + (a.nome || 'ataque'));
+      if (a) rolar(d20(valorAtaque(f, a)), quem(f) + ' · ' + (a.nome || 'ataque'), 'atq:' + btn.dataset.i);
       return;
     }
     if (acao === 'rolar-dano') {
       const a = f.ataques[+btn.dataset.i];
-      if (a && a.dano.trim()) rolar(a.dano.trim(), quem(f) + ' · dano de ' + (a.nome || 'ataque'));
+      if (a && a.dano.trim()) rolar(a.dano.trim(), quem(f) + ' · dano de ' + (a.nome || 'ataque'), 'dano:' + btn.dataset.i);
+      return;
+    }
+    if (acao === 'rolar-critico') {
+      const i = +btn.dataset.i, a = f.ataques[i];
+      if (!a || !a.dano.trim()) return;
+      const mult = multiplicadorCritico(a.critico);
+      rolar(expressaoCritica(a.dano.trim(), mult),
+            quem(f) + ' · 💥 CRÍTICO ×' + mult + ' de ' + (a.nome || 'ataque'), 'crit:' + i);
+      return;
+    }
+    if (acao === 'limpar-hist') {
+      historico = [];
+      salvarHistorico(f.id);
+      pintarHistorico();
       return;
     }
   }
@@ -1482,88 +1665,133 @@
     return (window.GA_MAGIAS || []).find(m => m.id === mid) || null;
   }
 
+  // O texto integral de uma magia: a ficha guarda só os campos que se
+  // leem na mesa, e a descrição vem da base na hora de mostrar.
+  function corpoDaMagia(mid, resumoGuardado) {
+    const b = daBase(mid);
+    if (!b) return '<p>' + esc(resumoGuardado || 'Sem texto guardado para esta magia.') + '</p>';
+    return (b.descricao || []).map(p => '<p>' + esc(p) + '</p>').join('') +
+      (b.truque ? '<p class="fi-mag-truque"><strong>Truque.</strong> ' + esc(b.truque) + '</p>' : '') +
+      ((b.aprimoramentos || []).length
+        ? '<div class="fi-mag-aprim"><strong>Aprimoramentos</strong>' +
+          b.aprimoramentos.map(a => '<p><span class="fi-mag-aprim-pm">+' + a.pm + ' PM</span> ' +
+            (a.condicao ? esc(a.condicao) + ' — ' : '') + esc(a.texto) +
+            (a.requer ? ' <em>(requer ' + a.requer + 'º círculo)</em>' : '') + '</p>').join('') + '</div>'
+        : '');
+  }
+  // O cabeçalho de estatísticas, igual na busca e na ficha.
+  function fichaDaMagia(m) {
+    return `
+      <p class="fi-mag-ficha">${m.circulo}º círculo · ${esc(m.escola || '')} · ${esc(m.tipo || '')}
+        · <strong>${m.pm} PM</strong></p>
+      <div class="fi-mag-linha fi-mag-linha--modal">
+        ${campoMag('Execução', m.execucao)}${campoMag('Alcance', m.alcance)}
+        ${campoMag('Alvo', m.alvo || m.area || m.efeito)}${campoMag('Duração', m.duracao)}
+        ${campoMag('Resistência', m.resistencia)}
+      </div>`;
+  }
+
+  //  A busca tem DOIS passos de propósito: achar e, só depois de ler,
+  //  adicionar. Antes um toque na lista já jogava a magia na ficha —
+  //  e o dedo escorregando numa lista de 254 nomes é fácil demais.
   function abrirBuscaMagia(f) {
     const base = window.GA_MAGIAS || [];
     if (!base.length || !window.GA_abrirModal) return;
 
     const overlay = window.GA_abrirModal(`
-      <div class="ga-modal-cab">
+      <div class="ga-modal-cab" id="fiMagCab">
         <span>✨ Adicionar magia</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
-      <p class="ga-modal-dica">As ${base.length} magias do livro, as mesmas das Consultas.
-        Busque pelo nome, pela escola ou pelo círculo (<code>3º</code>, <code>evocação</code>, <code>arcana</code>…).</p>
-      <input type="text" class="fi-busca-mag" id="fiBuscaMag" placeholder="bola de fogo, cura, ilusão…"
-             autocomplete="off" aria-label="Buscar magia">
-      <div class="fi-busca-res" id="fiBuscaRes"></div>`);
+      <div id="fiMagCorpo"></div>`);
+    const corpo = overlay.querySelector('#fiMagCorpo');
 
-    const campo = overlay.querySelector('#fiBuscaMag');
-    const res   = overlay.querySelector('#fiBuscaRes');
+    function telaBusca(termo) {
+      corpo.innerHTML = `
+        <p class="ga-modal-dica">As ${base.length} magias do livro, as mesmas das Consultas.
+          Busque pelo nome, pela escola ou pelo círculo (<code>3º</code>, <code>evocação</code>, <code>arcana</code>…).</p>
+        <input type="text" class="fi-busca-mag" id="fiBuscaMag" placeholder="bola de fogo, cura, ilusão…"
+               autocomplete="off" aria-label="Buscar magia" value="${esc(termo || '')}">
+        <div class="fi-busca-res" id="fiBuscaRes"></div>`;
+      const campo = corpo.querySelector('#fiBuscaMag');
+      const res   = corpo.querySelector('#fiBuscaRes');
 
-    function desenhar() {
-      const q = semAcento((campo.value || '').trim());
-      const achadas = !q ? base.slice(0, 40) : base.filter(m => {
-        const alvo = semAcento(m.nome + ' ' + m.escola + ' ' + m.tipo + ' ' + m.circulo + 'º ' + (m.resumo || ''));
-        return alvo.indexOf(q) >= 0;
-      }).slice(0, 60);
+      function listar() {
+        const q = semAcento((campo.value || '').trim());
+        const achadas = !q ? base.slice(0, 40) : base.filter(m => {
+          const alvo = semAcento(m.nome + ' ' + m.escola + ' ' + m.tipo + ' ' + m.circulo + 'º ' + (m.resumo || ''));
+          return alvo.indexOf(q) >= 0;
+        }).slice(0, 60);
+        const jaTem = {};
+        f.magias.forEach(m => { jaTem[m.mid] = true; });
 
-      res.innerHTML = achadas.length ? achadas.map(m => `
-        <button type="button" class="fi-busca-item" data-mid="${esc(m.id)}">
-          <span class="fi-busca-circ">${m.circulo}º</span>
-          <span class="fi-busca-nome">${esc(m.nome)}</span>
-          <span class="fi-busca-meta">${esc(m.escola)} · ${esc(m.tipo)} · ${m.pm} PM</span>
-          <span class="fi-busca-res-txt">${esc(m.resumo || '')}</span>
-        </button>`).join('')
-        : '<p class="fi-busca-vazio">Nenhuma magia com isso.</p>';
+        res.innerHTML = achadas.length ? achadas.map(m => `
+          <button type="button" class="fi-busca-item ${jaTem[m.id] ? 'fi-busca-item--tem' : ''}" data-mid="${esc(m.id)}">
+            <span class="fi-busca-circ">${m.circulo}º</span>
+            <span class="fi-busca-nome">${esc(m.nome)}${jaTem[m.id] ? ' <em>já está na ficha</em>' : ''}</span>
+            <span class="fi-busca-meta">${esc(m.escola)} · ${esc(m.tipo)} · ${m.pm} PM</span>
+            <span class="fi-busca-res-txt">${esc(m.resumo || '')}</span>
+          </button>`).join('')
+          : '<p class="fi-busca-vazio">Nenhuma magia com isso.</p>';
+      }
+      campo.addEventListener('input', listar);
+      res.addEventListener('click', e => {
+        const b = e.target.closest('[data-mid]');
+        if (b) telaMagia(b.dataset.mid, campo.value);
+      });
+      listar();
+      campo.focus();
     }
 
-    campo.addEventListener('input', desenhar);
-    res.addEventListener('click', e => {
-      const b = e.target.closest('[data-mid]');
-      if (!b) return;
-      const m = daBase(b.dataset.mid);
+    // segundo passo: leu, e aí decide
+    function telaMagia(mid, termo) {
+      const m = daBase(mid);
       if (!m) return;
-      f.magias.push({
-        id: novoId(), mid: m.id, nome: m.nome, circulo: m.circulo, pm: m.pm,
-        tipo: m.tipo || '', escola: m.escola || '', execucao: m.execucao || '',
-        alcance: m.alcance || '', alvo: m.alvo || m.area || m.efeito || '',
-        duracao: m.duracao || '', resistencia: m.resistencia || '',
-        resumo: m.resumo || '', obs: '',
+      const jaTem = f.magias.some(x => x.mid === mid);
+      corpo.innerHTML = `
+        <div class="fi-mag-topo">
+          <button type="button" class="fi-mag-voltar" data-voltar>← voltar à busca</button>
+          <strong class="fi-mag-titulo">${esc(m.nome)}</strong>
+        </div>
+        ${fichaDaMagia(m)}
+        <div class="fi-mag-texto">${corpoDaMagia(m.id, m.resumo)}</div>
+        <div class="ga-modal-acoes">
+          <button type="button" class="ga-btn-sec" data-voltar>← Voltar</button>
+          <button type="button" class="ga-btn-principal" data-add ${jaTem ? 'disabled' : ''}>
+            ${jaTem ? '✓ já está na ficha' : '＋ Adicionar esta magia'}</button>
+        </div>`;
+      corpo.querySelectorAll('[data-voltar]').forEach(b =>
+        b.addEventListener('click', () => telaBusca(termo)));
+      const add = corpo.querySelector('[data-add]');
+      if (add && !jaTem) add.addEventListener('click', () => {
+        f.magias.push({
+          id: novoId(), mid: m.id, nome: m.nome, circulo: m.circulo, pm: m.pm,
+          tipo: m.tipo || '', escola: m.escola || '', execucao: m.execucao || '',
+          alcance: m.alcance || '', alvo: m.alvo || m.area || m.efeito || '',
+          duracao: m.duracao || '', resistencia: m.resistencia || '',
+          resumo: m.resumo || '', obs: '',
+        });
+        sujar(f.id, 'magias');
+        salvar();
+        overlay._fechar();
+        render();
       });
-      salvar();
-      overlay._fechar();
-      render();
-    });
-    desenhar();
+    }
+
+    telaBusca('');
   }
 
   // 👁 ver — o texto integral, buscado na base na hora.
   function verMagia(m) {
     if (!m || !window.GA_abrirModal) return;
-    const b = daBase(m.mid);
-    const corpo = b
-      ? (b.descricao || []).map(p => '<p>' + esc(p) + '</p>').join('') +
-        (b.truque ? '<p class="fi-mag-truque"><strong>Truque.</strong> ' + esc(b.truque) + '</p>' : '') +
-        ((b.aprimoramentos || []).length
-          ? '<div class="fi-mag-aprim"><strong>Aprimoramentos</strong>' +
-            b.aprimoramentos.map(a => '<p>+' + a.pm + ' PM: ' +
-              (a.condicao ? esc(a.condicao) + ' — ' : '') + esc(a.texto) +
-              (a.requer ? ' <em>(requer ' + a.requer + 'º círculo)</em>' : '') + '</p>').join('') + '</div>'
-          : '')
-      : '<p>' + esc(m.resumo || 'Sem texto guardado para esta magia.') + '</p>';
-
     window.GA_abrirModal(`
       <div class="ga-modal-cab">
         <span>${esc(m.nome)}</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
-      <p class="fi-mag-ficha">${m.circulo}º círculo · ${esc(m.escola)} · ${esc(m.tipo)} · <strong>${m.pm} PM</strong></p>
-      <div class="fi-mag-linha fi-mag-linha--modal">
-        ${campoMag('Execução', m.execucao)}${campoMag('Alcance', m.alcance)}
-        ${campoMag('Alvo', m.alvo)}${campoMag('Duração', m.duracao)}
-        ${campoMag('Resistência', m.resistencia)}
-      </div>
-      <div class="fi-mag-texto">${corpo}</div>`);
+      ${fichaDaMagia(m)}
+      <div class="fi-mag-texto">${corpoDaMagia(m.mid, m.resumo)}</div>
+      ${m.obs ? '<p class="fi-mag-obs-modal"><strong>Sua anotação.</strong> ' + esc(m.obs) + '</p>' : ''}`);
   }
 
   // ═══ AS SUB-ABAS DA 📖 FICHAS ═════════════════════════════════════
@@ -1598,6 +1826,7 @@
     if (!cont || !D) return;                 // página que não tem a aba
     secao = cont.closest('section') || cont;
     carregar();
+    carregarHistorico(dados.aberta);
     render();
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoEntrada);
@@ -1609,7 +1838,6 @@
       const f = fichaAberta();
       if (!f) return;
       if (e.target.hasAttribute('data-fi-expr')) { e.preventDefault(); rolarLivre(f); }
-      else if (e.target.hasAttribute('data-fi-dano')) { e.preventDefault(); aplicarDano(f, 'pv', lerDano()); }
     });
     secao.addEventListener('mousedown', window.GA_richDescMousedown);
     secao.addEventListener('paste', window.GA_richPaste);
