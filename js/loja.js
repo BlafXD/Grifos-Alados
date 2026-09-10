@@ -133,6 +133,7 @@
       lojaContent.addEventListener('click', aoClicarAjuste);
       lojaContent.addEventListener('click', aoClicarLog);
       lojaContent.addEventListener('click', aoClicarComunidade);
+      lojaContent.addEventListener('click', aoClicarLevar);
     }
 
     if (secaoLoja.classList.contains('active')) {
@@ -1060,6 +1061,12 @@
           ${precosHtml}
         </div>
         ${estoqueHtml}
+        ${botaoLevar({
+          nome: item.nome || '',
+          espacos: espacosDoItem(item),
+          preco: parseFloat(item.preco_final),
+          obs: obsDoItem(stats, precoFinal),
+        })}
         ${statsHtml ? `<hr class="item-linha"/><div class="item-stats">${statsHtml}</div>` : ''}
         ${descHtml}
       </div>`;
@@ -1067,6 +1074,109 @@
 
   function statSpan(label, valor) {
     return `<span class="item-stat"><strong>${label}:</strong> ${valor}</span>`;
+  }
+
+  // ── 🎒 LEVAR PARA A FICHA ────────────────────────────────────────
+  //  O item comprado cai no inventário da ficha ABERTA: a do jogador, na
+  //  página dele; a que estiver na tela do mestre, na dele (inclusive a
+  //  de um jogador — é assim que ele entrega o que a mesa achou).
+  //
+  //  A Loja não conhece a ficha por dentro. Manda o que qualquer item
+  //  tem — nome, espaços, preço e uma anotação — e quem aplica a regra
+  //  da p. 141 (e desconta o T$) é o ficha.js. O caminho de volta não
+  //  existe: quem vende de novo tira do inventário lá.
+  //
+  //  Clique PAGA; Shift+clique leva sem pagar — a mesma convenção do
+  //  botão de estoque, que já usa o Shift para o caminho contrário. O
+  //  estoque da prateleira NÃO se mexe sozinho: dar baixa continua sendo
+  //  o 📦 do mestre, que é quem sabe se aquilo saiu mesmo da loja.
+  //
+  //  `data-jog-livre` é o que deixa o botão vivo no jogadores.html: lá
+  //  a Loja inteira é só-leitura, e este é o único controle dela que
+  //  escreve na ficha de quem clicou — nunca na loja do mestre.
+  function espacosDoItem(item) {
+    const n = item.tipo_item === 'armor' ? item.peso_armadura : item.peso;
+    const v = parseFloat(n);
+    return isNaN(v) ? 1 : v;                 // sem número em tabela, 1 espaço (o padrão do livro)
+  }
+  // A anotação que viaja com o item: o que o livro diz dele (dano,
+  // crítico, bônus de armadura…) e o preço de tabela, para quem for
+  // revender saber por quanto comprou. O "Peso" fica de fora — na ficha
+  // ele já é a coluna de espaços.
+  function obsDoItem(stats, preco) {
+    const p = [];
+    stats.forEach(([rot, val]) => {
+      // o traço da tabela ("Dano —") é buraco de coluna, não informação:
+      // no card ele até cabe, na anotação da ficha é só sujeira
+      const v = String(val == null ? '' : val).trim();
+      if (rot === 'Peso' || !v || v === '-' || v === '—') return;
+      p.push(`${rot} ${v}`);
+    });
+    if (preco && preco !== '—' && preco !== '**') p.push(`T$ ${preco}`);
+    return p.join(' · ');
+  }
+  function botaoLevar(o) {
+    const esc = window.GA_esc;
+    const p = (typeof o.preco === 'number' && isFinite(o.preco) && o.preco > 0) ? o.preco : null;
+    const dica = p != null
+      ? `Levar para o inventário da ficha aberta — clique paga T$ ${formatarPreco(p)}, Shift+clique leva sem pagar`
+      : 'Levar para o inventário da ficha aberta (este não tem preço em tabela: acerte o T$ à mão)';
+    return `
+      <div class="item-levar-linha">
+        <button type="button" class="item-levar" data-jog-livre
+                data-levar-nome="${esc(o.nome)}"
+                data-levar-esp="${o.espacos}"
+                data-levar-preco="${p == null ? '' : p}"
+                data-levar-obs="${esc(o.obs || '')}"
+                title="${esc(dica)}">🎒 Levar para a ficha</button>
+        <span class="item-levar-res" hidden></span>
+      </div>`;
+  }
+
+  function aoClicarLevar(e) {
+    const btn = e.target.closest('[data-levar-nome]');
+    if (!btn) return;
+    const res = btn.parentElement && btn.parentElement.querySelector('.item-levar-res');
+    function dizer(txt, ruim) {
+      if (!res) return;
+      res.hidden = false;
+      res.textContent = txt;
+      res.classList.toggle('item-levar-res--ruim', !!ruim);
+    }
+    if (!window.GA_Ficha || !window.GA_Ficha.receberItem) {
+      return dizer('A ficha de personagem não está nesta página.', true);
+    }
+    const preco = parseFloat(btn.dataset.levarPreco);
+    const r = window.GA_Ficha.receberItem({
+      nome:    btn.dataset.levarNome,
+      espacos: parseFloat(btn.dataset.levarEsp),
+      obs:     btn.dataset.levarObs || '',
+      preco:   isNaN(preco) ? null : preco,
+      pagar:   !e.shiftKey,
+    });
+    if (!r || !r.ok) {
+      return dizer(r && r.motivo === 'sem-nome'
+        ? 'Este item não tem nome para guardar.'
+        : 'Nenhuma ficha aberta — abra ou crie a sua na aba 📖 Fichas e clique de novo.', true);
+    }
+    const partes = ['✔ na mochila de ' + r.personagem + (r.de ? ' (' + r.de + ')' : '')];
+    if (r.pagou) {
+      partes.push(`T$ ${formatarPreco(r.pagou)} pagos, restam T$ ${formatarPreco(r.tibares)}`);
+    } else if (r.faltou) {
+      partes.push(`⚠ T$ ${formatarPreco(r.faltou)} não cabem nos T$ ${formatarPreco(r.tibares)} de ` +
+                  `${r.personagem} — levou assim mesmo, e o dinheiro ficou como estava`);
+    } else if (e.shiftKey) {
+      partes.push('sem pagar');
+    } else if (isNaN(preco)) {
+      partes.push('sem preço em tabela — acerte o T$ à mão');
+    }
+    if (r.estadoCarga && r.estadoCarga !== 'ok') {
+      // o aviso da p. 141, com o preço já escrito — a ficha avisa e não impede
+      partes.push(r.estadoCarga === 'demais'
+        ? `⚠ a mochila passou do DOBRO do limite: ${r.carga} de ${r.limite} espaços — o livro diz que não dá para carregar`
+        : `⚠ a mochila passou do limite: ${r.carga} de ${r.limite} espaços — sobrecarregado é −5 de armadura e −3m`);
+    }
+    dizer(partes.join(' · '), !!r.faltou || (r.estadoCarga && r.estadoCarga !== 'ok'));
   }
 
   // ══════════════════════════════════════════════════════════════════
@@ -1351,6 +1461,12 @@
           <span class="mag-preco-label">Pergaminho</span>
           <span class="item-preco-final">T$ ${fmt(p.precoPergaminho)}</span>
         </div>
+        ${botaoLevar({
+          nome: 'Pergaminho de ' + p.nome,
+          espacos: 0.5,                       // "cada pergaminho ocupa ½ espaço"
+          preco: p.precoPergaminho,
+          obs: `${p.circulo}º círculo · ${p.pm} PM · ${tipoLabel} · T$ ${fmt(p.precoPergaminho)}`,
+        })}
         <hr class="item-linha"/>
         <div class="item-stats">
           <span class="item-stat"><strong>Aprender:</strong> +T$ ${fmt(p.precoAprender)} (total T$ ${fmt(p.precoTotal)})</span>

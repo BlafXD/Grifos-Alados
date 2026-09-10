@@ -32,10 +32,15 @@
   // Bases: Residentes, Inventário da base e o Inventário dos jogadores; na
   // Viagem: o diário e as paradas que o mestre revelou) — entram inteiras,
   // com a barra de formatação delas.
+  //  [data-jog-livre] é o botão SOLTO que escapa da trava da seção dele.
+  //  Existe por causa de um caso só, e ele é o exemplo do que vale aqui:
+  //  o "🎒 Levar para a ficha" da Loja escreve na ficha de quem clicou —
+  //  que é dela —, nunca na loja do mestre. Um botão só entra nesta
+  //  lista quando o que ele muda pertence ao jogador.
   const PERMITIDOS =
     '.nav-link, .cr-subtab, .nc-camp-aba, summary, .ga-tip, .ga-tip-pop, ' +
     '.loja-aba, .loja-busca, .cr-busca, .vg-toggle, .bs-toggle, .vg-regras, ' +
-    '[data-jog-edita]';
+    '[data-jog-edita], [data-jog-livre]';
 
   // Seções onde a trava NÃO vale. Consultas é material de regra, e a Mesa
   // é de todo mundo: é lá que o jogador entra na conta, pede para entrar e

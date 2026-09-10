@@ -56,7 +56,10 @@
   let _timer = null;
   function salvar() { clearTimeout(_timer); _timer = setTimeout(gravarTudo, 250); }
   function salvarAgora() { clearTimeout(_timer); gravarTudo(); }
-  function gravarTudo() { gravar(); subir(); }
+  // `avisar` é o que faz o PV da lista de iniciativa acompanhar o da
+  // ficha. Fica no salvamento, e não em cada tecla, porque o salvamento
+  // já é a rede que segura a digitação (250 ms).
+  function gravarTudo() { gravar(); subir(); avisar(); }
   function gravar() {
     try { window.GA_guardar(STORAGE_KEY, JSON.stringify(dados)); }
     catch (e) { console.warn('[ficha] não deu para salvar:', e && e.message); }
@@ -1647,7 +1650,7 @@
       mudou = true;
     });
     if (mudou) gravar();
-    if (mudou || antes !== canon(remotas)) render();
+    if (mudou || antes !== canon(remotas)) { render(); avisar(); }
   }
 
   function mesaMudou() { render(); }
@@ -1794,6 +1797,122 @@
       ${m.obs ? '<p class="fi-mag-obs-modal"><strong>Sua anotação.</strong> ' + esc(m.obs) + '</p>' : ''}`);
   }
 
+  // ═══ O QUE A FICHA EMPRESTA AO RESTO DO SITE ══════════════════════
+  //  Duas portas, as duas de mão única: quem chama sabe da ficha, e a
+  //  ficha não sabe de quem chama. A lista de iniciativa PERGUNTA os
+  //  números (`visiveis`), e a 🏪 Loja ENTREGA um item comprado
+  //  (`receberItem`). Nenhuma das duas traz nada de criatura para cá —
+  //  a fronteira de docs/ficha-do-jogador.md continua onde estava.
+  const ouvintes = [];
+  function escutar(cb) { if (typeof cb === 'function') ouvintes.push(cb); }
+  function avisar() {
+    ouvintes.forEach(cb => {
+      try { cb(); } catch (e) { console.warn('[ficha] ouvinte:', e && e.message); }
+    });
+  }
+
+  //  Todas as fichas que ESTE navegador enxerga: as minhas (o
+  //  localStorage) e as que o banco me deixa ler — para o jogador, as
+  //  dele em outro aparelho; para o mestre, as da mesa inteira. Vão com
+  //  os números JÁ CALCULADOS: quem recebe não repete conta nenhuma do
+  //  livro, e por isso não precisa conhecer o modelo da ficha.
+  function visiveis() {
+    const saida = [];
+    function juntar(f, dono) {
+      if (!f || typeof f !== 'object' || !f.pv) return;
+      saida.push({
+        id: f.id, dono: dono || '',
+        nome: f.nome || '', jogador: f.jogador || '',
+        nivel: nivel(f),
+        des: atr(f, 'des'),              // o modificador de Iniciativa, em T20, é a Destreza
+        pv: { atual: pvAtual(f), max: pvMax(f), temp: f.pv.temp || 0 },
+        pm: { atual: pmAtual(f), max: pmMax(f), temp: f.pm.temp || 0 },
+        defesa: defesa(f),
+        atualizadoEm: f.atualizadoEm || 0,
+      });
+    }
+    dados.fichas.forEach(f => juntar(f, meuUid));
+    Object.keys(remotas).forEach(uid => {
+      if (uid === meuUid) return;                  // as minhas já foram
+      const m = remotas[uid] || {};
+      Object.keys(m).forEach(id => juntar(m[id], uid));
+    });
+    return saida;
+  }
+
+  //  Abrir uma ficha vindo DE FORA (o painel de iniciativa, clicando no
+  //  PV). Troca a aba do site, entra na sub-aba certa e põe a ficha na
+  //  tela — senão o clique "funcionava" numa aba que ninguém está vendo.
+  function abrirNaTela(id) {
+    const minha  = dados.fichas.some(f => f.id === id);
+    const daMesa = fichasDaMesa().some(x => x.ficha.id === id);
+    if (!minha && !daMesa) return false;
+    abrirFicha(id);
+    gravar(); render();
+    const cont = document.getElementById('ficha-content');
+    const sec  = cont ? cont.closest('section') : null;
+    if (sec) {
+      const link = document.querySelector('.nav-link[data-section="' + sec.id + '"]');
+      if (link) link.click();
+    }
+    // no index a ficha divide a aba 📖 com os PDFs importados
+    const sub = document.querySelector('[data-fi-subtabs] [data-fi-tab="ficha"]');
+    if (sub) sub.click();
+    if (cont && cont.scrollIntoView) cont.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    return true;
+  }
+
+  //  UM ITEM COMPRADO NA LOJA. Chega só com o que qualquer item tem —
+  //  nome, espaços, preço e uma anotação —, e daqui para dentro é a
+  //  regra da p. 141 de sempre. Vai para a ficha ABERTA: se o mestre
+  //  está com a ficha de um jogador na tela, o item cai na mochila dele
+  //  (e a resposta diz de quem é, para ninguém dar espada ao vizinho).
+  //
+  //  O site não policia: se o dinheiro não cobre, o item vai do mesmo
+  //  jeito e o T$ fica como estava — quem resolve é a mesa, não a tela.
+  function receberItem(item) {
+    const f = fichaAberta();
+    if (!f) return { ok: false, motivo: 'sem-ficha' };
+    const nome = String((item && item.nome) || '').trim();
+    if (!nome) return { ok: false, motivo: 'sem-nome' };
+
+    const qtd     = Math.max(1, parseInt(item.qtd, 10) || 1);
+    const espacos = (typeof item.espacos === 'number' && isFinite(item.espacos)) ? item.espacos : 1;
+    const preco   = (typeof item.preco === 'number' && isFinite(item.preco) && item.preco > 0) ? item.preco : null;
+
+    // o mesmo item comprado duas vezes vira "×2", não duas linhas iguais
+    const chaveNome = s => String(s || '').trim().toLowerCase();
+    const igual = f.inventario.find(it =>
+      chaveNome(it.nome) === chaveNome(nome) && it.cada !== false && it.espacos === espacos);
+    if (igual) igual.qtd = (igual.qtd || 0) + qtd;
+    else f.inventario.push({
+      id: novoId(), nome: nome, qtd: qtd, espacos: espacos, cada: true,
+      obs: String((item && item.obs) || ''),
+    });
+    sujar(f.id, 'inventario');
+
+    let pagou = 0, faltou = 0;
+    if (preco != null && item.pagar !== false) {
+      const custo = arredonda(preco * qtd);
+      if ((f.tibares || 0) >= custo) {
+        f.tibares = arredonda((f.tibares || 0) - custo);
+        pagou = custo;
+        sujar(f.id, 'tibares');
+      } else {
+        faltou = custo;
+      }
+    }
+    salvar(); render();
+    const dono = donoDe(f.id);
+    return {
+      ok: true, nome: nome, qtd: qtd,
+      personagem: f.nome || 'ficha sem nome',
+      de: dono ? nomeDoDono(dono, f) : '',
+      pagou: pagou, faltou: faltou, tibares: f.tibares || 0,
+      carga: cargaUsada(f), limite: cargaMax(f), estadoCarga: estadoCarga(f),
+    };
+  }
+
   // ═══ AS SUB-ABAS DA 📖 FICHAS ═════════════════════════════════════
   //  Só o index.html tem duas: a ficha feita aqui e os PDFs importados
   //  (js/fichas.js, que continua dono do #fichas-content sem saber disto).
@@ -1848,11 +1967,17 @@
   }
   // O que o ficha-mesa.js chama. Ele cuida do Firebase; a ficha cuida
   // do modelo e da tela. Nenhum dos dois sabe do outro além disto.
+  // As quatro últimas são as portas para o resto do site (a iniciativa
+  // e a Loja) — ver "O QUE A FICHA EMPRESTA", mais acima.
   window.GA_Ficha = {
     receberDaMesa: receberDaMesa,      // o banco mudou
     mesaMudou: mesaMudou,              // login/papel mudou → redesenhar a barra
     minhasFichas: () => dados.fichas.slice(),
     recarregar: () => { carregar(); render(); },
+    visiveis: visiveis,                // as fichas que este navegador enxerga
+    aoMudar: escutar,                  // avisa quando qualquer número muda
+    receberItem: receberItem,          // um item comprado na 🏪 Loja
+    abrirNaTela: abrirNaTela,          // trazer uma ficha para a frente
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

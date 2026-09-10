@@ -248,8 +248,9 @@ segue onde estava.
 
 ## O que ficou de fora
 
-- **A ficha ainda não empresta ao resto do site**: o PV não aparece na lista de
-  iniciativa, e o item comprado na 🏪 Loja não entra sozinho no inventário.
+- ~~**A ficha ainda não empresta ao resto do site**: o PV não aparece na lista de
+  iniciativa, e o item comprado na 🏪 Loja não entra sozinho no inventário.~~
+  **Feito em 10/09/2026** — é a terceira leva, no fim deste documento.
 - **Conflito de escrita é "o último ganha", por grupo.** Dois editando o mesmo
   grupo ao mesmo tempo (os dois no PV) ainda é o último a falar. Basta para uma
   mesa de amigos; não é um editor colaborativo.
@@ -367,3 +368,140 @@ temporários primeiro (a regra da p. 105 não mudou de lugar) — mas um golpe d
 agora é ou nove cliques no −, ou digitar o PV novo direto no campo, e **digitar
 direto não passa pela regra dos temporários**. Fica registrado aqui porque é o
 preço da simplificação, e é fácil de esquecer.
+
+---
+
+# A terceira leva — 10 de setembro de 2026
+
+**A ficha passa a emprestar ao resto do site.** Eram as duas pontas soltas
+anotadas em "O que ficou de fora": o **PV na lista de iniciativa** e o **item da
+🏪 Loja no inventário**. Com elas, a etapa 4 do plano da mesa fecha.
+
+## A regra que desenhou as duas: mão única
+
+A ficha **não conhece** a iniciativa nem a Loja. Ela abre duas portas e fica
+quieta; quem sabe da ficha é quem chama.
+
+| Porta (`window.GA_Ficha`) | Quem usa | O que faz |
+|---|---|---|
+| `visiveis()` | `iniciativa.js` | devolve as fichas que ESTE navegador enxerga, com os números **já calculados** (PV, PM, Defesa, nível, Destreza) |
+| `aoMudar(cb)` | `iniciativa.js` | avisa quando qualquer número muda — é o que faz o PV da lista acompanhar o da ficha |
+| `receberItem(item)` | `loja.js` | guarda um item no inventário da ficha **aberta** e desconta o T$ |
+| `abrirNaTela(id)` | `iniciativa.js` | troca a aba do site e traz aquela ficha para a frente |
+
+Isso mantém de pé a fronteira de 08/09/2026 (*"qualquer coisa que se relacione a
+ficha dos jogadores é somente dos JOGADORES e que não tenha nada a ver com fichas
+de criaturas"*): **nada de criatura entra pelas portas**, e a ficha continua sem
+importar uma linha do bestiário. O que atravessa é o PV **saindo**, para uma
+lista que já misturava os dois lados.
+
+## 1. O PV na lista de iniciativa
+
+Cada linha de jogador que tem ficha à vista ganha, ao lado do nome, um selo
+`42/42`: o número forte é o que a pessoa **tem para gastar** (o atual mais o
+temporário, que é o primeiro a ser gasto — p. 105) e o pequeno é o máximo.
+
+- **A cor conta de longe:** normal, dourado abaixo de metade, carmim abaixo de um
+  quarto, e fundo carmim quando chega a zero. Um sublinhado dourado diz que há PV
+  temporário em pé.
+- **Clicar no selo abre aquela ficha** — troca de aba, entra na sub-aba certa e
+  rola até ela. É de propósito que o dano **não** se aplica daqui: a regra dos
+  temporários mora no `gastarPontos()` da ficha, e o bloco "Sofrer / curar" saiu
+  a pedido dele. O selo mostra; quem baixa é a ficha.
+- **Quem vê o quê continua sendo decisão do BANCO**, não desta tela. `visiveis()`
+  devolve o que as regras já deixaram chegar: o jogador enxerga só as fichas
+  dele, o mestre e o auxiliar enxergam as da mesa. Ou seja, **o jogador vê o
+  próprio PV na lista e o do vizinho não chega nem ao navegador**.
+
+**A lista passou a nascer com o nome do PERSONAGEM.** Ao montar, cada membro da
+mesa é procurado entre as fichas visíveis: achou, a linha nasce com o nome do
+personagem e amarrada à ficha (`uid` + `fichaId`, campos novos e públicos, que
+não abrem nada — quem lê a ficha continua sendo só o dono e o mestre); não achou,
+fica o nome da conta, como antes. Com mais de uma ficha da mesma pessoa, vale a
+**mexida mais recentemente**, e a nuvem do selo diz de quem é ("PV de Zézinho
+(ficha de Cleber)"), para o engano não ser mudo.
+
+De quebra, o **desempate** passou a valer para os jogadores: o `mod` da linha
+nasce com a Destreza da ficha, que em T20 **é** o modificador de Iniciativa. Ele
+continua morando no nó secreto (`iniciativaValores`), fora do alcance dos
+jogadores.
+
+### A armadilha desta leva
+
+**Redesenhar o painel arrancaria o foco do campo de iniciativa.** O mestre digita
+"18" no valor de alguém enquanto o PV de outro muda — e um `innerHTML` no meio
+disso engole o número. Por isso o aviso de mudança de ficha tem dois caminhos: se
+o foco está **dentro** do painel, só os selos são repintados no lugar
+(`pintarPvs()`); fora dele, o render normal. Conferido no dublê: o "18" digitado
+continuou no campo enquanto o selo do vizinho ia de 5 para 40.
+
+## 2. O item da Loja no inventário
+
+Cada card da 🏪 Loja ganhou **🎒 Levar para a ficha** — nas armas, armaduras e
+equipamentos, e nos **pergaminhos** (que já entram com ½ espaço, como o livro
+manda).
+
+- **Clique paga; Shift+clique leva sem pagar.** É a mesma convenção do botão de
+  estoque, que já usa o Shift para o caminho contrário.
+- **Vai para a ficha ABERTA**, e a resposta diz de quem é a mochila — inclusive
+  quando o mestre está com a ficha de um jogador na tela, que é como ele entrega
+  o que a mesa achou.
+- **Os espaços saem da tabela do livro** (a coluna que o gerador chama de `peso`
+  / `armor_weight`), e a anotação leva o que se lê no card: dano, crítico,
+  alcance, bônus de armadura, e o preço pago.
+- **O mesmo item comprado duas vezes vira ×2**, não duas linhas iguais.
+- **O site não policia.** Sem dinheiro que cubra, o item vai do mesmo jeito e o
+  T$ fica como estava — com o aviso escrito ao lado do botão. Passou do limite de
+  carga, o aviso da p. 141 aparece junto ("−5 de armadura e −3m"), e ninguém é
+  impedido de nada.
+- **A resposta nasce ao lado do botão que a pediu**, como as rolagens da ficha, e
+  fica lá até a próxima compra daquele item.
+
+### A trava do jogadores.html, e a exceção do tamanho de um botão
+
+Na página dos jogadores a Loja inteira é só-leitura: o `modo-jogador.js` bloqueia,
+na fase de captura, o clique em qualquer botão dentro de qualquer `<section>`
+travada. O 🎒 morreria ali — e ele é justamente o botão que o **jogador** mais
+usa.
+
+Entrou então `[data-jog-livre]` na lista de permitidos: **um botão solto que
+escapa da trava da seção dele**. A régua para usá-lo é estreita — só entra o
+controle cujo efeito pertence a quem clicou. O 🎒 escreve na ficha de quem
+clicou, nunca na loja do mestre; o 📦 de estoque, que é do mestre, continua mudo
+lá. Conferido com um A/B: botão comum dentro da Loja não recebe o clique, botão
+com `data-jog-livre` recebe.
+
+## O que eu NÃO juntei (fica anotado, ele decide)
+
+- **A arma comprada não vira ataque na ficha.** Seria natural — "Espada longa"
+  com dano 1d8 e crítico 19 já está na anotação —, mas a perícia do ataque não sai
+  do dado: "Lança" tem alcance *Curto* e é de Luta; "Azagaia", também Curto, é de
+  Pontaria. Chutar erraria calado. Hoje o dano fica na anotação do item, para
+  copiar.
+- **Comprar não dá baixa no estoque da prateleira.** São duas contas diferentes:
+  o 📦 é do mestre e diz o que a loja tem; o 🎒 é do comprador. E na página dos
+  jogadores a loja é só um espelho — dar baixa lá seria escrever num reflexo.
+- **A Loja Especial (encantamentos) e os 🛎 Serviços não têm o botão.** Encanto
+  não é item de mochila (é um adjetivo de um item que você já tem), e serviço é
+  gasto, não carga. Se ele quiser, o caminho é o mesmo.
+
+## O que foi conferido, e como
+
+Servindo o site em `http://localhost:8765` com `Cache-Control: no-store` (sem
+isso o Chrome serve o JS velho e o A/B mente), nas duas páginas:
+
+| O quê | Resultado |
+|---|---|
+| Selo com PV, PM, Defesa e Destreza vindos das contas do livro | bárbaro nível 3 com Con +2 → 42 PV, 9 PM, Defesa 13 ✔ |
+| PV mudando na ficha → selo acompanha | 42 → 8, e a cor vira carmim ✔ |
+| PV temporário | `0 + 10 temp` mostra 10 e não é caído; `−3 + 6 temp` mostra 3 ✔ |
+| Foco preservado enquanto o selo se atualiza | ✔ |
+| Clique no selo abre a ficha | Notícias → 📖 Fichas, sub-aba ✍ Ficha ✔ |
+| Mesa com membros, no dublê (Firebase de mentira) | linhas com nome de personagem, `uid`, `fichaId`; espectador fora; `mod` = Destreza no nó secreto ✔ |
+| Comprar, comprar de novo, Shift, e sem dinheiro | ×2, sem cobrança, e aviso com o dinheiro intacto ✔ |
+| Botão na página dos jogadores | vivo; botão comum na mesma seção, mudo ✔ |
+| Sem ficha nenhuma | "Nenhuma ficha aberta — abra ou crie a sua na aba 📖 Fichas" ✔ |
+
+**O banco real não entrou no teste** (exigiria a conta dele), como na leva
+anterior: a mesa foi provada com dublê. O que depende do banco é o mesmo caminho
+que a leva 2 já usa todo dia.

@@ -251,6 +251,12 @@ app.
 > no navegador. O desenho, a matemática conferida no livro e as armadilhas estão
 > em `docs/ficha-do-jogador.md`. O que segue abaixo é o texto de quando ela ainda
 > era plano.
+>
+> **A etapa fechou em 10/09/2026, com as outras duas levas:** a ficha subiu para
+> a mesa (09/09, `mesas/<sala>/fichas/<uid>/<id>`, o único nó não-público) e
+> passou a **emprestar ao resto do site** (10/09): o PV aparece na lista de
+> iniciativa e o item da 🏪 Loja entra no inventário com um clique. As quatro
+> etapas do §9 estão de pé.
 
 Ele quer a ficha **completa, feita no app, pelo livro** — não o PDF importado de
 hoje. É, sozinha, maior que sala + rolagens + iniciativa somadas, e merece o
@@ -278,6 +284,10 @@ Cada etapa termina com algo que dá para usar na mesa da semana seguinte.
 3. **Iniciativa** — a lista na cena do Combates: as criaturas que já estão ali,
    mais os membros da mesa; rolar, ordenar, passar turno, brilhar.
 4. **Ficha de personagem** — a longa.
+
+> **As quatro saíram, entre 8 e 10 de setembro de 2026.** A ficha veio em três
+> levas (local, na mesa, e emprestando ao site); a quinta — as notícias por
+> campanha, no §13 — é a que continua no papel.
 
 ## 10. As cinco de detalhe — respondidas em 8 de setembro
 

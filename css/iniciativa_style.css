@@ -129,6 +129,42 @@
 .ga-ini-linha--vez .ga-ini-nome { font-weight: 700; }
 .ga-ini-linha--vez .ga-ini-pos { color: var(--gold-deep); }
 
+/* ── O PV DA FICHA, AO LADO DO NOME ───────────────────────────────
+   Só aparece na linha de quem tem ficha à vista (a sua, se você é
+   jogador; as da mesa, se você é o mestre). O número forte é o que a
+   pessoa tem agora — com o temporário somado, que é o primeiro a ser
+   gasto —, e o pequeno é o máximo. A cor conta como vai a vida; o
+   sublinhado dourado diz que há PV temporário em pé. */
+.ga-ini-pv {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.05rem;
+  padding: 0.12rem 0.3rem;
+  font-family: 'Crimson Pro', serif;
+  line-height: 1.15;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.ga-ini-pv b { font-size: 0.8rem; font-weight: 700; }
+.ga-ini-pv i { font-size: 0.58rem; font-style: normal; color: var(--text-dim); }
+.ga-ini-pv:hover { background: var(--gold-pale); border-color: var(--gold-deep); }
+
+.ga-ini-pv--meio  { border-color: var(--gold-deep); }
+.ga-ini-pv--meio b { color: var(--gold-deep); }
+.ga-ini-pv--mal   { border-color: var(--carmim); }
+.ga-ini-pv--mal b { color: var(--carmim); }
+.ga-ini-pv--caido {
+  color: var(--parchment);
+  background: var(--carmim);
+  border-color: var(--carmim);
+}
+.ga-ini-pv--caido i { color: rgba(242, 232, 213, 0.8); }
+.ga-ini-pv--temp { box-shadow: inset 0 -0.15rem 0 var(--gold-deep); }
+
 .ga-ini-val {
   flex: 0 0 2.6rem;
   width: 2.6rem;
