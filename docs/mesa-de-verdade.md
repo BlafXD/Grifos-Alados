@@ -285,9 +285,10 @@ Cada etapa termina com algo que dá para usar na mesa da semana seguinte.
    mais os membros da mesa; rolar, ordenar, passar turno, brilhar.
 4. **Ficha de personagem** — a longa.
 
-> **As quatro saíram, entre 8 e 10 de setembro de 2026.** A ficha veio em três
-> levas (local, na mesa, e emprestando ao site); a quinta — as notícias por
-> campanha, no §13 — é a que continua no papel.
+> **As quatro saíram, entre 8 e 10 de setembro de 2026** — e a quinta (as
+> notícias por campanha, no §13) saiu junto, em 10/09. O plano inteiro está de
+> pé; o que falta é do lado dele: publicar as regras novas no console do
+> Firebase (o nó `campanhas`, no `MODO-JOGADOR.md`).
 
 ## 10. As cinco de detalhe — respondidas em 8 de setembro
 
@@ -403,20 +404,74 @@ recusado a escrita, mas a tela mentia. Lição que vale para as próximas etapas
 **um estado que a tela mostra a quem está de fora tem de vir de um nó que quem
 está de fora consegue ler.**
 
-## 13. As notícias, quando chegarem (etapa 5)
+## 13. As notícias (etapa 5) — FEITA em 10 de setembro de 2026
 
-Ele já disse aonde isso vai, e vale anotar antes de esquecer:
+Ele já tinha dito aonde isso ia, e foi assim que ficou:
 
 - as notícias de uma campanha só o **mestre daquela campanha** edita;
 - **qualquer pessoa que entrar nos Grifos Alados vê as notícias de todas as
   campanhas** — *"porque ficam nas memórias"*: a gazeta é o registro do mundo,
   não o mural de um grupo.
 
-Hoje elas vivem em `js/noticias-data.js`, um arquivo do repositório, e só ele
-edita — o que ele aceita por enquanto. Quando virar etapa, mudam para
-`campanhas/<c>/noticias` no banco, com `.read: true` e escrita do dono da
-campanha. **O `campanhas` já foi aberto para leitura pública nesta revisão**,
-exatamente para esse dia.
+### O desenho
+
+| Onde | O quê |
+|---|---|
+| `campanhas/<id>` | `nome`, `dono` (uid), `autor` (o nome de quem escreveu), `criadaEm`, `atualizadoEm` |
+| `campanhas/<id>/noticias` | a lista de anos, do mesmo formato do `noticias-data.js` |
+| `js/noticias-mesa.js` | o lado do Firebase — assina `campanhas`, publica e apaga |
+| `js/noticias.js` | a gazeta de sempre, agora com o banco por cima |
+
+**O arquivo não morreu, e não deve morrer.** `js/noticias-data.js` é o **chão**:
+sem Firebase, sem internet ou com o site aberto do disco, a gazeta é a dele. O
+banco entra **por cima** — cada campanha publicada substitui a do arquivo, e as
+que só existem no banco entram no fim da fila de abas. É o mesmo acordo do resto
+do site: offline nada quebra, só deixa de atualizar.
+
+### Quem manda em quê
+
+- **Ler: todo mundo, sem login.** `campanhas` é `.read: true` — visita, jogador,
+  quem quer que abra o link. Foi o pedido, e é o único nó de leitura aberta que
+  não tem nada a ver com uma mesa específica.
+- **Escrever: o dono.** Quem publica primeiro vira `dono` na mesma escrita.
+  Campanha **sem dono é órfã e quem chegar assume** — a mesma regra das mesas.
+- Editar a gazeta de outra pessoa **não é bloqueado na tela**: o que ela mudar
+  fica no navegador dela, e a linha 📡 diz isso com todas as letras. O banco é
+  quem recusa, como sempre.
+
+### O que ele vê
+
+Uma linha 📡 no alto da gazeta, e ela muda de acordo com quem está lendo:
+
+| Situação | A linha |
+|---|---|
+| Leitor, gazeta do arquivo | nada (não há o que dizer) |
+| Leitor, gazeta publicada | "📡 Gazeta ao vivo — escrita por *Fulano*" |
+| Editando, sem login | "só neste navegador · entre com o Google na aba 🎲 Mesa" |
+| Editando, gazeta ainda não publicada | o botão **📡 Publicar esta gazeta** |
+| Editando a sua, no ar | "cada mudança sobe sozinha" + **✕ Tirar do ar** |
+| Editando a de outra pessoa | "é de *Fulano* — o que você mudar fica só aqui" |
+
+Publicar é **um clique só, uma vez**: dali em diante toda edição sobe sozinha,
+sem baixar arquivo e sem commit. O "⬇ Baixar arquivo" continua onde estava, para
+quem não tem banco — e para guardar o backup no repositório.
+
+### Três armadilhas desta etapa
+
+1. **O eco do banco desfazia edição local.** A tela é a soma de duas fontes, e
+   ela é remontada a cada mudança no banco — inclusive nas campanhas dos OUTROS.
+   Renomear uma campanha do arquivo e receber, um segundo depois, a manchete de
+   outro mestre fazia o nome antigo voltar. Agora o arquivo acompanha toda
+   mudança de lista (`guardarNoArquivo()`), e a campanha que está subindo fica
+   marcada em `pendentes` até o banco devolvê-la igual.
+2. **O aviso de "publicado" chega por duas portas**, e não se sabe qual vem
+   primeiro: a promessa da escrita e o eco do banco (que é quem limpa a fila).
+   As duas passam por `conferirPublicacao()`; quem chegar por último avisa.
+3. **`permission_denied` é o estado normal até as regras subirem.** O nó
+   `campanhas` é NOVO no `MODO-JOGADOR.md` — enquanto ele não colar as regras no
+   console, todo navegador recebe recusa ao ler. Por isso o leitor não vê erro
+   nenhum (a gazeta do arquivo aparece igual) e só quem está editando lê o
+   recado, já com o que fazer escrito.
 
 ---
 
