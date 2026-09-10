@@ -132,6 +132,31 @@
     f.carga = f.carga || {};
     ['usada', 'outros'].forEach(k => { if (typeof f.carga[k] !== 'number') f.carga[k] = 0; });
     if (typeof f.cdAtributo !== 'string') f.cdAtributo = 'int';
+    if (typeof f.xp !== 'number') f.xp = 0;
+
+    // ── O QUE APARA O DANO ─────────────────────────────────────────
+    //  Três coisas diferentes, que a mesa confunde o tempo todo — e por
+    //  isso ficam em campos separados, com o nome que o livro usa:
+    //   • RESISTÊNCIA a um tipo de dano ("resistência a fogo 10"):
+    //     tira aquele tanto do dano DAQUELE tipo. NÃO é o teste de
+    //     resistência (Fortitude, Reflexos e Vontade são PERÍCIAS, e
+    //     estão lá em cima, na lista das 29);
+    //   • REDUÇÃO DE DANO ("RD 5"): tira de todo dano físico, e dá para
+    //     ter várias ao mesmo tempo, cada uma com a sua condição;
+    //   • IMUNIDADE: não sofre aquilo, ponto.
+    //  As três são LISTAS porque um personagem acumula várias — de
+    //  raça, de item, de poder — e escrever tudo num campo só vira uma
+    //  frase que ninguém lê no meio do combate.
+    ['resistencias', 'reducoes', 'imunidades'].forEach(k => {
+      if (!Array.isArray(f[k])) f[k] = [];
+      f[k] = f[k].map(x => ({
+        id: (x && x.id) || novoId(),
+        valor: String((x && x.valor) || ''),      // "10", "5", "" (imunidade não tem número)
+        do_: String((x && (x.do_ || x.tipo)) || ''),   // "fogo", "corte", "veneno"…
+        obs: String((x && x.obs) || ''),          // "só com a armadura", "3×/dia"…
+      }));
+    });
+    if (typeof f.proficiencias !== 'string') f.proficiencias = '';
 
     f.pericias = f.pericias || {};
     D.PERICIAS.forEach(p => {
@@ -183,6 +208,11 @@
       espacos: (it && typeof it.espacos === 'number') ? it.espacos : 1,
       cada: (it && it.cada) !== false,
       obs: String((it && it.obs) || ''),
+      // A caixa grande de cada item: o que a espada faz, o encanto que
+      // ela tem, a habilidade que custa PM. A `obs` continua sendo a
+      // linha curta ("na mochila do Elias"); isto é o texto.
+      notas: String((it && it.notas) || ''),
+      aberto: (it && it.aberto) === true,       // a caixa está desdobrada?
     }));
     if (typeof f.tibares !== 'number') f.tibares = 0;
 
@@ -228,6 +258,10 @@
       resistencia: String((m && m.resistencia) || ''),
       resumo: String((m && m.resumo) || ''),
       obs: String((m && m.obs) || ''),
+      // quais aprimoramentos estão ligados agora (índices na lista da
+      // base). Fica guardado porque na mesa se repete a mesma combinação
+      // toda vez: "bola de fogo com +2d6" é a mesma magia de sempre.
+      apr: Array.isArray(m && m.apr) ? m.apr.map(n => parseInt(n, 10)).filter(n => n >= 0) : [],
     }));
 
     if (!Array.isArray(f.ataques)) f.ataques = [];
@@ -456,6 +490,12 @@
   // Meio espaço existe (poções, pergaminhos), então a soma é fracionária
   // — mas 0.30000000000000004 não é número de ficha.
   function arredonda(n) { return Math.round(n * 100) / 100; }
+  // Quanto da mochila já foi. Passa de 100% quando está sobrecarregado —
+  // e aí a barra fica cheia, com o aviso escrito ao lado dizendo o resto.
+  function fatiaCarga(f) {
+    const lim = cargaMax(f);
+    return lim > 0 ? Math.max(0, Math.min(100, Math.round(cargaUsada(f) / lim * 100))) : 0;
+  }
 
   // Sobrecarregado: passou do limite → −5 de armadura e −3m. Acima do
   // dobro, o livro diz que simplesmente não dá para carregar.
@@ -752,7 +792,7 @@
       return;
     }
 
-    html += bloqueIdentidade(f) + blocoNumeros(f) + blocoPericias(f) + blocoAtaques(f) +
+    html += bloqueIdentidade(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
             blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
             blocoCompras(f);
     const donoAberta = donoDe(f.id);
@@ -905,8 +945,54 @@
           <span class="fi-nivel-selo">Nível <strong data-der="nivel">${nivel(f)}</strong>
             <em data-der="patamar">${patamar(nivel(f))}</em></span>
         </div>
+        <div class="fi-ident-xp">
+          <label class="fi-campo fi-campo--curto"><span class="fi-rot">XP</span>
+            <input class="fi-num" type="number" min="0" step="100" value="${f.xp}" data-campo="xp"
+                   title="Pontos de experiência acumulados (Tabela 1-4, p. 34)"></label>
+          <span class="fi-xp-conta" data-der="xpconta">${contaXp(f)}</span>
+          <span class="fi-xp-barra" data-der="xpbarra" aria-hidden="true">${barraXp(f)}</span>
+        </div>
       </div>`;
   }
+
+  // ── XP: FALTA MUITO PARA SUBIR? ──────────────────────────────────
+  //  A Tabela 1-4 (p. 34) diz o XP de cada nível; daqui sai a frase que
+  //  se quer ler no fim da sessão. O nível continua sendo o que ELE
+  //  escreve nas classes — o XP não sobe ninguém sozinho, porque subir
+  //  de nível é escolher poder, perícia e mais coisa. Quando os dois
+  //  discordam, a ficha DIZ, e não conserta.
+  function xpDoNivel(n) {
+    const t = D.XP_POR_NIVEL || [];
+    return t[Math.max(1, Math.min(20, n))] || 0;
+  }
+  function contaXp(f) {
+    const xp = Math.max(0, f.xp || 0);
+    const n = nivel(f);
+    const nPeloXp = D.nivelDoXp ? D.nivelDoXp(xp) : 1;
+    if (n >= 20) return 'Nível 20 — o teto do livro. ' + num(xp) + ' XP.';
+    const alvo = xpDoNivel(n + 1);
+    const faltam = Math.max(0, alvo - xp);
+    let frase = faltam === 0
+      ? '✔ já dá para o nível ' + (n + 1) + ' — ' + num(xp) + ' de ' + num(alvo) + ' XP'
+      : 'faltam <strong>' + num(faltam) + '</strong> XP para o nível ' + (n + 1) +
+        ' <em>(' + num(xp) + ' de ' + num(alvo) + ')</em>';
+    if (nPeloXp > n) {
+      frase += ' · <strong class="fi-xp-alerta">a tabela já lhe dá o nível ' + nPeloXp + '</strong>';
+    } else if (nPeloXp < n && xp > 0) {
+      frase += ' · <em class="fi-xp-alerta">a tabela daria o nível ' + nPeloXp + '</em>';
+    }
+    return frase;
+  }
+  // Quanto do caminho entre o nível de agora e o próximo já foi andado.
+  function barraXp(f) {
+    const n = nivel(f);
+    if (n >= 20) return '<span class="fi-xp-parte" style="width:100%"></span>';
+    const de = xpDoNivel(n), ate = xpDoNivel(n + 1);
+    const xp = Math.max(0, f.xp || 0);
+    const p = ate > de ? Math.max(0, Math.min(100, Math.round((xp - de) / (ate - de) * 100))) : 0;
+    return '<span class="fi-xp-parte" style="width:' + p + '%"></span>';
+  }
+  function num(n) { return (n || 0).toLocaleString('pt-BR'); }
 
   // ── OS NÚMEROS: atributos · vida e mana · defesa e carga ─────────
   function blocoNumeros(f) {
@@ -1065,6 +1151,76 @@
     if (f.defesa.escudo)   p.push('escudo ' + sinal(f.defesa.escudo));
     if (f.defesa.outros)   p.push('outros ' + sinal(f.defesa.outros));
     return p.join(' + ').replace(/\+ -/g, '− ');
+  }
+
+  // ── O QUE APARA O DANO ───────────────────────────────────────────
+  //  Resistência, redução de dano e imunidade são TRÊS coisas, e a
+  //  mesa vive confundindo as duas primeiras. Aqui elas têm cartão
+  //  próprio, cada uma com o seu formato — e a nota do cartão diz, em
+  //  uma linha, o que cada uma faz.
+  //
+  //  ⚠ "Teste de resistência" NÃO é isto: Fortitude, Reflexos e Vontade
+  //  são PERÍCIAS em T20, e estão no cartão de cima, com as outras 29.
+  const APARAM = [
+    { campo: 'resistencias', titulo: '🜂 Resistências', icone: '🜂',
+      dica: 'Resistência a fogo 10, a frio 5… tira aquele tanto do dano DAQUELE tipo',
+      phValor: '10', phDo: 'fogo, frio, ácido…', comValor: true },
+    { campo: 'reducoes', titulo: '🛡 Redução de dano', icone: '🛡',
+      dica: 'RD 5 tira 5 de todo dano físico. Dá para ter várias, cada uma com a sua condição',
+      phValor: '5', phDo: 'todo dano físico, corte…', comValor: true },
+    { campo: 'imunidades', titulo: '🚫 Imunidades', icone: '🚫',
+      dica: 'O que não lhe atinge de jeito nenhum: veneno, medo, sono…',
+      phValor: '', phDo: 'veneno, doenças, medo…', comValor: false },
+  ];
+
+  function linhaApara(f, bloco, x, i) {
+    return `
+      <li class="fi-apara">
+        ${bloco.comValor
+          ? `<input class="fi-num fi-num--mini" type="text" inputmode="numeric" value="${esc(x.valor)}"
+                   data-campo="${bloco.campo}.${i}.valor" placeholder="${bloco.phValor}" title="Quanto tira">`
+          : `<span class="fi-apara-icone" aria-hidden="true">${bloco.icone}</span>`}
+        <input class="fi-txt" type="text" value="${esc(x.do_)}" data-campo="${bloco.campo}.${i}.do_"
+               placeholder="${esc(bloco.phDo)}" autocomplete="off">
+        <input class="fi-txt fi-txt--obs" type="text" value="${esc(x.obs)}" data-campo="${bloco.campo}.${i}.obs"
+               placeholder="de onde vem, quando vale…" autocomplete="off">
+        <button type="button" class="fi-mini fi-mini--x" data-acao="tira-apara"
+                data-campo="${bloco.campo}" data-i="${i}" title="Tirar esta linha">✕</button>
+      </li>`;
+  }
+
+  function blocoApara(f) {
+    const cartoes = APARAM.map(b => {
+      const lista = f[b.campo] || [];
+      return `
+        <div class="fi-apara-grupo">
+          <h3 class="fi-apara-tit">${b.titulo}
+            <span class="fi-apara-dica">${esc(b.dica)}</span></h3>
+          <ul class="fi-apara-lista">
+            ${lista.length ? lista.map((x, i) => linhaApara(f, b, x, i)).join('')
+              : '<li class="fi-atq-vazio">Nada por enquanto.</li>'}
+          </ul>
+          <button type="button" class="fi-add fi-add--menor" data-acao="add-apara"
+                  data-campo="${b.campo}">＋ Acrescentar</button>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="fi-cartao fi-bloco fi-aparas">
+        <h2 class="fi-cartao-tit">🛡 O que apara o dano
+          <span class="fi-cartao-nota">resistência, redução e imunidade são três coisas diferentes</span>
+        </h2>
+        <div class="fi-apara-grade">${cartoes}</div>
+        <label class="fi-campo fi-campo--largo fi-prof">
+          <span class="fi-rot">🎓 Proficiências</span>
+          <input class="fi-txt" type="text" value="${esc(f.proficiencias)}" data-campo="proficiencias"
+                 placeholder="armas simples, armaduras leves, escudos…" autocomplete="off">
+        </label>
+        <p class="fi-nota"><strong>Teste de resistência é outra coisa.</strong> Fortitude, Reflexos e
+          Vontade são <em>perícias</em> em Tormenta 20 — estão lá em cima, na lista das 29, com o selo
+          <strong>resistência</strong>. O que está neste cartão é o que <em>apara o dano</em> depois que
+          ele acontece.</p>
+      </div>`;
   }
 
   // ── PERÍCIAS ─────────────────────────────────────────────────────
@@ -1247,8 +1403,10 @@
         </h2>
         ${grupos || '<p class="fi-mag-vazia">Nenhuma magia ainda. O <strong>＋ Adicionar magia</strong> abre a busca nas ' +
           (temBase ? window.GA_MAGIAS.length : 254) + ' magias do livro — as mesmas da aba 📚 Consultas.</p>'}
-        <p class="fi-nota">Clique no <strong>nome da magia</strong> para abrir o texto inteiro, com truque e
-          aprimoramentos. O <strong>🔥</strong> desconta os PM do círculo — dos temporários primeiro.</p>
+        <p class="fi-nota">Clique no <strong>nome da magia</strong> para abrir o texto inteiro, com o truque.
+          Os <strong>＋ aprimoramentos</strong> ligam e desligam: o total em PM se acerta sozinho, e fica
+          guardado para a próxima vez. O <strong>🔥</strong> gasta esse total — <em>dos temporários
+          primeiro</em>, como manda a p. 105.</p>
         ${caixaRica(f, BLOCOS_EMBUTIDOS[0])}
       </div>`;
   }
@@ -1256,7 +1414,69 @@
   // O cartão de uma magia na ficha. O nome inteiro é botão: clicou,
   // abre o texto completo — era o que faltava para não precisar ir às
   // Consultas com a ficha aberta do lado.
+  // ── OS APRIMORAMENTOS, COM BOTÃO ─────────────────────────────────
+  //  "em vez de o jogador ficar fazendo cálculo, apertar o botão de
+  //  adicionar ou remover o Aprimorado e saber quantos PM gasta e
+  //  quanto aumenta o benefício" — pedido dele em 10/09/2026.
+  //
+  //  A lista vem da base das Consultas (window.GA_MAGIAS), onde cada
+  //  aprimoramento já é dado de verdade: `{ pm, condicao, texto,
+  //  requer, itens }`. A ficha guarda só QUAIS estão ligados (`m.apr`),
+  //  porque na mesa a combinação se repete toda semana.
+  //
+  //  Sem a base carregada (ficha exportada, site offline) o cartão
+  //  simplesmente não aparece — e o 🔥 volta a ser o PM do círculo.
+  function aprimoramentosDe(m) {
+    const b = daBase(m.mid);
+    return (b && Array.isArray(b.aprimoramentos)) ? b.aprimoramentos : [];
+  }
+  function pmDaMagia(m) {
+    const lista = aprimoramentosDe(m);
+    const extra = (m.apr || []).reduce((s, k) => s + ((lista[k] && lista[k].pm) || 0), 0);
+    return { base: m.pm || 0, extra: extra, total: (m.pm || 0) + extra };
+  }
+  function blocoAprimoramentos(m, i) {
+    const lista = aprimoramentosDe(m);
+    if (!lista.length) return '';
+    const p = pmDaMagia(m);
+    const linhas = lista.map((a, k) => {
+      const on = (m.apr || []).indexOf(k) >= 0;
+      return `
+        <li class="fi-apr${on ? ' fi-apr--on' : ''}">
+          <button type="button" class="fi-apr-btn" data-acao="apr" data-i="${i}" data-k="${k}"
+                  aria-pressed="${on}" title="${on ? 'Tirar este aprimoramento' : 'Somar este aprimoramento'}">
+            <span class="fi-apr-sinal" aria-hidden="true">${on ? '−' : '＋'}</span>
+            <span class="fi-apr-pm">${a.pm > 0 ? '+' + a.pm + ' PM' : 'sem PM'}</span>
+          </button>
+          <span class="fi-apr-txt">
+            ${a.condicao ? `<span class="fi-apr-marca">${esc(a.condicao)}</span>` : ''}
+            ${a.requer ? `<span class="fi-apr-marca fi-apr-marca--req">${a.requer}º círculo</span>` : ''}
+            ${esc(a.texto)}
+            ${on && Array.isArray(a.itens) && a.itens.length
+              ? '<span class="fi-apr-itens">' + a.itens.map(t => '<em>' + esc(t) + '</em>').join('') + '</span>'
+              : ''}
+          </span>
+        </li>`;
+    }).join('');
+    return `
+      <div class="fi-apr-caixa">
+        <div class="fi-apr-cab">
+          <span class="fi-apr-tit">✨ Aprimoramentos</span>
+          <span class="fi-apr-conta" data-der="apr:${i}">${contaApr(p)}</span>
+          ${p.extra ? `<button type="button" class="fi-mini" data-acao="apr-limpa" data-i="${i}"
+                  title="Desligar todos os aprimoramentos desta magia">✦ limpar</button>` : ''}
+        </div>
+        <ul class="fi-apr-lista">${linhas}</ul>
+      </div>`;
+  }
+  function contaApr(p) {
+    return p.extra
+      ? '<strong>' + p.total + ' PM</strong> <em>(' + p.base + ' da magia + ' + p.extra + ')</em>'
+      : '<strong>' + p.base + ' PM</strong> <em>(sem aprimoramento)</em>';
+  }
+
   function cartaoMagia(m, i) {
+    const p = pmDaMagia(m);
     return `
       <li class="fi-mag">
         <button type="button" class="fi-mag-abrir" data-acao="ver-magia" data-i="${i}"
@@ -1267,8 +1487,10 @@
           <span class="fi-mag-lupa" aria-hidden="true">👁</span>
         </button>
         <span class="fi-mag-acoes">
-          ${m.pm ? `<button type="button" class="fi-mag-pm-btn" data-acao="gastar-magia" data-i="${i}"
-                  title="Gastar ${m.pm} PM — os temporários saem primeiro">🔥 ${m.pm} PM</button>` : ''}
+          ${p.total ? `<button type="button" class="fi-mag-pm-btn${p.extra ? ' fi-mag-pm-btn--apr' : ''}"
+                  data-acao="gastar-magia" data-i="${i}"
+                  title="Gastar ${p.total} PM${p.extra ? ' (' + p.base + ' da magia + ' + p.extra + ' de aprimoramento)' : ''} — os temporários saem primeiro"
+            >🔥 ${p.total} PM</button>` : ''}
           <button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
                   title="Tirar ${esc(m.nome)} da ficha">✕</button>
         </span>
@@ -1278,8 +1500,9 @@
           ${campoMag('Resistência', m.resistencia)}
         </div>
         ${m.resumo ? `<p class="fi-mag-resumo">${esc(m.resumo)}</p>` : ''}
+        ${blocoAprimoramentos(m, i)}
         <input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
-               placeholder="sua anotação (aprimoramento que usa, alvo preferido…)" autocomplete="off">
+               placeholder="sua anotação (alvo preferido, quem costuma acompanhar…)" autocomplete="off">
       </li>`;
   }
   function campoMag(rot, v) {
@@ -1320,7 +1543,21 @@
           <span class="fi-inv-total" data-der="inv:${i}" title="Espaços que esta linha ocupa">${arredonda(total)}</span>
           <input class="fi-txt fi-inv-obs" type="text" value="${esc(it.obs)}" data-campo="inventario.${i}.obs"
                  placeholder="onde está, quem emprestou, encanto…" autocomplete="off">
-          <button type="button" class="fi-mini fi-mini--x" data-acao="tira-item" data-i="${i}" title="Tirar do inventário">✕</button>
+          <span class="fi-inv-fim">
+            <button type="button" class="fi-mini ${it.aberto ? 'fi-mini--on' : ''}${it.notas && !it.aberto ? ' fi-mini--tem' : ''}"
+                    data-acao="item-texto" data-i="${i}"
+                    title="${it.aberto ? 'Fechar o texto deste item' : 'Escrever sobre este item — o que ele faz, o encanto, a habilidade que custa PM'}"
+                    aria-pressed="${!!it.aberto}">✎</button>
+            <button type="button" class="fi-mini fi-mini--x" data-acao="tira-item" data-i="${i}" title="Tirar do inventário">✕</button>
+          </span>
+          ${it.aberto ? `
+          <div class="ga-rich-wrap ga-rich-wrap--barra fi-inv-texto" data-jog-edita>
+            ${window.GA_barraRica ? window.GA_barraRica() : ''}
+            <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
+                 data-campo="inventario.${i}.notas"
+                 data-ph="O que este item faz: o encanto, o dano extra, a habilidade que custa PM…"
+                 >${it.notas}</div>
+          </div>` : ''}
         </li>`;
     }).join('');
 
@@ -1331,6 +1568,16 @@
             <strong data-der="cargausada2">${cargaUsada(f)}</strong> de
             <strong data-der="cargamax2">${cargaMax(f)}</strong> espaços</span>
         </h2>
+        <div class="fi-inv-carga">
+          <span class="fi-inv-carga-num">
+            <strong data-der="cargausada3">${cargaUsada(f)}</strong> de
+            <strong data-der="cargamax3">${cargaMax(f)}</strong> espaços
+          </span>
+          <span class="fi-barra-pv fi-barra-pv--carga">
+            <span class="fi-barra-parte" data-der="cargabarra" style="width:${fatiaCarga(f)}%"></span>
+          </span>
+          <em class="fi-carga-estado" data-der="cargaestado2">${rotuloCarga(f)}</em>
+        </div>
         <div class="fi-inv-cab">
           <span>Item</span><span>Quantas</span><span>Espaços</span><span>Ocupa</span><span>Anotação</span><span></span>
         </div>
@@ -1411,15 +1658,21 @@
       if (d === 'pvmax')     el.textContent = pvMax(f);
       if (d === 'pmmax')     el.textContent = pmMax(f);
       if (d === 'defesa')    el.textContent = defesa(f);
-      if (d === 'cargamax' || d === 'cargamax2') el.textContent = cargaMax(f);
-      if (d === 'cargausada' || d === 'cargausada2') el.textContent = cargaUsada(f);
-      if (d === 'cargaestado') el.textContent = rotuloCarga(f);
+      if (d === 'cargamax' || d === 'cargamax2' || d === 'cargamax3') el.textContent = cargaMax(f);
+      if (d === 'cargausada' || d === 'cargausada2' || d === 'cargausada3') el.textContent = cargaUsada(f);
+      if (d === 'cargaestado' || d === 'cargaestado2') el.textContent = rotuloCarga(f);
+      if (d === 'cargabarra') {
+        el.style.width = fatiaCarga(f) + '%';
+        el.parentElement.classList.toggle('fi-barra-pv--cheia', estadoCarga(f) !== 'ok');
+      }
       if (d === 'invconta')  el.innerHTML = contaCarga(f);
       if (d === 'cd' || d === 'cd2') el.textContent = cdBase(f);
       if (d === 'desloc')    el.textContent = f.deslocamento;
       if (d === 'quadrados') el.textContent = quadrados(f.deslocamento);
       if (d === 'pvconta')   el.innerHTML = contaPv(f);
       if (d === 'defconta')  el.innerHTML = contaDefesa(f);
+      if (d === 'xpconta')   el.innerHTML = contaXp(f);
+      if (d === 'xpbarra')   el.innerHTML = barraXp(f);
       if (d === 'danoeco')   { el.innerHTML = ultimoDano; el.hidden = !ultimoDano; }
       // os dois medidores: barra, pedaço temporário e o selo ao lado
       if (d === 'pvbarra')     el.style.width = fatia(pvAtual(f), pvMax(f), f.pv.temp) + '%';
@@ -1558,6 +1811,20 @@
     if (acao === 'add-classe')  { f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
     if (acao === 'tira-classe') { f.classes.splice(+btn.dataset.i, 1); if (!f.classes.length) f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
     if (acao === 'add-ataque')  { f.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0, dano: '', critico: '', tipo: '', alcance: '' }); salvar(); return render(); }
+
+    // ── O QUE APARA O DANO ─────────────────────────────────────────
+    if (acao === 'add-apara') {
+      const c = btn.dataset.campo;
+      if (!Array.isArray(f[c])) return;
+      f[c].push({ id: novoId(), valor: '', do_: '', obs: '' });
+      sujar(f.id, c); salvar(); return render();
+    }
+    if (acao === 'tira-apara') {
+      const c = btn.dataset.campo;
+      if (!Array.isArray(f[c])) return;
+      f[c].splice(+btn.dataset.i, 1);
+      sujar(f.id, c); salvar(); return render();
+    }
     if (acao === 'tira-ataque') { f.ataques.splice(+btn.dataset.i, 1); salvar(); return render(); }
 
     if (acao === 'treinar') {
@@ -1623,6 +1890,13 @@
       if (it) { it.cada = !it.cada; sujar(f.id, 'inventario'); salvar(); render(); }
       return;
     }
+    // a caixa grande do item: abre e fecha, e o estado fica guardado —
+    // quem escreveu sobre a espada quer achar aquilo aberto amanhã
+    if (acao === 'item-texto') {
+      const it = f.inventario[+btn.dataset.i];
+      if (it) { it.aberto = !it.aberto; sujar(f.id, 'inventario'); salvar(); render(); }
+      return;
+    }
 
     // ── MAGIAS ─────────────────────────────────────────────────────
     if (acao === 'add-magia')  return abrirBuscaMagia(f);
@@ -1630,8 +1904,28 @@
     if (acao === 'ver-magia')  return verMagia(f.magias[+btn.dataset.i]);
     if (acao === 'gastar-magia') {
       const m = f.magias[+btn.dataset.i];
-      if (m && m.pm) aplicarDano(f, 'pm', m.pm, m.nome);
+      if (!m) return;
+      const p = pmDaMagia(m);
+      // o rótulo diz o que saiu: "Bola de Fogo · com +2 aprimorado"
+      if (p.total) aplicarDano(f, 'pm', p.total, m.nome + (p.extra ? ' (aprimorada)' : ''));
       return;
+    }
+    // ── APRIMORAMENTOS: liga e desliga ─────────────────────────────
+    if (acao === 'apr') {
+      const m = f.magias[+btn.dataset.i], k = +btn.dataset.k;
+      if (!m) return;
+      const j = (m.apr || []).indexOf(k);
+      if (j >= 0) m.apr.splice(j, 1); else m.apr.push(k);
+      m.apr.sort((a, b) => a - b);
+      sujar(f.id, 'magias');
+      salvar(); return render();
+    }
+    if (acao === 'apr-limpa') {
+      const m = f.magias[+btn.dataset.i];
+      if (!m || !m.apr.length) return;
+      m.apr = [];
+      sujar(f.id, 'magias');
+      salvar(); return render();
     }
 
     // ── O ROLADOR LIVRE ────────────────────────────────────────────

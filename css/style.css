@@ -2467,6 +2467,15 @@ footer {
   cursor: pointer;
   opacity: 0.82;
 }
+/* ⚠ A FICHA NÃO ENTRA NESSA TRAVA. Ela é do jogador, mora no
+   `localStorage` dele e nunca chega ao banco — exigir conta ali seria
+   trancar a porta de uma casa vazia. O `modo-jogador.js` já a libera
+   (SECOES_LIVRES); o CSS tinha ficado para trás e desenhava cadeado
+   numa caixa que aceita escrita. */
+#ficha [data-jog-edita]::after { content: none; }
+#ficha [data-jog-edita] .ga-barra { display: flex; }
+.ga-jog-travado #ficha [data-jog-edita] .ga-rich { cursor: var(--cursor-texto); opacity: 1; }
+
 .ga-jog-travado [data-jog-edita]::after {
   content: '🔒 entre para escrever';
   position: absolute;

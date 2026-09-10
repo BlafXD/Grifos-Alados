@@ -128,6 +128,21 @@
   // "Cada mil moedas, independentemente do tipo, ocupam 1 espaço" (p. 141).
   const MOEDAS_POR_ESPACO = 1000;
 
+  // ── XP: a Tabela 1-4, Níveis de Personagem (p. 34) ───────────────
+  //  "Você começa no 1º nível e com 0 XP. Quando acumula XP suficiente
+  //  (conforme a tabela) você sobe de nível." Lido do PDF do Tormenta
+  //  20 — Edição Jogo do Ano em 10/09/2026; é a MESMA tabela de onde
+  //  sai o bônus de perícia (+2/+0, +3/+1…), que a ficha já calcula
+  //  pela fórmula e bate linha a linha.
+  //  O índice é o nível: XP_POR_NIVEL[1] = 0, XP_POR_NIVEL[20] = 190000.
+  const XP_POR_NIVEL = [
+    null,
+    0,      1000,   3000,   6000,   10000,
+    15000,  21000,  28000,  36000,  45000,
+    55000,  66000,  78000,  91000,  105000,
+    120000, 136000, 153000, 171000, 190000,
+  ];
+
   const PERICIA_POR_CHAVE = {}; PERICIAS.forEach(p => { PERICIA_POR_CHAVE[p.chave] = p; });
   const CLASSE_POR_CHAVE  = {}; CLASSES.forEach(c  => { CLASSE_POR_CHAVE[c.chave]  = c;  });
 
@@ -139,7 +154,14 @@
     OFICIOS: OFICIOS,
     ESPACOS: ESPACOS,
     MOEDAS_POR_ESPACO: MOEDAS_POR_ESPACO,
+    XP_POR_NIVEL: XP_POR_NIVEL,
     pericia: function (chave) { return PERICIA_POR_CHAVE[chave] || null; },
     classe:  function (chave) { return CLASSE_POR_CHAVE[chave]  || null; },
+    // Em que nível esse tanto de XP põe o personagem (1 a 20).
+    nivelDoXp: function (xp) {
+      let n = 1;
+      for (let i = 2; i < XP_POR_NIVEL.length; i++) if ((xp || 0) >= XP_POR_NIVEL[i]) n = i;
+      return n;
+    },
   };
 })();

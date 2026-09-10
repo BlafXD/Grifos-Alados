@@ -1421,3 +1421,210 @@
   .fi-mag-acoes { justify-content: flex-end; }
   .fi-inv-pe { flex-direction: column; align-items: stretch; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   XP · O QUE APARA O DANO · A CAIXA DO ITEM · OS APRIMORAMENTOS
+   (10 de setembro de 2026)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── XP e o quanto falta para subir (Tabela 1-4, p. 34) ─────────── */
+.fi-ident-xp {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.8rem;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dotted var(--parchment3);
+}
+.fi-xp-conta {
+  flex: 1 1 14rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  color: var(--text-mid);
+}
+.fi-xp-conta strong { color: var(--ink); }
+.fi-xp-conta em { font-style: italic; color: var(--text-dim); }
+.fi-xp-alerta { color: var(--verde-dark); }
+.fi-xp-barra {
+  flex: 1 1 100%;
+  display: block;
+  height: 0.4rem;
+  overflow: hidden;
+  background: var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-xp-parte {
+  display: block;
+  height: 100%;
+  background: var(--gold-deep);
+  transition: width 0.25s;
+}
+
+/* ── O QUE APARA O DANO (resistência ≠ redução ≠ imunidade) ─────── */
+.fi-apara-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.9rem;
+  margin-bottom: 0.6rem;
+}
+.fi-apara-grupo {
+  padding: 0.5rem 0.6rem 0.6rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-apara-tit {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+.fi-apara-dica {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.74rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-dim);
+}
+.fi-apara-lista { list-style: none; margin: 0.4rem 0 0.35rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.fi-apara {
+  display: grid;
+  grid-template-columns: 3rem 1fr 1fr auto;
+  align-items: center;
+  gap: 0.3rem;
+}
+.fi-apara-icone { text-align: center; color: var(--text-dim); }
+.fi-apara .fi-txt { min-width: 0; }
+.fi-apara .fi-txt--obs { font-size: 0.82rem; color: var(--text-mid); }
+.fi-prof { margin-top: 0.2rem; }
+
+/* ── A CARGA, DENTRO DO INVENTÁRIO ──────────────────────────────── */
+.fi-inv-carga {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.7rem;
+  margin-bottom: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-inv-carga-num { font-family: 'Crimson Pro', serif; font-size: 0.95rem; }
+.fi-inv-carga-num strong { font-size: 1.1rem; }
+.fi-barra-pv--carga { flex: 1 1 8rem; height: 0.4rem; }
+.fi-barra-pv--carga .fi-barra-parte { background: var(--gold-deep); }
+.fi-barra-pv--cheia .fi-barra-parte { background: var(--carmim); }
+.fi-inv-carga .fi-carga-estado { flex: 1 1 100%; }
+
+/* ── A CAIXA DE TEXTO DE CADA ITEM ──────────────────────────────── */
+.fi-inv-fim { display: inline-flex; gap: 0.2rem; }
+.fi-mini--on { background: var(--gold-pale); border-color: var(--gold-deep); color: var(--gold-deep); }
+/* o ✎ de um item que TEM texto escrito, mas está fechado */
+.fi-mini--tem { border-style: dashed; border-color: var(--gold-dim); color: var(--gold-deep); }
+.fi-inv-texto {
+  grid-column: 1 / -1;
+  margin: 0.35rem 0 0.2rem;
+}
+.fi-inv-texto .fi-texto { min-height: 4.5rem; }
+
+/* ── OS APRIMORAMENTOS DA MAGIA ─────────────────────────────────── */
+.fi-apr-caixa {
+  margin: 0.4rem 0 0.35rem;
+  padding: 0.4rem 0.5rem 0.45rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-apr-cab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.fi-apr-tit {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+.fi-apr-conta { font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--text-mid); }
+.fi-apr-conta strong { color: var(--ink); font-size: 1rem; }
+.fi-apr-conta em { font-style: italic; color: var(--text-dim); font-size: 0.82rem; }
+.fi-apr-cab .fi-mini { margin-left: auto; }
+
+.fi-apr-lista { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+.fi-apr {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.25rem 0.3rem;
+  border-radius: var(--raio);
+  border: 1px solid transparent;
+}
+.fi-apr--on { background: var(--gold-pale); border-color: var(--gold-dim); }
+.fi-apr-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+}
+.fi-apr-btn:hover { background: var(--gold-pale); border-color: var(--gold-deep); }
+.fi-apr--on .fi-apr-btn { color: var(--parchment); background: var(--rust-dark); border-color: var(--rust-dark); }
+.fi-apr--on .fi-apr-btn:hover { background: var(--carmim); border-color: var(--carmim); }
+.fi-apr-sinal { font-size: 0.8rem; line-height: 1; }
+.fi-apr-txt {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--text-mid);
+}
+.fi-apr--on .fi-apr-txt { color: var(--ink); }
+.fi-apr-marca {
+  display: inline-block;
+  margin-right: 0.3rem;
+  padding: 0.02rem 0.35rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  background: var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-apr-marca--req { color: var(--azul); }
+.fi-apr-itens { display: block; margin-top: 0.2rem; }
+.fi-apr-itens em {
+  display: block;
+  font-family: 'IM Fell English', serif;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+.fi-mag-pm-btn--apr { background: var(--gold-pale); border-color: var(--gold-deep); }
+
+@media (max-width: 560px) {
+  .fi-apara { grid-template-columns: 3rem 1fr auto; }
+  .fi-apara .fi-txt--obs { grid-column: 1 / -1; }
+  .fi-apr { flex-wrap: wrap; }
+}
