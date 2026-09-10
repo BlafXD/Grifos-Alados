@@ -622,3 +622,110 @@ está com a ficha na mão.
 **O que continua igual:** duas telas editando a MESMA ficha ao mesmo tempo ainda
 é "o último a falar ganha", por grupo. Serve para mesa de amigos; não é editor
 colaborativo.
+
+---
+
+# A leva do jogador — 10 de setembro de 2026
+
+Ele usou a ficha de verdade e voltou com cinco pedidos. Todos feitos; o último
+era o que ele mesmo tinha marcado como "pode ficar para depois".
+
+## 1. O que apara o dano — e o que NÃO é teste de resistência
+
+> "preciso de caixas de texto para colocar Resistência (**Teste de resistência é
+> diferente de REDUÇÃO DE DANO!**), Redução de Dano (ele pode ter várias ao mesmo
+> tempo), imunidades e proficiência"
+
+Cartão novo, entre os números e as perícias, com **três listas separadas** —
+porque são três regras diferentes que a mesa vive confundindo:
+
+| | O que é | Formato |
+|---|---|---|
+| 🜂 **Resistências** | tira aquele tanto do dano **daquele tipo** ("resistência a fogo 10") | valor + tipo + de onde vem |
+| 🛡 **Redução de dano** | tira de todo dano físico ("RD 5"); **dá para ter várias** | valor + condição + de onde vem |
+| 🚫 **Imunidades** | não lhe atinge, ponto | o quê + de onde vem |
+
+Mais o campo **🎓 Proficiências**, em linha, embaixo.
+
+**A distinção que ele fez questão de marcar está escrita no cartão:** *"Teste de
+resistência é outra coisa — Fortitude, Reflexos e Vontade são perícias em
+Tormenta 20"*. Elas continuam na lista das 29, com o selo `resistência`, e o
+cartão novo cuida só do que apara o dano **depois** que ele acontece.
+
+Cada linha é `{ valor, do_, obs }` e sobe para a mesa no seu próprio grupo
+(`resistencias`, `reducoes`, `imunidades`) — o mestre pode escrever numa enquanto
+o jogador escreve na outra.
+
+## 2. XP, e o quanto falta para subir
+
+Campo **XP** ao lado da classe, com a frase que se quer ler no fim da sessão:
+
+> faltam **2.500** XP para o nível 6 *(12.500 de 15.000)*
+
+Mais uma barrinha do caminho andado. A tabela é a **1-4: Níveis de Personagem
+(p. 34)**, lida do PDF em 10/09/2026 — a MESMA de onde sai o bônus de perícia que
+a ficha já calculava, e as duas colunas batem linha a linha (1º +2/+0 … 20º
++16/+10). Ela mora em `js/ficha-data.js` como `XP_POR_NIVEL`.
+
+**O XP não sobe ninguém de nível.** Subir é escolher poder, perícia e mais coisa
+— quem faz isso é o jogador, no campo de nível. Quando os dois discordam a ficha
+**diz** (*"a tabela já lhe dá o nível 6"*) e não conserta nada sozinha. É a mesma
+política de sempre: conta e mostra, não policia.
+
+## 3. Uma caixa de texto por item
+
+> "seria interessante ter uma caixa de texto abaixo de cada item para eu escrever
+> mais sobre a espada… por exemplo eu tenho um machado táurico com vampírica que
+> exige que eu gaste PM para usar uma habilidade"
+
+Cada linha do inventário ganhou um **✎** que abre, logo abaixo dela, uma caixa
+rica de verdade (a mesma do resto do site: grifo, ▣ caixa, ※ descrição). O
+estado aberto/fechado fica guardado, e o ✎ de um item que tem texto escrito fica
+**marcado** mesmo fechado — senão o texto some de vista e ninguém lembra dele.
+
+A `Anotação` curta continua na linha ("na mochila do Elias"); a caixa é para o
+que o item **faz**.
+
+## 4. A carga também dentro do inventário
+
+Estava só lá em cima, no cartão de Defesa & Carga. Agora o 🎒 abre com a própria
+conta — **`2` de `10` espaços**, uma barra, e o aviso da p. 141 quando passa do
+limite (−5 de armadura e −3m; acima do dobro, não carrega). A de cima continua
+onde estava.
+
+## 5. Os aprimoramentos com botão
+
+> "invés do jogador ter que ficar fazendo cálculo, poderia ter alguma forma mais
+> prática para só apertar o botão de adicionar ou remover os efeitos de
+> 'Aprimorado' para saber quantos PM gasto e quanto aumenta o benefício"
+
+Cada magia da ficha lista os aprimoramentos **dela**, com um botão por linha:
+
+```
+✨ APRIMORAMENTOS        6 PM (3 da magia + 3)        ✦ limpar
+  [＋ +2 PM]  aumenta o dano em +2d6.
+  [＋ +2 PM]  muda a área para esfera flamejante…
+  [− +3 PM]   muda a duração para um dia…              ← ligado
+```
+
+Ligou, o total no alto e o **🔥 do canto** mudam juntos; o 🔥 gasta esse total
+(dos temporários primeiro, p. 105) e o histórico registra "Bola de Fogo
+(aprimorada)". A escolha **fica guardada** na ficha — na mesa a mesma combinação
+se repete toda semana.
+
+**Isto só foi barato porque o dado já existia estruturado.** Os aprimoramentos
+das 254 magias estão em `js/magias-data.js` como `{ pm, condicao, texto, requer,
+itens }` — 235 magias têm pelo menos um. O `condicao` ("Apenas Druidas") e o
+`requer` (círculo mínimo) viram selo na linha; os `itens` (3 magias os têm, como
+Animar Objetos) aparecem quando o aprimoramento está ligado.
+
+**Sem a base carregada** (ficha exportada em `.json`, site sem `magias-data.js`)
+o cartão simplesmente não aparece e o 🔥 volta a ser o PM do círculo.
+
+## 🐛 De quebra: o cadeado que mentia
+
+Na página dos jogadores, **todas** as caixas ricas da ficha mostravam
+"🔒 entre para escrever" e ficavam apagadas — mesmo aceitando escrita. O
+`modo-jogador.js` já libera a ficha desde a primeira leva (`SECOES_LIVRES`), mas
+o CSS tinha ficado para trás. Agora `#ficha` está fora das três regras de trava.
+As outras seções (Bases, Viagem) seguem com o cadeado, que lá é verdade.
