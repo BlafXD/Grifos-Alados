@@ -1390,7 +1390,7 @@
           ${c === '0' ? 'sem círculo' : 'círculo'}
           <em>${porCirculo[c].length} magia${porCirculo[c].length > 1 ? 's' : ''}</em>
         </h3>
-        <ul class="fi-mag-lista">${porCirculo[c].map(({ m, i }) => cartaoMagia(m, i)).join('')}</ul>
+        <ul class="fi-mag-lista">${porCirculo[c].map(({ m, i }) => cartaoMagia(f, m, i)).join('')}</ul>
       </div>`).join('');
 
     return `
@@ -1430,28 +1430,77 @@
     const b = daBase(m.mid);
     return (b && Array.isArray(b.aprimoramentos)) ? b.aprimoramentos : [];
   }
+
+  //  ── APRIMORAMENTOS CUMULATIVOS (Magia, p. 171) ─────────────────
+  //  O livro dá o teste pronto, e ele é literal:
+  //
+  //   "Para aprimoramentos que aumentam um valor (o texto começa com a
+  //    palavra «aumenta»), você pode gastar aquela quantidade de PM
+  //    várias vezes para acumular o aumento. A magia Bola de Fogo causa
+  //    6d6 pontos de dano e tem um aprimoramento que aumenta esse dano
+  //    em +2d6 por +2 PM. Um arcanista de 11º nível pode gastar até 11
+  //    PM ao lançar essa magia, causando 14d6 pontos de dano."
+  //
+  //  Então: quem começa com "aumenta" ganha ＋ e −, e o resto continua
+  //  sendo liga/desliga. São 153 dos 671 aprimoramentos do livro.
+  function cumulativo(a) {
+    return /^\s*aumenta/i.test((a && a.texto) || '');
+  }
+  //  O quanto o aumento vira, vezes N. Pega o PRIMEIRO "+XdY" ou "+X"
+  //  do texto — que é onde o livro põe o valor — e multiplica só ele.
+  //  Sem número reconhecível ("aumenta o dano da arma em mais um
+  //  passo"), devolve nada e a tela mostra só o ×N.
+  function aumentoVezes(a, n) {
+    const m = /\+(\d+)(d\d+)?/.exec((a && a.texto) || '');
+    if (!m || n < 2) return '';
+    return '+' + (parseInt(m[1], 10) * n) + (m[2] || '');
+  }
+  //  O teto por magia (p. 224): "o máximo de PM que você pode gastar
+  //  por uso é igual ao seu nível NA CLASSE que fornece a habilidade".
+  //  Com uma classe só — o caso normal — é o nível dela.
+  function limitePm(f) {
+    const n = f.classes.reduce((s, c) => Math.max(s, c.nivel || 0), 0);
+    return Math.max(1, n || nivel(f));
+  }
+  function quantos(m, k) {
+    return (m.apr || []).filter(x => x === k).length;
+  }
   function pmDaMagia(m) {
     const lista = aprimoramentosDe(m);
     const extra = (m.apr || []).reduce((s, k) => s + ((lista[k] && lista[k].pm) || 0), 0);
     return { base: m.pm || 0, extra: extra, total: (m.pm || 0) + extra };
   }
-  function blocoAprimoramentos(m, i) {
+  function blocoAprimoramentos(f, m, i) {
     const lista = aprimoramentosDe(m);
     if (!lista.length) return '';
     const p = pmDaMagia(m);
+    const limite = limitePm(f);
     const linhas = lista.map((a, k) => {
-      const on = (m.apr || []).indexOf(k) >= 0;
-      return `
-        <li class="fi-apr${on ? ' fi-apr--on' : ''}">
-          <button type="button" class="fi-apr-btn" data-acao="apr" data-i="${i}" data-k="${k}"
+      const n = quantos(m, k);
+      const on = n > 0;
+      const cum = cumulativo(a);
+      const rotPm = a.pm > 0 ? '+' + a.pm + ' PM' : 'sem PM';
+      const controles = cum
+        ? `${on ? `<button type="button" class="fi-apr-btn fi-apr-btn--menos" data-acao="apr-menos" data-i="${i}" data-k="${k}"
+                  title="Uma vez a menos (−${a.pm} PM)">−</button>
+             <span class="fi-apr-vezes">×${n}</span>` : ''}
+           <button type="button" class="fi-apr-btn" data-acao="apr" data-i="${i}" data-k="${k}"
+                  title="Mais uma vez (+${a.pm} PM) — o livro deixa acumular, p. 171">
+             <span class="fi-apr-sinal" aria-hidden="true">＋</span>
+             <span class="fi-apr-pm">${rotPm}</span></button>`
+        : `<button type="button" class="fi-apr-btn" data-acao="apr" data-i="${i}" data-k="${k}"
                   aria-pressed="${on}" title="${on ? 'Tirar este aprimoramento' : 'Somar este aprimoramento'}">
-            <span class="fi-apr-sinal" aria-hidden="true">${on ? '−' : '＋'}</span>
-            <span class="fi-apr-pm">${a.pm > 0 ? '+' + a.pm + ' PM' : 'sem PM'}</span>
-          </button>
+             <span class="fi-apr-sinal" aria-hidden="true">${on ? '−' : '＋'}</span>
+             <span class="fi-apr-pm">${rotPm}</span></button>`;
+      const soma = cum && n > 1 ? aumentoVezes(a, n) : '';
+      return `
+        <li class="fi-apr${on ? ' fi-apr--on' : ''}${cum ? ' fi-apr--cum' : ''}">
+          <span class="fi-apr-ctrl">${controles}</span>
           <span class="fi-apr-txt">
             ${a.condicao ? `<span class="fi-apr-marca">${esc(a.condicao)}</span>` : ''}
             ${a.requer ? `<span class="fi-apr-marca fi-apr-marca--req">${a.requer}º círculo</span>` : ''}
             ${esc(a.texto)}
+            ${soma ? `<strong class="fi-apr-soma">→ ${esc(soma)} ao todo, por ${a.pm * n} PM</strong>` : ''}
             ${on && Array.isArray(a.itens) && a.itens.length
               ? '<span class="fi-apr-itens">' + a.itens.map(t => '<em>' + esc(t) + '</em>').join('') + '</span>'
               : ''}
@@ -1462,20 +1511,26 @@
       <div class="fi-apr-caixa">
         <div class="fi-apr-cab">
           <span class="fi-apr-tit">✨ Aprimoramentos</span>
-          <span class="fi-apr-conta" data-der="apr:${i}">${contaApr(p)}</span>
+          <span class="fi-apr-conta" data-der="apr:${i}">${contaApr(p, limite)}</span>
           ${p.extra ? `<button type="button" class="fi-mini" data-acao="apr-limpa" data-i="${i}"
                   title="Desligar todos os aprimoramentos desta magia">✦ limpar</button>` : ''}
         </div>
         <ul class="fi-apr-lista">${linhas}</ul>
       </div>`;
   }
-  function contaApr(p) {
-    return p.extra
+  //  O total, e o aviso do teto quando ele estoura. A ficha AVISA e não
+  //  impede — o limite depende da classe que deu a magia, e só quem
+  //  está com ela na mão sabe qual foi.
+  function contaApr(p, limite) {
+    const base = p.extra
       ? '<strong>' + p.total + ' PM</strong> <em>(' + p.base + ' da magia + ' + p.extra + ')</em>'
       : '<strong>' + p.base + ' PM</strong> <em>(sem aprimoramento)</em>';
+    if (!limite || p.total <= limite) return base;
+    return base + ' <em class="fi-apr-teto">⚠ passa do seu limite de ' + limite +
+      ' PM por magia (o seu nível na classe que a deu — p. 224)</em>';
   }
 
-  function cartaoMagia(m, i) {
+  function cartaoMagia(f, m, i) {
     const p = pmDaMagia(m);
     return `
       <li class="fi-mag">
@@ -1500,7 +1555,7 @@
           ${campoMag('Resistência', m.resistencia)}
         </div>
         ${m.resumo ? `<p class="fi-mag-resumo">${esc(m.resumo)}</p>` : ''}
-        ${blocoAprimoramentos(m, i)}
+        ${blocoAprimoramentos(f, m, i)}
         <input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
                placeholder="sua anotação (alvo preferido, quem costuma acompanhar…)" autocomplete="off">
       </li>`;
@@ -1910,13 +1965,27 @@
       if (p.total) aplicarDano(f, 'pm', p.total, m.nome + (p.extra ? ' (aprimorada)' : ''));
       return;
     }
-    // ── APRIMORAMENTOS: liga e desliga ─────────────────────────────
+    // ── APRIMORAMENTOS ─────────────────────────────────────────────
+    //  O que começa com "aumenta" ACUMULA (p. 171): o ＋ soma mais uma
+    //  vez, e a lista `apr` guarda o índice repetido. O resto é
+    //  liga/desliga, como sempre foi.
     if (acao === 'apr') {
       const m = f.magias[+btn.dataset.i], k = +btn.dataset.k;
       if (!m) return;
+      const a = aprimoramentosDe(m)[k];
       const j = (m.apr || []).indexOf(k);
-      if (j >= 0) m.apr.splice(j, 1); else m.apr.push(k);
-      m.apr.sort((a, b) => a - b);
+      if (a && cumulativo(a)) m.apr.push(k);          // mais uma vez
+      else if (j >= 0) m.apr.splice(j, 1);
+      else m.apr.push(k);
+      m.apr.sort((x, y) => x - y);
+      sujar(f.id, 'magias');
+      salvar(); return render();
+    }
+    if (acao === 'apr-menos') {
+      const m = f.magias[+btn.dataset.i], k = +btn.dataset.k;
+      if (!m) return;
+      const j = (m.apr || []).indexOf(k);
+      if (j >= 0) m.apr.splice(j, 1);
       sujar(f.id, 'magias');
       salvar(); return render();
     }

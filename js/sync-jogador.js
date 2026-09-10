@@ -41,27 +41,61 @@
   // estado da sala (o sync escreve) e a linha de login (o bloco "QUEM PODE
   // ESCREVER" escreve). Por isso ele não é mais um innerHTML só — uma parte
   // não pode apagar a outra.
+  //  RECOLHER: no celular o chip fica em cima do que está no rodapé —
+  //  foi o que ele mostrou na print, com o painel ⚙ aberto e os botões
+  //  dele atrás do chip. O ▾ encolhe tudo para um 📡; um clique nele
+  //  devolve. Fica guardado: quem recolheu quer recolhido amanhã também.
+  const MIN_KEY = 'grifosAlados.jogChipRecolhido';
+  let recolhido = false;
+  try { recolhido = localStorage.getItem(MIN_KEY) === '1'; } catch (e) {}
+  let classeChip = '';
+
+  function pintarChip() {
+    const el = document.getElementById('gaJogChip');
+    if (!el) return;
+    el.className = 'ga-jog-chip ' + classeChip + (recolhido ? ' ga-jog-chip--min' : '');
+    el.title = recolhido ? 'Mesa — clique para abrir' : '';
+    const b = el.querySelector('[data-jog-min]');
+    if (!b) return;
+    b.textContent = recolhido ? '📡' : '▾';
+    const rot = recolhido ? 'Abrir o estado da mesa' : 'Recolher — fica só o 📡';
+    b.title = rot;
+    b.setAttribute('aria-label', rot);
+    b.setAttribute('aria-expanded', String(!recolhido));
+  }
+  function alternarChip() {
+    recolhido = !recolhido;
+    window.GA_guardar(MIN_KEY, recolhido ? '1' : '0');
+    pintarChip();
+  }
+
   function chipRaiz() {
     let el = document.getElementById('gaJogChip');
     if (!el) {
       el = document.createElement('div');
       el.id = 'gaJogChip';
       el.className = 'ga-jog-chip';
-      el.innerHTML = '<span class="ga-jog-chip-txt"></span><span class="ga-jog-chip-auth"></span>';
+      el.innerHTML = '<span class="ga-jog-chip-txt"></span><span class="ga-jog-chip-auth"></span>' +
+        '<button type="button" class="ga-jog-chip-min" data-jog-min>▾</button>';
       el.addEventListener('click', e => {
         if (!(e.target instanceof Element)) return;
+        if (e.target.closest('[data-jog-min]')) return alternarChip();
+        // recolhido, o chip inteiro é o botão de abrir
+        if (recolhido) return alternarChip();
         if (e.target.closest('[data-jog-entrar]')) entrar();
         else if (e.target.closest('[data-jog-sair]')) sair();
         else if (e.target.closest('[data-jog-mesa]')) irParaMesa();
       });
       document.body.appendChild(el);
+      pintarChip();
     }
     return el;
   }
   function chip(texto, classe) {
     const el = chipRaiz();
-    el.className = 'ga-jog-chip ' + (classe || '');
+    classeChip = classe || '';
     el.querySelector('.ga-jog-chip-txt').innerHTML = texto;
+    pintarChip();
   }
   function chipAuth(html) {
     chipRaiz().querySelector('.ga-jog-chip-auth').innerHTML = html;
