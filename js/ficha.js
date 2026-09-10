@@ -43,6 +43,13 @@
   //  e a mesa é o espelho.
   let remotas = {};
   let meuUid = '';
+  //  ── A GAVETA DA CONTA ──────────────────────────────────────────
+  //  `usuarios/<uid>/fichas`: as MINHAS fichas, presas à conta e não ao
+  //  aparelho. É o que faz a ficha aparecer no celular novo, e o que a
+  //  mantém viva depois que a campanha acabar. Não entra sozinha na
+  //  tela: uma ficha que só existe na gaveta espera o botão "trazer" —
+  //  senão o que eu apaguei aqui ressuscitaria no próximo login.
+  let gaveta = {};
   // O que mudou desde o último envio, por ficha: 'pv', 'pericias',
   // 'inventario'… Publicar só os grupos sujos é o que deixa o mestre
   // baixar o PV enquanto o jogador escreve no inventário sem um apagar
@@ -769,20 +776,53 @@
   //  Para o JOGADOR: nada de ficha dos outros (o banco nem manda), só
   //  a linha dizendo que a dele está indo para o mestre — e isso é
   //  informação, não enfeite: dá para saber se o mestre está vendo.
+  //  ── A GAVETA DA CONTA, NA TELA ─────────────────────────────────
+  //   Aparece com o login, esteja ou não numa mesa. Duas coisas ela
+  //   precisa dizer, e nenhuma delas é enfeite: que a ficha não vai
+  //   morrer com este navegador, e QUAIS fichas da conta ainda não
+  //   estão aqui — com o botão de trazer cada uma.
+  function barraDaGaveta(e) {
+    if (!e.logado) return '';
+    const faltando = soNaGaveta();
+    const quem = (e.usuario && (e.usuario.displayName || e.usuario.email)) || 'a sua conta';
+    let html = '';
+    if (faltando.length) {
+      html += `
+        <div class="fi-barra fi-barra--gaveta">
+          <span class="fi-barra-rot" title="Ficam guardadas na sua conta, não neste aparelho">🗄 Na sua conta</span>
+          ${faltando.map(f => `
+            <button type="button" class="fi-aba fi-aba--gaveta" data-acao="trazer" data-id="${esc(f.id)}"
+                    title="Trazer esta ficha para este aparelho — ela continua na sua conta">
+              ⬇ ${esc(f.nome || '(sem nome)')}
+              <em>${esc(resumoDaFicha(f))}</em>
+            </button>`).join('')}
+        </div>`;
+    }
+    html += `<p class="fi-mesa-linha fi-mesa-linha--conta">
+      🗄 As suas fichas ficam guardadas em <strong>${esc(quem)}</strong> — entre com ela em qualquer
+      aparelho e elas aparecem${faltando.length ? ' (é o que está logo acima)' : ''}.</p>`;
+    return html;
+  }
+  function resumoDaFicha(f) {
+    const c = (f.classes || []).filter(x => x.classe && x.nivel > 0)
+      .map(x => (D.classe(x.classe) || {}).nome || x.classe);
+    return c.length ? c.join(' / ') + ' ' + nivel(f) : 'nível ' + nivel(f);
+  }
+
   function barraDaMesa() {
     const e = window.GA_FichaMesa ? window.GA_FichaMesa.estado() : null;
     if (!e || !e.configurado) return '';       // site sem Firebase: a ficha é local e pronto
 
     if (!e.ligado) {
-      return `<p class="fi-mesa-linha fi-mesa-linha--off">
-        📡 Esta ficha está só neste navegador.
+      return barraDaGaveta(e) + `<p class="fi-mesa-linha fi-mesa-linha--off">
+        📡 Esta ficha ${e.logado ? 'não está em mesa nenhuma' : 'está só neste navegador'}.
         ${e.usuario
           ? 'Entre na mesa pela aba <strong>🎲 Mesa</strong> para o mestre poder vê-la.'
           : 'Entre com o Google na aba <strong>🎲 Mesa</strong> para o mestre poder vê-la.'}</p>`;
     }
 
     const daMesa = fichasDaMesa();
-    let html = '';
+    let html = barraDaGaveta(e);
     if (e.vejoTodas) {
       html += `
         <div class="fi-barra fi-barra--mesa">
@@ -1493,6 +1533,7 @@
       abrirFicha(btn.dataset.id);
       salvar(); return render();
     }
+    if (acao === 'trazer') return trazerDaGaveta(btn.dataset.id);
     if (!f) return;
 
     if (acao === 'remover') {
@@ -1678,9 +1719,16 @@
   }
 
   let ultimoRecebido = null;
+  let ultimoDaGaveta = null;
   function receberDaMesa(mapa, uid) {
     meuUid = uid || '';
     ultimoRecebido = mapa || {};
+    if (digitando()) return adiarChegada();
+    aplicarChegada();
+  }
+  // A gaveta chega pelo mesmo caminho, e espera a digitação do mesmo jeito.
+  function receberDaGaveta(mapa) {
+    ultimoDaGaveta = mapa || {};
     if (digitando()) return adiarChegada();
     aplicarChegada();
   }
@@ -1720,9 +1768,59 @@
       if (igual(dados.fichas[i], vinda)) return;   // é o eco da minha própria escrita
       dados.fichas[i] = vinda;                     // já veio normalizada acima
       mudou = true;
+      // o mestre baixou o PV pela mesa: a gaveta da conta tem de saber,
+      // senão o outro aparelho continua com o número velho
+      if (window.GA_FichaMesa && window.GA_FichaMesa.guardarNaConta) {
+        window.GA_FichaMesa.guardarNaConta(vinda);
+      }
     });
+
+    // ── E O QUE VEM DA GAVETA DA CONTA ─────────────────────────────
+    const antesGaveta = canon(gaveta);
+    const daConta = {};
+    Object.keys(ultimoDaGaveta || {}).forEach(id => {
+      const f = ultimoDaGaveta[id];
+      if (!f || typeof f !== 'object') return;
+      const n = normalizar(f);
+      n.id = id;
+      n.autor = f.autor || '';
+      daConta[id] = n;
+    });
+    gaveta = daConta;
+
+    //  A ficha que TAMBÉM está na mesa segue a MESA, não a gaveta: é a
+    //  mesa que carrega o PV que o mestre acabou de baixar, e a gaveta
+    //  pode estar um segundo atrás. Fora da mesa, a gaveta é quem manda
+    //  — é ela que sincroniza o celular com o computador.
+    Object.keys(gaveta).forEach(id => {
+      if (minhas[id]) return;
+      const i = dados.fichas.findIndex(x => x.id === id);
+      if (i < 0) return;                           // só na gaveta: espera o botão "trazer"
+      if (igual(dados.fichas[i], gaveta[id])) return;
+      dados.fichas[i] = gaveta[id];
+      mudou = true;
+    });
+
     if (mudou) gravar();
-    if (mudou || antes !== canon(remotas)) { render(); avisar(); }
+    if (mudou || antes !== canon(remotas) || antesGaveta !== canon(gaveta)) { render(); avisar(); }
+  }
+
+  // As fichas da conta que ainda não estão neste aparelho.
+  function soNaGaveta() {
+    return Object.keys(gaveta)
+      .filter(id => !dados.fichas.some(f => f.id === id))
+      .map(id => gaveta[id]);
+  }
+
+  // "⬇ Trazer": a ficha da conta vira ficha deste navegador. Daí em
+  // diante ela é local como qualquer outra — e volta a subir a cada
+  // mudança, para a conta e para a mesa.
+  function trazerDaGaveta(id) {
+    const f = gaveta[id];
+    if (!f || dados.fichas.some(x => x.id === id)) return;
+    dados.fichas.push(normalizar(JSON.parse(JSON.stringify(f))));
+    abrirFicha(id);
+    salvar(); render();
   }
 
   function mesaMudou() { render(); }
@@ -2066,6 +2164,7 @@
   // e a Loja) — ver "O QUE A FICHA EMPRESTA", mais acima.
   window.GA_Ficha = {
     receberDaMesa: receberDaMesa,      // o banco mudou
+    receberDaGaveta: receberDaGaveta,  // a conta mudou (as minhas, de qualquer aparelho)
     mesaMudou: mesaMudou,              // login/papel mudou → redesenhar a barra
     minhasFichas: () => dados.fichas.slice(),
     recarregar: () => { carregar(); render(); },
