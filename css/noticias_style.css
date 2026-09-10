@@ -337,3 +337,34 @@
   .nc-camp-rot  { display: none; }
   .nc-camp-sep  { display: none; }
 }
+
+/* ── A GAZETA AO VIVO (📡) ────────────────────────────────────────
+   A linha que diz de onde vem esta gazeta: do arquivo deste navegador
+   ou do banco, ao vivo. Fora da edição é uma frase pequena e só
+   aparece quando há o que dizer; na edição carrega o botão de
+   publicar, o de tirar do ar, e o recado do banco quando ele recusa. */
+.nc-mesa-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.45rem 0.9rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.nc-mesa-linha:empty { display: none; }
+.nc-mesa-linha strong { color: var(--ink); }
+.nc-mesa-linha em { font-style: italic; opacity: 0.85; }
+.nc-mesa-erro {
+  flex: 1 1 100%;
+  color: var(--carmim);
+  font-size: 0.8rem;
+}

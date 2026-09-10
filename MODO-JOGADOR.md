@@ -107,6 +107,13 @@ uma hospedagem para o site (**GitHub Pages**).
              }
            }
          }
+       },
+
+       "campanhas": {
+         ".read": true,
+         "$camp": {
+           ".write": "auth != null && (data.child('dono').val() === auth.uid || !data.child('dono').exists()) && (!newData.exists() || newData.child('dono').val() === auth.uid)"
+         }
        }
      }
    }
@@ -126,7 +133,17 @@ uma hospedagem para o site (**GitHub Pages**).
    | `nome`, `campanhaId`, `entradaLivre`, `dono` | qualquer um | o mestre da mesa |
    | `membros` | membros (e cada um sempre lê o próprio) | o mestre; e o próprio, entrando numa mesa de porta aberta |
    | `pedidos` | o mestre (e cada um o seu) | quem pede, e o mestre |
-   | `campanhas` | **qualquer um** (é a memória de Arton) | quem criou aquela campanha |
+   | `campanhas` | **qualquer um**, sem login (é a memória de Arton) | quem criou aquela campanha |
+
+   > 📰 **`campanhas` é a gazeta ao vivo** (desde 10/09/2026). Cada campanha
+   > guarda as próprias notícias em `campanhas/<id>/noticias`, e elas são as
+   > únicas coisas do banco que **qualquer pessoa lê sem entrar em mesa
+   > nenhuma** — foi o pedido: *"qualquer pessoa que entrar nos Grifos Alados vê
+   > as notícias de todas as campanhas, porque ficam nas memórias"*. Escrever é
+   > só do **dono**, que é quem publicou; campanha sem dono é órfã e quem chegar
+   > assume, igual às mesas. **Enquanto este bloco não for publicado, a gazeta
+   > continua funcionando** — ela cai no `js/noticias-data.js` do repositório, e
+   > só o mestre, editando, vê o aviso de que o banco recusou.
 
    > 📖 **`fichas` é o único nó da mesa que não é público.** A loja, a gazeta e
    > as bases são de leitura aberta a quem tem o link — a ficha de alguém não

@@ -23,6 +23,17 @@
   let campAtiva   = 0;              // índice da campanha aberta
   let edicaoAtiva = false;
 
+  // ── O QUE VEM DO BANCO ───────────────────────────────────────────
+  //  A gazeta tem DOIS chãos, e a ordem importa: primeiro o arquivo
+  //  `js/noticias-data.js` (que funciona offline, do disco, sem conta
+  //  nenhuma), depois o banco POR CIMA — cada campanha publicada
+  //  substitui a do arquivo, e as que só existem no banco entram no
+  //  fim. Quem cuida do Firebase é o `js/noticias-mesa.js`; aqui só se
+  //  desenha e se manda escrever.
+  let remotas = {};                 // id → { nome, dono, noticias, autor }
+  let meuUid  = '';
+  let doArquivo = { campanhas: [] };   // o que veio do noticias-data.js, intacto
+
   // ── ID ÚNICO ─────────────────────────────────────────────────────
   function uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -61,12 +72,50 @@
   //  arquivo js/noticias-data.js. Como é um <script>, funciona mesmo
   //  com o index.html aberto offline (sem o server.py).
   function carregarNoticias() {
-    dados = normalizar(window.NOTICIAS_DADOS);
+    doArquivo = normalizar(window.NOTICIAS_DADOS);
+    dados = juntarComAMesa();
     if (!dados.campanhas.length) {
       console.warn('[noticias] noticias-data.js não encontrado ou sem campanhas.');
     }
     campAtiva = indiceCampanhaSalva();
     renderizar();
+  }
+
+  // O arquivo é a base; o banco entra por cima. Uma campanha publicada
+  // manda no nome e nas notícias (é a versão viva dela); as que só
+  // existem no banco entram no fim, na ordem em que o banco as devolve.
+  function juntarComAMesa() {
+    // as mesmas referências, não cópias: o que for editado numa campanha
+    // do arquivo cai no arquivo na hora, e não se perde no próximo eco
+    const saida = doArquivo.campanhas.slice();
+    Object.keys(remotas).forEach(id => {
+      const r = remotas[id] || {};
+      const viva = {
+        id: id,
+        nome: r.nome || id,
+        anos: paraLista(r.noticias).map(a => ({
+          ano: (a && a.ano) || '',
+          noticias: paraLista(a && a.noticias),
+        })),
+        daMesa: true,
+        dono: r.dono || '',
+        autor: r.autor || '',
+      };
+      const i = saida.findIndex(c => c.id === id);
+      if (i >= 0) saida[i] = viva; else saida.push(viva);
+    });
+    return { campanhas: saida };
+  }
+
+  // O Realtime Database devolve array como objeto de chaves numéricas
+  // quando falta um índice — e a gazeta veio de um arquivo escrito à
+  // mão, então falta. Isto endireita os dois casos.
+  function paraLista(v) {
+    if (Array.isArray(v)) return v.filter(x => x != null);
+    if (v && typeof v === 'object') {
+      return Object.keys(v).sort((a, b) => Number(a) - Number(b)).map(k => v[k]).filter(x => x != null);
+    }
+    return [];
   }
 
   // Aceita o formato novo ({campanhas:[…]}) e também o antigo
@@ -102,15 +151,55 @@
   }
 
   // ── SALVAR ───────────────────────────────────────────────────────
-  //  Salvar grava arquivos no computador, o que um navegador sozinho
-  //  não pode fazer — por isso o server.py precisa estar rodando. Sem
-  //  ele, o botão "⬇ Baixar arquivo" resolve pela pasta de downloads.
+  //  DOIS CAMINHOS, e o primeiro que servir é o que vale:
+  //
+  //   1. a GAZETA AO VIVO — se esta campanha é minha (ou ainda não tem
+  //      dono) e eu entrei com o Google, ela sobe para `campanhas/<id>`
+  //      e a manchete aparece na hora para quem estiver com o site
+  //      aberto. É a etapa 5 do plano da mesa;
+  //   2. o ARQUIVO — o caminho de sempre, para quem não tem banco: o
+  //      server.py grava, e sem ele fica o "⬇ Baixar arquivo".
+  //
+  //  O caminho 2 não foi aposentado de propósito: é ele que mantém a
+  //  gazeta de pé offline, do disco e sem conta nenhuma.
+  let esperandoPublicar = false;
+
+  function mesaNoticias() { return window.GA_NoticiasMesa || null; }
+  function podePublicar(id) {
+    const m = mesaNoticias();
+    return !!(m && m.possoEscrever(id));
+  }
+
+  //  O ARQUIVO GUARDA TUDO O QUE É MEU. Trocar de nome, criar, remover e
+  //  reordenar campanha mexe na LISTA, e a lista do banco é um mapa sem
+  //  ordem — se o arquivo não acompanhasse, o próximo eco de qualquer
+  //  campanha desfaria essas mudanças na tela. A gazeta de outra pessoa
+  //  fica de fora: ela é dela, e o meu arquivo não a carrega.
+  function guardarNoArquivo() {
+    doArquivo = {
+      campanhas: dados.campanhas
+        // fica de fora só o que eu SEI ser de outra pessoa. Deslogado
+        // não se sabe de ninguém — e perder a própria gazeta do backup
+        // por causa disso seria bem pior do que carregar uma a mais.
+        .filter(c => !(c.dono && meuUid && c.dono !== meuUid))
+        .map(c => ({ id: c.id, nome: c.nome, anos: c.anos })),
+    };
+  }
+
   async function salvar() {
+    guardarNoArquivo();
+    const c = campanhaAtual();
+    if (c && podePublicar(c.id)) {
+      pendentes[c.id] = true;
+      esperandoPublicar = true;
+      mesaNoticias().publicar({ id: c.id, nome: c.nome, anos: c.anos });
+      return;
+    }
     try {
       const r = await fetch('/api/noticias', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(dados),
+        body:    JSON.stringify(paraArquivo()),
       });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       mostrarToast('✔ Salvo');
@@ -123,12 +212,20 @@
   // ── BAIXAR ───────────────────────────────────────────────────────
   //  Gera o js/noticias-data.js igualzinho ao que o server.py escreve.
   //  É só trocar o arquivo na pasta js/ e dar commit para publicar.
+  //  O arquivo guarda só o que é dele: id, nome e anos. O que a gazeta
+  //  ao vivo carimba por cima (dono, autor, "veio da mesa") fica de
+  //  fora — senão o `noticias-data.js` do repositório encheria de uid.
+  function paraArquivo() {
+    guardarNoArquivo();
+    return { campanhas: doArquivo.campanhas };
+  }
+
   function baixarArquivo() {
     const conteudo =
       '// Noticias do Grifos Alados.\n' +
       '// Gerado ao salvar (server.py) ou pelo botao "Baixar arquivo" do site.\n' +
       '// Ele permite que as noticias sejam lidas mesmo offline (sem servidor).\n' +
-      'window.NOTICIAS_DADOS = ' + JSON.stringify(dados, null, 2) + ';\n';
+      'window.NOTICIAS_DADOS = ' + JSON.stringify(paraArquivo(), null, 2) + ';\n';
 
     const url = URL.createObjectURL(
       new Blob([conteudo], { type: 'text/javascript;charset=utf-8' })
@@ -159,6 +256,91 @@
   }
 
   // ══════════════════════════════════════════════════════════════════
+  //  O QUE CHEGA DO BANCO
+  //  Chamado pelo noticias-mesa.js a cada mudança em `campanhas`.
+  // ══════════════════════════════════════════════════════════════════
+  const pendentes = {};        // id → tem edição minha ainda subindo
+
+  //  Comparação estável: o Firebase devolve as chaves em outra ordem, e
+  //  um JSON.stringify cru acharia diferença onde não há — o que faria
+  //  a gazeta piscar a cada eco da própria escrita.
+  function canon(v) {
+    if (v === null || typeof v !== 'object') return JSON.stringify(v === undefined ? null : v);
+    if (Array.isArray(v)) return '[' + v.map(canon).join(',') + ']';
+    return '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}';
+  }
+  function miolo(c) { return canon({ nome: c.nome || '', anos: c.anos || [] }); }
+
+  function receberDaMesa(mapa, uid) {
+    remotas = mapa || {};
+    meuUid = uid || '';
+
+    // O que eu acabei de escrever ainda pode não ter voltado do banco.
+    // Enquanto não voltar igual, a MINHA versão é a que fica na tela —
+    // senão o eco de outra campanha apagaria a manchete meio digitada.
+    const minhas = {};
+    Object.keys(pendentes).forEach(id => {
+      const local = dados.campanhas.find(c => c.id === id);
+      if (!local) { delete pendentes[id]; return; }
+      const r = remotas[id];
+      const voltou = r && miolo({
+        nome: r.nome,
+        anos: paraLista(r.noticias).map(a => ({ ano: (a && a.ano) || '', noticias: paraLista(a && a.noticias) })),
+      }) === miolo(local);
+      if (voltou) delete pendentes[id];
+      else minhas[id] = local;
+    });
+
+    const antes = canon(dados.campanhas.map(c => ({ id: c.id, m: miolo(c) })));
+    const idAberta = (campanhaAtual() || {}).id;
+    dados = juntarComAMesa();
+    Object.keys(minhas).forEach(id => {
+      const i = dados.campanhas.findIndex(c => c.id === id);
+      if (i >= 0) dados.campanhas[i] = Object.assign(dados.campanhas[i], minhas[id]);
+    });
+
+    // a campanha aberta continua aberta, mesmo que a ordem tenha mudado
+    const novo = dados.campanhas.findIndex(c => c.id === idAberta);
+    if (novo >= 0) campAtiva = novo;
+    else if (campAtiva >= dados.campanhas.length) campAtiva = Math.max(0, dados.campanhas.length - 1);
+
+    if (canon(dados.campanhas.map(c => ({ id: c.id, m: miolo(c) }))) !== antes) renderizar();
+    else pintarLinhaMesa();
+    conferirPublicacao();
+  }
+
+  //  O aviso de "publicado" chega por duas portas e não se sabe qual
+  //  vem primeiro: a promessa da escrita (mesaMudou) e o eco do banco
+  //  (receberDaMesa, que é quem limpa a fila). Então as duas passam
+  //  por aqui, e quem chegar depois é que avisa.
+  function conferirPublicacao() {
+    if (!esperandoPublicar) return;
+    const e = mesaNoticias() ? mesaNoticias().estado() : null;
+    if (!e) return;
+    if (e.erro) {
+      esperandoPublicar = false;
+      mostrarToast('⚠ ' + (/permission/i.test(e.erro)
+        ? 'o banco recusou: esta gazeta não é sua' : e.erro));
+      return;
+    }
+    if (!Object.keys(pendentes).length) {
+      esperandoPublicar = false;
+      mostrarToast('📡 Publicado na gazeta ao vivo');
+    }
+  }
+
+  // Login, erro do banco ou publicação concluída: só a linha 📡 muda.
+  function mesaMudou() {
+    conferirPublicacao();
+    pintarLinhaMesa();
+  }
+
+  window.GA_Noticias = {
+    receberDaMesa: receberDaMesa,
+    mesaMudou: mesaMudou,
+  };
+
+  // ══════════════════════════════════════════════════════════════════
   //  RENDERIZAÇÃO
   // ══════════════════════════════════════════════════════════════════
   function renderizar() {
@@ -176,6 +358,8 @@
       wrapper.appendChild(renderizarAbasCampanha());
     }
     if (edicaoAtiva) wrapper.appendChild(renderizarCtrlCampanha());
+    const linha = linhaMesa();
+    if (linha) wrapper.appendChild(linha);
 
     const camp = campanhaAtual();
 
@@ -206,6 +390,100 @@
     p.className   = 'nc-vazio';
     p.textContent = texto;
     return p;
+  }
+
+  // ── A LINHA DA GAZETA AO VIVO (📡) ───────────────────────────────
+  //  Fora da edição ela é uma frase pequena, e só quando há o que
+  //  dizer ("esta gazeta vem da mesa, ao vivo"). Na edição ela conta a
+  //  história inteira: de quem é a campanha, se dá para publicar, e o
+  //  que o banco respondeu.
+  function linhaMesa() {
+    const e = mesaNoticias() ? mesaNoticias().estado() : null;
+    if (!e || !e.configurado) return null;          // site sem Firebase: nada a dizer
+    const c = campanhaAtual();
+    if (!c) return null;
+    const p = document.createElement('p');
+    p.className = 'nc-mesa-linha';
+    p.dataset.ncMesa = '1';
+    p.innerHTML = textoDaLinha(e, c);
+    return p;
+  }
+
+  function pintarLinhaMesa() {
+    const alvo = document.querySelector('#noticias [data-nc-mesa]');
+    const e = mesaNoticias() ? mesaNoticias().estado() : null;
+    const c = campanhaAtual();
+    if (!alvo || !e || !c) return renderizar();     // a linha ainda não existe: desenha tudo
+    alvo.innerHTML = textoDaLinha(e, c);
+  }
+
+  //  "permission_denied" não diz nada a quem escreve notícia. Na quase
+  //  totalidade das vezes é a mesma coisa: as regras novas ainda não
+  //  foram coladas no console do Firebase.
+  function recadoDoBanco(err) {
+    if (/permission/i.test(err)) {
+      return 'o banco recusou. Se a gazeta ao vivo é nova aqui, falta publicar as regras ' +
+             'do <strong>MODO-JOGADOR.md</strong> no console do Firebase — o nó <code>campanhas</code>.';
+    }
+    return esc(err);
+  }
+
+  function textoDaLinha(e, c) {
+    const doBanco = !!remotas[c.id];
+    const dono    = doBanco ? (remotas[c.id].dono || '') : '';
+    const autor   = doBanco ? (remotas[c.id].autor || '') : '';
+    const minha   = doBanco && dono && dono === e.meuUid;
+    const orfa    = doBanco && !dono;
+    const erro    = e.erro ? '<span class="nc-mesa-erro">⚠ ' + recadoDoBanco(e.erro) + '</span>' : '';
+
+    if (!edicaoAtiva) {
+      if (!doBanco) return '';                      // gazeta do arquivo: o leitor não precisa saber
+      return '📡 <strong>Gazeta ao vivo</strong> — o que o mestre escrever aparece aqui sozinho' +
+        (autor && !minha ? ' · escrita por <strong>' + esc(autor) + '</strong>' : '');
+    }
+
+    if (!e.usuario) {
+      return '📡 Esta gazeta está <strong>só neste navegador</strong>. ' +
+        'Entre com o Google na aba <strong>🎲 Mesa</strong> para publicá-la — aí ela aparece ' +
+        'para quem abrir o site, sem passar por commit.' + erro;
+    }
+    if (doBanco && !minha && !orfa) {
+      return '📡 A gazeta de <strong>' + esc(c.nome) + '</strong> é de <strong>' +
+        esc(autor || 'outra pessoa') + '</strong>. O que você mudar aqui fica <strong>só neste ' +
+        'navegador</strong> — o banco não vai aceitar.' + erro;
+    }
+    if (minha) {
+      return '📡 <strong>No ar</strong>, e é sua: cada mudança sobe sozinha e aparece para quem ' +
+        'estiver com o site aberto. ' +
+        '<button type="button" class="nc-btn nc-btn-sm nc-btn-danger" data-acao="camp-tirar-do-ar">' +
+        '✕ Tirar do ar</button>' + erro;
+    }
+    return '📡 Esta gazeta ainda <strong>não está no ar</strong>. ' +
+      '<button type="button" class="nc-btn nc-btn-sm nc-btn-add" data-acao="camp-publicar">' +
+      '📡 Publicar esta gazeta</button>' +
+      (orfa ? ' <em>(ela existe no banco sem dono — publicar é assumi-la)</em>' : '') + erro;
+  }
+
+  // Publicar é a primeira subida: daí em diante toda edição sobe sozinha.
+  function publicarCampanha() {
+    const c = campanhaAtual();
+    if (!c || !podePublicar(c.id)) return;
+    pendentes[c.id] = true;
+    esperandoPublicar = true;
+    mesaNoticias().publicar({ id: c.id, nome: c.nome, anos: c.anos });
+    mostrarToast('📡 Subindo…');
+  }
+
+  // Tirar do ar não apaga nada daqui: a campanha continua na tela e no
+  // arquivo, e volta a ser só deste navegador.
+  function tirarDoAr() {
+    const c = campanhaAtual();
+    if (!c || !remotas[c.id]) return;
+    if (!confirm('Tirar "' + c.nome + '" da gazeta ao vivo?\n\n' +
+                 'Ela some para quem abre o site. O que está escrito continua aqui, ' +
+                 'e você pode publicar de novo depois.')) return;
+    delete pendentes[c.id];
+    mesaNoticias().apagar(c.id).then(() => mostrarToast('✔ Fora do ar'));
   }
 
   // ── ABAS DE CAMPANHA (uma gazeta por RPG) ────────────────────────
@@ -340,6 +618,8 @@
       case 'camp-nova':     abrirModalCampanha('add');    break;
       case 'camp-renomear': abrirModalCampanha('edit');   break;
       case 'camp-del':      removerCampanha();            break;
+      case 'camp-publicar':    publicarCampanha();        break;
+      case 'camp-tirar-do-ar': tirarDoAr();               break;
       case 'baixar':        baixarArquivo();              break;
       case 'ano-up':        moverAno(ai, -1);             break;
       case 'ano-down':      moverAno(ai,  1);             break;
@@ -378,11 +658,15 @@
     const c = campanhaAtual();
     if (!c) return;
     const qtd = (c.anos || []).reduce((s, a) => s + (a.noticias || []).length, 0);
-    const msg = qtd > 0
+    const noAr = !!remotas[c.id] && podePublicar(c.id);
+    const msg = (qtd > 0
       ? `A campanha "${c.nome}" tem ${qtd} notícia(s). Deseja excluir mesmo assim?`
-      : `Remover a campanha "${c.nome}"?`;
+      : `Remover a campanha "${c.nome}"?`) +
+      (noAr ? '\n\nEla está NO AR: sai também da gazeta ao vivo, para todo mundo.' : '');
     if (!confirm(msg)) return;
 
+    if (noAr) mesaNoticias().apagar(c.id);
+    delete pendentes[c.id];
     dados.campanhas.splice(campAtiva, 1);
     if (campAtiva >= dados.campanhas.length) {
       campAtiva = Math.max(0, dados.campanhas.length - 1);
