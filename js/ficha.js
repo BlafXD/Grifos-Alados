@@ -178,6 +178,22 @@
       obs: String((it && it.obs) || ''),
     }));
     if (typeof f.tibares !== 'number') f.tibares = 0;
+
+    // ── O QUE ENTROU PELA LOJA ─────────────────────────────────────
+    //  As últimas compras desta ficha. Ao contrário do histórico de
+    //  rolagens (que é caderninho de navegador), esta lista mora DENTRO
+    //  da ficha: ela sobe para a mesa junto, então o jogador vê o que o
+    //  mestre comprou para ele, e a lista o acompanha de aparelho.
+    if (!Array.isArray(f.compras)) f.compras = [];
+    f.compras = f.compras.slice(0, COMPRAS_MAX).map(c => ({
+      quando: (c && typeof c.quando === 'number') ? c.quando : 0,
+      nome:   String((c && c.nome) || ''),
+      qtd:    Math.max(1, parseInt((c && c.qtd), 10) || 1),
+      preco:  (c && typeof c.preco === 'number')  ? c.preco  : 0,   // o de tabela
+      pago:   (c && typeof c.pago === 'number')   ? c.pago   : 0,   // o que saiu do bolso
+      faltou: (c && typeof c.faltou === 'number') ? c.faltou : 0,   // não coube no T$
+      por:    String((c && c.por) || ''),                           // quem comprou, se não foi o dono
+    }));
     // "Cada mil moedas ocupam 1 espaço" é regra do livro (p. 141), mas é
     // das primeiras que uma mesa dispensa — e a dele dispensa. Então a
     // conta existe, e nasce DESLIGADA: quem quiser o peso da bolsa liga
@@ -274,6 +290,8 @@
   // verdade (com espaços contados e busca na base de magias), e a caixa
   // livre de cada uma passou a morar dentro do cartão novo — o que
   // alguém já tinha escrito continua onde estava.
+  const COMPRAS_MAX = 30;      // o mesmo fôlego do histórico de rolagens
+
   const BLOCOS = [
     { campo: 'racaOrigem',    titulo: '🌿 Habilidades de raça e origem',
       dica: 'O que a raça e a origem lhe deram — copie do livro ou escreva com suas palavras…' },
@@ -602,6 +620,53 @@
       </div>`;
   }
 
+  // ── O RECIBO DA LOJA ─────────────────────────────────────────────
+  //  Logo abaixo do histórico de rolagens: o que entrou na mochila pelo
+  //  🎒 da 🏪 Loja, com o que foi pago. Mora DENTRO da ficha (e não no
+  //  localStorage, como as rolagens), porque quem precisa consultar é o
+  //  dono dela — e quem compra pode ser o mestre, na tela dele.
+  function dataHora(t) {
+    if (!t) return '';
+    try {
+      const d = new Date(t);
+      const dia = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      return dia + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) { return ''; }
+  }
+  function contaDaCompra(c) {
+    if (c.faltou) return '⚠ não pagou — faltou T$ ' + arredonda(c.faltou);
+    if (c.pago)   return 'T$ ' + arredonda(c.pago);
+    if (c.preco)  return 'sem pagar · vale T$ ' + arredonda(c.preco);
+    return 'sem preço de tabela';
+  }
+  function listaCompras(f) {
+    if (!f.compras.length) {
+      return '<p class="fi-hist-vazio">Nada comprado ainda. O botão <strong>🎒 Levar</strong> ' +
+             'de cada item da 🏪 Loja traz o que você comprar para cá.</p>';
+    }
+    return f.compras.map(c => `
+      <li class="fi-hist-item">
+        <span class="fi-hist-hora">${esc(dataHora(c.quando))}</span>
+        <span class="fi-hist-rot">${esc(c.nome)}${c.qtd > 1 ? ' ×' + c.qtd : ''}</span>
+        <span class="fi-hist-det${c.faltou ? ' fi-compra-erro' : ''}">${esc(contaDaCompra(c))}${
+          c.por ? ' <em class="fi-compra-por">· por ' + esc(c.por) + '</em>' : ''}</span>
+      </li>`).join('');
+  }
+  function blocoCompras(f) {
+    const gasto = arredonda(f.compras.reduce((s, c) => s + (c.pago || 0), 0));
+    return `
+      <div class="fi-cartao fi-hist fi-compras">
+        <h2 class="fi-cartao-tit">🧾 O que veio da Loja
+          <span class="fi-cartao-nota">${f.compras.length
+            ? 'as ' + Math.min(COMPRAS_MAX, f.compras.length) + ' últimas' + (gasto ? ' · T$ ' + gasto + ' gastos aqui' : '')
+            : 'as ' + COMPRAS_MAX + ' últimas compras desta ficha'}</span>
+          ${f.compras.length ? `<button type="button" class="fi-mini fi-hist-limpar" data-acao="limpar-compras"
+                  title="Esvaziar este recibo — o que está na mochila continua lá">🗑 Limpar</button>` : ''}
+        </h2>
+        <ul class="fi-hist-lista">${listaCompras(f)}</ul>
+      </div>`;
+  }
+
   // ── O CRÍTICO, NA REGRA DO LIVRO ─────────────────────────────────
   //  p. 142: "multiplique os DADOS de dano por 2. Bônus numéricos e
   //  dados extras não são multiplicados. Por exemplo, um dano de 1d8+3
@@ -681,7 +746,8 @@
     }
 
     html += bloqueIdentidade(f) + blocoNumeros(f) + blocoPericias(f) + blocoAtaques(f) +
-            blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico();
+            blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
+            blocoCompras(f);
     const donoAberta = donoDe(f.id);
     html += `
       <div class="fi-rodape">
@@ -1559,6 +1625,12 @@
       pintarHistorico();
       return;
     }
+    // limpar o recibo não devolve nada: o que está na mochila fica lá
+    if (acao === 'limpar-compras') {
+      f.compras = [];
+      sujar(f.id, 'compras');
+      salvar(); return render();
+    }
   }
 
   // ═══ O QUE CHEGA DA MESA ══════════════════════════════════════════
@@ -1870,6 +1942,16 @@
   //
   //  O site não policia: se o dinheiro não cobre, o item vai do mesmo
   //  jeito e o T$ fica como estava — quem resolve é a mesa, não a tela.
+  //  Quem clicou no 🎒, quando não é o dono da ficha: é o mestre
+  //  comprando para um jogador, e o recibo tem de dizer isso — senão o
+  //  jogador vê uma espada que não lembra de ter comprado.
+  function quemComprou(f) {
+    if (!donoDe(f.id)) return '';                  // a ficha é minha: não há o que explicar
+    const e = window.GA_FichaMesa ? window.GA_FichaMesa.estado() : null;
+    const u = e && e.usuario;
+    return (u && (u.displayName || u.email)) || 'o mestre';
+  }
+
   function receberItem(item) {
     const f = fichaAberta();
     if (!f) return { ok: false, motivo: 'sem-ficha' };
@@ -1902,6 +1984,19 @@
         faltou = custo;
       }
     }
+
+    // o recibo, no fim da ficha. Vai para dentro da ficha (e sobe para a
+    // mesa) de propósito: quem tem de consultar o que comprou é o dono
+    // dela, e o mestre compra na tela dele.
+    f.compras.unshift({
+      quando: Date.now(), nome: nome, qtd: qtd,
+      preco: preco == null ? 0 : arredonda(preco * qtd),
+      pago: pagou, faltou: faltou,
+      por: quemComprou(f),
+    });
+    f.compras = f.compras.slice(0, COMPRAS_MAX);
+    sujar(f.id, 'compras');
+
     salvar(); render();
     const dono = donoDe(f.id);
     return {

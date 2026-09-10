@@ -1086,10 +1086,15 @@
   //  da p. 141 (e desconta o T$) é o ficha.js. O caminho de volta não
   //  existe: quem vende de novo tira do inventário lá.
   //
-  //  Clique PAGA; Shift+clique leva sem pagar — a mesma convenção do
-  //  botão de estoque, que já usa o Shift para o caminho contrário. O
-  //  estoque da prateleira NÃO se mexe sozinho: dar baixa continua sendo
-  //  o 📦 do mestre, que é quem sabe se aquilo saiu mesmo da loja.
+  //  SÃO DOIS BOTÕES, e é de propósito: "🎒 Levar — T$ 12" desconta o
+  //  dinheiro, e o "sem pagar" ao lado põe na mochila sem mexer no T$
+  //  (o que o mestre deu, o que já era seu, o que a mesa achou). Nasceu
+  //  escondido no Shift+clique, e Shift **não existe em celular** — a
+  //  metade da mesa que joga no telefone ficaria sem a metade da função.
+  //  O Shift continua valendo como atalho de quem está no teclado.
+  //
+  //  O estoque da prateleira NÃO se mexe sozinho: dar baixa continua
+  //  sendo o 📦 do mestre, que é quem sabe se aquilo saiu mesmo da loja.
   //
   //  `data-jog-livre` é o que deixa o botão vivo no jogadores.html: lá
   //  a Loja inteira é só-leitura, e este é o único controle dela que
@@ -1118,25 +1123,33 @@
   function botaoLevar(o) {
     const esc = window.GA_esc;
     const p = (typeof o.preco === 'number' && isFinite(o.preco) && o.preco > 0) ? o.preco : null;
+    const rotulo = p != null ? `🎒 Levar — T$ ${formatarPreco(p)}` : '🎒 Levar para a ficha';
     const dica = p != null
-      ? `Levar para o inventário da ficha aberta — clique paga T$ ${formatarPreco(p)}, Shift+clique leva sem pagar`
-      : 'Levar para o inventário da ficha aberta (este não tem preço em tabela: acerte o T$ à mão)';
+      ? `Põe na mochila da ficha aberta e desconta T$ ${formatarPreco(p)} do dinheiro dela`
+      : 'Põe na mochila da ficha aberta (este item não tem preço em tabela: acerte o T$ à mão)';
     return `
-      <div class="item-levar-linha">
-        <button type="button" class="item-levar" data-jog-livre
-                data-levar-nome="${esc(o.nome)}"
-                data-levar-esp="${o.espacos}"
-                data-levar-preco="${p == null ? '' : p}"
-                data-levar-obs="${esc(o.obs || '')}"
-                title="${esc(dica)}">🎒 Levar para a ficha</button>
+      <div class="item-levar-linha"
+           data-levar-nome="${esc(o.nome)}"
+           data-levar-esp="${o.espacos}"
+           data-levar-preco="${p == null ? '' : p}"
+           data-levar-obs="${esc(o.obs || '')}">
+        <button type="button" class="item-levar" data-jog-livre data-levar-acao="pagar"
+                title="${esc(dica)}">${rotulo}</button>
+        ${p != null ? `<button type="button" class="item-levar item-levar--gratis" data-jog-livre
+                data-levar-acao="sem"
+                title="Põe na mochila SEM mexer no dinheiro — o que o mestre deu, o que a mesa achou, o que já era seu (no teclado: Shift+clique no botão ao lado)"
+          >sem pagar</button>` : ''}
         <span class="item-levar-res" hidden></span>
       </div>`;
   }
 
   function aoClicarLevar(e) {
-    const btn = e.target.closest('[data-levar-nome]');
+    const btn = e.target.closest('[data-levar-acao]');
     if (!btn) return;
-    const res = btn.parentElement && btn.parentElement.querySelector('.item-levar-res');
+    const caixa = btn.closest('[data-levar-nome]');
+    if (!caixa) return;
+    const semPagar = btn.dataset.levarAcao === 'sem' || e.shiftKey;
+    const res = caixa.querySelector('.item-levar-res');
     function dizer(txt, ruim) {
       if (!res) return;
       res.hidden = false;
@@ -1146,13 +1159,13 @@
     if (!window.GA_Ficha || !window.GA_Ficha.receberItem) {
       return dizer('A ficha de personagem não está nesta página.', true);
     }
-    const preco = parseFloat(btn.dataset.levarPreco);
+    const preco = parseFloat(caixa.dataset.levarPreco);
     const r = window.GA_Ficha.receberItem({
-      nome:    btn.dataset.levarNome,
-      espacos: parseFloat(btn.dataset.levarEsp),
-      obs:     btn.dataset.levarObs || '',
+      nome:    caixa.dataset.levarNome,
+      espacos: parseFloat(caixa.dataset.levarEsp),
+      obs:     caixa.dataset.levarObs || '',
       preco:   isNaN(preco) ? null : preco,
-      pagar:   !e.shiftKey,
+      pagar:   !semPagar,
     });
     if (!r || !r.ok) {
       return dizer(r && r.motivo === 'sem-nome'
@@ -1165,8 +1178,8 @@
     } else if (r.faltou) {
       partes.push(`⚠ T$ ${formatarPreco(r.faltou)} não cabem nos T$ ${formatarPreco(r.tibares)} de ` +
                   `${r.personagem} — levou assim mesmo, e o dinheiro ficou como estava`);
-    } else if (e.shiftKey) {
-      partes.push('sem pagar');
+    } else if (semPagar) {
+      partes.push('sem pagar — o T$ ficou como estava');
     } else if (isNaN(preco)) {
       partes.push('sem preço em tabela — acerte o T$ à mão');
     }
