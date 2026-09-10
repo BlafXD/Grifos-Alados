@@ -110,6 +110,54 @@
     salvarGrupo(grupo().filter(n => chave(n) !== chave(nome)));
   }
 
+  // ── A FICHA DE QUEM ESTÁ NA LISTA ────────────────────────────────
+  //  O PV que aparece ao lado do nome sai da ficha de personagem, e sai
+  //  pela porta que o ficha.js abriu (`GA_Ficha.visiveis`). Quem vê o
+  //  quê continua sendo decisão do BANCO, não desta tela: o jogador só
+  //  enxerga as fichas dele, o mestre e o auxiliar enxergam as da mesa.
+  //  Ou seja — o jogador vê o próprio PV na lista, e o do vizinho não
+  //  chega nem aqui. Nada de criatura entra por este caminho.
+  function fichasVisiveis() {
+    try {
+      return (window.GA_Ficha && window.GA_Ficha.visiveis) ? window.GA_Ficha.visiveis() : [];
+    } catch (e) { return []; }
+  }
+  function maisNova(lista) {
+    return lista.slice().sort((a, b) => (b.atualizadoEm || 0) - (a.atualizadoEm || 0))[0];
+  }
+  //  Três maneiras de casar, da mais firme para a mais frouxa: o id
+  //  guardado na linha, o dono (o uid de quem está na mesa) e o nome.
+  //  O nome vale pelos DOIS lados da ficha — o do personagem e o de
+  //  quem joga —, porque o mestre tanto digita "Zézinho" quanto
+  //  "Cleber" no campo de quem faltou.
+  function fichaDaLinha(l, fichas) {
+    if (!l || l.tipo !== 'jogador') return null;
+    const lista = fichas || fichasVisiveis();
+    if (!lista.length) return null;
+    if (l.fichaId) {
+      const f = lista.find(x => x.id === l.fichaId);
+      if (f) return f;
+    }
+    const doNome = lista.filter(f => chave(f.nome) && chave(f.nome) === chave(l.nome));
+    if (l.uid) {
+      const daPessoa = lista.filter(f => f.dono === l.uid);
+      const casado = doNome.find(f => f.dono === l.uid);
+      if (casado) return casado;
+      if (daPessoa.length) return maisNova(daPessoa);
+    }
+    if (doNome.length) return maisNova(doNome);
+    const doJogador = lista.filter(f => chave(f.jogador) && chave(f.jogador) === chave(l.nome));
+    if (doJogador.length) return maisNova(doJogador);
+    return null;
+  }
+  //  A ficha de um membro da mesa, na hora de montar a lista: com uma
+  //  só, é ela; com várias, a mexida mais recentemente (e o nome do
+  //  personagem aparece na nuvem, para o engano não ser mudo).
+  function fichaDoMembro(uid, fichas) {
+    const dele = (fichas || fichasVisiveis()).filter(f => f.dono === uid);
+    return dele.length ? maisNova(dele) : null;
+  }
+
   // ── ASSINATURAS ──────────────────────────────────────────────────
   function desligarRefs() {
     refs.forEach(r => { try { r.ref.off('value', r.cb); } catch (e) {} });
@@ -204,21 +252,34 @@
 
     // os jogadores entram sempre, mesmo sem valor: a lista tem de mostrar
     // o grupo inteiro, e o que falta é o número
+    const fichas = fichasVisiveis();
     const vistos = {};
-    function jogador(nome) {
+    function jogador(nome, uid, ficha) {
       const k = chave(nome);
       if (!k || vistos[k]) return;
       vistos[k] = 1;
-      novas.push({ nome: String(nome).trim(), tipo: 'jogador', valor: null, mod: 0 });
+      novas.push({
+        nome: String(nome).trim(), tipo: 'jogador', valor: null,
+        // o modificador de Iniciativa em T20 É a Destreza, e é ele que
+        // desempata quem rolou o mesmo número
+        mod: ficha ? (ficha.des || 0) : 0,
+        uid: uid || '', fichaId: ficha ? ficha.id : '',
+      });
     }
     if (naMesa()) {
       Object.keys(mesa.membros || {}).forEach(uid => {
         const m = mesa.membros[uid];
         if (!m || m.papel === 'espectador') return;
-        jogador(m.nome || 'jogador');
+        // Quando dá para saber qual é a ficha, a linha nasce com o nome
+        // do PERSONAGEM e amarrada a ela — é o que traz o PV para o lado
+        // do nome, e o que tira da lista de combate o nome da conta.
+        const f = fichaDoMembro(uid, fichas);
+        jogador((f && f.nome) || m.nome || 'jogador', uid, f);
       });
     }
-    grupo().forEach(jogador);
+    // um nome por vez: o forEach entrega o índice no segundo argumento,
+    // e ele viraria o `uid` da linha
+    grupo().forEach(n => jogador(n, '', fichaDaLinha({ tipo: 'jogador', nome: n }, fichas)));
 
     if (!novas.length) {
       recado = cena
@@ -248,7 +309,13 @@
     const secreto = {};
     ordenada.forEach((l, i) => {
       const id = l.id || ('l' + Date.now().toString(36) + i.toString(36));
-      publico.linhas[id] = { nome: String(l.nome || ''), tipo: l.tipo === 'jogador' ? 'jogador' : 'criatura', ordem: i };
+      const linha = { nome: String(l.nome || ''), tipo: l.tipo === 'jogador' ? 'jogador' : 'criatura', ordem: i };
+      // De quem é a linha e qual ficha ela puxa. É público, como o resto
+      // da lista — e não abre nada: quem lê a FICHA continua sendo só o
+      // dono dela e o mestre, pela regra do banco.
+      if (l.uid) linha.uid = String(l.uid);
+      if (l.fichaId) linha.fichaId = String(l.fichaId);
+      publico.linhas[id] = linha;
       secreto[id] = { valor: (l.valor == null ? null : l.valor), mod: l.mod || 0 };
     });
     const ids = Object.keys(publico.linhas);
@@ -270,6 +337,7 @@
   function listaAtual() {
     return emOrdem().map(l => ({
       id: l.id, nome: l.nome, tipo: l.tipo,
+      uid: l.uid || '', fichaId: l.fichaId || '',
       valor: (valores[l.id] && valores[l.id].valor != null) ? valores[l.id].valor : null,
       mod: (valores[l.id] && valores[l.id].mod) || 0,
     }));
@@ -401,6 +469,12 @@
       if (quantas() && !confirm('Montar de novo apaga a ordem deste combate e rola tudo outra vez. Continuar?')) return;
       return montar();
     }
+    // o PV: abre a ficha daquela pessoa na aba do site. Vale para o
+    // jogador também — a ficha dele é dele.
+    if (acao === 'ficha') {
+      if (window.GA_Ficha && window.GA_Ficha.abrirNaTela) window.GA_Ficha.abrirNaTela(btn.dataset.ficha);
+      return;
+    }
     if (acao === 'passar')  return passarTurno();
     if (acao === 'limpar')  return limpar();
     if (acao === 'sobe')    return mover(id, -1);
@@ -415,7 +489,44 @@
     if (campo) mudarValor(campo.dataset.iniValor, campo.value);
   }
 
-  function linhaHtml(l, i) {
+  // ── O PV DA FICHA, AO LADO DO NOME ───────────────────────────────
+  //  Cabe num painel de 19rem porque só o essencial é grande: o número
+  //  forte é o que a pessoa TEM agora — o atual mais o temporário, que
+  //  é o primeiro a ser gasto (p. 105) —, e o pequeno é o máximo. A cor
+  //  conta de longe como vai a vida; a nuvem conta por escrito.
+  //  Clicar abre a ficha: é lá que o dano se aplica, com a regra dos
+  //  temporários no meio. Daqui não se mexe em PV de ninguém.
+  function nomeDoDono(uid) {
+    const m = mesa && mesa.membros && mesa.membros[uid];
+    return (m && m.nome) || '';
+  }
+  function pvHtml(l, fichas) {
+    const f = fichaDaLinha(l, fichas);
+    if (!f) return '';
+    const temp  = f.pv.temp || 0;
+    const max   = f.pv.max || 0;
+    // O que ela TEM para gastar é o atual mais o temporário — e é esse
+    // número que manda no tamanho e na cor. Separar os dois faria a cor
+    // dizer "caído" ao lado de um número vivo (PV atual negativo com
+    // temporário em pé, que se digita direto no campo).
+    const total = f.pv.atual + temp;
+    const parte = max > 0 ? total / max : 1;
+    const cor = total <= 0   ? ' ga-ini-pv--caido'
+              : parte <= 0.25 ? ' ga-ini-pv--mal'
+              : parte <= 0.5  ? ' ga-ini-pv--meio' : '';
+    const dono = nomeDoDono(f.dono);
+    const titulo = 'PV de ' + (f.nome || 'sem nome') + (dono ? ' (ficha de ' + dono + ')' : '') +
+      ': ' + f.pv.atual + ' de ' + max +
+      (temp ? ' · ' + temp + ' temporário' + (temp > 1 ? 's' : '') + ', gastos primeiro' : '') +
+      (total <= 0 ? ' · caído' : '') +
+      ' · clique para abrir a ficha';
+    return '<button type="button" class="ga-ini-pv' + cor + (temp ? ' ga-ini-pv--temp' : '') + '"' +
+      ' data-ini="ficha" data-ficha="' + esc(f.id) + '" data-ini-pv="' + esc(l.id) + '"' +
+      ' title="' + esc(titulo) + '">' +
+      '<b>' + total + '</b><i>/' + max + '</i></button>';
+  }
+
+  function linhaHtml(l, i, fichas) {
     const eu = l.id === atual;
     const v = valores[l.id] || {};
     const icone = l.tipo === 'jogador' ? '🧑' : '👹';
@@ -430,8 +541,28 @@
       '<button type="button" class="ga-ini-nome" data-ini="' + (mando() ? 'vez' : '') + '" data-id="' + esc(l.id) + '"' +
         (mando() ? ' title="Dar a vez a esta linha"' : ' disabled') + '>' +
         '<span class="ga-ini-pos">' + (i + 1) + '</span>' + icone + ' ' + esc(l.nome) +
-      '</button>' + controles +
+      '</button>' + pvHtml(l, fichas) + controles +
     '</li>';
+  }
+
+  // O PV mudou na ficha e o dedo do mestre está dentro do painel (ele
+  // digita o valor da iniciativa de alguém): redesenhar arrancaria o
+  // foco no meio do número. Então só os PV são repintados, no lugar.
+  function pintarPvs() {
+    if (!painel) return;
+    const fichas = fichasVisiveis();
+    painel.querySelectorAll('[data-ini-pv]').forEach(el => {
+      const l = linhas[el.dataset.iniPv];
+      if (!l) return;
+      const novo = pvHtml(Object.assign({ id: el.dataset.iniPv }, l), fichas);
+      if (!novo) return;                       // a ficha sumiu: fica como está até o próximo render
+      const molde = document.createElement('div');
+      molde.innerHTML = novo;
+      const b = molde.firstChild;
+      el.className = b.className;
+      el.title = b.title;
+      el.innerHTML = b.innerHTML;
+    });
   }
 
   // Um combate que começa abre o painel sozinho — inclusive ao recarregar
@@ -467,8 +598,9 @@
 
     let corpo = '';
     if (aberto) {
+      const fichas = fichasVisiveis();
       corpo = temLista
-        ? '<ol class="ga-ini-lista">' + lista.map(linhaHtml).join('') + '</ol>'
+        ? '<ol class="ga-ini-lista">' + lista.map((l, i) => linhaHtml(l, i, fichas)).join('') + '</ol>'
         : '<p class="ga-ini-vazio">' + esc(recado ||
             'Nenhuma iniciativa rolada. Monte com a cena que você está narrando.') + '</p>';
       if (mando()) {
@@ -540,7 +672,23 @@
   //  nunca — nem depois de entrar na mesa, nem com combate rolando.
   //  Por isso a segunda chance: se o GA_Mesa ainda não chegou, tenta de
   //  novo no fim da fila dos `defer`.
+  //  O MESMO CUIDADO VALE PARA O GA_Ficha: o ficha.js também é carregado
+  //  depois deste arquivo, e é dele que vem o PV que aparece na lista.
+  //  Registrar cedo demais aqui seria o mesmo defeito de antes, calado.
+  let fichaLigada = false;
+  function ligarFicha() {
+    if (fichaLigada || !window.GA_Ficha || !window.GA_Ficha.aoMudar) return;
+    fichaLigada = true;
+    window.GA_Ficha.aoMudar(function () {
+      // com o dedo dentro do painel (ele digita a iniciativa de alguém),
+      // redesenhar arrancaria o foco: só os PV são repintados
+      if (painel && painel.contains(document.activeElement)) return pintarPvs();
+      render();
+    });
+  }
+
   function init(segundaChance) {
+    ligarFicha();
     if (window.GA_Mesa) {
       window.GA_Mesa.aoMudar(function (e) { mesa = e; assinar(); render(); });
       return;

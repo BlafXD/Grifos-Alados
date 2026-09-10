@@ -1128,6 +1128,41 @@
 }
 .item-estoque--zero:hover { background: var(--rust); border-color: var(--rust); }
 
+/* ── 🎒 LEVAR PARA A FICHA ────────────────────────────────────────
+   O item comprado vai para o inventário da ficha aberta. A resposta
+   nasce ao lado do botão que a pediu — como as rolagens da ficha —,
+   e fica lá até a próxima compra daquele mesmo item. */
+.item-levar-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+.item-levar {
+  align-self: flex-start;
+  padding: 0.18rem 0.55rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--verde-dark);
+  border: 1px solid var(--verde-dark);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.item-levar:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
+.item-levar-res {
+  flex: 1 1 100%;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.item-levar-res--ruim { color: var(--carmim); }
+
 .item-card--esgotado {
   opacity: 0.55;
   filter: grayscale(0.5);
