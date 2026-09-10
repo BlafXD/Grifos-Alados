@@ -722,6 +722,54 @@ Animar Objetos) aparecem quando o aprimoramento está ligado.
 **Sem a base carregada** (ficha exportada em `.json`, site sem `magias-data.js`)
 o cartão simplesmente não aparece e o 🔥 volta a ser o PM do círculo.
 
+## 6. Os aprimoramentos que ACUMULAM (p. 171)
+
+Ele apontou a regra: *"'Aumenta em...' — se tem isso, ele pode ser aumentado
+várias vezes! Eu posso gastar +4 PM para aumentar +4d6"*. Está no livro, e o
+teste é literal:
+
+> "Para aprimoramentos que aumentam um valor (o texto começa com a palavra
+> **«aumenta»**), você pode gastar aquela quantidade de PM várias vezes para
+> acumular o aumento. A magia Bola de Fogo causa 6d6 pontos de dano e tem um
+> aprimoramento que aumenta esse dano em +2d6 por +2 PM. Um arcanista de 11º
+> nível pode gastar até 11 PM ao lançar essa magia, causando 14d6."
+> — Tormenta 20, Magia, p. 171
+
+Então quem começa com "aumenta" ganha **− ×N ＋** no lugar do liga/desliga, e a
+linha mostra o acumulado: *"→ +8d6 ao todo, por 8 PM"*. São **153 dos 671**
+aprimoramentos do livro. O `m.apr` guarda o índice repetido (`[0,0,0,0]` = quatro
+vezes o primeiro), o que manteve a ficha velha funcionando sem migração nenhuma.
+
+**O aumento é calculado, não adivinhado:** pego o PRIMEIRO `+XdY` (ou `+X`) do
+texto e multiplico só ele. Sem número reconhecível ("aumenta o dano da arma em
+mais um passo"), a tela mostra só o ×N e cala a boca sobre o resto.
+
+**E entrou o teto de PM** (p. 224): *"para habilidades com custo variável, o
+máximo de PM que você pode gastar por uso é igual ao seu nível NA CLASSE que
+fornece a habilidade"*. Passou disso, aparece o aviso em carmim — e **não
+impede**, porque só quem está com a ficha na mão sabe qual classe deu a magia.
+
+**Conferido com o exemplo do próprio livro:** arcanista de 11º nível, Bola de
+Fogo, quatro vezes o +2 PM → 11 PM no total, "+8d6 ao todo". A quinta vez passa
+do teto e o aviso aparece.
+
+## 🐛 O chip da mesa em cima dos botões
+
+Print do celular dele: o painel ⚙ aberto e o chip da mesa por cima dos botões do
+rodapé. **A causa é geral e valia para todo modal do site** — o chip
+(`z-index: 9000`) e a coluna de rolagens/iniciativa (`8500`) nascem acima do
+overlay do modal (`1000`). Agora `body.ga-modal-aberto` esconde os dois: ver
+magia, buscar magia, exportar loja e acessibilidade ficaram livres.
+
+E, como ele pediu, **o chip encolhe**: um ▾ no canto o reduz a um 📡, e um clique
+nele devolve tudo. Fica guardado no navegador — quem recolheu quer recolhido
+amanhã.
+
+> **Nota de teste:** o `getComputedStyle` lido pelo bridge da extensão devolveu
+> `visible` para um elemento que estava escondido (até com `style` inline). A
+> foto da tela é que valeu. Quando o CSS "não aplicar" e a regra estiver lá,
+> tire um screenshot antes de sair caçando o problema no lugar errado.
+
 ## 🐛 De quebra: o cadeado que mentia
 
 Na página dos jogadores, **todas** as caixas ricas da ficha mostravam
@@ -729,3 +777,11 @@ Na página dos jogadores, **todas** as caixas ricas da ficha mostravam
 `modo-jogador.js` já libera a ficha desde a primeira leva (`SECOES_LIVRES`), mas
 o CSS tinha ficado para trás. Agora `#ficha` está fora das três regras de trava.
 As outras seções (Bases, Viagem) seguem com o cadeado, que lá é verdade.
+
+## Depois: as classes que faltam
+
+Combinado com ele em 10/09/2026, para a noite: a ficha só tem as **14 classes
+básicas**, e a mesa dele usa mais — **Frade** (suplemento, p. 31: 12 PV, 3/nível,
+6 PM/nível), **Treinador** (p. 35: 12 PV, 3/nível, 4 PM/nível) e as **14 classes
+variantes** (p. 42). O caminho e a armadilha da tabela desalinhada estão anotados
+na memória `classes-que-faltam-na-ficha`.

@@ -1628,3 +1628,25 @@
   .fi-apara .fi-txt--obs { grid-column: 1 / -1; }
   .fi-apr { flex-wrap: wrap; }
 }
+
+/* ── APRIMORAMENTOS CUMULATIVOS (p. 171) ──────────────────────────
+   Os que começam com "aumenta" ganham − ×N ＋ no lugar do liga/desliga:
+   é o "gastei 8 PM, então aumenta +8d6" do livro, sem conta na cabeça. */
+.fi-apr-ctrl { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 0.2rem; }
+.fi-apr-btn--menos { padding: 0.15rem 0.45rem; }
+.fi-apr-vezes {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--rust-dark);
+  min-width: 1.5rem;
+  text-align: center;
+}
+.fi-apr-soma {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  color: var(--rust-dark);
+}
+.fi-apr-teto { display: block; margin-top: 0.1rem; color: var(--carmim); font-style: italic; }

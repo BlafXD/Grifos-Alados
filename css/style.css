@@ -2402,6 +2402,38 @@ footer {
 .ga-jog-chip--on  { border-color: var(--teal); }
 .ga-jog-chip--off { border-color: var(--ink-faded); color: var(--ink-faded); }
 
+/* ⚠ NADA FLUTUA POR CIMA DE UM MODAL. O chip da mesa (z-index 9000) e a
+   coluna de rolagens/iniciativa (8500) nascem acima do overlay (1000) —
+   e foi assim que o painel ⚙ apareceu, no celular dele, com o chip da
+   mesa em cima dos botões do rodapé. Vale para todo modal do site: ver
+   magia, buscar magia, exportar loja, acessibilidade. */
+body.ga-modal-aberto .ga-jog-chip,
+body.ga-modal-aberto .ga-coluna-mesa { visibility: hidden; }
+
+/* ── O CHIP RECOLHIDO ──────────────────────────────────────────────
+   Um clique no ▾ e ele vira só o 📡; outro clique traz tudo de volta.
+   Fica guardado no navegador, porque quem recolheu quer recolhido. */
+.ga-jog-chip-min {
+  flex: 0 0 auto;
+  padding: 0 0.15rem;
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--ink-faded);
+  background: none;
+  border: none;
+  opacity: 0.75;
+}
+.ga-jog-chip-min:hover { opacity: 1; }
+.ga-jog-chip--min {
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  gap: 0;
+}
+.ga-jog-chip--min .ga-jog-chip-txt,
+.ga-jog-chip--min .ga-jog-chip-auth { display: none; }
+.ga-jog-chip--min .ga-jog-chip-min { font-size: 1rem; padding: 0; opacity: 1; }
+
 /* ── ENTRAR PARA ESCREVER (a linha de login dentro do chip) ────────
    Ler a mesa é aberto a quem tem o link; escrever exige a conta Google
    estar na lista das regras do banco (ver MODO-JOGADOR.md). O chip
