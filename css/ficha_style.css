@@ -1095,6 +1095,37 @@
 }
 .fi-mesa-erro { display: block; color: var(--carmim); font-weight: 600; }
 
+/* ── A GAVETA DA CONTA (🗄) ────────────────────────────────────────
+   As fichas que estão na conta e ainda não neste aparelho. O botão é
+   o mesmo da barra, em verde: é ganho, não é aviso. */
+.fi-mesa-linha--conta {
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border-left: 3px solid var(--verde);
+}
+.fi-barra--gaveta .fi-barra-rot { color: var(--verde-dark); }
+.fi-aba--gaveta {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  line-height: 1.2;
+  border-style: dashed;
+  border-color: var(--verde);
+  color: var(--verde-dark);
+}
+.fi-aba--gaveta:hover {
+  color: var(--parchment);
+  background: var(--verde-dark);
+  border-color: var(--verde-dark);
+}
+.fi-aba--gaveta em {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.68rem;
+  opacity: 0.8;
+}
+
 /* ══════════════════════════════════════════════════════════════════
    O RESULTADO ONDE SE CLICOU
    Antes toda rolagem ia para uma faixa no alto da ficha: rolar

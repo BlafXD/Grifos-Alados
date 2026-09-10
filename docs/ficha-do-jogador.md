@@ -550,3 +550,75 @@ isso o Chrome serve o JS velho e o A/B mente), nas duas páginas:
 **O banco real não entrou no teste** (exigiria a conta dele), como na leva
 anterior: a mesa foi provada com dublê. O que depende do banco é o mesmo caminho
 que a leva 2 já usa todo dia.
+
+---
+
+# A gaveta da conta — 10 de setembro de 2026
+
+Pergunta dele, e ela achou um buraco:
+
+> "As fichas dos jogadores são salvas SOMENTE NO DISPOSITIVO deles ou é ligado ao
+> EMAIL dele? Seria possível ser salvo as coisas dos jogadores ligado ao EMAIL?"
+
+**A resposta era "meio e meio", e o meio que faltava era o que importa.** A ficha
+já subia para a mesa sob o uid da conta (leva 2) — mas o site **nunca a trazia de
+volta**: o `aplicarChegada()` só atualizava fichas que já existissem naquele
+navegador (*"ficha que só existe na mesa: não puxo"*). Trocar de celular era
+começar do zero. E ela morava **dentro da mesa**: fora de uma, não existia; com a
+campanha encerrada, ia junto.
+
+## O desenho: uma gaveta por conta
+
+`usuarios/<uid>/fichas/<id>` — as fichas da PESSOA, não da mesa nem do aparelho.
+
+| | Onde | Quem lê |
+|---|---|---|
+| o aparelho | `localStorage` | quem está com o navegador |
+| a **conta** | `usuarios/<uid>/fichas/<id>` | **só o dono** |
+| a mesa | `mesas/<sala>/fichas/<uid>/<id>` | o dono e o mestre |
+
+**Não precisou tocar nas regras do Firebase.** `usuarios/$uid` já era `só o dono
+lê e escreve` desde a aba 🎲 Mesa — é onde a lista de mesas dele já morava. A
+gaveta entrou por essa porta que já estava aberta.
+
+A escrita virou dois destinos no mesmo salvamento (`js/ficha-mesa.js`): a mesa,
+se eu estou numa e posso escrever; e a gaveta, **se a ficha é minha**. A ficha de
+um jogador que o mestre está editando **não** vai para a gaveta dele — a regra do
+banco não deixaria, e não deve deixar mesmo.
+
+## Quem manda, quando os dois falam
+
+Essa foi a decisão de projeto da leva, e ela evita um bug que seria feio:
+
+> **A ficha que também está na mesa segue a MESA. A gaveta cuida do resto.**
+
+É a mesa que carrega o PV que o mestre acabou de baixar; a gaveta pode estar um
+segundo atrás. Se as duas mandassem igual, o eco da gaveta velha ressuscitaria o
+PV cheio no meio do combate. Em troca, toda mudança que chega **pela mesa** é
+reenviada para a gaveta na hora (`guardarNaConta()`), senão o outro aparelho
+ficaria com o número velho para sempre.
+
+## O celular novo
+
+Entrando com a mesma conta num navegador vazio, aparece a barra **🗄 Na sua
+conta**, com um botão por ficha: `⬇ Zézinho — Bárbaro 3`. Um clique e ela é
+local como qualquer outra.
+
+**Ela não entra sozinha, e isso é de propósito:** o que eu apaguei neste
+navegador não pode voltar do banco no próximo login. Trazer é decisão de quem
+está com a ficha na mão.
+
+## O que foi conferido (dublê, com a regra do banco imitada)
+
+| O quê | Resultado |
+|---|---|
+| Entrar na conta **sem mesa nenhuma** | a ficha sobe para `usuarios/u-eu/fichas` ✔ |
+| Navegador vazio + conta com ficha | barra 🗄 com "⬇ Zézinho · Bárbaro 3"; o clique traz completa (nível, T$, PV 42) ✔ |
+| O outro aparelho mexeu | nome e T$ mudam nesta tela sozinhos ✔ |
+| O mestre baixa o PV pela mesa | a tela vai a 7 **e a gaveta acompanha**; o eco seguinte não desfaz ✔ |
+| Apagar a ficha | some do aparelho, da mesa e da conta ✔ |
+| O mestre editando a ficha de um jogador | **nenhuma** escrita na gaveta alheia ✔ |
+
+**O que continua igual:** duas telas editando a MESMA ficha ao mesmo tempo ainda
+é "o último a falar ganha", por grupo. Serve para mesa de amigos; não é editor
+colaborativo.

@@ -32,13 +32,19 @@
 
   let mesa = null;              // último estado do GA_Mesa
   let refFichas = null, cbFichas = null, salaLigada = '', escopoLigado = '';
-  let remotas = {};             // uid → { fichaId: ficha }
+  let refGaveta = null, cbGaveta = null, uidGaveta = '';
+  let remotas = {};             // uid → { fichaId: ficha }   (a mesa)
+  let gaveta = {};              // fichaId → ficha            (a conta)
   let pendentes = {};           // fichaId → { dono, grupos:Set, ficha }
   let timer = null;
   let ultimoErro = '';
 
   function db() { return window.GA_Mesa ? window.GA_Mesa.db() : null; }
   function ligado() { return !!(mesa && mesa.configurado && mesa.usuario && mesa.souMembro); }
+  //  A GAVETA DA CONTA não depende de mesa nenhuma: basta ter entrado.
+  //  É `usuarios/<uid>/fichas`, e a regra dela já existe desde a aba 🎲
+  //  ("só o dono lê e escreve") — não foi preciso mexer no console.
+  function logado() { return !!(mesa && mesa.configurado && mesa.usuario); }
   // Mestre e auxiliar leem a mesa inteira; os demais, só a própria pasta.
   function vejoTodas() { return !!(mesa && (mesa.papel === 'mestre' || mesa.papel === 'auxiliar')); }
   function meuUid() { return (mesa && mesa.usuario) ? mesa.usuario.uid : ''; }
@@ -79,6 +85,41 @@
     if (Object.keys(remotas).length) { remotas = {}; entregar(); }
   }
 
+  // ── A GAVETA DA CONTA ────────────────────────────────────────────
+  //  Mesma conta, qualquer aparelho: é aqui que a ficha do celular novo
+  //  vai ser encontrada. Ninguém mais lê isto — nem o mestre, que
+  //  continua vendo pela cópia da mesa.
+  function ligarGaveta() {
+    if (!logado()) return desligarGaveta();
+    const b = db();
+    if (!b) return;
+    if (uidGaveta === meuUid()) return;
+    desligarGaveta();
+    uidGaveta = meuUid();
+    refGaveta = b.ref('usuarios/' + uidGaveta + '/fichas');
+    cbGaveta = refGaveta.on('value', snap => {
+      gaveta = snap.val() || {};
+      entregarGaveta();
+    }, err => {
+      ultimoErro = (err && err.message) || '';
+      console.warn('[ficha-mesa] gaveta:', ultimoErro);
+    });
+  }
+
+  function desligarGaveta() {
+    if (refGaveta && cbGaveta) { try { refGaveta.off('value', cbGaveta); } catch (e) {} }
+    refGaveta = null; cbGaveta = null; uidGaveta = '';
+    if (Object.keys(gaveta).length) { gaveta = {}; entregarGaveta(); }
+  }
+
+  function entregarGaveta() {
+    try {
+      if (window.GA_Ficha && window.GA_Ficha.receberDaGaveta) {
+        window.GA_Ficha.receberDaGaveta(gaveta);
+      }
+    } catch (e) { console.warn('[ficha-mesa] entregar gaveta:', e && e.message); }
+  }
+
   function entregar() {
     try {
       if (window.GA_Ficha && window.GA_Ficha.receberDaMesa) {
@@ -92,7 +133,15 @@
   //  do primeiro nível que mudaram; vazio manda a ficha inteira (é o
   //  caso da primeira subida e do "acabei de criar").
   function publicar(ficha, dono, grupos) {
-    if (!ligado() || !ficha || !mesa.escreve) return;
+    if (!ficha) return;
+    //  Dois destinos, e cada um com a sua condição: a MESA (se eu estou
+    //  numa e posso escrever) e a GAVETA da conta (se a ficha é minha).
+    //  A ficha de um jogador que o mestre está editando NÃO vai para a
+    //  gaveta dele — a regra do banco só deixa o dono escrever lá, e é
+    //  assim que tem de ser.
+    const paraMesa   = ligado() && mesa.escreve;
+    const paraGaveta = logado() && !dono;
+    if (!paraMesa && !paraGaveta) return;
     const uid = dono || meuUid();
     const p = pendentes[ficha.id] || (pendentes[ficha.id] = { dono: uid, grupos: new Set(), ficha: null });
     p.dono = uid;
@@ -105,29 +154,49 @@
 
   function enviar() {
     const b = db();
-    if (!b || !ligado()) return;
+    if (!b || !logado()) return;
     const fila = pendentes; pendentes = {};
     Object.keys(fila).forEach(id => {
       const p = fila[id];
-      const base = 'mesas/' + salaLigada + '/fichas/' + p.dono + '/' + id;
       const carimbo = {
         dono: p.dono,
         autor: (mesa.usuario.displayName || mesa.usuario.email || ''),
         atualizadoEm: firebase.database.ServerValue.TIMESTAMP,
       };
-      let promessa;
-      if (!p.grupos) {
-        promessa = b.ref(base).set(Object.assign(limpar(p.ficha), carimbo));
-      } else {
-        const patch = Object.assign({}, carimbo);
-        p.grupos.forEach(g => { patch[g] = valorLimpo(p.ficha[g]); });
-        promessa = b.ref(base).update(patch);
-      }
-      promessa.catch(e => {
-        ultimoErro = e.message;
-        console.warn('[ficha-mesa] não deu para publicar:', e.message);
+      const caminhos = [];
+      if (ligado() && mesa.escreve) caminhos.push('mesas/' + salaLigada + '/fichas/' + p.dono + '/' + id);
+      if (p.dono === meuUid())      caminhos.push('usuarios/' + meuUid() + '/fichas/' + id);
+
+      caminhos.forEach(base => {
+        let promessa;
+        if (!p.grupos) {
+          promessa = b.ref(base).set(Object.assign(limpar(p.ficha), carimbo));
+        } else {
+          const patch = Object.assign({}, carimbo);
+          p.grupos.forEach(g => { patch[g] = valorLimpo(p.ficha[g]); });
+          promessa = b.ref(base).update(patch);
+        }
+        promessa.catch(e => {
+          ultimoErro = e.message;
+          console.warn('[ficha-mesa] não deu para publicar em ' + base + ':', e.message);
+        });
       });
     });
+  }
+
+  //  Só a gaveta, sem passar pela mesa. É o que mantém a conta em dia
+  //  quando quem mexeu na minha ficha foi o MESTRE: a mudança chegou
+  //  pela mesa, e sem isto o outro aparelho continuaria com o PV velho.
+  function guardarNaConta(ficha) {
+    const b = db();
+    if (!b || !logado() || !ficha || !ficha.id) return;
+    b.ref('usuarios/' + meuUid() + '/fichas/' + ficha.id)
+      .set(Object.assign(limpar(ficha), {
+        dono: meuUid(),
+        autor: (mesa.usuario.displayName || mesa.usuario.email || ''),
+        atualizadoEm: firebase.database.ServerValue.TIMESTAMP,
+      }))
+      .catch(e => console.warn('[ficha-mesa] gaveta:', e && e.message));
   }
 
   // O Realtime Database recusa `undefined` e transforma array com
@@ -144,22 +213,30 @@
     window.GA_Ficha.minhasFichas().forEach(f => publicar(f, null, null));
   }
 
-  // Apagar de verdade: some da mesa junto.
+  // Apagar de verdade: some da mesa e da conta junto.
   function apagar(id, dono) {
     const b = db();
-    if (!b || !ligado()) return;
+    if (!b || !logado()) return;
     delete pendentes[id];
-    b.ref('mesas/' + salaLigada + '/fichas/' + (dono || meuUid()) + '/' + id).remove()
-      .catch(e => console.warn('[ficha-mesa] não deu para apagar:', e && e.message));
+    if (ligado() && mesa.escreve) {
+      b.ref('mesas/' + salaLigada + '/fichas/' + (dono || meuUid()) + '/' + id).remove()
+        .catch(e => console.warn('[ficha-mesa] não deu para apagar da mesa:', e && e.message));
+    }
+    if (!dono) {
+      b.ref('usuarios/' + meuUid() + '/fichas/' + id).remove()
+        .catch(e => console.warn('[ficha-mesa] não deu para apagar da conta:', e && e.message));
+    }
   }
 
   window.GA_FichaMesa = {
     publicar: publicar,
+    guardarNaConta: guardarNaConta,
     apagar: apagar,
     // o que a barra de fichas precisa saber para se desenhar
     estado: function () {
       return {
         ligado: ligado(),
+        logado: logado(),
         configurado: !!(mesa && mesa.configurado),
         usuario: mesa ? mesa.usuario : null,
         papel: mesa ? mesa.papel : null,
@@ -187,10 +264,13 @@
       return;
     }
     window.GA_Mesa.aoMudar(e => {
-      const antes = ligado();
+      const antes = ligado(), antesLogado = logado();
       mesa = e;
       ligar();
-      if (!antes && ligado()) publicarTudo();     // acabou de entrar na mesa
+      ligarGaveta();
+      // acabou de entrar na mesa, ou acabou de entrar na conta: sobe
+      // tudo o que é meu, para a mesa e para a gaveta
+      if ((!antes && ligado()) || (!antesLogado && logado())) publicarTudo();
       try {
         if (window.GA_Ficha && window.GA_Ficha.mesaMudou) window.GA_Ficha.mesaMudou();
       } catch (err) { console.warn('[ficha-mesa]', err && err.message); }
