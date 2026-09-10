@@ -411,7 +411,11 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
   .vg-btn,
   .tp-btn,
   .fp-btn,
-  .fi-btn {
+  .fi-btn,
+  /* os dois da 🏪 Loja que põem o item na ficha: no dedo é onde eles
+     mais são usados, e o "sem pagar" existe justamente porque no
+     celular não há Shift para segurar */
+  .item-levar {
     min-height: 2.75rem;
     display: inline-flex;
     align-items: center;

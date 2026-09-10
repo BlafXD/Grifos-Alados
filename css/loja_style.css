@@ -1154,6 +1154,22 @@
   transition: background 0.15s, border-color 0.15s;
 }
 .item-levar:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
+
+/* "sem pagar": o mesmo botão, em voz baixa. Existe para o celular, que
+   não tem Shift — e para quem nunca vai adivinhar que o Shift existe. */
+.item-levar--gratis {
+  color: var(--ink-faded);
+  background: transparent;
+  border-color: var(--ink-faded);
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 0.62rem;
+}
+.item-levar--gratis:hover {
+  color: var(--parchment);
+  background: var(--ink-faded);
+  border-color: var(--ink-faded);
+}
 .item-levar-res {
   flex: 1 1 100%;
   font-family: 'Crimson Pro', serif;

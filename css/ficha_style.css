@@ -1177,6 +1177,11 @@
 }
 .fi-hist-det { color: var(--text-mid); }
 .fi-hist-det strong { font-size: 1.05rem; color: var(--ink); }
+/* ── O RECIBO DA LOJA (🧾) ─────────────────────────────────────── */
+.fi-compras .fi-hist-rot { color: var(--verde-dark); }
+.fi-compra-erro { color: var(--carmim); }
+.fi-compra-por  { font-style: italic; color: var(--text-dim); }
+
 .fi-hist-vazio {
   font-family: 'IM Fell English', serif;
   font-style: italic;

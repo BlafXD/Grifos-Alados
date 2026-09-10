@@ -441,8 +441,11 @@ Cada card da 🏪 Loja ganhou **🎒 Levar para a ficha** — nas armas, armadur
 equipamentos, e nos **pergaminhos** (que já entram com ½ espaço, como o livro
 manda).
 
-- **Clique paga; Shift+clique leva sem pagar.** É a mesma convenção do botão de
-  estoque, que já usa o Shift para o caminho contrário.
+- **São dois botões: `🎒 Levar — T$ 12` e `sem pagar`.** O primeiro desconta o
+  dinheiro da ficha; o segundo põe na mochila sem mexer no T$ — o que o mestre
+  deu, o que a mesa achou, o que já era seu. O Shift+clique continua valendo como
+  atalho de teclado, e o preço no rótulo do botão diz o que vai acontecer antes
+  de acontecer.
 - **Vai para a ficha ABERTA**, e a resposta diz de quem é a mochila — inclusive
   quando o mestre está com a ficha de um jogador na tela, que é como ele entrega
   o que a mesa achou.
@@ -457,6 +460,22 @@ manda).
 - **A resposta nasce ao lado do botão que a pediu**, como as rolagens da ficha, e
   fica lá até a próxima compra daquele item.
 
+### 🐛 O Shift não existe no celular
+
+Nasceu **só** com Shift+clique, e ele apontou o buraco no mesmo dia: *"como uma
+pessoa de celular faria isso?"* — não faria. Metade da mesa joga no telefone, e
+para essa metade a função simplesmente não existia. Pior: mesmo no teclado,
+ninguém adivinha uma tecla escondida numa dica de mouse.
+
+Daí os **dois botões visíveis**. E, no toque, os dois entraram na lista de alvos
+grandes do `css/acessibilidade.css` (`@media (pointer: coarse)` → `2.75rem` de
+altura), onde já moram os botões de ação do site. Medido num card de 360px de
+largura — a largura de celular —, os dois cabem na mesma linha com folga.
+
+**A lição, que vale para o resto do site:** atalho de teclado é **enfeite**;
+tudo o que só existe com uma tecla apertada não existe para quem joga no
+telefone.
+
 ### A trava do jogadores.html, e a exceção do tamanho de um botão
 
 Na página dos jogadores a Loja inteira é só-leitura: o `modo-jogador.js` bloqueia,
@@ -470,6 +489,28 @@ controle cujo efeito pertence a quem clicou. O 🎒 escreve na ficha de quem
 clicou, nunca na loja do mestre; o 📦 de estoque, que é do mestre, continua mudo
 lá. Conferido com um A/B: botão comum dentro da Loja não recebe o clique, botão
 com `data-jog-livre` recebe.
+
+## 3. O recibo, no fim da ficha
+
+Pedido dele junto com os dois botões: um lugar para **o jogador consultar o que
+comprou**. É o cartão **🧾 O que veio da Loja**, logo abaixo do 🎲 Histórico de
+rolagens — mesmo desenho, mesma altura, mesma régua de 30 linhas.
+
+Cada linha traz **quando, o quê e quanto**: `10/09 14:32 · Espada longa · T$ 12`.
+As três formas de entrar têm cara própria — pago (`T$ 12`), de graça (`sem pagar
+· vale T$ 12`) e o que não coube no bolso (`⚠ não pagou — faltou T$ 160`, em
+carmim). No cabeçalho, o total gasto ali.
+
+**Ele mora DENTRO da ficha (`f.compras`), e não no `localStorage` como o
+histórico de rolagens.** É a diferença que faz a coisa funcionar: quem compra
+pode ser o **mestre**, na tela dele — e o recibo tem de aparecer para o jogador,
+que é quem vai olhar a mochila e não lembrar de ter comprado nada. Por isso a
+linha também guarda **quem comprou**, quando não foi o dono: `· por Caique`.
+
+Sobe para a mesa como qualquer outro pedaço, no grupo `compras` — que é próprio,
+então o recibo nunca briga com o PV nem com o inventário na hora de gravar.
+O 🗑 **Limpar** esvazia o recibo e **não devolve nada**: o que está na mochila
+continua lá.
 
 ## O que eu NÃO juntei (fica anotado, ele decide)
 
@@ -499,6 +540,10 @@ isso o Chrome serve o JS velho e o A/B mente), nas duas páginas:
 | Clique no selo abre a ficha | Notícias → 📖 Fichas, sub-aba ✍ Ficha ✔ |
 | Mesa com membros, no dublê (Firebase de mentira) | linhas com nome de personagem, `uid`, `fichaId`; espectador fora; `mod` = Destreza no nó secreto ✔ |
 | Comprar, comprar de novo, Shift, e sem dinheiro | ×2, sem cobrança, e aviso com o dinheiro intacto ✔ |
+| Os dois botões (o que paga, o "sem pagar") e o Shift como atalho | os três caminhos, e o T$ certo em cada um ✔ |
+| O recibo 🧾 | sobrevive ao F5, e o 🗑 Limpar não toca no inventário ✔ |
+| O mestre comprando na ficha de um jogador | item e T$ na ficha DELE, e o recibo diz "por Caique" ✔ |
+| Os dois botões num card de 360px (celular) | na mesma linha, sem vazar ✔ |
 | Botão na página dos jogadores | vivo; botão comum na mesma seção, mudo ✔ |
 | Sem ficha nenhuma | "Nenhuma ficha aberta — abra ou crie a sua na aba 📖 Fichas" ✔ |
 
