@@ -659,18 +659,18 @@ era o que ele mesmo tinha marcado como "pode ficar para depois".
 Cartão novo, entre os números e as perícias, com **três listas separadas** —
 porque são três regras diferentes que a mesa vive confundindo:
 
-| | O que é | Formato |
+| | O que é (corrigido em 11/09/2026 — ver o fim do arquivo) | Formato |
 |---|---|---|
-| 🜂 **Resistências** | tira aquele tanto do dano **daquele tipo** ("resistência a fogo 10") | valor + tipo + de onde vem |
-| 🛡 **Redução de dano** | tira de todo dano físico ("RD 5"); **dá para ter várias** | valor + condição + de onde vem |
-| 🚫 **Imunidades** | não lhe atinge, ponto | o quê + de onde vem |
+| 🜂 **Resistências** | **bônus no teste** de Fortitude, Reflexos ou Vontade contra aquele efeito ("resistência a magia +2") — não tira dano | valor + efeito + de onde vem |
+| 🛡 **Redução de dano** | ignora aquele tanto de **todo** dano ("RD 5"), a não ser que diga de qual; **dá para ter várias** | valor + tipo (ou "Geral") + de onde vem |
+| 🚫 **Imunidades** | nenhuma consequência direta daquilo | o quê + de onde vem |
 
 Mais o campo **🎓 Proficiências**, em linha, embaixo.
 
-**A distinção que ele fez questão de marcar está escrita no cartão:** *"Teste de
-resistência é outra coisa — Fortitude, Reflexos e Vontade são perícias em
-Tormenta 20"*. Elas continuam na lista das 29, com o selo `resistência`, e o
-cartão novo cuida só do que apara o dano **depois** que ele acontece.
+> ⚠ **A primeira versão desta tabela estava errada** — dizia que a resistência
+> "tirava o dano daquele tipo" e que a RD era "de todo dano físico". Ele pegou
+> em 11/09/2026, e o livro (p. 229) dá razão a ele. O cartão foi reescrito; a
+> correção está em "A leva de 11 de setembro", no fim.
 
 Cada linha é `{ valor, do_, obs }` e sobe para a mesa no seu próprio grupo
 (`resistencias`, `reducoes`, `imunidades`) — o mestre pode escrever numa enquanto
@@ -1046,3 +1046,111 @@ PV funcionam, a perícia rola, e o rolador sumiu.
   três cartões de dentro zeram a margem (quem separa é o `gap`), e a grade não
   tinha margem própria. Agora tem os mesmos 0,9rem de todo cartão — medido: todo
   par de blocos da ficha fica a 14px, sem exceção.
+
+---
+
+# A leva de 11 de setembro de 2026 — o que ele pegou usando a ficha
+
+Sete pedidos numa mensagem só, e um deles só para anotar (está no fim).
+
+## 1. Resistência ≠ RD — e a primeira versão tinha errado as duas
+
+> "Resistência é bônus na rolagem CONTRA AQUELE EFEITO! É diferente de Redução
+> de dano […] E RD o texto também está errado! Não é somente para DANO FÍSICO, é
+> literal tudo!"
+
+Ele tinha razão nas duas, e o livro diz com todas as letras (Tormenta 20 JdA,
+**p. 229**, PDF 235 — o glossário de habilidades):
+
+- **Resistência a \<Efeito\>**: "um bônus em testes de resistência contra efeitos
+  do tipo especificado" — *resistência a magia +2* dá +2 no Fortitude, Reflexos
+  ou Vontade contra habilidades mágicas. **Não tira dano nenhum.**
+- **Redução de Dano (RD)**: "ignora parte do dano que sofre" — de **todo** dano.
+  Pode ser de um tipo só (*redução de fogo 10*), e o que vem depois da barra fica
+  de fora (*RD 10/mágico* vale para tudo menos o mágico).
+- **Imunidade**: nenhuma consequência direta daquilo.
+
+O cartão virou **🛡 Resistências, RD e imunidades** (o "o que apara o dano" não
+servia, porque resistência não apara dano) e cada lista ganhou a frase do livro.
+A caixa de tipo da RD, que sugeria "todo dano físico", agora sugere **Geral**, e
+o número da resistência sugere **+2**. A nota de baixo diz a regra numa linha:
+*resistência entra no teste; RD entra no dano*.
+
+## 2. O selo "só treinada" nos Ofícios
+
+As perícias comuns desenham o selo pelo `marcasDe()`; as linhas de Ofício só
+desenhavam o ✕ e o ＋. O dado já dizia `treinada: true` (p. 121) — faltava pôr
+o selo na tela, nas duas linhas.
+
+## 3. O texto da arma (✎)
+
+Embaixo de cada ataque, uma **caixa rica** com a barra de sempre: o encanto, o
+que a arma faz no crítico, a habilidade que custa PM — "algo que o jogador sabe
+que aquela espada é capaz". Mesmo molde do item do inventário: `notas` e
+`aberto` dentro de cada ataque, e o ✎ dobra e desdobra. **Nasce aberta** (o
+pedido era a caixa "abaixo da espada"); dobrada com texto dentro, o ✎ fica
+tracejado. Sobe para a mesa no grupo `ataques`.
+
+## 4. 🐛 As pílulas que vazavam, e o ✕ para fechar
+
+A print 3 dele mostrava o dano e o crítico saindo da pílula, um por cima do
+outro. **A causa:** o `pintarResultado()` escrevia `el.className = 'fi-res'` — e
+apagava o `fi-res--atq` (que manda a pílula ocupar a linha inteira embaixo do
+ataque) e o `fi-res--crit` (o listrado). Sem eles, os três resultados caíam nas
+primeiras colunas da grade, a de 5rem e a de 2,8rem. Agora só a marca de erro
+liga e desliga (`classList.toggle`). **Quem mexer ali: nunca troque o className
+inteiro** — as classes da pílula dizem onde ela mora.
+
+E cada pílula ganhou um **✕**: rolar Percepção, Reflexos e Vontade numa sessão
+deixava a ficha pontilhada de resultados velhos. O ✕ tira só daqui; o painel
+🎲 Rolagens da mesa é o histórico de todo mundo e continua como está. No celular
+a conta quebra dentro da pílula, e o ✕ cresce para o dedo.
+
+## 5. "💥 Crítico"
+
+O botão era "💥 ×2" e virou **💥 Crítico**, a pedido dele — nos ataques do
+personagem e nos do melhor amigo. O ×N foi para a dica do mouse, com a conta
+pronta (*2d12+15 (×2 — só os dados multiplicam, p. 142)*), e o campo "19/×3" ao
+lado continua dizendo o multiplicador.
+
+## 6. As magias com o texto inteiro, e o recolher
+
+O cartão de cada magia mostrava o **resumo** de uma linha ("Esfera
+incandescente explode…"). Agora mostra o **texto do livro** — a descrição e o
+truque, buscados na base na hora de desenhar (as 254 têm). Os aprimoramentos não
+se repetem no texto: estão logo abaixo, com botão. Sem a base, fica o resumo que
+a ficha guardou.
+
+Com o texto inteiro, a lista de um conjurador de nível alto fica comprida e o
+inventário vai lá para o fim. Então:
+
+- o **nome** da magia recolhe e abre aquele cartão (sobra a linha do nome, com o
+  🔥 à mão para lançar);
+- **▸ Recolher todas** / **▾ Abrir todas**, no título do cartão.
+
+**O que está recolhido é do navegador, não da ficha** (`localStorage`,
+`grifosAlados.fichaMagiasFechadas`): o mestre recolhendo as magias de um jogador
+não pode recolhê-las na tela do jogador, e não há por que mandar isso à mesa.
+
+O 👁 e o modal da magia saíram — o texto que eles mostravam agora está no
+cartão. O modal da busca ("＋ Adicionar magia") continua igual.
+
+## 7. Anotado, não feito: rolar a magia
+
+> "Anote para si uma ideia mas eu não quero nenhuma execução dessa ideia ainda"
+
+Um dado na própria magia, para rolar o dano, a cura etc. **já com os
+aprimoramentos ligados**. Quando ele pedir: o dado da magia está no texto
+(`descricao`, ex.: "causando 6d6 pontos de dano de fogo"), e o aumento de cada
+aprimoramento cumulativo já é lido pelo `aumentoVezes()` (o primeiro "+XdY").
+
+## Testado
+
+No `jogadores.html` servido por Node **com o Firebase desligado**, com uma ficha
+de teste (arcanista 11, espada longa 1d12+15, quatro magias): as três pílulas do
+ataque inteiras e cada uma na sua linha, o ✕ fechando só a sua, o ✎ guardando o
+texto, o recolher uma e todas, os selos dos Ofícios e o cartão novo. No iframe
+de 390px, com as regras de toque: nada passa da tela, e o ✎ e o ✕ sobem para a
+linha do nome da arma. **Não medido**: o agrupamento dos dois botões do título
+das Magias no celular, feito depois — a máquina ficou sem memória e o servidor
+de teste caiu.

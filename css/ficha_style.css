@@ -507,17 +507,24 @@
 .fi-selo--arm { color: var(--carmim); border-color: var(--carmim); }
 
 /* ── ATAQUES ───────────────────────────────────────────────────── */
-/* Onze colunas: arma, perícia, extra, ataque, dano, 🎲, crítico, 💥,
-   tipo, alcance e ✕. As três faixas de resultado (ataque, dano e
-   crítico) entram embaixo, cada uma ocupando a linha inteira. */
+/* Doze colunas: arma, perícia, extra, ataque, dano, 🎲, crítico,
+   💥 Crítico, tipo, alcance, ✎ e ✕. As três faixas de resultado
+   (ataque, dano e crítico) e o texto da arma entram embaixo, cada um
+   ocupando a linha inteira. */
 .fi-atq-cab, .fi-atq {
   display: grid;
   grid-template-columns:
     minmax(6.5rem, 2fr) 5rem 2.8rem 4.2rem minmax(4.5rem, 1fr) 4.2rem
-    minmax(3.8rem, 1fr) 3.8rem minmax(4rem, 1fr) minmax(5rem, 1fr) 2rem;
+    minmax(3.8rem, 1fr) 5.4rem minmax(4rem, 1fr) minmax(5rem, 1fr) 2rem 2rem;
   gap: 0.3rem;
   align-items: center;
 }
+/* o texto da arma (✎): a caixa rica embaixo da linha, na largura toda */
+.fi-atq-texto {
+  grid-column: 1 / -1;
+  margin: 0.3rem 0 0.2rem;
+}
+.fi-atq-texto .fi-texto { min-height: 2.8rem; font-size: 0.95rem; }
 .fi-atq-cab {
   font-family: 'Cinzel', serif;
   font-size: 0.52rem;
@@ -793,14 +800,15 @@
   border: 1px solid var(--gold-dim);
   border-radius: 999px;
 }
-.fi-mag-resumo {
-  margin-top: 0.3rem;
-  font-family: 'IM Fell English', serif;
-  font-style: italic;
-  font-size: 0.88rem;
-  line-height: 1.4;
-  color: var(--text-mid);
+/* o texto do livro, direto no cartão (a descrição e o truque) */
+.fi-mag-desc {
+  margin-top: 0.4rem;
+  font-size: 0.93rem;
+  line-height: 1.55;
+  color: var(--ink);
 }
+.fi-mag-desc p { margin: 0 0 0.45rem; }
+.fi-mag-desc p:last-child { margin-bottom: 0; }
 .fi-mag-obs {
   width: 100%;
   margin-top: 0.35rem;
@@ -1098,14 +1106,33 @@
   display: inline-flex;
   align-items: baseline;
   gap: 0.35rem;
+  max-width: 100%;
   margin-left: 0.35rem;
-  padding: 0.05rem 0.4rem;
+  padding: 0.05rem 0.15rem 0.05rem 0.4rem;
   background: var(--gold-pale);
   border: 1px solid var(--gold-dim);
   border-radius: 999px;
   animation: fi-res-entra 0.25s ease-out;
 }
 .fi-res[hidden] { display: none; }
+/* o ✕ que fecha a rolagem: discreto, e só acende sob o ponteiro */
+.fi-res-x {
+  align-self: center;
+  flex: 0 0 auto;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-left: 0.1rem;
+  padding: 0;
+  font-size: 0.66rem;
+  line-height: 1;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.fi-res-x:hover,
+.fi-res-x:focus-visible { color: var(--carmim); background: var(--parchment); border-color: var(--carmim); }
 @keyframes fi-res-entra {
   from { opacity: 0; transform: translateX(-4px); }
   to   { opacity: 1; transform: none; }
@@ -1259,7 +1286,7 @@
 }
 .fi-mag:hover { border-left-color: var(--rust); background: var(--parchment2); }
 
-/* o nome inteiro é o botão que abre o texto da magia */
+/* o nome inteiro é o botão que recolhe e abre o texto da magia */
 .fi-mag-abrir {
   display: flex;
   align-items: baseline;
@@ -1281,9 +1308,29 @@
   border-bottom: 1px dotted transparent;
 }
 .fi-mag-abrir:hover .fi-mag-nome { border-bottom-color: var(--rust); }
-.fi-mag-lupa { font-size: 0.8rem; opacity: 0.4; }
-.fi-mag-abrir:hover .fi-mag-lupa { opacity: 1; }
+.fi-mag-seta {
+  flex: 0 0 auto;
+  width: 0.9rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+.fi-mag-abrir:hover .fi-mag-seta { color: var(--rust-dark); }
+/* recolhida, sobra a linha do nome: o cartão fica mais baixo e mais
+   apagado, para a lista de nomes se ler como um índice */
+.fi-mag--fechada { padding-top: 0.3rem; padding-bottom: 0.3rem; }
+.fi-mag--fechada .fi-mag-nome { font-size: 0.92rem; }
 .fi-mag-acoes { display: flex; align-items: center; gap: 0.25rem; }
+/* "▸ Recolher todas" e "＋ Adicionar magia" andam juntos: no celular,
+   quando não cabem ao lado do título, descem os dois para a linha de
+   baixo, em vez de um ficar em cima e o outro sozinho embaixo */
+.fi-mag-botoes {
+  margin-left: auto;
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+.fi-mag-botoes .fi-mag-add { margin-left: 0; }
 .fi-mag-pm-btn {
   font-family: 'Cinzel', serif;
   font-size: 0.62rem;
@@ -1297,7 +1344,7 @@
   border-radius: var(--raio);
 }
 .fi-mag-pm-btn:hover { background: var(--rust); color: var(--parchment); }
-.fi-mag-linha, .fi-mag-resumo, .fi-mag-obs { grid-column: 1 / -1; }
+.fi-mag-corpo { grid-column: 1 / -1; }
 
 /* ── O MODAL DA MAGIA ──────────────────────────────────────────── */
 .fi-mag-topo {
@@ -1324,14 +1371,6 @@
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--rust-dark);
-}
-.fi-mag-obs-modal {
-  margin-top: 0.8rem;
-  padding: 0.4rem 0.6rem;
-  font-size: 0.9rem;
-  background: var(--gold-pale);
-  border-left: 3px solid var(--gold);
-  border-radius: var(--raio);
 }
 .fi-busca-item--tem { opacity: 0.6; }
 .fi-busca-nome em {
@@ -1377,6 +1416,8 @@
      perícia — o número é o que se quer ler, não o nome pela metade */
   .fi-per { flex-wrap: wrap; }
   .fi-res { margin-left: 0; }
+  /* e a conta por extenso quebra dentro da pílula, em vez de vazar */
+  .fi-res-det { white-space: normal; }
   .fi-mag { grid-template-columns: 1fr; }
   .fi-mag-acoes { justify-content: flex-end; }
   .fi-inv-pe { flex-direction: column; align-items: stretch; }
@@ -1737,7 +1778,7 @@
   .fi-atq-cab.fi-atq--am, .fi-atq.fi-atq--am {
     grid-template-columns:
       minmax(6.5rem, 2fr) 5rem 2.8rem 4.2rem minmax(4.5rem, 1fr) minmax(5rem, auto)
-      minmax(3.8rem, 1fr) 3.8rem minmax(4rem, 1fr) 2rem;
+      minmax(3.8rem, 1fr) 5.4rem minmax(4rem, 1fr) 2rem;
   }
 }
 
@@ -1889,7 +1930,7 @@
   .fi-atq {
     grid-template-columns: repeat(6, minmax(0, 1fr));
     grid-template-areas:
-      "nome nome nome nome nome sai"
+      "nome nome nome nome txt  sai"
       "per  per  ext  atq  atq  atq"
       "dan  dan  dan  dbt  dbt  dbt"
       "cri  cri  cri  cbt  cbt  cbt"
@@ -1915,6 +1956,7 @@
   .fi-atq > .fi-atq-crit             { grid-area: cbt; }
   .fi-atq > [data-campo$=".tipo"]    { grid-area: tip; }
   .fi-atq > [data-campo$=".alcance"] { grid-area: alc; }
+  .fi-atq > .fi-atq-nota             { grid-area: txt; }
   .fi-atq > .fi-mini--x              { grid-area: sai; }
 
   /* o ✎ ✕ sobe para o lado do nome, e a conta vira uma linha só que
@@ -1984,6 +2026,7 @@
   #ficha-content .fi-passo       { width: 2.75rem; height: 2.75rem; font-size: 1.25rem; }
   #ficha-content .fi-per-check   { width: 2rem; height: 2rem; font-size: 0.95rem; }
   #ficha-content .fi-mini        { min-width: 2.5rem; min-height: 2.5rem; }
+  #ficha-content .fi-res-x       { width: 2rem; height: 2rem; font-size: 0.8rem; }
   #ficha-content .fi-apr-btn     { min-width: 2.5rem; min-height: 2.5rem; justify-content: center; }
   #ficha-content .fi-aba,
   #ficha-content .fi-add,

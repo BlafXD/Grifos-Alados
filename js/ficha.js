@@ -134,16 +134,20 @@
     if (typeof f.cdAtributo !== 'string') f.cdAtributo = 'int';
     if (typeof f.xp !== 'number') f.xp = 0;
 
-    // ── O QUE APARA O DANO ─────────────────────────────────────────
+    // ── RESISTÊNCIAS, RD E IMUNIDADES (Tormenta 20, p. 229) ────────
     //  Três coisas diferentes, que a mesa confunde o tempo todo — e por
     //  isso ficam em campos separados, com o nome que o livro usa:
-    //   • RESISTÊNCIA a um tipo de dano ("resistência a fogo 10"):
-    //     tira aquele tanto do dano DAQUELE tipo. NÃO é o teste de
-    //     resistência (Fortitude, Reflexos e Vontade são PERÍCIAS, e
-    //     estão lá em cima, na lista das 29);
-    //   • REDUÇÃO DE DANO ("RD 5"): tira de todo dano físico, e dá para
-    //     ter várias ao mesmo tempo, cada uma com a sua condição;
-    //   • IMUNIDADE: não sofre aquilo, ponto.
+    //   • RESISTÊNCIA a um efeito ("resistência a magia +2"): BÔNUS nos
+    //     testes de Fortitude, Reflexos ou Vontade contra aquele efeito.
+    //     Entra no TESTE, não tira dano nenhum;
+    //   • REDUÇÃO DE DANO ("RD 5"): ignora aquele tanto de TODO dano que
+    //     se sofre — corte, fogo, psíquico, o que for. Só vale para um
+    //     tipo quando diz qual ("redução de fogo 10"), e "RD 10/mágico"
+    //     vale para tudo MENOS o mágico. Dá para ter várias;
+    //   • IMUNIDADE: nenhuma consequência direta daquilo.
+    //  (Em 10/09/2026 a primeira versão disse que resistência "tirava o
+    //  dano daquele tipo" e que a RD era "de dano físico" — as duas
+    //  erradas, e ele pegou.)
     //  As três são LISTAS porque um personagem acumula várias — de
     //  raça, de item, de poder — e escrever tudo num campo só vira uma
     //  frase que ninguém lê no meio do combate.
@@ -151,8 +155,8 @@
       if (!Array.isArray(f[k])) f[k] = [];
       f[k] = f[k].map(x => ({
         id: (x && x.id) || novoId(),
-        valor: String((x && x.valor) || ''),      // "10", "5", "" (imunidade não tem número)
-        do_: String((x && (x.do_ || x.tipo)) || ''),   // "fogo", "corte", "veneno"…
+        valor: String((x && x.valor) || ''),      // "+2", "5", "" (imunidade não tem número)
+        do_: String((x && (x.do_ || x.tipo)) || ''),   // "magia", "fogo", "veneno", "Geral"…
         obs: String((x && x.obs) || ''),          // "só com a armadura", "3×/dia"…
       }));
     });
@@ -274,6 +278,12 @@
       critico: String((a && a.critico) || ''),
       tipo: String((a && a.tipo) || ''),
       alcance: String((a && a.alcance) || ''),
+      // A caixa rica embaixo da arma: o encanto, o que ela faz no
+      // crítico, a habilidade que custa PM — o que o jogador sabe que
+      // aquela espada é capaz. Nasce ABERTA (é o que ele pediu: a caixa
+      // "abaixo da espada"), e o ✎ dobra quem não quiser vê-la.
+      notas: String((a && a.notas) || ''),
+      aberto: (a && a.aberto) !== false,
     }));
 
     // ── O MELHOR AMIGO DO TREINADOR (Heróis de Arton, p. 20) ───────
@@ -622,7 +632,10 @@
   //  alto da ficha, e no meio de um combate isso quer dizer rolar
   //  Percepção lá embaixo e subir a página inteira para ler o número.
   //  Agora cada botão que rola tem o seu lugar de resposta (o `slot`), e
-  //  o que sai fica lá até a próxima rolagem daquele mesmo botão.
+  //  o que sai fica lá até a próxima rolagem daquele mesmo botão — ou
+  //  até o ✕ da própria pílula. Sem ele, uma sessão inteira de
+  //  Percepção, Reflexos e Vontade deixava a ficha pontilhada de
+  //  resultados velhos (pedido dele, 11/09/2026).
   //
   //  `slot` é 'per:percepcao', 'of:0', 'atq:2', 'dano:2', 'crit:2' ou
   //  'am:0:per:luta' (o melhor amigo) — e é o mesmo texto do [data-res]
@@ -673,6 +686,11 @@
 
   // Escreve o resultado no lugar dele, sem redesenhar a ficha (um
   // re-render tiraria o cursor de quem estivesse digitando ao lado).
+  //  Só a marca de erro liga e desliga: as outras classes da pílula
+  //  (fi-res--atq, fi-res--crit) dizem ONDE ela mora na linha. Trocar o
+  //  className inteiro as apagava, e os três resultados do ataque caíam
+  //  nas colunas estreitas da grade — o número do dano e o do crítico
+  //  saíam para fora da pílula (a print 3 dele, 11/09/2026).
   function pintarResultado(slot) {
     if (!secao) return;
     const el = secao.querySelector('[data-res="' + cssEsc(slot) + '"]');
@@ -680,11 +698,13 @@
     const r = resultados[slot];
     if (!r) { el.innerHTML = ''; el.hidden = true; return; }
     el.hidden = false;
-    el.className = 'fi-res' + (r.erro ? ' fi-res--erro' : '');
-    el.innerHTML = r.erro
+    el.classList.toggle('fi-res--erro', !!r.erro);
+    el.innerHTML = (r.erro
       ? '⚠ ' + esc(r.erro)
       : '<strong class="fi-res-num">' + r.total + '</strong>' +
-        '<span class="fi-res-det">' + r.detalhe + '</span>';
+        '<span class="fi-res-det">' + r.detalhe + '</span>') +
+      '<button type="button" class="fi-res-x" data-acao="fecha-res" data-slot="' + esc(slot) + '"' +
+      ' title="Fechar esta rolagem" aria-label="Fechar esta rolagem">✕</button>';
   }
   // os slots têm ':' no nome, que em seletor CSS precisa de escape
   function cssEsc(s) { return String(s).replace(/:/g, '\\:'); }
@@ -1280,23 +1300,23 @@
     return p.join(' + ').replace(/\+ -/g, '− ');
   }
 
-  // ── O QUE APARA O DANO ───────────────────────────────────────────
-  //  Resistência, redução de dano e imunidade são TRÊS coisas, e a
-  //  mesa vive confundindo as duas primeiras. Aqui elas têm cartão
-  //  próprio, cada uma com o seu formato — e a nota do cartão diz, em
-  //  uma linha, o que cada uma faz.
-  //
-  //  ⚠ "Teste de resistência" NÃO é isto: Fortitude, Reflexos e Vontade
-  //  são PERÍCIAS em T20, e estão no cartão de cima, com as outras 29.
+  // ── RESISTÊNCIAS, RD E IMUNIDADES (Tormenta 20, p. 229) ──────────
+  //  Três coisas, e a mesa vive confundindo as duas primeiras. Aqui
+  //  cada uma tem a sua lista e a sua frase, com as palavras do livro:
+  //   • resistência entra no TESTE (Fortitude, Reflexos ou Vontade);
+  //   • a RD entra no DANO — em todo dano, se não disser de qual;
+  //   • imunidade: nem uma coisa nem outra, aquilo não o atinge.
   const APARAM = [
     { campo: 'resistencias', titulo: '🜂 Resistências', icone: '🜂',
-      dica: 'Resistência a fogo 10, a frio 5… tira aquele tanto do dano DAQUELE tipo',
-      phValor: '10', phDo: 'fogo, frio, ácido…', comValor: true },
+      dica: 'Resistência a magia +2, a veneno +5… é BÔNUS no teste de Fortitude, Reflexos ou Vontade contra aquele efeito — não tira dano',
+      phValor: '+2', titValor: 'Bônus no teste de resistência contra este efeito',
+      phDo: 'magia, veneno, medo, fogo…', comValor: true },
     { campo: 'reducoes', titulo: '🛡 Redução de dano', icone: '🛡',
-      dica: 'RD 5 tira 5 de todo dano físico. Dá para ter várias, cada uma com a sua condição',
-      phValor: '5', phDo: 'todo dano físico, corte…', comValor: true },
+      dica: 'RD 5 ignora 5 de TODO dano que você sofre — corte, fogo, psíquico, magia… Só vale para um tipo quando diz qual ("redução de fogo 10"). Dá para ter várias',
+      phValor: '5', titValor: 'Quanto de dano ignora',
+      phDo: 'Geral', comValor: true },
     { campo: 'imunidades', titulo: '🚫 Imunidades', icone: '🚫',
-      dica: 'O que não lhe atinge de jeito nenhum: veneno, medo, sono…',
+      dica: 'Nenhuma consequência direta daquilo: um tipo de dano, uma condição, um efeito — veneno, medo, sono…',
       phValor: '', phDo: 'veneno, doenças, medo…', comValor: false },
   ];
 
@@ -1305,7 +1325,7 @@
       <li class="fi-apara">
         ${bloco.comValor
           ? `<input class="fi-num fi-num--mini" type="text" inputmode="numeric" value="${esc(x.valor)}"
-                   data-campo="${bloco.campo}.${i}.valor" placeholder="${bloco.phValor}" title="Quanto tira">`
+                   data-campo="${bloco.campo}.${i}.valor" placeholder="${bloco.phValor}" title="${esc(bloco.titValor)}">`
           : `<span class="fi-apara-icone" aria-hidden="true">${bloco.icone}</span>`}
         <input class="fi-txt" type="text" value="${esc(x.do_)}" data-campo="${bloco.campo}.${i}.do_"
                placeholder="${esc(bloco.phDo)}" autocomplete="off">
@@ -1334,8 +1354,8 @@
 
     return `
       <div class="fi-cartao fi-bloco fi-aparas">
-        <h2 class="fi-cartao-tit">🛡 O que apara o dano
-          <span class="fi-cartao-nota">resistência, redução e imunidade são três coisas diferentes</span>
+        <h2 class="fi-cartao-tit">🛡 Resistências, RD e imunidades
+          <span class="fi-cartao-nota">três coisas diferentes (Tormenta 20, p. 229)</span>
         </h2>
         <div class="fi-apara-grade">${cartoes}</div>
         <label class="fi-campo fi-campo--largo fi-prof">
@@ -1343,10 +1363,12 @@
           <input class="fi-txt" type="text" value="${esc(f.proficiencias)}" data-campo="proficiencias"
                  placeholder="armas simples, armaduras leves, escudos…" autocomplete="off">
         </label>
-        <p class="fi-nota"><strong>Teste de resistência é outra coisa.</strong> Fortitude, Reflexos e
-          Vontade são <em>perícias</em> em Tormenta 20 — estão lá em cima, na lista das 29, com o selo
-          <strong>resistência</strong>. O que está neste cartão é o que <em>apara o dano</em> depois que
-          ele acontece.</p>
+        <p class="fi-nota"><strong>Resistência entra no teste; RD entra no dano.</strong> Com resistência a
+          fogo +5, você soma +5 no Fortitude, Reflexos ou Vontade que rolar para resistir a um efeito de fogo —
+          são as perícias com o selo <strong>resistência</strong>, lá em cima. Com RD 5, sem dizer de quê, você
+          ignora 5 de <em>qualquer</em> dano que sofrer; <em>redução de fogo 10</em> vale só para fogo, e
+          <em>RD 10/mágico</em> vale para tudo, menos o dano mágico. Imunidade: você não sofre nenhuma
+          consequência <em>direta</em> daquilo.</p>
       </div>`;
   }
 
@@ -1426,6 +1448,7 @@
           <input class="fi-num fi-num--mini" type="number" value="${o.outros}"
                  data-campo="oficios.${i}.outros" title="Outros bônus neste ofício">
           <span class="fi-per-marcas">
+            ${marcasDe(p)}
             ${f.oficios.length > 2
               ? `<button type="button" class="fi-mini fi-mini--x" data-acao="tira-oficio" data-i="${i}"
                          title="Tirar este ofício">✕</button>` : ''}
@@ -1466,15 +1489,26 @@
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.critico)}" data-campo="ataques.${i}.critico"
                placeholder="19/×3" autocomplete="off">
         <button type="button" class="fi-atq-crit" data-acao="rolar-critico" data-i="${i}"
-                title="Rolar o dano CRÍTICO: ${esc(expressaoCritica(a.dano || '—', mult))} (só os dados multiplicam, ×${mult})">💥 ×${mult}</button>
+                title="${esc(tituloCritico(a.dano, mult))}">💥 Crítico</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.tipo)}" data-campo="ataques.${i}.tipo"
                placeholder="corte" autocomplete="off">
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.alcance)}" data-campo="ataques.${i}.alcance"
                placeholder="corpo a corpo" autocomplete="off">
+        <button type="button" class="fi-mini fi-atq-nota ${a.aberto ? 'fi-mini--on' : ''}${a.notas && !a.aberto ? ' fi-mini--tem' : ''}"
+                data-acao="atq-texto" data-i="${i}" aria-pressed="${a.aberto}"
+                title="${a.aberto ? 'Dobrar o texto desta arma' : 'Abrir o texto desta arma — o encanto, o que ela faz'}">✎</button>
         <button type="button" class="fi-mini fi-mini--x" data-acao="tira-ataque" data-i="${i}" title="Tirar este ataque">✕</button>
         <span class="fi-res fi-res--atq" data-res="atq:${i}" hidden></span>
         <span class="fi-res fi-res--atq" data-res="dano:${i}" hidden></span>
         <span class="fi-res fi-res--atq fi-res--crit" data-res="crit:${i}" hidden></span>
+        ${a.aberto ? `
+        <div class="ga-rich-wrap ga-rich-wrap--barra fi-atq-texto" data-jog-edita>
+          ${window.GA_barraRica ? window.GA_barraRica() : ''}
+          <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
+               data-campo="ataques.${i}.notas"
+               data-ph="O que esta arma faz: o encanto, o efeito no crítico, a habilidade que custa PM…"
+               >${a.notas}</div>
+        </div>` : ''}
       </li>`;
     }).join('');
 
@@ -1485,15 +1519,23 @@
         </h2>
         <div class="fi-atq-cab">
           <span>Arma</span><span>Perícia</span><span>Extra</span><span>Ataque</span>
-          <span>Dano</span><span></span><span>Crítico</span><span></span><span>Tipo</span><span>Alcance</span><span></span>
+          <span>Dano</span><span></span><span>Crítico</span><span></span><span>Tipo</span><span>Alcance</span><span></span><span></span>
         </div>
         <ul class="fi-atq-lista">${linhas || '<li class="fi-atq-vazio">Nenhum ataque ainda.</li>'}</ul>
         <button type="button" class="fi-add fi-add--menor" data-acao="add-ataque">＋ Acrescentar ataque</button>
         <p class="fi-nota">O dano de corpo a corpo e de arremesso soma a Força — escreva o total aqui (ex.: <code>1d8+3</code>).
-          O <strong>💥</strong> rola o crítico <em>à mão</em>, porque quem decide se o 20 virou crítico é a mesa:
+          O <strong>💥 Crítico</strong> rola o crítico <em>à mão</em>, porque quem decide se o 20 virou crítico é a mesa:
           ele multiplica só os <strong>dados</strong>, como o livro manda (p. 142) — <code>1d8+3</code> com ×2 vira
-          <code>2d8+3</code>, e o +3 não dobra.</p>
+          <code>2d8+3</code>, e o +3 não dobra. Embaixo de cada arma vai o texto dela (o encanto, o que ela faz);
+          o <strong>✎</strong> dobra e desdobra.</p>
       </div>`;
+  }
+  // O multiplicador saiu do botão ("💥 ×2" virou "💥 Crítico", a pedido
+  // dele) e mora na dica do mouse — que é a conta inteira, com os dados
+  // já multiplicados. O campo "19/×3" ao lado continua dizendo o ×N.
+  function tituloCritico(dano, mult) {
+    return 'Rolar o dano CRÍTICO: ' + expressaoCritica(dano || '—', mult) +
+      ' (×' + mult + ' — só os dados multiplicam, p. 142)';
   }
 
   // ═══ O MELHOR AMIGO DO TREINADOR (Heróis de Arton, p. 17–22) ══════
@@ -1895,7 +1937,7 @@
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(x.critico)}" data-campo="amigos.${i}.ataques.${j}.critico"
                placeholder="×2" autocomplete="off">
         <button type="button" class="fi-atq-crit" data-acao="am-rolar-crit" data-i="${i}" data-j="${j}"
-                title="Rolar o dano CRÍTICO — só os dados multiplicam (Tormenta20, p. 142)">💥 ×<span data-der="am:${i}:mult:${j}">${multiplicadorCritico(x.critico)}</span></button>
+                title="${esc(tituloCritico(dano, multiplicadorCritico(x.critico)))}">💥 Crítico</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(x.tipo)}" data-campo="amigos.${i}.ataques.${j}.tipo"
                placeholder="corte, impacto…" autocomplete="off">
         <button type="button" class="fi-mini fi-mini--x" data-acao="am-tira-atq" data-i="${i}" data-j="${j}"
@@ -1945,8 +1987,26 @@
   //  (window.GA_MAGIAS, as 254 do livro): "＋ Adicionar magia" abre a
   //  busca e o que entra já vem com círculo, PM, execução, alcance,
   //  alvo, duração e resistência preenchidos — ninguém copia à mão.
+  //  O TEXTO INTEIRO, E O RECOLHER. Cada magia mostra o texto do livro
+  //  direto no cartão (pedido dele, 11/09/2026 — o resumo de uma linha
+  //  não servia na mesa). Com isso a lista de um conjurador de nível
+  //  alto fica comprida, e o inventário lá no fim; então cada cartão
+  //  recolhe até sobrar só o nome, e o "Recolher todas" faz o mesmo com
+  //  a lista inteira.
+  //  O que está recolhido é deste NAVEGADOR, não da ficha: o mestre
+  //  recolhendo as magias de um jogador não pode recolhê-las na tela do
+  //  jogador — e não há por que mandar isso para a mesa.
+  const MAG_FECHADAS_KEY = 'grifosAlados.fichaMagiasFechadas';
+  let magiasFechadas = (function () {
+    try { return JSON.parse(localStorage.getItem(MAG_FECHADAS_KEY) || '{}') || {}; } catch (e) { return {}; }
+  })();
+  function guardarFechadas() {
+    try { window.GA_guardar(MAG_FECHADAS_KEY, JSON.stringify(magiasFechadas)); } catch (e) {}
+  }
+
   function blocoMagias(f) {
     const temBase = Array.isArray(window.GA_MAGIAS) && window.GA_MAGIAS.length;
+    const todasFechadas = f.magias.length > 0 && f.magias.every(m => magiasFechadas[m.id]);
     // agrupadas por círculo, como o livro lista e como se procura na mesa
     const porCirculo = {};
     f.magias.forEach((m, i) => {
@@ -1969,12 +2029,19 @@
         <h2 class="fi-cartao-tit">✨ Magias
           <span class="fi-cartao-nota">${f.magias.length} na ficha · a CD delas é a sua:
             <strong data-der="cd2">${cdBase(f)}</strong></span>
-          <button type="button" class="fi-add fi-add--menor fi-mag-add" data-acao="add-magia" ${temBase ? '' : 'disabled'}>
-            ＋ Adicionar magia</button>
+          <span class="fi-mag-botoes">
+            ${f.magias.length > 1 ? `<button type="button" class="fi-add fi-add--menor fi-mag-dobra" data-acao="dobra-magias"
+                    title="${todasFechadas ? 'Mostrar o texto de todas as magias' : 'Deixar só os nomes, para achar uma magia (ou chegar ao inventário) sem descer tanto'}"
+              >${todasFechadas ? '▾ Abrir todas' : '▸ Recolher todas'}</button>` : ''}
+            <button type="button" class="fi-add fi-add--menor fi-mag-add" data-acao="add-magia" ${temBase ? '' : 'disabled'}>
+              ＋ Adicionar magia</button>
+          </span>
         </h2>
         ${grupos || '<p class="fi-mag-vazia">Nenhuma magia ainda. O <strong>＋ Adicionar magia</strong> abre a busca nas ' +
           (temBase ? window.GA_MAGIAS.length : 254) + ' magias do livro — as mesmas da aba 📚 Consultas.</p>'}
-        <p class="fi-nota">Clique no <strong>nome da magia</strong> para abrir o texto inteiro, com o truque.
+        <p class="fi-nota">Cada magia traz o <strong>texto inteiro</strong> do livro. Clique no <strong>nome</strong>
+          para recolher ou abrir uma delas, e o <strong>▸ Recolher todas</strong> deixa só os nomes — para achar
+          uma magia, ou chegar ao inventário, sem descer a página inteira.
           Os <strong>＋ aprimoramentos</strong> ligam e desligam: o total em PM se acerta sozinho, e fica
           guardado para a próxima vez. O <strong>🔥</strong> gasta esse total — <em>dos temporários
           primeiro</em>, como manda a p. 105.</p>
@@ -1982,9 +2049,6 @@
       </div>`;
   }
 
-  // O cartão de uma magia na ficha. O nome inteiro é botão: clicou,
-  // abre o texto completo — era o que faltava para não precisar ir às
-  // Consultas com a ficha aberta do lado.
   // ── OS APRIMORAMENTOS, COM BOTÃO ─────────────────────────────────
   //  "em vez de o jogador ficar fazendo cálculo, apertar o botão de
   //  adicionar ou remover o Aprimorado e saber quantos PM gasta e
@@ -2101,16 +2165,21 @@
       ' PM por magia (o seu nível na classe que a deu — p. 224)</em>';
   }
 
+  // O cartão de uma magia na ficha. O nome inteiro é o botão que
+  // recolhe e abre: recolhida, sobra a linha do nome, com o 🔥 à mão
+  // para lançar sem precisar abrir.
   function cartaoMagia(f, m, i) {
     const p = pmDaMagia(m);
+    const fechada = !!magiasFechadas[m.id];
     return `
-      <li class="fi-mag">
-        <button type="button" class="fi-mag-abrir" data-acao="ver-magia" data-i="${i}"
-                title="Abrir o texto inteiro de ${esc(m.nome)}">
+      <li class="fi-mag${fechada ? ' fi-mag--fechada' : ''}">
+        <button type="button" class="fi-mag-abrir" data-acao="dobra-magia" data-i="${i}"
+                aria-expanded="${!fechada}"
+                title="${fechada ? 'Abrir' : 'Recolher'} o texto de ${esc(m.nome)}">
+          <span class="fi-mag-seta" aria-hidden="true">${fechada ? '▸' : '▾'}</span>
           <span class="fi-mag-nome">${esc(m.nome)}</span>
           ${m.escola ? `<span class="fi-mag-tag">${esc(m.escola)}</span>` : ''}
           ${m.tipo ? `<span class="fi-mag-tag fi-mag-tag--tipo">${esc(m.tipo)}</span>` : ''}
-          <span class="fi-mag-lupa" aria-hidden="true">👁</span>
         </button>
         <span class="fi-mag-acoes">
           ${p.total ? `<button type="button" class="fi-mag-pm-btn${p.extra ? ' fi-mag-pm-btn--apr' : ''}"
@@ -2120,19 +2189,32 @@
           <button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
                   title="Tirar ${esc(m.nome)} da ficha">✕</button>
         </span>
-        <div class="fi-mag-linha">
-          ${campoMag('Execução', m.execucao)}${campoMag('Alcance', m.alcance)}
-          ${campoMag('Alvo', m.alvo)}${campoMag('Duração', m.duracao)}
-          ${campoMag('Resistência', m.resistencia)}
-        </div>
-        ${m.resumo ? `<p class="fi-mag-resumo">${esc(m.resumo)}</p>` : ''}
-        ${blocoAprimoramentos(f, m, i)}
-        <input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
-               placeholder="sua anotação (alvo preferido, quem costuma acompanhar…)" autocomplete="off">
+        ${fechada ? '' : `
+        <div class="fi-mag-corpo">
+          <div class="fi-mag-linha">
+            ${campoMag('Execução', m.execucao)}${campoMag('Alcance', m.alcance)}
+            ${campoMag('Alvo', m.alvo)}${campoMag('Duração', m.duracao)}
+            ${campoMag('Resistência', m.resistencia)}
+          </div>
+          <div class="fi-mag-desc">${descricaoDaMagia(m)}</div>
+          ${blocoAprimoramentos(f, m, i)}
+          <input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
+                 placeholder="sua anotação (alvo preferido, quem costuma acompanhar…)" autocomplete="off">
+        </div>`}
       </li>`;
   }
   function campoMag(rot, v) {
     return v ? `<span class="fi-mag-campo"><em>${esc(rot)}</em> ${esc(v)}</span>` : '';
+  }
+  // O texto do livro no cartão: a descrição e o truque. Os
+  // aprimoramentos não se repetem aqui — estão logo abaixo, com botão.
+  // Sem a base carregada (ficha exportada, site sem as magias), fica o
+  // resumo que a ficha guardou ao adicionar.
+  function descricaoDaMagia(m) {
+    const b = daBase(m.mid);
+    if (!b) return m.resumo ? '<p>' + esc(m.resumo) + '</p>' : '';
+    return (b.descricao || []).map(p => '<p>' + esc(p) + '</p>').join('') +
+      (b.truque ? '<p class="fi-mag-truque"><strong>Truque.</strong> ' + esc(b.truque) + '</p>' : '');
   }
 
   // ── INVENTÁRIO ───────────────────────────────────────────────────
@@ -2338,14 +2420,14 @@
       const a = f.ataques[+b.dataset.i];
       if (a) b.textContent = sinal(valorAtaque(f, a)) + ' 🎲';
     });
-    // e o ×N do crítico segue o que está escrito no campo "19/×3"
+    // e a dica do 💥 Crítico segue o que está escrito no campo "19/×3"
     secao.querySelectorAll('[data-acao="rolar-critico"]').forEach(b => {
       const a = f.ataques[+b.dataset.i];
-      if (!a) return;
-      const mult = multiplicadorCritico(a.critico);
-      b.textContent = '💥 ×' + mult;
-      b.title = 'Rolar o dano CRÍTICO: ' + expressaoCritica(a.dano || '—', mult) +
-                ' (só os dados multiplicam, ×' + mult + ')';
+      if (a) b.title = tituloCritico(a.dano, multiplicadorCritico(a.critico));
+    });
+    secao.querySelectorAll('[data-acao="am-rolar-crit"]').forEach(b => {
+      const a = f.amigos[+b.dataset.i], x = a && a.ataques[+b.dataset.j];
+      if (x) b.title = tituloCritico(danoAmigo(f, a, x), multiplicadorCritico(x.critico));
     });
   }
 
@@ -2370,7 +2452,6 @@
       case 'per':      el.textContent = sinal(valorPericiaAmigo(f, a, p[3])); break;
       case 'atq':      el.textContent = sinal(valorAtaqueAmigo(f, a, x)); break;
       case 'dano':     el.textContent = danoAmigo(f, a, x) || 'dano'; break;
-      case 'mult':     el.textContent = multiplicadorCritico(x.critico); break;
       case 'truq':     el.innerHTML = contaTruques(f, a); break;
     }
   }
@@ -2470,6 +2551,12 @@
       salvar(); return render();
     }
     if (acao === 'trazer') return trazerDaGaveta(btn.dataset.id);
+    // o ✕ da pílula: some com a rolagem daqui. A da mesa (o painel
+    // 🎲 Rolagens) continua lá — aquela é o histórico de todo mundo
+    if (acao === 'fecha-res') {
+      delete resultados[btn.dataset.slot];
+      return pintarResultado(btn.dataset.slot);
+    }
     if (!f) return;
 
     if (acao === 'remover') {
@@ -2493,7 +2580,7 @@
     }
     if (acao === 'add-classe')  { f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
     if (acao === 'tira-classe') { f.classes.splice(+btn.dataset.i, 1); if (!f.classes.length) f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
-    if (acao === 'add-ataque')  { f.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0, dano: '', critico: '', tipo: '', alcance: '' }); salvar(); return render(); }
+    if (acao === 'add-ataque')  { f.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0, dano: '', critico: '', tipo: '', alcance: '', notas: '', aberto: true }); salvar(); return render(); }
 
     // ── O QUE APARA O DANO ─────────────────────────────────────────
     if (acao === 'add-apara') {
@@ -2509,6 +2596,13 @@
       sujar(f.id, c); salvar(); return render();
     }
     if (acao === 'tira-ataque') { f.ataques.splice(+btn.dataset.i, 1); salvar(); return render(); }
+    // o texto da arma dobra e desdobra, e o estado fica guardado, como o
+    // do item do inventário
+    if (acao === 'atq-texto') {
+      const a = f.ataques[+btn.dataset.i];
+      if (a) { a.aberto = !a.aberto; sujar(f.id, 'ataques'); salvar(); render(); }
+      return;
+    }
 
     // ── O MELHOR AMIGO ─────────────────────────────────────────────
     if (acao.slice(0, 3) === 'am-') return aoClicarAmigo(f, btn, acao);
@@ -2586,8 +2680,23 @@
 
     // ── MAGIAS ─────────────────────────────────────────────────────
     if (acao === 'add-magia')  return abrirBuscaMagia(f);
-    if (acao === 'tira-magia') { f.magias.splice(+btn.dataset.i, 1); salvar(); return render(); }
-    if (acao === 'ver-magia')  return verMagia(f.magias[+btn.dataset.i]);
+    if (acao === 'tira-magia') {
+      const m = f.magias[+btn.dataset.i];
+      if (m && magiasFechadas[m.id]) { delete magiasFechadas[m.id]; guardarFechadas(); }
+      f.magias.splice(+btn.dataset.i, 1); salvar(); return render();
+    }
+    // recolher e abrir não mexem na ficha: é deste navegador (ver blocoMagias)
+    if (acao === 'dobra-magia') {
+      const m = f.magias[+btn.dataset.i];
+      if (!m) return;
+      if (magiasFechadas[m.id]) delete magiasFechadas[m.id]; else magiasFechadas[m.id] = 1;
+      guardarFechadas(); return render();
+    }
+    if (acao === 'dobra-magias') {
+      const abrir = f.magias.every(m => magiasFechadas[m.id]);
+      f.magias.forEach(m => { if (abrir) delete magiasFechadas[m.id]; else magiasFechadas[m.id] = 1; });
+      guardarFechadas(); return render();
+    }
     if (acao === 'gastar-magia') {
       const m = f.magias[+btn.dataset.i];
       if (!m) return;
@@ -2918,8 +3027,9 @@
   //  MESMA window.GA_MAGIAS que a aba 📚 Consultas usa, e copia para
   //  dentro da ficha só o que se lê na mesa (círculo, PM, execução,
   //  alcance, alvo, duração, resistência e o resumo). O texto inteiro
-  //  fica de fora de propósito — 👁 ver vai buscar na hora, e uma ficha
-  //  não precisa carregar o livro junto para ser exportada.
+  //  fica de fora de propósito — o cartão vai buscá-lo na base na hora
+  //  de desenhar, e uma ficha não precisa carregar o livro junto para
+  //  ser exportada.
   const semAcento = window.GA_semAcento || (s => String(s || '').toLowerCase());
 
   function daBase(mid) {
@@ -3040,19 +3150,6 @@
     }
 
     telaBusca('');
-  }
-
-  // 👁 ver — o texto integral, buscado na base na hora.
-  function verMagia(m) {
-    if (!m || !window.GA_abrirModal) return;
-    window.GA_abrirModal(`
-      <div class="ga-modal-cab">
-        <span>${esc(m.nome)}</span>
-        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
-      </div>
-      ${fichaDaMagia(m)}
-      <div class="fi-mag-texto">${corpoDaMagia(m.mid, m.resumo)}</div>
-      ${m.obs ? '<p class="fi-mag-obs-modal"><strong>Sua anotação.</strong> ' + esc(m.obs) + '</p>' : ''}`);
   }
 
   // ═══ O QUE A FICHA EMPRESTA AO RESTO DO SITE ══════════════════════
