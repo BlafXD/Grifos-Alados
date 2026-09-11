@@ -276,12 +276,94 @@
       alcance: String((a && a.alcance) || ''),
     }));
 
+    // ── O MELHOR AMIGO DO TREINADOR (Heróis de Arton, p. 20) ───────
+    //  Só aparece com o Treinador na ficha, mas o dado fica guardado sem
+    //  ele: tirar a classe por engano não pode apagar um bicho inteiro.
+    //  O PV ATUAL de cada amigo mora à parte, em `amigosPv` (id → PV).
+    //  A escrita da mesa é por grupo, e o PV é o que o mestre baixa no
+    //  meio do combate: se morasse em `amigos`, o jogador escrevendo a
+    //  descrição do bicho mandaria o PV velho junto e desfaria o golpe.
+    const cfg = (f.treinador && typeof f.treinador === 'object') ? f.treinador : {};
+    f.treinador = {
+      treino: (cfg.treino === 'numeros' || cfg.treino === 'intensivo') ? cfg.treino : '',
+      ecletico: cfg.ecletico === true,
+    };
+    f.amigos = lista(f.amigos).map(normalizarAmigo);
+    const pvs = (f.amigosPv && typeof f.amigosPv === 'object') ? f.amigosPv : {};
+    f.amigosPv = {};
+    f.amigos.forEach(a => { if (typeof pvs[a.id] === 'number') f.amigosPv[a.id] = pvs[a.id]; });
+
     f.blocos = f.blocos || {};
     TODOS_BLOCOS.forEach(b => { if (typeof f.blocos[b.campo] !== 'string') f.blocos[b.campo] = ''; });
     return f;
   }
 
   function novoId() { return 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  // O Realtime Database devolve a lista como objeto quando falta um
+  // índice ({0: …, 2: …}); isto aceita as duas formas.
+  function lista(x) {
+    if (Array.isArray(x)) return x.filter(v => v != null);
+    if (x && typeof x === 'object') {
+      return Object.keys(x).sort((p, q) => p - q).map(k => x[k]).filter(v => v != null);
+    }
+    return [];
+  }
+
+  function normalizarAmigo(a) {
+    a = (a && typeof a === 'object') ? a : {};
+    const A = D.AMIGO;
+    const atrs = (a.atributos && typeof a.atributos === 'object') ? a.atributos : {};
+    const pers = (a.pericias && typeof a.pericias === 'object') ? a.pericias : {};
+    const truq = (a.truques && typeof a.truques === 'object') ? a.truques : {};
+    const am = {
+      id: a.id || novoId(),
+      nome: String(a.nome || ''),
+      especie: String(a.especie || ''),                  // "lobo", "golem de ferro"…
+      tipo: D.tipoAmigo(a.tipo) ? a.tipo : '',
+      tamanho: A.tamanhos.indexOf(a.tamanho) >= 0 ? a.tamanho : 'Médio',
+      parceiro: D.parceiro(a.parceiro) ? a.parceiro : '',
+      atributos: {},
+      pericias: {},
+      truques: {},                                       // chave → quantas vezes
+      pvOutros: typeof a.pvOutros === 'number' ? a.pvOutros : 0,
+      defOutros: typeof a.defOutros === 'number' ? a.defOutros : 0,
+      deslocamento: typeof a.deslocamento === 'number' ? a.deslocamento : A.deslocamento,
+      ataques: lista(a.ataques).map(x => ({
+        id: (x && x.id) || novoId(),
+        nome: String((x && x.nome) || ''),
+        pericia: (x && x.pericia === 'pontaria') ? 'pontaria' : 'luta',
+        extra: (x && typeof x.extra === 'number') ? x.extra : 0,
+        dano: String((x && x.dano) || ''),               // só o DADO: a Força entra sozinha
+        critico: String((x && x.critico) || ''),
+        tipo: String((x && x.tipo) || ''),
+      })),
+      notas: String(a.notas || ''),
+    };
+    // Os atributos guardados são os FINAIS (o tipo e os truques de número
+    // fixo já somados — ver trocarTipo e pacoteTruque), como na ficha do
+    // jogador: o que se lê na caixa é o que vale.
+    D.ATRIBUTOS.forEach(x => {
+      am.atributos[x.chave] = typeof atrs[x.chave] === 'number' ? atrs[x.chave] : A.atributos[x.chave];
+    });
+    A.pericias.forEach(k => {
+      const e = (pers[k] && typeof pers[k] === 'object') ? pers[k] : {};
+      am.pericias[k] = { treinada: e.treinada === true, outros: typeof e.outros === 'number' ? e.outros : 0 };
+    });
+    D.TRUQUES.forEach(T => {
+      const n = parseInt(truq[T.chave], 10);
+      if (n > 0) am.truques[T.chave] = T.vezes ? Math.min(9, n) : 1;
+    });
+    return am;
+  }
+  // O amigo que acabou de chegar: a ficha da p. 20, com a arma natural.
+  function novoAmigo() {
+    const A = D.AMIGO;
+    return normalizarAmigo({
+      atributos: Object.assign({}, A.atributos),
+      ataques: [{ nome: A.arma.nome, pericia: 'luta', extra: 0, dano: A.arma.dano, critico: A.arma.critico, tipo: '' }],
+    });
+  }
 
   // A ficha aberta pode ser minha (localStorage) ou de outra pessoa da
   // mesa (só o mestre e o auxiliar chegam nessas). As duas se editam
@@ -384,7 +466,25 @@
       const C = D.classe(c.classe);
       if (C) total += Math.max(0, c.nivel || 0) * C.pmNivel;
     });
+    atributosDoPm(f).forEach(x => { total += atr(f, x.atr); });
     return total + (f.pm.outros || 0);
+  }
+  // O atributo que as classes que lançam magia somam ao PM (e o paladino,
+  // pelo Abençoado) — ver `pmAtr` no ficha-data.js. Cada atributo entra
+  // UMA vez, por mais classes que o deem: "um clérigo/druida não soma
+  // duas vezes sua Sabedoria nos pontos de mana" (p. 226). O arcanista
+  // soma o atributo do Caminho, que é o mesmo da CD.
+  function atributosDoPm(f) {
+    const vistos = {}, saida = [];
+    f.classes.forEach(c => {
+      const C = D.classe(c.classe);
+      if (!C || !C.pmAtr || !(c.nivel > 0)) return;
+      const k = C.pmAtr === 'chave' ? f.cdAtributo : C.pmAtr;
+      if (vistos[k]) return;
+      vistos[k] = true;
+      saida.push({ atr: k, classe: C });
+    });
+    return saida;
   }
   // Defesa = 10 + Destreza + armadura + escudo (p. 106)
   function defesa(f) {
@@ -528,6 +628,10 @@
   //  'livre' — e é o mesmo texto do [data-res] no HTML.
   let resultados = {};        // slot → { total, detalhe, erro }
   let historico = [];         // as últimas rolagens desta ficha
+  // Do melhor amigo, só desta tela (não sobem para a mesa): o Direcionar
+  // armado para o próximo teste, e a lista inteira de truques aberta.
+  let direcionar = {};        // id do amigo → true
+  let truquesAbertos = {};    // id do amigo → true
   const HIST_KEY = 'grifosAlados.fichaRolagens';
   const HIST_MAX = 30;
 
@@ -594,6 +698,7 @@
   function abrirFicha(id) {
     dados.aberta = id;
     resultados = {};
+    direcionar = {};
     carregarHistorico(id);
   }
   function d20(valor) { return valor === 0 ? '1d20' : '1d20' + sinal(valor); }
@@ -793,7 +898,7 @@
     }
 
     html += bloqueIdentidade(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
-            blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
+            blocoAmigos(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
             blocoCompras(f);
     const donoAberta = donoDe(f.id);
     html += `
@@ -1068,11 +1173,12 @@
             <label class="fi-extra fi-extra--temp"><span>✦ PM temporários</span>
               <input class="fi-num" type="number" value="${f.pm.temp}" data-campo="pm.temp"
                      title="Mesma regra dos PV temporários: entram por cima e saem primeiro"></label>
-            <label class="fi-extra"><span>PV de outras fontes</span>
+            <label class="fi-extra"><span>＋ PV máximo</span>
               <input class="fi-num" type="number" value="${f.pv.outros}" data-campo="pv.outros"
-                     title="O que poderes e itens somam ao PV máximo"></label>
-            <label class="fi-extra"><span>PM de outras fontes</span>
-              <input class="fi-num" type="number" value="${f.pm.outros}" data-campo="pm.outros"></label>
+                     title="O que soma ao PV máximo além da classe: poderes (Vitalidade, Sarado…), itens, raça. Pode ser negativo."></label>
+            <label class="fi-extra"><span>＋ PM máximo</span>
+              <input class="fi-num" type="number" value="${f.pm.outros}" data-campo="pm.outros"
+                     title="O que soma ao PM máximo além da classe e do atributo: poderes (Vontade de Ferro, Totem Espiritual, Elo com a Natureza…), itens. Negativo para uma Penalidade de PM (p. 221)."></label>
           </div>
           <p class="fi-nota fi-nota--temp">Os temporários entram <em>por cima</em> do seu total, mesmo passando do
             máximo, e são <strong>sempre os primeiros a serem gastos</strong> — por isso o dano daqui desce
@@ -1108,7 +1214,8 @@
             <div class="fi-linha">
               <span>CD das suas habilidades</span>
               <span><strong data-der="cd">${cdBase(f)}</strong>
-                <select class="fi-sel fi-sel--mini" data-campo="cdAtributo" title="Atributo-chave das suas habilidades">${opsCd}</select></span>
+                <select class="fi-sel fi-sel--mini" data-campo="cdAtributo"
+                        title="Atributo-chave das suas habilidades — no arcanista, é também o que ele soma no PM (Bruxo e Mago: Int; Feiticeiro: Car)">${opsCd}</select></span>
             </div>
             <div class="fi-linha">
               <span>Deslocamento</span>
@@ -1170,7 +1277,11 @@
         ? `${esc(C.nome)}: ${C.pvBase}${sinalCon(con)} + ${x.nivel - 1}×(${C.pvNivel}${sinalCon(con)})`
         : `${esc(C.nome)}: ${x.nivel}×(${C.pvNivel}${sinalCon(con)})`;
     });
-    const pm = c.map(x => `${D.classe(x.classe).pmNivel}×${x.nivel}`).join(' + ');
+    const pm = c.map(x => `${D.classe(x.classe).pmNivel}×${x.nivel}`).join(' + ') +
+      atributosDoPm(f).map(x => {
+        const v = atr(f, x.atr);
+        return ` + ${atrCurto(x.atr)} ${v < 0 ? '−' + Math.abs(v) : v} <em>(${esc(x.classe.nome.toLowerCase())})</em>`;
+      }).join('');
     return `PV = ${partes.join(' + ')}${f.pv.outros ? ' ' + sinal(f.pv.outros) : ''} · PM = ${pm}${f.pm.outros ? ' ' + sinal(f.pm.outros) : ''}`;
   }
   function sinalCon(con) { return con === 0 ? '' : (con > 0 ? ' + ' + con : ' − ' + Math.abs(con)); }
@@ -1406,6 +1517,428 @@
           ele multiplica só os <strong>dados</strong>, como o livro manda (p. 142) — <code>1d8+3</code> com ×2 vira
           <code>2d8+3</code>, e o +3 não dobra.</p>
       </div>`;
+  }
+
+  // ═══ O MELHOR AMIGO DO TREINADOR (Heróis de Arton, p. 17–22) ══════
+  //  Um parceiro com ficha COMPLETA — atributos, PV, Defesa, perícias,
+  //  ataques e truques —, que age com as ações do treinador. As contas
+  //  são as da p. 20. O nível que vale é o de treinador; com o poder
+  //  Treinador Eclético, o de personagem (só para PV, perícias e Defesa).
+  //  Não vem do bestiário nem fala com ele: "se você escolher um melhor
+  //  amigo gorlogg, ele terá as características abaixo, não aquelas
+  //  descritas em Tormenta20, p. 291" — é o livro que separa.
+  function nivelTreinador(f) {
+    return f.classes.reduce((s, c) => s + (c.classe === 'treinador' ? Math.max(0, c.nivel || 0) : 0), 0);
+  }
+  function nivelDoAmigo(f) {
+    return Math.max(1, f.treinador.ecletico ? nivel(f) : nivelTreinador(f));
+  }
+  function temTruque(a, k) { return (a.truques[k] || 0) > 0; }
+  function nomeAmigo(a) { return a.nome || 'melhor amigo'; }
+
+  // "Começa com 16 pontos de vida + Constituição e ganha 4 PV + Con por
+  // nível" — a Constituição é a DELE. Treino Intensivo: "+4 PV por nível".
+  function pvAmigoMax(f, a) {
+    const n = nivelDoAmigo(f), con = a.atributos.con || 0;
+    let pv = D.AMIGO.pvBase + con + (n - 1) * (D.AMIGO.pvNivel + con);
+    if (f.treinador.treino === 'intensivo') pv += 4 * n;
+    return pv + (a.pvOutros || 0);
+  }
+  function pvAmigoAtual(f, a) {
+    const v = f.amigosPv[a.id];
+    return typeof v === 'number' ? v : pvAmigoMax(f, a);
+  }
+  // p. 236: "Quando seus pontos de vida chegam a –10 ou a um número
+  // negativo igual à metade de seus PV totais (o que for mais baixo),
+  // você morre."
+  function limiteMorte(max) { return Math.min(-10, -Math.floor(max / 2)); }
+  function estadoAmigo(f, a) {
+    const pv = pvAmigoAtual(f, a), max = pvAmigoMax(f, a);
+    if (pv <= limiteMorte(max)) return 'morto';
+    return pv <= 0 ? 'caido' : '';
+  }
+  function textoEstado(f, a) {
+    const e = estadoAmigo(f, a);
+    if (e === 'morto') return '💀 <strong>Morto.</strong> O treinador fica atordoado por 1d4 rodadas, e um novo ' +
+      'melhor amigo se treina com um mês de trabalho (p. 17).';
+    if (e === 'caido') return '🩸 <strong>Caído</strong>, com 0 PV ou menos — morre em −' +
+      Math.abs(limiteMorte(pvAmigoMax(f, a))) + ' PV (Tormenta20, p. 236).';
+    return '';
+  }
+
+  // "Defesa. 10 + Destreza + Carisma do treinador + metade do nível do
+  // treinador." Treinamento Defensivo troca a metade pelo nível; Veloz, +2.
+  function defesaAmigo(f, a) {
+    const n = nivelDoAmigo(f);
+    return 10 + (a.atributos.des || 0) + atr(f, 'car') +
+      (temTruque(a, 'treinamento-defensivo') ? n : Math.floor(n / 2)) +
+      (temTruque(a, 'veloz') ? 2 : 0) + (a.defOutros || 0);
+  }
+
+  // Treinada por escolha (as 3 da p. 20), pelo tipo (o animal) ou pelo
+  // truque Veloz (Atletismo — "se já for, recebe +2 nessa perícia").
+  function treinoAmigo(a, k) {
+    const T = D.tipoAmigo(a.tipo);
+    const doTipo = !!(T && T.treina && T.treina.indexOf(k) >= 0);
+    const doVeloz = k === 'atletismo' && temTruque(a, 'veloz');
+    const escolhida = !!(a.pericias[k] && a.pericias[k].treinada);
+    return { treinada: escolhida || doTipo || doVeloz, escolhida: escolhida, doTipo: doTipo, doVeloz: doVeloz };
+  }
+  function valorPericiaAmigo(f, a, k) {
+    const P = D.pericia(k);
+    if (!P) return 0;
+    const n = nivelDoAmigo(f), t = treinoAmigo(a, k);
+    let v = Math.floor(n / 2) + (a.atributos[P.atr] || 0) + treino(n, t.treinada) + ((a.pericias[k] || {}).outros || 0);
+    if (t.doVeloz && (t.escolhida || t.doTipo)) v += 2;
+    return v;
+  }
+  // As 3 que o jogador escolheu — as do tipo não contam, vêm de graça.
+  function escolhidasAmigo(a) {
+    return D.AMIGO.pericias.filter(k => { const t = treinoAmigo(a, k); return t.escolhida && !t.doTipo; }).length;
+  }
+
+  // Treinamento Marcial: +2, e +1 por patamar acima de iniciante.
+  function marcialAmigo(f, a) {
+    if (!temTruque(a, 'treinamento-marcial')) return 0;
+    const n = nivelDoAmigo(f);
+    return 2 + (n >= 17 ? 3 : n >= 11 ? 2 : n >= 5 ? 1 : 0);
+  }
+  function valorAtaqueAmigo(f, a, x) {
+    return valorPericiaAmigo(f, a, x.pericia) + (x.extra || 0) +
+      (temTruque(a, 'amigo-feroz') ? 2 : 0) + marcialAmigo(f, a);
+  }
+  // O dano é o dado da arma + a Força (corpo a corpo) + Treinamento
+  // Marcial. Aqui a ficha soma sozinha, ao contrário dos ataques do
+  // personagem: a arma é a do livro e a Força é a do bicho, que ninguém
+  // lembra de corrigir quando o Condicionamento Especial a sobe.
+  function danoAmigo(f, a, x) {
+    const dado = String(x.dano || '').trim();
+    if (!dado) return '';
+    const b = (x.pericia === 'luta' ? (a.atributos.for || 0) : 0) + marcialAmigo(f, a);
+    return b ? dado + (b > 0 ? '+' : '-') + Math.abs(b) : dado;
+  }
+
+  // RD: a do Treino Intensivo (5; 10 no 11º nível; 15 no 17º) e a do
+  // truque Redução de Dano. São habilidades diferentes, e "efeitos de
+  // habilidades e perícias acumulam entre si" (p. 226).
+  function rdAmigo(f, a) {
+    const nt = nivelTreinador(f), partes = [];
+    if (f.treinador.treino === 'intensivo' && nt >= 5) {
+      partes.push({ v: nt >= 17 ? 15 : nt >= 11 ? 10 : 5, de: 'Treino Intensivo' });
+    }
+    if (temTruque(a, 'reducao-de-dano')) partes.push({ v: 5, de: 'truque' });
+    return partes;
+  }
+  function textoRd(f, a) {
+    const p = rdAmigo(f, a);
+    if (!p.length) return '';
+    const total = p.reduce((s, x) => s + x.v, 0);
+    return 'RD <strong>' + total + '</strong> <em>(' + p.map(x => x.de + (p.length > 1 ? ' ' + x.v : '')).join(' + ') + ')</em>';
+  }
+  function deslocAmigo(a) { return (a.deslocamento || 0) + (temTruque(a, 'veloz') ? 3 : 0); }
+
+  // "Ele começa com dois truques a sua escolha e recebe um novo truque a
+  // cada três níveis seguintes" (p. 17): 2, 3 no 4º, 4 no 7º… O Treino
+  // Intensivo dá mais um, e outro no 11º. O poder Ensinar Truque a ficha
+  // não conhece — por isso a conta DIZ, e não trava.
+  function truquesDoNivel(f) {
+    const n = nivelTreinador(f);
+    if (n < 1) return 0;
+    let t = 2 + Math.floor((n - 1) / 3);
+    if (f.treinador.treino === 'intensivo' && n >= 5) t += n >= 11 ? 2 : 1;
+    return t;
+  }
+  function contaTruques(f, a) {
+    const tem = Object.keys(a.truques).reduce((s, k) => s + (a.truques[k] || 0), 0);
+    const da = truquesDoNivel(f);
+    return '<strong>' + tem + '</strong> marcado' + (tem === 1 ? '' : 's') + ' · o nível dá <strong>' + da + '</strong>' +
+      (tem > da ? ' <em>— passou; o poder Ensinar Truque dá mais um por patamar</em>' : '');
+  }
+  // Amigo Veterano e Amigo Mestre sobem o degrau do parceiro (p. 21).
+  function degrauParceiro(a) {
+    return temTruque(a, 'amigo-mestre') ? 'mestre' : temTruque(a, 'amigo-veterano') ? 'veterano' : 'iniciante';
+  }
+
+  function contaPvAmigo(f, a) {
+    const n = nivelDoAmigo(f), con = a.atributos.con || 0;
+    let t = 'PV = ' + D.AMIGO.pvBase + sinalCon(con) +
+      (n > 1 ? ' + ' + (n - 1) + '×(' + D.AMIGO.pvNivel + sinalCon(con) + ')' : '');
+    if (f.treinador.treino === 'intensivo') t += ' + 4×' + n + ' <em>(Treino Intensivo)</em>';
+    if (a.pvOutros) t += ' ' + sinal(a.pvOutros);
+    return t;
+  }
+  function contaDefAmigo(f, a) {
+    const n = nivelDoAmigo(f);
+    const p = ['10', 'Des ' + sinal(a.atributos.des || 0), 'Car do treinador ' + sinal(atr(f, 'car')),
+      temTruque(a, 'treinamento-defensivo') ? 'nível ' + n + ' (Treinamento Defensivo)' : 'metade do nível ' + Math.floor(n / 2)];
+    if (temTruque(a, 'veloz')) p.push('Veloz 2');
+    if (a.defOutros) p.push('outros ' + sinal(a.defOutros));
+    return 'Defesa = ' + p.join(' + ').replace(/\+ -/g, '− ');
+  }
+
+  // Trocar de tipo tira o pacote do velho e põe o do novo (p. 20–21).
+  function trocarTipo(a, de, para) {
+    const A = D.tipoAmigo(de), B = D.tipoAmigo(para);
+    if (A && A.atr) Object.keys(A.atr).forEach(k => { a.atributos[k] = (a.atributos[k] || 0) - A.atr[k]; });
+    if (B && B.atr) Object.keys(B.atr).forEach(k => { a.atributos[k] = (a.atributos[k] || 0) + B.atr[k]; });
+  }
+  // Os truques de número fixo (Amigão: +1 For e Enorme; Anatomia
+  // Humanoide: Int –2 em vez de –4) entram ao ligar e saem ao desligar.
+  function pacoteTruque(a, T, estava, fica) {
+    if (estava === fica) return;
+    const s = fica ? 1 : -1;
+    if (T.atr) Object.keys(T.atr).forEach(k => { a.atributos[k] = (a.atributos[k] || 0) + s * T.atr[k]; });
+    if (T.tamanho) {
+      if (fica) a.tamanho = T.tamanho;
+      else if (a.tamanho === T.tamanho) a.tamanho = 'Grande';       // o Amigão pede um amigo Grande
+    }
+  }
+
+  function blocoAmigos(f) {
+    if (nivelTreinador(f) < 1) return '';
+    const cfg = f.treinador;
+    const opcoes = [
+      ['', '— ainda não escolhido —'],
+      ['numeros', 'Conquistar pelos Números — um segundo amigo'],
+      ['intensivo', 'Treino Intensivo — +4 PV por nível, RD e um truque'],
+    ].map(([v, r]) => `<option value="${v}" ${cfg.treino === v ? 'selected' : ''}>${esc(r)}</option>`).join('');
+    const cabem = cfg.treino === 'numeros' ? 2 : 1;
+    return `
+      <div class="fi-cartao fi-amigos">
+        <h2 class="fi-cartao-tit">🐾 Melhor amigo
+          <span class="fi-cartao-nota">o parceiro do treinador, com ficha completa — Heróis de Arton, p. 20</span>
+        </h2>
+        <div class="fi-am-opcoes">
+          <label class="fi-campo fi-campo--largo"><span class="fi-rot">Treino especializado (5º nível)</span>
+            <select class="fi-sel" data-campo="treinador.treino" title="Heróis de Arton, p. 19">${opcoes}</select></label>
+          <button type="button" class="fi-am-chave ${cfg.ecletico ? 'fi-am-chave--on' : ''}" data-acao="am-ecletico"
+                  aria-pressed="${cfg.ecletico}"
+                  title="Poder Treinador Eclético (p. 19): os amigos usam o nível de personagem, em vez do de treinador, para PV, perícias e Defesa">
+            ${cfg.ecletico ? '✓' : '＋'} Treinador Eclético</button>
+          <span class="fi-am-nivel" title="Para o amigo vale o nível de treinador (p. 20) — ou o de personagem, com Treinador Eclético">
+            nível do amigo <strong data-der="am:nivel">${nivelDoAmigo(f)}</strong></span>
+        </div>
+        ${f.amigos.map((a, i) => cartaoAmigo(f, a, i)).join('') ||
+          `<p class="fi-am-vazio">O melhor amigo ainda não está na ficha. O botão abaixo o cria com as regras da
+            p. 20: For 1, Des 1, Con 1, Int –4, Sab 1, Car 0, 16 PV e uma arma natural de 1d8.</p>`}
+        ${f.amigos.length < cabem ? `<button type="button" class="fi-add" data-acao="am-criar">${
+          f.amigos.length ? '＋ O segundo melhor amigo (Conquistar pelos Números)' : '🐾 Criar o melhor amigo'}</button>` : ''}
+      </div>`;
+  }
+
+  function cartaoAmigo(f, a, i) {
+    const T = D.tipoAmigo(a.tipo), P = D.parceiro(a.parceiro);
+    const opts = (itens, atual, rot) => '<option value="">' + rot + '</option>' + itens.map(x =>
+      `<option value="${x.chave}" ${x.chave === atual ? 'selected' : ''}>${esc(x.nome)}</option>`).join('');
+    const opsTam = D.AMIGO.tamanhos.map(t =>
+      `<option value="${esc(t)}" ${t === a.tamanho ? 'selected' : ''}>${esc(t)}</option>`).join('');
+    const degrau = degrauParceiro(a);
+    const max = pvAmigoMax(f, a), atual = pvAmigoAtual(f, a);
+    const estado = textoEstado(f, a);
+    const dir = !!direcionar[a.id];
+    const aberto = !!truquesAbertos[a.id];
+    const truques = D.TRUQUES.filter(t => aberto || temTruque(a, t.chave));
+
+    return `
+      <div class="fi-am">
+        <div class="fi-am-cab">
+          <label class="fi-campo fi-campo--largo"><span class="fi-rot">Nome</span>
+            <input class="fi-txt fi-txt--nome" type="text" value="${esc(a.nome)}" data-campo="amigos.${i}.nome"
+                   placeholder="o nome do bicho" autocomplete="off"></label>
+          <label class="fi-campo"><span class="fi-rot">Espécie</span>
+            <input class="fi-txt" type="text" value="${esc(a.especie)}" data-campo="amigos.${i}.especie"
+                   placeholder="lobo, golem, espírito…" autocomplete="off"></label>
+        </div>
+        <div class="fi-am-cab">
+          <label class="fi-campo fi-campo--curto"><span class="fi-rot">Tipo</span>
+            <select class="fi-sel" data-campo="amigos.${i}.tipo" title="Heróis de Arton, p. 20–21">${opts(D.TIPOS_AMIGO, a.tipo, '— tipo —')}</select></label>
+          <label class="fi-campo fi-campo--curto"><span class="fi-rot">Tamanho</span>
+            <select class="fi-sel" data-campo="amigos.${i}.tamanho">${opsTam}</select></label>
+          <label class="fi-campo fi-campo--largo"><span class="fi-rot">Tipo de parceiro</span>
+            <select class="fi-sel" data-campo="amigos.${i}.parceiro" title="Tormenta20, p. 260–262">${opts(D.PARCEIROS, a.parceiro, '— o que ele faz por você —')}</select></label>
+        </div>
+        ${T ? `<p class="fi-am-linha"><strong>${esc(T.nome)}.</strong> ${esc(T.texto)}
+          <em>${T.treina ? 'Os atributos do tipo já estão somados e as duas perícias já vêm treinadas.' : 'Os atributos do tipo já estão somados.'}</em></p>` : ''}
+        ${P ? `<p class="fi-am-linha fi-am-linha--parc"><strong>🤝 ${esc(P.nome)} ${degrau}:</strong> ${esc(P[degrau])}
+          ${P.nota ? esc(P.nota) + ' ' : ''}<em>Só vale com ele em alcance curto de você.</em></p>` : ''}
+
+        <div class="fi-am-grade">
+          <div class="fi-am-sub">
+            <h3 class="fi-am-tit">Atributos</h3>
+            <div class="fi-atr-grade">${D.ATRIBUTOS.map(x => `
+              <label class="fi-atr">
+                <span class="fi-atr-nome">${esc(x.curto)}</span>
+                <input class="fi-atr-val" type="number" value="${a.atributos[x.chave]}"
+                       data-campo="amigos.${i}.atributos.${x.chave}" title="${esc(x.nome)} — o tipo já está somado">
+              </label>`).join('')}</div>
+          </div>
+          <div class="fi-am-sub">
+            <h3 class="fi-am-tit">Vida &amp; Defesa</h3>
+            <div class="fi-medidor">
+              <span class="fi-medidor-rot">PV</span>
+              <button type="button" class="fi-passo" data-acao="am-pv-menos" data-i="${i}" title="−1 PV">−</button>
+              <input class="fi-medidor-val" type="number" value="${atual}" data-campo="amigosPv.${esc(a.id)}"
+                     title="PV atual — em branco, volta a cheio">
+              <span class="fi-medidor-max">/ <strong data-der="am:${i}:pvmax">${max}</strong></span>
+              <button type="button" class="fi-passo" data-acao="am-pv-mais" data-i="${i}" title="+1 PV">+</button>
+            </div>
+            <div class="fi-barra-pv">
+              <span class="fi-barra-parte" data-der="am:${i}:pvbarra" style="width:${porcento(Math.max(0, atual), max)}%"></span>
+            </div>
+            <p class="fi-am-estado" data-der="am:${i}:estado" ${estado ? '' : 'hidden'}>${estado}</p>
+            <div class="fi-grande">
+              <span class="fi-grande-rot">Defesa</span>
+              <strong class="fi-grande-val" data-der="am:${i}:def">${defesaAmigo(f, a)}</strong>
+              <span class="fi-am-rd" data-der="am:${i}:rd">${textoRd(f, a)}</span>
+            </div>
+            <div class="fi-linha"><span>Deslocamento</span>
+              <span><strong data-der="am:${i}:desloc">${deslocAmigo(a)}</strong> m
+                (<strong data-der="am:${i}:quad">${quadrados(deslocAmigo(a))}</strong> quadrados)</span></div>
+            <div class="fi-extras">
+              <label class="fi-extra"><span>＋ PV máximo</span>
+                <input class="fi-num" type="number" value="${a.pvOutros}" data-campo="amigos.${i}.pvOutros"></label>
+              <label class="fi-extra"><span>Defesa: outros</span>
+                <input class="fi-num" type="number" value="${a.defOutros}" data-campo="amigos.${i}.defOutros"
+                       title="Os itens que ele veste (até dois) e o que mais somar"></label>
+              <label class="fi-extra"><span>Desloc. base (m)</span>
+                <input class="fi-num" type="number" min="0" step="1.5" value="${a.deslocamento}" data-campo="amigos.${i}.deslocamento"
+                       title="12m pelo livro; a montaria usa o que ela fornece. O Veloz soma +3m sozinho."></label>
+            </div>
+            <p class="fi-conta" data-der="am:${i}:pvconta">${contaPvAmigo(f, a)}</p>
+            <p class="fi-conta" data-der="am:${i}:defconta">${contaDefAmigo(f, a)}</p>
+          </div>
+        </div>
+
+        <div class="fi-am-bloco">
+          <h3 class="fi-am-tit">Perícias
+            <span class="fi-cartao-nota">${escolhidasAmigo(a)} de ${D.AMIGO.escolhe} escolhidas${T && T.treina ? ', fora as do tipo' : ''}</span></h3>
+          <button type="button" class="fi-am-dir ${dir ? 'fi-am-dir--on' : ''}" data-acao="am-direcionar" data-i="${i}"
+                  aria-pressed="${dir}"
+                  title="Direcionar (p. 17): com ele em alcance curto, gaste 2 PM para somar o seu Carisma no teste de perícia dele — e o ataque é teste de perícia">
+            📣 ${dir ? 'Direcionando — o próximo teste soma Car' : 'Direcionar o próximo teste: 2 PM, Car'}
+            <strong data-der="am:car">${sinal(atr(f, 'car'))}</strong></button>
+          <ul class="fi-per-lista fi-per-lista--am">${D.AMIGO.pericias.map(k => linhaPericiaAmigo(f, a, i, k)).join('')}</ul>
+        </div>
+
+        <div class="fi-am-bloco">
+          <h3 class="fi-am-tit">Ataques
+            <span class="fi-cartao-nota">escreva só o dado da arma — a Força${marcialAmigo(f, a) ? ' e o Treinamento Marcial entram' : ' entra'} sozinha${marcialAmigo(f, a) ? 's' : ''}</span></h3>
+          <div class="fi-atq-cab fi-atq--am">
+            <span>Arma</span><span>Perícia</span><span>Extra</span><span>Ataque</span>
+            <span>Dado</span><span></span><span>Crítico</span><span></span><span>Tipo</span><span></span>
+          </div>
+          <ul class="fi-atq-lista">${a.ataques.map((x, j) => linhaAtaqueAmigo(f, a, i, x, j)).join('') ||
+            '<li class="fi-atq-vazio">Nenhuma arma natural.</li>'}</ul>
+          <button type="button" class="fi-add fi-add--menor" data-acao="am-add-atq" data-i="${i}">＋ Arma natural</button>
+          ${notaAtaquesAmigo(a)}
+        </div>
+
+        <div class="fi-am-bloco">
+          <h3 class="fi-am-tit">Truques
+            <span class="fi-cartao-nota" data-der="am:${i}:truq">${contaTruques(f, a)}</span>
+            <button type="button" class="fi-mini fi-am-ver" data-acao="am-ver-truques" data-i="${i}">
+              ${aberto ? '▴ só os marcados' : '▾ ver os ' + D.TRUQUES.length}</button></h3>
+          ${truques.length ? `<ul class="fi-apr-lista">${truques.map(t => linhaTruque(a, i, t)).join('')}</ul>`
+            : '<p class="fi-am-vazio">Nenhum truque marcado ainda — o ▾ mostra os 22 do livro, com o texto de cada um.</p>'}
+        </div>
+
+        <div class="fi-am-bloco">
+          <h3 class="fi-am-tit">Anotações
+            <span class="fi-cartao-nota">o que ele veste (até dois itens), como ele é, de onde veio…</span></h3>
+          ${caixaRicaCampo('amigos.' + i + '.notas', a.notas, 'Itens vestidos, manias, a história de vocês dois…')}
+        </div>
+        <div class="fi-am-rodape">
+          <button type="button" class="fi-remover" data-acao="am-tirar" data-i="${i}">✕ Tirar ${esc(nomeAmigo(a))} da ficha</button>
+        </div>
+      </div>`;
+  }
+
+  function linhaPericiaAmigo(f, a, i, k) {
+    const P = D.pericia(k), t = treinoAmigo(a, k), v = valorPericiaAmigo(f, a, k);
+    const selo = t.doTipo ? 'do tipo' : (t.doVeloz ? (t.escolhida ? 'Veloz +2' : 'Veloz') : '');
+    return `
+      <li class="fi-per ${t.treinada ? 'fi-per--treinada' : ''}">
+        ${t.doTipo
+          ? `<span class="fi-per-check fi-per-check--auto" aria-pressed="true" title="Treinada pelo tipo — vem de graça">✓</span>`
+          : botaoTreinar(t.escolhida, 'data-acao="am-treinar" data-i="' + i + '" data-p="' + k + '"')}
+        <button type="button" class="fi-per-rolar" data-acao="am-rolar-per" data-i="${i}" data-p="${k}"
+                title="Rolar 1d20 ${sinal(v)} de ${esc(P.nome)}">
+          <span class="fi-per-nome">${esc(P.nome)}</span>
+          <span class="fi-per-atr">${esc(atrCurto(P.atr))}</span>
+          <span class="fi-per-val" data-der="am:${i}:per:${k}">${sinal(v)}</span>
+          <span class="fi-per-dado" aria-hidden="true">🎲</span>
+        </button>
+        <input class="fi-num fi-num--mini" type="number" value="${a.pericias[k].outros}"
+               data-campo="amigos.${i}.pericias.${k}.outros" title="Outros bônus nesta perícia">
+        <span class="fi-per-marcas">${selo ? '<span class="fi-selo">' + selo + '</span>' : ''}${
+          P.resist ? '<span class="fi-selo fi-selo--res" title="Teste de resistência">resistência</span>' : ''}${
+          P.ataque ? '<span class="fi-selo fi-selo--atq" title="Teste de ataque ' + esc(P.ataque) + '">ataque</span>' : ''}</span>
+        <span class="fi-res" data-res="am:${i}:per:${k}" hidden></span>
+      </li>`;
+  }
+
+  function linhaAtaqueAmigo(f, a, i, x, j) {
+    const v = valorAtaqueAmigo(f, a, x), dano = danoAmigo(f, a, x);
+    return `
+      <li class="fi-atq fi-atq--am">
+        <input class="fi-txt fi-txt--atq" type="text" value="${esc(x.nome)}" data-campo="amigos.${i}.ataques.${j}.nome"
+               placeholder="mordida, garra…" autocomplete="off">
+        <select class="fi-sel fi-sel--mini" data-campo="amigos.${i}.ataques.${j}.pericia" title="Com qual perícia ele ataca">
+          <option value="luta" ${x.pericia === 'luta' ? 'selected' : ''}>Luta</option>
+          <option value="pontaria" ${x.pericia === 'pontaria' ? 'selected' : ''}>Pontaria</option>
+        </select>
+        <input class="fi-num fi-num--mini" type="number" value="${x.extra}" data-campo="amigos.${i}.ataques.${j}.extra"
+               title="Bônus extra deste ataque">
+        <button type="button" class="fi-atq-val" data-acao="am-rolar-atq" data-i="${i}" data-j="${j}"
+                title="Rolar o ataque"><span data-der="am:${i}:atq:${j}">${sinal(v)}</span> 🎲</button>
+        <input class="fi-txt fi-txt--mini" type="text" value="${esc(x.dano)}" data-campo="amigos.${i}.ataques.${j}.dano"
+               placeholder="1d8" autocomplete="off" title="Só o dado da arma — a Força entra sozinha">
+        <button type="button" class="fi-atq-dano" data-acao="am-rolar-dano" data-i="${i}" data-j="${j}"
+                title="Rolar o dano">🎲 <span data-der="am:${i}:dano:${j}">${esc(dano || 'dano')}</span></button>
+        <input class="fi-txt fi-txt--mini" type="text" value="${esc(x.critico)}" data-campo="amigos.${i}.ataques.${j}.critico"
+               placeholder="×2" autocomplete="off">
+        <button type="button" class="fi-atq-crit" data-acao="am-rolar-crit" data-i="${i}" data-j="${j}"
+                title="Rolar o dano CRÍTICO — só os dados multiplicam (Tormenta20, p. 142)">💥 ×<span data-der="am:${i}:mult:${j}">${multiplicadorCritico(x.critico)}</span></button>
+        <input class="fi-txt fi-txt--mini" type="text" value="${esc(x.tipo)}" data-campo="amigos.${i}.ataques.${j}.tipo"
+               placeholder="corte, impacto…" autocomplete="off">
+        <button type="button" class="fi-mini fi-mini--x" data-acao="am-tira-atq" data-i="${i}" data-j="${j}"
+                title="Tirar esta arma">✕</button>
+        <span class="fi-res fi-res--atq" data-res="am:${i}:atq:${j}" hidden></span>
+        <span class="fi-res fi-res--atq" data-res="am:${i}:dano:${j}" hidden></span>
+        <span class="fi-res fi-res--atq fi-res--crit" data-res="am:${i}:crit:${j}" hidden></span>
+      </li>`;
+  }
+  // O que a ficha NÃO mexe sozinha na arma, e por quê: a margem de
+  // ameaça e o passo de dano dependem de qual arma é, e o livro deixa
+  // escolher entre várias (Ameaças de Arton, p. 374).
+  function notaAtaquesAmigo(a) {
+    const p = [];
+    if (a.tipo === 'animal') p.push('o <strong>animal</strong> tem +1 na margem de ameaça (escreva <code>19/×2</code> no crítico)');
+    if (a.tipo === 'monstro') p.push('o <strong>monstro</strong> tem uma segunda arma natural — o ＋ acrescenta');
+    if (temTruque(a, 'amigo-feroz')) p.push('o <strong>Amigo Feroz</strong> já soma +2 no ataque; a margem +2 e o passo de dano são com você');
+    if (temTruque(a, 'amigao')) p.push('o <strong>Amigão</strong> sobe o dano um passo (1d8 vira 1d10)');
+    return p.length ? '<p class="fi-nota">Na arma: ' + p.join('; ') + '.</p>' : '';
+  }
+
+  function linhaTruque(a, i, T) {
+    const n = a.truques[T.chave] || 0;
+    const ctrl = T.vezes
+      ? `<span class="fi-apr-ctrl">
+           <button type="button" class="fi-apr-btn fi-apr-btn--menos" data-acao="am-truque-menos" data-i="${i}" data-t="${T.chave}"
+                   ${n ? '' : 'disabled'} title="Uma vez a menos">−</button>
+           <span class="fi-apr-vezes">×${n}</span>
+           <button type="button" class="fi-apr-btn" data-acao="am-truque" data-i="${i}" data-t="${T.chave}"
+                   title="Mais uma vez — o livro deixa tomar de novo">＋</button>
+         </span>`
+      : `<button type="button" class="fi-apr-btn" data-acao="am-truque" data-i="${i}" data-t="${T.chave}"
+                 aria-pressed="${!!n}" title="${n ? 'Desmarcar' : 'Marcar este truque'}">
+           <span class="fi-apr-sinal">${n ? '✓' : '＋'}</span></button>`;
+    return `
+      <li class="fi-apr ${n ? 'fi-apr--on' : ''}">
+        ${ctrl}
+        <span class="fi-apr-txt"><strong>${esc(T.nome)}.</strong> ${esc(T.texto)}
+          ${T.req ? '<span class="fi-apr-marca fi-apr-marca--req">requer ' + esc(T.req) + '</span>' : ''}</span>
+      </li>`;
   }
 
   // ── MAGIAS ───────────────────────────────────────────────────────
@@ -1713,12 +2246,16 @@
 
   // ── OS BLOCOS DE TEXTO ───────────────────────────────────────────
   function caixaRica(f, b) {
+    return caixaRicaCampo('blocos.' + b.campo, f.blocos[b.campo], b.dica);
+  }
+  // A mesma caixa, para qualquer campo da ficha (as anotações do amigo).
+  function caixaRicaCampo(campo, html, dica) {
     const barra = window.GA_barraRica ? window.GA_barraRica() : '';
     return `
       <div class="ga-rich-wrap ga-rich-wrap--barra" data-jog-edita>
         ${barra}
         <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
-             data-campo="blocos.${b.campo}" data-ph="${esc(b.dica)}">${f.blocos[b.campo] || ''}</div>
+             data-campo="${campo}" data-ph="${esc(dica)}">${html || ''}</div>
       </div>`;
   }
   function blocoTextos(f) {
@@ -1738,6 +2275,7 @@
     const n = nivel(f);
     secao.querySelectorAll('[data-der]').forEach(el => {
       const d = el.dataset.der;
+      if (d.slice(0, 3) === 'am:')  { derivadoAmigo(f, el, d); return; }
       if (d.slice(0, 4) === 'per:') { el.textContent = sinal(valorPericia(f, d.slice(4))); return; }
       if (d.slice(0, 4) === 'atq:') { el.textContent = sinal(valorAtaque(f, f.ataques[+d.slice(4)] || {})); return; }
       if (d.slice(0, 3) === 'of:')  { el.textContent = sinal(valorOficio(f, +d.slice(3))); return; }
@@ -1789,6 +2327,11 @@
       const temp = secao.querySelector('[data-campo="' + q + '.temp"]');
       if (temp && document.activeElement !== temp) temp.value = f[q].temp || 0;
     });
+    // e o PV atual de cada melhor amigo (o ± e a subida de nível mexem nele)
+    f.amigos.forEach(a => {
+      const campo = secao.querySelector('[data-campo="amigosPv.' + a.id + '"]');
+      if (campo && document.activeElement !== campo) campo.value = pvAmigoAtual(f, a);
+    });
     // o botão de ataque não é [data-der] (é botão), mas o valor dele muda
     secao.querySelectorAll('[data-acao="rolar-ataque"]').forEach(b => {
       const a = f.ataques[+b.dataset.i];
@@ -1803,6 +2346,32 @@
       b.title = 'Rolar o dano CRÍTICO: ' + expressaoCritica(a.dano || '—', mult) +
                 ' (só os dados multiplicam, ×' + mult + ')';
     });
+  }
+
+  // Os números do melhor amigo: 'am:0:pvmax', 'am:0:per:luta',
+  // 'am:1:atq:0'… — o índice é a posição em f.amigos.
+  function derivadoAmigo(f, el, d) {
+    if (d === 'am:nivel') { el.textContent = nivelDoAmigo(f); return; }
+    if (d === 'am:car')   { el.textContent = sinal(atr(f, 'car')); return; }
+    const p = d.split(':'), a = f.amigos[+p[1]];
+    if (!a) return;
+    const x = a.ataques[+p[3]] || {};
+    switch (p[2]) {
+      case 'pvmax':    el.textContent = pvAmigoMax(f, a); break;
+      case 'pvbarra':  el.style.width = porcento(Math.max(0, pvAmigoAtual(f, a)), pvAmigoMax(f, a)) + '%'; break;
+      case 'estado':   el.innerHTML = textoEstado(f, a); el.hidden = !el.innerHTML; break;
+      case 'pvconta':  el.innerHTML = contaPvAmigo(f, a); break;
+      case 'def':      el.textContent = defesaAmigo(f, a); break;
+      case 'defconta': el.innerHTML = contaDefAmigo(f, a); break;
+      case 'rd':       el.innerHTML = textoRd(f, a); break;
+      case 'desloc':   el.textContent = deslocAmigo(a); break;
+      case 'quad':     el.textContent = quadrados(deslocAmigo(a)); break;
+      case 'per':      el.textContent = sinal(valorPericiaAmigo(f, a, p[3])); break;
+      case 'atq':      el.textContent = sinal(valorAtaqueAmigo(f, a, x)); break;
+      case 'dano':     el.textContent = danoAmigo(f, a, x) || 'dano'; break;
+      case 'mult':     el.textContent = multiplicadorCritico(x.critico); break;
+      case 'truq':     el.innerHTML = contaTruques(f, a); break;
+    }
   }
 
   // ═══ ESCRITAS ═════════════════════════════════════════════════════
@@ -1833,9 +2402,12 @@
     if (el.type === 'number') {
       const bruto = String(el.value).trim();
       // PV/PM atuais em branco voltam a "cheio" (null); o resto vira 0
-      const ehAtual = (campo === 'pv.atual' || campo === 'pm.atual');
+      const ehAtual = (campo === 'pv.atual' || campo === 'pm.atual' || campo.indexOf('amigosPv.') === 0);
       const v = bruto === '' ? (ehAtual ? null : 0) : (parseFloat(bruto) || 0);
       gravarCampo(f, campo, v);
+      // o amigo cheio é a AUSÊNCIA da chave: o banco apaga null, e a
+      // ficha que voltasse dele pareceria outra
+      if (v === null && campo.indexOf('amigosPv.') === 0) delete f.amigosPv[campo.slice(9)];
     } else {
       gravarCampo(f, campo, el.value);
     }
@@ -1855,11 +2427,17 @@
     if (!f) return;
     if (el.tagName === 'SELECT') {
       const campo = el.dataset.campo;
+      // o tipo do amigo traz um pacote de atributos: sai o do velho e
+      // entra o do novo, ANTES de gravar o nome do tipo
+      const mt = /^amigos\.(\d+)\.tipo$/.exec(campo);
+      if (mt && f.amigos[+mt[1]]) trocarTipo(f.amigos[+mt[1]], f.amigos[+mt[1]].tipo, el.value);
       gravarCampo(f, campo, el.value);
       salvar();
       // trocar de classe muda PV, PM e todas as perícias — e o rótulo da
-      // conta por extenso; redesenhar é mais honesto que remendar
-      if (campo.indexOf('classes.') === 0) return render();
+      // conta por extenso; redesenhar é mais honesto que remendar. O
+      // mesmo vale para o tipo, o parceiro e o treino do amigo.
+      if (campo.indexOf('classes.') === 0 || campo.indexOf('amigos.') === 0 ||
+          campo.indexOf('treinador.') === 0) return render();
       atualizarDerivados();
     }
   }
@@ -1920,6 +2498,9 @@
       sujar(f.id, c); salvar(); return render();
     }
     if (acao === 'tira-ataque') { f.ataques.splice(+btn.dataset.i, 1); salvar(); return render(); }
+
+    // ── O MELHOR AMIGO ─────────────────────────────────────────────
+    if (acao.slice(0, 3) === 'am-') return aoClicarAmigo(f, btn, acao);
 
     if (acao === 'treinar') {
       const p = btn.dataset.p;
@@ -2074,6 +2655,102 @@
       sujar(f.id, 'compras');
       salvar(); return render();
     }
+  }
+
+  function aoClicarAmigo(f, btn, acao) {
+    if (acao === 'am-ecletico') {
+      f.treinador.ecletico = !f.treinador.ecletico;
+      sujar(f.id, 'treinador'); salvar(); return render();
+    }
+    if (acao === 'am-criar') {
+      f.amigos.push(novoAmigo());
+      sujar(f.id, 'amigos'); salvar(); return render();
+    }
+    const i = +btn.dataset.i, a = f.amigos[i];
+    if (!a) return;
+
+    if (acao === 'am-tirar') {
+      if (!confirm('Tirar ' + nomeAmigo(a) + ' desta ficha? A ficha dele vai junto, e isto não tem volta.')) return;
+      f.amigos.splice(i, 1);
+      delete f.amigosPv[a.id];
+      sujar(f.id, 'amigos'); sujar(f.id, 'amigosPv');
+      salvar(); return render();
+    }
+    if (acao === 'am-pv-menos' || acao === 'am-pv-mais') {
+      const agora = pvAmigoAtual(f, a);
+      f.amigosPv[a.id] = acao === 'am-pv-mais' ? Math.min(pvAmigoMax(f, a), agora + 1) : agora - 1;
+      sujar(f.id, 'amigosPv');
+      atualizarDerivados(); return salvar();
+    }
+    if (acao === 'am-treinar') {
+      const e = a.pericias[btn.dataset.p];
+      if (e) { e.treinada = !e.treinada; sujar(f.id, 'amigos'); salvar(); render(); }
+      return;
+    }
+    if (acao === 'am-truque' || acao === 'am-truque-menos') {
+      const T = D.truque(btn.dataset.t);
+      if (!T) return;
+      const antes = a.truques[T.chave] || 0;
+      const depois = acao === 'am-truque-menos' ? Math.max(0, antes - 1)
+        : (T.vezes ? Math.min(9, antes + 1) : (antes ? 0 : 1));
+      pacoteTruque(a, T, antes > 0, depois > 0);
+      if (depois) a.truques[T.chave] = depois; else delete a.truques[T.chave];
+      sujar(f.id, 'amigos'); salvar(); return render();
+    }
+    if (acao === 'am-ver-truques') { truquesAbertos[a.id] = !truquesAbertos[a.id]; return render(); }
+    if (acao === 'am-direcionar')  { direcionar[a.id] = !direcionar[a.id]; return render(); }
+    if (acao === 'am-add-atq') {
+      a.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0,
+                       dano: D.AMIGO.arma.dano, critico: D.AMIGO.arma.critico, tipo: '' });
+      sujar(f.id, 'amigos'); salvar(); return render();
+    }
+
+    const j = +btn.dataset.j, x = a.ataques[j];
+    if (acao === 'am-tira-atq') {
+      if (x) { a.ataques.splice(j, 1); sujar(f.id, 'amigos'); salvar(); render(); }
+      return;
+    }
+    // ── as rolagens: caem na mesa com o nome do bicho ──
+    const rot = quem(f) + ' · ' + nomeAmigo(a);
+    if (acao === 'am-rolar-per') {
+      const P = D.pericia(btn.dataset.p);
+      if (!P) return;
+      const d = usarDirecionar(f, a);
+      rolar(d20(valorPericiaAmigo(f, a, P.chave) + d.bonus), rot + ' · ' + P.nome + d.rotulo, 'am:' + i + ':per:' + P.chave);
+      return d.depois();
+    }
+    if (!x) return;
+    if (acao === 'am-rolar-atq') {
+      const d = usarDirecionar(f, a);
+      rolar(d20(valorAtaqueAmigo(f, a, x) + d.bonus), rot + ' · ' + (x.nome || 'ataque') + d.rotulo, 'am:' + i + ':atq:' + j);
+      return d.depois();
+    }
+    const dano = danoAmigo(f, a, x);
+    if (!dano) return;
+    if (acao === 'am-rolar-dano') {
+      rolar(dano, rot + ' · dano de ' + (x.nome || 'ataque'), 'am:' + i + ':dano:' + j);
+      return;
+    }
+    if (acao === 'am-rolar-crit') {
+      const mult = multiplicadorCritico(x.critico);
+      rolar(expressaoCritica(dano, mult), rot + ' · 💥 CRÍTICO ×' + mult + ' de ' + (x.nome || 'ataque'), 'am:' + i + ':crit:' + j);
+    }
+  }
+
+  // Direcionar (p. 17): "Se o seu melhor amigo estiver em alcance curto e
+  // fizer um teste de perícia, você pode gastar 2 PM para somar seu
+  // Carisma no teste dele." Fica armado até o próximo teste — e o ataque
+  // É teste de perícia (Luta ou Pontaria). Os 2 PM saem do treinador
+  // pelo caminho de todo gasto de mana: os temporários primeiro.
+  function usarDirecionar(f, a) {
+    if (!direcionar[a.id]) return { bonus: 0, rotulo: '', depois: () => {} };
+    const car = atr(f, 'car');
+    delete direcionar[a.id];
+    return {
+      bonus: car,
+      rotulo: ' (direcionado, Car ' + sinal(car) + ')',
+      depois: () => { aplicarDano(f, 'pm', 2, 'Direcionar'); render(); },
+    };
   }
 
   // ═══ O QUE CHEGA DA MESA ══════════════════════════════════════════

@@ -27,7 +27,7 @@ E, na mesma conversa, a regra que manda em tudo o que está aqui:
 
 | Arquivo | O quê |
 |---|---|
-| `js/ficha-data.js` | as 29 perícias, as 30 classes (16 básicas e 14 variantes), os 6 atributos, os tamanhos |
+| `js/ficha-data.js` | as 29 perícias, as 30 classes (16 básicas e 14 variantes), os 6 atributos, os tamanhos, e o melhor amigo do Treinador (tipos, truques, parceiros) |
 | `js/ficha.js` | o modelo, as contas, a tela, a rolagem e o salvamento |
 | `css/ficha_style.css` | o visual (prefixo `fi-`) |
 | `index.html` | a 📖 Fichas ganhou **sub-abas**: ✍ Ficha de Personagem e 📄 Fichas em PDF |
@@ -44,7 +44,7 @@ Tudo de Tormenta 20 — Edição Jogo do Ano, lido do PDF em 08/09/2026.
 | Treino | +2 (1º–6º), +4 (7º–14º), +6 (15º+) | p. 114 |
 | Defesa | 10 + Destreza + armadura + escudo + outros | p. 106 |
 | PV | inicial da classe + Con, e (PV por nível + Con) por nível acima do 1º | cap. 2 |
-| PM | PM por nível × nível | cap. 2 |
+| PM | PM por nível × nível + o atributo das classes que lançam magia (uma vez cada atributo) | cap. 2; p. 226 |
 | Ataque | **é** teste de perícia — Luta (corpo a corpo) ou Pontaria (à distância) | cap. 5 |
 | CD das habilidades | 10 + ⌊nível ÷ 2⌋ + atributo-chave | cap. 6 |
 | Carga | 10 espaços + 2 por ponto de Força (ou −1 por ponto negativo) | p. 141 |
@@ -94,6 +94,20 @@ compartilhar. Aqui está, e a recomendação é **deixar como está**:
    rolagens usam. É o que faz a rolagem da ficha aparecer para todo mundo.
 4. **A caixa de texto rica (`GA_barraRica`, `.ga-rich`) também é compartilhada.**
    Mesma razão: é ferramenta de escrita do site inteiro, não conteúdo de ficha.
+
+5. **O melhor amigo parece bicho de bestiário, e não é** (11/09/2026). Duas
+   coisas dele têm gêmeas no `js/criar-ameaca-data.js`:
+   - os **cinco tipos** (animal, construto, espírito, monstro, morto-vivo) têm
+     os mesmos nomes dos tipos de criatura de lá — mas o pacote é outro: o do
+     amigo é o da Heróis de Arton, p. 20–21 (+1 em For, Des e Sab para o
+     animal…), e o de lá é o de Ameaças de Arton. *Não juntar*: o próprio livro
+     diz que o amigo gorlogg "terá as características abaixo, não aquelas
+     descritas em Tormenta20, p. 291";
+   - as **13 armas naturais** (`ARMAS_NATURAIS`, linha 339: garra, mordida,
+     chifres…). O livro deixa o amigo escolher uma delas (Ameaças de Arton,
+     p. 374), e hoje o nome da arma é texto livre. *Se ele quiser a lista como
+     sugestão no campo*, o caminho é DUPLICAR os 13 nomes no ficha-data.js, como
+     as perícias — não importar de lá.
 
 Ou seja: **dados de regra ficam separados; ferramentas continuam comuns.**
 
@@ -832,6 +846,106 @@ certa, com a linha por extenso embaixo do medidor ("PV = Burguês: 12 + 1 +
 multiclasse legítimo (Burguês 11 + Guerreiro 2 = 65 PV, 50 PM) não acende aviso
 nenhum.
 
-**O que ficou de fora:** o *melhor amigo* do Treinador tem PV próprio (16 + Con,
-e 4 por nível — Heróis de Arton, p. 20). É uma segunda criatura, não um número
-da ficha; se ele quiser, vira outra conversa.
+**O que ficou de fora:** ~~o *melhor amigo* do Treinador~~ — ele pediu na mesma
+noite, e entrou: ver a seção seguinte.
+
+## O PM que faltava e o melhor amigo do Treinador (11/09/2026)
+
+Os dois pedidos, nas palavras dele: *"faz o melhor amigo do Treinador também,
+além de poder aumentar o PM máximo das fichas dos jogadores!"*
+
+### O PM: a ficha esquecia o atributo de quem lança magia
+
+O campo manual já existia ("PM de outras fontes", que o mestre também edita na
+ficha do jogador pela mesa — a regra do banco deixa). O que faltava era o
+**livro**: toda classe que lança magia **soma o atributo-chave no total de PM**,
+uma vez só, e a ficha não somava. Era PM a menos em todo conjurador da mesa:
+
+| Classe | Soma no PM | Onde |
+|---|---|---|
+| Arcanista | o atributo do Caminho (Bruxo e Mago: Int; Feiticeiro: Car) — a ficha usa o da CD | p. 37 |
+| Bardo | Carisma | p. 44 |
+| Clérigo, Druida | Sabedoria | p. 57, 61 |
+| Paladino | Carisma, pelo Abençoado | p. 82 |
+| Frade | Sabedoria | Deuses de Arton, p. 39 |
+| Necromante | Inteligência (não tem Caminho) | Heróis de Arton, p. 35 |
+| Usurpador | **Carisma** — o clérigo soma Sabedoria | Heróis de Arton, p. 41 |
+| Magimarcialista, Ermitão, Santo | como a básica (Car, Sab, Car) | Heróis de Arton |
+
+**O mesmo atributo não soma duas vezes** — o livro dá o exemplo pronto: *"um
+clérigo/druida não soma duas vezes sua Sabedoria nos pontos de mana"* (p. 226).
+Atributos diferentes, sim: clérigo/necromante soma Sab e Int. A conta por
+extenso mostra cada um: `PM = 6×11 + Int 4 (arcanista)`.
+
+E os dois campos manuais ganharam o nome do que fazem: **＋ PV máximo** e **＋ PM
+máximo**, com a dica dos poderes que costumam ir ali (Vitalidade, Sarado,
+Vontade de Ferro, Totem Espiritual, Elo com a Natureza) e do negativo para a
+Penalidade de PM (p. 221).
+
+> ⚠ **Quem já tinha posto o atributo à mão em "PM de outras fontes" agora conta
+> duas vezes** — a conta por extenso embaixo do medidor mostra, e é só tirar.
+
+### O melhor amigo (Heróis de Arton, p. 17–22)
+
+Um cartão **🐾 Melhor amigo**, depois dos Ataques, que só aparece com o
+Treinador na ficha (o dado fica guardado sem ele — tirar a classe por engano não
+apaga o bicho). O livro diz que o amigo "possui uma ficha completa", e é o que
+ele ganhou:
+
+- **Tipo** (animal, construto, espírito, monstro, morto-vivo): o pacote do tipo
+  entra sozinho — os atributos ao trocar de tipo (sai o do velho, entra o do
+  novo), e as duas perícias do animal já vêm treinadas, com o ✓ verde "do tipo".
+- **Tipo de parceiro**: os 12 de Tormenta20 (p. 260–261) e as 6 montarias
+  (p. 262), com o bônus escrito no degrau certo — iniciante, veterano com Amigo
+  Veterano, mestre com Amigo Mestre.
+- **Atributos** guardados já com o tipo somado (For 1, Des 1, Con 1, Int –4,
+  Sab 1, Car 0 de base).
+- **PV** = 16 + Con + (nível − 1) × (4 + Con), com medidor, ± e o estado:
+  *caído* em 0, *morto* em −10 ou −metade do máximo, o que for mais baixo
+  (Tormenta20, p. 236) — e o lembrete de que o treinador fica atordoado por 1d4
+  rodadas.
+- **Defesa** = 10 + Des dele + **Car do treinador** + metade do nível.
+- **As 10 perícias** que o livro deixa escolher (3 à escolha), roláveis.
+- **Ataques** com o dado da arma: a Força (e o Treinamento Marcial) entram
+  sozinhas no dano — ao contrário dos ataques do personagem, porque aqui a arma
+  e a Força são as do bicho e ninguém lembra de corrigir o texto.
+- **Os 22 truques** com o texto do livro, marcáveis como os aprimoramentos, com
+  a conta "o nível dá N" (2, e +1 a cada três níveis). Os de número entram nas
+  contas: Treinamento Defensivo, Veloz, Amigo Feroz, Treinamento Marcial,
+  Redução de Dano, Amigão (+1 For e Enorme, desfeito ao desmarcar) e Anatomia
+  Humanoide (Int –2).
+- **Treino especializado** (5º): Conquistar pelos Números abre o segundo amigo;
+  Treino Intensivo dá +4 PV por nível, RD 5/10/15 e truques.
+- **Treinador Eclético**: o amigo passa a usar o nível de personagem para PV,
+  perícias e Defesa — e só para isso; os truques seguem o nível de treinador.
+- **📣 Direcionar** (p. 17): arma o próximo teste do amigo (e o ataque é teste
+  de perícia), soma o Car do treinador e desconta os 2 PM do treinador pelo
+  caminho de sempre (os temporários primeiro).
+
+**O nível do amigo é o de TREINADOR** — "Para efeitos baseados no nível do
+melhor amigo, use o nível do treinador" (p. 20). Num treinador 6/guerreiro 4, o
+amigo é de 6º; com Treinador Eclético, de 10º.
+
+**A RD se soma**: Treino Intensivo e o truque Redução de Dano são habilidades
+diferentes, e "efeitos de habilidades e perícias acumulam entre si, exceto
+quando vierem da mesma habilidade" (p. 226).
+
+**O PV ATUAL do amigo mora à parte**, em `amigosPv` (id → PV), e não dentro de
+`amigos`. A escrita da mesa é por grupo, e o PV é o que o mestre baixa no meio
+do combate: se morasse junto, o jogador escrevendo a descrição do bicho mandaria
+o PV velho e desfaria o golpe. Pelo mesmo motivo, o amigo cheio é a
+**ausência** da chave, e não `null` — o banco apaga null, e a ficha que voltasse
+dele pareceria outra e se redesenharia à toa (testado: o segundo eco idêntico
+não redesenha nada).
+
+**O que a ficha NÃO faz sozinha na arma:** a margem de ameaça (+1 do animal, +2
+do Amigo Feroz) e o passo de dano (Amigo Feroz, Amigão) dependem de qual arma é
+— o livro deixa escolher entre as de Ameaças de Arton, p. 374. A nota embaixo
+dos ataques lembra, e o jogador escreve.
+
+**Testado no navegador** (index, `jogadores.html` e a 390px): treinador 6 com
+Car 3 → amigo com 42 PV e Defesa 17; animal → For/Des/Sab 2, Percepção +7;
+monstro desfaz o animal; Veloz → Defesa +2, 15 m e Atletismo treinado;
+Treinamento Defensivo → Defesa 23; Treino Intensivo → 66 PV e RD 5, com o truque
+RD 10; Amigão liga e desliga; Direcionar rola 1d20+10 e tira 2 PM; 0 PV → caído,
+−33 → morto; o segundo amigo aparece com Conquistar pelos Números.
