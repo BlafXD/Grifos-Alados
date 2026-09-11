@@ -340,6 +340,8 @@ window.GA_barraRica = function () {
         <span class="ga-barra-rot">Grifar</span>${sw}
         <button type="button" class="ga-barra-btn ga-barra-btn--box" data-rich-acao="grifar" data-cor="${window.GA_GRIFO_CAIXA}"
                 title="Marcar o trecho como caixa de leitura (boxed, estilo livro de aventura)">▣ Caixa</button>
+        <button type="button" class="ga-barra-btn ga-barra-btn--base" data-rich-acao="colar-base"
+                title="Busca na base do site (itens, magias, condições, pratos, poderes…) e COLA a descrição dentro desta caixa, onde estiver o cursor — não precisa selecionar nada">🔎 Esse item já existe?</button>
         <button type="button" class="ga-barra-btn ga-barra-btn--desc" data-rich-acao="descrever"
                 title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">※ Descrição</button>
         <button type="button" class="ga-barra-btn ga-barra-btn--limpa" data-rich-acao="desgrifar"
@@ -363,6 +365,12 @@ window.GA_richDescMousedown = function (e) {
   const acao = btn.dataset.richAcao;
   if (acao === 'grifar' || acao === 'desgrifar') {
     if (window.GA_aplicarGrifo(editor, acao, btn.dataset.cor)) avisar();
+    return;
+  }
+  // 🔎 Esse item já existe? — a mesma busca do ※, mas o texto escolhido
+  // entra DENTRO da caixa, e não pendurado num trecho
+  if (acao === 'colar-base') {
+    if (window.GA_Tip && window.GA_Tip.colarDaBase) window.GA_Tip.colarDaBase(editor, avisar);
     return;
   }
   // ※ Descrição (botão flutuante ou o da barra)

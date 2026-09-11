@@ -2005,6 +2005,10 @@ footer {
 .ga-barra-btn--sw:hover { border-color: var(--ink); }
 .ga-barra-btn--box:hover,
 .ga-barra-btn--desc:hover { background: var(--gold-deep); color: var(--parchment); border-color: var(--gold-deep); }
+/* 🔎 Esse item já existe? — o irmão do ※: mesma busca, mas cola o texto
+   dentro da caixa. Verde, para não se confundir com ele à primeira vista */
+.ga-barra-btn--base { color: var(--verde-dark); border-color: var(--verde); }
+.ga-barra-btn--base:hover { background: var(--verde-dark); color: var(--parchment); border-color: var(--verde-dark); }
 .ga-barra-btn--limpa:hover { background: var(--ink); color: var(--parchment); }
 .ga-barra-dica {
   font-family: 'IM Fell English', serif;
@@ -2558,13 +2562,13 @@ body.ga-modal-aberto .ga-coluna-mesa { visibility: hidden; }
    base e o Inventário dos jogadores) — escrevem e formatam normalmente, e
    por isso ganham o I-beam da casa. O seletor repete o `section:not(…)` de
    propósito: sem ele o `cursor: default` de cima vencia (o #perigos dentro
-   do :not() conta como ID) e a caixa que ELES editam ficava com seta. Só
-   o ※ Descrição sai (o modal de descrições não é carregado no
-   jogadores.html). */
+   do :not() conta como ID) e a caixa que ELES editam ficava com seta.
+   (O ※ Descrição ficava escondido aqui porque o modal de descrições não
+   era carregado no jogadores.html. Desde o 🔎 "Esse item já existe?",
+   11/09/2026, é — e os dois botões valem para o jogador também.) */
 .ga-jogador section:not(#perigos):not(#ficha) [data-jog-edita] .ga-rich { cursor: var(--cursor-texto); }
 /* a ficha é toda do jogador: texto, número, seletor e o I-beam da casa */
 .ga-jogador #ficha .ga-rich { cursor: var(--cursor-texto); }
-.ga-jogador .ga-barra-btn--desc { display: none; }
 /* As campanhas do mestre dentro do modal do 📡 — o mesmo chip da aba
    Mesa, na escala do modal. */
 .ga-sync-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.5rem 0 0.2rem; }
