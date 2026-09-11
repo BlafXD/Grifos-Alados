@@ -1154,3 +1154,34 @@ de 390px, com as regras de toque: nada passa da tela, e o ✎ e o ✕ sobem para
 linha do nome da arma. **Não medido**: o agrupamento dos dois botões do título
 das Magias no celular, feito depois — a máquina ficou sem memória e o servidor
 de teste caiu.
+
+## A segunda rodada do dia (11/09/2026, à tarde)
+
+**As pílulas do ataque dizem o que se rolou.** *"só os bloquinhos aparecendo sem
+descrição com algum dado rolado fica confuso"* — embaixo de um ataque são três
+pílulas empilhadas. Agora cada uma começa com o nome: **ATAQUE**, **DANO**,
+**💥 CRÍTICO ×2** (e **ATAQUE DIRECIONADO** no melhor amigo). É o quarto
+parâmetro do `rolar()`, o `curto`; as perícias não usam, porque a pílula já
+nasce ao lado do nome delas.
+
+**O "requer 3º círculo" dos aprimoramentos** era azul sobre o bege — 3,3:1, em
+letra de 0,58rem, e ele não conseguia ler. Virou pergaminho sobre tinta (11:1),
+o mesmo selo de círculo dos pergaminhos da Loja, e ganhou o "requer" na frente.
+
+**A ordem da mochila: ⇈ ↑ ↓.** O ↑ e o ↓ são os de toda lista do site; o ⇈ leva
+direto ao topo, que era o pedido (*"adicionei um item mas eu quero que ele esteja
+no topo"*). Depois de mover, **o item que andou continua embaixo do ponteiro**
+(`seguirItem()` rola a página o tanto que a linha andou) e com o foco — sem
+isso, o segundo clique no mesmo lugar acertava o vizinho e desfazia o primeiro.
+No celular as setas moram ao lado da anotação, não na linha do nome.
+
+**Tirar pergunta antes.** O ✕ do item, do ataque e da magia pede confirmação —
+os dois últimos moram colados no ✎ e no 🔥, e no dedo é fácil errar. **A linha
+em branco sai sem pergunta** (`temConteudo()`, que ignora HTML vazio do texto
+rico): quase sempre é o ＋ apertado a mais. As remoções agora sobem para a mesa
+só no grupo delas (`sujar`), como o resto.
+
+Testado no `jogadores.html` com o Firebase desligado e o `confirm` trocado por
+um espião: as três pílulas com o nome, o selo novo, o ⇈ e as setas (dois
+cliques de mouse de verdade no mesmo ponto desceram o MESMO item duas vezes), a
+pergunta ao tirar, e o item em branco saindo sem ela.
