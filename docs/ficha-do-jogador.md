@@ -1032,3 +1032,17 @@ computador isso NUNCA aparece, porque a regra é `(pointer: coarse)`. O conserto
 **Testado** no index e no `jogadores.html`, a 360, 390, 560 e 700px (com as
 regras de toque injetadas) e no computador: nada rola de lado, o ± do item e do
 PV funcionam, a perícia rola, e o rolador sumiu.
+
+**O respiro que faltava** (mesmo dia, pelos prints dele, `Inútil/Print 1` e `Print 2`):
+
+- **O título encostava no menu**, na página dos jogadores. As abas que abrem com
+  título (Bases, Viagem, Mesa) descem **1,8rem** no cabeçalho; a ficha descia
+  zero. Agora desce o mesmo — só quando é a primeira coisa da aba
+  (`.wrapper > #ficha-content:first-child`): no index ela vem depois das
+  sub-abas ✍ / 📄, e lá o respiro já existe.
+- **As sub-abas do index** ficavam a 9px do menu; as de Consultas e Anotações, a
+  19px. Ganharam o mesmo `padding-top: 0.6rem` delas.
+- **A grade dos números colava no cartão de baixo** ("O que apara o dano"): os
+  três cartões de dentro zeram a margem (quem separa é o `gap`), e a grade não
+  tinha margem própria. Agora tem os mesmos 0,9rem de todo cartão — medido: todo
+  par de blocos da ficha fica a 14px, sem exceção.

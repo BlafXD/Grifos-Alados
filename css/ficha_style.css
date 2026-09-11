@@ -11,6 +11,11 @@
 
 /* ── CABEÇALHO E ABAS ──────────────────────────────────────────── */
 .fi-cabecalho { text-align: center; margin-bottom: 1rem; }
+/* Na página dos jogadores a ficha é a primeira coisa da aba, e o título
+   encostava no menu. As outras abas que abrem com título (Bases, Viagem,
+   Mesa) descem 1,8rem — a ficha desce o mesmo. No index ela vem depois
+   das sub-abas (✍ / 📄), que já dão o respiro: lá não entra. */
+.wrapper > #ficha-content:first-child .fi-cabecalho { padding-top: 1.8rem; }
 .fi-cabecalho h1 {
   font-family: 'UnifrakturMaguntia', 'Cinzel', serif;
   font-size: clamp(1.9rem, 4vw, 2.8rem);
@@ -248,6 +253,10 @@
   grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
   gap: 0.9rem;
   align-items: start;
+  /* os três cartões daqui dentro zeram a margem de baixo (quem separa é
+     o gap), então o respiro até o próximo cartão tem de vir da grade —
+     sem isto o "O que apara o dano" colava na Vida & Mana */
+  margin-bottom: 0.9rem;
 }
 .fi-numeros .fi-cartao { margin-bottom: 0; }
 
@@ -593,6 +602,7 @@
   gap: 0.3rem;
   margin-bottom: 1rem;
   border-bottom: 2px solid var(--gold-dim);
+  padding-top: 0.6rem;              /* o mesmo respiro das sub-abas de Consultas e Anotações */
   padding-bottom: 0.4rem;
 }
 .fi-subtab {
