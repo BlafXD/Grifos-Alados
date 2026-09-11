@@ -473,6 +473,34 @@ quem não tem banco — e para guardar o backup no repositório.
    nenhum (a gazeta do arquivo aparece igual) e só quem está editando lê o
    recado, já com o que fazer escrito.
 
+### A data — o Calendário Artoniano (11 de setembro de 2026)
+
+O "Tempo & Calendário" do **Atlas de Arton, p. 30–33** (PDF 32–35) virou o
+`js/calendario.js`, com os textos do livro em `js/calendario-data.js`. Na gazeta
+ele entra em dois lugares:
+
+| Onde | O quê |
+|---|---|
+| cada notícia | `quando: { dia, mes, forma }` e `local`. O **ano é o do bloco** em que ela está, então nunca desencontra do "Ano de 1424" acima dela. O `data` continua indo junto, já escrito, para quem lê o JSON |
+| `campanhas/<id>/hoje` | `{ dia, mes, ano }` — o **📅 Hoje em Arton**, que vai para o "Publicado em…" do cabeçalho e é a data em que uma notícia nova já nasce |
+
+- **Mês 0 são os Dias de Nimb** (dia 1 a 8, e `apos` = o mês depois do qual
+  caíram, se a carta de Nimb disse).
+- **As formas** são as duas do livro — culta ("Valk 10 sob Caravana, mil
+  quatrocentos e vinte anos da chegada dos elfos") e coloquial ("10 de Caravana
+  de mil quatrocentos e vinte") — e a "curta", que é a coloquial com o ano em
+  algarismos.
+- **O dia da semana é conta do site, não do livro.** O único ponto de apoio é
+  aquele exemplo (10/01/1420 é Valk), e a semana corre dali de sete em sete, com
+  os Dias de Nimb de fora — se entrassem, nenhuma data depois de 1420 teria dia
+  da semana, porque ninguém sabe quantos foram. Quem contar diferente tem o
+  texto livre.
+- **As datas antigas não mudam.** O `ler()` reconhece "28º dia de Pomo
+  (Fevereiro) — Ano 1424" só para pendurar a nuvem no pedaço da data; a notícia
+  só vira "do calendário" quando o mestre a abre e escolhe o 📅.
+- **Regra do banco: nada muda.** O `.write` de `campanhas/$camp` não olha os
+  filhos, então o `hoje` passa pela mesma porta das notícias.
+
 ---
 
 ## 14. Uma mesa é uma campanha — 8 de setembro de 2026 (terceira revisão)

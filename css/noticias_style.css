@@ -249,11 +249,233 @@
   accent-color: var(--ink);
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   A DATA — o Calendário Artoniano (Atlas de Arton, p. 30–33)
+   O bloco "Data e local" do modal da notícia, o seletor de um mês por
+   vez (calendario.js — o 📅 Hoje em Arton usa o mesmo) e a nuvem na
+   data do card e no alto da gazeta.
+   ══════════════════════════════════════════════════════════════════ */
+.nc-quando {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.7rem 0.8rem 0.85rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  background: linear-gradient(180deg, rgba(255,255,255,0.2), transparent 55%), var(--parchment);
+}
+.nc-quando-cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.nc-quando-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+
+/* 📅 Calendário | ✍ Texto livre */
+.nc-quando-modos {
+  display: inline-flex;
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  overflow: hidden;
+}
+.nc-quando-modo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.75rem;
+  border: none;
+  background: var(--parchment2);
+  color: var(--ink-faded);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.nc-quando-modo + .nc-quando-modo { border-left: 1px solid var(--ink-faded); }
+.nc-quando-modo:hover { background: var(--parchment3); color: var(--ink); }
+.nc-quando-modo[aria-pressed="true"] { background: var(--ink); color: var(--parchment); }
+
+.nc-quando-painel { display: flex; flex-direction: column; gap: 0.65rem; }
+.nc-quando-painel[hidden] { display: none; }
+
+/* o texto livre tem o desenho dos outros campos do modal */
+.nc-quando-livre {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  padding: 0.42rem 0.65rem;
+}
+.nc-quando-livre:focus {
+  outline: 2px solid var(--foco);
+  outline-offset: 1px;
+  border-color: var(--rust);
+  background: var(--parchment);
+}
+
+.nc-quando-formas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1rem;
+}
+.nc-quando-forma {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.nc-quando-forma input { accent-color: var(--ink); cursor: pointer; }
+
+/* como a data vai sair no card */
+.nc-quando-previa {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--rust-dark);
+  padding: 0.45rem 0.7rem;
+  border-left: 3px solid var(--rust);
+  background: var(--parchment2);
+}
+.nc-quando-ajuda { font-size: 0.92rem; line-height: 1.45; color: var(--ink-faded); }
+
+/* ── O seletor: um mês por vez, de Valk a Leen ── */
+.cal { display: flex; flex-direction: column; gap: 0.5rem; }
+/* ‹ mês › numa linha só; as setas acompanham a altura da lista, que no
+   celular cresce para 2,6rem (acessibilidade.css §7) */
+.cal-topo { display: flex; align-items: stretch; gap: 0.4rem; }
+.cal-nav {
+  flex: 0 0 auto;
+  width: 2.6rem;
+  min-height: 2.3rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.cal-nav:hover:not(:disabled) { background: var(--parchment3); border-color: var(--ink); }
+.cal-nav:disabled { opacity: 0.35; cursor: default; }
+.cal-mes,
+.cal-ano,
+.cal-apos select {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  padding: 0.3rem 0.5rem;
+  min-height: 2.3rem;
+}
+.cal-mes { flex: 1 1 auto; min-width: 0; }
+/* o ano do 📅 Hoje em Arton, numa linha dele, acima do mês */
+.cal-ano-rot {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.cal-ano-rot > span {
+  font-family: 'Cinzel', serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.cal-ano { width: 6.5rem; }
+
+.cal-grade,
+.cal-nimb { display: grid; gap: 3px; }
+.cal-grade { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.cal-nimb  { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+.cal-sem {
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-align: center;
+  color: var(--ink-faded);
+  padding: 0.2rem 0 0.25rem;
+  border-bottom: 1px solid var(--parchment3);
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  cursor: help;
+}
+.cal-sem--nota { color: var(--rust-dark); }      /* Haya, de festejos; Leen, de descanso */
+.cal-sem-curto { display: none; }
+.cal-dia {
+  position: relative;
+  min-height: 2.35rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.98rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.cal-dia:hover { background: var(--parchment3); border-color: var(--ink-faded); }
+/* as Datas Especiais do livro: fundo dourado e a estrelinha no canto */
+.cal-dia--festa { background: var(--gold-pale); border-color: var(--gold); }
+.cal-dia--festa::after {
+  content: '✦';
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font-size: 0.55rem;
+  line-height: 1;
+  color: var(--gold-deep);
+}
+/* o dia de hoje da campanha (📅) */
+.cal-dia--hoje { box-shadow: inset 0 0 0 2px var(--gold); font-weight: 700; }
+.cal-dia--sel,
+.cal-dia--sel:hover { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
+.cal-dia--sel.cal-dia--festa::after { color: var(--gold-light); }
+
+.cal-apos {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  color: var(--ink-faded);
+}
+.cal-apos[hidden] { display: none; }
+.cal-info { font-size: 0.92rem; line-height: 1.5; color: var(--ink-faded); }
+.cal-info strong { color: var(--ink); }
+.cal-aviso {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-faded);
+}
+
+/* a data no card e no alto da gazeta: a nuvem sem o negrito do glossário */
+.news-date .ga-tip,
+.masthead-meta .ga-tip { font-weight: inherit; color: inherit; }
+
 /* ── RESPONSIVO ─────────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .nc-row-2     { grid-template-columns: 1fr; }
   .nc-modal     { max-height: 100vh; border-left: none; border-right: none; }
   .nc-ano-ctrl  { gap: 0.25rem; }
+  /* numa coluna de ~40px "Hedryl" não cabe: vai o nome curto */
+  .cal-sem-longo { display: none; }
+  .cal-sem-curto { display: inline; }
 }
 
 /* ══════════════════════════════════════════════════════════════════

@@ -116,9 +116,13 @@
       const corpo = {
         nome: String(camp.nome || ''),
         noticias: limpo(camp.anos) || [],
+        // o "📅 hoje" da gazeta; null apaga (o mestre tirou a data). Quem
+        // chama sem mandar a chave não mexe no que está no banco
+        hoje: camp.hoje ? limpo(camp.hoje) : null,
         autor: meuNome(),
         atualizadoEm: agora(),
       };
+      if (!('hoje' in camp)) delete corpo.hoje;
       // Campanha nova (ou órfã) ganha dono na mesma escrita: é o que a
       // regra pede para deixar criar, e o que impede outra pessoa de
       // reescrever a gazeta depois.
