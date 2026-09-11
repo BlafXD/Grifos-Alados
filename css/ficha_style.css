@@ -231,6 +231,16 @@
   text-transform: lowercase;
   opacity: 0.85;
 }
+/* a mesma classe em duas linhas — a variante e a básica são uma classe
+   só (Heróis de Arton, p. 22). Aviso em carmim; a ficha não trava. */
+.fi-classes-aviso {
+  flex: 1 1 100%;
+  margin: 0;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--carmim);
+}
 
 /* ── OS TRÊS CARTÕES DE NÚMEROS ────────────────────────────────── */
 .fi-numeros {

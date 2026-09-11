@@ -13,6 +13,8 @@
 //  Fonte: Tormenta 20 — Edição Jogo do Ano. Conferido no PDF em
 //  08/09/2026: Tabela 2-1 (p. 115) para as perícias, e o bloco
 //  "Pontos de Vida / Pontos de Mana" de cada classe no Capítulo 2.
+//  As classes de fora do básico (10/09/2026) vêm do Deuses de Arton
+//  (o Frade) e do Heróis de Arton (o Treinador e as 14 variantes).
 // ════════════════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -72,13 +74,18 @@
     { chave: 'vontade',       nome: 'Vontade',       atr: 'sab', treinada: false, armadura: false, resist: true },
   ];
 
-  // ── AS 14 CLASSES: só o que é conta ────────────────────────────
+  // ── AS 16 CLASSES BÁSICAS: só o que é conta ────────────────────
   //  pvBase   PV do 1º nível (+ Constituição)
   //  pvNivel  PV por nível depois do 1º (+ Constituição)
   //  pmNivel  PM por nível (sem atributo nenhum)
   //  Poder, proficiência e habilidade de classe NÃO estão aqui: viram
   //  texto no bloco "Habilidades de classe e poderes", que é o combinado.
-  const CLASSES = [
+  //  As 14 do livro básico e mais duas, que os livros trazem como classe
+  //  nova, e não como variante de nenhuma:
+  //    Frade      Deuses de Arton, p. 39
+  //    Treinador  Heróis de Arton, p. 16 ("nova classe básica")
+  //  O suplemento que ele usa na mesa traz as duas com os mesmos números.
+  const BASICAS = [
     { chave: 'arcanista', nome: 'Arcanista', pvBase:  8, pvNivel: 2, pmNivel: 6 },
     { chave: 'barbaro',   nome: 'Bárbaro',   pvBase: 24, pvNivel: 6, pmNivel: 3 },
     { chave: 'bardo',     nome: 'Bardo',     pvBase: 12, pvNivel: 3, pmNivel: 4 },
@@ -87,13 +94,51 @@
     { chave: 'cavaleiro', nome: 'Cavaleiro', pvBase: 20, pvNivel: 5, pmNivel: 3 },
     { chave: 'clerigo',   nome: 'Clérigo',   pvBase: 16, pvNivel: 4, pmNivel: 5 },
     { chave: 'druida',    nome: 'Druida',    pvBase: 16, pvNivel: 4, pmNivel: 4 },
+    { chave: 'frade',     nome: 'Frade',     pvBase: 12, pvNivel: 3, pmNivel: 6 },
     { chave: 'guerreiro', nome: 'Guerreiro', pvBase: 20, pvNivel: 5, pmNivel: 3 },
     { chave: 'inventor',  nome: 'Inventor',  pvBase: 12, pvNivel: 3, pmNivel: 4 },
     { chave: 'ladino',    nome: 'Ladino',    pvBase: 12, pvNivel: 3, pmNivel: 4 },
     { chave: 'lutador',   nome: 'Lutador',   pvBase: 20, pvNivel: 5, pmNivel: 3 },
     { chave: 'nobre',     nome: 'Nobre',     pvBase: 16, pvNivel: 4, pmNivel: 4 },
     { chave: 'paladino',  nome: 'Paladino',  pvBase: 20, pvNivel: 5, pmNivel: 3 },
+    { chave: 'treinador', nome: 'Treinador', pvBase: 12, pvNivel: 3, pmNivel: 4 },
   ];
+
+  // ── AS 14 CLASSES VARIANTES (Heróis de Arton, p. 22–44) ─────────
+  //  "Classes variantes são modificações de suas versões básicas; as
+  //  características e habilidades descritas aqui substituem as da
+  //  classe básica" (p. 22). O `de` é a básica: sai do cabeçalho de
+  //  cada seção e da Tabela 1-2, e as duas coisas batem. (No suplemento,
+  //  a mesma tabela sai TORTA do pdftotext e casa guerreiro com
+  //  alquimista — nunca tire o par de lá.)
+  //  Quando o livro diz "como o inventor básico", o número NÃO está
+  //  escrito aqui: vem da básica. Os que estão escritos são os quatro
+  //  que o livro troca, e são justamente os que passariam batido:
+  //    Burguês, Ermitão   12 PV e 3 por nível (o nobre e o druida: 16 e 4)
+  //    Magimarcialista    16 PV e 4 por nível (o bardo: 12 e 3)
+  //    Santo              4 PM por nível      (o paladino: 3)
+  //  A página ao lado é a do bloco de PV e PM de cada uma.
+  const VARIANTES = [
+    { chave: 'alquimista',       nome: 'Alquimista',       de: 'inventor'  },                          // p. 22
+    { chave: 'atleta',           nome: 'Atleta',           de: 'lutador'   },                          // p. 24
+    { chave: 'burgues',          nome: 'Burguês',          de: 'nobre',     pvBase: 12, pvNivel: 3 },  // p. 25
+    { chave: 'duelista',         nome: 'Duelista',         de: 'bucaneiro' },                          // p. 27
+    { chave: 'ermitao',          nome: 'Ermitão',          de: 'druida',    pvBase: 12, pvNivel: 3 },  // p. 29
+    { chave: 'inovador',         nome: 'Inovador',         de: 'guerreiro' },                          // p. 31
+    { chave: 'machado-de-pedra', nome: 'Machado de Pedra', de: 'barbaro'   },                          // p. 32
+    { chave: 'magimarcialista',  nome: 'Magimarcialista',  de: 'bardo',     pvBase: 16, pvNivel: 4 },  // p. 34
+    { chave: 'necromante',       nome: 'Necromante',       de: 'arcanista' },                          // p. 35
+    { chave: 'santo',            nome: 'Santo',            de: 'paladino',  pmNivel: 4 },              // p. 37
+    { chave: 'seteiro',          nome: 'Seteiro',          de: 'cacador'   },                          // p. 39
+    { chave: 'usurpador',        nome: 'Usurpador',        de: 'clerigo'   },                          // p. 40
+    { chave: 'vassalo',          nome: 'Vassalo',          de: 'cavaleiro' },                          // p. 41
+    { chave: 'ventanista',       nome: 'Ventanista',       de: 'ladino'    },                          // p. 44
+  ];
+
+  // As 30 numa lista só. A variante herda da básica o que não reescreve:
+  // é o "como o básico" do livro, feito conta.
+  const BASICA_POR_CHAVE = {}; BASICAS.forEach(c => { BASICA_POR_CHAVE[c.chave] = c; });
+  const CLASSES = BASICAS.concat(VARIANTES.map(v => Object.assign({}, BASICA_POR_CHAVE[v.de], v)));
 
   // Tamanhos (p. 106): só o rótulo e o deslocamento não mudam por aqui —
   // o modificador de Furtividade/manobras fica de fora de propósito, é
@@ -157,6 +202,12 @@
     XP_POR_NIVEL: XP_POR_NIVEL,
     pericia: function (chave) { return PERICIA_POR_CHAVE[chave] || null; },
     classe:  function (chave) { return CLASSE_POR_CHAVE[chave]  || null; },
+    // A classe que conta para as regras: a variante responde pela básica
+    // — "para todos os efeitos, ambas são a mesma classe" (Heróis, p. 22).
+    basicaDe: function (chave) {
+      const c = CLASSE_POR_CHAVE[chave];
+      return c ? (c.de || c.chave) : '';
+    },
     // Em que nível esse tanto de XP põe o personagem (1 a 20).
     nivelDoXp: function (xp) {
       let n = 1;
