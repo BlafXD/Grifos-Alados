@@ -103,11 +103,13 @@ compartilhar. Aqui está, e a recomendação é **deixar como está**:
      animal…), e o de lá é o de Ameaças de Arton. *Não juntar*: o próprio livro
      diz que o amigo gorlogg "terá as características abaixo, não aquelas
      descritas em Tormenta20, p. 291";
-   - as **13 armas naturais** (`ARMAS_NATURAIS`, linha 339: garra, mordida,
-     chifres…). O livro deixa o amigo escolher uma delas (Ameaças de Arton,
-     p. 374), e hoje o nome da arma é texto livre. *Se ele quiser a lista como
-     sugestão no campo*, o caminho é DUPLICAR os 13 nomes no ficha-data.js, como
-     as perícias — não importar de lá.
+   - as **armas naturais** (`ARMAS_NATURAIS`, linha 339). Ele pediu a lista como
+     sugestão no campo do amigo (11/09/2026), e ela foi DUPLICADA no
+     ficha-data.js, lida direto da Tabela 2-1 de Ameaças de Arton (p. 374) —
+     não importada de lá. **A de lá tem 13 e a tabela tem 12**: o Pseudópode
+     não está na tabela, vem da ficha de uma criatura. Para a aba ⚗ Criar
+     Ameaça ele não atrapalha (é arma de verdade do livro), então ficou onde
+     estava; só não entrou na ficha do amigo, que segue a tabela.
 
 Ou seja: **dados de regra ficam separados; ferramentas continuam comuns.**
 
@@ -942,6 +944,17 @@ não redesenha nada).
 do Amigo Feroz) e o passo de dano (Amigo Feroz, Amigão) dependem de qual arma é
 — o livro deixa escolher entre as de Ameaças de Arton, p. 374. A nota embaixo
 dos ataques lembra, e o jogador escreve.
+
+**As 12 armas naturais como sugestão** (pedido dele, 11/09/2026). O nome da
+arma do amigo sugere as 12 da Tabela 2-1 de Ameaças de Arton (p. 374): cascos,
+cauda, chifres, ferrão, garra, marrada, mordida, pancada, pinça, presas,
+tentáculo e tromba. Escolher uma **preenche o tipo de dano** dela (a tabela só
+dá isso: nome e tipo) — sem ligar para maiúscula nem acento ("pinca" acha a
+Pinça). Não passa por cima do que o jogador escreveu: só troca o tipo vazio ou
+um dos três do livro (corte, impacto, perfuração); "perfuração e veneno" fica.
+**O dano continua 1d8 ×2**, que é a regra do amigo (Heróis de Arton, p. 20): o
+"1d6 para uma criatura Pequena ou Média" da mesma página de Ameaças é regra de
+ameaça.
 
 **Testado no navegador** (index, `jogadores.html` e a 390px): treinador 6 com
 Car 3 → amigo com 42 PV e Defesa 17; animal → For/Des/Sab 2, Percepção +7;

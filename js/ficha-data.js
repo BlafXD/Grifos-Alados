@@ -179,6 +179,34 @@
     arma: { nome: 'arma natural', dano: '1d8', critico: '×2' },
   };
 
+  //  As armas naturais de Ameaças de Arton, Tabela 2-1 (p. 374) — a lista
+  //  de onde o livro deixa o treinador tirar a do amigo ("Se você tiver o
+  //  suplemento Ameaças de Arton, pode escolher uma das armas naturais
+  //  descritas na p. 374"). São DOZE, conferidas no -raw e no -layout; a
+  //  tabela dá o nome e o tipo de dano, e mais nada.
+  //  O dano do amigo continua 1d8 ×2, que é a regra DELE (p. 20): o
+  //  "1d6 para uma criatura Pequena ou Média" da mesma página é regra de
+  //  ameaça, e o amigo "possui uma ficha completa… mesmo que sejam
+  //  diferentes da ficha de sua espécie".
+  //  Duplicada de propósito: o js/criar-ameaca-data.js tem uma lista
+  //  parecida, mas a ficha do jogador não puxa dado do bestiário (ver
+  //  docs/ficha-do-jogador.md, "O que eu NÃO juntei"). E a de lá tem uma
+  //  13ª, o Pseudópode, que não está na tabela — vem de uma ficha.
+  const ARMAS_NATURAIS = [
+    { nome: 'Cascos',    tipo: 'impacto' },
+    { nome: 'Cauda',     tipo: 'impacto' },
+    { nome: 'Chifres',   tipo: 'perfuração' },
+    { nome: 'Ferrão',    tipo: 'perfuração' },
+    { nome: 'Garra',     tipo: 'corte' },
+    { nome: 'Marrada',   tipo: 'impacto' },
+    { nome: 'Mordida',   tipo: 'perfuração' },
+    { nome: 'Pancada',   tipo: 'impacto' },
+    { nome: 'Pinça',     tipo: 'corte' },
+    { nome: 'Presas',    tipo: 'perfuração' },
+    { nome: 'Tentáculo', tipo: 'impacto' },
+    { nome: 'Tromba',    tipo: 'impacto' },
+  ];
+
   //  O tipo dá um pacote fixo (p. 20–21). `atr` e `treina` a ficha aplica
   //  sozinha ao trocar de tipo; o resto é texto, porque é regra de mesa.
   const TIPOS_AMIGO = [
@@ -387,6 +415,7 @@
     PERICIAS: PERICIAS,
     CLASSES: CLASSES,
     AMIGO: AMIGO,
+    ARMAS_NATURAIS: ARMAS_NATURAIS,
     TIPOS_AMIGO: TIPOS_AMIGO,
     TRUQUES: TRUQUES,
     PARCEIROS: PARCEIROS,
