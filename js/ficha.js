@@ -625,7 +625,8 @@
   //  o que sai fica lá até a próxima rolagem daquele mesmo botão.
   //
   //  `slot` é 'per:percepcao', 'of:0', 'atq:2', 'dano:2', 'crit:2' ou
-  //  'livre' — e é o mesmo texto do [data-res] no HTML.
+  //  'am:0:per:luta' (o melhor amigo) — e é o mesmo texto do [data-res]
+  //  no HTML.
   let resultados = {};        // slot → { total, detalhe, erro }
   let historico = [];         // as últimas rolagens desta ficha
   // Do melhor amigo, só desta tela (não sobem para a mesa): o Direcionar
@@ -839,17 +840,6 @@
     return m ? Math.max(2, Math.min(10, parseInt(m[1], 10))) : 2;
   }
 
-  // ── O ROLADOR LIVRE ──────────────────────────────────────────────
-  function rolarLivre(f) {
-    const campo = secao && secao.querySelector('[data-fi-expr]');
-    if (!campo) return;
-    const txt = (campo.value || '').trim();
-    if (!txt) return;
-    rolar(txt, quem(f), 'livre');
-    campo.value = '';
-    campo.focus();
-  }
-
   // ═══ RENDER ═══════════════════════════════════════════════════════
   function render() {
     const cont = document.getElementById('ficha-content');
@@ -872,22 +862,9 @@
       ${barraDaMesa()}
 `;
 
-    // O rolador livre — o mesmo do painel do mestre, aqui dentro da
-    // ficha. Entende XdY e + − × ÷ com parênteses, e o que sair aparece
-    // na mesa inteira, como qualquer rolagem daqui.
-    if (f) html += `
-      <div class="fi-dadeira">
-        <span class="fi-dadeira-rot">🎲 Rolar</span>
-        <input class="fi-txt fi-dadeira-exp" type="text" data-fi-expr
-               placeholder="2d6+3, 1d20+7, (2d8+4)×2…" autocomplete="off"
-               title="Enter rola. Entende XdY e + − × ÷ com parênteses.">
-        <button type="button" class="fi-dadeira-btn" data-acao="rolar-livre">rolar</button>
-        ${[['1d20', 'd20'], ['1d100', 'd%'], ['2d6', '2d6'], ['1d8', 'd8'], ['1d6', 'd6'], ['1d4', 'd4']]
-          .map(([e, r]) => `<button type="button" class="fi-dadeira-atalho" data-acao="rolar-atalho"
-                 data-expr="${e}" title="Rolar ${e}">${r}</button>`).join('')}
-        <span class="fi-res fi-res--livre" data-res="livre" hidden></span>
-      </div>`;
-
+    // O rolador livre que ficava aqui saiu em 11/09/2026, a pedido dele:
+    // na mesa, quem rola à mão é o painel 🎲 Rolagens (o mesmo do mestre);
+    // na ficha, rola quem tem número — perícia, ataque, dano.
     if (!f) {
       html += `
         <p class="fi-vazio">Nenhuma ficha ainda.<br>
@@ -2173,6 +2150,7 @@
         <li class="fi-inv">
           <input class="fi-txt fi-inv-nome" type="text" value="${esc(it.nome)}" data-campo="inventario.${i}.nome"
                  placeholder="espada longa, poção de cura…" autocomplete="off">
+          <span class="fi-inv-conta-linha">
           <span class="fi-inv-qtd">
             <button type="button" class="fi-mini" data-acao="inv-menos" data-i="${i}" title="Uma a menos">−</button>
             <input class="fi-num fi-num--mini" type="number" min="0" value="${it.qtd}" data-campo="inventario.${i}.qtd"
@@ -2190,6 +2168,7 @@
               >${it.cada ? 'cada' : 'no total'}</button>
           </span>
           <span class="fi-inv-total" data-der="inv:${i}" title="Espaços que esta linha ocupa">${arredonda(total)}</span>
+          </span>
           <input class="fi-txt fi-inv-obs" type="text" value="${esc(it.obs)}" data-campo="inventario.${i}.obs"
                  placeholder="onde está, quem emprestou, encanto…" autocomplete="off">
           <span class="fi-inv-fim">
@@ -2649,9 +2628,7 @@
       salvar(); return render();
     }
 
-    // ── O ROLADOR LIVRE ────────────────────────────────────────────
-    if (acao === 'rolar-livre')  return rolarLivre(f);
-    if (acao === 'rolar-atalho') return rolar(btn.dataset.expr, quem(f), 'livre');
+    // ── AS ROLAGENS DA FICHA ───────────────────────────────────────
     if (acao === 'rolar-pericia') {
       const p = D.pericia(btn.dataset.p);
       if (p) rolar(d20(valorPericia(f, p.chave)), quem(f) + ' · ' + p.nome, 'per:' + p.chave);
@@ -3254,14 +3231,6 @@
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoEntrada);
     secao.addEventListener('change', aoMudar);
-    // Enter rola a caixa de dados e aplica o dano — quem está no meio de
-    // um combate não quer tirar a mão do teclado para achar o botão.
-    secao.addEventListener('keydown', e => {
-      if (e.key !== 'Enter' || !e.target.dataset) return;
-      const f = fichaAberta();
-      if (!f) return;
-      if (e.target.hasAttribute('data-fi-expr')) { e.preventDefault(); rolarLivre(f); }
-    });
     secao.addEventListener('mousedown', window.GA_richDescMousedown);
     secao.addEventListener('paste', window.GA_richPaste);
     window.addEventListener('beforeunload', salvarAgora);

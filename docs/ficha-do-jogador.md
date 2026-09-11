@@ -212,6 +212,10 @@ O 🎲 saiu do implícito: cada perícia tem o seu, e a rolagem vai para a mesa
 inteira. Ao lado, a mesma caixa de expressão do painel do mestre —
 `2d6+3`, `(2d8+4)×2` — com atalhos de d20, d%, 2d6, d8, d6 e d4. Enter rola.
 
+> **O rolador livre saiu do topo da ficha em 11/09/2026**, a pedido dele — ver
+> "O traço forte e o celular", no fim. Os dados de cada perícia, ataque e dano
+> continuam.
+
 ## 4. O inventário conta os espaços
 
 > "eu posso ter UMA armadura que pesa 5! Mas se eu pegar outra da mesma armadura
@@ -962,3 +966,69 @@ monstro desfaz o animal; Veloz → Defesa +2, 15 m e Atletismo treinado;
 Treinamento Defensivo → Defesa 23; Treino Intensivo → 66 PV e RD 5, com o truque
 RD 10; Amigão liga e desliga; Direcionar rola 1d20+10 e tira 2 PM; 0 PV → caído,
 −33 → morto; o segundo amigo aparece com Conquistar pelos Números.
+
+## O traço forte e o celular (11/09/2026)
+
+O pedido: *"dê uma melhorada no design das fichas dos jogadores, deixe alguns
+traços mais fortes e deixe as coisas mais bonitas e com boas práticas para quem
+usa celular! Aliás, remova o rolador do topo da ficha."*
+
+**O rolador livre saiu.** Na mesa, quem rola à mão é o painel 🎲 Rolagens (o
+mesmo do mestre, com o campo de expressão); na ficha, rola o que tem número —
+perícia, ataque, dano, crítico e o melhor amigo. Fora de mesa, o painel não
+aparece, e a ficha fica só com esses botões.
+
+**A referência do traço forte é a ficha de papel do Tormenta 20**: moldura de
+tinta em volta de cada quadro e o título numa faixa preta. É uma camada só, no
+fim do `css/ficha_style.css` ("TRAÇO FORTE"), por cima das levas anteriores —
+para voltar ao traço fino, é apagar aquele bloco.
+
+- Cada cartão ganhou **moldura de 2px em tinta** e o título virou **faixa
+  escura com fio de ouro**. No celular a faixa é o marco que o polegar procura
+  numa ficha comprida. O melhor amigo continua verde, agora na faixa.
+- A identidade, que não tem título, é a **capa**: friso de 6px no alto.
+- **Atributos** em quadro de tinta, com o nome numa tarja preta em cima (como
+  na folha impressa); a **Defesa** num quadro igual.
+- Os **campos** ganharam a linha de escrever embaixo (2px), e as divisórias
+  pontilhadas claras viraram linha cheia.
+- O **"outros" das perícias** virou um espaço em branco com traço embaixo:
+  antes, a caixa de "0" pesava mais que o valor da perícia.
+
+**O que era do celular:**
+
+- **O ataque se lê de cima para baixo.** Abaixo de 900px a linha caía numa
+  grade de "o que couber", e o botão `+4 🎲` ia parar ao lado do texto do dano.
+  Agora cada peça tem o seu lugar (grid com áreas nomeadas): a arma e o ✕; a
+  perícia, o extra e o ataque; o dano; o crítico; o tipo e o alcance. As peças
+  sem classe própria são achadas pelo fim do `data-campo` (`[data-campo$=".dano"]`).
+- **O item do inventário vira a conta por extenso**: `[−] 3 [+] × 0,5 cada =
+  1,5 esp.`, com ✎ ✕ ao lado do nome. Para isso as três peças da conta ganharam
+  um invólucro, `.fi-inv-conta-linha`, que no computador é `display: contents`
+  (as três continuam sendo colunas da tabela) e no celular é uma linha só.
+- **A linha da classe cabe a 360px**: com "Machado de Pedra (bárbaro)" na lista
+  e o ✕ do tamanho do dedo, passava da tela; agora a lista encolhe.
+- **Alvos de dedo de verdade** onde a fileira é apertada: o [−][PV][+] com 44px,
+  o ✓ das perícias com 36px, os ✕ ✎ ＋ com 45px. O `::after` invisível do
+  `acessibilidade.js` não serve ali — ele mede, vê o vizinho encostado e desiste
+  (é o certo) —, então o botão cresce de fato.
+- `touch-action: manipulation` em todo botão da ficha: apertar o − três vezes
+  seguidas não dá mais zoom de toque duplo.
+
+**🐛 A armadilha que isto revelou — e que vale para qualquer aba:** a regra do
+`css/acessibilidade.css` que põe **16px em todo campo no celular** (para o
+iPhone não dar zoom ao focar) tem especificidade (0,3,1) —
+`input:not([type=checkbox]):not([type=radio]):not([type=range])` — e passa por
+cima de qualquer classe de aba. Ela **encolhia os números grandes da ficha**: o
+atributo de 1,7rem virava 1rem, o PV de 1,15rem também. Numa tela de
+computador isso NUNCA aparece, porque a regra é `(pointer: coarse)`. O conserto
+é o `#ficha-content` na frente, dentro do mesmo `(pointer: coarse)`; e maior que
+16px o iPhone continua sem zoom.
+
+> **Como testar o celular de verdade no computador:** o iframe de 390px pega a
+> largura (e o texto a 112,5%), mas não o `(pointer: coarse)`. Copie as regras
+> desse `@media` para um `<style>` dentro do iframe — foi assim que o encolhimento
+> apareceu. Sem isso, o teste mostra um celular que não existe.
+
+**Testado** no index e no `jogadores.html`, a 360, 390, 560 e 700px (com as
+regras de toque injetadas) e no computador: nada rola de lado, o ± do item e do
+PV funcionam, a perícia rola, e o rolador sumiu.
