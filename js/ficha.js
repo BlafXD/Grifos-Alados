@@ -663,12 +663,17 @@
     } catch (e) {}
   }
 
-  function rolar(expr, rotulo, slot) {
+  //  `curto` é o nome do que se rolou, escrito na própria pílula
+  //  ("Ataque", "Dano", "💥 Crítico ×2"). Nas perícias não precisa — a
+  //  pílula nasce ao lado do nome delas —, mas embaixo de um ataque são
+  //  três pílulas empilhadas, e só com números não se sabia qual era qual
+  //  (pedido dele, 11/09/2026).
+  function rolar(expr, rotulo, slot, curto) {
     if (!window.GA_Rolagens || !window.GA_Dados) return null;
     let r = null;
     try {
       r = window.GA_Rolagens.rolarEPublicar(expr, rotulo);
-      resultados[slot] = { total: r.total, detalhe: r.detalhe };
+      resultados[slot] = { total: r.total, detalhe: r.detalhe, curto: curto || '' };
       historico.unshift({
         quando: Date.now(), rotulo: rotulo, expr: expr,
         total: r.total, detalhe: r.detalhe,
@@ -677,7 +682,7 @@
       const f = fichaAberta();
       if (f) salvarHistorico(f.id);
     } catch (err) {
-      resultados[slot] = { erro: err.message || 'não deu para rolar' };
+      resultados[slot] = { erro: err.message || 'não deu para rolar', curto: curto || '' };
     }
     pintarResultado(slot);
     pintarHistorico();
@@ -699,7 +704,8 @@
     if (!r) { el.innerHTML = ''; el.hidden = true; return; }
     el.hidden = false;
     el.classList.toggle('fi-res--erro', !!r.erro);
-    el.innerHTML = (r.erro
+    el.innerHTML = (r.curto ? '<span class="fi-res-rot">' + esc(r.curto) + '</span>' : '') +
+      (r.erro
       ? '⚠ ' + esc(r.erro)
       : '<strong class="fi-res-num">' + r.total + '</strong>' +
         '<span class="fi-res-det">' + r.detalhe + '</span>') +
@@ -2133,7 +2139,7 @@
           <span class="fi-apr-ctrl">${controles}</span>
           <span class="fi-apr-txt">
             ${a.condicao ? `<span class="fi-apr-marca">${esc(a.condicao)}</span>` : ''}
-            ${a.requer ? `<span class="fi-apr-marca fi-apr-marca--req">${a.requer}º círculo</span>` : ''}
+            ${a.requer ? `<span class="fi-apr-marca fi-apr-marca--req" title="Este aprimoramento só pode ser usado por quem lança magias de ${a.requer}º círculo">requer ${a.requer}º círculo</span>` : ''}
             ${esc(a.texto)}
             ${soma ? `<strong class="fi-apr-soma">→ ${esc(soma)} ao todo, por ${a.pm * n} PM</strong>` : ''}
             ${on && Array.isArray(a.itens) && a.itens.length
@@ -2253,6 +2259,14 @@
           </span>
           <input class="fi-txt fi-inv-obs" type="text" value="${esc(it.obs)}" data-campo="inventario.${i}.obs"
                  placeholder="onde está, quem emprestou, encanto…" autocomplete="off">
+          <span class="fi-inv-ordem">
+            <button type="button" class="fi-mini" data-acao="inv-topo" data-i="${i}" ${i === 0 ? 'disabled' : ''}
+                    title="Levar para o topo da lista" aria-label="Levar ${esc(it.nome || 'este item')} para o topo">⇈</button>
+            <button type="button" class="fi-mini" data-acao="inv-sobe" data-i="${i}" ${i === 0 ? 'disabled' : ''}
+                    title="Mover para cima" aria-label="Mover ${esc(it.nome || 'este item')} para cima">↑</button>
+            <button type="button" class="fi-mini" data-acao="inv-desce" data-i="${i}" ${i === f.inventario.length - 1 ? 'disabled' : ''}
+                    title="Mover para baixo" aria-label="Mover ${esc(it.nome || 'este item')} para baixo">↓</button>
+          </span>
           <span class="fi-inv-fim">
             <button type="button" class="fi-mini ${it.aberto ? 'fi-mini--on' : ''}${it.notas && !it.aberto ? ' fi-mini--tem' : ''}"
                     data-acao="item-texto" data-i="${i}"
@@ -2289,7 +2303,7 @@
           <em class="fi-carga-estado" data-der="cargaestado2">${rotuloCarga(f)}</em>
         </div>
         <div class="fi-inv-cab">
-          <span>Item</span><span>Quantas</span><span>Espaços</span><span>Ocupa</span><span>Anotação</span><span></span>
+          <span>Item</span><span>Quantas</span><span>Espaços</span><span>Ocupa</span><span>Anotação</span><span>Ordem</span><span></span>
         </div>
         <ul class="fi-inv-lista">${linhas || '<li class="fi-atq-vazio">Mochila vazia.</li>'}</ul>
         <datalist id="fiEspacos">${opsEsp}</datalist>
@@ -2315,6 +2329,31 @@
           <strong>moeda não pesa</strong>, e o 🪶 ao lado do T$ liga a regra do livro para quem quiser.</p>
         ${caixaRica(f, BLOCOS_EMBUTIDOS[1])}
       </div>`;
+  }
+
+  // Uma linha "tem conteúdo" quando tem algo que se leia: nome, anotação
+  // ou texto. O texto rico pode sobrar só com tags vazias ("<br>"), então
+  // conta o que aparece, não o HTML.
+  function temConteudo() {
+    return Array.prototype.some.call(arguments, v =>
+      String(v || '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim() !== '');
+  }
+
+  // Depois de mover, o item que andou continua EMBAIXO DO PONTEIRO — a
+  // página rola o tanto que a linha andou — e com o foco do teclado. Sem
+  // isso, o segundo clique no mesmo lugar acertava o vizinho, que tinha
+  // ido para onde o item estava, e desfazia o primeiro. O ⇈ é a exceção:
+  // o item foi para o topo, e é lá que se quer vê-lo.
+  function seguirItem(acao, i, antes) {
+    if (!secao) return;
+    const q = a => secao.querySelector('[data-acao="' + a + '"][data-i="' + i + '"]');
+    const mesmo = q(acao);
+    if (!mesmo) return;
+    if (acao === 'inv-topo') mesmo.scrollIntoView({ block: 'nearest' });
+    else window.scrollBy(0, mesmo.getBoundingClientRect().top - antes);
+    // chegou na ponta, o botão apagou: o foco vai para a seta do outro lado
+    const foco = !mesmo.disabled ? mesmo : q(acao === 'inv-desce' ? 'inv-sobe' : 'inv-desce');
+    if (foco && !foco.disabled) foco.focus({ preventScroll: true });
   }
 
   function contaCarga(f) {
@@ -2595,7 +2634,17 @@
       f[c].splice(+btn.dataset.i, 1);
       sujar(f.id, c); salvar(); return render();
     }
-    if (acao === 'tira-ataque') { f.ataques.splice(+btn.dataset.i, 1); salvar(); return render(); }
+    // o ✕ do ataque mora colado no ✎ — no dedo, errar um pelo outro é
+    // fácil; a pergunta só aparece se houver algo escrito
+    if (acao === 'tira-ataque') {
+      const a = f.ataques[+btn.dataset.i];
+      if (!a) return;
+      if (temConteudo(a.nome, a.dano, a.notas) &&
+          !confirm('Tirar o ataque "' + (a.nome || 'sem nome') + '"?' +
+                   (temConteudo(a.notas) ? '\n\nO texto escrito nele vai junto.' : ''))) return;
+      f.ataques.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'ataques'); salvar(); return render();
+    }
     // o texto da arma dobra e desdobra, e o estado fica guardado, como o
     // do item do inventário
     if (acao === 'atq-texto') {
@@ -2650,7 +2699,31 @@
       f.inventario.push({ id: novoId(), nome: '', qtd: 1, espacos: 1, cada: true, obs: '' });
       salvar(); return render();
     }
-    if (acao === 'tira-item') { f.inventario.splice(+btn.dataset.i, 1); salvar(); return render(); }
+    // Tirar pergunta antes — "às vezes sem querer eu posso remover um item
+    // que eu não queria" (11/09/2026). A linha em branco sai sem pergunta:
+    // é quase sempre o ＋ apertado a mais.
+    if (acao === 'tira-item') {
+      const it = f.inventario[+btn.dataset.i];
+      if (!it) return;
+      if (temConteudo(it.nome, it.obs, it.notas) &&
+          !confirm('Tirar "' + (it.nome || 'este item') + '" do inventário?' +
+                   (it.notas ? '\n\nO texto escrito nele vai junto.' : ''))) return;
+      f.inventario.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'inventario'); salvar(); return render();
+    }
+    // A ordem: ↑ e ↓ um passo, e ⇈ direto para o topo ("adicionei um
+    // item mas eu quero que ele esteja no topo!").
+    if (acao === 'inv-sobe' || acao === 'inv-desce' || acao === 'inv-topo') {
+      const de = +btn.dataset.i;
+      const para = acao === 'inv-topo' ? 0 : de + (acao === 'inv-sobe' ? -1 : 1);
+      if (!f.inventario[de] || para < 0 || para >= f.inventario.length || para === de) return;
+      const antes = btn.getBoundingClientRect().top;
+      const [it] = f.inventario.splice(de, 1);
+      f.inventario.splice(para, 0, it);
+      sujar(f.id, 'inventario'); salvar(); render();
+      seguirItem(acao, para, antes);
+      return;
+    }
     if (acao === 'inv-menos' || acao === 'inv-mais') {
       const it = f.inventario[+btn.dataset.i];
       if (!it) return;
@@ -2680,10 +2753,15 @@
 
     // ── MAGIAS ─────────────────────────────────────────────────────
     if (acao === 'add-magia')  return abrirBuscaMagia(f);
+    // o ✕ da magia mora colado no 🔥 de lançar — pergunta antes
     if (acao === 'tira-magia') {
       const m = f.magias[+btn.dataset.i];
-      if (m && magiasFechadas[m.id]) { delete magiasFechadas[m.id]; guardarFechadas(); }
-      f.magias.splice(+btn.dataset.i, 1); salvar(); return render();
+      if (!m) return;
+      if (!confirm('Tirar ' + (m.nome || 'esta magia') + ' da ficha?' +
+                   ((m.apr && m.apr.length) || m.obs ? '\n\nOs aprimoramentos ligados e a sua anotação vão junto.' : ''))) return;
+      if (magiasFechadas[m.id]) { delete magiasFechadas[m.id]; guardarFechadas(); }
+      f.magias.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'magias'); salvar(); return render();
     }
     // recolher e abrir não mexem na ficha: é deste navegador (ver blocoMagias)
     if (acao === 'dobra-magia') {
@@ -2745,12 +2823,12 @@
     }
     if (acao === 'rolar-ataque') {
       const a = f.ataques[+btn.dataset.i];
-      if (a) rolar(d20(valorAtaque(f, a)), quem(f) + ' · ' + (a.nome || 'ataque'), 'atq:' + btn.dataset.i);
+      if (a) rolar(d20(valorAtaque(f, a)), quem(f) + ' · ' + (a.nome || 'ataque'), 'atq:' + btn.dataset.i, 'Ataque');
       return;
     }
     if (acao === 'rolar-dano') {
       const a = f.ataques[+btn.dataset.i];
-      if (a && a.dano.trim()) rolar(a.dano.trim(), quem(f) + ' · dano de ' + (a.nome || 'ataque'), 'dano:' + btn.dataset.i);
+      if (a && a.dano.trim()) rolar(a.dano.trim(), quem(f) + ' · dano de ' + (a.nome || 'ataque'), 'dano:' + btn.dataset.i, 'Dano');
       return;
     }
     if (acao === 'rolar-critico') {
@@ -2758,7 +2836,7 @@
       if (!a || !a.dano.trim()) return;
       const mult = multiplicadorCritico(a.critico);
       rolar(expressaoCritica(a.dano.trim(), mult),
-            quem(f) + ' · 💥 CRÍTICO ×' + mult + ' de ' + (a.nome || 'ataque'), 'crit:' + i);
+            quem(f) + ' · 💥 CRÍTICO ×' + mult + ' de ' + (a.nome || 'ataque'), 'crit:' + i, '💥 Crítico ×' + mult);
       return;
     }
     if (acao === 'limpar-hist') {
@@ -2840,18 +2918,20 @@
     if (!x) return;
     if (acao === 'am-rolar-atq') {
       const d = usarDirecionar(f, a);
-      rolar(d20(valorAtaqueAmigo(f, a, x) + d.bonus), rot + ' · ' + (x.nome || 'ataque') + d.rotulo, 'am:' + i + ':atq:' + j);
+      rolar(d20(valorAtaqueAmigo(f, a, x) + d.bonus), rot + ' · ' + (x.nome || 'ataque') + d.rotulo, 'am:' + i + ':atq:' + j,
+            d.bonus ? 'Ataque direcionado' : 'Ataque');
       return d.depois();
     }
     const dano = danoAmigo(f, a, x);
     if (!dano) return;
     if (acao === 'am-rolar-dano') {
-      rolar(dano, rot + ' · dano de ' + (x.nome || 'ataque'), 'am:' + i + ':dano:' + j);
+      rolar(dano, rot + ' · dano de ' + (x.nome || 'ataque'), 'am:' + i + ':dano:' + j, 'Dano');
       return;
     }
     if (acao === 'am-rolar-crit') {
       const mult = multiplicadorCritico(x.critico);
-      rolar(expressaoCritica(dano, mult), rot + ' · 💥 CRÍTICO ×' + mult + ' de ' + (x.nome || 'ataque'), 'am:' + i + ':crit:' + j);
+      rolar(expressaoCritica(dano, mult), rot + ' · 💥 CRÍTICO ×' + mult + ' de ' + (x.nome || 'ataque'), 'am:' + i + ':crit:' + j,
+            '💥 Crítico ×' + mult);
     }
   }
 

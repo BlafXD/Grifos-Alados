@@ -893,10 +893,13 @@
    ══════════════════════════════════════════════════════════════════ */
 .fi-inv-cab, .fi-inv {
   display: grid;
-  grid-template-columns: minmax(7rem, 2fr) auto auto 3rem minmax(6rem, 1.4fr) auto;
+  grid-template-columns: minmax(7rem, 2fr) auto auto 3rem minmax(6rem, 1.4fr) auto auto;
   align-items: center;
   gap: 0.35rem;
 }
+/* ⇈ ↑ ↓ — a ordem da mochila (pedido dele, 11/09/2026) */
+.fi-inv-ordem { display: inline-flex; gap: 0.15rem; }
+.fi-inv-ordem .fi-mini:disabled { opacity: 0.3; cursor: default; }
 .fi-inv-cab {
   padding: 0 0.2rem 0.3rem;
   font-family: 'Cinzel', serif;
@@ -1115,6 +1118,24 @@
   animation: fi-res-entra 0.25s ease-out;
 }
 .fi-res[hidden] { display: none; }
+/* o nome do que se rolou ("Ataque", "Dano", "💥 Crítico ×2"), no começo
+   da pílula — embaixo de um ataque são três, e só com número não se
+   sabia qual era qual */
+.fi-res-rot {
+  align-self: center;
+  flex: 0 0 auto;
+  padding: 0.05rem 0.35rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--parchment);
+  background: var(--ink-faded);
+  border-radius: 999px;
+}
+.fi-res--crit .fi-res-rot { background: var(--rust-dark); }
 /* o ✕ que fecha a rolagem: discreto, e só acende sob o ponteiro */
 .fi-res-x {
   align-self: center;
@@ -1614,7 +1635,10 @@
   background: var(--parchment3);
   border-radius: var(--raio);
 }
-.fi-apr-marca--req { color: var(--azul); }
+/* "requer 2º círculo": era azul sobre o bege, 3,3:1 em letra miúda — ele
+   reclamou que mal se lia (11/09/2026). Tinta com letra de pergaminho, o
+   mesmo selo de círculo dos pergaminhos da Loja: 11:1. */
+.fi-apr-marca--req { color: var(--parchment); background: var(--ink-faded); }
 .fi-apr-itens { display: block; margin-top: 0.2rem; }
 .fi-apr-itens em {
   display: block;
@@ -1967,12 +1991,15 @@
     grid-template-areas:
       "nome  fim"
       "conta conta"
-      "obs   obs";
+      "obs   ordem";
     gap: 0.35rem 0.5rem;
   }
   .fi-inv-nome  { grid-area: nome; }
   .fi-inv-fim   { grid-area: fim; }
   .fi-inv-obs   { grid-area: obs; }
+  /* as setas descem para o lado da anotação: na linha do nome, com o ✎ e
+     o ✕, sobrariam 120px para escrever "poção de cura" */
+  .fi-inv-ordem { grid-area: ordem; }
   .fi-inv-conta-linha {
     grid-area: conta;
     display: flex;
