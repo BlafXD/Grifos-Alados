@@ -547,6 +547,9 @@ function preencherMasthead() {
   if (anoRodape) anoRodape.textContent = ANO_ARTON;
 }
 preencherMasthead();
+// A gazeta põe por cima o "📅 hoje em Arton" da campanha aberta, e é
+// esta a linha que volta quando a campanha não tem data (noticias.js).
+window.GA_preencherMasthead = preencherMasthead;
 
 // ── ALTURA DO MENU ───────────────────────────────────────────────────
 // Publica a altura real do nav em --nav-h para as sub-abas (Consultas,

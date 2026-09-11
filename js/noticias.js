@@ -11,6 +11,10 @@
 //  Salva: data/noticias.json + js/noticias-data.js (POST /api/noticias),
 //         ou pelo botão "⬇ Baixar arquivo", que gera o mesmo
 //         js/noticias-data.js pelo navegador — sem precisar do server.py.
+//
+//  As DATAS são do Calendário Artoniano (js/calendario.js): a de cada
+//  notícia se escolhe num mês de Valk a Leen, e cada campanha pode ter o
+//  seu "📅 hoje", que vai para o "Publicado em…" do alto da gazeta.
 // ═══════════════════════════════════════════════════════════════════
 
 (function () {
@@ -53,6 +57,21 @@
 
   // ── ESCAPE HTML (utilitário compartilhado, definido em script.js) ──
   const esc = window.GA_esc;
+
+  // O calendário é opcional: se o calendario.js não carregar, a gazeta
+  // volta a ser a de antes — data em texto livre, sem nuvem e sem "hoje".
+  function calendario() { return window.GA_Calendario || null; }
+
+  // O "📅 hoje" de uma campanha, limpo (dia, mês e ano), ou null. É null,
+  // e não chave ausente, quando não há data: o Object.assign que segura a
+  // minha versão durante o eco do banco precisa copiar o "tirei a data".
+  //  Sem o calendário carregado ele passa como veio — o arquivo não pode
+  //  perder a data do mestre só porque um script falhou.
+  function hojeDe(h) {
+    const cal = calendario();
+    if (!cal) return (h && typeof h === 'object') ? h : null;
+    return cal.valida(h, true) || null;
+  }
 
   // ── INICIALIZAÇÃO ────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
@@ -97,6 +116,7 @@
           ano: (a && a.ano) || '',
           noticias: paraLista(a && a.noticias),
         })),
+        hoje: hojeDe(r.hoje),
         daMesa: true,
         dono: r.dono || '',
         autor: r.autor || '',
@@ -130,6 +150,7 @@
         id:   c.id   || ('campanha-' + (i + 1)),
         nome: c.nome || ('Campanha ' + (i + 1)),
         anos: Array.isArray(c.anos) ? c.anos : [],
+        hoje: hojeDe(c.hoje),
       })),
     };
   }
@@ -182,8 +203,16 @@
         // não se sabe de ninguém — e perder a própria gazeta do backup
         // por causa disso seria bem pior do que carregar uma a mais.
         .filter(c => !(c.dono && meuUid && c.dono !== meuUid))
-        .map(c => ({ id: c.id, nome: c.nome, anos: c.anos })),
+        // o "hoje" só entra no arquivo quando existe: campanha sem data
+        // continua escrita exatamente como antes
+        .map(c => Object.assign({ id: c.id, nome: c.nome, anos: c.anos }, c.hoje ? { hoje: c.hoje } : {})),
     };
+  }
+
+  // O que sobe para o banco: a campanha inteira, com o "hoje" (null o
+  // apaga lá).
+  function paraPublicar(c) {
+    return { id: c.id, nome: c.nome, anos: c.anos, hoje: c.hoje || null };
   }
 
   async function salvar() {
@@ -192,7 +221,7 @@
     if (c && podePublicar(c.id)) {
       pendentes[c.id] = true;
       esperandoPublicar = true;
-      mesaNoticias().publicar({ id: c.id, nome: c.nome, anos: c.anos });
+      mesaNoticias().publicar(paraPublicar(c));
       return;
     }
     try {
@@ -269,7 +298,7 @@
     if (Array.isArray(v)) return '[' + v.map(canon).join(',') + ']';
     return '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}';
   }
-  function miolo(c) { return canon({ nome: c.nome || '', anos: c.anos || [] }); }
+  function miolo(c) { return canon({ nome: c.nome || '', anos: c.anos || [], hoje: c.hoje || null }); }
 
   function receberDaMesa(mapa, uid) {
     remotas = mapa || {};
@@ -286,6 +315,7 @@
       const voltou = r && miolo({
         nome: r.nome,
         anos: paraLista(r.noticias).map(a => ({ ano: (a && a.ano) || '', noticias: paraLista(a && a.noticias) })),
+        hoje: hojeDe(r.hoje),
       }) === miolo(local);
       if (voltou) delete pendentes[id];
       else minhas[id] = local;
@@ -383,6 +413,56 @@
     orn.style.cssText = 'margin:2.5rem 0 0.5rem';
     orn.textContent   = '✦ ✦ ✦';
     wrapper.appendChild(orn);
+
+    pintarMasthead();
+  }
+
+  // ── O ALTO DA GAZETA ─────────────────────────────────────────────
+  //  O "Publicado em …" do cabeçalho mostra o dia de hoje em Arton da
+  //  campanha aberta, quando o mestre marcou um (📅, na edição). Sem ele
+  //  a linha fica como sempre foi — quem a escreve é o script.js, e é a
+  //  ele que se devolve a linha quando a data sai.
+  function pintarMasthead() {
+    const pub = document.getElementById('mh-publicado');
+    const cal = calendario();
+    if (!pub || !cal) return;
+    const c = campanhaAtual();
+    const h = c ? hojeDe(c.hoje) : null;
+    if (!h) {
+      if (pub.dataset.ncHoje) {
+        delete pub.dataset.ncHoje;
+        if (window.GA_preencherMasthead) window.GA_preencherMasthead();
+      }
+      return;
+    }
+    pub.dataset.ncHoje = '1';
+    const nuvem = 'Hoje em Arton, na campanha ' + c.nome + '.\n\n' + cal.nuvem(h, h.ano);
+    pub.innerHTML = '⚜ Publicado ' + (h.mes === 0 ? 'no ' : 'em ') +
+      tipDeData(nuvem, cal.compacta(h, h.ano)) + ' ⚜';
+    const rodape = document.getElementById('mh-ano-rodape');
+    if (rodape) rodape.textContent = cal.anoNum(h.ano);
+  }
+
+  function tipDeData(nuvem, texto) {
+    return '<span class="ga-tip" tabindex="0" data-tip="' + esc(nuvem) + '">' + esc(texto) + '</span>';
+  }
+
+  // A data no card. A do calendário é reescrita a partir do `quando` e
+  // do ano do bloco; a antiga, digitada, sai exatamente como foi escrita
+  // — só o pedaço da data ganha a nuvem, quando dá para reconhecê-lo.
+  function htmlDaData(n, ano) {
+    const cal = calendario();
+    const a = (ano === '' || ano == null) ? NaN : Number(ano);
+    if (cal) {
+      const q = cal.valida(n.quando);
+      if (q) {
+        return (n.local ? esc(n.local) + ', ' : '') +
+          tipDeData(cal.nuvem(q, a), cal.escrever(q, a, n.quando.forma));
+      }
+      const lido = cal.ler(n.data);
+      if (lido) return esc(lido.antes) + tipDeData(cal.nuvem(lido, a), lido.resto);
+    }
+    return esc(n.data);
   }
 
   function avisoVazio(texto) {
@@ -470,7 +550,7 @@
     if (!c || !podePublicar(c.id)) return;
     pendentes[c.id] = true;
     esperandoPublicar = true;
-    mesaNoticias().publicar({ id: c.id, nome: c.nome, anos: c.anos });
+    mesaNoticias().publicar(paraPublicar(c));
     mostrarToast('📡 Subindo…');
   }
 
@@ -505,13 +585,19 @@
   function renderizarCtrlCampanha() {
     const ctrl = document.createElement('div');
     ctrl.className = 'nc-camp-ctrl';
-    const temCamp = !!campanhaAtual();
+    const camp = campanhaAtual();
+    const temCamp = !!camp;
+    const cal = calendario();
+    const hj = camp ? hojeDe(camp.hoje) : null;
     ctrl.innerHTML = `
       <button class="nc-btn nc-btn-add nc-btn-sm" data-acao="camp-nova">+ Nova Campanha</button>
       ${temCamp ? `
         <button class="nc-btn nc-btn-sm" data-acao="camp-esq" title="Mover campanha para a esquerda">◀</button>
         <button class="nc-btn nc-btn-sm" data-acao="camp-dir" title="Mover campanha para a direita">▶</button>
         <button class="nc-btn nc-btn-sm" data-acao="camp-renomear">✏ Renomear</button>
+        ${cal ? `<button class="nc-btn nc-btn-sm${hj ? '' : ' nc-btn-add'}" data-acao="camp-hoje"
+          title="O dia de hoje em Arton nesta campanha: vai para o alto da gazeta e é a data que uma notícia nova já traz">📅 ${
+            hj ? 'Hoje: ' + esc(cal.compacta(hj, hj.ano)) : 'Marcar o dia de hoje'}</button>` : ''}
         <button class="nc-btn nc-btn-danger nc-btn-sm" data-acao="camp-del">✕ Remover Campanha</button>
       ` : ''}
       <span class="nc-camp-sep" aria-hidden="true"></span>
@@ -548,14 +634,14 @@
     const grid = document.createElement('div');
     grid.className = 'news-grid';
     (anoObj.noticias || []).forEach((n, ni) =>
-      grid.appendChild(renderizarCard(n, ai, ni))
+      grid.appendChild(renderizarCard(n, ai, ni, anoObj.ano))
     );
     bloco.appendChild(grid);
     return bloco;
   }
 
   // ── CARD ─────────────────────────────────────────────────────────
-  function renderizarCard(noticia, ai, ni) {
+  function renderizarCard(noticia, ai, ni, ano) {
     const card = document.createElement('div');
     // a 1ª matéria do ano mais recente é a manchete principal (destaque de capa)
     const ehLead = (ai === 0 && ni === 0);
@@ -566,7 +652,7 @@
     corpo.innerHTML = `
       <span class="news-tag">${esc(noticia.tag)}</span>
       <h3 class="news-title">${esc(noticia.titulo)}</h3>
-      <span class="news-date">${esc(noticia.data)}</span>
+      <span class="news-date">${htmlDaData(noticia, ano)}</span>
       <hr class="news-rule"/>
       <p class="news-body">${bodyHtml}</p>
       ${noticia.ornamento ? '<div class="ornament">— ✦ —</div>' : ''}
@@ -617,6 +703,7 @@
       case 'camp-dir':      moverCampanha( 1);            break;
       case 'camp-nova':     abrirModalCampanha('add');    break;
       case 'camp-renomear': abrirModalCampanha('edit');   break;
+      case 'camp-hoje':     abrirModalHoje();             break;
       case 'camp-del':      removerCampanha();            break;
       case 'camp-publicar':    publicarCampanha();        break;
       case 'camp-tirar-do-ar': tirarDoAr();               break;
@@ -724,6 +811,122 @@
   }
 
   // ══════════════════════════════════════════════════════════════════
+  //  A DATA DA NOTÍCIA — o Calendário Artoniano (Atlas de Arton, p. 30–33)
+  //  Duas maneiras, e a notícia guarda qual usou:
+  //   • pelo 📅 calendário — `quando: { dia, mes, forma }` mais o `local`.
+  //     O ano não entra: é o do bloco em que a notícia está, então a data
+  //     nunca desencontra do "Ano de 1424" logo acima dela;
+  //   • do jeito de sempre, texto livre em `data`.
+  //  A do calendário também leva o `data` já escrito — é o que o arquivo
+  //  e o banco mostram a quem lê o JSON, e o que uma cópia velha do site,
+  //  em cache, ainda sabe exibir. Quem manda na tela, porém, é o `quando`.
+  // ══════════════════════════════════════════════════════════════════
+  const FORMA_KEY = 'grifosAlados.calendarioForma';
+  let seletorAtual = null;               // o calendário do modal aberto
+
+  function formaLembrada() {
+    try { return localStorage.getItem(FORMA_KEY) || 'coloquial'; } catch (e) { return 'coloquial'; }
+  }
+
+  function textoDaData(local, quando, ano) {
+    const cal = calendario();
+    const d = cal ? cal.escrever(quando, ano, quando && quando.forma) : '';
+    return local && d ? local + ', ' + d : (local || d);
+  }
+
+  // Onde uma data nova começa: no "📅 hoje" da campanha; sem ele, no dia
+  // da notícia mais recente, que é onde a história parou.
+  function dataSugerida(camp) {
+    const cal = calendario();
+    if (!cal || !camp) return null;
+    const hj = hojeDe(camp.hoje);
+    if (hj) return hj;
+    let melhor = null, maior = -Infinity;
+    (camp.anos || []).forEach(a => {
+      const ano = Number(a && a.ano);
+      paraLista(a && a.noticias).forEach(n => {
+        const q = cal.valida(n.quando) || cal.valida(cal.ler(n.data));
+        const o = q ? cal.ordem(q, ano) : -Infinity;
+        if (o > maior) { maior = o; melhor = Object.assign(q, { ano: ano }); }
+      });
+    });
+    return melhor;
+  }
+
+  function anoDoModal() {
+    const sel = document.getElementById('ncAno');
+    if (!sel) return null;
+    const n = sel.value === '__novo__'
+      ? parseInt((document.getElementById('ncNovoAno') || {}).value, 10)
+      : parseInt(sel.value, 10);
+    return isFinite(n) ? n : null;
+  }
+
+  // A data do calendário do modal, pronta para guardar — ou null, se o
+  // painel aberto é o do texto livre.
+  function quandoDoModal() {
+    const painel = document.querySelector('#ncQuando [data-quando-painel="cal"]');
+    if (!seletorAtual || !painel || painel.hidden) return null;
+    const q = seletorAtual.valor();
+    const r = document.querySelector('#ncQuando input[name="ncForma"]:checked');
+    const quando = { dia: q.dia, mes: q.mes, forma: calendario().formaOk(r ? r.value : '') };
+    if (q.apos) quando.apos = q.apos;
+    return quando;
+  }
+
+  function textoDoCalendario() {
+    if (!seletorAtual) return '';
+    const q = seletorAtual.valor();
+    const r = document.querySelector('#ncQuando input[name="ncForma"]:checked');
+    const local = ((document.getElementById('ncLocal') || {}).value || '').trim();
+    return textoDaData(local, Object.assign({}, q, { forma: r ? r.value : '' }), anoDoModal());
+  }
+
+  // O bloco "Data e local" do modal. Sem o calendário carregado, só o
+  // campo de texto de sempre.
+  function htmlDoBlocoDaData(cal, modoData, local, forma, textoLivre) {
+    const livre = `
+      <input type="text" id="ncData" class="nc-quando-livre" value="${esc(textoLivre)}"
+        placeholder="Ex: Valkaria, 28º dia de Pomo — Ano 1424" aria-label="Data e local, do jeito que quiser">`;
+    if (!cal) {
+      return `<label class="nc-campo"><span>Data / Local</span>${livre}</label>`;
+    }
+    return `
+      <div class="nc-quando" id="ncQuando">
+        <div class="nc-quando-cab">
+          <span class="nc-quando-rot">Data e local</span>
+          <div class="nc-quando-modos" role="group" aria-label="Como escrever a data">
+            <button type="button" class="nc-quando-modo" data-quando-modo="cal"
+              aria-pressed="${modoData === 'cal'}">📅 Calendário de Arton</button>
+            <button type="button" class="nc-quando-modo" data-quando-modo="livre"
+              aria-pressed="${modoData === 'livre'}">✍ Texto livre</button>
+          </div>
+        </div>
+
+        <div class="nc-quando-painel" data-quando-painel="cal"${modoData === 'cal' ? '' : ' hidden'}>
+          <label class="nc-campo">
+            <span>Local</span>
+            <input type="text" id="ncLocal" value="${esc(local)}" placeholder="Ex: Valkaria">
+          </label>
+          <div id="ncCal"></div>
+          <div class="nc-quando-formas" role="radiogroup" aria-label="Forma de escrever a data">
+            <span class="nc-quando-rot">Escrever na forma</span>
+            ${cal.FORMAS.map(f => `
+              <label class="nc-quando-forma" title="${esc('Ex.: ' + f.exemplo)}">
+                <input type="radio" name="ncForma" value="${f.chave}"${f.chave === forma ? ' checked' : ''}>
+                <span>${esc(f.nome)}</span>
+              </label>`).join('')}
+          </div>
+          <p class="nc-quando-previa" id="ncPrevia" aria-live="polite"></p>
+        </div>
+
+        <div class="nc-quando-painel" data-quando-painel="livre"${modoData === 'livre' ? '' : ' hidden'}>
+          ${livre}
+        </div>
+      </div>`;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
   //  MODAL ADD / EDIT DE NOTÍCIA
   // ══════════════════════════════════════════════════════════════════
   function abrirModal(modo, ai, ni) {
@@ -734,13 +937,31 @@
 
     const anoAtual = camp.anos[ai] ? camp.anos[ai].ano : '';
     let vals = { span: 12, tag: '', titulo: '', data: '', corpo: '', ornamento: false };
+    const editada = (modo === 'edit' && ni != null) ? camp.anos[ai].noticias[ni] : null;
 
-    if (modo === 'edit' && ni != null) {
-      const n = camp.anos[ai].noticias[ni];
+    if (editada) {
+      const n = editada;
       vals = { span: n.span || 12, tag: n.tag || '',
                titulo: n.titulo || '', data: n.data || '',
                corpo: n.corpo || '', ornamento: !!n.ornamento };
     }
+
+    // A data: a notícia do calendário reabre nele; a de texto livre reabre
+    // no texto, do jeito que está — o calendário vem pronto por baixo, com
+    // o dia que deu para ler dela, para quando ele quiser trocar.
+    const cal = calendario();
+    let quando = null, local = '', modoData = 'cal';
+    if (cal && editada) {
+      const q = cal.valida(editada.quando);
+      if (q) { quando = q; local = editada.local || ''; }
+      else {
+        const lido = cal.ler(editada.data);
+        if (lido) { quando = cal.valida(lido); local = lido.local; }
+        if (editada.data) modoData = 'livre';
+      }
+    }
+    if (cal && !quando) quando = cal.valida(dataSugerida(camp)) || { dia: 1, mes: 1 };
+    const forma = cal ? cal.formaOk((editada && editada.quando && editada.quando.forma) || formaLembrada()) : '';
 
     const opcoesCamp = dados.campanhas.map((c, i) =>
       `<option value="${i}" ${i === campAtiva ? 'selected' : ''}>${esc(c.nome)}</option>`
@@ -797,11 +1018,7 @@
               placeholder="Título da notícia">
           </label>
 
-          <label class="nc-campo">
-            <span>Data / Local</span>
-            <input type="text" id="ncData" value="${esc(vals.data)}"
-              placeholder="Ex: Valkaria, 28º dia de Pomo — Ano 1424">
-          </label>
+          ${htmlDoBlocoDaData(cal, modoData, local, forma, vals.data)}
 
           <label class="nc-campo">
             <span>Corpo</span>
@@ -848,11 +1065,46 @@
     }
 
     preencherAnos(campAtiva, anoAtual);
-    selCamp.addEventListener('change', () => preencherAnos(+selCamp.value, anoAtual));
-    selAno .addEventListener('change', alternarNovoAno);
+    selCamp.addEventListener('change', () => { preencherAnos(+selCamp.value, anoAtual); anoMudou(); });
+    selAno .addEventListener('change', () => { alternarNovoAno(); anoMudou(); });
+
+    // O calendário: o ano da grade é o do seletor "Ano" logo acima, então
+    // trocar o ano (ou digitar um novo) redesenha os dias da semana.
+    function pintarPrevia() {
+      const p = document.getElementById('ncPrevia');
+      if (p) p.textContent = textoDoCalendario() || '—';
+    }
+    function anoMudou() {
+      if (seletorAtual) seletorAtual.redesenhar();
+      pintarPrevia();
+    }
+    if (cal) {
+      seletorAtual = cal.seletor(document.getElementById('ncCal'), {
+        valor: quando,
+        ano: anoDoModal,
+        hoje: hojeDe(camp.hoje),
+        aoMudar: pintarPrevia,
+      });
+      document.getElementById('ncNovoAno').addEventListener('input', anoMudou);
+      document.getElementById('ncLocal').addEventListener('input', pintarPrevia);
+      overlay.querySelectorAll('input[name="ncForma"]').forEach(r => r.addEventListener('change', pintarPrevia));
+      pintarPrevia();
+    }
+
+    function trocarModoData(m) {
+      overlay.querySelectorAll('[data-quando-modo]').forEach(b =>
+        b.setAttribute('aria-pressed', String(b.dataset.quandoModo === m)));
+      overlay.querySelectorAll('[data-quando-painel]').forEach(p => { p.hidden = p.dataset.quandoPainel !== m; });
+      // indo para o texto livre com a caixa vazia, ela já leva a data do
+      // calendário escrita — é só retocar
+      const livre = document.getElementById('ncData');
+      if (m === 'livre' && !livre.value.trim()) livre.value = textoDoCalendario();
+    }
 
     // Eventos do modal
     overlay.addEventListener('click', e => {
+      const modoBtn = e.target.closest('[data-quando-modo]');
+      if (modoBtn) { trocarModoData(modoBtn.dataset.quandoModo); return; }
       const btn = e.target.closest('[data-acao-modal]');
       if (!btn && e.target === overlay) { fecharModal(); return; }
       if (!btn) return;
@@ -874,6 +1126,7 @@
   function fecharModal() {
     const el = document.getElementById('ncModal');
     if (el) el.remove();
+    seletorAtual = null;
   }
 
   function confirmarModal(modo, ai, ni) {
@@ -891,15 +1144,25 @@
     const titulo = document.getElementById('ncTitulo').value.trim();
     if (!titulo) { alert('O título é obrigatório.'); return; }
 
+    // a data do calendário, se é o painel dele que está aberto
+    const quando = quandoDoModal();
+    const local  = quando ? document.getElementById('ncLocal').value.trim() : '';
+
     const novaNoticia = {
       id:       uid(),
       span:     parseInt(document.getElementById('ncSpan').value, 10),
       tag:      document.getElementById('ncTag').value.trim(),
       titulo,
-      data:     document.getElementById('ncData').value.trim(),
+      data:     quando ? textoDaData(local, quando, anoNum)
+                       : document.getElementById('ncData').value.trim(),
       corpo:    document.getElementById('ncCorpo').value.trim(),
       ornamento: document.getElementById('ncOrnamento').checked,
     };
+    if (quando) {
+      novaNoticia.quando = quando;
+      if (local) novaNoticia.local = local;
+      window.GA_guardar(FORMA_KEY, quando.forma);     // a próxima já nasce na mesma forma
+    }
 
     if (modo === 'add') {
       garantirAno(campDest, anoNum).noticias.push(novaNoticia);
@@ -986,6 +1249,83 @@
     fecharModal();
     salvar();
     renderizar();
+  }
+
+  // ── MODAL "HOJE EM ARTON" (📅) ────────────────────────────────────
+  //  O dia em que a campanha está. Vai para o "Publicado em…" do alto da
+  //  gazeta e é a data que uma notícia nova já traz. Mora na própria
+  //  campanha (`hoje: { dia, mes, ano }`), então sobe para o banco junto
+  //  com as notícias e os jogadores veem o mesmo dia.
+  function abrirModalHoje() {
+    fecharModal();
+    const camp = campanhaAtual();
+    const cal  = calendario();
+    if (!camp || !cal) return;
+
+    const temHoje = !!hojeDe(camp.hoje);
+    const primeiroAno = Number(camp.anos[0] && camp.anos[0].ano);
+    const inicial = dataSugerida(camp) ||
+      { dia: 1, mes: 1, ano: isFinite(primeiroAno) && primeiroAno ? primeiroAno : cal.anoDoLivro };
+
+    const overlay = document.createElement('div');
+    overlay.id = 'ncModal';
+    overlay.className = 'nc-overlay';
+    overlay.innerHTML = `
+      <div class="nc-modal nc-modal-sm" role="dialog" aria-modal="true" aria-labelledby="ncHojeTit">
+        <div class="nc-modal-header">
+          <span id="ncHojeTit">📅 Hoje em Arton</span>
+          <button class="nc-modal-fechar" data-acao-modal="fechar" title="Fechar">✕</button>
+        </div>
+        <div class="nc-modal-corpo">
+          <p class="nc-quando-ajuda">O dia em que <strong>${esc(camp.nome)}</strong> está. Ele vai para o
+            alto da gazeta, no “Publicado em…”, e é a data que uma notícia nova já traz.</p>
+          <div id="ncCalHoje"></div>
+          <p class="nc-quando-previa" id="ncPreviaHoje" aria-live="polite"></p>
+        </div>
+        <div class="nc-modal-footer">
+          ${temHoje ? '<button class="nc-btn nc-btn-danger" data-acao-modal="hoje-tirar">Tirar a data</button>' : ''}
+          <button class="nc-btn" data-acao-modal="fechar">Cancelar</button>
+          <button class="nc-btn nc-btn-primary" data-acao-modal="hoje-salvar">Salvar</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    function previa() {
+      const h = cal.valida(seletorAtual.valor(), true);
+      document.getElementById('ncPreviaHoje').textContent = h
+        ? '⚜ Publicado ' + (h.mes === 0 ? 'no ' : 'em ') + cal.compacta(h, h.ano) + ' ⚜'
+        : 'Falta o ano.';
+    }
+    seletorAtual = cal.seletor(document.getElementById('ncCalHoje'), {
+      valor: inicial,
+      anoProprio: true,
+      hoje: hojeDe(camp.hoje),
+      aoMudar: previa,
+    });
+    previa();
+
+    overlay.addEventListener('click', e => {
+      const btn = e.target.closest('[data-acao-modal]');
+      if (!btn && e.target === overlay) { fecharModal(); return; }
+      if (!btn) return;
+      const acao = btn.dataset.acaoModal;
+      if (acao === 'fechar') { fecharModal(); return; }
+      // a campanha é relida aqui, e não a de quando o modal abriu: um eco
+      // do banco no meio do caminho troca o objeto por outro igual
+      const c = campanhaAtual();
+      if (!c) { fecharModal(); return; }
+      if (acao === 'hoje-tirar') {
+        c.hoje = null;
+      } else if (acao === 'hoje-salvar') {
+        const h = cal.valida(seletorAtual.valor(), true);
+        if (!h) { alert('Informe o ano.'); return; }
+        c.hoje = h;
+      } else return;
+      fecharModal();
+      salvar();
+      renderizar();
+    });
   }
 
   // ── MODAL NOVO ANO (botão "+ Novo Ano") ───────────────────────────
