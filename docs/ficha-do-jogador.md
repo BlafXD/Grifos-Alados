@@ -27,7 +27,7 @@ E, na mesma conversa, a regra que manda em tudo o que está aqui:
 
 | Arquivo | O quê |
 |---|---|
-| `js/ficha-data.js` | as 29 perícias, as 14 classes, os 6 atributos, os tamanhos |
+| `js/ficha-data.js` | as 29 perícias, as 30 classes (16 básicas e 14 variantes), os 6 atributos, os tamanhos |
 | `js/ficha.js` | o modelo, as contas, a tela, a rolagem e o salvamento |
 | `css/ficha_style.css` | o visual (prefixo `fi-`) |
 | `index.html` | a 📖 Fichas ganhou **sub-abas**: ✍ Ficha de Personagem e 📄 Fichas em PDF |
@@ -87,8 +87,8 @@ compartilhar. Aqui está, e a recomendação é **deixar como está**:
    `armadura`, `resist` e `ataque`, que não significam nada para uma ameaça. Um
    arquivo só passaria a carregar os dois vocabulários, e toda mudança de um
    lado precisaria ser pensada do outro. *Recomendo manter separado.*
-2. **A tabela de PV/PM das 14 classes** não existe em nenhum outro lugar do
-   projeto — criatura não tem classe. Nada a juntar.
+2. **A tabela de PV/PM das classes** (30, desde 10/09/2026) não existe em
+   nenhum outro lugar do projeto — criatura não tem classe. Nada a juntar.
 3. **O rolador (`GA_Dados` / `GA_Rolagens`) é compartilhado, e deve ser.** Não é
    dado de ficha: é o dado da mesa, o mesmo que o bestiário e o painel de
    rolagens usam. É o que faz a rolagem da ficha aparecer para todo mundo.
@@ -778,10 +778,60 @@ Na página dos jogadores, **todas** as caixas ricas da ficha mostravam
 o CSS tinha ficado para trás. Agora `#ficha` está fora das três regras de trava.
 As outras seções (Bases, Viagem) seguem com o cadeado, que lá é verdade.
 
-## Depois: as classes que faltam
+## As classes que faltavam (10/09/2026, à noite)
 
-Combinado com ele em 10/09/2026, para a noite: a ficha só tem as **14 classes
-básicas**, e a mesa dele usa mais — **Frade** (suplemento, p. 31: 12 PV, 3/nível,
-6 PM/nível), **Treinador** (p. 35: 12 PV, 3/nível, 4 PM/nível) e as **14 classes
-variantes** (p. 42). O caminho e a armadilha da tabela desalinhada estão anotados
-na memória `classes-que-faltam-na-ficha`.
+A ficha só conhecia as 14 classes do livro básico, e a mesa dele usa mais. Agora
+são **30**: as 14, mais o **Frade** e o **Treinador**, mais as **14 classes
+variantes** do Heróis de Arton. Tudo lido do PDF, e cada número conferido em
+DUAS fontes — o livro oficial e o suplemento que ele usa na mesa (que bate):
+
+| Classe | Onde | PV inicial | PV/nível | PM/nível |
+|---|---|---|---|---|
+| Frade | Deuses de Arton, p. 39 | 12 | 3 | 6 |
+| Treinador | Heróis de Arton, p. 16 | 12 | 3 | 4 |
+
+**Das 14 variantes, dez copiam a básica e quatro NÃO** — e são essas quatro que
+passariam batido numa cópia de "é igual à básica":
+
+| Variante | De | O que troca |
+|---|---|---|
+| Burguês | nobre | 12 PV e 3/nível (o nobre tem 16 e 4) |
+| Ermitão | druida | 12 PV e 3/nível (o druida tem 16 e 4) |
+| Magimarcialista | bardo | 16 PV e 4/nível (o bardo tem 12 e 3) |
+| Santo | paladino | 4 PM/nível (o paladino tem 3) |
+
+**No dado, a variante só escreve o que troca.** O livro diz "Pontos de Vida:
+como o inventor básico", e o `VARIANTES` de `js/ficha-data.js` diz a mesma
+coisa: o Alquimista é só `{ de: 'inventor' }`, e o número vem da básica. Os
+quatro que trocam têm o número escrito ao lado, e só eles — a exceção aparece
+de longe.
+
+**Na tela, é uma lista só, em dois grupos** (decisão dele): *Classes básicas*
+(as 16, em ordem alfabética) e *Classes variantes* (as 14, cada uma com a
+básica entre parênteses — "Burguês (nobre)"). A outra opção era a variante como
+marca da básica, numa segunda lista; perdeu porque obriga a saber de que
+básica a variante vem.
+
+**E o aviso de multiclasse**, que diz e não trava: *"Não é possível fazer
+multiclasse entre uma classe básica e uma de suas variantes — para todos os
+efeitos, ambas são a mesma classe"* (Heróis de Arton, p. 22). Burguês numa
+linha e Nobre na outra acendem um aviso em carmim embaixo das classes; a mesma
+classe em duas linhas também. O `GA_FichaData.basicaDe()` é quem responde "que
+classe é esta para as regras".
+
+**A armadilha, que já tinha mordido à tarde:** a tabela das variantes do
+suplemento (Tabela 1.5-21) sai TORTA do `pdftotext` e casa guerreiro com
+alquimista. O par certo sai do bloco de PV e PM de cada seção ("como o inventor
+básico") — e a Tabela 1-2 do Heróis de Arton, que sai alinhada, confirma os 14.
+
+**Testado no navegador**, no index e no `jogadores.html`, no computador e a 390px
+de largura: as seis que têm número próprio (Frade, Treinador e as quatro
+variantes que trocam) e uma que copia (Necromante = arcanista) dão a conta
+certa, com a linha por extenso embaixo do medidor ("PV = Burguês: 12 + 1 +
+10×(3 + 1)"), e o
+multiclasse legítimo (Burguês 11 + Guerreiro 2 = 65 PV, 50 PM) não acende aviso
+nenhum.
+
+**O que ficou de fora:** o *melhor amigo* do Treinador tem PV próprio (16 + Con,
+e 4 por nível — Heróis de Arton, p. 20). É uma segunda criatura, não um número
+da ficha; se ele quiser, vira outra conversa.

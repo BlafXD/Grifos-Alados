@@ -896,9 +896,18 @@
   function bloqueIdentidade(f) {
     const opsTam = D.TAMANHOS.map(t =>
       `<option value="${esc(t)}" ${t === f.tamanho ? 'selected' : ''}>${esc(t)}</option>`).join('');
+    // As 30 numa lista só, em dois grupos — a escolha dele, em 10/09/2026:
+    // quem joga de Burguês acha o Burguês, sem precisar saber de que
+    // básica ele vem. A básica vai entre parênteses.
+    const opcao = (C, sel) =>
+      `<option value="${C.chave}" ${C.chave === sel ? 'selected' : ''}>${esc(C.nome)}${
+        C.de ? ' (' + esc(D.classe(C.de).nome.toLowerCase()) + ')' : ''}</option>`;
     const linhasClasse = f.classes.map((c, i) => {
-      const ops = ['<option value="">— classe —</option>'].concat(D.CLASSES.map(C =>
-        `<option value="${C.chave}" ${C.chave === c.classe ? 'selected' : ''}>${esc(C.nome)}</option>`)).join('');
+      const ops = '<option value="">— classe —</option>' +
+        '<optgroup label="Classes básicas">' +
+          D.CLASSES.filter(C => !C.de).map(C => opcao(C, c.classe)).join('') + '</optgroup>' +
+        '<optgroup label="Classes variantes">' +
+          D.CLASSES.filter(C => C.de).map(C => opcao(C, c.classe)).join('') + '</optgroup>';
       return `
         <div class="fi-classe">
           <select class="fi-sel" data-campo="classes.${i}.classe" title="Classe">${ops}</select>
@@ -944,6 +953,7 @@
           </div>
           <span class="fi-nivel-selo">Nível <strong data-der="nivel">${nivel(f)}</strong>
             <em data-der="patamar">${patamar(nivel(f))}</em></span>
+          ${avisoMesmaClasse(f)}
         </div>
         <div class="fi-ident-xp">
           <label class="fi-campo fi-campo--curto"><span class="fi-rot">XP</span>
@@ -953,6 +963,35 @@
           <span class="fi-xp-barra" data-der="xpbarra" aria-hidden="true">${barraXp(f)}</span>
         </div>
       </div>`;
+  }
+
+  // ── A MESMA CLASSE EM DUAS LINHAS ────────────────────────────────
+  //  "Não é possível fazer multiclasse entre uma classe básica e uma de
+  //  suas variantes — para todos os efeitos, ambas são a mesma classe"
+  //  (Heróis de Arton, p. 22). A ficha diz e não trava, como no resto.
+  //  Não depende do nível, só de qual classe está em cada linha, então
+  //  o render() que toda troca de classe já faz basta para atualizar.
+  function avisoMesmaClasse(f) {
+    const vista = {};
+    const avisos = [];
+    f.classes.forEach(c => {
+      const C = D.classe(c.classe);
+      if (!C) return;
+      const b = D.basicaDe(C.chave);
+      const A = vista[b];
+      if (!A) { vista[b] = C; return; }
+      if (A.chave === C.chave) {
+        avisos.push(`${esc(C.nome)} está em duas linhas — é uma classe só; some os níveis numa linha.`);
+      } else {
+        const v = C.de ? C : A;
+        avisos.push(`${esc(v.nome)} é a variante do ${esc(D.classe(v.de).nome.toLowerCase())}: para o livro,
+          as duas são a mesma classe e não fazem multiclasse (Heróis de Arton, p. 22). Fique com uma e
+          some os níveis nela.`);
+      }
+    });
+    // três linhas de Guerreiro dariam o mesmo aviso duas vezes
+    return avisos.filter((a, i) => avisos.indexOf(a) === i)
+      .map(a => `<p class="fi-classes-aviso">⚠ ${a}</p>`).join('');
   }
 
   // ── XP: FALTA MUITO PARA SUBIR? ──────────────────────────────────
