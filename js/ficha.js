@@ -1723,7 +1723,26 @@
             p. 20: For 1, Des 1, Con 1, Int –4, Sab 1, Car 0, 16 PV e uma arma natural de 1d8.</p>`}
         ${f.amigos.length < cabem ? `<button type="button" class="fi-add" data-acao="am-criar">${
           f.amigos.length ? '＋ O segundo melhor amigo (Conquistar pelos Números)' : '🐾 Criar o melhor amigo'}</button>` : ''}
+        <datalist id="fiArmasNaturais">${(D.ARMAS_NATURAIS || []).map(w =>
+          `<option value="${esc(w.nome)}">${esc(w.tipo)}</option>`).join('')}</datalist>
       </div>`;
+  }
+  // A arma da Tabela 2-1 com este nome, se for uma delas — sem ligar para
+  // maiúscula nem acento ("mordida", "pinca").
+  function armaNatural(nome) {
+    const k = semAcento(String(nome || '').trim());
+    return (D.ARMAS_NATURAIS || []).find(w => semAcento(w.nome) === k) || null;
+  }
+  // Escolher uma arma da tabela preenche o tipo de dano dela — a não ser
+  // que o jogador tenha escrito outra coisa ali ("perfuração e veneno"):
+  // só troca o que está vazio ou é um dos três tipos do livro.
+  const TIPOS_DA_TABELA = ['corte', 'impacto', 'perfuracao'];     // sem acento, para comparar
+  function tipoDaArma(x) {
+    const w = armaNatural(x.nome);
+    if (!w || w.tipo === x.tipo) return false;
+    if (x.tipo && TIPOS_DA_TABELA.indexOf(semAcento(x.tipo).trim()) < 0) return false;
+    x.tipo = w.tipo;
+    return true;
   }
 
   function cartaoAmigo(f, a, i) {
@@ -1882,7 +1901,8 @@
     return `
       <li class="fi-atq fi-atq--am">
         <input class="fi-txt fi-txt--atq" type="text" value="${esc(x.nome)}" data-campo="amigos.${i}.ataques.${j}.nome"
-               placeholder="mordida, garra…" autocomplete="off">
+               list="fiArmasNaturais" placeholder="mordida, garra…" autocomplete="off"
+               title="As 12 armas naturais de Ameaças de Arton (p. 374) aparecem como sugestão — escolher uma preenche o tipo de dano">
         <select class="fi-sel fi-sel--mini" data-campo="amigos.${i}.ataques.${j}.pericia" title="Com qual perícia ele ataca">
           <option value="luta" ${x.pericia === 'luta' ? 'selected' : ''}>Luta</option>
           <option value="pontaria" ${x.pericia === 'pontaria' ? 'selected' : ''}>Pontaria</option>
@@ -1917,7 +1937,9 @@
     if (a.tipo === 'monstro') p.push('o <strong>monstro</strong> tem uma segunda arma natural — o ＋ acrescenta');
     if (temTruque(a, 'amigo-feroz')) p.push('o <strong>Amigo Feroz</strong> já soma +2 no ataque; a margem +2 e o passo de dano são com você');
     if (temTruque(a, 'amigao')) p.push('o <strong>Amigão</strong> sobe o dano um passo (1d8 vira 1d10)');
-    return p.length ? '<p class="fi-nota">Na arma: ' + p.join('; ') + '.</p>' : '';
+    return '<p class="fi-nota">O nome sugere as 12 armas naturais da Tabela 2-1 de Ameaças de Arton (p. 374), e ' +
+      'escolher uma preenche o tipo de dano. O dano segue <code>1d8</code> ×2, que é a regra do amigo (p. 20) — o ' +
+      '1d6 daquela tabela vale para as ameaças.' + (p.length ? ' Na arma: ' + p.join('; ') + '.' : '') + '</p>';
   }
 
   function linhaTruque(a, i, T) {
@@ -2410,6 +2432,16 @@
       if (v === null && campo.indexOf('amigosPv.') === 0) delete f.amigosPv[campo.slice(9)];
     } else {
       gravarCampo(f, campo, el.value);
+    }
+    // a arma do amigo escolhida da Tabela 2-1 traz o tipo de dano junto;
+    // escreve direto no campo, sem redesenhar (o cursor está no nome)
+    const ma = /^amigos\.(\d+)\.ataques\.(\d+)\.nome$/.exec(campo);
+    if (ma) {
+      const a = f.amigos[+ma[1]], x = a && a.ataques[+ma[2]];
+      if (x && tipoDaArma(x)) {
+        const t = secao.querySelector('[data-campo="amigos.' + ma[1] + '.ataques.' + ma[2] + '.tipo"]');
+        if (t) t.value = x.tipo;
+      }
     }
     // o nome do personagem também é o rótulo da aba — esse precisa redesenhar
     if (campo === 'nome') {
