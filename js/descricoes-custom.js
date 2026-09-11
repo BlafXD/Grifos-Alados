@@ -17,9 +17,18 @@
 //                            o custo de aprender (250 × PM) e o trabalho.
 //    • "Texto completo"    → desmarcado, cai no resumo de uma linha.
 //
-//  Consumidores: monstros.js (caixas do Combate) e mapa.js (nós do Mapa).
+//  🔎 "ESSE ITEM JÁ EXISTE?" (11/09/2026) é o irmão do ※: a MESMA busca,
+//  mas o que se escolhe é COLADO dentro da caixa de texto, onde estava
+//  o cursor — não fica pendurado num trecho, e não precisa selecionar
+//  nada. É o modo 'colar' do abrirEditor, chamado pelo colarDaBase().
+//
+//  Consumidores: monstros.js (caixas do Combate), mapa.js (nós do Mapa)
+//  e toda caixa com a barra rica (GA_barraRica: Ficha, Bases, Viagem,
+//  Anotações) — nas DUAS páginas, desde que o jogadores.html passou a
+//  carregar este arquivo.
 //  API: GA_Tip.editarSelecao(editorEl, aoConcluir) → true se abriu;
-//       GA_Tip.abrirEditor({termo, atual, onSalvar, onRemover}).
+//       GA_Tip.colarDaBase(editorEl, aoConcluir)   → true se abriu;
+//       GA_Tip.abrirEditor({termo, atual, onSalvar, onRemover, modo}).
 // ════════════════════════════════════════════════════════════════════
 window.GA_Tip = (function () {
   'use strict';
@@ -237,21 +246,27 @@ window.GA_Tip = (function () {
   }
 
   // ── Modal de edição ─────────────────────────────────────────────────
-  //  opts: { termo, atual, onSalvar(texto), onRemover() }
+  //  opts: { termo, atual, onSalvar(texto), onRemover(), modo }
   //  `termo` vem INTEIRO (só o rótulo é encurtado): é por ele que se
   //  descobre se o trecho é o nome de uma magia.
+  //  modo 'colar' (🔎 Esse item já existe?): o termo, se houver, só
+  //  preenche a busca; o nome do que se escolhe entra como PRIMEIRA
+  //  LINHA da caixa (ela vira negrito no texto), e o botão final cola.
   function abrirEditor(opts) {
     opts = opts || {};
+    const colar = opts.modo === 'colar';
     // a nuvem pode estar fixada no próprio termo — solta antes de abrir
     // o modal, para não ficar flutuando por cima dele
     if (window.ItensDescricoes && window.ItensDescricoes.fecharNuvem) window.ItensDescricoes.fecharNuvem();
     const termoCurto = String(opts.termo || '');
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
-        <strong>Descrição do trecho</strong>
+        <strong>${colar ? '🔎 Esse item já existe?' : 'Descrição do trecho'}</strong>
         <button class="ga-modal-x" data-ga-fechar title="Fechar (Esc)">✕</button>
       </div>
-      <p class="gd-termo">Trecho: <strong>${esc(termoCurto.length > 80 ? termoCurto.slice(0, 80) + '…' : termoCurto)}</strong></p>
+      ${colar
+        ? '<p class="gd-termo">Busque na base e o texto entra <strong>dentro da caixa</strong>, onde estava o cursor.</p>'
+        : `<p class="gd-termo">Trecho: <strong>${esc(termoCurto.length > 80 ? termoCurto.slice(0, 80) + '…' : termoCurto)}</strong></p>`}
       <input class="gd-busca" type="text" autocomplete="off"
              placeholder="Buscar descrição pronta (itens, magias, condições, pratos, poderes…)">
       <div class="gd-resultados"></div>
@@ -267,13 +282,17 @@ window.GA_Tip = (function () {
         </label>
       </div>
       <textarea class="gd-texto"
-                placeholder="…ou escreva aqui a descrição com as suas palavras.">${esc(opts.atual || '')}</textarea>
-      <p class="gd-dica">Cole textos à vontade — a colagem entra emendada num parágrafo só.
+                placeholder="${colar
+                  ? 'Escolha um resultado acima: o texto dele aparece aqui, e é isto que entra na caixa (dá para retocar antes).'
+                  : '…ou escreva aqui a descrição com as suas palavras.'}">${esc(opts.atual || '')}</textarea>
+      <p class="gd-dica">${colar
+        ? 'A primeira linha entra em negrito, e as quebras que estiverem aqui entram junto.'
+        : `Cole textos à vontade — a colagem entra emendada num parágrafo só.
         As quebras que você deixar aqui a nuvem respeita.
-        No texto, passe o mouse no trecho para ver a nuvem e CLIQUE no trecho para fixá-la (rolar e copiar).</p>
+        No texto, passe o mouse no trecho para ver a nuvem e CLIQUE no trecho para fixá-la (rolar e copiar).`}</p>
       <div class="gd-acoes">
         ${opts.atual ? '<button type="button" class="gd-btn gd-btn--remover" data-gd="remover">Remover descrição</button>' : ''}
-        <button type="button" class="gd-btn" data-gd="aplicar">Aplicar</button>
+        <button type="button" class="gd-btn" data-gd="aplicar">${colar ? '＋ Colar no texto' : 'Aplicar'}</button>
       </div>`);
     overlay.classList.add('gd-overlay');
 
@@ -315,16 +334,22 @@ window.GA_Tip = (function () {
         </button>`).join('');
       resultados._achados = achados;
     });
+    // magia escolhida → entra o texto INTEGRAL dela (e os interruptores);
+    // qualquer outra fonte → o texto do índice, como sempre foi. Colando,
+    // o nome vai na frente: na nuvem o trecho já é o nome, mas dentro da
+    // caixa é ele que diz do que se está falando. (O texto da magia já
+    // começa pelo nome.)
+    function escolher(it) {
+      const reg = it.fonte === 'magia' ? magiaDe(it.nome) : null;
+      if (reg) ligarMagia(reg, true);
+      else { ligarMagia(null); ta.value = colar ? it.nome + '\n' + it.texto : it.texto; }
+    }
     resultados.addEventListener('click', e => {
       const btn = e.target.closest('[data-gd-res]');
       if (!btn || !resultados._achados) return;
       const it = resultados._achados[+btn.dataset.gdRes];
       if (!it) return;
-      // magia escolhida → entra o texto INTEGRAL dela (e os interruptores);
-      // qualquer outra fonte → o texto do índice, como sempre foi.
-      const reg = it.fonte === 'magia' ? magiaDe(it.nome) : null;
-      if (reg) ligarMagia(reg, true);
-      else { ligarMagia(null); ta.value = it.texto; }
+      escolher(it);
       ta.focus();
     });
 
@@ -334,6 +359,16 @@ window.GA_Tip = (function () {
     // caminho comum. Havendo descrição, o texto dela é preservado até o
     // mestre mexer num dos interruptores.
     ligarMagia(magiaDe(opts.termo), !opts.atual);
+
+    // Colando com um trecho selecionado, ele é o que se busca — e se o
+    // primeiro achado tem exatamente aquele nome, já entra na caixa:
+    // selecionar "Espada longa" e apertar o 🔎 basta.
+    if (colar && opts.termo && !magiaSel) {
+      busca.value = String(opts.termo).trim();
+      busca.dispatchEvent(new Event('input'));
+      const primeiro = (resultados._achados || [])[0];
+      if (primeiro && primeiro.busca === window.GA_semAcento(busca.value)) escolher(primeiro);
+    }
 
     // colagem SEM quebras de linha (junta tudo num parágrafo)
     ta.addEventListener('paste', e => {
@@ -355,8 +390,9 @@ window.GA_Tip = (function () {
       if (btn.dataset.gd === 'aplicar') {
         const texto = limparTexto(ta.value);
         if (!texto) {
-          // aplicar vazio = tirar a descrição (se havia uma)
-          if (opts.atual && opts.onRemover) opts.onRemover();
+          // aplicar vazio = tirar a descrição (se havia uma); colar vazio
+          // não faz nada — só fecha
+          if (!colar && opts.atual && opts.onRemover) opts.onRemover();
         } else if (opts.onSalvar) {
           opts.onSalvar(texto);
         }
@@ -431,8 +467,78 @@ window.GA_Tip = (function () {
     return true;
   }
 
+  // ── 🔎 Esse item já existe? → a descrição DENTRO do texto ─────────────
+  //  O cursor é guardado antes de o modal abrir (ele tira o foco da
+  //  caixa). Estava fora da caixa? O texto entra no fim. Havia um trecho
+  //  selecionado? Ele vira a busca, e o texto entra logo DEPOIS dele — o
+  //  trecho fica como estava.
+  function colarDaBase(editor, aoConcluir) {
+    if (!editor) return false;
+    const sel = window.getSelection();
+    let range = null;
+    if (sel && sel.rangeCount && editor.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+      range = sel.getRangeAt(0).cloneRange();
+    }
+    const termo = range && !range.collapsed ? range.toString().trim() : '';
+    if (range) range.collapse(false);
+    // Se a tela for redesenhada com o modal aberto (o eco da mesa, na
+    // ficha), a caixa de agora deixa de existir: a campo dela é que diz
+    // qual é a nova.
+    const campo = editor.getAttribute('data-campo');
+    abrirEditor({
+      modo: 'colar',
+      termo: termo,
+      onSalvar: texto => {
+        let alvo = editor;
+        if (!document.body.contains(alvo) && campo) {
+          alvo = document.querySelector('.ga-rich[data-campo="' + campo.replace(/"/g, '\\"') + '"]');
+          range = null;
+        }
+        if (!alvo) return;
+        inserirTexto(alvo, range, texto);
+        // o dono da caixa salva no 'input' — se ela foi trocada, avisa a nova
+        if (alvo === editor) { if (aoConcluir) aoConcluir(); }
+        else alvo.dispatchEvent(new Event('input', { bubbles: true }));
+      },
+    });
+    return true;
+  }
+
+  // A primeira linha (o nome) em negrito, as outras como estão; linha em
+  // branco vira linha em branco. Só tags que o GA_limparHtml deixa passar.
+  function htmlDoTexto(texto) {
+    return limparTexto(texto).split('\n')
+      .map((l, i) => i === 0 ? '<b>' + esc(l) + '</b>' : esc(l))
+      .join('<br>');
+  }
+
+  // Entra no cursor, numa linha só dela: quebra antes se já havia texto
+  // antes do cursor, e depois se havia texto depois. Sem cursor, no fim.
+  function inserirTexto(editor, range, texto) {
+    const temTexto = r => r.toString().trim() !== '';
+    let antes = false, depois = false;
+    if (range && editor.contains(range.startContainer)) {
+      const r1 = document.createRange();
+      r1.selectNodeContents(editor);
+      r1.setEnd(range.startContainer, range.startOffset);
+      antes = temTexto(r1);
+      const r2 = document.createRange();
+      r2.selectNodeContents(editor);
+      r2.setStart(range.endContainer, range.endOffset);
+      depois = temTexto(r2);
+    } else {
+      range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      antes = editor.textContent.trim() !== '';
+    }
+    const html = (antes ? '<br>' : '') + htmlDoTexto(texto) + (depois ? '<br>' : '');
+    range.insertNode(range.createContextualFragment(html));
+    editor.normalize();
+  }
+
   return {
-    editarSelecao, abrirEditor, buscar,
+    editarSelecao, abrirEditor, buscar, colarDaBase,
     magiaDe, magiaTexto,                  // usados pelo painel de magia
     _limparColagem: limparColagem,
     _limparTexto: limparTexto,

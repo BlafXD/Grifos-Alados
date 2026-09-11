@@ -1185,3 +1185,28 @@ Testado no `jogadores.html` com o Firebase desligado e o `confirm` trocado por
 um espião: as três pílulas com o nome, o selo novo, o ⇈ e as setas (dois
 cliques de mouse de verdade no mesmo ponto desceram o MESMO item duas vezes), a
 pergunta ao tirar, e o item em branco saindo sem ela.
+
+## 🔎 "Esse item já existe?" (11/09/2026, fim do dia)
+
+> "Invés do descrição que precisa ter um texto para eu adicionar a descrição de
+> um item que tem anotado nos grifos, ele seria para LITERAL adicionar a
+> descrição já dentro da caixa de texto!"
+
+Um botão na **barra rica**, à esquerda do ※ Descrição. É a **mesma busca** do ※
+(itens da Loja com dano e preço, a lore dos itens, magias com o texto inteiro,
+condições, pratos, poderes concedidos), mas o que se escolhe é **colado dentro
+da caixa**, onde estava o cursor (sem cursor nela, no fim), numa linha só dele,
+com o nome em negrito na primeira linha. Não precisa selecionar nada; se houver
+um trecho selecionado, ele vira a busca, e o texto entra logo depois dele.
+
+Mora no `descricoes-custom.js` (o modo `colar` do `abrirEditor`, chamado pelo
+`colarDaBase()`), e a barra é a do site inteiro — então vale na Ficha, nas
+Bases, na Viagem e nas Anotações. **O `jogadores.html` passou a carregar esse
+arquivo**, e com isso o ※ Descrição, que ficava escondido do jogador só porque o
+modal não era carregado lá, também voltou para ele.
+
+Testado no `jogadores.html`: "espada longa" entra como **Espada longa** + a
+linha de dano, crítico, espaço e T$ + a descrição; "Bola de Fogo" selecionada no
+meio de uma frase abre o modal já com a magia inteira, e o texto entra depois
+dela, com o resto da frase numa linha própria. O que a ficha salva é idêntico
+ao que está na caixa.
