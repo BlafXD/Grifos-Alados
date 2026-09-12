@@ -473,6 +473,15 @@
 .fi-per-rolar:hover .fi-per-nome { color: var(--rust); text-decoration: underline dotted; }
 .fi-per-nome { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fi-per--treinada .fi-per-nome { font-weight: 700; }
+/* Na perícia do personagem o botão se partiu em dois — o nome e o
+   número — para o seletor de atributo caber entre eles (um <select>
+   dentro de um <button> não abre). O nome não estica; quem empurra o
+   número para a direita é o próprio botão do número, e a sigla fica
+   colada no nome, exatamente onde o "DES" escrito ficava. A perícia do
+   melhor amigo continua num botão só, e por isso nada disto é o padrão
+   de .fi-per-rolar. */
+.fi-per-rolar--nome { flex: 0 1 auto; }
+.fi-per-rolar--val  { flex: 0 0 auto; margin-left: auto; }
 .fi-per-atr {
   font-family: 'Cinzel', serif;
   font-size: 0.56rem;
@@ -2065,4 +2074,57 @@
   #ficha-content .fi-am-chave,
   #ficha-content .fi-am-dir,
   #ficha-content .fi-inv-modo    { min-height: 2.6rem; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   O ATRIBUTO DE CADA LINHA (12 de setembro de 2026)
+   A sigla ao lado do nome da perícia deixou de ser um rótulo e virou
+   escolha: a Defesa e cada perícia podem usar outro atributo — um
+   poder, um item, uma classe que mande Sabedoria no lugar da
+   Inteligência de Misticismo, ou da Destreza da Defesa.
+
+   Este bloco mora no FIM do arquivo de propósito: o "traço forte" lá
+   em cima redesenha todo .fi-sel com moldura e linha de escrever, e se
+   viesse antes apagaria a etiqueta discreta que a perícia precisa ser.
+   ══════════════════════════════════════════════════════════════════ */
+/* Na linha da perícia, em repouso, ele é a MESMA etiqueta de antes:
+   sem moldura, sem fundo, do tamanho do texto que era. */
+.fi-per > .fi-sel--atr {
+  width: auto;
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--raio);
+  padding: 0.05rem 0.1rem;
+  cursor: pointer;
+}
+.fi-per > .fi-sel--atr:hover { border-color: var(--parchment3); background: var(--parchment2); }
+/* Só quando o que está nele NÃO é o que o livro imprime é que ele
+   acende — aí a conta saiu do padrão, e quem lê a ficha de fora precisa
+   ver isso de longe, sem ter de conferir a Tabela 2-1 linha por linha. */
+.fi-per > .fi-sel--trocado,
+.fi-extra--atr > .fi-sel--trocado {
+  color: var(--rust);
+  font-weight: 700;
+  border-color: var(--rust);
+  background: var(--gold-pale);
+}
+/* No cartão da Defesa ele não é etiqueta: é um campo como a armadura e
+   o escudo ao lado, e tem de ter a cara deles. */
+.fi-extra--atr > .fi-sel { text-align: center; }
+
+/* No celular, uma sigla de 0,56rem é um alvo que ninguém acerta — e
+   errar aqui troca o atributo da perícia sem querer. */
+@media (pointer: coarse) {
+  #ficha-content .fi-per > .fi-sel--atr {
+    font-size: 0.7rem;
+    min-height: 2rem;
+    padding: 0.15rem 0.25rem;
+    border-color: var(--parchment3);
+  }
 }

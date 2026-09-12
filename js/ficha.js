@@ -129,6 +129,17 @@
     ['armadura', 'escudo', 'outros', 'penalidade'].forEach(k => {
       if (typeof f.defesa[k] !== 'number') f.defesa[k] = 0;
     });
+    // ── O ATRIBUTO DA DEFESA (12/09/2026) ──────────────────────────
+    //  Pelo livro a Defesa é 10 + DESTREZA + armadura + escudo (p. 106),
+    //  e é com Destreza que toda ficha nasce. Mas há quem troque: um
+    //  poder, um item, uma classe que manda usar Sabedoria no lugar.
+    //  O jeito antigo era somar a diferença na mão em "outros" — o que
+    //  apagava a Destreza da conta por extenso e deixava um número solto
+    //  que ninguém sabia explicar dali a uma semana. Agora se DIZ qual
+    //  atributo entra, e a conta continua contando a história inteira.
+    //  Um só: quem tiver DOIS atributos na Defesa soma o segundo em
+    //  "outros", como já fazia.
+    f.defesa.atributo = ehAtributo(f.defesa.atributo) ? f.defesa.atributo : 'des';
     f.carga = f.carga || {};
     ['usada', 'outros'].forEach(k => { if (typeof f.carga[k] !== 'number') f.carga[k] = 0; });
     if (typeof f.cdAtributo !== 'string') f.cdAtributo = 'int';
@@ -162,12 +173,19 @@
     });
     if (typeof f.proficiencias !== 'string') f.proficiencias = '';
 
+    //  `atr` é a MESMA ideia da Defesa, perícia por perícia: a Tabela
+    //  2-1 (p. 115) diz o atributo-chave de cada uma, e é esse que vale
+    //  — a não ser que ESTA ficha diga outro. Um poder que manda testar
+    //  Misticismo com Sabedoria no lugar de Inteligência muda a linha
+    //  inteira, e não só a rolagem de hoje. Vazio quer dizer "o do
+    //  livro": a ficha velha chega sem o campo e continua certa.
     f.pericias = f.pericias || {};
     D.PERICIAS.forEach(p => {
       const e = f.pericias[p.chave] || {};
       f.pericias[p.chave] = {
         treinada: e.treinada === true,
         outros: typeof e.outros === 'number' ? e.outros : 0,
+        atr: ehAtributo(e.atr) ? e.atr : '',
       };
     });
 
@@ -180,20 +198,21 @@
     //  ele vira o primeiro da lista, com o treino e o bônus que tinha.
     if (!Array.isArray(f.oficios)) {
       const velho = f.pericias.oficio || {};
-      f.oficios = [{ id: novoId(), esp: '', treinada: !!velho.treinada, outros: velho.outros || 0 }];
+      f.oficios = [{ id: novoId(), esp: '', treinada: !!velho.treinada, outros: velho.outros || 0, atr: '' }];
     }
     f.oficios = f.oficios.map(o => ({
       id: (o && o.id) || novoId(),
       esp: String((o && o.esp) || ''),            // "alquimista", "engenhoqueiro"…
       treinada: (o && o.treinada) === true,
       outros: (o && typeof o.outros === 'number') ? o.outros : 0,
+      atr: (o && ehAtributo(o.atr)) ? o.atr : '', // vazio = o do livro (Int)
     }));
     // DOIS ofícios sempre à vista, sem precisar de um ＋ para achar o
     // segundo: ter dois é o caso normal ("um alquimista com um
     // engenhoqueiro"), e uma linha vazia não atrapalha ninguém. O ＋
     // continua ali para o terceiro em diante.
     while (f.oficios.length < 2) {
-      f.oficios.push({ id: novoId(), esp: '', treinada: false, outros: 0 });
+      f.oficios.push({ id: novoId(), esp: '', treinada: false, outros: 0, atr: '' });
     }
 
     // ── INVENTÁRIO (p. 141) ────────────────────────────────────────
@@ -454,6 +473,25 @@
     return Math.max(1, n);
   }
   function atr(f, chave) { return f.atributos[chave] || 0; }
+  // ── QUAL ATRIBUTO ENTRA ONDE ───────────────────────────────────
+  //  A Defesa e cada perícia têm o atributo que o livro manda — e a
+  //  ficha deixa trocar. Tudo passa por aqui, para que um campo em
+  //  branco, uma ficha velha ou o lixo de outra versão do site caiam
+  //  fora e a conta volte sozinha para o que está impresso.
+  function ehAtributo(k) { return D.ATRIBUTOS.some(x => x.chave === k); }
+  //  O da Defesa: Destreza (p. 106), salvo escolha desta ficha.
+  function atrDefesa(f) {
+    return (f.defesa && ehAtributo(f.defesa.atributo)) ? f.defesa.atributo : 'des';
+  }
+  //  O de uma perícia: o da Tabela 2-1 (p. 115), salvo escolha desta
+  //  linha. `e` é a entrada da perícia ou do ofício ({treinada, outros,
+  //  atr}) — Ofício tem uma por especialidade, e cada uma escolhe a sua.
+  function atrPericia(P, e) {
+    return (e && ehAtributo(e.atr)) ? e.atr : (P ? P.atr : 'des');
+  }
+  //  Esta linha saiu do que o livro imprime? É o que acende a marca na
+  //  tela e o que põe o atributo no nome da rolagem que vai para a mesa.
+  function trocouAtr(P, e) { return !!P && atrPericia(P, e) !== P.atr; }
 
   // PV: a PRIMEIRA classe dá o PV inicial dela; o primeiro nível de uma
   // classe nova dá PV de nível subsequente, não do 1º (p. 40).
@@ -496,9 +534,11 @@
     });
     return saida;
   }
-  // Defesa = 10 + Destreza + armadura + escudo (p. 106)
+  // Defesa = 10 + Destreza + armadura + escudo (p. 106) — e "Destreza"
+  // é o padrão, não uma amarra: quem escolheu outro atributo na ficha
+  // soma o dele, e a conta por extenso diz qual foi.
   function defesa(f) {
-    return 10 + atr(f, 'des') + f.defesa.armadura + f.defesa.escudo + f.defesa.outros;
+    return 10 + atr(f, atrDefesa(f)) + f.defesa.armadura + f.defesa.escudo + f.defesa.outros;
   }
   // Carga = 10 espaços + 2 por ponto de Força, ou −1 por ponto negativo (p. 141)
   function cargaMax(f) {
@@ -517,7 +557,7 @@
   function calcPericia(f, P, e) {
     if (!P) return 0;
     const n = nivel(f);
-    let v = Math.floor(n / 2) + atr(f, P.atr) + treino(n, (e || {}).treinada) + ((e || {}).outros || 0);
+    let v = Math.floor(n / 2) + atr(f, atrPericia(P, e)) + treino(n, (e || {}).treinada) + ((e || {}).outros || 0);
     if (P.armadura) v -= Math.abs(f.defesa.penalidade || 0);
     return v;
   }
@@ -531,6 +571,13 @@
   // precisa mostrar para não sair três "Ofício" iguais.
   function nomeOficio(o) {
     return 'Ofício' + (o && o.esp ? ' (' + o.esp + ')' : '');
+  }
+  //  "Misticismo (Sab)" — quando a linha sai do atributo do livro, quem
+  //  lê a rolagem na mesa precisa ver POR QUE aquele número é aquele.
+  //  Quando não sai, o nome vai limpo, como sempre foi.
+  function nomeRolado(P, e, nome) {
+    return (nome || (P ? P.nome : '')) +
+      (trocouAtr(P, e) ? ' (' + atrCurto(atrPericia(P, e)) + ')' : '');
   }
   // CD das suas habilidades = 10 + ⌊nível ÷ 2⌋ + atributo-chave
   function cdBase(f) { return 10 + Math.floor(nivel(f) / 2) + atr(f, f.cdAtributo); }
@@ -1197,6 +1244,11 @@
           </div>
           <p class="fi-conta" data-der="defconta">${contaDefesa(f)}</p>
           <div class="fi-extras">
+            <label class="fi-extra fi-extra--atr"><span>Atributo</span>
+              ${seletorAtr('defesa.atributo', atrDefesa(f), 'des',
+                'Qual atributo entra na Defesa. Pelo livro é Destreza (p. 106); se um poder, um item ' +
+                'ou uma classe sua mandar outro — Sabedoria, Carisma —, escolha aqui: ele entra NO LUGAR ' +
+                'da Destreza, e a conta acima passa a mostrar qual foi.', 'fi-sel')}</label>
             <label class="fi-extra"><span>Armadura</span>
               <input class="fi-num" type="number" value="${f.defesa.armadura}" data-campo="defesa.armadura"></label>
             <label class="fi-extra"><span>Escudo</span>
@@ -1299,11 +1351,15 @@
   }
 
   function contaDefesa(f) {
-    const p = ['10', 'Des ' + sinal(atr(f, 'des'))];
+    const k = atrDefesa(f);
+    const p = ['10', atrCurto(k) + ' ' + sinal(atr(f, k))];
     if (f.defesa.armadura) p.push('armadura ' + sinal(f.defesa.armadura));
     if (f.defesa.escudo)   p.push('escudo ' + sinal(f.defesa.escudo));
     if (f.defesa.outros)   p.push('outros ' + sinal(f.defesa.outros));
-    return p.join(' + ').replace(/\+ -/g, '− ');
+    // quando o atributo não é o da p. 106, a conta diz o que está
+    // fazendo — senão o número parece errado para quem olha de fora
+    return p.join(' + ').replace(/\+ -/g, '− ') +
+      (k === 'des' ? '' : ' <em>(' + esc(nomeAtr(k)) + ' no lugar da Destreza)</em>');
   }
 
   // ── RESISTÊNCIAS, RD E IMUNIDADES (Tormenta 20, p. 229) ──────────
@@ -1399,13 +1455,23 @@
       if (p.multipla) return linhasOficio(f, p);
       const e = f.pericias[p.chave];
       const v = valorPericia(f, p.chave);
+      //  O botão de rolar virou DOIS — o nome e o número —, com o
+      //  seletor de atributo entre eles, onde antes ficava o "DES"
+      //  escrito. Um <select> dentro de um <button> não abre (e o
+      //  clique cairia no botão), então o botão teve de se partir; os
+      //  dois rolam a mesma perícia, e a linha continua igual na tela.
       return `
         <li class="fi-per ${e.treinada ? 'fi-per--treinada' : ''}">
           ${botaoTreinar(e.treinada, 'data-acao="treinar" data-p="' + p.chave + '"')}
-          <button type="button" class="fi-per-rolar" data-acao="rolar-pericia" data-p="${p.chave}"
+          <button type="button" class="fi-per-rolar fi-per-rolar--nome" data-acao="rolar-pericia" data-p="${p.chave}"
                   title="Rolar 1d20 ${sinal(v)} de ${esc(p.nome)}">
             <span class="fi-per-nome">${esc(p.nome)}</span>
-            <span class="fi-per-atr">${esc(atrCurto(p.atr))}</span>
+          </button>
+          ${seletorAtr('pericias.' + p.chave + '.atr', atrPericia(p, e), p.atr,
+            'Qual atributo entra em ' + p.nome + '. Pelo livro é ' + nomeAtr(p.atr) +
+            ' (Tabela 2-1, p. 115); se um poder, um item ou uma classe sua mandar outro, escolha aqui — muda só esta perícia.')}
+          <button type="button" class="fi-per-rolar fi-per-rolar--val" data-acao="rolar-pericia" data-p="${p.chave}"
+                  title="Rolar 1d20 ${sinal(v)} de ${esc(p.nome)}">
             <span class="fi-per-val" data-der="per:${p.chave}">${sinal(v)}</span>
             <span class="fi-per-dado" aria-hidden="true">🎲</span>
           </button>
@@ -1424,7 +1490,10 @@
         <ul class="fi-per-lista">${linhas}</ul>
         <p class="fi-nota">O <strong>🎲</strong> rola 1d20 com o bônus já somado, e a rolagem aparece na mesa.
           O ✓ marca treinada — o site não confere quantas você pode treinar, isso é escolha sua.
-          As <em>só treinada</em> aparecem mesmo sem treino porque o livro proíbe o uso, não a rolagem.</p>
+          As <em>só treinada</em> aparecem mesmo sem treino porque o livro proíbe o uso, não a rolagem.
+          A sigla do meio é o <strong>atributo</strong>: vem o da Tabela 2-1, e você pode trocar por outro
+          (usar Sabedoria em Misticismo, por exemplo). Trocado, ele fica em destaque e o nome da rolagem
+          vai para a mesa com o atributo entre parênteses.</p>
       </div>`;
   }
 
@@ -1445,9 +1514,11 @@
           <input class="fi-txt fi-of-esp" type="text" value="${esc(o.esp)}" list="fiOficios"
                  data-campo="oficios.${i}.esp" placeholder="de quê? alquimista, engenhoqueiro…"
                  autocomplete="off" title="A especialidade deste ofício">
+          ${seletorAtr('oficios.' + i + '.atr', atrPericia(p, o), p.atr,
+            'Qual atributo entra neste ofício. Pelo livro é ' + nomeAtr(p.atr) +
+            ' (p. 121); cada ofício é uma perícia à parte, e escolhe o seu.')}
           <button type="button" class="fi-per-rolar fi-per-rolar--of" data-acao="rolar-oficio" data-i="${i}"
                   title="Rolar 1d20 ${sinal(v)} de ${esc(nomeOficio(o))}">
-            <span class="fi-per-atr">${esc(atrCurto(p.atr))}</span>
             <span class="fi-per-val" data-der="of:${i}">${sinal(v)}</span>
             <span class="fi-per-dado" aria-hidden="true">🎲</span>
           </button>
@@ -1470,6 +1541,23 @@
   function atrCurto(chave) {
     const a = D.ATRIBUTOS.find(x => x.chave === chave);
     return a ? a.curto : chave;
+  }
+  function nomeAtr(chave) {
+    const a = D.ATRIBUTOS.find(x => x.chave === chave);
+    return a ? a.nome : chave;
+  }
+
+  // ── O SELETOR DE ATRIBUTO DE UMA LINHA ───────────────────────────
+  //  O "DES" que ficava ao lado do nome era um rótulo; agora é escolha.
+  //  Serve à Defesa e a cada perícia (e a cada ofício), e vai sempre com
+  //  o do LIVRO guardado em `data-livro`: é ele que acende a marca de
+  //  "esta linha saiu do padrão" — sem precisar redesenhar a ficha
+  //  inteira a cada troca (ver atualizarDerivados).
+  function seletorAtr(campo, valor, doLivro, dica, classe) {
+    const ops = D.ATRIBUTOS.map(x =>
+      `<option value="${x.chave}" ${x.chave === valor ? 'selected' : ''}>${esc(x.curto)}</option>`).join('');
+    return `<select class="${classe || 'fi-sel fi-sel--atr'}${valor === doLivro ? '' : ' fi-sel--trocado'}"
+              data-campo="${campo}" data-livro="${doLivro}" title="${esc(dica)}">${ops}</select>`;
   }
 
   // ── ATAQUES ──────────────────────────────────────────────────────
@@ -2440,6 +2528,13 @@
         if (forte) forte.textContent = t;
       }
     });
+    // A marca de "este atributo não é o do livro" acende e apaga junto
+    // com o <select>. Fica aqui, e não num render(), porque redesenhar a
+    // ficha por causa de uma sigla arrancaria a rolagem pendurada na
+    // linha e o cursor de quem estivesse escrevendo ao lado.
+    secao.querySelectorAll('[data-livro]').forEach(sel => {
+      sel.classList.toggle('fi-sel--trocado', sel.value !== sel.dataset.livro);
+    });
     // os campos de PV/PM atuais também mudam sozinhos (dano, cura, ＋/−)
     ['pv', 'pm'].forEach(q => {
       const campo = secao.querySelector('[data-campo="' + q + '.atual"]');
@@ -2690,7 +2785,8 @@
     }
     if (acao === 'rolar-oficio') {
       const i = +btn.dataset.i, o = f.oficios[i];
-      if (o) rolar(d20(valorOficio(f, i)), quem(f) + ' · ' + nomeOficio(o), 'of:' + i);
+      if (o) rolar(d20(valorOficio(f, i)),
+                   quem(f) + ' · ' + nomeRolado(D.pericia('oficio'), o, nomeOficio(o)), 'of:' + i);
       return;
     }
 
@@ -2818,7 +2914,7 @@
     // ── AS ROLAGENS DA FICHA ───────────────────────────────────────
     if (acao === 'rolar-pericia') {
       const p = D.pericia(btn.dataset.p);
-      if (p) rolar(d20(valorPericia(f, p.chave)), quem(f) + ' · ' + p.nome, 'per:' + p.chave);
+      if (p) rolar(d20(valorPericia(f, p.chave)), quem(f) + ' · ' + nomeRolado(p, f.pericias[p.chave]), 'per:' + p.chave);
       return;
     }
     if (acao === 'rolar-ataque') {
@@ -3259,7 +3355,11 @@
         id: f.id, dono: dono || '',
         nome: f.nome || '', jogador: f.jogador || '',
         nivel: nivel(f),
-        des: atr(f, 'des'),              // o modificador de Iniciativa, em T20, é a Destreza
+        // O desempate da lista de iniciativa. Em T20 o modificador é a
+        // Destreza — mas quem trocou o atributo da perícia Iniciativa
+        // nesta ficha desempata com o dele, senão a lista contaria uma
+        // história diferente da que o jogador está vendo na ficha.
+        des: atr(f, atrPericia(D.pericia('iniciativa'), f.pericias.iniciativa)),
         pv: { atual: pvAtual(f), max: pvMax(f), temp: f.pv.temp || 0 },
         pm: { atual: pmAtual(f), max: pmMax(f), temp: f.pm.temp || 0 },
         defesa: defesa(f),
