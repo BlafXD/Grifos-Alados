@@ -41,8 +41,10 @@ Tudo de Tormenta 20 — Edição Jogo do Ano, lido do PDF em 08/09/2026.
 | O quê | Conta | Onde |
 |---|---|---|
 | Perícia | ⌊nível ÷ 2⌋ + atributo-chave + treino − penalidade de armadura + outros | p. 114 |
+| ↳ o atributo-chave | o da Tabela 2-1 — **trocável linha a linha** desde 12/09/2026 | p. 115 |
 | Treino | +2 (1º–6º), +4 (7º–14º), +6 (15º+) | p. 114 |
 | Defesa | 10 + Destreza + armadura + escudo + outros | p. 106 |
+| ↳ a Destreza | **trocável por outro atributo** desde 12/09/2026 (entra no lugar dela, não somada) | p. 106 |
 | PV | inicial da classe + Con, e (PV por nível + Con) por nível acima do 1º | cap. 2 |
 | PM | PM por nível × nível + o atributo das classes que lançam magia (uma vez cada atributo) | cap. 2; p. 226 |
 | Ataque | **é** teste de perícia — Luta (corpo a corpo) ou Pontaria (à distância) | cap. 5 |
@@ -1210,3 +1212,85 @@ linha de dano, crítico, espaço e T$ + a descrição; "Bola de Fogo" selecionad
 meio de uma frase abre o modal já com a magia inteira, e o texto entra depois
 dela, com o resto da frase numa linha própria. O que a ficha salva é idêntico
 ao que está na caixa.
+
+## O atributo que entra na Defesa e em cada perícia (12/09/2026)
+
+> "Invés de eu usar DES para defesa, eu posso usar SAB! (…) Nas perícias tem que
+> ter como escolher o atributo para aquela perícia! Eu por exemplo, posso usar
+> SAB invés de INT na perícia Misticismo!"
+
+Duas coisas, a mesma ideia. O livro diz qual atributo entra onde — Destreza na
+Defesa (p. 106), o da **Tabela 2-1** em cada perícia (p. 115) —, e a ficha
+nascia sabendo disso e mais nada. Mas em Tormenta 20 o que o livro imprime é o
+padrão, não o fim: poder, item, raça e classe vivem mandando trocar. Até agora o
+jeito de fazer isso na ficha era somar a diferença na mão em "outros", o que
+custava caro:
+
+- a conta por extenso da Defesa continuava dizendo **"+ Des +1"** quando a
+  Destreza não estava mais na conta;
+- o "outros" virava um número solto que ninguém sabia explicar dali a uma
+  semana — e que parava de acompanhar o atributo quando ele subisse de nível.
+
+Agora se **diz qual atributo entra**, e a conta faz o resto sozinha.
+
+### Onde fica
+
+- **Defesa** — um campo **Atributo** no cartão *Defesa & Carga*, ao lado de
+  Armadura, Escudo e Outros. Ele entra **no lugar** da Destreza (é um só; quem
+  precisar de dois soma o segundo em "outros", como sempre).
+- **Perícias** — a sigla que ficava escrita ao lado do nome (`DES`, `INT`…)
+  virou um seletor. **Uma por linha**, e cada **Ofício** escolhe o seu, porque
+  cada ofício é uma perícia à parte (p. 121).
+
+`f.defesa.atributo` e `f.pericias.<chave>.atr` / `f.oficios[i].atr`. **Vazio
+quer dizer "o do livro"** — a ficha velha chega sem o campo e continua certa —,
+e tudo passa pelo `ehAtributo()` do `normalizar`, então um campo em branco ou o
+lixo de outra versão do site cai fora e a conta volta sozinha para o impresso.
+
+### O que aparece quando você troca
+
+| Onde | Antes | Depois de trocar |
+|---|---|---|
+| Conta da Defesa | `10 + Des +1 + armadura +5` | `10 + Sab +5 + armadura +5` *(Sabedoria no lugar da Destreza)* |
+| A sigla na linha | etiqueta cinza, discreta | **acende** (ferrugem sobre ouro pálido) |
+| A rolagem na mesa | `Aragorn · Misticismo` | `Aragorn · Misticismo (Sab)` |
+
+O realce é a peça que importa: quem lê a ficha de fora — o mestre, no meio do
+combate — precisa ver **de longe** que aquela linha saiu do padrão, sem conferir
+a Tabela 2-1 uma por uma. Ele se acende sozinho, comparando o `<select>` com o
+`data-livro` que vai grudado nele, dentro do `atualizarDerivados()` — e **não**
+num `render()`: redesenhar a ficha por causa de uma sigla arrancaria a rolagem
+pendurada na linha e o cursor de quem estivesse escrevendo ao lado.
+
+### Duas armadilhas do caminho
+
+1. **`<select>` dentro de `<button>` não abre** — e o clique cai no botão. O
+   botão de rolar a perícia teve de se partir em dois (o nome e o número), com o
+   seletor entre eles, exatamente onde o "DES" escrito ficava. Os dois rolam a
+   mesma perícia; na tela a linha ficou igual à de antes. A perícia do **melhor
+   amigo** continua num botão só, e por isso o `flex` novo é `.fi-per-rolar--nome`
+   / `--val`, e não o `.fi-per-rolar` de todo mundo.
+2. **O CSS tinha de morar no fim do arquivo.** O "traço forte" redesenha *todo*
+   `.fi-sel` com moldura e linha de escrever; vindo antes dele, a etiqueta
+   discreta da perícia ganhava uma caixa de campo e a lista de 29 linhas virava
+   um formulário.
+
+### De quebra: o desempate da iniciativa
+
+O `visiveis()` mandava `des: atr(f, 'des')` para o `iniciativa.js` desempatar.
+Quem trocar o atributo da perícia **Iniciativa** desempata com o dele — senão a
+lista de combate contaria uma história diferente da que o jogador está lendo na
+própria ficha.
+
+### Testado
+
+Clérigo 8 com Des +1, Sab +5, Int 0, armadura 5, escudo 2:
+
+- Defesa **18** (`10 + Des +1 + armadura +5 + escudo +2`); trocando para Sab,
+  **22**, e a conta passa a dizer *(Sabedoria no lugar da Destreza)*;
+- Misticismo **+4** → trocado para Sab, **+9**; Religião, que não foi tocada,
+  continua **+9** pelo caminho do livro;
+- 31 seletores na ficha (1 da Defesa + 28 perícias + 2 ofícios);
+- as rolagens saem `Misticismo (Sab)`, `Religião` (limpa) e `Ofício (For)`;
+- devolvendo Misticismo para Int, o valor volta a **+4** e o realce apaga sozinho;
+- tudo sobrevive ao F5, e o que fica salvo na perícia não tocada é `""`.
