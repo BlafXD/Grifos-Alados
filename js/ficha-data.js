@@ -406,6 +406,102 @@
     120000, 136000, 153000, 171000, 190000,
   ];
 
+  // ── PASSOS DE DANO (Tabela 3-2: Dano de Armas, p. 143) ─────────
+  //  "Alguns efeitos podem aumentar ou diminuir o dano da arma em um ou
+  //  mais 'passos'. […] Sempre que precisar aumentar ou diminuir o dano
+  //  de uma arma em um ou mais passos, consulte a Tabela 3-2: Dano de
+  //  Armas." Lida do PDF em 15/09/2026 (PDF 149, impressa 143). É a
+  //  MESMA tabela da aba 📚 Consultas → ⚔ Arsenal & Regras, duplicada
+  //  aqui de propósito (ver o cabeçalho deste arquivo): lá ela é texto
+  //  para ler, aqui é conta.
+  //  Cada linha: –2, –1, NORMAL, +1, +2, +3. A coluna Normal pode ter
+  //  mais de um dado — "1d8 ou 2d4", "1d12, 2d6 ou 3d4" —, e todos eles
+  //  andam pela mesma linha.
+  const PASSOS_DANO = [
+    ['1',    '1d2',  ['1d3'],                '1d4',  '1d6',  '1d8'],
+    ['1d2',  '1d3',  ['1d4'],                '1d6',  '1d8',  '1d10'],
+    ['1d3',  '1d4',  ['1d6'],                '1d8',  '1d10', '1d12'],
+    ['1d4',  '1d6',  ['1d8', '2d4'],         '1d10', '1d12', '3d6'],
+    ['1d6',  '1d8',  ['1d10'],               '1d12', '3d6',  '4d6'],
+    ['1d8',  '1d10', ['1d12', '2d6', '3d4'], '3d6',  '4d6',  '4d8'],
+    ['1d10', '2d6',  ['2d8'],                '3d8',  '4d8',  '4d10'],
+    ['2d6',  '2d8',  ['2d10'],               '3d10', '4d10', '4d12'],
+  ];
+  //  Além das pontas da tabela (mais de +3, mais de −2) anda-se passo a
+  //  passo pela própria tabela: um dado da coluna Normal sobe e desce
+  //  pela linha dele; os que só aparecem nas pontas seguem a escada que
+  //  as linhas desenham — 3d6 → 4d6 → 4d8 → 4d10 → 4d12, que é o máximo
+  //  ("4d12 (máximo)"), e 1d2 → 1, que é o chão.
+  //  Duas descidas são escolha nossa, porque a tabela chega a elas por
+  //  dois caminhos: 4d8 desce para 4d6 (e não 3d8) e 4d10 para 4d8 (e
+  //  não 3d10). Só pesam para uma arma que JÁ nasce com esse dado.
+  const PASSO_ACIMA  = { '1': '1d2', '1d2': '1d3', '3d6': '4d6', '4d6': '4d8', '3d8': '4d8',
+                         '4d8': '4d10', '3d10': '4d10', '4d10': '4d12', '4d12': '4d12' };
+  const PASSO_ABAIXO = { '1': '1', '1d2': '1', '3d6': '1d12', '4d6': '3d6', '3d8': '2d8',
+                         '4d8': '4d6', '3d10': '2d10', '4d10': '4d8', '4d12': '4d10' };
+
+  // "1D8", "d8", " 1d8 " → "1d8"; "1" → "1"; o resto → ''
+  function dadoLimpo(txt) {
+    const s = String(txt == null ? '' : txt).trim().toLowerCase();
+    const m = /^(\d*)d(\d+)$/.exec(s);
+    if (m) return (parseInt(m[1], 10) || 1) + 'd' + parseInt(m[2], 10);
+    return s === '1' ? '1' : '';
+  }
+  function linhaDoPasso(d) {
+    for (let i = 0; i < PASSOS_DANO.length; i++) if (PASSOS_DANO[i][2].indexOf(d) >= 0) return i;
+    return -1;
+  }
+  function umPasso(d, sobe) {
+    const i = linhaDoPasso(d);
+    if (i >= 0) return PASSOS_DANO[i][sobe ? 3 : 1];
+    return (sobe ? PASSO_ACIMA : PASSO_ABAIXO)[d] || null;
+  }
+
+  //  passoDeDano('1d8', 2) → { ok: true, dado: '1d12' }
+  //   ok        o dado está na tabela (senão ele volta como veio)
+  //   limitado  sobraram passos: bateu no 4d12 ou no 1
+  function passoDeDano(dado, passos) {
+    const d = dadoLimpo(dado);
+    const n = parseInt(passos, 10) || 0;
+    if (!d || (linhaDoPasso(d) < 0 && !PASSO_ACIMA[d])) return { ok: false, dado: d || String(dado || '') };
+    if (!n) return { ok: true, dado: d };
+    let atual = d, falta = n;
+    const i = linhaDoPasso(d);
+    if (i >= 0) {
+      const col = 2 + n;
+      if (col >= 0 && col <= 5) return { ok: true, dado: PASSOS_DANO[i][col] };
+      atual = PASSOS_DANO[i][col > 5 ? 5 : 0];      // a ponta da linha…
+      falta = col > 5 ? col - 5 : col;              // …e o que ainda falta andar
+    }
+    while (falta) {
+      const prox = umPasso(atual, falta > 0);
+      if (!prox || prox === atual) break;
+      atual = prox;
+      falta += falta > 0 ? -1 : 1;
+    }
+    return { ok: true, dado: atual, limitado: falta !== 0 };
+  }
+
+  //  O dano inteiro de um ataque: "1d8+3" com +2 passos → "1d12+3". Só
+  //  o PRIMEIRO dado da expressão é o da arma e anda na tabela; o resto
+  //  (o +1d6 de um encanto, o +3 da Força) fica como está — a tabela é
+  //  do dano da arma, e o crítico também só multiplica os dados dela.
+  //   { expr, ok, base, dado, limitado, semDado }
+  function danoComPassos(expr, passos) {
+    const txt = String(expr == null ? '' : expr);
+    const n = parseInt(passos, 10) || 0;
+    const m = /(\d*)d(\d+)/i.exec(txt);
+    if (!m) return { expr: txt, ok: !n, base: '', dado: '', semDado: true };
+    const base = (parseInt(m[1], 10) || 1) + 'd' + parseInt(m[2], 10);
+    if (!n) return { expr: txt, ok: true, base: base, dado: base };
+    const p = passoDeDano(base, n);
+    if (!p.ok) return { expr: txt, ok: false, base: base, dado: base };
+    return {
+      expr: txt.slice(0, m.index) + p.dado + txt.slice(m.index + m[0].length),
+      ok: true, base: base, dado: p.dado, limitado: !!p.limitado,
+    };
+  }
+
   const PERICIA_POR_CHAVE = {}; PERICIAS.forEach(p => { PERICIA_POR_CHAVE[p.chave] = p; });
   const CLASSE_POR_CHAVE  = {}; CLASSES.forEach(c  => { CLASSE_POR_CHAVE[c.chave]  = c;  });
   const porChave = lista => { const m = {}; lista.forEach(x => { m[x.chave] = x; }); return k => m[k] || null; };
@@ -427,6 +523,9 @@
     ESPACOS: ESPACOS,
     MOEDAS_POR_ESPACO: MOEDAS_POR_ESPACO,
     XP_POR_NIVEL: XP_POR_NIVEL,
+    PASSOS_DANO: PASSOS_DANO,
+    passoDeDano: passoDeDano,
+    danoComPassos: danoComPassos,
     pericia: function (chave) { return PERICIA_POR_CHAVE[chave] || null; },
     classe:  function (chave) { return CLASSE_POR_CHAVE[chave]  || null; },
     // A classe que conta para as regras: a variante responde pela básica

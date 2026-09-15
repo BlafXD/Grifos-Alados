@@ -15,6 +15,11 @@
 //  O login daqui é o mesmo do site inteiro: a conta do Google, pelo
 //  mesa.js. Quem escreve o nome de uma campanha vira mestre dela — não há
 //  usuário de mestre criado à mão no console, como havia até 08/09/2026.
+//
+//  E A TRAVA (15/09/2026): antes de mandar qualquer chave, confere com o
+//  que está no banco. O que mudou por outra mão — outro navegador, outro
+//  aparelho, o site aberto de outro endereço — não é substituído sem o
+//  mestre dizer "📤 Mandar a daqui por cima". Ver "A TRAVA", mais abaixo.
 // ═══════════════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -43,6 +48,32 @@
   let ultimoEnvio = null;     // Date do último push OK
   let ultimoErro = '';
 
+  // ── A TRAVA (15/09/2026) ─────────────────────────────────────────
+  //  O caso que a pediu: o mestre anotou no site publicado, abriu o
+  //  index.html de OUTRO endereço (outra gaveta de localStorage, com as
+  //  coisas de dias atrás) e entrou com a mesma conta. O "virou mestre →
+  //  foto completa" mandou a cópia velha por cima da nova: os dois
+  //  endereços falam com o mesmo banco, e ninguém comparava nada. Um
+  //  navegador VAZIO seria pior — a foto completa mandaria nada, e a
+  //  Loja, as Bases e as Viagens sumiriam da tela dos jogadores.
+  //
+  //  Agora cada navegador guarda a impressão digital do que combinou com
+  //  o banco por último, chave a chave (`conhecido`): o que mandou, ou o
+  //  que conferiu que era igual. Antes de mandar uma chave, olha o banco:
+  //    • igual ao meu                        → não há o que mandar;
+  //    • vazio, ou igual ao que eu conhecia  → a mudança é minha: mando;
+  //    • mudou por outra mão (ou eu nunca conversei com ele) e é
+  //      diferente do meu                    → NÃO mando. A parte fica
+  //      pausada, o 📡 fica âmbar, e quem decide é o mestre.
+  const CONHECIDO_KEY = 'grifosAlados.syncConhecido';
+  let conhecido = {};         // sala → { chave: digital do que ESTE navegador combinou com o banco }
+  try { conhecido = JSON.parse(localStorage.getItem(CONHECIDO_KEY) || '{}') || {}; } catch (e) { conhecido = {}; }
+  let banco = null;           // mesas/<sala>/dados como está agora (null = a primeira foto ainda não chegou)
+  let metaBanco = null;       // mesas/<sala>/meta — só para dizer QUANDO foi a última publicação
+  let conflitos = {};         // chave → true: pausada, esperando o mestre decidir
+  const emVoo = new Set();    // chaves com escrita minha ainda sem resposta
+  let abriuSozinho = '';      // sala em que o modal já se abriu sozinho por conflito
+
   function temConfig() {
     return typeof firebase !== 'undefined' && window.GA_FIREBASE && window.GA_FIREBASE.apiKey;
   }
@@ -69,8 +100,11 @@
           podeTransmitir = e.transmite;
           papelAqui = e.papel;
           ligarInventario();          // trocou de campanha? a escuta segue junto
+          ligarBanco();               // e a do que está no banco, que vem ANTES de mandar
           atualizarBotao();
-          if (podeTransmitir && !antes) enviarTudo();   // virou mestre → foto completa
+          // virou mestre → foto completa. Desde 15/09/2026 ela espera a
+          // primeira foto do banco e é conferida chave a chave (a TRAVA)
+          if (podeTransmitir && !antes) enviarTudo();
         });
       }
       ligarInventario();
@@ -183,8 +217,6 @@
     limparInventarioJogadores: baseId => limparInbox(baseId, 'jogadores'),
   };
 
-  function refDados() { return db.ref('mesas/' + sala() + '/dados'); }
-
   // O que está marcado "só o mestre vê" (visivelJogadores: false) NUNCA sai
   // daqui — filtrado antes mesmo de virar pacote para o Firebase. Não é só
   // esconder na tela: o jogador não tem como inspecionar o que nunca chegou
@@ -213,23 +245,129 @@
     return v;
   }
 
+  // O que este navegador mandaria de uma chave agora (já sem o 🙈).
+  function valorLocal(nome) {
+    let v = null;
+    try { v = localStorage.getItem(CHAVES[nome]); } catch (e) {}
+    return v == null ? null : valorParaEnviar(nome, v);
+  }
+
+  // ── A TRAVA, NA PRÁTICA ──────────────────────────────────────────
+  //  FNV-1a de 32 bits mais o tamanho: basta para dizer "é o mesmo
+  //  texto?" sem guardar no localStorage uma segunda cópia da loja.
+  function digital(v) {
+    if (v == null) return 'nulo';
+    const s = String(v);
+    let h = 0x811c9dc5;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+    return (h >>> 0).toString(36) + '.' + s.length;
+  }
+  function marcarConhecido(s, nome, valor) {
+    (conhecido[s] || (conhecido[s] = {}))[nome] = digital(valor);
+  }
+  function guardarConhecido() {
+    window.GA_guardar(CONHECIDO_KEY, JSON.stringify(conhecido));
+  }
+
+  //  'igual'    o banco já tem o que eu mandaria;
+  //  'livre'    a diferença é MINHA: o banco está vazio, ou não mudou
+  //             desde o que eu conhecia — pode mandar;
+  //  'conflito' o banco mudou por outra mão, ou este navegador nunca
+  //             conversou com ele, e está diferente do meu. Não se manda.
+  //  Mandar um VAZIO por cima de algo que existe é sempre conflito: é o
+  //  navegador novo apagando a loja dos jogadores.
+  function estadoDaChave(nome) {
+    const local = valorLocal(nome);
+    const remoto = banco ? banco[nome] : null;
+    const dr = digital(remoto);
+    if (digital(local) === dr) return 'igual';
+    if (remoto == null) return 'livre';
+    if (local == null) return 'conflito';
+    const dk = (conhecido[sala()] || {})[nome];
+    return (dk && dk === dr) ? 'livre' : 'conflito';
+  }
+
+  // A escuta do que está no banco da sala transmitida — é com ela que se
+  // sabe o que está lá ANTES de mandar qualquer coisa. `meta` é público,
+  // e `dados` também (é o que os jogadores leem).
+  let salaBanco = '', refBanco = null, cbBanco = null, refMeta = null, cbMeta = null;
+  function ligarBanco() {
+    if (!db || !podeTransmitir) return desligarBanco();
+    const s = sala();
+    if (s === salaBanco) return;
+    desligarBanco();
+    salaBanco = s;
+    refBanco = db.ref('mesas/' + s + '/dados');
+    cbBanco = refBanco.on('value', snap => { banco = snap.val() || {}; conferirBanco(); },
+      err => console.warn('[sync] leitura dos dados da mesa:', err && err.message));
+    refMeta = db.ref('mesas/' + s + '/meta');
+    cbMeta = refMeta.on('value', snap => { metaBanco = snap.val() || {}; atualizarBotao(); },
+      err => console.warn('[sync] leitura do meta da mesa:', err && err.message));
+  }
+  function desligarBanco() {
+    if (refBanco && cbBanco) { try { refBanco.off('value', cbBanco); } catch (e) {} }
+    if (refMeta && cbMeta) { try { refMeta.off('value', cbMeta); } catch (e) {} }
+    refBanco = cbBanco = refMeta = cbMeta = null;
+    salaBanco = ''; banco = null; metaBanco = null; conflitos = {};
+    emVoo.clear();
+  }
+
+  // A cada foto do banco: o que ficou igual vira conhecido, o que mudou
+  // por outra mão pausa, e o que esperava a primeira foto sai agora.
+  function conferirBanco() {
+    if (!banco || !podeTransmitir) return;
+    const s = sala();
+    let mudou = false;
+    Object.keys(CHAVES).forEach(nome => {
+      // o eco da minha própria escrita ainda não é a resposta do banco:
+      // quem marca o conhecido dela é a promessa, quando voltar
+      if (emVoo.has(nome)) return;
+      const e = estadoDaChave(nome);
+      if (e === 'igual') {
+        delete conflitos[nome];
+        if ((conhecido[s] || {})[nome] !== digital(banco[nome])) { marcarConhecido(s, nome, banco[nome]); mudou = true; }
+      } else if (e === 'conflito') {
+        conflitos[nome] = true;
+      }
+    });
+    if (mudou) guardarConhecido();
+    if (pendentes.size) enviarPendentes();
+    atualizarBotao();
+    avisarConflito();
+  }
+
   function enviarPendentes() {
     if (!db || !podeTransmitir || !pendentes.size) return;
+    // o banco ainda não disse o que tem: espera a primeira foto dele
+    // (o conferirBanco chama de novo quando ela chegar)
+    if (!banco) return;
+    const s = sala();
     const pacote = {};
     pendentes.forEach(nome => {
-      let v = null;
-      try { v = localStorage.getItem(CHAVES[nome]); } catch (e) {}
-      pacote[nome] = (v == null) ? null : valorParaEnviar(nome, v);
+      const e = estadoDaChave(nome);
+      if (e === 'livre') pacote[nome] = valorLocal(nome);
+      else if (e === 'conflito') conflitos[nome] = true;
     });
     pendentes.clear();
-    refDados().update(pacote)
+    atualizarBotao();
+    if (Object.keys(pacote).length) mandar(s, pacote);
+    avisarConflito();
+  }
+
+  function mandar(s, pacote) {
+    const nomes = Object.keys(pacote);
+    nomes.forEach(n => emVoo.add(n));
+    db.ref('mesas/' + s + '/dados').update(pacote)
       .then(() => {
-        return db.ref('mesas/' + sala() + '/meta').update({
+        nomes.forEach(n => { emVoo.delete(n); marcarConhecido(s, n, pacote[n]); delete conflitos[n]; });
+        guardarConhecido();
+        return db.ref('mesas/' + s + '/meta').update({
           atualizadoEm: firebase.database.ServerValue.TIMESTAMP,
         });
       })
       .then(() => { ultimoEnvio = new Date(); ultimoErro = ''; atualizarBotao(); })
       .catch(e => {
+        nomes.forEach(n => emVoo.delete(n));
         ultimoErro = e.message;
         atualizarBotao();
         console.warn('[sync] envio falhou:', e.message);
@@ -239,6 +377,50 @@
   function enviarTudo() {
     Object.keys(CHAVES).forEach(n => pendentes.add(n));
     enviarPendentes();
+  }
+
+  // "📤 Mandar a daqui por cima": a decisão do mestre, com todas as
+  // letras, de que a cópia deste navegador vale mais que a do banco. É o
+  // único caminho que atravessa um conflito.
+  function mandarPorCima() {
+    if (!db || !podeTransmitir || !banco) return;
+    const s = sala();
+    const pacote = {};
+    Object.keys(conflitos).forEach(nome => { pacote[nome] = valorLocal(nome); });
+    conflitos = {};
+    if (Object.keys(pacote).length) mandar(s, pacote);
+    atualizarBotao();
+  }
+
+  // O modal abre SOZINHO, uma vez por sala, quando a pausa aparece: um
+  // âmbar no canto passaria despercebido, e é justo a hora em que o
+  // mestre acha que está transmitindo.
+  function avisarConflito() {
+    if (!Object.keys(conflitos).length || abriuSozinho === sala()) return;
+    if (document.querySelector('.ga-modal-overlay')) return;   // outro modal aberto: o âmbar espera
+    abriuSozinho = sala();
+    abrirModal();
+  }
+
+  const PARTES = [
+    { nome: '🏪 Loja',    chaves: ['lojaLog', 'lojaLogSel', 'lojaComunidade'] },
+    { nome: '🏰 Bases',   chaves: ['bases'] },
+    { nome: '🐎 Viagens', chaves: ['viagens'] },
+  ];
+  function partesEmConflito() {
+    return PARTES.filter(p => p.chaves.some(k => conflitos[k])).map(p => ({
+      nome: p.nome,
+      vazia: p.chaves.filter(k => conflitos[k]).every(k => valorLocal(k) == null),
+    }));
+  }
+  function quandoFoi() {
+    const t = metaBanco && metaBanco.atualizadoEm;
+    if (!t) return '';
+    try {
+      const d = new Date(t);
+      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' às ' +
+             d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) { return ''; }
   }
 
   // ── Gatilho: qualquer salvar() das abas passa pelo setItem ───────
@@ -259,6 +441,7 @@
     if (!temConfig()) return 'config';
     if (!usuario) return 'off';
     if (!podeTransmitir) return 'sempapel';
+    if (Object.keys(conflitos).length) return 'conflito';
     if (ultimoErro) return 'erro';
     return 'on';
   }
@@ -274,6 +457,7 @@
       sempapel: 'Mesa ao vivo — você não mestra esta campanha (clique para escolher a sua)',
       on:       'Mesa ao vivo — transmitindo para os jogadores' + (ultimoEnvio ? ' · último envio ' + ultimoEnvio.toLocaleTimeString('pt-BR') : ''),
       erro:     'Mesa ao vivo — erro no último envio: ' + ultimoErro,
+      conflito: 'Mesa ao vivo — PAUSADA em parte: o banco tem uma versão que não saiu deste navegador (clique para decidir)',
     }[e];
     // re-desenha o modal se estiver aberto (login concluiu, envio saiu…)
     const modal = document.querySelector('.ga-sync-modal');
@@ -331,8 +515,29 @@
         <div class="ga-modal-acoes"><button class="ga-btn-sec" data-sync-sair>Sair da conta</button></div>`;
     }
 
-    return cab + `
-      <p class="ga-sync-p">✅ Transmitindo como <strong>${esc(usuario.displayName || usuario.email || 'mestre')}</strong>,
+    // A TRAVA, na tela: o que está pausado, desde quando, e o que custa
+    // mandar a daqui — dito antes do botão, e não depois do estrago.
+    const partes = partesEmConflito();
+    const quando = quandoFoi();
+    const blocoConflito = partes.length ? `
+      <div class="ga-sync-conflito">
+        <p class="ga-sync-p"><strong>⚠ Parte da transmissão está pausada.</strong> O banco da campanha
+          <strong>${esc(sala())}</strong> tem uma versão que não saiu deste navegador${quando
+            ? ' (a última publicação lá foi em <strong>' + esc(quando) + '</strong>)' : ''}:</p>
+        <ul class="ga-sync-lista">${partes.map(p => '<li><strong>' + p.nome + '</strong> — ' +
+          (p.vazia ? 'aqui está <em>vazia</em>' : 'diferente da daqui') + '</li>').join('')}</ul>
+        <p class="ga-sync-p">Acontece quando o site é aberto em outro navegador, em outro aparelho ou de outro
+          endereço — o <code>index.html</code> do computador e o site publicado <strong>não</strong> dividem o
+          que guardam, mas dividem o banco. <strong>Mandar a daqui substitui a de lá</strong>, e o que foi
+          publicado de lá some da tela dos jogadores. O que estiver igual segue transmitindo normalmente.</p>
+        <div class="ga-modal-acoes">
+          <button class="ga-btn-sec" data-ga-fechar>Agora não</button>
+          <button class="ga-btn-principal ga-sync-perigo" data-sync-por-cima>📤 Mandar a daqui por cima</button>
+        </div>
+      </div>` : '';
+
+    return cab + blocoConflito + `
+      <p class="ga-sync-p">${partes.length ? '📡 Conectado' : '✅ Transmitindo'} como <strong>${esc(usuario.displayName || usuario.email || 'mestre')}</strong>,
         campanha <strong>${esc(sala())}</strong>${papelAqui === 'auxiliar' ? ' (você é auxiliar)' : ''}.</p>
       <p class="ga-sync-p">O que os jogadores veem: a <strong>Loja</strong> exibida (com encantamentos
         e pergaminhos), as <strong>Bases</strong> e as <strong>Viagens</strong> — atualizado sozinho
@@ -376,6 +581,10 @@
       }
       if (e.target.closest('[data-sync-enviar]')) {
         enviarTudo();
+        return;
+      }
+      if (e.target.closest('[data-sync-por-cima]')) {
+        mandarPorCima();
         return;
       }
     });
