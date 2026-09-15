@@ -44,7 +44,8 @@ Tudo de Tormenta 20 — Edição Jogo do Ano, lido do PDF em 08/09/2026.
 | ↳ o atributo-chave | o da Tabela 2-1 — **trocável linha a linha** desde 12/09/2026 | p. 115 |
 | Treino | +2 (1º–6º), +4 (7º–14º), +6 (15º+) | p. 114 |
 | Defesa | 10 + Destreza + armadura + escudo + outros | p. 106 |
-| ↳ a Destreza | **trocável por outro atributo** desde 12/09/2026 (entra no lugar dela, não somada) | p. 106 |
+| ↳ a Destreza | **trocável por outro atributo** desde 12/09/2026 (entra no lugar dela, não somada) — ou por **nenhum** desde 15/09/2026 (armadura pesada) | p. 106; p. 152 |
+| Dano com passos | o primeiro dado da arma anda na Tabela 3-2; o crítico multiplica o dado já andado | p. 143; p. 142 |
 | PV | inicial da classe + Con, e (PV por nível + Con) por nível acima do 1º | cap. 2 |
 | PM | PM por nível × nível + o atributo das classes que lançam magia (uma vez cada atributo) | cap. 2; p. 226 |
 | Ataque | **é** teste de perícia — Luta (corpo a corpo) ou Pontaria (à distância) | cap. 5 |
@@ -1294,3 +1295,188 @@ Clérigo 8 com Des +1, Sab +5, Int 0, armadura 5, escudo 2:
 - as rolagens saem `Misticismo (Sab)`, `Religião` (limpa) e `Ofício (For)`;
 - devolvendo Misticismo para Int, o valor volta a **+4** e o realce apaga sozinho;
 - tudo sobrevive ao F5, e o que fica salvo na perícia não tocada é `""`.
+
+---
+
+# A leva de 15 de setembro de 2026 — passos de dano, Defesa sem atributo e a conferência
+
+Quatro pedidos numa mensagem só. Três são desta ficha (os passos, a Defesa e, de
+tabela, a conferência que nasceu de um susto); a rolagem escondida e a trava do 📡
+estão em `docs/mesa-de-verdade.md`, §19 e §20. O quarto — a aba de poderes — ficou
+anotado, no fim.
+
+## 1. Os passos de dano, sozinhos na ficha
+
+> "Os jogadores constantemente estão tendo poder de aumentar o passos de dano e
+> ficar consultando isso no livro é beem chato, só não sei onde poderia ser e se
+> poderia ser automático na ficha..."
+
+**A tabela já existia no site** — em 📚 Consultas → ⚔ Arsenal & Regras, "Passos de
+dano (Tabela 3-2)" —, mas como texto para ler. Agora ela é **conta**: cada ataque
+ganhou a coluna **Passos**, e o dado da arma anda na tabela sozinho.
+
+- Com `1d8+3` e **+2**, o que se rola é `1d12+3`, e a linha embaixo do ataque diz
+  para onde o dado foi: *⇅ 1d8 +2 passos → 1d12 · Tabela 3-2, p. 143*.
+- **Só o primeiro dado anda.** A tabela é do dano da arma: o `+1d6` de um encanto e
+  os números ficam como estão (`2d6+1d6+4` com +1 vira `3d6+1d6+4`).
+- **O crítico multiplica o dado já andado** — os "dados de dano" da p. 142 são os da
+  arma como ela está agora: `1d12+3` com ×2 vira `2d12+3`.
+- O campo **acende** quando sai do zero, como o atributo trocado: quem lê a ficha de
+  fora vê de longe que aquela arma não rola o que está escrito.
+- A **Tabela 3-2 inteira** fica recolhida no fim do cartão (📊), com a linha do dado
+  de cada arma da ficha acesa — e continua aberta quando a ficha se redesenha.
+- A pílula e a mesa dizem: *Dano (+2 passos)*, *💥 Crítico ×2 (+2 passos)*.
+
+### A tabela, lida do PDF
+
+Tormenta 20 JdA, **p. 143 (PDF 149)**, conferida em 15/09/2026 com `pdftotext -raw`
+e `-table` (o `-layout` embaralha as colunas) — e ela bate linha a linha com a que
+as Consultas já mostravam:
+
+| –2 | –1 | Normal | +1 | +2 | +3 |
+|---|---|---|---|---|---|
+| 1 | 1d2 | 1d3 | 1d4 | 1d6 | 1d8 |
+| 1d2 | 1d3 | 1d4 | 1d6 | 1d8 | 1d10 |
+| 1d3 | 1d4 | 1d6 | 1d8 | 1d10 | 1d12 |
+| 1d4 | 1d6 | 1d8 ou 2d4 | 1d10 | 1d12 | 3d6 |
+| 1d6 | 1d8 | 1d10 | 1d12 | 3d6 | 4d6 |
+| 1d8 | 1d10 | 1d12, 2d6 ou 3d4 | 3d6 | 4d6 | 4d8 |
+| 1d10 | 2d6 | 2d8 | 3d8 | 4d8 | 4d10 |
+| 2d6 | 2d8 | 2d10 | 3d10 | 4d10 | 4d12 (máximo) |
+
+Ela mora em `js/ficha-data.js` como `PASSOS_DANO`, **duplicada de propósito** — lá
+nas Consultas é texto para ler, aqui é conta —, com `passoDeDano()` e
+`danoComPassos()`.
+
+**Além das pontas** (mais de +3, mais de –2) anda-se passo a passo pela própria
+tabela: um dado da coluna Normal sobe e desce pela linha dele; os que só aparecem
+nas pontas seguem a escada que as linhas desenham — 3d6 → 4d6 → 4d8 → 4d10 →
+**4d12, o máximo** — e 1d2 → **1, o chão**. Duas descidas são escolha nossa, porque
+a tabela chega a elas por dois caminhos (4d8 desce para 4d6, e 4d10 para 4d8); só
+pesam para uma arma que já nasce com esse dado.
+
+**O que não anda diz por quê:** um dado fora da tabela (`2d12`, `1d20`) sai sem os
+passos, com o aviso em carmim; um dano sem dado nenhum (`3`) pede o dado da arma.
+
+**O teste que fecha isso:** a tabela digitada de novo a partir do PDF, **à parte**
+do arquivo do site (senão o teste compararia o arquivo com ele mesmo), e 96
+conferências — cada dado da coluna Normal de –2 a +3, as pontas, `d8` sem
+quantidade, maiúscula, e as expressões inteiras. Todas batem.
+
+### O melhor amigo anda sozinho
+
+O **Amigão** e o **Amigo Feroz** dizem que o dano das armas naturais "aumenta em um
+passo". A nota mandava o jogador fazer a conta; agora eles entram sozinhos, como a
+Força, e a linha conta de onde veio cada passo: *⇅ 1d8 +3 passos (Amigão +1 · Amigo
+Feroz +1 · outros +1) → 3d6*. O campo Passos do amigo é para os de **fora** dos
+truques. A margem de ameaça continua com o jogador: depende de qual arma é.
+
+### Testado
+
+No `jogadores.html` com o Firebase desligado: `1d8+3` +2 → `1d12+3` (rolado 14, e o
+crítico `2d12+3`); `2d12` e `3` com o aviso; a Adaga `1d4+3` –3 → `1+3`; o Montante
+`2d6` +1 digitado → `3d6` sem redesenhar a ficha; o amigo com os dois truques →
+`3d6+1`; a tabela aberta sobrevivendo a um "＋ Acrescentar ataque". No iframe de
+390px: o dano, os passos e o 🎲 na mesma linha, e nada rola de lado.
+
+## 2. A Defesa sem atributo
+
+> "Ter alguma opção de não colocar pontos de atributos na defesa, tem armadura e
+> condições que falam explicitamente 'Não pode colocar pontos de DES na defesa'"
+
+O seletor de atributo da Defesa ganhou **«— nenhum»**. A regra é da **p. 152** (PDF
+158): *"Se usar uma armadura pesada, você não aplica sua Destreza na Defesa e tem
+seu deslocamento reduzido em 3m."* Os poderes que trocam o atributo repetem a
+ressalva — a Autoconfiança do nobre (p. 79) e o Couraceiro do inventor (p. 69):
+*"mas continua não podendo somar um atributo na Defesa quando usa armadura
+pesada"*.
+
+- A conta por extenso diz: `10 + armadura +8 + escudo +2` *(nenhum atributo na
+  Defesa — como com armadura pesada, p. 152)*.
+- O seletor acende, como qualquer troca do padrão do livro.
+- `f.defesa.atributo` aceita `'nenhum'`; o `normalizar` continua mandando qualquer
+  outra coisa de volta para a Destreza.
+
+**O que ficou de fora, de propósito:** a armadura pesada **delicada** (p. 164)
+"permite que o personagem aplique 1 ponto de sua Destreza na Defesa", e a de
+**mitral** (p. 167), "até dois pontos". Não há teto por enquanto: escolhe-se
+*nenhum* e põem-se esses pontos em Outros — a dica do seletor diz isso. Se incomodar,
+o caminho é um "teto do atributo" ao lado do seletor.
+
+Testado: guerreiro com armadura 8 e escudo 2 → Defesa **20** com *nenhum*, **22**
+voltando para a Destreza (+2), e o realce apaga sozinho.
+
+## 3. A conferência: a ficha não sobe por cima de ninguém
+
+**O caso que a pediu** está em `docs/mesa-de-verdade.md` §20: o `index.html` de outro
+endereço, com uma cópia velha, entrou na mesma conta — e o `ficha-mesa.js` mandava
+**todas** as fichas locais com `set()`, para a mesa e para a gaveta, sem olhar o que estava
+lá. O outro navegador, recebendo, trocava a ficha dele pela velha.
+
+**Agora entrar não sobe nada.** O `ficha-mesa.js` pede uma **conferência**: a `GA_Ficha` para
+de aceitar o banco por cima das minhas (`aguardando`) e, quando a gaveta — e a mesa, se
+houver — respondem pela primeira vez, o `conferir()` decide ficha a ficha, com três versões:
+
+| | O que é |
+|---|---|
+| a **daqui** | a do `localStorage` |
+| as de **lá** | a cópia da mesa e a da conta (a mais nova, pelo `atualizadoEm`) |
+| a **combinada** | a digital da última versão que este navegador viu igual no banco (`grifosAlados.fichaSincronia`) |
+
+- nada de lá que este navegador não tenha visto → **a daqui vale** (sobe, se alguma cópia
+  estiver atrás ou faltando);
+- mudou só lá (a daqui é a combinada) → **desce** — é o mestre que baixou o PV com a página
+  fechada;
+- mudou dos dois lados — ou este navegador nunca combinou nada e as duas diferem — → **RETIDA**.
+
+**A ficha retida** mostra no alto *"⚠ Esta ficha está diferente da da mesa…"*: quando a de lá
+foi salva, quando a daqui foi mexida (`editadoEm`, a hora da última mudança feita num
+navegador — vai junto no carimbo e fica fora das comparações), **o que muda entre as duas**
+("PV, proficiências") e dois botões: **⬇ Ficar com a da mesa** (ou da conta) e **⬆ Ficar com a
+deste navegador**. Enquanto ninguém escolhe, nada dela sobe nem desce — nem o que se digitar
+nela. A aba da ficha ganha um ⚠.
+
+**A que perde fica guardada** neste navegador (`grifosAlados.fichaGuardadas`, uma por ficha),
+com **↩ Voltar para ela** — que pergunta antes, e troca de novo — e **✕ Descartar**.
+
+**O dia a dia não muda:** depois da conferência, o PV que o mestre baixa aparece na hora, como
+antes. É só no ENTRAR que se confere.
+
+> A primeira vez depois de publicar esta versão, todo navegador cuja ficha difere do banco
+> pergunta uma vez: ainda não existe versão combinada. É o esperado.
+
+### Testado (dublê do Firebase, o jogador em `127.0.0.1`)
+
+| Caso | Resultado |
+|---|---|
+| navegador com a ficha velha, primeira vez | retida, "O que muda: PV, proficiências", **zero** escritas |
+| "Ficar com a da mesa" → "↩ Voltar para ela" → "Descartar" | troca, guarda, destroca e esquece ✔ |
+| só o mestre mexeu (PV 4), com a página fechada | desceu calado, e a cópia da conta foi acertada ✔ |
+| só este navegador mexeu, sem internet | subiu para a mesa e para a conta ✔ |
+| os dois mexeram | retida, com as duas horas; digitar nela não escreve nada ✔ |
+| depois de escolher, o mestre baixa o PV ao vivo | a tela vai a 2, e a conta acompanha ✔ |
+
+## Anotado, não feito: a aba de poderes
+
+> "alguma aba dentro da ficha dos jogadores ter como ADICIONAR PODER … e dentro da aba um
+> filtro e sub árvores de 'Poder de classe, poder geral, poder concedido, poder da tormenta,
+> poder de raça' … Principalmente poder da tormenta … e na calculadora, 'Poderes que não são
+> da tormenta mas contam como um' — o Lefou"
+
+Ele disse que não precisa ser de imediato. O que já se sabe, para quando for:
+
+- **"A lógica das criaturas"** é o `js/tormenta-data.js` — os poderes da Tormenta do livro
+  básico e 6 do Suplemento, com `escala(n)` por poder e `carismaPerdido(n)` —, usado pelo
+  bloco 🩸 do bestiário. Pela regra deste documento **ele seria duplicado** na ficha; ele
+  sugeriu reaproveitar, e a decisão é dele (ver "O que eu NÃO juntei").
+- **A regra do Carisma** (JdA, p. 136): perde 1 pelo primeiro poder da Tormenta e mais 1 a
+  cada dois outros; abaixo de Car –5 o personagem vira NPC.
+- **O que "conta como":** a Deformidade do lefou (JdA, p. 24) dá +2 em duas perícias, e "cada
+  um desses bônus conta como um poder da Tormenta (exceto para perda de Carisma)"; o
+  Suplemento (PDF 77) tem poder com a mesma ressalva; o Heróis de Arton (p. 67) tem "conta
+  como se tivesse dois poderes da Tormenta". Ou seja: a calculadora precisa de **dois
+  contadores** — um para a escala dos poderes, outro para a perda de Carisma.
+- **Proposta, não decidida:** 1ª leva — o cartão ✨ Poderes, com "＋ Adicionar poder" (busca e
+  árvore por categoria), e os poderes da Tormenta com a escala e o "conta como"; depois os
+  gerais e os de classe do JdA, o Heróis de Arton, os concedidos (Deuses de Arton e Deuses
+  Menores) e os de raça — lidos do PDF e estruturados, como as magias.

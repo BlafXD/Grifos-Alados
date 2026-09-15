@@ -26,6 +26,11 @@
 //  falar apagar o outro. Mandando só `pv` e só `inventario`, o banco
 //  junta os dois. É o mesmo cuidado que o sync-mestre.js tem com a
 //  caixa de entrada, aplicado a um dado que muda muito mais.
+//
+//  E NADA SOBE ANTES DE O BANCO RESPONDER (15/09/2026). Entrar mandava a
+//  cópia deste navegador por cima de tudo; agora entrar pede uma
+//  CONFERÊNCIA, que espera a gaveta e a mesa chegarem e decide, ficha a
+//  ficha, o que sobe, o que desce e o que pergunta — ver o ficha.js.
 // ═══════════════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -38,6 +43,13 @@
   let pendentes = {};           // fichaId → { dono, grupos:Set, ficha }
   let timer = null;
   let ultimoErro = '';
+  //  A CONFERÊNCIA (15/09/2026). Entrar na conta ou na mesa mandava a
+  //  cópia deste navegador por cima do banco, sem olhar — e um navegador
+  //  com a ficha de dias atrás apagava o que outro aparelho tinha
+  //  escrito. Agora nada sobe antes de o banco responder o que tem:
+  //  quando a gaveta (e a mesa, se houver) chegam, a ficha.js compara
+  //  ficha por ficha e decide o que vai, o que vem e o que pergunta.
+  let gavetaChegou = false, mesaChegou = false, querConferir = false;
 
   function db() { return window.GA_Mesa ? window.GA_Mesa.db() : null; }
   function ligado() { return !!(mesa && mesa.configurado && mesa.usuario && mesa.souMembro); }
@@ -65,23 +77,31 @@
 
     const caminho = 'mesas/' + sala + '/fichas' + (vejoTodas() ? '' : '/' + meuUid());
     refFichas = b.ref(caminho);
+    mesaChegou = false;
     cbFichas = refFichas.on('value', snap => {
       const v = snap.val() || {};
       remotas = vejoTodas() ? v : { [meuUid()]: v };
+      mesaChegou = true;
       entregar();
+      talvezConferir();
     }, err => {
       // "sem permissão" aqui não é falha: é a resposta certa para quem
       // não é da mesa, ou para a mesa que ainda não publicou as regras.
       ultimoErro = (err && err.message) || '';
       console.warn('[ficha-mesa] leitura:', ultimoErro);
+      mesaChegou = true;            // não há o que esperar dela
+      talvezConferir();
     });
-    // primeira subida: manda tudo o que é meu, para o mestre já ver
-    publicarTudo();
+    // Até 15/09/2026 aqui se mandava TUDO o que é meu, por cima do que
+    // estivesse na mesa. Agora quem decide é a conferência, com a mesa
+    // e a gaveta já respondidas.
+    pedirConferencia();
   }
 
   function desligar() {
     if (refFichas && cbFichas) { try { refFichas.off('value', cbFichas); } catch (e) {} }
     refFichas = null; cbFichas = null; salaLigada = ''; escopoLigado = '';
+    mesaChegou = false;
     if (Object.keys(remotas).length) { remotas = {}; entregar(); }
   }
 
@@ -97,18 +117,24 @@
     desligarGaveta();
     uidGaveta = meuUid();
     refGaveta = b.ref('usuarios/' + uidGaveta + '/fichas');
+    gavetaChegou = false;
     cbGaveta = refGaveta.on('value', snap => {
       gaveta = snap.val() || {};
+      gavetaChegou = true;
       entregarGaveta();
+      talvezConferir();
     }, err => {
       ultimoErro = (err && err.message) || '';
       console.warn('[ficha-mesa] gaveta:', ultimoErro);
+      gavetaChegou = true;          // sem gaveta, a conferência segue só com a mesa
+      talvezConferir();
     });
   }
 
   function desligarGaveta() {
     if (refGaveta && cbGaveta) { try { refGaveta.off('value', cbGaveta); } catch (e) {} }
     refGaveta = null; cbGaveta = null; uidGaveta = '';
+    gavetaChegou = false;
     if (Object.keys(gaveta).length) { gaveta = {}; entregarGaveta(); }
   }
 
@@ -163,6 +189,8 @@
         autor: (mesa.usuario.displayName || mesa.usuario.email || ''),
         atualizadoEm: firebase.database.ServerValue.TIMESTAMP,
       };
+      // a hora da última mudança feita num navegador (a conferência mostra)
+      if (p.ficha && p.ficha.editadoEm) carimbo.editadoEm = p.ficha.editadoEm;
       const caminhos = [];
       if (ligado() && mesa.escreve) caminhos.push('mesas/' + salaLigada + '/fichas/' + p.dono + '/' + id);
       if (p.dono === meuUid())      caminhos.push('usuarios/' + meuUid() + '/fichas/' + id);
@@ -208,9 +236,24 @@
   }
   function limpar(f) { return valorLimpo(f) || {}; }
 
-  function publicarTudo() {
-    if (!window.GA_Ficha || !window.GA_Ficha.minhasFichas) return;
-    window.GA_Ficha.minhasFichas().forEach(f => publicar(f, null, null));
+  //  Pedir a conferência: a ficha.js para de aceitar o banco por cima das
+  //  minhas até conferir, e a conferência sai assim que a gaveta (e a
+  //  mesa, se eu estou numa) tiverem respondido pela primeira vez. É ela
+  //  quem manda a primeira subida — só do que pode subir.
+  function pedirConferencia() {
+    querConferir = true;
+    try {
+      if (window.GA_Ficha && window.GA_Ficha.esperarConferencia) window.GA_Ficha.esperarConferencia();
+    } catch (e) { console.warn('[ficha-mesa] esperar a conferência:', e && e.message); }
+    talvezConferir();
+  }
+  function talvezConferir() {
+    if (!querConferir || !logado() || !gavetaChegou) return;
+    if (ligado() && !mesaChegou) return;
+    querConferir = false;
+    try {
+      if (window.GA_Ficha && window.GA_Ficha.conferir) window.GA_Ficha.conferir();
+    } catch (e) { console.warn('[ficha-mesa] conferir:', e && e.message); }
   }
 
   // Apagar de verdade: some da mesa e da conta junto.
@@ -268,9 +311,9 @@
       mesa = e;
       ligar();
       ligarGaveta();
-      // acabou de entrar na mesa, ou acabou de entrar na conta: sobe
-      // tudo o que é meu, para a mesa e para a gaveta
-      if ((!antes && ligado()) || (!antesLogado && logado())) publicarTudo();
+      // acabou de entrar na mesa, ou acabou de entrar na conta: confere
+      // com o banco ANTES de subir qualquer coisa (15/09/2026)
+      if ((!antes && ligado()) || (!antesLogado && logado())) pedirConferencia();
       try {
         if (window.GA_Ficha && window.GA_Ficha.mesaMudou) window.GA_Ficha.mesaMudou();
       } catch (err) { console.warn('[ficha-mesa]', err && err.message); }

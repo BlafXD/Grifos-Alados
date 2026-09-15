@@ -158,3 +158,84 @@
   .ga-rol { left: 0.4rem; right: 0.4rem; width: auto; bottom: 3.2rem; }
   .ga-rol-lista { max-height: 35vh; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   ROLAR ESCONDIDO (15/09/2026)
+   O 👁/🙈 do cabeçalho: ligado, o que o mestre ou o auxiliar rola fica
+   só no aparelho dele, até o "👁 revelar". O painel inteiro muda de cara
+   enquanto o modo está ligado — rolar achando que a mesa está vendo (ou
+   que não está) é o engano que este modo pode causar.
+   ═══════════════════════════════════════════════════════════════════ */
+.ga-rol-olho { border-radius: var(--raio); opacity: 0.9; }
+.ga-rol-olho--on { opacity: 1; background: var(--gold-light); }
+.ga-rol--segredo { border: 2px dashed var(--gold-deep); }
+.ga-rol--segredo .ga-rol-cab { background: var(--gold-deep); }
+
+.ga-rol-faixa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem 0.5rem;
+  padding: 0.35rem 0.55rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: var(--ink);
+  background: var(--gold-pale);
+  border-bottom: 1px solid var(--parchment3);
+}
+.ga-rol-faixa-acoes { display: inline-flex; flex-wrap: wrap; gap: 0.3rem; }
+
+/* a rolagem escondida: tracejada, como tudo o que é 🙈 no site */
+.ga-rol-item--oculta,
+.ga-rol-item--oculta:last-child {
+  margin: 0.2rem 0;
+  padding: 0.35rem 0.45rem;
+  border: 1px dashed var(--gold-deep);
+  border-radius: var(--raio);
+  background: var(--gold-pale);
+}
+.ga-rol-pe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+.ga-rol-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+.ga-rol-revelar {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0.22rem 0.5rem;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--gold-deep);
+  border-radius: var(--raio);
+}
+.ga-rol-revelar:hover { background: var(--gold-light); }
+.ga-rol-revelar[disabled] { opacity: 0.6; cursor: progress; }
+.ga-rol-revelar--sec { border-color: var(--ink-faded); }
+.ga-rol-revelada {
+  margin-top: 0.1rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.74rem;
+  color: var(--text-dim);
+}
+@media (pointer: coarse) {
+  .ga-rol-olho { min-width: 2.5rem; min-height: 2.5rem; font-size: 1rem; }
+  .ga-rol-revelar { min-height: 2.5rem; padding: 0.3rem 0.7rem; font-size: 0.64rem; }
+}

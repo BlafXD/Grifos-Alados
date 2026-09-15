@@ -764,3 +764,112 @@ semana. Tirar alguém com o ✕ da linha também o tira do grupo.
 Três goblins na cena viram "Goblin 1", "Goblin 2", "Goblin 3". A lista serve
 para saber **de quem** é a vez, e três linhas idênticas com valores diferentes
 não dizem isso. Nome que aparece uma vez só fica como está.
+
+---
+
+## 19. As rolagens escondidas (15 de setembro de 2026)
+
+O pedido: *"Eles conseguem ver as minhas rolagens e eu gostaria de uma opção para
+esconder e o mesmo botão para revelar caso eu queira."*
+
+**O 👁 no cabeçalho do painel 🎲 Rolagens** vira 🙈 e liga o modo; o mesmo botão o
+desliga. Só aparece para quem **transmite** a mesa — mestre e auxiliar. Ligado:
+
+- o que ele rola — no painel, no ⚔ Combates ou numa ficha — **não vai para o banco**:
+  fica no painel dele, tracejado, com *🙈 só você vê · 21:03* e um **👁 revelar**;
+- o painel inteiro muda de cara (moldura tracejada, cabeçalho dourado) e uma faixa diz
+  *"Rolando escondido. O que você rolar fica só neste aparelho."* — rolar achando que a
+  mesa está vendo, ou o contrário, é o engano que este modo pode causar;
+- **revelar** manda a rolagem para a mesa naquela hora, levando o horário em que ela
+  foi rolada (`roladaEm`): todo mundo vê *👁 revelada · rolada às 21:03*. Dali em diante
+  é uma rolagem como qualquer outra — só de acrescentar;
+- com o modo desligado, as que ficaram escondidas continuam lá, e a faixa oferece
+  **👁 revelar as N**, na ordem em que foram roladas.
+
+**Não é esconder na tela: é não mandar.** O jogador não tem como ler o que nunca chegou
+ao banco — a mesma ideia do 🙈 das Bases e das Viagens.
+
+**A escondida mora só no aparelho que rolou.** Foi a escolha dele entre as duas saídas
+(a outra era um nó `rolagensOcultas` com regra de mestre e auxiliar): não pede regra
+nova no Firebase e funciona assim que o site é publicado. O preço fica dito: o auxiliar
+não vê a do mestre (nem o mestre a do auxiliar), e o celular não vê a do computador.
+Mora em `grifosAlados.rolagensOcultas`, por sala, as 40 últimas; o 🗑 do mestre limpa as
+dele junto com o log, e o auxiliar tem o seu "✕ apagar".
+
+**Regras do banco: nada muda.** Revelar é um `push` comum em `rolagens`, com o próprio
+`uid` — a regra de "só de acrescentar, e com o seu uid" já aceita. Uma escondida feita
+com **outra conta** neste navegador não passa, e o painel diz isso em vez de falhar
+calado.
+
+**Testado** com um Firebase de mentira (a árvore em memória, servida por um Node local
+que troca o SDK do CDN pelo dublê — o banco real não entra): duas escondidas, uma do
+rolador do painel e uma perícia mandada pelo mesmo caminho do ⚔ Combates, com **zero**
+escritas no banco; revelar a primeira grava uma rolagem com `roladaEm`; desligar o modo
+e rolar grava direto; a que sobrou sobrevive ao F5.
+
+## 20. A trava contra mandar por cima (15 de setembro de 2026)
+
+**O caso que a pediu.** Ele anotou coisas no site publicado; depois abriu o `index.html`
+de outro endereço, entrou com a mesma conta do Google e "publicou o que tinha lá" — e o
+que estava no site oficial foi substituído. O banco confirmava: a mesa `nuevosol`
+recebeu uma publicação em 15/09/2026 às 11h18.
+
+**Por que acontecia.** Cada endereço — o site publicado, o `localhost`, o
+`127.0.0.1`, o `file://` — tem o seu próprio `localStorage`, uma gaveta por endereço,
+mas todos falam com **o mesmo** Firebase. E dois caminhos mandavam a gaveta local por
+cima do banco sem comparar nada:
+
+1. o `sync-mestre.js`, que ao virar mestre manda a **foto completa** (Loja, Bases,
+   Viagens) — e um navegador **vazio** mandaria *nada*, apagando a Loja dos jogadores;
+2. o `ficha-mesa.js`, que ao entrar mandava **todas as fichas** locais com `set()`, para a
+   mesa e para a conta — e o outro navegador, recebendo, trocava a ficha dele pela velha.
+
+A gazeta não entrava nessa: ela só sobe quando se edita, e a tela já mostra o banco por
+cima do arquivo.
+
+### O 📡: a digital do que foi combinado
+
+Cada navegador guarda, por sala e por chave, a **impressão digital** (FNV-1a mais o
+tamanho) do valor que combinou com o banco por último — o que mandou, ou o que conferiu
+que era igual — em `grifosAlados.syncConhecido`. O `sync-mestre.js` passou a **escutar**
+`mesas/<sala>/dados` e `meta` (os dois de leitura pública) e, antes de mandar uma chave:
+
+| O banco… | O que acontece |
+|---|---|
+| tem o mesmo que eu | nada a mandar (e a digital é anotada) |
+| está vazio, ou é o que eu conhecia | a diferença é minha: manda |
+| mudou por outra mão — ou eu nunca conversei com ele — e é diferente | **não manda**: a parte fica pausada |
+| tem algo, e aqui está vazio | **nunca** manda sozinho |
+
+Com parte pausada, o 📡 fica **âmbar** e o modal **abre sozinho**, uma vez por sala:
+*"⚠ Parte da transmissão está pausada"*, a lista do que difere (🏪 Loja — aqui está
+vazia; 🏰 Bases — diferente da daqui…), quando foi a última publicação lá, o que custa
+mandar a daqui, e dois botões — **Agora não** e **📤 Mandar a daqui por cima**, o único
+caminho que atravessa a pausa. O que não está em conflito segue transmitindo.
+
+**Regras do banco: nada muda** — só se passou a ler o que já era público.
+
+### A ficha: a conferência
+
+Ver `docs/ficha-do-jogador.md`, "A conferência". Em resumo: entrar deixou de subir tudo.
+A ficha espera a gaveta e a mesa responderem e compara três versões — a daqui, as de
+lá e a combinada (`grifosAlados.fichaSincronia`). O que só mudou aqui sobe; o que só
+mudou lá desce; o que mudou dos dois lados fica **retido** até o jogador escolher, e a
+versão que perde fica guardada, com um "↩ voltar".
+
+### Testado (o dublê do Firebase, e dois "navegadores": `localhost` e `127.0.0.1`)
+
+- navegador com a cópia velha entra como mestre → modal com Loja (vazia), Bases e
+  Viagens, e **zero** escritas;
+- "Agora não" e uma edição local das Bases → continua sem escrever;
+- "Mandar a daqui por cima" → as três sobem, e o 📡 fica verde;
+- recarregar → **sem** alarme (o que os módulos regravam ao abrir é diferença "minha", e
+  sobe normalmente);
+- outra mão escreve nas Bases com a página aberta → o modal abre sozinho, só com as
+  Bases; editar as Viagens aqui sobe, editar as Bases aqui **não** sobe.
+
+> ⚠ **Armadilha do teste:** a primeira versão do dublê gravava o banco no disco com um
+> `fetch` adiado, e uma escrita se perdeu antes do recarregar — pareceu falso alarme da
+> trava, e era a trava acertando diante de um banco velho. O dublê passou a gravar com
+> XHR síncrono. Quando um teste com dublê "falhar", confira primeiro o que o dublê
+> guardou.

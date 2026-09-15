@@ -57,6 +57,34 @@
   const sujos = {};
   function sujar(id, grupo) {
     (sujos[id] || (sujos[id] = new Set())).add(grupo);
+    // a hora da última mudança FEITA NESTE navegador: a conferência a
+    // mostra quando precisa perguntar qual versão fica
+    const minha = dados.fichas.find(x => x.id === id);
+    if (minha) minha.editadoEm = Date.now();
+  }
+
+  // ── A CONFERÊNCIA (15/09/2026) ───────────────────────────────────
+  //  O caso: a mesma conta aberta em dois navegadores — o site publicado
+  //  e o index.html do computador, cada um com o seu localStorage. Ao
+  //  entrar, o que tinha a cópia VELHA mandava a ficha inteira por cima
+  //  da nova, e o outro navegador, recebendo, trocava a dele pela velha.
+  //  Agora cada navegador guarda a impressão digital da versão que
+  //  combinou com o banco por último (`sinc`) e, ao entrar, só depois de
+  //  o banco responder, compara as três: a daqui, as de lá e a combinada.
+  //    • só a daqui mudou   → sobe;
+  //    • só a de lá mudou   → desce (é o mestre que baixou o PV);
+  //    • as duas mudaram, ou este navegador nunca combinou nada e elas
+  //      diferem → a ficha fica RETIDA: nada sobe nem desce até o jogador
+  //      escolher, e a que perder fica guardada, com um "↩ voltar".
+  //  Ver conferir(), mais abaixo, e o ficha-mesa.js, que a chama.
+  const SINC_KEY = 'grifosAlados.fichaSincronia';
+  const GUARDADAS_KEY = 'grifosAlados.fichaGuardadas';
+  let sinc = lerGuardado(SINC_KEY);           // id → digital da versão combinada com o banco
+  let guardadas = lerGuardado(GUARDADAS_KEY); // id → { quando, motivo, ficha } — a que perdeu
+  let aguardando = false;   // entrou e o banco ainda não respondeu: nada das minhas entra nem sai
+  let retidas = {};         // id → { remota, de, em } — mudou aqui E lá; espera o jogador escolher
+  function lerGuardado(chave) {
+    try { return JSON.parse(localStorage.getItem(chave) || '{}') || {}; } catch (e) { return {}; }
   }
 
   // ── PERSISTÊNCIA ─────────────────────────────────────────────────
@@ -76,6 +104,9 @@
   function subir() {
     const f = fichaAberta();
     if (!f || !window.GA_FichaMesa) return;
+    // Antes da conferência, e na ficha retida, nada meu sobe: o que mudou
+    // continua em `sujos` e vai depois (ver A CONFERÊNCIA).
+    if (!donoDe(f.id) && (aguardando || retidas[f.id])) return;
     const g = sujos[f.id];
     delete sujos[f.id];
     window.GA_FichaMesa.publicar(f, donoDe(f.id), g);
@@ -139,7 +170,10 @@
     //  atributo entra, e a conta continua contando a história inteira.
     //  Um só: quem tiver DOIS atributos na Defesa soma o segundo em
     //  "outros", como já fazia.
-    f.defesa.atributo = ehAtributo(f.defesa.atributo) ? f.defesa.atributo : 'des';
+    //  E pode ser NENHUM (15/09/2026, pedido dele): com armadura pesada
+    //  "você não aplica sua Destreza na Defesa" (p. 152), e há poderes,
+    //  condições e efeitos que dizem o mesmo.
+    f.defesa.atributo = atributoDaDefesa(f.defesa.atributo);
     f.carga = f.carga || {};
     ['usada', 'outros'].forEach(k => { if (typeof f.carga[k] !== 'number') f.carga[k] = 0; });
     if (typeof f.cdAtributo !== 'string') f.cdAtributo = 'int';
@@ -294,6 +328,9 @@
       pericia: (a && a.pericia === 'pontaria') ? 'pontaria' : 'luta',
       extra: (a && typeof a.extra === 'number') ? a.extra : 0,
       dano: String((a && a.dano) || ''),
+      // Passos de dano (Tabela 3-2, p. 143): o dado da arma anda na
+      // tabela sozinho, e o que se rola é o dado já andado.
+      passos: passosDe(a && a.passos),
       critico: String((a && a.critico) || ''),
       tipo: String((a && a.tipo) || ''),
       alcance: String((a && a.alcance) || ''),
@@ -328,6 +365,12 @@
   }
 
   function novoId() { return 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  // Passos de dano guardados como inteiro: de 1 a 4d12 são 12 passos na
+  // Tabela 3-2, e ninguém precisa de mais que isso para um lado ou outro.
+  function passosDe(v) {
+    const n = parseInt(v, 10);
+    return isFinite(n) ? Math.max(-12, Math.min(12, n)) : 0;
+  }
 
   // O Realtime Database devolve a lista como objeto quando falta um
   // índice ({0: …, 2: …}); isto aceita as duas formas.
@@ -364,6 +407,7 @@
         pericia: (x && x.pericia === 'pontaria') ? 'pontaria' : 'luta',
         extra: (x && typeof x.extra === 'number') ? x.extra : 0,
         dano: String((x && x.dano) || ''),               // só o DADO: a Força entra sozinha
+        passos: passosDe(x && x.passos),                 // os de fora dos truques (Tabela 3-2)
         critico: String((x && x.critico) || ''),
         tipo: String((x && x.tipo) || ''),
       })),
@@ -479,9 +523,16 @@
   //  branco, uma ficha velha ou o lixo de outra versão do site caiam
   //  fora e a conta volte sozinha para o que está impresso.
   function ehAtributo(k) { return D.ATRIBUTOS.some(x => x.chave === k); }
-  //  O da Defesa: Destreza (p. 106), salvo escolha desta ficha.
-  function atrDefesa(f) {
-    return (f.defesa && ehAtributo(f.defesa.atributo)) ? f.defesa.atributo : 'des';
+  //  O da Defesa: Destreza (p. 106), salvo escolha desta ficha — que
+  //  pode ser 'nenhum' (armadura pesada, p. 152: "você não aplica sua
+  //  Destreza na Defesa"). O que não é nem uma coisa nem outra volta
+  //  para a Destreza.
+  function atributoDaDefesa(k) { return (ehAtributo(k) || k === 'nenhum') ? k : 'des'; }
+  function atrDefesa(f) { return atributoDaDefesa(f.defesa && f.defesa.atributo); }
+  //  O quanto ele soma: nada, quando é nenhum.
+  function somaAtrDefesa(f) {
+    const k = atrDefesa(f);
+    return k === 'nenhum' ? 0 : atr(f, k);
   }
   //  O de uma perícia: o da Tabela 2-1 (p. 115), salvo escolha desta
   //  linha. `e` é a entrada da perícia ou do ofício ({treinada, outros,
@@ -536,9 +587,10 @@
   }
   // Defesa = 10 + Destreza + armadura + escudo (p. 106) — e "Destreza"
   // é o padrão, não uma amarra: quem escolheu outro atributo na ficha
-  // soma o dele, e a conta por extenso diz qual foi.
+  // soma o dele, quem escolheu nenhum não soma atributo, e a conta por
+  // extenso diz qual foi.
   function defesa(f) {
-    return 10 + atr(f, atrDefesa(f)) + f.defesa.armadura + f.defesa.escudo + f.defesa.outros;
+    return 10 + somaAtrDefesa(f) + f.defesa.armadura + f.defesa.escudo + f.defesa.outros;
   }
   // Carga = 10 espaços + 2 por ponto de Força, ou −1 por ponto negativo (p. 141)
   function cargaMax(f) {
@@ -693,6 +745,7 @@
   // armado para o próximo teste, e a lista inteira de truques aberta.
   let direcionar = {};        // id do amigo → true
   let truquesAbertos = {};    // id do amigo → true
+  let tabelaPassosAberta = false;   // a Tabela 3-2 do cartão dos Ataques, aberta nesta tela
   const HIST_KEY = 'grifosAlados.fichaRolagens';
   const HIST_MAX = 30;
 
@@ -926,13 +979,14 @@
       </div>
       <div class="fi-barra">
         ${dados.fichas.map(x => `
-          <button type="button" class="fi-aba ${x.id === dados.aberta ? 'fi-aba--ativa' : ''}"
-                  data-acao="abrir" data-id="${esc(x.id)}">
-            ${esc(x.nome || '(sem nome)')}
+          <button type="button" class="fi-aba ${x.id === dados.aberta ? 'fi-aba--ativa' : ''}${retidas[x.id] ? ' fi-aba--retida' : ''}"
+                  data-acao="abrir" data-id="${esc(x.id)}"${retidas[x.id] ? ' title="Esta ficha espera você escolher entre a deste navegador e a do banco"' : ''}>
+            ${retidas[x.id] ? '⚠ ' : ''}${esc(x.nome || '(sem nome)')}
           </button>`).join('')}
         <button type="button" class="fi-add" data-acao="nova">＋ Nova ficha</button>
       </div>
       ${barraDaMesa()}
+      ${avisoDeSincronia(f)}
 `;
 
     // O rolador livre que ficava aqui saiu em 11/09/2026, a pedido dele:
@@ -1248,7 +1302,10 @@
               ${seletorAtr('defesa.atributo', atrDefesa(f), 'des',
                 'Qual atributo entra na Defesa. Pelo livro é Destreza (p. 106); se um poder, um item ' +
                 'ou uma classe sua mandar outro — Sabedoria, Carisma —, escolha aqui: ele entra NO LUGAR ' +
-                'da Destreza, e a conta acima passa a mostrar qual foi.', 'fi-sel')}</label>
+                'da Destreza, e a conta acima passa a mostrar qual foi. «— nenhum» é para quando NADA ' +
+                'entra: com armadura pesada "você não aplica sua Destreza na Defesa" (p. 152), e há ' +
+                'poderes, condições e efeitos que dizem o mesmo. (Armadura pesada delicada ou de mitral ' +
+                'deixa 1 ou 2 pontos: escolha nenhum e ponha esses pontos em Outros.)', 'fi-sel', true)}</label>
             <label class="fi-extra"><span>Armadura</span>
               <input class="fi-num" type="number" value="${f.defesa.armadura}" data-campo="defesa.armadura"></label>
             <label class="fi-extra"><span>Escudo</span>
@@ -1352,14 +1409,17 @@
 
   function contaDefesa(f) {
     const k = atrDefesa(f);
-    const p = ['10', atrCurto(k) + ' ' + sinal(atr(f, k))];
+    const p = ['10'];
+    if (k !== 'nenhum') p.push(atrCurto(k) + ' ' + sinal(atr(f, k)));
     if (f.defesa.armadura) p.push('armadura ' + sinal(f.defesa.armadura));
     if (f.defesa.escudo)   p.push('escudo ' + sinal(f.defesa.escudo));
     if (f.defesa.outros)   p.push('outros ' + sinal(f.defesa.outros));
     // quando o atributo não é o da p. 106, a conta diz o que está
     // fazendo — senão o número parece errado para quem olha de fora
-    return p.join(' + ').replace(/\+ -/g, '− ') +
-      (k === 'des' ? '' : ' <em>(' + esc(nomeAtr(k)) + ' no lugar da Destreza)</em>');
+    const nota = k === 'des' ? ''
+      : k === 'nenhum' ? ' <em>(nenhum atributo na Defesa — como com armadura pesada, p. 152)</em>'
+      : ' <em>(' + esc(nomeAtr(k)) + ' no lugar da Destreza)</em>';
+    return p.join(' + ').replace(/\+ -/g, '− ') + nota;
   }
 
   // ── RESISTÊNCIAS, RD E IMUNIDADES (Tormenta 20, p. 229) ──────────
@@ -1553,9 +1613,12 @@
   //  o do LIVRO guardado em `data-livro`: é ele que acende a marca de
   //  "esta linha saiu do padrão" — sem precisar redesenhar a ficha
   //  inteira a cada troca (ver atualizarDerivados).
-  function seletorAtr(campo, valor, doLivro, dica, classe) {
+  //  `comNenhum` (só a Defesa, 15/09/2026) acrescenta «— nenhum», para
+  //  quando atributo nenhum entra — a armadura pesada, p. 152.
+  function seletorAtr(campo, valor, doLivro, dica, classe, comNenhum) {
     const ops = D.ATRIBUTOS.map(x =>
-      `<option value="${x.chave}" ${x.chave === valor ? 'selected' : ''}>${esc(x.curto)}</option>`).join('');
+      `<option value="${x.chave}" ${x.chave === valor ? 'selected' : ''}>${esc(x.curto)}</option>`).join('') +
+      (comNenhum ? `<option value="nenhum" ${valor === 'nenhum' ? 'selected' : ''}>— nenhum</option>` : '');
     return `<select class="${classe || 'fi-sel fi-sel--atr'}${valor === doLivro ? '' : ' fi-sel--trocado'}"
               data-campo="${campo}" data-livro="${doLivro}" title="${esc(dica)}">${ops}</select>`;
   }
@@ -1578,12 +1641,15 @@
                 title="Rolar 1d20 ${sinal(valorAtaque(f, a))} de ataque">${sinal(valorAtaque(f, a))} 🎲</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.dano)}" data-campo="ataques.${i}.dano"
                placeholder="1d8+3" autocomplete="off">
+        <input class="fi-num fi-num--passos${a.passos ? ' fi-num--andou' : ''}" type="number" min="-12" max="12" step="1"
+               value="${a.passos}" data-campo="ataques.${i}.passos" aria-label="Passos de dano"
+               title="Passos de dano (Tabela 3-2, p. 143): +1 para cada passo que um poder, a arma adaptável usada com as duas mãos ou uma arma maior sobem; −1 para cada um que descem. O dado da arma anda na tabela sozinho — o resto do dano fica como está.">
         <button type="button" class="fi-atq-dano" data-acao="rolar-dano" data-i="${i}"
-                title="Rolar o dano">🎲 dano</button>
+                title="${esc(tituloDano(a))}">🎲 dano</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.critico)}" data-campo="ataques.${i}.critico"
                placeholder="19/×3" autocomplete="off">
         <button type="button" class="fi-atq-crit" data-acao="rolar-critico" data-i="${i}"
-                title="${esc(tituloCritico(a.dano, mult))}">💥 Crítico</button>
+                title="${esc(tituloCritico(danoDoAtaque(a).expr, mult))}">💥 Crítico</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.tipo)}" data-campo="ataques.${i}.tipo"
                placeholder="corte" autocomplete="off">
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.alcance)}" data-campo="ataques.${i}.alcance"
@@ -1592,6 +1658,8 @@
                 data-acao="atq-texto" data-i="${i}" aria-pressed="${a.aberto}"
                 title="${a.aberto ? 'Dobrar o texto desta arma' : 'Abrir o texto desta arma — o encanto, o que ela faz'}">✎</button>
         <button type="button" class="fi-mini fi-mini--x" data-acao="tira-ataque" data-i="${i}" title="Tirar este ataque">✕</button>
+        <span class="fi-atq-passos${avisoDePassos(a) ? ' fi-atq-passos--aviso' : ''}" data-der="passos:${i}"
+              ${passosDe(a.passos) ? '' : 'hidden'}>${linhaDePassos(a)}</span>
         <span class="fi-res fi-res--atq" data-res="atq:${i}" hidden></span>
         <span class="fi-res fi-res--atq" data-res="dano:${i}" hidden></span>
         <span class="fi-res fi-res--atq fi-res--crit" data-res="crit:${i}" hidden></span>
@@ -1613,7 +1681,7 @@
         </h2>
         <div class="fi-atq-cab">
           <span>Arma</span><span>Perícia</span><span>Extra</span><span>Ataque</span>
-          <span>Dano</span><span></span><span>Crítico</span><span></span><span>Tipo</span><span>Alcance</span><span></span><span></span>
+          <span>Dano</span><span title="Passos de dano — Tabela 3-2, p. 143">Passos</span><span></span><span>Crítico</span><span></span><span>Tipo</span><span>Alcance</span><span></span><span></span>
         </div>
         <ul class="fi-atq-lista">${linhas || '<li class="fi-atq-vazio">Nenhum ataque ainda.</li>'}</ul>
         <button type="button" class="fi-add fi-add--menor" data-acao="add-ataque">＋ Acrescentar ataque</button>
@@ -1622,6 +1690,10 @@
           ele multiplica só os <strong>dados</strong>, como o livro manda (p. 142) — <code>1d8+3</code> com ×2 vira
           <code>2d8+3</code>, e o +3 não dobra. Embaixo de cada arma vai o texto dela (o encanto, o que ela faz);
           o <strong>✎</strong> dobra e desdobra.</p>
+        <p class="fi-nota">A coluna <strong>Passos</strong> anda o dado da arma na Tabela 3-2 (p. 143): com
+          <code>1d8+3</code> e <code>+2</code>, o que se rola é <code>1d12+3</code> — e o crítico multiplica o
+          dado já andado. Só o primeiro dado anda; o <code>+1d6</code> de um encanto e os números ficam como estão.</p>
+        ${tabelaDePassos(f)}
       </div>`;
   }
   // O multiplicador saiu do botão ("💥 ×2" virou "💥 Crítico", a pedido
@@ -1630,6 +1702,74 @@
   function tituloCritico(dano, mult) {
     return 'Rolar o dano CRÍTICO: ' + expressaoCritica(dano || '—', mult) +
       ' (×' + mult + ' — só os dados multiplicam, p. 142)';
+  }
+
+  // ── PASSOS DE DANO (Tabela 3-2, p. 143) — 15/09/2026 ─────────────
+  //  O que se rola é o dano escrito com o PRIMEIRO dado andado na tabela
+  //  (D.danoComPassos). A ficha guarda só o número de passos; o dado
+  //  andado é conta, como tudo o mais aqui. `extra` são passos que vêm de
+  //  fora do campo (os truques do melhor amigo).
+  function danoDoAtaque(a, extra) {
+    return D.danoComPassos(String((a && a.dano) || '').trim(), passosDe(a && a.passos) + (extra || 0));
+  }
+  function textoPassos(n) {
+    return (n > 0 ? '+' : '−') + Math.abs(n) + ' passo' + (Math.abs(n) === 1 ? '' : 's');
+  }
+  function tituloDano(a) {
+    const r = danoDoAtaque(a);
+    if (!r.expr) return 'Rolar o dano';
+    return 'Rolar o dano: ' + r.expr + (passosDe(a.passos) && r.ok && !r.semDado
+      ? ' (' + r.base + ' ' + textoPassos(passosDe(a.passos)) + ', Tabela 3-2)' : '');
+  }
+  // A linha embaixo do ataque: para onde o dado andou — ou por que não andou.
+  function linhaDePassos(a, extra, fontes) {
+    const n = passosDe(a.passos) + (extra || 0);
+    if (!n) return '';
+    const r = danoDoAtaque(a, extra);
+    const quais = fontes ? ' <em>(' + esc(fontes) + ')</em>' : '';
+    if (r.semDado) {
+      return '⚠ ' + textoPassos(n) + quais + ' — escreva o dado da arma no dano (ex.: <code>1d8+3</code>) ' +
+        'para ele andar na tabela';
+    }
+    if (!r.ok) return '⚠ <strong>' + esc(r.base) + '</strong> não está na Tabela 3-2 — o dano sai sem os passos';
+    return '⇅ <strong>' + esc(r.base) + '</strong> ' + textoPassos(n) + quais + ' → <strong>' + esc(r.dado) + '</strong>' +
+      (r.dado === '4d12' ? ' <em>(o máximo da tabela)</em>' : '') +
+      (r.limitado && r.dado !== '4d12' ? ' <em>(a tabela não desce mais)</em>' : '') +
+      ' <em>· Tabela 3-2, p. 143</em>';
+  }
+  function avisoDePassos(a, extra) {
+    if (!(passosDe(a.passos) + (extra || 0))) return false;
+    const r = danoDoAtaque(a, extra);
+    return !!(r.semDado || !r.ok);
+  }
+  // A tabela inteira, recolhida no cartão: a linha do dado de cada arma da
+  // ficha acende, para quem quiser conferir a conta com os próprios olhos.
+  function tabelaDePassos(f) {
+    const usadas = {};
+    (f.ataques || []).forEach(a => {
+      const r = danoDoAtaque(a, 0);
+      if (r.base) usadas[r.base] = true;
+    });
+    const cab = ['–2', '–1', 'Normal', '+1', '+2', '+3'];
+    const linhas = D.PASSOS_DANO.map(l => {
+      const usada = l[2].some(d => usadas[d]);
+      return '<tr' + (usada ? ' class="fi-passos-usada"' : '') + '>' + l.map((c, i) =>
+        '<td' + (i === 2 ? ' class="fi-passos-normal"' : '') + '>' +
+          esc(i === 2 ? c.join(' ou ') : (c === '4d12' ? '4d12 (máx.)' : c)) + '</td>').join('') + '</tr>';
+    }).join('');
+    return `
+        <details class="fi-passos-tabela"${tabelaPassosAberta ? ' open' : ''}>
+          <summary data-acao="passos-tabela">📊 Tabela 3-2 — passos de dano</summary>
+          <div class="fi-passos-rola">
+            <table class="fi-passos-tab">
+              <thead><tr>${cab.map((c, i) => '<th' + (i === 2 ? ' class="fi-passos-normal"' : '') + '>' + c + '</th>').join('')}</tr></thead>
+              <tbody>${linhas}</tbody>
+            </table>
+            <p class="fi-passos-nota">Ache o dado da arma na coluna Normal e ande para os lados. Além das pontas,
+              anda-se de passo em passo pela própria tabela, até o 4d12, que é o máximo. (Tormenta 20, p. 143 —
+              a mesma tabela está em 📚 Consultas → ⚔ Arsenal &amp; Regras.)</p>
+          </div>
+        </details>`;
   }
 
   // ═══ O MELHOR AMIGO DO TREINADOR (Heróis de Arton, p. 17–22) ══════
@@ -1724,9 +1864,25 @@
   // Marcial. Aqui a ficha soma sozinha, ao contrário dos ataques do
   // personagem: a arma é a do livro e a Força é a do bicho, que ninguém
   // lembra de corrigir quando o Condicionamento Especial a sobe.
+  //  E o dado já sai ANDADO na Tabela 3-2 (15/09/2026): os passos que o
+  //  jogador escreveu, mais os dos truques que dizem que o dano das armas
+  //  naturais "aumenta em um passo" — o Amigão e o Amigo Feroz. Esses
+  //  entram sozinhos, como a Força, porque são do bicho e não da arma.
+  function passosDosTruques(a) {
+    const p = [];
+    if (temTruque(a, 'amigao')) p.push('Amigão');
+    if (temTruque(a, 'amigo-feroz')) p.push('Amigo Feroz');
+    return p;
+  }
+  function fontesDePassos(x, a) {
+    const p = passosDosTruques(a).map(t => t + ' +1');
+    if (!p.length) return '';
+    if (passosDe(x.passos)) p.push('outros ' + sinal(passosDe(x.passos)));
+    return p.join(' · ');
+  }
   function danoAmigo(f, a, x) {
-    const dado = String(x.dano || '').trim();
-    if (!dado) return '';
+    if (!String(x.dano || '').trim()) return '';
+    const dado = danoDoAtaque(x, passosDosTruques(a).length).expr;
     const b = (x.pericia === 'luta' ? (a.atributos.for || 0) : 0) + marcialAmigo(f, a);
     return b ? dado + (b > 0 ? '+' : '-') + Math.abs(b) : dado;
   }
@@ -1957,7 +2113,7 @@
             <span class="fi-cartao-nota">escreva só o dado da arma — a Força${marcialAmigo(f, a) ? ' e o Treinamento Marcial entram' : ' entra'} sozinha${marcialAmigo(f, a) ? 's' : ''}</span></h3>
           <div class="fi-atq-cab fi-atq--am">
             <span>Arma</span><span>Perícia</span><span>Extra</span><span>Ataque</span>
-            <span>Dado</span><span></span><span>Crítico</span><span></span><span>Tipo</span><span></span>
+            <span>Dado</span><span title="Passos de dano — Tabela 3-2, p. 143">Passos</span><span></span><span>Crítico</span><span></span><span>Tipo</span><span></span>
           </div>
           <ul class="fi-atq-lista">${a.ataques.map((x, j) => linhaAtaqueAmigo(f, a, i, x, j)).join('') ||
             '<li class="fi-atq-vazio">Nenhuma arma natural.</li>'}</ul>
@@ -2026,6 +2182,9 @@
                 title="Rolar o ataque"><span data-der="am:${i}:atq:${j}">${sinal(v)}</span> 🎲</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(x.dano)}" data-campo="amigos.${i}.ataques.${j}.dano"
                placeholder="1d8" autocomplete="off" title="Só o dado da arma — a Força entra sozinha">
+        <input class="fi-num fi-num--passos${x.passos ? ' fi-num--andou' : ''}" type="number" min="-12" max="12" step="1"
+               value="${x.passos}" data-campo="amigos.${i}.ataques.${j}.passos" aria-label="Passos de dano"
+               title="Passos de dano de FORA dos truques (Tabela 3-2, p. 143). O Amigão e o Amigo Feroz já sobem um passo cada, sozinhos.">
         <button type="button" class="fi-atq-dano" data-acao="am-rolar-dano" data-i="${i}" data-j="${j}"
                 title="Rolar o dano">🎲 <span data-der="am:${i}:dano:${j}">${esc(dano || 'dano')}</span></button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(x.critico)}" data-campo="amigos.${i}.ataques.${j}.critico"
@@ -2036,20 +2195,24 @@
                placeholder="corte, impacto…" autocomplete="off">
         <button type="button" class="fi-mini fi-mini--x" data-acao="am-tira-atq" data-i="${i}" data-j="${j}"
                 title="Tirar esta arma">✕</button>
+        <span class="fi-atq-passos${avisoDePassos(x, passosDosTruques(a).length) ? ' fi-atq-passos--aviso' : ''}"
+              data-der="am:${i}:passos:${j}" ${(passosDe(x.passos) + passosDosTruques(a).length) ? '' : 'hidden'}>${
+          linhaDePassos(x, passosDosTruques(a).length, fontesDePassos(x, a))}</span>
         <span class="fi-res fi-res--atq" data-res="am:${i}:atq:${j}" hidden></span>
         <span class="fi-res fi-res--atq" data-res="am:${i}:dano:${j}" hidden></span>
         <span class="fi-res fi-res--atq fi-res--crit" data-res="am:${i}:crit:${j}" hidden></span>
       </li>`;
   }
   // O que a ficha NÃO mexe sozinha na arma, e por quê: a margem de
-  // ameaça e o passo de dano dependem de qual arma é, e o livro deixa
-  // escolher entre várias (Ameaças de Arton, p. 374).
+  // ameaça depende de qual arma é, e o livro deixa escolher entre várias
+  // (Ameaças de Arton, p. 374). O passo de dano dos truques, sim: desde
+  // 15/09/2026 ele anda sozinho na Tabela 3-2 (ver danoAmigo).
   function notaAtaquesAmigo(a) {
     const p = [];
     if (a.tipo === 'animal') p.push('o <strong>animal</strong> tem +1 na margem de ameaça (escreva <code>19/×2</code> no crítico)');
     if (a.tipo === 'monstro') p.push('o <strong>monstro</strong> tem uma segunda arma natural — o ＋ acrescenta');
-    if (temTruque(a, 'amigo-feroz')) p.push('o <strong>Amigo Feroz</strong> já soma +2 no ataque; a margem +2 e o passo de dano são com você');
-    if (temTruque(a, 'amigao')) p.push('o <strong>Amigão</strong> sobe o dano um passo (1d8 vira 1d10)');
+    if (temTruque(a, 'amigo-feroz')) p.push('o <strong>Amigo Feroz</strong> já soma +2 no ataque e sobe o dano um passo; a margem +2 é com você');
+    if (temTruque(a, 'amigao')) p.push('o <strong>Amigão</strong> já sobe o dano um passo (1d8 vira 1d10)');
     return '<p class="fi-nota">O nome sugere as 12 armas naturais da Tabela 2-1 de Ameaças de Arton (p. 374), e ' +
       'escolher uma preenche o tipo de dano. O dano segue <code>1d8</code> ×2, que é a regra do amigo (p. 20) — o ' +
       '1d6 daquela tabela vale para as ameaças.' + (p.length ? ' Na arma: ' + p.join('; ') + '.' : '') + '</p>';
@@ -2488,6 +2651,15 @@
       if (d.slice(0, 3) === 'am:')  { derivadoAmigo(f, el, d); return; }
       if (d.slice(0, 4) === 'per:') { el.textContent = sinal(valorPericia(f, d.slice(4))); return; }
       if (d.slice(0, 4) === 'atq:') { el.textContent = sinal(valorAtaque(f, f.ataques[+d.slice(4)] || {})); return; }
+      if (d.slice(0, 7) === 'passos:') {
+        const a = f.ataques[+d.slice(7)];
+        if (a) {
+          el.innerHTML = linhaDePassos(a);
+          el.hidden = !passosDe(a.passos);
+          el.classList.toggle('fi-atq-passos--aviso', avisoDePassos(a));
+        }
+        return;
+      }
       if (d.slice(0, 3) === 'of:')  { el.textContent = sinal(valorOficio(f, +d.slice(3))); return; }
       if (d.slice(0, 4) === 'inv:') {
         const it = f.inventario[+d.slice(4)];
@@ -2554,10 +2726,19 @@
       const a = f.ataques[+b.dataset.i];
       if (a) b.textContent = sinal(valorAtaque(f, a)) + ' 🎲';
     });
-    // e a dica do 💥 Crítico segue o que está escrito no campo "19/×3"
+    // e a dica do 💥 Crítico segue o que está escrito no campo "19/×3" —
+    // com o dado já andado pelos passos
     secao.querySelectorAll('[data-acao="rolar-critico"]').forEach(b => {
       const a = f.ataques[+b.dataset.i];
-      if (a) b.title = tituloCritico(a.dano, multiplicadorCritico(a.critico));
+      if (a) b.title = tituloCritico(danoDoAtaque(a).expr, multiplicadorCritico(a.critico));
+    });
+    secao.querySelectorAll('[data-acao="rolar-dano"]').forEach(b => {
+      const a = f.ataques[+b.dataset.i];
+      if (a) b.title = tituloDano(a);
+    });
+    // o campo de passos acende quando sai do zero, como o atributo trocado
+    secao.querySelectorAll('.fi-num--passos').forEach(el => {
+      el.classList.toggle('fi-num--andou', (parseInt(el.value, 10) || 0) !== 0);
     });
     secao.querySelectorAll('[data-acao="am-rolar-crit"]').forEach(b => {
       const a = f.amigos[+b.dataset.i], x = a && a.ataques[+b.dataset.j];
@@ -2586,6 +2767,13 @@
       case 'per':      el.textContent = sinal(valorPericiaAmigo(f, a, p[3])); break;
       case 'atq':      el.textContent = sinal(valorAtaqueAmigo(f, a, x)); break;
       case 'dano':     el.textContent = danoAmigo(f, a, x) || 'dano'; break;
+      case 'passos': {
+        const extra = passosDosTruques(a).length;
+        el.innerHTML = linhaDePassos(x, extra, fontesDePassos(x, a));
+        el.hidden = !(passosDe(x.passos) + extra);
+        el.classList.toggle('fi-atq-passos--aviso', avisoDePassos(x, extra));
+        break;
+      }
       case 'truq':     el.innerHTML = contaTruques(f, a); break;
     }
   }
@@ -2685,6 +2873,9 @@
       salvar(); return render();
     }
     if (acao === 'trazer') return trazerDaGaveta(btn.dataset.id);
+    // a Tabela 3-2 recolhida lembra se está aberta, para um render não a
+    // fechar na cara de quem está lendo (o clique vem ANTES de abrir)
+    if (acao === 'passos-tabela') { tabelaPassosAberta = !(btn.closest('details') || {}).open; return; }
     // o ✕ da pílula: some com a rolagem daqui. A da mesa (o painel
     // 🎲 Rolagens) continua lá — aquela é o histórico de todo mundo
     if (acao === 'fecha-res') {
@@ -2692,6 +2883,11 @@
       return pintarResultado(btn.dataset.slot);
     }
     if (!f) return;
+
+    // ── A CONFERÊNCIA: a escolha de quem está com a ficha ──────────
+    if (acao === 'sinc-de-la' || acao === 'sinc-daqui' || acao === 'sinc-voltar' || acao === 'sinc-descartar') {
+      return decidirSincronia(f, acao);
+    }
 
     if (acao === 'remover') {
       const dono = donoDe(f.id);
@@ -2709,12 +2905,13 @@
         dados.fichas = dados.fichas.filter(x => x.id !== f.id);
       }
       delete sujos[f.id];
+      if (!dono) esquecerSincronia(f.id);
       dados.aberta = dados.fichas.length ? dados.fichas[0].id : null;
       gravar(); return render();
     }
     if (acao === 'add-classe')  { f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
     if (acao === 'tira-classe') { f.classes.splice(+btn.dataset.i, 1); if (!f.classes.length) f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
-    if (acao === 'add-ataque')  { f.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0, dano: '', critico: '', tipo: '', alcance: '', notas: '', aberto: true }); salvar(); return render(); }
+    if (acao === 'add-ataque')  { f.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0, dano: '', passos: 0, critico: '', tipo: '', alcance: '', notas: '', aberto: true }); salvar(); return render(); }
 
     // ── O QUE APARA O DANO ─────────────────────────────────────────
     if (acao === 'add-apara') {
@@ -2922,17 +3119,25 @@
       if (a) rolar(d20(valorAtaque(f, a)), quem(f) + ' · ' + (a.nome || 'ataque'), 'atq:' + btn.dataset.i, 'Ataque');
       return;
     }
+    // O dano sai com o dado já andado pelos passos (Tabela 3-2), e o
+    // crítico multiplica ESSE dado: os "dados de dano" da p. 142 são os da
+    // arma como ela está agora.
     if (acao === 'rolar-dano') {
       const a = f.ataques[+btn.dataset.i];
-      if (a && a.dano.trim()) rolar(a.dano.trim(), quem(f) + ' · dano de ' + (a.nome || 'ataque'), 'dano:' + btn.dataset.i, 'Dano');
+      if (!a || !a.dano.trim()) return;
+      const r = danoDoAtaque(a);
+      const p = (passosDe(a.passos) && r.ok && !r.semDado) ? ' (' + textoPassos(passosDe(a.passos)) + ')' : '';
+      rolar(r.expr, quem(f) + ' · dano de ' + (a.nome || 'ataque') + p, 'dano:' + btn.dataset.i, 'Dano' + p);
       return;
     }
     if (acao === 'rolar-critico') {
       const i = +btn.dataset.i, a = f.ataques[i];
       if (!a || !a.dano.trim()) return;
       const mult = multiplicadorCritico(a.critico);
-      rolar(expressaoCritica(a.dano.trim(), mult),
-            quem(f) + ' · 💥 CRÍTICO ×' + mult + ' de ' + (a.nome || 'ataque'), 'crit:' + i, '💥 Crítico ×' + mult);
+      const r = danoDoAtaque(a);
+      const p = (passosDe(a.passos) && r.ok && !r.semDado) ? ' (' + textoPassos(passosDe(a.passos)) + ')' : '';
+      rolar(expressaoCritica(r.expr, mult),
+            quem(f) + ' · 💥 CRÍTICO ×' + mult + ' de ' + (a.nome || 'ataque') + p, 'crit:' + i, '💥 Crítico ×' + mult + p);
       return;
     }
     if (acao === 'limpar-hist') {
@@ -2993,7 +3198,7 @@
     if (acao === 'am-direcionar')  { direcionar[a.id] = !direcionar[a.id]; return render(); }
     if (acao === 'am-add-atq') {
       a.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0,
-                       dano: D.AMIGO.arma.dano, critico: D.AMIGO.arma.critico, tipo: '' });
+                       dano: D.AMIGO.arma.dano, passos: 0, critico: D.AMIGO.arma.critico, tipo: '' });
       sujar(f.id, 'amigos'); salvar(); return render();
     }
 
@@ -3055,7 +3260,10 @@
   //   • as MINHAS, quando o mestre mexeu nelas. Essas são aplicadas
   //     por cima da cópia local: é o "o mestre baixou meu PV e eu vi
   //     acontecer" — o motivo de tudo isto existir.
-  const CARIMBO = { dono: 1, autor: 1, atualizadoEm: 1 };
+  //  `editadoEm` (15/09/2026) também fica de fora: é a hora da última
+  //  mudança feita num navegador, e duas fichas iguais com horas
+  //  diferentes continuam sendo a mesma ficha.
+  const CARIMBO = { dono: 1, autor: 1, atualizadoEm: 1, editadoEm: 1 };
 
   // Comparação estável: o Firebase devolve as chaves em outra ordem, e
   // um JSON.stringify cru acharia diferença onde não há — o que faria a
@@ -3133,13 +3341,20 @@
     // as minhas, mexidas pelo mestre → entram na cópia local
     const minhas = mapa[meuUid] || {};
     let mudou = false;
+    let mudouSinc = false;
     Object.keys(minhas).forEach(id => {
       const vinda = minhas[id];
       if (!vinda || typeof vinda !== 'object') return;
       const i = dados.fichas.findIndex(x => x.id === id);
       if (i < 0) return;                       // ficha que só existe na mesa: não puxo
-      if (igual(dados.fichas[i], vinda)) return;   // é o eco da minha própria escrita
+      // antes da conferência, e na ficha retida, o banco não entra por cima
+      if (aguardando || retidas[id]) return;
+      if (igual(dados.fichas[i], vinda)) {         // é o eco da minha própria escrita
+        mudouSinc = marcarSinc(id, vinda) || mudouSinc;
+        return;
+      }
       dados.fichas[i] = vinda;                     // já veio normalizada acima
+      mudouSinc = marcarSinc(id, vinda) || mudouSinc;
       mudou = true;
       // o mestre baixou o PV pela mesa: a gaveta da conta tem de saber,
       // senão o outro aparelho continua com o número velho
@@ -3169,11 +3384,14 @@
       if (minhas[id]) return;
       const i = dados.fichas.findIndex(x => x.id === id);
       if (i < 0) return;                           // só na gaveta: espera o botão "trazer"
-      if (igual(dados.fichas[i], gaveta[id])) return;
+      if (aguardando || retidas[id]) return;
+      if (igual(dados.fichas[i], gaveta[id])) { mudouSinc = marcarSinc(id, gaveta[id]) || mudouSinc; return; }
       dados.fichas[i] = gaveta[id];
+      mudouSinc = marcarSinc(id, gaveta[id]) || mudouSinc;
       mudou = true;
     });
 
+    if (mudouSinc) guardarSinc();
     if (mudou) gravar();
     if (mudou || antes !== canon(remotas) || antesGaveta !== canon(gaveta)) { render(); avisar(); }
   }
@@ -3191,12 +3409,206 @@
   function trazerDaGaveta(id) {
     const f = gaveta[id];
     if (!f || dados.fichas.some(x => x.id === id)) return;
-    dados.fichas.push(normalizar(JSON.parse(JSON.stringify(f))));
+    const copia = normalizar(JSON.parse(JSON.stringify(f)));
+    dados.fichas.push(copia);
+    if (marcarSinc(id, copia)) guardarSinc();     // veio da conta: é a versão combinada
     abrirFicha(id);
     salvar(); render();
   }
 
-  function mesaMudou() { render(); }
+  function mesaMudou() {
+    // saiu da conta: não há com quem conferir, e a escolha pendente espera
+    // o próximo login, que refaz a conferência do zero
+    const e = window.GA_FichaMesa ? window.GA_FichaMesa.estado() : null;
+    if (e && !e.logado) { aguardando = false; retidas = {}; }
+    render();
+  }
+
+  // ═══ A CONFERÊNCIA ════════════════════════════════════════════════
+  //  O desenho está no começo do arquivo, junto de `sinc`. Aqui é a parte
+  //  que decide — chamada pelo ficha-mesa.js quando a gaveta (e a mesa,
+  //  se houver) responderam pela primeira vez depois de entrar.
+  function digitalDa(f) {
+    const s = canon(f);
+    let h = 0x811c9dc5;
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+    return (h >>> 0).toString(36) + '.' + s.length;
+  }
+  function marcarSinc(id, f) {
+    const d = digitalDa(f);
+    if (sinc[id] === d) return false;
+    sinc[id] = d;
+    return true;
+  }
+  function guardarSinc() { window.GA_guardar(SINC_KEY, JSON.stringify(sinc)); }
+  function guardarGuardadas() { window.GA_guardar(GUARDADAS_KEY, JSON.stringify(guardadas)); }
+  function esquecerSincronia(id) {
+    delete sinc[id]; delete guardadas[id]; delete retidas[id];
+    guardarSinc(); guardarGuardadas();
+  }
+  function copiaNormalizada(x, id) {
+    if (!x || typeof x !== 'object') return null;
+    const n = normalizar(JSON.parse(JSON.stringify(x)));
+    n.id = id;
+    n.autor = x.autor || '';
+    return n;
+  }
+  // A versão que perde uma escolha fica guardada neste navegador — uma por
+  // ficha, com o motivo e a hora —, e o "↩ voltar" troca de novo.
+  function guardarVersao(f, motivo) {
+    guardadas[f.id] = { quando: Date.now(), motivo: motivo, ficha: JSON.parse(JSON.stringify(f)) };
+    guardarGuardadas();
+  }
+  // A ficha inteira, para a mesa e para a conta: é o que se manda quando a
+  // conferência decide que a daqui vale (e para acertar uma cópia atrasada).
+  function publicarInteira(f) {
+    delete sujos[f.id];
+    if (window.GA_FichaMesa) window.GA_FichaMesa.publicar(f, null, null);
+  }
+
+  function esperarConferencia() { aguardando = true; }
+
+  //  Para cada ficha minha, três versões: a DAQUI, as cópias de LÁ (a da
+  //  mesa e a da conta) e a COMBINADA (a digital em `sinc`). "Nova" é a
+  //  cópia de lá que não é nem a daqui nem a combinada: mudou por outra
+  //  mão, e este navegador ainda não viu.
+  //    • nenhuma nova                    → a daqui vale (sobe, se alguma cópia ficou atrás);
+  //    • uma nova, e a daqui é a combinada → desce a nova (o mestre baixou o PV);
+  //    • nova, e a daqui também mudou — ou nunca houve combinada, ou lá há
+  //      duas novas diferentes → RETIDA, e o jogador escolhe.
+  function conferir() {
+    aguardando = false;
+    retidas = {};
+    const e = window.GA_FichaMesa ? window.GA_FichaMesa.estado() : {};
+    const naMesa  = (ultimoRecebido && ultimoRecebido[meuUid]) || {};
+    const naConta = ultimoDaGaveta || {};
+    let mudouDados = false;
+    dados.fichas.forEach((local, i) => {
+      const id = local.id;
+      const m = copiaNormalizada(naMesa[id], id);
+      const g = copiaNormalizada(naConta[id], id);
+      const copias = [m, g].filter(Boolean);
+      const faltaCopia = (e.ligado && e.escreve && !m) || !g;
+      if (!copias.length) { publicarInteira(local); return; }      // o banco ainda não a conhece
+      const dL = digitalDa(local), dK = sinc[id];
+      const novas = copias.filter(c => { const d = digitalDa(c); return d !== dL && d !== dK; });
+      if (!novas.length) {
+        if (copias.every(c => digitalDa(c) === dL)) {
+          marcarSinc(id, local);
+          if (faltaCopia) publicarInteira(local);
+        } else {
+          publicarInteira(local);          // a daqui é mais nova que a combinada: sobe
+        }
+        return;
+      }
+      const la = novas.reduce((x, y) => ((y.atualizadoEm || 0) > (x.atualizadoEm || 0) ? y : x));
+      const umaSo = new Set(novas.map(digitalDa)).size === 1;
+      if (dK && dK === dL && umaSo) {                              // aqui nada mudou: desce
+        dados.fichas[i] = la;
+        marcarSinc(id, la);
+        delete sujos[id];
+        mudouDados = true;
+        if (faltaCopia || copias.some(c => digitalDa(c) !== digitalDa(la))) publicarInteira(la);
+        return;
+      }
+      retidas[id] = { remota: la, de: la === m ? 'mesa' : 'conta', em: la.atualizadoEm || 0 };
+    });
+    guardarSinc();
+    if (mudouDados) gravar();
+    render(); avisar();
+  }
+
+  // O que muda entre duas versões, com o nome que se lê na ficha.
+  const NOMES_GRUPO = {
+    nome: 'nome', jogador: 'jogador', raca: 'raça', origem: 'origem', divindade: 'divindade',
+    tamanho: 'tamanho', deslocamento: 'deslocamento', classes: 'classes e níveis', atributos: 'atributos',
+    pv: 'PV', pm: 'PM', defesa: 'Defesa', carga: 'carga', cdAtributo: 'atributo da CD', xp: 'XP',
+    resistencias: 'resistências', reducoes: 'RD', imunidades: 'imunidades', proficiencias: 'proficiências',
+    pericias: 'perícias', oficios: 'ofícios', inventario: 'inventário', tibares: 'T$',
+    compras: 'recibo da Loja', magias: 'magias', ataques: 'ataques', treinador: 'treinador',
+    amigos: 'melhor amigo', amigosPv: 'PV do melhor amigo', blocos: 'textos',
+  };
+  function gruposDiferentes(a, b) {
+    const chaves = {}, saida = [];
+    Object.keys(a || {}).concat(Object.keys(b || {})).forEach(k => { chaves[k] = true; });
+    Object.keys(chaves).forEach(k => {
+      if (CARIMBO[k] || k === 'id') return;
+      if (canon((a || {})[k]) !== canon((b || {})[k])) saida.push(NOMES_GRUPO[k] || k);
+    });
+    return saida;
+  }
+
+  // O aviso no alto da ficha: a retida (escolha) ou a versão guardada (↩).
+  function avisoDeSincronia(f) {
+    if (!f || donoDe(f.id)) return '';
+    const r = retidas[f.id];
+    if (r) {
+      const la = r.de === 'mesa' ? 'da mesa' : 'da sua conta';
+      const muda = gruposDiferentes(f, r.remota);
+      return `
+      <div class="fi-sinc fi-sinc--retida" role="alert">
+        <p><strong>⚠ Esta ficha está diferente da ${la}</strong>, e não dá para saber sozinho qual é a certa:
+          ${sinc[f.id] ? 'as duas mudaram desde a última vez que este navegador conversou com o banco'
+                       : 'este navegador ainda não tinha conversado com o banco sobre ela'}.
+          Enquanto você não escolher, <strong>nada desta ficha sobe nem desce</strong>.</p>
+        <p>${r.em ? 'A ' + la + ' foi salva em <strong>' + esc(dataHora(r.em)) + '</strong>' : 'A ' + la + ' não diz quando foi salva'}${
+          f.editadoEm ? '; a deste navegador foi mexida em <strong>' + esc(dataHora(f.editadoEm)) + '</strong>' : ''}.
+          ${muda.length ? 'O que muda entre as duas: <strong>' + esc(muda.join(', ')) + '</strong>.' : ''}</p>
+        <div class="fi-sinc-acoes">
+          <button type="button" class="fi-add fi-add--menor" data-acao="sinc-de-la">⬇ Ficar com a ${la}</button>
+          <button type="button" class="fi-add fi-add--menor" data-acao="sinc-daqui">⬆ Ficar com a deste navegador</button>
+        </div>
+        <p class="fi-sinc-nota">A que você não escolher fica guardada neste navegador, com um botão para voltar a ela.</p>
+      </div>`;
+    }
+    const gd = guardadas[f.id];
+    if (gd && gd.ficha) {
+      return `
+      <div class="fi-sinc fi-sinc--guardada">
+        <p>↩ Ficou guardada outra versão desta ficha — ${esc(gd.motivo)} (${esc(dataHora(gd.quando))}).
+          <button type="button" class="fi-mini" data-acao="sinc-voltar"
+                  title="Trocar a da tela pela guardada; a da tela fica guardada no lugar">↩ Voltar para ela</button>
+          <button type="button" class="fi-mini" data-acao="sinc-descartar" title="Esquecer a versão guardada">✕ Descartar</button></p>
+      </div>`;
+    }
+    return '';
+  }
+
+  function decidirSincronia(f, acao) {
+    const i = dados.fichas.findIndex(x => x.id === f.id);
+    if (i < 0) return;                                   // só as minhas passam por conferência
+    const r = retidas[f.id];
+    if (acao === 'sinc-de-la' && r) {
+      guardarVersao(f, 'era a deste navegador, trocada pela ' + (r.de === 'mesa' ? 'da mesa' : 'da conta'));
+      dados.fichas[i] = r.remota;
+      delete retidas[f.id];
+      if (marcarSinc(f.id, r.remota)) guardarSinc();
+      publicarInteira(r.remota);                          // acerta a outra cópia, se estiver atrás
+      gravar(); return render();
+    }
+    if (acao === 'sinc-daqui' && r) {
+      guardarVersao(r.remota, 'era a ' + (r.de === 'mesa' ? 'da mesa' : 'da conta') + ', substituída pela deste navegador');
+      delete retidas[f.id];
+      publicarInteira(f);
+      return render();
+    }
+    const gd = guardadas[f.id];
+    if (acao === 'sinc-voltar' && gd && gd.ficha) {
+      if (!confirm('Voltar para a versão guardada de "' + (f.nome || 'sem nome') + '"?\n\n' +
+                   'A que está na tela agora fica guardada no lugar dela, e a de volta sobe para a conta e a mesa.')) return;
+      const volta = copiaNormalizada(gd.ficha, f.id);
+      guardarVersao(f, 'era a que estava na tela antes do ↩');
+      dados.fichas[i] = volta;
+      delete retidas[f.id];
+      publicarInteira(volta);
+      gravar(); return render();
+    }
+    if (acao === 'sinc-descartar' && gd) {
+      delete guardadas[f.id];
+      guardarGuardadas();
+      return render();
+    }
+  }
 
   // ═══ AS MAGIAS, VINDAS DA BASE DO SITE ════════════════════════════
   //  A ficha não guarda uma segunda cópia das 254 magias: ela busca na
@@ -3522,6 +3934,8 @@
   window.GA_Ficha = {
     receberDaMesa: receberDaMesa,      // o banco mudou
     receberDaGaveta: receberDaGaveta,  // a conta mudou (as minhas, de qualquer aparelho)
+    esperarConferencia: esperarConferencia, // entrou: o banco não entra por cima até conferir
+    conferir: conferir,                // a gaveta (e a mesa) responderam: decide ficha a ficha
     mesaMudou: mesaMudou,              // login/papel mudou → redesenhar a barra
     minhasFichas: () => dados.fichas.slice(),
     recarregar: () => { carregar(); render(); },

@@ -2339,6 +2339,30 @@ footer {
 .ga-sync-btn:hover { opacity: 1; }
 .ga-sync-btn--on   { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(31, 122, 107, 0.35); }
 .ga-sync-btn--erro { border-color: var(--carmim); box-shadow: 0 0 0 2px rgba(139, 16, 32, 0.35); }
+/* pausado pela TRAVA (15/09/2026): o banco tem uma versão que não saiu
+   deste navegador, e mandar a daqui apagaria a de lá — o mestre decide */
+.ga-sync-btn--conflito {
+  opacity: 1;
+  border-color: var(--gold-deep);
+  background: var(--gold-pale);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.7);
+}
+.ga-sync-conflito {
+  margin: 0.4rem 0 0.9rem;
+  padding: 0.2rem 0.8rem 0.7rem;
+  background: var(--gold-pale);
+  border: 1px dashed var(--gold-deep);
+}
+.ga-sync-lista {
+  margin: 0.3rem 0 0.5rem 1.2rem;
+  padding: 0;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.ga-sync-conflito .ga-modal-acoes { border-top-color: var(--gold-deep); padding-top: 0.7rem; }
+.ga-btn-principal.ga-sync-perigo { background: var(--carmim); border-color: var(--carmim); }
+.ga-btn-principal.ga-sync-perigo:hover { background: #a3182b; }
 
 /* modal do 📡 */
 .ga-sync-p { font-family: 'Crimson Pro', serif; font-size: 0.95rem; line-height: 1.5; margin: 0.4rem 0; }

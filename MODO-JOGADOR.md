@@ -284,6 +284,20 @@ deixe o santuário 🙈 até o grupo chegar lá.
 segredos que você nem quer arriscar é melhor guardar nas Anotações/Combates,
 que não são transmitidos de jeito nenhum.
 
+## 🙈 Rolagens escondidas (o mestre e o auxiliar)
+
+No painel **🎲 Rolagens**, o **👁** do cabeçalho vira **🙈**: a partir daí o que você
+rola — no painel, no ⚔ Combates ou numa ficha — **não vai para a mesa**. Fica só no
+seu painel, tracejado, com um **👁 revelar** em cada uma; revelar manda a rolagem para
+todo mundo naquela hora, com o horário em que ela foi rolada. Clicar no 🙈 volta a
+mostrar as próximas (e as que ficaram escondidas continuam lá, para revelar depois).
+
+- Não é esconder só na tela: a rolagem **não sai deste aparelho** — o jogador não tem
+  como ver o que nunca chegou ao banco.
+- Por isso mesmo, a escondida aparece **só no aparelho em que foi rolada**: o
+  auxiliar não vê a sua, e o seu celular não vê a do computador.
+- Não precisa mexer nas regras do Firebase.
+
 ## O que os jogadores editam
 
 Fora estas caixas, a página deles é só de leitura — e mesmo estas só abrem
@@ -327,6 +341,17 @@ recusada pelo banco. Ler ela continua podendo, como qualquer um com o link.
 ## Problemas comuns
 
 - **Botão 📡 diz "falta configurar"** → `js/firebase-config.js` ainda está `null`.
+- **📡 âmbar e "⚠ Parte da transmissão está pausada"** → o banco da campanha tem uma
+  versão da Loja, das Bases ou das Viagens que **não saiu deste navegador**: foi
+  publicada de outro navegador, de outro aparelho ou do site aberto de outro endereço
+  (o `index.html` do computador e o site publicado não dividem o que guardam, mas
+  dividem o banco). Nada é mandado por cima sozinho. Se a certa é a daqui,
+  **📤 Mandar a daqui por cima**; se é a de lá, **Agora não** — e continue no navegador
+  onde ela está.
+- **"⚠ Esta ficha está diferente da da mesa" (ou "da sua conta")** → a ficha mudou
+  aqui e lá desde a última vez que este navegador conversou com o banco. Nada dela
+  sobe nem desce até alguém escolher, e a versão que perder fica guardada neste
+  navegador, com um **↩ Voltar para ela**.
 - **"permission denied" ao transmitir** → o e-mail nas REGRAS (parte 1.4) não é
   exatamente o mesmo do usuário criado (parte 1.5), ou você não está logado.
 - **Jogadores veem "sem permissão para ler"** → as regras não foram publicadas, ou o

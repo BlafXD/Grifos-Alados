@@ -2128,3 +2128,150 @@
     border-color: var(--parchment3);
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   PASSOS DE DANO (15 de setembro de 2026)
+   Pedido dele: "os jogadores constantemente estão tendo poder de
+   aumentar o passo de dano, e ficar consultando isso no livro é bem
+   chato". Cada ataque ganhou a coluna PASSOS: o dado da arma anda na
+   Tabela 3-2 (p. 143) sozinho, e uma linha embaixo diz para onde foi.
+   Mora no fim do arquivo pelo mesmo motivo do atributo de cada linha:
+   o "traço forte" redesenha a grade dos ataques, e isto vem por cima.
+   ══════════════════════════════════════════════════════════════════ */
+@media (min-width: 901px) {
+  /* treze colunas: a de Passos entra entre o dano e o 🎲 dele */
+  .fi-atq-cab, .fi-atq {
+    grid-template-columns:
+      minmax(6.5rem, 2fr) 5rem 2.8rem 4.2rem minmax(4.5rem, 1fr) 2.7rem 4.2rem
+      minmax(3.8rem, 1fr) 5.4rem minmax(4rem, 1fr) minmax(5rem, 1fr) 2rem 2rem;
+  }
+  .fi-atq-cab.fi-atq--am, .fi-atq.fi-atq--am {
+    grid-template-columns:
+      minmax(6.5rem, 2fr) 5rem 2.8rem 4.2rem minmax(4.5rem, 1fr) 2.7rem minmax(5rem, auto)
+      minmax(3.8rem, 1fr) 5.4rem minmax(4rem, 1fr) 2rem;
+  }
+}
+.fi-atq .fi-num--passos {
+  width: 100%;
+  min-width: 0;
+  padding: 0.18rem 0.2rem;
+  font-size: 0.88rem;
+  text-align: center;
+}
+/* passo diferente de zero acende, como o atributo trocado: quem lê a
+   ficha de fora vê de longe que o dado daquela arma não é o escrito */
+.fi-atq .fi-num--passos.fi-num--andou {
+  font-weight: 700;
+  color: var(--rust);
+  border-color: var(--rust);
+  background: var(--gold-pale);
+}
+/* a linha que diz para onde o dado andou — na largura toda, como as pílulas */
+.fi-atq-passos {
+  grid-column: 1 / -1;
+  padding: 0.05rem 0.2rem 0.15rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: var(--text-mid);
+}
+.fi-atq-passos strong { color: var(--ink); }
+.fi-atq-passos em { color: var(--text-dim); }
+.fi-atq-passos--aviso, .fi-atq-passos--aviso strong { color: var(--carmim); }
+
+@media (max-width: 900px) {
+  /* no celular o passo fica na linha do dano: [dano][passos][🎲] */
+  .fi-atq {
+    grid-template-areas:
+      "nome nome nome nome txt  sai"
+      "per  per  ext  atq  atq  atq"
+      "dan  dan  pas  dbt  dbt  dbt"
+      "cri  cri  cri  cbt  cbt  cbt"
+      "tip  tip  tip  alc  alc  alc";
+  }
+  .fi-atq--am {
+    grid-template-areas:
+      "nome nome nome nome nome sai"
+      "per  per  ext  atq  atq  atq"
+      "dan  dan  pas  dbt  dbt  dbt"
+      "cri  cri  cri  cbt  cbt  cbt"
+      "tip  tip  tip  tip  tip  tip";
+  }
+  .fi-atq > .fi-num--passos { grid-area: pas; }
+}
+
+/* A Tabela 3-2 inteira, recolhida no cartão dos Ataques: a linha da
+   arma de cada ataque acende, para quem quiser conferir a conta. */
+.fi-passos-tabela {
+  margin: 0.1rem 0 0.7rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-passos-tabela > summary {
+  cursor: pointer;
+  padding: 0.45rem 0.6rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.fi-passos-rola { overflow-x: auto; padding: 0 0.5rem 0.5rem; }
+.fi-passos-tab {
+  width: 100%;
+  min-width: 21rem;
+  border-collapse: collapse;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  text-align: center;
+}
+.fi-passos-tab th {
+  padding: 0.3rem 0.25rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--parchment);
+  background: var(--ink);
+}
+.fi-passos-tab td { padding: 0.22rem 0.25rem; border-bottom: 1px solid var(--parchment3); }
+.fi-passos-tab .fi-passos-normal { font-weight: 700; background: var(--gold-pale); }
+.fi-passos-tab th.fi-passos-normal { color: var(--ink); background: var(--gold-light); }
+.fi-passos-tab tr.fi-passos-usada td { background: rgba(212, 175, 55, 0.28); }
+.fi-passos-tab tr.fi-passos-usada td.fi-passos-normal { background: var(--gold-light); }
+.fi-passos-nota {
+  margin: 0.4rem 0 0;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--text-dim);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   A CONFERÊNCIA DA FICHA (15 de setembro de 2026)
+   Quando a ficha deste navegador e a do banco mudaram as duas, nada
+   sobe até alguém escolher — e a versão que perdeu fica guardada, com
+   o "↩" para voltar a ela. Tracejado dourado, como o que espera decisão.
+   ══════════════════════════════════════════════════════════════════ */
+.fi-sinc {
+  margin: 0.2rem 0 0.9rem;
+  padding: 0.55rem 0.8rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--gold-pale);
+  border: 2px dashed var(--gold-deep);
+  border-radius: var(--raio);
+}
+.fi-sinc p { margin: 0.2rem 0; }
+.fi-sinc--guardada {
+  font-size: 0.92rem;
+  background: var(--parchment2);
+  border-width: 1px;
+}
+.fi-sinc-acoes { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.45rem 0 0.25rem; }
+.fi-sinc-nota { font-size: 0.84rem; font-style: italic; color: var(--text-dim); }
+.fi-aba.fi-aba--retida { border-style: dashed; border-color: var(--gold-deep); }
