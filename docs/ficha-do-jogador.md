@@ -1456,27 +1456,86 @@ antes. É só no ENTRAR que se confere.
 | os dois mexeram | retida, com as duas horas; digitar nela não escreve nada ✔ |
 | depois de escolher, o mestre baixa o PV ao vivo | a tela vai a 2, e a conta acompanha ✔ |
 
-## Anotado, não feito: a aba de poderes
+## 4. A aba de poderes: os 460 dos livros, e a conta da Tormenta
 
-> "alguma aba dentro da ficha dos jogadores ter como ADICIONAR PODER … e dentro da aba um
-> filtro e sub árvores de 'Poder de classe, poder geral, poder concedido, poder da tormenta,
-> poder de raça' … Principalmente poder da tormenta … e na calculadora, 'Poderes que não são
-> da tormenta mas contam como um' — o Lefou"
+> "Vamos colocar todos os poderes e até mesmo aqueles que NÃO estão no suplemento! Exceto é
+> claro: Poderes de classe, origens e distinção, habilidades que já vem com a raça (até porque
+> poderes de raça é um grupo do heróis de arton!)" — 15/09/2026, à noite
 
-Ele disse que não precisa ser de imediato. O que já se sabe, para quando for:
+### A base: `js/poderes-data.js`
 
-- **"A lógica das criaturas"** é o `js/tormenta-data.js` — os poderes da Tormenta do livro
-  básico e 6 do Suplemento, com `escala(n)` por poder e `carismaPerdido(n)` —, usado pelo
-  bloco 🩸 do bestiário. Pela regra deste documento **ele seria duplicado** na ficha; ele
-  sugeriu reaproveitar, e a decisão é dele (ver "O que eu NÃO juntei").
-- **A regra do Carisma** (JdA, p. 136): perde 1 pelo primeiro poder da Tormenta e mais 1 a
-  cada dois outros; abaixo de Car –5 o personagem vira NPC.
-- **O que "conta como":** a Deformidade do lefou (JdA, p. 24) dá +2 em duas perícias, e "cada
-  um desses bônus conta como um poder da Tormenta (exceto para perda de Carisma)"; o
-  Suplemento (PDF 77) tem poder com a mesma ressalva; o Heróis de Arton (p. 67) tem "conta
-  como se tivesse dois poderes da Tormenta". Ou seja: a calculadora precisa de **dois
-  contadores** — um para a escala dos poderes, outro para a perda de Carisma.
-- **Proposta, não decidida:** 1ª leva — o cartão ✨ Poderes, com "＋ Adicionar poder" (busca e
-  árvore por categoria), e os poderes da Tormenta com a escala e o "conta como"; depois os
-  gerais e os de classe do JdA, o Heróis de Arton, os concedidos (Deuses de Arton e Deuses
-  Menores) e os de raça — lidos do PDF e estruturados, como as magias.
+460 poderes lidos do PDF de sete livros, com o **texto integral**, a página impressa, as tags que
+o livro imprime ao lado do nome (os deuses de um poder concedido, as raças de um poder de raça,
+"Aprimoramento") e, no Guia de Deuses Menores, o **deus dono** de cada poder.
+
+| Livro | Poderes | Onde |
+|---|---:|---|
+| Tormenta20 Jogo do Ano | 162 | combate p. 124–129, destino 129–131, magia 131, concedidos 132–136, Tormenta 136–137 |
+| Heróis de Arton | 155 | combate 78–79, destino 80–82, magia 82–83, Tormenta 83, raça 84–91, grupo 92–95 |
+| Deuses de Arton | 75 | concedidos p. 42–47 |
+| Guia de Deuses Menores | 60 | um por deus menor, p. 5–51 |
+| Guia de NPCs | 2 | Liberdade Irrestrita p. 17, Caminho da Mão Vazia p. 27 |
+| Atlas de Arton | 1 | Presente de Wynlla p. 111 |
+| Ameaças de Arton | 5 | as quatro de montaria p. 223, Coração de Dragão p. 67 |
+
+**Ficam de fora, por decisão dele:** poderes de **classe**, **origens** e **distinções**.
+Habilidade que já vem com a raça não é poder — "poder de raça" é o grupo novo do Heróis de Arton,
+e está aqui. O levantamento que deu origem à base, com o que o Suplemento tem e o que falta nele,
+é o `docs/poderes-levantamento.md`.
+
+### O cartão ✨ Poderes
+
+- **＋ Adicionar poder** abre a busca em dois passos — achar, ler, e só então adicionar, como nas
+  magias — com os **filtros de grupo** em cima, que são as "sub árvores" do pedido. A busca acha
+  pelo nome, pelo texto, pelo deus e pela raça.
+- **✍ Escrever** guarda um poder que não está na base: os de **classe** (que ficaram para outra
+  hora) e os caseiros. Nome, grupo e texto, e o cartão funciona igual.
+- A lista sai **agrupada** — combate, destino, magia, concedidos, Tormenta, raça, grupo e os
+  escritos à mão —, cada poder com o texto inteiro que recolhe, a página do livro e uma anotação
+  sua. O que está recolhido é deste navegador, não da ficha (mesma razão das magias).
+
+### A conta da Tormenta: dois contadores
+
+- **A escala** de cada poder (`js/ficha-tormenta.js`) conta os poderes da Tormenta da ficha **mais
+  o que conta como um sem ser**: o 🩸 de um poder na lista e o contador `− 0 ＋` para o que não é
+  poder nenhum (os bônus da Deformidade do lefou, JdA p. 24).
+- **A perda de Carisma** (p. 136) conta **só os de verdade** — o livro é explícito: o que "conta
+  como" não conta para a perda de Carisma. A ficha mostra a conta; quem muda o Car na caixa de
+  atributos é o jogador, como no Bestiário.
+- Pré-requisito de quantidade e de poder nomeado é conferido: tirar a Carapaça faz a Carapaça
+  Corrompida avisar **"⚠ falta Carapaça"**.
+
+O `js/ficha-tormenta.js` é **cópia** do `js/tormenta-data.js` das criaturas, não o mesmo arquivo —
+a regra deste documento, confirmada por ele em 15/09/2026: dado de regra se duplica, para mexer na
+ficha do jogador nunca quebrar o Bestiário.
+
+### Como o texto saiu do PDF, e as quatro armadilhas
+
+O `-raw` do pdftotext não marca borda nenhuma. As que custaram rodada:
+
+1. **Tabela-resumo × texto.** No livro básico, a linha "Afinidade com a Tormenta Aharadak" da
+   tabela é idêntica ao título do poder. As páginas que são só tabela ficam de fora, e a página
+   que vale é sempre a do texto (por isso 11 poderes de combate estão na p. 128, não na 126).
+2. **Guia de Deuses Menores.** A seção do deus seguinte começa numa linha "…, status divino N"; o
+   título decorativo do deus sai **duplicado**; e a coluna vira no meio da frase. Como é um poder
+   por deus, o dono de cada poder sai casando o k-ésimo deus com o k-ésimo poder — o "status
+   divino mais próximo acima" erra, porque a coluna inverte a ordem.
+3. **O "e" solto.** O ícone de fim de poder sai do PDF como um "e" depois do ponto final; mas "e"
+   no fim de linha depois de palavra é conjunção, e aí a frase continua na outra coluna.
+4. **Legenda de ilustração** também sai duplicada ("Um Inexpugnável" duas vezes, p. 129) e não é
+   texto do poder.
+
+### Testado (servidor local, Firebase desligado)
+
+| O que | Resultado |
+|---|---|
+| a base carrega no `index.html` e no `jogadores.html` | 460 poderes, 7 grupos ✔ |
+| buscar "carapaça" | acha Carapaça, Carapaça Corrompida e quem a cita no texto ✔ |
+| três poderes da Tormenta | cada um vale +2 (1 + um a cada dois dos 2 outros), Carisma −2 ✔ |
+| ＋ no "contam como" | 4 e 5 contando; a escala sobe para +3 e o Carisma não se mexe ✔ |
+| 🩸 num poder de raça | entra na escala, fica fora do Carisma ✔ |
+| tirar a Carapaça | Carisma −1 e "⚠ falta Carapaça" na Corrompida ✔ |
+| ✍ escrever um poder | dois parágrafos, no grupo "escritos à mão" ✔ |
+| ▸ recolher todos / ▾ abrir todos | 4 fechados → 0 ✔ |
+| F5 | os quatro poderes, o contador e os grupos de volta ✔ |
+| console | sem erro nas duas páginas ✔ |

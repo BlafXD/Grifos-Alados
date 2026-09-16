@@ -321,6 +321,33 @@
       apr: Array.isArray(m && m.apr) ? m.apr.map(n => parseInt(n, 10)).filter(n => n >= 0) : [],
     }));
 
+    // ── PODERES ────────────────────────────────────────────────────
+    //  Vêm da base window.GA_PODERES (js/poderes-data.js). Guardamos o
+    //  `pid` e uma CÓPIA do que se lê na mesa — igual às magias, para
+    //  uma ficha exportada continuar legível sem o site do lado. Poder
+    //  escrito à mão (os de classe, os caseiros) fica com pid vazio.
+    if (!Array.isArray(f.poderes)) f.poderes = [];
+    f.poderes = f.poderes.map(p => ({
+      id: (p && p.id) || novoId(),
+      pid: String((p && p.pid) || ''),
+      nome: String((p && p.nome) || ''),
+      grupo: String((p && p.grupo) || 'livre'),
+      livro: String((p && p.livro) || ''),
+      pagina: (p && typeof p.pagina === 'number') ? p.pagina : 0,
+      tags: String((p && p.tags) || ''),
+      deus: String((p && p.deus) || ''),
+      preReq: String((p && p.preReq) || ''),
+      custo: String((p && p.custo) || ''),
+      texto: Array.isArray(p && p.texto) ? p.texto.map(t => String(t))
+        : ((p && p.texto) ? [String(p.texto)] : []),
+      obs: String((p && p.obs) || ''),
+      // marcado como "conta como um poder da Tormenta" sem ser um
+      contaTormenta: !!(p && p.contaTormenta),
+    }));
+    // o que conta como poder da Tormenta e não é poder nenhum (os bônus
+    // da Deformidade do lefou, p. 24)
+    f.tormentaConta = Math.max(0, parseInt((f.tormentaConta || 0), 10) || 0);
+
     if (!Array.isArray(f.ataques)) f.ataques = [];
     f.ataques = f.ataques.map(a => ({
       id: (a && a.id) || novoId(),
@@ -1002,7 +1029,7 @@
     }
 
     html += bloqueIdentidade(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
-            blocoAmigos(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
+            blocoAmigos(f) + blocoPoderes(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
             blocoCompras(f);
     const donoAberta = donoDe(f.id);
     html += `
@@ -2261,6 +2288,192 @@
     try { window.GA_guardar(MAG_FECHADAS_KEY, JSON.stringify(magiasFechadas)); } catch (e) {}
   }
 
+  // ═══ ✨ PODERES ═══════════════════════════════════════════════════
+  //  Pedido dele em 15/09/2026: "ADICIONAR PODER… e dentro da aba um
+  //  filtro e sub árvores de poder de classe, poder geral, poder
+  //  concedido, poder da tormenta, poder de raça". A base é
+  //  window.GA_PODERES (js/poderes-data.js): os 460 poderes dos livros
+  //  FORA os de classe, com o texto integral, a página e as tags — os
+  //  deuses de um concedido, as raças de um poder de raça. Origens e
+  //  distinções ficaram de fora, decisão dele no mesmo dia.
+  //  Para o que não está na base — poder de CLASSE, poder caseiro — tem
+  //  o "✍ Escrever", que guarda nome, grupo e texto na própria ficha.
+  //
+  //  O recolhido é deste NAVEGADOR, não da ficha: o mestre recolhendo os
+  //  poderes de um jogador não pode recolhê-los na tela do jogador (a
+  //  mesma razão do cartão de magias).
+  const POD_FECHADOS_KEY = 'grifosAlados.fichaPoderesFechados';
+  let poderesFechados = (function () {
+    try { return JSON.parse(localStorage.getItem(POD_FECHADOS_KEY) || '{}') || {}; } catch (e) { return {}; }
+  })();
+  function guardarPodFechados() {
+    try { window.GA_guardar(POD_FECHADOS_KEY, JSON.stringify(poderesFechados)); } catch (e) {}
+  }
+  const GRUPO_LIVRE = { chave: 'livre', nome: 'Escritos à mão', emoji: '✍' };
+  function gruposDePoder() { return (window.GA_PODERES_GRUPOS || []).concat([GRUPO_LIVRE]); }
+  function grupoDePoder(chave) {
+    return gruposDePoder().find(g => g.chave === chave) || GRUPO_LIVRE;
+  }
+  function daBasePoder(pid) {
+    if (!pid || !Array.isArray(window.GA_PODERES)) return null;
+    return window.GA_PODERES.find(x => x.id === pid) || null;
+  }
+  function fontePoder(p) {
+    const nome = (window.GA_PODERES_LIVROS || {})[p.livro] || '';
+    return nome ? nome + (p.pagina ? ', p. ' + p.pagina : '') : '';
+  }
+  //  O texto do livro: o da base quando ela está carregada; sem ela, a
+  //  cópia que a ficha guardou na hora de adicionar.
+  function textoDoPoder(p) {
+    const b = daBasePoder(p.pid);
+    const paras = (b && b.texto) || p.texto || [];
+    const quadro = b && b.quadro;
+    return paras.map(t => '<p>' + esc(t) + '</p>').join('') +
+      (quadro ? '<div class="fi-pod-quadro"><strong>' + esc(quadro.titulo) + '</strong>' +
+        (quadro.texto || []).map(t => '<p>' + esc(t) + '</p>').join('') + '</div>' : '');
+  }
+
+  //  ── A CONTA DA TORMENTA ──────────────────────────────────────────
+  //  DOIS contadores, como o livro manda: a ESCALA de cada poder conta
+  //  os poderes da Tormenta da ficha MAIS o que "conta como" um sem ser
+  //  (Deformidade do lefou, p. 24: "cada um desses bônus conta como um
+  //  poder da Tormenta, exceto para perda de Carisma"); a perda de
+  //  CARISMA (p. 136) conta só os de verdade.
+  //  A conta mora em js/ficha-tormenta.js — cópia da do Bestiário, por
+  //  decisão dele: a ficha do jogador não toca no arquivo das criaturas.
+  function poderesDaTormenta(f) { return f.poderes.filter(p => p.grupo === 'tormenta'); }
+  function marcadosComoTormenta(f) {
+    return f.poderes.filter(p => p.grupo !== 'tormenta' && p.contaTormenta);
+  }
+  function totalDaTormenta(f) {
+    return poderesDaTormenta(f).length + marcadosComoTormenta(f).length + (f.tormentaConta || 0);
+  }
+
+  function blocoTormenta(f) {
+    const T = window.GA_FICHA_TORMENTA;
+    const meus = poderesDaTormenta(f);
+    const marcados = marcadosComoTormenta(f);
+    const soltos = f.tormentaConta || 0;
+    if (!meus.length && !marcados.length && !soltos) return '';
+    const n = meus.length + marcados.length + soltos;
+    const car = T ? T.carismaPerdido(meus.length) : 0;
+    const ids = meus.map(p => p.pid).filter(Boolean);
+    const linhas = meus.map(p => {
+      const e = T && T.escala(p.pid, n);
+      const falta = T ? T.faltando(p.pid, ids) : [];
+      return `
+        <li class="fi-pod-esc">
+          <span class="fi-pod-esc-nome">${esc(p.nome)}</span>
+          ${e ? `<span class="fi-pod-esc-vale">${esc(e.txt)}</span>` : ''}
+          ${e && e.calc ? `<em class="fi-pod-esc-conta">${esc(e.calc)}</em>` : ''}
+          ${falta.length ? `<em class="fi-pod-esc-falta">⚠ falta ${esc(falta.join(', '))}</em>` : ''}
+        </li>`;
+    }).join('');
+    return `
+      <div class="fi-pod-tormenta">
+        <h3 class="fi-pod-tormenta-tit">🩸 Poderes da Tormenta
+          <span class="fi-pod-tormenta-n">${n} contando${n !== meus.length
+            ? ` <em>(${meus.length} de verdade + ${n - meus.length} que contam como)</em>` : ''}</span>
+        </h3>
+        <p class="fi-pod-carisma">Carisma <strong>−${car}</strong>
+          <em>(1 pelo primeiro + 1 a cada dois outros — p. 136)</em>
+          — a ficha só mostra a conta; quem muda o Car na caixa de atributos é você.</p>
+        <p class="fi-pod-comoconta">
+          <span>Contam como poder da Tormenta sem ser um:</span>
+          <button type="button" class="fi-mini" data-acao="tormenta-conta" data-delta="-1" ${soltos ? '' : 'disabled'}
+                  title="Um a menos">−</button>
+          <strong data-der="tormenta">${soltos}</strong>
+          <button type="button" class="fi-mini" data-acao="tormenta-conta" data-delta="1"
+                  title="Um a mais — os bônus da Deformidade do lefou (p. 24), por exemplo">＋</button>
+          ${marcados.length ? `<em>e mais ${marcados.length} marcado${marcados.length > 1 ? 's' : ''} com 🩸 na lista</em>` : ''}
+        </p>
+        ${linhas ? `<ul class="fi-pod-escalas">${linhas}</ul>` : ''}
+        ${atr(f, 'car') < -5 ? '<p class="fi-pod-aviso">⚠ Com Car abaixo de −5 o livro diz que o personagem vira NPC do mestre (p. 136).</p>' : ''}
+      </div>`;
+  }
+
+  //  O cartão de um poder. O nome inteiro é o botão que recolhe e abre —
+  //  uma ficha de nível alto tem poder demais para deixar tudo aberto.
+  function cartaoPoder(f, p, i) {
+    const fechado = !!poderesFechados[p.id];
+    const T = window.GA_FICHA_TORMENTA;
+    const escala = (p.grupo === 'tormenta' && T) ? T.escala(p.pid, totalDaTormenta(f)) : null;
+    const fonte = fontePoder(p);
+    return `
+      <li class="fi-pod${fechado ? ' fi-pod--fechado' : ''}${p.contaTormenta ? ' fi-pod--conta' : ''}">
+        <button type="button" class="fi-pod-abrir" data-acao="dobra-poder" data-i="${i}"
+                aria-expanded="${!fechado}"
+                title="${fechado ? 'Abrir' : 'Recolher'} o texto de ${esc(p.nome)}">
+          <span class="fi-pod-seta" aria-hidden="true">${fechado ? '▸' : '▾'}</span>
+          <span class="fi-pod-nome">${esc(p.nome)}</span>
+          ${p.tags ? `<span class="fi-pod-tag">${esc(p.tags)}</span>` : ''}
+          ${p.deus ? `<span class="fi-pod-tag fi-pod-tag--deus">${esc(p.deus)}</span>` : ''}
+          ${p.contaTormenta ? '<span class="fi-pod-tag fi-pod-tag--conta">🩸 conta como Tormenta</span>' : ''}
+        </button>
+        <span class="fi-pod-acoes">
+          ${p.pid ? '' : `<button type="button" class="fi-mini" data-acao="editar-poder" data-i="${i}"
+                  title="Editar este poder escrito à mão">✍</button>`}
+          ${p.grupo === 'tormenta' ? '' : `<button type="button" class="fi-mini fi-pod-conta-btn${p.contaTormenta ? ' fi-mini--on' : ''}"
+                  data-acao="poder-conta" data-i="${i}" aria-pressed="${!!p.contaTormenta}"
+                  title="${p.contaTormenta ? 'Parar de contar como poder da Tormenta'
+                    : 'Marcar: conta como um poder da Tormenta sem ser um (Deformidade do lefou, p. 24)'}">🩸</button>`}
+          <button type="button" class="fi-mini fi-mini--x" data-acao="tira-poder" data-i="${i}"
+                  title="Tirar ${esc(p.nome)} da ficha">✕</button>
+        </span>
+        ${fechado ? '' : `
+        <div class="fi-pod-corpo">
+          ${fonte ? `<p class="fi-pod-fonte">${esc(fonte)}</p>` : ''}
+          <div class="fi-pod-desc">${textoDoPoder(p)}</div>
+          ${p.preReq ? `<p class="fi-pod-req"><strong>Pré-requisito:</strong> ${esc(p.preReq)}</p>` : ''}
+          ${p.custo ? `<p class="fi-pod-req"><strong>Custo:</strong> ${esc(p.custo)}</p>` : ''}
+          ${escala ? `<p class="fi-pod-agora"><strong>Agora:</strong> ${esc(escala.txt)}
+            ${escala.calc ? `<em>${esc(escala.calc)}</em>` : ''}</p>` : ''}
+          <input class="fi-txt fi-pod-obs" type="text" value="${esc(p.obs)}" data-campo="poderes.${i}.obs"
+                 placeholder="sua anotação (quando usou, com o que combina…)" autocomplete="off">
+        </div>`}
+      </li>`;
+  }
+
+  function blocoPoderes(f) {
+    const temBase = Array.isArray(window.GA_PODERES) && window.GA_PODERES.length;
+    const todosFechados = f.poderes.length > 0 && f.poderes.every(p => poderesFechados[p.id]);
+    const porGrupo = {};
+    f.poderes.forEach((p, i) => { (porGrupo[p.grupo] || (porGrupo[p.grupo] = [])).push({ p: p, i: i }); });
+    const grupos = gruposDePoder().filter(g => porGrupo[g.chave]).map(g => `
+      <div class="fi-pod-grupo">
+        <h3 class="fi-pod-grupo-tit">
+          <span class="fi-pod-emoji" aria-hidden="true">${g.emoji}</span>${esc(g.nome)}
+          <em>${porGrupo[g.chave].length} poder${porGrupo[g.chave].length > 1 ? 'es' : ''}</em>
+        </h3>
+        <ul class="fi-pod-lista">${porGrupo[g.chave].map(x => cartaoPoder(f, x.p, x.i)).join('')}</ul>
+      </div>`).join('');
+
+    return `
+      <div class="fi-cartao fi-bloco fi-poderes">
+        <h2 class="fi-cartao-tit">✨ Poderes
+          <span class="fi-cartao-nota">${f.poderes.length} na ficha${temBase
+            ? ' · ' + window.GA_PODERES.length + ' nos livros, fora os de classe' : ''}</span>
+          <span class="fi-pod-botoes">
+            ${f.poderes.length > 1 ? `<button type="button" class="fi-add fi-add--menor" data-acao="dobra-poderes"
+                    title="${todosFechados ? 'Mostrar o texto de todos os poderes' : 'Deixar só os nomes'}"
+              >${todosFechados ? '▾ Abrir todos' : '▸ Recolher todos'}</button>` : ''}
+            <button type="button" class="fi-add fi-add--menor" data-acao="escrever-poder"
+                    title="Um poder que não está na base: de classe, ou caseiro">✍ Escrever</button>
+            <button type="button" class="fi-add fi-add--menor fi-pod-add" data-acao="add-poder" ${temBase ? '' : 'disabled'}>
+              ＋ Adicionar poder</button>
+          </span>
+        </h2>
+        ${blocoTormenta(f)}
+        ${grupos || `<p class="fi-pod-vazia">Nenhum poder ainda. O <strong>＋ Adicionar poder</strong> abre a busca
+          nos ${temBase ? window.GA_PODERES.length : 460} poderes dos livros, com filtro por grupo — combate, destino,
+          magia, concedidos, Tormenta, raça e grupo. Os de <strong>classe</strong> não estão na base: para esses, o
+          <strong>✍ Escrever</strong>.</p>`}
+        <p class="fi-nota">Cada poder traz o <strong>texto inteiro</strong> do livro, com a página. Clique no
+          <strong>nome</strong> para recolher ou abrir. O <strong>🩸</strong> de um poder marca que ele
+          <em>conta como</em> poder da Tormenta sem ser um: entra na escala dos outros, mas não na perda de Carisma.</p>
+      </div>`;
+  }
+
   function blocoMagias(f) {
     const temBase = Array.isArray(window.GA_MAGIAS) && window.GA_MAGIAS.length;
     const todasFechadas = f.magias.length > 0 && f.magias.every(m => magiasFechadas[m.id]);
@@ -3044,6 +3257,45 @@
       return;
     }
 
+    // ── PODERES ────────────────────────────────────────────────────
+    if (acao === 'add-poder')      return abrirBuscaPoder(f);
+    if (acao === 'escrever-poder') return escreverPoder(f);
+    if (acao === 'editar-poder')   return escreverPoder(f, +btn.dataset.i);
+    if (acao === 'tira-poder') {
+      const p = f.poderes[+btn.dataset.i];
+      if (!p) return;
+      if (!confirm('Tirar ' + (p.nome || 'este poder') + ' da ficha?' +
+                   (p.obs ? '\n\nA sua anotação vai junto.' : ''))) return;
+      if (poderesFechados[p.id]) { delete poderesFechados[p.id]; guardarPodFechados(); }
+      f.poderes.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'poderes'); salvar(); return render();
+    }
+    // o 🩸: este poder conta como um poder da Tormenta sem ser um
+    if (acao === 'poder-conta') {
+      const p = f.poderes[+btn.dataset.i];
+      if (!p) return;
+      p.contaTormenta = !p.contaTormenta;
+      sujar(f.id, 'poderes'); salvar(); return render();
+    }
+    // o que conta como poder da Tormenta e não é poder nenhum
+    if (acao === 'tormenta-conta') {
+      const d = parseInt(btn.dataset.delta, 10) || 0;
+      f.tormentaConta = Math.max(0, (f.tormentaConta || 0) + d);
+      sujar(f.id, 'tormentaConta'); salvar(); return render();
+    }
+    // recolher e abrir não mexem na ficha: é deste navegador
+    if (acao === 'dobra-poder') {
+      const p = f.poderes[+btn.dataset.i];
+      if (!p) return;
+      if (poderesFechados[p.id]) delete poderesFechados[p.id]; else poderesFechados[p.id] = 1;
+      guardarPodFechados(); return render();
+    }
+    if (acao === 'dobra-poderes') {
+      const abrir = f.poderes.every(p => poderesFechados[p.id]);
+      f.poderes.forEach(p => { if (abrir) delete poderesFechados[p.id]; else poderesFechados[p.id] = 1; });
+      guardarPodFechados(); return render();
+    }
+
     // ── MAGIAS ─────────────────────────────────────────────────────
     if (acao === 'add-magia')  return abrirBuscaMagia(f);
     // o ✕ da magia mora colado no 🔥 de lançar — pergunta antes
@@ -3738,6 +3990,169 @@
     }
 
     telaBusca('');
+  }
+
+  //  A BUSCA DOS PODERES. Dois passos, como a das magias: achar e, só
+  //  depois de LER, adicionar. Os filtros de grupo em cima são as "sub
+  //  árvores" do pedido — e a busca também acha pelo texto, pelo deus do
+  //  poder concedido e pela raça do poder de raça.
+  function abrirBuscaPoder(f) {
+    const base = window.GA_PODERES || [];
+    if (!base.length || !window.GA_abrirModal) return;
+
+    const overlay = window.GA_abrirModal(`
+      <div class="ga-modal-cab">
+        <span>✨ Adicionar poder</span>
+        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
+      </div>
+      <div id="fiPodCorpo"></div>`);
+    const corpo = overlay.querySelector('#fiPodCorpo');
+    let grupo = '';        // '' = todos
+
+    function telaBusca(termo) {
+      const chips = [{ chave: '', nome: 'Todos', emoji: '✨', quantos: base.length }]
+        .concat(window.GA_PODERES_GRUPOS || [])
+        .map(g => `<button type="button" class="fi-pod-chip${grupo === g.chave ? ' fi-pod-chip--on' : ''}"
+                data-grupo="${esc(g.chave)}">${g.emoji} ${esc(g.nome)} <em>${g.quantos}</em></button>`).join('');
+      corpo.innerHTML = `
+        <p class="ga-modal-dica">Os ${base.length} poderes dos livros, fora os de classe. Busque pelo nome, pelo
+          texto, pelo deus ou pela raça — ou filtre pelo grupo.</p>
+        <div class="fi-pod-chips" id="fiPodChips">${chips}</div>
+        <input type="text" class="fi-busca-mag" id="fiBuscaPod" placeholder="esquiva, lefou, Wynna, +2 em Luta…"
+               autocomplete="off" aria-label="Buscar poder" value="${esc(termo || '')}">
+        <div class="fi-busca-res" id="fiPodRes"></div>`;
+      const campo = corpo.querySelector('#fiBuscaPod');
+      const res = corpo.querySelector('#fiPodRes');
+      const jaTem = {};
+      f.poderes.forEach(p => { if (p.pid) jaTem[p.pid] = true; });
+
+      function listar() {
+        const q = semAcento((campo.value || '').trim());
+        const achados = base.filter(p => {
+          if (grupo && p.grupo !== grupo) return false;
+          if (!q) return true;
+          return semAcento([p.nome, p.tags, p.deus || '', p.preReq || '', (p.texto || []).join(' '),
+            (window.GA_PODERES_LIVROS || {})[p.livro] || ''].join(' ')).indexOf(q) >= 0;
+        });
+        const mostra = achados.slice(0, 60);
+        res.innerHTML = mostra.length
+          ? mostra.map(p => `
+            <button type="button" class="fi-busca-item ${jaTem[p.id] ? 'fi-busca-item--tem' : ''}" data-pid="${esc(p.id)}">
+              <span class="fi-busca-circ">${grupoDePoder(p.grupo).emoji}</span>
+              <span class="fi-busca-nome">${esc(p.nome)}${jaTem[p.id] ? ' <em>já está na ficha</em>' : ''}</span>
+              <span class="fi-busca-meta">${esc(grupoDePoder(p.grupo).nome)}${p.tags ? ' · ' + esc(p.tags) : ''}${p.deus ? ' · ' + esc(p.deus) : ''} · ${esc(fontePoder(p))}</span>
+              <span class="fi-busca-res-txt">${esc((p.texto || [])[0] || '')}</span>
+            </button>`).join('') +
+            (achados.length > mostra.length
+              ? `<p class="fi-busca-vazio">…e mais ${achados.length - mostra.length}. Escreva mais para afinar.</p>` : '')
+          : '<p class="fi-busca-vazio">Nenhum poder com isso. Se for de classe, use o ✍ Escrever.</p>';
+      }
+      campo.addEventListener('input', listar);
+      corpo.querySelector('#fiPodChips').addEventListener('click', e => {
+        const b = e.target.closest('[data-grupo]');
+        if (!b) return;
+        grupo = b.dataset.grupo;
+        telaBusca(campo.value);
+      });
+      res.addEventListener('click', e => {
+        const b = e.target.closest('[data-pid]');
+        if (b) telaPoder(b.dataset.pid, campo.value);
+      });
+      listar();
+      campo.focus();
+    }
+
+    // segundo passo: leu o poder inteiro, e aí decide
+    function telaPoder(pid, termo) {
+      const b = daBasePoder(pid);
+      if (!b) return;
+      const jaTem = f.poderes.some(x => x.pid === pid);
+      const g = grupoDePoder(b.grupo);
+      corpo.innerHTML = `
+        <div class="fi-mag-topo">
+          <button type="button" class="fi-mag-voltar" data-voltar>← voltar à busca</button>
+          <strong class="fi-mag-titulo">${esc(b.nome)}</strong>
+        </div>
+        <p class="fi-pod-ficha">${g.emoji} ${esc(g.nome)}${b.tags ? ' · ' + esc(b.tags) : ''}${b.deus ? ' · ' + esc(b.deus) : ''}
+          · ${esc(fontePoder(b))}</p>
+        <div class="fi-mag-texto">
+          ${(b.texto || []).map(t => '<p>' + esc(t) + '</p>').join('')}
+          ${b.quadro ? '<div class="fi-pod-quadro"><strong>' + esc(b.quadro.titulo) + '</strong>' +
+            (b.quadro.texto || []).map(t => '<p>' + esc(t) + '</p>').join('') + '</div>' : ''}
+          ${b.preReq ? '<p class="fi-pod-req"><strong>Pré-requisito:</strong> ' + esc(b.preReq) + '</p>' : ''}
+          ${b.custo ? '<p class="fi-pod-req"><strong>Custo:</strong> ' + esc(b.custo) + '</p>' : ''}
+        </div>
+        <div class="ga-modal-acoes">
+          <button type="button" class="ga-btn-sec" data-voltar>← Voltar</button>
+          <button type="button" class="ga-btn-principal" data-add ${jaTem ? 'disabled' : ''}>
+            ${jaTem ? '✓ já está na ficha' : '＋ Adicionar este poder'}</button>
+        </div>`;
+      corpo.querySelectorAll('[data-voltar]').forEach(x => x.addEventListener('click', () => telaBusca(termo)));
+      const add = corpo.querySelector('[data-add]');
+      if (add && !jaTem) add.addEventListener('click', () => {
+        f.poderes.push({
+          id: novoId(), pid: b.id, nome: b.nome, grupo: b.grupo, livro: b.livro || '',
+          pagina: b.pagina || 0, tags: b.tags || '', deus: b.deus || '', preReq: b.preReq || '',
+          custo: b.custo || '', texto: (b.texto || []).slice(), obs: '', contaTormenta: false,
+        });
+        sujar(f.id, 'poderes');
+        salvar();
+        overlay._fechar();
+        render();
+      });
+    }
+
+    telaBusca('');
+  }
+
+  //  O poder que não está na base: os de CLASSE (que ficaram para outra
+  //  hora) e os caseiros. Fica com o grupo que a pessoa escolher e o
+  //  texto que ela escrever — o resto do cartão funciona igual.
+  function escreverPoder(f, i) {
+    if (!window.GA_abrirModal) return;
+    const p = (typeof i === 'number') ? f.poderes[i] : null;
+    if (typeof i === 'number' && !p) return;
+    const overlay = window.GA_abrirModal(`
+      <div class="ga-modal-cab">
+        <span>✍ ${p ? 'Editar poder' : 'Escrever um poder'}</span>
+        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
+      </div>
+      <p class="ga-modal-dica">Para o que não está na base: poder de classe, poder caseiro, o que o mestre inventou.
+        Uma linha em branco separa parágrafos.</p>
+      <label class="fi-campo"><span class="fi-rot">Nome</span>
+        <input type="text" class="fi-txt" id="fiPodNome" autocomplete="off"
+               value="${p ? esc(p.nome) : ''}" placeholder="Golpe Pessoal, Fúria do Bárbaro…"></label>
+      <label class="fi-campo"><span class="fi-rot">Grupo</span>
+        <select class="fi-sel" id="fiPodGrupo">${gruposDePoder().map(g =>
+          `<option value="${esc(g.chave)}"${p && p.grupo === g.chave ? ' selected' : ''}>${g.emoji} ${esc(g.nome)}</option>`).join('')}</select></label>
+      <label class="fi-campo"><span class="fi-rot">Texto</span>
+        <textarea class="fi-txt fi-pod-area" id="fiPodTexto" rows="6"
+                  placeholder="o que o poder faz, como está no livro da classe">${p ? esc((p.texto || []).join('\n\n')) : ''}</textarea></label>
+      <div class="ga-modal-acoes">
+        <button type="button" class="ga-btn-sec" data-ga-fechar>Cancelar</button>
+        <button type="button" class="ga-btn-principal" id="fiPodSalvar">${p ? 'Salvar' : '＋ Adicionar'}</button>
+      </div>`);
+    const campoNome = overlay.querySelector('#fiPodNome');
+    overlay.querySelector('#fiPodSalvar').addEventListener('click', () => {
+      const nome = (campoNome.value || '').trim();
+      if (!nome) return campoNome.focus();
+      const texto = (overlay.querySelector('#fiPodTexto').value || '')
+        .split(/\n{2,}/).map(t => t.replace(/\s+/g, ' ').trim()).filter(Boolean);
+      const grupo = overlay.querySelector('#fiPodGrupo').value || 'livre';
+      if (p) {
+        p.nome = nome; p.grupo = grupo; p.texto = texto;
+      } else {
+        f.poderes.push({
+          id: novoId(), pid: '', nome: nome, grupo: grupo, livro: '', pagina: 0, tags: '',
+          deus: '', preReq: '', custo: '', texto: texto, obs: '', contaTormenta: false,
+        });
+      }
+      sujar(f.id, 'poderes');
+      salvar();
+      overlay._fechar();
+      render();
+    });
+    campoNome.focus();
   }
 
   // ═══ O QUE A FICHA EMPRESTA AO RESTO DO SITE ══════════════════════

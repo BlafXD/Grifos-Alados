@@ -1450,6 +1450,9 @@
   .fi-res-det { white-space: normal; }
   .fi-mag { grid-template-columns: 1fr; }
   .fi-mag-acoes { justify-content: flex-end; }
+  .fi-pod { grid-template-columns: 1fr; }
+  .fi-pod-acoes { justify-content: flex-end; }
+  .fi-pod-chip { min-height: 2.4rem; }
   .fi-inv-pe { flex-direction: column; align-items: stretch; }
 }
 
@@ -1947,6 +1950,8 @@
 .fi-apara-grupo, .fi-am-sub { border: 1.5px solid rgba(26, 16, 8, 0.28); }
 .fi-am { border: 1.5px solid rgba(47, 93, 51, 0.5); border-left: 4px solid var(--verde-dark); }
 .fi-mag { border: 1.5px solid rgba(26, 16, 8, 0.25); border-left: 4px solid var(--azul); }
+.fi-pod { border: 1.5px solid rgba(26, 16, 8, 0.25); border-left: 4px solid var(--gold-deep); }
+.fi-pod-grupo-tit::after { height: 1.5px; background: rgba(26, 16, 8, 0.3); }
 .fi-aba { border-color: rgba(26, 16, 8, 0.45); }
 /* no computador, a conta do item (quantos × espaços = total) são três
    colunas da tabela; o invólucro só existe para o celular juntá-las */
@@ -2275,3 +2280,248 @@
 .fi-sinc-acoes { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.45rem 0 0.25rem; }
 .fi-sinc-nota { font-size: 0.84rem; font-style: italic; color: var(--text-dim); }
 .fi-aba.fi-aba--retida { border-style: dashed; border-color: var(--gold-deep); }
+
+/* ══════════════════════════════════════════════════════════════════
+   PODERES (15 de setembro de 2026)
+   A lista agrupada por grupo, como o livro lista: combate, destino,
+   magia, concedidos, Tormenta, raça, grupo — e os escritos à mão.
+   Mesmo traço do cartão de magias, para os dois se lerem igual. O
+   bloco 🩸 da Tormenta é o único destaque, em carmim, porque é a
+   única parte que faz CONTA (a escala de cada poder e o Carisma).
+   ══════════════════════════════════════════════════════════════════ */
+.fi-pod-botoes {
+  margin-left: auto;
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.3rem;
+}
+.fi-pod-grupo { margin-bottom: 0.8rem; }
+.fi-pod-grupo-tit {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 0 0 0.35rem;
+}
+.fi-pod-grupo-tit::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--parchment3);
+}
+.fi-pod-grupo-tit em {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+  order: 3;
+}
+.fi-pod-emoji { font-size: 0.8rem; letter-spacing: 0; }
+.fi-pod-vazia {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--text-dim);
+  padding: 1.2rem 0.4rem;
+  text-align: center;
+}
+.fi-pod-lista { list-style: none; display: flex; flex-direction: column; gap: 0.35rem; }
+
+.fi-pod {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.15rem 0.5rem;
+  padding: 0.45rem 0.55rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--gold-deep);
+  border-radius: var(--raio);
+  transition: border-color 0.15s, background 0.15s;
+}
+.fi-pod:hover { border-left-color: var(--rust); background: var(--parchment2); }
+.fi-pod--conta { border-left-color: var(--carmim); }
+
+/* o nome inteiro é o botão que recolhe e abre o texto do poder */
+.fi-pod-abrir {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-width: 0;
+  text-align: left;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink);
+}
+.fi-pod-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--rust-dark);
+  border-bottom: 1px dotted transparent;
+}
+.fi-pod-abrir:hover .fi-pod-nome { border-bottom-color: var(--rust); }
+.fi-pod-seta {
+  flex: 0 0 auto;
+  width: 0.9rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+.fi-pod-abrir:hover .fi-pod-seta { color: var(--rust-dark); }
+.fi-pod--fechado { padding-top: 0.3rem; padding-bottom: 0.3rem; }
+.fi-pod--fechado .fi-pod-nome { font-size: 0.92rem; }
+.fi-pod-acoes { display: flex; align-items: center; gap: 0.25rem; }
+
+/* as tags do título do livro: os deuses do concedido, as raças do
+   poder de raça, o deus menor dono do poder */
+.fi-pod-tag {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--text-dim);
+  padding: 0 0.3rem;
+  border: 1px solid var(--parchment3);
+  border-radius: 2rem;
+}
+.fi-pod-tag--deus { border-style: dashed; }
+.fi-pod-tag--conta {
+  font-style: normal;
+  color: var(--carmim);
+  border-color: var(--carmim);
+}
+
+.fi-pod-corpo { grid-column: 1 / -1; }
+.fi-pod-fonte {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-dim);
+  margin: 0.1rem 0 0.35rem;
+}
+.fi-pod-desc {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.fi-pod-desc p { margin: 0 0 0.45rem; }
+.fi-pod-desc p:last-child { margin-bottom: 0; }
+/* o quadro que o livro imprime junto do poder (o javali do anão) */
+.fi-pod-quadro {
+  margin: 0.5rem 0 0.2rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--parchment2);
+  border: 1px dashed var(--parchment3);
+  border-radius: var(--raio);
+  font-size: 0.9rem;
+}
+.fi-pod-quadro strong { font-family: 'Cinzel', serif; font-size: 0.82rem; }
+.fi-pod-quadro p { margin: 0.25rem 0 0; }
+.fi-pod-req {
+  margin: 0.4rem 0 0;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+/* o valor de AGORA de um poder da Tormenta, que muda com a quantidade */
+.fi-pod-agora {
+  margin: 0.45rem 0 0;
+  padding: 0.35rem 0.5rem;
+  background: var(--parchment2);
+  border-left: 2px solid var(--carmim);
+  border-radius: var(--raio);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+}
+.fi-pod-agora em { display: block; font-size: 0.82rem; color: var(--text-dim); }
+.fi-pod-obs { width: 100%; margin-top: 0.45rem; }
+
+/* ── o bloco 🩸 da Tormenta: a conta, e só a conta ─────────────── */
+.fi-pod-tormenta {
+  margin: 0.2rem 0 0.9rem;
+  padding: 0.55rem 0.8rem;
+  background: var(--parchment2);
+  border: 2px solid var(--carmim);
+  border-radius: var(--raio);
+  font-family: 'Crimson Pro', serif;
+}
+.fi-pod-tormenta-tit {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--carmim);
+  margin: 0 0 0.35rem;
+}
+.fi-pod-tormenta-n { font-family: 'Crimson Pro', serif; font-size: 0.92rem; color: var(--ink); }
+.fi-pod-tormenta-n em { color: var(--text-dim); font-size: 0.86rem; }
+.fi-pod-carisma { margin: 0 0 0.35rem; font-size: 0.92rem; }
+.fi-pod-carisma em { color: var(--text-dim); font-size: 0.86rem; }
+.fi-pod-comoconta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 0.4rem;
+  font-size: 0.92rem;
+}
+.fi-pod-comoconta em { color: var(--text-dim); font-size: 0.86rem; }
+.fi-pod-escalas { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+.fi-pod-esc {
+  padding-left: 0.6rem;
+  border-left: 2px solid var(--parchment3);
+  font-size: 0.92rem;
+}
+.fi-pod-esc-nome { font-family: 'Cinzel', serif; font-size: 0.85rem; margin-right: 0.35rem; }
+.fi-pod-esc-vale { font-weight: 600; }
+.fi-pod-esc-conta { display: block; font-size: 0.82rem; color: var(--text-dim); }
+.fi-pod-esc-falta { display: block; font-size: 0.84rem; color: var(--rust-dark); }
+.fi-pod-aviso { margin: 0.4rem 0 0; font-size: 0.9rem; color: var(--carmim); }
+
+/* ── a busca: os filtros de grupo (as sub-árvores) ─────────────── */
+.fi-pod-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0 0 0.5rem; }
+.fi-pod-chip {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.85rem;
+  padding: 0.15rem 0.5rem;
+  background: var(--parchment);
+  color: var(--ink);
+  border: 1px solid var(--parchment3);
+  border-radius: 2rem;
+  cursor: pointer;
+}
+.fi-pod-chip em { color: var(--text-dim); font-size: 0.78rem; }
+.fi-pod-chip:hover { border-color: var(--rust); }
+.fi-pod-chip--on {
+  background: var(--gold-pale);
+  border-color: var(--gold-deep);
+  font-weight: 600;
+}
+.fi-pod-chip--on em { color: var(--ink-faded); }
+.fi-pod-ficha {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--text-dim);
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--parchment3);
+}
+.fi-pod-area {
+  width: 100%;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  resize: vertical;
+}
+/* o 🩸 ligado no cartão do poder */
+.fi-mini--on { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }

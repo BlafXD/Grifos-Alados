@@ -1,7 +1,8 @@
 # Poderes fora de classe: o que falta no Suplemento, e as diferenças
 
 **Feito em:** 15 de setembro de 2026, antes de construir a aba de poderes da ficha.
-**Estado:** conferido livro por livro, esperando entrar no Suplemento. Nada foi construído ainda.
+**Estado:** conferido livro por livro, esperando entrar no Suplemento. Estes mesmos poderes já estão
+na ficha: a lista virou `js/poderes-data.js` e o cartão ✨ Poderes, na noite de 15/09/2026.
 Origens e distinções ficaram de fora, por decisão.
 
 > O pedido: *"Não inclua as origens e nem as distinções! Consegue só destacar no documento o que NÃO
