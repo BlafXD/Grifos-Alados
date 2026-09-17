@@ -1661,8 +1661,8 @@
 .fi-mag-pm-btn--apr { background: var(--gold-pale); border-color: var(--gold-deep); }
 
 @media (max-width: 560px) {
-  .fi-apara { grid-template-columns: 3rem 1fr auto; }
-  .fi-apara .fi-txt--obs { grid-column: 1 / -1; }
+  /* a linha de resistência/RD/imunidade desdobra sozinha desde que ganhou
+     as setas ⇈ ↑ ↓ — ver o bloco novo, lá no fim */
   .fi-apr { flex-wrap: wrap; }
 }
 
@@ -2525,3 +2525,225 @@
 }
 /* o 🩸 ligado no cartão do poder */
 .fi-mini--on { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
+
+/* ══════════════════════════════════════════════════════════════════
+   O QUE MEXE NO DESLOCAMENTO (17/09/2026)
+   A base fica lá em cima, ao lado do Tamanho; aqui ficam as linhas que
+   somam ou tiram metros, coladas no número que elas explicam.
+   ══════════════════════════════════════════════════════════════════ */
+.fi-desl {
+  margin-top: 0.5rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed var(--parchment3);
+}
+.fi-desl-topo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.fi-desl-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.fi-desl-topo .fi-add { margin-left: auto; }
+.fi-desl-lista {
+  list-style: none;
+  margin: 0.4rem 0 0.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.fi-desl-linha {
+  display: grid;
+  grid-template-columns: 4.2rem 1rem 1fr auto;
+  align-items: center;
+  gap: 0.3rem;
+}
+.fi-desl-m { font-family: 'IM Fell English', serif; font-size: 0.85rem; color: var(--text-dim); }
+.fi-desl-linha .fi-txt { min-width: 0; }
+.fi-desl-vazio,
+.fi-desl-conta {
+  margin: 0.35rem 0 0;
+  font-family: 'IM Fell English', serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+.fi-desl-conta strong { font-style: normal; color: var(--rust-dark); }
+
+/* ══════════════════════════════════════════════════════════════════
+   🌀 CONDIÇÕES (Tormenta 20, p. 394)
+   A fileira de etiquetas do topo da ficha, e a lista do modal. A cor
+   de cada uma é a do TIPO de efeito (medo, mental, veneno…), que vem
+   de GA_CONDICOES.TIPOS — daí a variável --cond, escrita no elemento.
+   ══════════════════════════════════════════════════════════════════ */
+.fi-cond-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.2rem 0 0.5rem;
+}
+.fi-cond-nenhuma {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--text-dim);
+}
+.fi-cond {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.3rem 0.15rem 0.55rem;
+  background: var(--parchment);
+  border: 1px solid var(--cond, var(--rust-dark));
+  border-left: 4px solid var(--cond, var(--rust-dark));
+  border-radius: 2rem;
+}
+.fi-cond-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cond, var(--rust-dark));
+}
+.fi-cond-tipo {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--parchment);
+  background: var(--cond, var(--rust-dark));
+  padding: 0 0.35rem;
+  border-radius: 2rem;
+}
+/* a nuvem com o texto do livro: aparece no mouse E no foco do teclado */
+.fi-cond-nuvem {
+  position: absolute;
+  z-index: 40;
+  left: 0;
+  top: calc(100% + 0.3rem);
+  width: min(26rem, 80vw);
+  padding: 0.5rem 0.65rem;
+  background: var(--parchment);
+  border: 1px solid var(--cond, var(--rust-dark));
+  border-radius: var(--raio);
+  box-shadow: 0 4px 14px rgba(26, 16, 8, 0.3);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s;
+  pointer-events: none;
+}
+.fi-cond:hover .fi-cond-nuvem,
+.fi-cond:focus-within .fi-cond-nuvem { opacity: 1; visibility: visible; }
+.fi-cond-nuvem strong { font-family: 'Cinzel', serif; font-size: 0.86rem; color: var(--cond, var(--rust-dark)); }
+.fi-cond-nuvem em { font-size: 0.82rem; color: var(--text-dim); }
+.fi-cond-nuvem span { display: block; margin-top: 0.25rem; }
+
+/* a lista do modal: marca e desmarca sem fechar */
+.fi-cond-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-height: 55vh;
+  overflow-y: auto;
+  margin-top: 0.5rem;
+}
+.fi-cond-opcao {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.4rem 0.55rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-left: 4px solid var(--cond, var(--rust-dark));
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.fi-cond-opcao:hover { background: var(--parchment2); border-color: var(--cond, var(--rust)); }
+.fi-cond-opcao--on { background: var(--gold-pale); border-color: var(--gold-deep); }
+.fi-cond-opcao-cab {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.fi-cond-opcao-marca {
+  flex: 0 0 auto;
+  width: 1.1rem;
+  text-align: center;
+  color: var(--cond, var(--rust-dark));
+  font-weight: 700;
+}
+.fi-cond-opcao-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.fi-cond-opcao-txt {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--text-mid);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ⇈ ↑ ↓ NAS LISTAS, E OS PODERES DE CLASSE (17/09/2026)
+   ══════════════════════════════════════════════════════════════════ */
+.fi-apara-ordem,
+.fi-pod-ordem { display: inline-flex; gap: 0.1rem; }
+.fi-apara-ordem .fi-mini:disabled,
+.fi-pod-ordem .fi-mini:disabled { opacity: 0.3; cursor: default; }
+/* A linha de resistência/RD/imunidade ganhou as setas, e com elas não
+   cabem três campos lado a lado num cartão de 15rem: a anotação passa
+   a ocupar a segunda linha inteira, em qualquer largura. */
+.fi-apara { grid-template-columns: 3rem 1fr auto auto; }
+.fi-apara .fi-txt--obs { grid-column: 1 / -1; }
+/* e o cartão de poder também */
+.fi-pod { grid-template-columns: 1fr auto auto; }
+
+/* o selo ✦ do livro: aquele poder é uma habilidade MÁGICA */
+.fi-pod-magica {
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  color: var(--gold-deep);
+  cursor: help;
+}
+.fi-pod-magica span {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.72rem;
+  font-style: italic;
+  margin-left: 0.15rem;
+  color: var(--text-dim);
+}
+/* a segunda fileira de chips da busca: uma por classe */
+.fi-pod-chips--classe {
+  padding: 0.35rem 0 0.1rem;
+  border-top: 1px dashed var(--parchment3);
+}
+.fi-pod-chip--minha { border-color: var(--gold-deep); }
+.fi-pod-ressalva {
+  margin: 0 0 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--parchment2);
+  border-left: 2px solid var(--rust);
+  border-radius: var(--raio);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+}
+.fi-pod-ressalva em { color: var(--text-dim); font-size: 0.82rem; }
+
+@media (max-width: 560px) {
+  .fi-desl-linha { grid-template-columns: 4rem 1rem 1fr auto; }
+  .fi-cond-nuvem { left: auto; right: 0; }
+}

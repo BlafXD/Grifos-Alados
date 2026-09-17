@@ -133,7 +133,21 @@
       if (typeof f[k] !== 'string') f[k] = '';
     });
     if (typeof f.tamanho !== 'string') f.tamanho = 'Médio';
+    // ── DESLOCAMENTO: a base e o que mexe nela (17/09/2026) ────────
+    //  `deslocamento` é a BASE, a que a raça dá (9m para quase todo
+    //  mundo, p. 95). O que soma ou tira dela vira LINHA: "−3 m armadura
+    //  pesada", "+3 m Ímpeto", "+6 m Fúria da Savana". Pedido dele:
+    //  "eu me desloco 12 metros mas eu tenho −3m por causa da armadura"
+    //  — antes só cabia o número final, e a conta ficava na cabeça.
+    //  A linha guarda o valor em METROS; o quadrado é conta, como manda
+    //  a política do site (q = m ÷ 1,5).
     if (typeof f.deslocamento !== 'number') f.deslocamento = 9;
+    if (!Array.isArray(f.deslocMods)) f.deslocMods = [];
+    f.deslocMods = f.deslocMods.map(x => ({
+      id: (x && x.id) || novoId(),
+      valor: (x && typeof x.valor === 'number') ? x.valor : 0,   // pode ser negativo
+      de: String((x && x.de) || ''),                             // "armadura pesada", "Ímpeto"…
+    }));
     if (!Array.isArray(f.classes)) f.classes = [{ classe: '', nivel: 1 }];
     f.classes = f.classes.map(c => ({
       classe: String((c && c.classe) || ''),
@@ -206,6 +220,19 @@
       }));
     });
     if (typeof f.proficiencias !== 'string') f.proficiencias = '';
+
+    // ── CONDIÇÕES ATIVAS (17/09/2026) ──────────────────────────────
+    //  "Poder colocar condições (semelhante aos dos monstros)": a mesma
+    //  fileira de etiquetas, com o texto do livro na nuvem de mouse.
+    //  Guardamos só a CHAVE de cada uma (o slug do nome); o texto vem
+    //  de window.GA_CONDICOES — a mesma tabela de regra que a sub-aba
+    //  🌀 Condições das Consultas lê, e que não é de criatura nenhuma
+    //  (igual às magias e aos poderes, que a ficha já lê de lá).
+    //  A ficha MOSTRA a condição; ela não mexe nos números sozinha —
+    //  a mesma linha do resto: conta e mostra, não policia.
+    if (!Array.isArray(f.condicoes)) f.condicoes = [];
+    f.condicoes = f.condicoes.map(c => String(c || '')).filter(Boolean)
+      .filter((c, i, todas) => todas.indexOf(c) === i);
 
     //  `atr` é a MESMA ideia da Defesa, perícia por perícia: a Tabela
     //  2-1 (p. 115) diz o atributo-chave de cada uma, e é esse que vale
@@ -322,16 +349,22 @@
     }));
 
     // ── PODERES ────────────────────────────────────────────────────
-    //  Vêm da base window.GA_PODERES (js/poderes-data.js). Guardamos o
-    //  `pid` e uma CÓPIA do que se lê na mesa — igual às magias, para
+    //  Vêm de duas bases: window.GA_PODERES (js/poderes-data.js, os 460
+    //  de fora de classe) e window.GA_PODERES_CLASSE (js/poderes-classe-
+    //  data.js, os 348 DE classe, que entraram em 17/09/2026). Guardamos
+    //  o `pid` e uma CÓPIA do que se lê na mesa — igual às magias, para
     //  uma ficha exportada continuar legível sem o site do lado. Poder
-    //  escrito à mão (os de classe, os caseiros) fica com pid vazio.
+    //  escrito à mão (os caseiros) continua com pid vazio.
     if (!Array.isArray(f.poderes)) f.poderes = [];
     f.poderes = f.poderes.map(p => ({
       id: (p && p.id) || novoId(),
       pid: String((p && p.pid) || ''),
       nome: String((p && p.nome) || ''),
       grupo: String((p && p.grupo) || 'livre'),
+      // de qual classe é o poder, quando o grupo é 'classe'
+      classe: String((p && p.classe) || ''),
+      // o selo ✦ do livro: habilidade mágica, alvo de Dissipar Magia
+      magica: !!(p && p.magica),
       livro: String((p && p.livro) || ''),
       pagina: (p && typeof p.pagina === 'number') ? p.pagina : 0,
       tags: String((p && p.tags) || ''),
@@ -1028,7 +1061,7 @@
       return;
     }
 
-    html += bloqueIdentidade(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
+    html += bloqueIdentidade(f) + blocoCondicoes(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
             blocoAmigos(f) + blocoPoderes(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
             blocoCompras(f);
     const donoAberta = donoDe(f.id);
@@ -1178,8 +1211,9 @@
             <input class="fi-txt" type="text" value="${esc(f.divindade)}" data-campo="divindade" placeholder="ou nenhuma" autocomplete="off"></label>
           <label class="fi-campo fi-campo--curto"><span class="fi-rot">Tamanho</span>
             <select class="fi-sel" data-campo="tamanho">${opsTam}</select></label>
-          <label class="fi-campo fi-campo--curto"><span class="fi-rot">Desloc. (m)</span>
-            <input class="fi-num" type="number" min="0" step="1.5" value="${f.deslocamento}" data-campo="deslocamento"></label>
+          <label class="fi-campo fi-campo--curto"><span class="fi-rot">Desloc. base (m)</span>
+            <input class="fi-num" type="number" min="0" step="1.5" value="${f.deslocamento}" data-campo="deslocamento"
+                   title="O deslocamento que a raça lhe dá — 9 m para quase todas (p. 95). O que soma ou tira metros (armadura, poder, carga) vai em «O que mexe no deslocamento», no cartão Defesa & Carga."></label>
         </div>
         <div class="fi-ident-classes">
           <span class="fi-rot">Classe(s) e nível</span>
@@ -1358,10 +1392,41 @@
             </div>
             <div class="fi-linha">
               <span>Deslocamento</span>
-              <span><strong data-der="desloc">${f.deslocamento}</strong> m (<strong data-der="quadrados">${quadrados(f.deslocamento)}</strong> quadrados)</span>
+              <span><strong data-der="desloc">${deslocamento(f)}</strong> m (<strong data-der="quadrados">${quadrados(deslocamento(f))}</strong> quadrados)</span>
             </div>
           </div>
+          ${blocoDesloc(f)}
         </div>
+      </div>`;
+  }
+
+  // ── O QUE MEXE NO DESLOCAMENTO ───────────────────────────────────
+  //  Uma linha por coisa que soma ou tira metros: a armadura pesada que
+  //  tira 3, o Ímpeto que dá 6, a carga que passou do limite. Fica
+  //  colado no número, que é onde se lê o resultado.
+  function blocoDesloc(f) {
+    const mods = deslocMods(f);
+    const linhas = mods.map((x, i) => `
+      <li class="fi-desl-linha">
+        <input class="fi-num fi-num--mini" type="number" step="1.5" value="${x.valor}"
+               data-campo="deslocMods.${i}.valor" title="Metros que esta linha soma (ou tira, com o sinal −)">
+        <span class="fi-desl-m" aria-hidden="true">m</span>
+        <input class="fi-txt" type="text" value="${esc(x.de)}" data-campo="deslocMods.${i}.de"
+               placeholder="armadura pesada, Ímpeto, carga…" autocomplete="off">
+        <button type="button" class="fi-mini fi-mini--x" data-acao="tira-desloc" data-i="${i}"
+                title="Tirar esta linha">✕</button>
+      </li>`).join('');
+    return `
+      <div class="fi-desl">
+        <div class="fi-desl-topo">
+          <span class="fi-desl-rot">O que mexe no deslocamento</span>
+          <button type="button" class="fi-add fi-add--menor" data-acao="add-desloc"
+                  title="Uma linha que soma ou tira metros — a base fica lá em cima, ao lado do Tamanho">＋ Acrescentar</button>
+        </div>
+        ${linhas ? `<ul class="fi-desl-lista">${linhas}</ul>`
+          : '<p class="fi-desl-vazio">Nada mexe nele: valem os <strong data-der="desloc2">' +
+            f.deslocamento + '</strong> m da base, lá em cima.</p>'}
+        <p class="fi-conta fi-desl-conta" data-der="desloconta" ${contaDesloc(f) ? '' : 'hidden'}>${contaDesloc(f)}</p>
       </div>`;
   }
 
@@ -1404,6 +1469,27 @@
   // O mapa é em quadrados de 1,5 m; os METROS é que mandam, e o quadrado
   // é conta — a mesma política do resto do site.
   function quadrados(m) { return Math.round(((m || 0) / 1.5) * 10) / 10; }
+
+  // ── DESLOCAMENTO ─────────────────────────────────────────────────
+  //  O que vale é a base MAIS tudo que a ficha listar — e o total não
+  //  desce de 0 (imóvel é 0m, p. 394; abaixo disso não existe).
+  function deslocMods(f) { return f.deslocMods || []; }
+  function somaDesloc(f) { return deslocMods(f).reduce((s, x) => s + (x.valor || 0), 0); }
+  function deslocamento(f) { return Math.max(0, (f.deslocamento || 0) + somaDesloc(f)); }
+  //  A conta por extenso, do jeito que se explica na mesa: "12 m − 3 m
+  //  (armadura pesada) = 9 m". Sem linha nenhuma, não há o que explicar.
+  function contaDesloc(f) {
+    const mods = deslocMods(f).filter(x => x.valor || x.de);
+    if (!mods.length) return '';
+    const p = [(f.deslocamento || 0) + ' m'];
+    mods.forEach(x => {
+      const v = x.valor || 0;
+      p.push((v < 0 ? '− ' : '+ ') + Math.abs(v) + ' m' + (x.de ? ' (' + esc(x.de) + ')' : ''));
+    });
+    const bateu = (f.deslocamento || 0) + somaDesloc(f) < 0;
+    return p.join(' ') + ' = <strong>' + deslocamento(f) + ' m</strong>' +
+      (bateu ? ' <em>(a conta deu menos que zero; 0 m é o piso)</em>' : '');
+  }
   function porcento(a, b) { return b > 0 ? Math.max(0, Math.min(100, Math.round(a / b * 100))) : 0; }
 
   function contaPv(f) {
@@ -1449,6 +1535,86 @@
     return p.join(' + ').replace(/\+ -/g, '− ') + nota;
   }
 
+  // ═══ 🌀 CONDIÇÕES (Tormenta 20, p. 394) ═══════════════════════════
+  //  Pedido dele em 17/09/2026: "poder colocar condições (semelhante
+  //  aos dos monstros)". A fileira de etiquetas é a mesma ideia — o
+  //  nome, o tipo de efeito na cor dele e o texto INTEIRO do livro na
+  //  nuvem de mouse —, mas o desenho é o da ficha (prefixo `fi-`) e o
+  //  texto vem de window.GA_CONDICOES: a tabela de REGRA que a sub-aba
+  //  🌀 Condições das Consultas já lê. Não é dado de criatura, é do
+  //  livro, como as magias e os poderes que a ficha lê de lá.
+  //
+  //  A ficha MOSTRA e não aplica. Um −2 na Defesa que aparecesse
+  //  sozinho na conta seria impossível de conferir na mesa, e a p. 394
+  //  ainda manda não acumular condições de mesmo efeito ("um
+  //  personagem desprevenido e vulnerável sofre –5 na Defesa, não –7").
+  //  Quem decide isso é a mesa; a ficha põe o texto na mão dela.
+  function baseCondicoes() {
+    const G = window.GA_CONDICOES;
+    return (G && Array.isArray(G.LISTA)) ? G.LISTA : [];
+  }
+  function chaveCond(nome) {
+    return semAcento(nome).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+  function acharCond(chave) {
+    return baseCondicoes().find(c => chaveCond(c.nome) === chave) || null;
+  }
+  function tipoCond(c) {
+    const G = window.GA_CONDICOES;
+    const t = (G && G.TIPOS || []).find(x => x.chave === (c && c.tipo));
+    return t || null;
+  }
+  function condicoesDa(f) {
+    return (f.condicoes || []).map(k => ({ chave: k, c: acharCond(k) })).filter(x => x.c);
+  }
+
+  function etiquetaCond(x, i) {
+    const t = tipoCond(x.c);
+    //  A etiqueta inteira recebe foco (tabindex="0"): é o que faz a
+    //  nuvem abrir no TOQUE e no teclado, não só no mouse — sem isso,
+    //  no celular o único jeito de chegar ao texto seria tocar no ✕.
+    const id = 'ficond-' + x.chave;
+    return `
+      <span class="fi-cond" style="--cond:${t ? t.cor : 'var(--rust-dark)'}"
+            tabindex="0" aria-describedby="${id}">
+        <span class="fi-cond-nome">${esc(x.c.nome)}</span>
+        ${t ? `<span class="fi-cond-tipo">${esc(t.nome)}</span>` : ''}
+        <button type="button" class="fi-mini fi-mini--x" data-acao="tira-condicao" data-i="${i}"
+                title="Tirar ${esc(x.c.nome)}">✕</button>
+        <span class="fi-cond-nuvem" role="tooltip" id="${id}">
+          <strong>${esc(x.c.nome)}</strong>${t ? ` <em>efeito de ${esc(t.nome.toLowerCase())}</em>` : ''}
+          <span>${esc(x.c.texto)}</span>
+        </span>
+      </span>`;
+  }
+
+  function blocoCondicoes(f) {
+    const minhas = condicoesDa(f);
+    const temBase = baseCondicoes().length;
+    return `
+      <div class="fi-cartao fi-bloco fi-condicoes">
+        <h2 class="fi-cartao-tit">🌀 Condições
+          <span class="fi-cartao-nota">${minhas.length ? minhas.length + ' agora' : 'nenhuma agora'}${
+            temBase ? ' · ' + temBase + ' na lista do livro (p. 394)' : ''}</span>
+          <span class="fi-pod-botoes">
+            ${minhas.length ? `<button type="button" class="fi-add fi-add--menor" data-acao="limpa-condicoes"
+                    title="Tirar todas — é o que acontece no fim da cena">🧹 Fim da cena</button>` : ''}
+            <button type="button" class="fi-add fi-add--menor" data-acao="add-condicao" ${temBase ? '' : 'disabled'}
+                    >＋ Condição</button>
+          </span>
+        </h2>
+        <div class="fi-cond-fila">
+          ${minhas.length ? minhas.map(etiquetaCond).join('')
+            : '<span class="fi-cond-nenhuma">Nenhuma condição agora. O <strong>＋ Condição</strong> abre a lista do livro.</span>'}
+        </div>
+        <p class="fi-nota">Passe o mouse (ou toque) numa etiqueta para ler o texto inteiro do livro.
+          <strong>A ficha mostra, não aplica</strong>: os −2 e os −5 continuam por sua conta, porque
+          condições de mesmo efeito <em>não se somam</em> — "um personagem desprevenido e vulnerável
+          sofre –5 na Defesa, não –7" (p. 394). No fim da cena, todas terminam, a menos que a condição
+          diga o contrário.</p>
+      </div>`;
+  }
+
   // ── RESISTÊNCIAS, RD E IMUNIDADES (Tormenta 20, p. 229) ──────────
   //  Três coisas, e a mesa vive confundindo as duas primeiras. Aqui
   //  cada uma tem a sua lista e a sua frase, com as palavras do livro:
@@ -1478,11 +1644,31 @@
           : `<span class="fi-apara-icone" aria-hidden="true">${bloco.icone}</span>`}
         <input class="fi-txt" type="text" value="${esc(x.do_)}" data-campo="${bloco.campo}.${i}.do_"
                placeholder="${esc(bloco.phDo)}" autocomplete="off">
-        <input class="fi-txt fi-txt--obs" type="text" value="${esc(x.obs)}" data-campo="${bloco.campo}.${i}.obs"
-               placeholder="de onde vem, quando vale…" autocomplete="off">
+        <span class="fi-apara-ordem">
+          ${setasDeOrdem('apara', i, i, (f[bloco.campo] || []).length, x.do_ || 'esta linha',
+                         ' data-campo="' + bloco.campo + '"')}
+        </span>
         <button type="button" class="fi-mini fi-mini--x" data-acao="tira-apara"
                 data-campo="${bloco.campo}" data-i="${i}" title="Tirar esta linha">✕</button>
+        <input class="fi-txt fi-txt--obs" type="text" value="${esc(x.obs)}" data-campo="${bloco.campo}.${i}.obs"
+               placeholder="de onde vem, quando vale…" autocomplete="off">
       </li>`;
+  }
+
+  // ── ⇈ ↑ ↓: A ORDEM DE UMA LISTA ──────────────────────────────────
+  //  As mesmas três setas do inventário, agora onde ele pediu em
+  //  17/09/2026: "às vezes quero que o novo item que eu coloquei esteja
+  //  lá em cima em vez de eu ficar escrevendo tudo para baixo".
+  //  `prefixo` vira as ações <prefixo>-topo / -sobe / -desce; `i` é o
+  //  índice na lista guardada e `pos`/`quantos` o lugar na lista que se
+  //  VÊ (nos poderes as duas diferem: a tela agrupa, a lista é uma só).
+  //  `extra` leva o que mais o clique precisa saber.
+  function setasDeOrdem(prefixo, i, pos, quantos, oQue, extra) {
+    const primeiro = pos === 0, ultimo = pos === quantos - 1;
+    const b = (acao, seta, dica) => `<button type="button" class="fi-mini" data-acao="${prefixo}-${acao}"
+            data-i="${i}"${extra || ''} ${(acao === 'desce' ? ultimo : primeiro) ? 'disabled' : ''}
+            title="${dica}" aria-label="${dica} — ${esc(oQue)}">${seta}</button>`;
+    return b('topo', '⇈', 'Levar para o topo') + b('sobe', '↑', 'Mover para cima') + b('desce', '↓', 'Mover para baixo');
   }
 
   function blocoApara(f) {
@@ -2310,13 +2496,52 @@
     try { window.GA_guardar(POD_FECHADOS_KEY, JSON.stringify(poderesFechados)); } catch (e) {}
   }
   const GRUPO_LIVRE = { chave: 'livre', nome: 'Escritos à mão', emoji: '✍' };
-  function gruposDePoder() { return (window.GA_PODERES_GRUPOS || []).concat([GRUPO_LIVRE]); }
+  //  ── OS PODERES DE CLASSE (17/09/2026) ────────────────────────────
+  //  Entraram como um GRUPO a mais, ao lado de combate, destino, magia,
+  //  concedidos, Tormenta, raça e grupo — e dentro dele cada classe tem
+  //  a sua gaveta, porque "Aumento de Atributo" existe em todas as 16 e
+  //  o que muda é de quem ele é. A base é window.GA_PODERES_CLASSE.
+  //  A caixa de texto "⚔ Habilidades de classe e poderes" lá embaixo
+  //  CONTINUA onde estava: quem já escreveu o poder à mão não perde uma
+  //  linha (foi a condição que ele pôs).
+  const GRUPO_CLASSE = { chave: 'classe', nome: 'Classe', emoji: '⚔' };
+  //  O ✦ que o livro imprime no fim de um poder: aquilo é MÁGICO, e
+  //  importa em jogo. (A mesma marca dos statblocks, escrita aqui de
+  //  novo — a ficha não puxa nada de criatura.)
+  const DICA_MAGICA = 'Habilidade mágica — pode ser alvo de Dissipar Magia (inclusive como ' +
+    'contramágica) e é anulada onde a magia não funciona.';
+  function baseClasse() {
+    return Array.isArray(window.GA_PODERES_CLASSE) ? window.GA_PODERES_CLASSE : [];
+  }
+  function listasDeClasse() {
+    return Array.isArray(window.GA_PODERES_CLASSE_LISTAS) ? window.GA_PODERES_CLASSE_LISTAS : [];
+  }
+  function listaDeClasse(chave) {
+    return listasDeClasse().find(l => l.chave === chave) || null;
+  }
+  //  A variante NÃO tem lista própria: "você recebe esta habilidade como
+  //  o <básica> básico" (Heróis de Arton, p. 22–45). Quem responde pela
+  //  variante é a básica — a mesma regra que o resto da ficha já usa.
+  function classeDosPoderes(chave) { return D.basicaDe(chave) || chave; }
+  function ressalvaDaVariante(chave) {
+    const v = (window.GA_PODERES_CLASSE_VARIANTES || []).find(x => x.chave === chave);
+    return (v && v.nota) ? v : null;
+  }
+  function gruposDePoder() {
+    return (window.GA_PODERES_GRUPOS || []).concat(
+      baseClasse().length ? [Object.assign({ quantos: baseClasse().length }, GRUPO_CLASSE)] : [GRUPO_CLASSE],
+      [GRUPO_LIVRE]);
+  }
   function grupoDePoder(chave) {
     return gruposDePoder().find(g => g.chave === chave) || GRUPO_LIVRE;
   }
   function daBasePoder(pid) {
-    if (!pid || !Array.isArray(window.GA_PODERES)) return null;
-    return window.GA_PODERES.find(x => x.id === pid) || null;
+    if (!pid) return null;
+    if (Array.isArray(window.GA_PODERES)) {
+      const x = window.GA_PODERES.find(p => p.id === pid);
+      if (x) return x;
+    }
+    return baseClasse().find(p => p.id === pid) || null;
   }
   function fontePoder(p) {
     const nome = (window.GA_PODERES_LIVROS || {})[p.livro] || '';
@@ -2394,11 +2619,16 @@
 
   //  O cartão de um poder. O nome inteiro é o botão que recolhe e abre —
   //  uma ficha de nível alto tem poder demais para deixar tudo aberto.
-  function cartaoPoder(f, p, i) {
+  //  `pos`/`quantos` são o lugar DENTRO da gaveta em que o cartão está
+  //  desenhado: as setas andam com os vizinhos que se vê, não com a
+  //  lista crua (ver pod-sobe, em aoClicar).
+  function cartaoPoder(f, p, i, pos, quantos) {
     const fechado = !!poderesFechados[p.id];
     const T = window.GA_FICHA_TORMENTA;
     const escala = (p.grupo === 'tormenta' && T) ? T.escala(p.pid, totalDaTormenta(f)) : null;
     const fonte = fontePoder(p);
+    const base = daBasePoder(p.pid);
+    const magica = (base && base.magica) || p.magica;
     return `
       <li class="fi-pod${fechado ? ' fi-pod--fechado' : ''}${p.contaTormenta ? ' fi-pod--conta' : ''}">
         <button type="button" class="fi-pod-abrir" data-acao="dobra-poder" data-i="${i}"
@@ -2406,10 +2636,12 @@
                 title="${fechado ? 'Abrir' : 'Recolher'} o texto de ${esc(p.nome)}">
           <span class="fi-pod-seta" aria-hidden="true">${fechado ? '▸' : '▾'}</span>
           <span class="fi-pod-nome">${esc(p.nome)}</span>
+          ${magica ? `<span class="fi-pod-magica" title="${esc(DICA_MAGICA)}">✦<span>mágica</span></span>` : ''}
           ${p.tags ? `<span class="fi-pod-tag">${esc(p.tags)}</span>` : ''}
           ${p.deus ? `<span class="fi-pod-tag fi-pod-tag--deus">${esc(p.deus)}</span>` : ''}
           ${p.contaTormenta ? '<span class="fi-pod-tag fi-pod-tag--conta">🩸 conta como Tormenta</span>' : ''}
         </button>
+        <span class="fi-pod-ordem">${setasDeOrdem('pod', i, pos, quantos, p.nome, '')}</span>
         <span class="fi-pod-acoes">
           ${p.pid ? '' : `<button type="button" class="fi-mini" data-acao="editar-poder" data-i="${i}"
                   title="Editar este poder escrito à mão">✍</button>`}
@@ -2434,43 +2666,68 @@
       </li>`;
   }
 
+  //  Uma gaveta da lista desenhada: o título, e os cartões com a
+  //  posição que cada um ocupa NELA (é com essa posição que as setas
+  //  andam). `itens` são pares { p, i } — o poder e o índice guardado.
+  function gavetaDePoder(f, titulo, emoji, itens) {
+    return `
+      <div class="fi-pod-grupo">
+        <h3 class="fi-pod-grupo-tit">
+          <span class="fi-pod-emoji" aria-hidden="true">${emoji}</span>${esc(titulo)}
+          <em>${itens.length} poder${itens.length > 1 ? 'es' : ''}</em>
+        </h3>
+        <ul class="fi-pod-lista">${itens.map((x, pos) =>
+          cartaoPoder(f, x.p, x.i, pos, itens.length)).join('')}</ul>
+      </div>`;
+  }
+
   function blocoPoderes(f) {
     const temBase = Array.isArray(window.GA_PODERES) && window.GA_PODERES.length;
+    const nBase = (temBase ? window.GA_PODERES.length : 0) + baseClasse().length;
     const todosFechados = f.poderes.length > 0 && f.poderes.every(p => poderesFechados[p.id]);
     const porGrupo = {};
     f.poderes.forEach((p, i) => { (porGrupo[p.grupo] || (porGrupo[p.grupo] = [])).push({ p: p, i: i }); });
-    const grupos = gruposDePoder().filter(g => porGrupo[g.chave]).map(g => `
-      <div class="fi-pod-grupo">
-        <h3 class="fi-pod-grupo-tit">
-          <span class="fi-pod-emoji" aria-hidden="true">${g.emoji}</span>${esc(g.nome)}
-          <em>${porGrupo[g.chave].length} poder${porGrupo[g.chave].length > 1 ? 'es' : ''}</em>
-        </h3>
-        <ul class="fi-pod-lista">${porGrupo[g.chave].map(x => cartaoPoder(f, x.p, x.i)).join('')}</ul>
-      </div>`).join('');
+    const grupos = gruposDePoder().filter(g => porGrupo[g.chave]).map(g => {
+      //  Os de classe ganham uma gaveta POR CLASSE: numa ficha
+      //  multiclasse, saber de quem é cada poder é metade da leitura.
+      if (g.chave !== 'classe') return gavetaDePoder(f, g.nome, g.emoji, porGrupo[g.chave]);
+      const porClasse = {};
+      porGrupo.classe.forEach(x => {
+        const k = x.p.classe || '';
+        (porClasse[k] || (porClasse[k] = [])).push(x);
+      });
+      return Object.keys(porClasse).map(k => {
+        const L = listaDeClasse(k), C = D.classe(k);
+        const nome = 'Poderes de ' + ((L && L.nome) || (C && C.nome) || 'classe');
+        return gavetaDePoder(f, nome, g.emoji, porClasse[k]);
+      }).join('');
+    }).join('');
 
     return `
       <div class="fi-cartao fi-bloco fi-poderes">
         <h2 class="fi-cartao-tit">✨ Poderes
-          <span class="fi-cartao-nota">${f.poderes.length} na ficha${temBase
-            ? ' · ' + window.GA_PODERES.length + ' nos livros, fora os de classe' : ''}</span>
+          <span class="fi-cartao-nota">${f.poderes.length} na ficha${nBase
+            ? ' · ' + nBase + ' nos livros, com os de classe' : ''}</span>
           <span class="fi-pod-botoes">
             ${f.poderes.length > 1 ? `<button type="button" class="fi-add fi-add--menor" data-acao="dobra-poderes"
                     title="${todosFechados ? 'Mostrar o texto de todos os poderes' : 'Deixar só os nomes'}"
               >${todosFechados ? '▾ Abrir todos' : '▸ Recolher todos'}</button>` : ''}
             <button type="button" class="fi-add fi-add--menor" data-acao="escrever-poder"
-                    title="Um poder que não está na base: de classe, ou caseiro">✍ Escrever</button>
-            <button type="button" class="fi-add fi-add--menor fi-pod-add" data-acao="add-poder" ${temBase ? '' : 'disabled'}>
+                    title="Um poder que não está na base: o caseiro, o que o mestre inventou">✍ Escrever</button>
+            <button type="button" class="fi-add fi-add--menor fi-pod-add" data-acao="add-poder" ${temBase || baseClasse().length ? '' : 'disabled'}>
               ＋ Adicionar poder</button>
           </span>
         </h2>
         ${blocoTormenta(f)}
         ${grupos || `<p class="fi-pod-vazia">Nenhum poder ainda. O <strong>＋ Adicionar poder</strong> abre a busca
-          nos ${temBase ? window.GA_PODERES.length : 460} poderes dos livros, com filtro por grupo — combate, destino,
-          magia, concedidos, Tormenta, raça e grupo. Os de <strong>classe</strong> não estão na base: para esses, o
-          <strong>✍ Escrever</strong>.</p>`}
+          nos ${nBase || 808} poderes dos livros, com filtro por grupo — <strong>classe</strong> (com uma gaveta
+          para cada uma das 16), combate, destino, magia, concedidos, Tormenta, raça e grupo. Para o que não está
+          em livro nenhum, o <strong>✍ Escrever</strong>.</p>`}
         <p class="fi-nota">Cada poder traz o <strong>texto inteiro</strong> do livro, com a página. Clique no
-          <strong>nome</strong> para recolher ou abrir. O <strong>🩸</strong> de um poder marca que ele
-          <em>conta como</em> poder da Tormenta sem ser um: entra na escala dos outros, mas não na perda de Carisma.</p>
+          <strong>nome</strong> para recolher ou abrir, e use <strong>⇈ ↑ ↓</strong> para pôr na ordem que você quer
+          ler. O <strong>🩸</strong> de um poder marca que ele <em>conta como</em> poder da Tormenta sem ser um:
+          entra na escala dos outros, mas não na perda de Carisma. O <strong>✦</strong> é do livro: aquele poder é
+          uma habilidade <em>mágica</em>.</p>
       </div>`;
   }
 
@@ -2808,15 +3065,19 @@
   // isso, o segundo clique no mesmo lugar acertava o vizinho, que tinha
   // ido para onde o item estava, e desfazia o primeiro. O ⇈ é a exceção:
   // o item foi para o topo, e é lá que se quer vê-lo.
-  function seguirItem(acao, i, antes) {
+  //  `acao` é '<prefixo>-sobe' / '-desce' / '-topo', e `filtro` afina a
+  //  busca quando a mesma ação existe em mais de uma lista na tela (os
+  //  três cartões de resistência, RD e imunidade).
+  function seguirItem(acao, i, antes, filtro) {
     if (!secao) return;
-    const q = a => secao.querySelector('[data-acao="' + a + '"][data-i="' + i + '"]');
+    const pre = acao.slice(0, acao.lastIndexOf('-'));
+    const q = a => secao.querySelector('[data-acao="' + a + '"][data-i="' + i + '"]' + (filtro || ''));
     const mesmo = q(acao);
     if (!mesmo) return;
-    if (acao === 'inv-topo') mesmo.scrollIntoView({ block: 'nearest' });
+    if (acao === pre + '-topo') mesmo.scrollIntoView({ block: 'nearest' });
     else window.scrollBy(0, mesmo.getBoundingClientRect().top - antes);
     // chegou na ponta, o botão apagou: o foco vai para a seta do outro lado
-    const foco = !mesmo.disabled ? mesmo : q(acao === 'inv-desce' ? 'inv-sobe' : 'inv-desce');
+    const foco = !mesmo.disabled ? mesmo : q(acao === pre + '-desce' ? pre + '-sobe' : pre + '-desce');
     if (foco && !foco.disabled) foco.focus({ preventScroll: true });
   }
 
@@ -2894,8 +3155,10 @@
       }
       if (d === 'invconta')  el.innerHTML = contaCarga(f);
       if (d === 'cd' || d === 'cd2') el.textContent = cdBase(f);
-      if (d === 'desloc')    el.textContent = f.deslocamento;
-      if (d === 'quadrados') el.textContent = quadrados(f.deslocamento);
+      if (d === 'desloc')    el.textContent = deslocamento(f);
+      if (d === 'desloc2')   el.textContent = f.deslocamento;
+      if (d === 'quadrados') el.textContent = quadrados(deslocamento(f));
+      if (d === 'desloconta') { el.innerHTML = contaDesloc(f); el.hidden = !contaDesloc(f); }
       if (d === 'pvconta')   el.innerHTML = contaPv(f);
       if (d === 'defconta')  el.innerHTML = contaDefesa(f);
       if (d === 'xpconta')   el.innerHTML = contaXp(f);
@@ -3139,6 +3402,47 @@
       f[c].splice(+btn.dataset.i, 1);
       sujar(f.id, c); salvar(); return render();
     }
+    // ⇈ ↑ ↓ (17/09/2026): "quero que o novo item esteja lá em cima em
+    // vez de eu ficar escrevendo tudo para baixo"
+    if (acao === 'apara-sobe' || acao === 'apara-desce' || acao === 'apara-topo') {
+      const c = btn.dataset.campo;
+      if (!Array.isArray(f[c])) return;
+      const de = +btn.dataset.i;
+      const para = acao === 'apara-topo' ? 0 : de + (acao === 'apara-sobe' ? -1 : 1);
+      if (!f[c][de] || para < 0 || para >= f[c].length || para === de) return;
+      const antes = btn.getBoundingClientRect().top;
+      const [x] = f[c].splice(de, 1);
+      f[c].splice(para, 0, x);
+      sujar(f.id, c); salvar(); render();
+      seguirItem(acao, para, antes, ' [data-campo="' + c + '"]');
+      return;
+    }
+
+    // ── O QUE MEXE NO DESLOCAMENTO ─────────────────────────────────
+    if (acao === 'add-desloc') {
+      f.deslocMods.push({ id: novoId(), valor: -3, de: '' });
+      sujar(f.id, 'deslocMods'); salvar(); return render();
+    }
+    if (acao === 'tira-desloc') {
+      f.deslocMods.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'deslocMods'); salvar(); return render();
+    }
+
+    // ── CONDIÇÕES ──────────────────────────────────────────────────
+    if (acao === 'add-condicao')  return abrirBuscaCondicao(f);
+    if (acao === 'tira-condicao') {
+      f.condicoes.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'condicoes'); salvar(); return render();
+    }
+    // "a menos que especificado o contrário, condições terminam no fim
+    // da cena" (p. 394) — o botão é esse fim de cena, de uma vez
+    if (acao === 'limpa-condicoes') {
+      if (!f.condicoes.length) return;
+      if (!confirm('Tirar as ' + f.condicoes.length + ' condições desta ficha?\n\n' +
+                   'É o que acontece no fim da cena — mas as que duram mais que ela saem junto.')) return;
+      f.condicoes = [];
+      sujar(f.id, 'condicoes'); salvar(); return render();
+    }
     // o ✕ do ataque mora colado no ✎ — no dedo, errar um pelo outro é
     // fácil; a pergunta só aparece se houver algo escrito
     if (acao === 'tira-ataque') {
@@ -3269,6 +3573,30 @@
       if (poderesFechados[p.id]) { delete poderesFechados[p.id]; guardarPodFechados(); }
       f.poderes.splice(+btn.dataset.i, 1);
       sujar(f.id, 'poderes'); salvar(); return render();
+    }
+    //  ⇈ ↑ ↓ do poder: andam DENTRO da gaveta em que o cartão está —
+    //  o grupo, e nos de classe a classe. A lista guardada é uma só e
+    //  intercalada, então o vizinho da tela quase nunca é o vizinho de
+    //  índice: quem manda é a ordem desenhada.
+    if (acao === 'pod-sobe' || acao === 'pod-desce' || acao === 'pod-topo') {
+      const de = +btn.dataset.i;
+      const p = f.poderes[de];
+      if (!p) return;
+      const irmaos = [];
+      f.poderes.forEach((x, k) => {
+        if (x.grupo !== p.grupo) return;
+        if (p.grupo === 'classe' && (x.classe || '') !== (p.classe || '')) return;
+        irmaos.push(k);
+      });
+      const pos = irmaos.indexOf(de);
+      const alvo = acao === 'pod-topo' ? 0 : pos + (acao === 'pod-sobe' ? -1 : 1);
+      if (alvo < 0 || alvo >= irmaos.length || alvo === pos) return;
+      const antes = btn.getBoundingClientRect().top;
+      const [x] = f.poderes.splice(de, 1);
+      f.poderes.splice(irmaos[alvo], 0, x);
+      sujar(f.id, 'poderes'); salvar(); render();
+      seguirItem(acao, irmaos[alvo], antes);
+      return;
     }
     // o 🩸: este poder conta como um poder da Tormenta sem ser um
     if (acao === 'poder-conta') {
@@ -3773,11 +4101,13 @@
   // O que muda entre duas versões, com o nome que se lê na ficha.
   const NOMES_GRUPO = {
     nome: 'nome', jogador: 'jogador', raca: 'raça', origem: 'origem', divindade: 'divindade',
-    tamanho: 'tamanho', deslocamento: 'deslocamento', classes: 'classes e níveis', atributos: 'atributos',
+    tamanho: 'tamanho', deslocamento: 'deslocamento', deslocMods: 'penalidades de deslocamento',
+    classes: 'classes e níveis', atributos: 'atributos',
     pv: 'PV', pm: 'PM', defesa: 'Defesa', carga: 'carga', cdAtributo: 'atributo da CD', xp: 'XP',
     resistencias: 'resistências', reducoes: 'RD', imunidades: 'imunidades', proficiencias: 'proficiências',
-    pericias: 'perícias', oficios: 'ofícios', inventario: 'inventário', tibares: 'T$',
-    compras: 'recibo da Loja', magias: 'magias', ataques: 'ataques', treinador: 'treinador',
+    condicoes: 'condições', pericias: 'perícias', oficios: 'ofícios', inventario: 'inventário', tibares: 'T$',
+    compras: 'recibo da Loja', magias: 'magias', poderes: 'poderes', tormentaConta: 'conta da Tormenta',
+    ataques: 'ataques', treinador: 'treinador', moedasPesam: 'peso das moedas',
     amigos: 'melhor amigo', amigosPv: 'PV do melhor amigo', blocos: 'textos',
   };
   function gruposDiferentes(a, b) {
@@ -3996,8 +4326,68 @@
   //  depois de LER, adicionar. Os filtros de grupo em cima são as "sub
   //  árvores" do pedido — e a busca também acha pelo texto, pelo deus do
   //  poder concedido e pela raça do poder de raça.
+  //  ── A LISTA DE CONDIÇÕES ─────────────────────────────────────────
+  //  Marca e desmarca ali mesmo, quantas quiser: na mesa nunca é uma só
+  //  ("o personagem fica desprevenido e imóvel"). A ficha por trás vai
+  //  mudando; o ✕ da etiqueta faz o caminho de volta.
+  function abrirBuscaCondicao(f) {
+    const base = baseCondicoes();
+    if (!base.length || !window.GA_abrirModal) return;
+    const G = window.GA_CONDICOES;
+    const overlay = window.GA_abrirModal(`
+      <div class="ga-modal-cab">
+        <span>🌀 Condições</span>
+        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
+      </div>
+      <p class="ga-modal-dica">${esc((G && G.intro) || '')}</p>
+      <input type="text" class="fi-busca-mag" id="fiBuscaCond" placeholder="cego, veneno, −5 na Defesa…"
+             autocomplete="off" aria-label="Buscar condição">
+      <div class="fi-cond-lista" id="fiCondLista"></div>
+      <div class="ga-modal-acoes">
+        <button type="button" class="ga-btn-principal" data-ga-fechar>Pronto</button>
+      </div>`);
+    const campo = overlay.querySelector('#fiBuscaCond');
+    const lista = overlay.querySelector('#fiCondLista');
+
+    function pintar() {
+      const q = semAcento((campo.value || '').trim());
+      const achadas = base.filter(c => !q ||
+        semAcento(c.nome + ' ' + c.texto + ' ' + (c.tipo || '')).indexOf(q) >= 0);
+      lista.innerHTML = achadas.length ? achadas.map(c => {
+        const k = chaveCond(c.nome), t = tipoCond(c), tem = f.condicoes.indexOf(k) >= 0;
+        return `
+          <button type="button" class="fi-cond-opcao${tem ? ' fi-cond-opcao--on' : ''}"
+                  style="--cond:${t ? t.cor : 'var(--rust-dark)'}" data-cond="${esc(k)}" aria-pressed="${tem}">
+            <span class="fi-cond-opcao-cab">
+              <span class="fi-cond-opcao-marca" aria-hidden="true">${tem ? '✓' : '＋'}</span>
+              <span class="fi-cond-opcao-nome">${esc(c.nome)}</span>
+              ${t ? `<span class="fi-cond-tipo">${esc(t.nome)}</span>` : ''}
+            </span>
+            <span class="fi-cond-opcao-txt">${esc(c.texto)}</span>
+          </button>`;
+      }).join('') : '<p class="fi-busca-vazio">Nenhuma condição com isso.</p>';
+    }
+    campo.addEventListener('input', pintar);
+    lista.addEventListener('click', e => {
+      const b = e.target.closest('[data-cond]');
+      if (!b) return;
+      const k = b.dataset.cond, i = f.condicoes.indexOf(k);
+      if (i >= 0) f.condicoes.splice(i, 1); else f.condicoes.push(k);
+      sujar(f.id, 'condicoes');
+      salvar();
+      pintar();
+      render();          // a fileira de etiquetas atrás do modal acompanha
+    });
+    pintar();
+    campo.focus();
+  }
+
   function abrirBuscaPoder(f) {
-    const base = window.GA_PODERES || [];
+    //  Duas bases numa lista só: os de fora de classe (GA_PODERES) e os
+    //  DE classe (GA_PODERES_CLASSE). O grupo "⚔ Classe" abre a segunda
+    //  fileira de chips, uma por classe, com as DA FICHA na frente — é
+    //  quase sempre uma delas que se procura.
+    const base = (window.GA_PODERES || []).concat(baseClasse());
     if (!base.length || !window.GA_abrirModal) return;
 
     const overlay = window.GA_abrirModal(`
@@ -4008,17 +4398,54 @@
       <div id="fiPodCorpo"></div>`);
     const corpo = overlay.querySelector('#fiPodCorpo');
     let grupo = '';        // '' = todos
+    let classe = '';       // dentro de ⚔ Classe: '' = todas
+
+    //  As classes que ESTA ficha tem, já resolvendo a variante para a
+    //  básica ("ambas são a mesma classe", Heróis de Arton, p. 22).
+    function minhasClasses() {
+      const vistas = [];
+      f.classes.forEach(c => {
+        const k = classeDosPoderes(c.classe);
+        if (k && listaDeClasse(k) && vistas.indexOf(k) < 0) vistas.push(k);
+      });
+      return vistas;
+    }
+    //  A ressalva impressa da variante, quando a ficha tem uma delas.
+    function ressalvas() {
+      return f.classes.map(c => ({ v: ressalvaDaVariante(c.classe), C: D.classe(c.classe) }))
+        .filter(x => x.v && x.C)
+        .filter((x, i, t) => t.findIndex(y => y.C.chave === x.C.chave) === i);
+    }
 
     function telaBusca(termo) {
       const chips = [{ chave: '', nome: 'Todos', emoji: '✨', quantos: base.length }]
-        .concat(window.GA_PODERES_GRUPOS || [])
+        .concat(gruposDePoder().filter(g => g.chave !== 'livre'))
         .map(g => `<button type="button" class="fi-pod-chip${grupo === g.chave ? ' fi-pod-chip--on' : ''}"
                 data-grupo="${esc(g.chave)}">${g.emoji} ${esc(g.nome)} <em>${g.quantos}</em></button>`).join('');
+      const minhas = minhasClasses();
+      const ordem = listasDeClasse().slice().sort((a, b) => {
+        const ma = minhas.indexOf(a.chave) >= 0, mb = minhas.indexOf(b.chave) >= 0;
+        return ma === mb ? a.nome.localeCompare(b.nome, 'pt-BR') : (ma ? -1 : 1);
+      });
+      const chipsClasse = grupo !== 'classe' ? '' : `
+        <div class="fi-pod-chips fi-pod-chips--classe" id="fiPodClasses">
+          <button type="button" class="fi-pod-chip${classe ? '' : ' fi-pod-chip--on'}" data-classe="">
+            Todas <em>${baseClasse().length}</em></button>
+          ${ordem.map(L => `<button type="button" class="fi-pod-chip${classe === L.chave ? ' fi-pod-chip--on' : ''}${
+              minhas.indexOf(L.chave) >= 0 ? ' fi-pod-chip--minha' : ''}" data-classe="${esc(L.chave)}"
+              ${minhas.indexOf(L.chave) >= 0 ? 'title="Uma das classes desta ficha"' : ''}
+            >${minhas.indexOf(L.chave) >= 0 ? '★ ' : ''}${esc(L.nome)} <em>${L.quantos}</em></button>`).join('')}
+        </div>
+        ${ressalvas().map(x => `<p class="fi-pod-ressalva">⚠ <strong>${esc(x.C.nome)}</strong> usa a lista do
+          ${esc((D.classe(D.basicaDe(x.C.chave)) || {}).nome || '')} — ${esc(x.v.nota)}
+          <em>(Heróis de Arton, p. ${x.v.pagina})</em></p>`).join('')}`;
       corpo.innerHTML = `
-        <p class="ga-modal-dica">Os ${base.length} poderes dos livros, fora os de classe. Busque pelo nome, pelo
-          texto, pelo deus ou pela raça — ou filtre pelo grupo.</p>
+        <p class="ga-modal-dica">Os ${base.length} poderes dos livros — <strong>com os ${baseClasse().length}
+          de classe</strong>. Busque pelo nome, pelo texto, pelo deus, pela raça ou pela classe — ou filtre
+          pelo grupo.</p>
         <div class="fi-pod-chips" id="fiPodChips">${chips}</div>
-        <input type="text" class="fi-busca-mag" id="fiBuscaPod" placeholder="esquiva, lefou, Wynna, +2 em Luta…"
+        ${chipsClasse}
+        <input type="text" class="fi-busca-mag" id="fiBuscaPod" placeholder="esquiva, fúria, lefou, Wynna, +2 em Luta…"
                autocomplete="off" aria-label="Buscar poder" value="${esc(termo || '')}">
         <div class="fi-busca-res" id="fiPodRes"></div>`;
       const campo = corpo.querySelector('#fiBuscaPod');
@@ -4029,29 +4456,44 @@
       function listar() {
         const q = semAcento((campo.value || '').trim());
         const achados = base.filter(p => {
-          if (grupo && p.grupo !== grupo) return false;
+          if (grupo && (p.classe ? 'classe' : p.grupo) !== grupo) return false;
+          if (grupo === 'classe' && classe && p.classe !== classe) return false;
           if (!q) return true;
-          return semAcento([p.nome, p.tags, p.deus || '', p.preReq || '', (p.texto || []).join(' '),
-            (window.GA_PODERES_LIVROS || {})[p.livro] || ''].join(' ')).indexOf(q) >= 0;
+          const daClasse = p.classe ? (listaDeClasse(p.classe) || {}).nome || '' : '';
+          return semAcento([p.nome, p.tags || '', p.deus || '', p.preReq || '', (p.texto || []).join(' '),
+            daClasse, (window.GA_PODERES_LIVROS || {})[p.livro] || ''].join(' ')).indexOf(q) >= 0;
         });
         const mostra = achados.slice(0, 60);
         res.innerHTML = mostra.length
-          ? mostra.map(p => `
+          ? mostra.map(p => {
+            const L = p.classe ? listaDeClasse(p.classe) : null;
+            const g = p.classe ? GRUPO_CLASSE : grupoDePoder(p.grupo);
+            return `
             <button type="button" class="fi-busca-item ${jaTem[p.id] ? 'fi-busca-item--tem' : ''}" data-pid="${esc(p.id)}">
-              <span class="fi-busca-circ">${grupoDePoder(p.grupo).emoji}</span>
-              <span class="fi-busca-nome">${esc(p.nome)}${jaTem[p.id] ? ' <em>já está na ficha</em>' : ''}</span>
-              <span class="fi-busca-meta">${esc(grupoDePoder(p.grupo).nome)}${p.tags ? ' · ' + esc(p.tags) : ''}${p.deus ? ' · ' + esc(p.deus) : ''} · ${esc(fontePoder(p))}</span>
+              <span class="fi-busca-circ">${g.emoji}</span>
+              <span class="fi-busca-nome">${esc(p.nome)}${p.magica ? ' ✦' : ''}${jaTem[p.id] ? ' <em>já está na ficha</em>' : ''}</span>
+              <span class="fi-busca-meta">${L ? 'Poder de ' + esc(L.nome) : esc(g.nome)}${p.tags ? ' · ' + esc(p.tags) : ''}${p.deus ? ' · ' + esc(p.deus) : ''} · ${esc(fontePoder(p))}</span>
               <span class="fi-busca-res-txt">${esc((p.texto || [])[0] || '')}</span>
-            </button>`).join('') +
+            </button>`; }).join('') +
             (achados.length > mostra.length
               ? `<p class="fi-busca-vazio">…e mais ${achados.length - mostra.length}. Escreva mais para afinar.</p>` : '')
-          : '<p class="fi-busca-vazio">Nenhum poder com isso. Se for de classe, use o ✍ Escrever.</p>';
+          : '<p class="fi-busca-vazio">Nenhum poder com isso. Se for caseiro, use o ✍ Escrever.</p>';
       }
       campo.addEventListener('input', listar);
       corpo.querySelector('#fiPodChips').addEventListener('click', e => {
         const b = e.target.closest('[data-grupo]');
         if (!b) return;
         grupo = b.dataset.grupo;
+        if (grupo !== 'classe') classe = '';
+        // entrando em ⚔ Classe com uma só classe na ficha, ela já vem aberta
+        else if (!classe && minhasClasses().length === 1) classe = minhasClasses()[0];
+        telaBusca(campo.value);
+      });
+      const fileira = corpo.querySelector('#fiPodClasses');
+      if (fileira) fileira.addEventListener('click', e => {
+        const b = e.target.closest('[data-classe]');
+        if (!b) return;
+        classe = b.dataset.classe;
         telaBusca(campo.value);
       });
       res.addEventListener('click', e => {
@@ -4067,14 +4509,15 @@
       const b = daBasePoder(pid);
       if (!b) return;
       const jaTem = f.poderes.some(x => x.pid === pid);
-      const g = grupoDePoder(b.grupo);
+      const L = b.classe ? listaDeClasse(b.classe) : null;
+      const g = b.classe ? GRUPO_CLASSE : grupoDePoder(b.grupo);
       corpo.innerHTML = `
         <div class="fi-mag-topo">
           <button type="button" class="fi-mag-voltar" data-voltar>← voltar à busca</button>
           <strong class="fi-mag-titulo">${esc(b.nome)}</strong>
         </div>
-        <p class="fi-pod-ficha">${g.emoji} ${esc(g.nome)}${b.tags ? ' · ' + esc(b.tags) : ''}${b.deus ? ' · ' + esc(b.deus) : ''}
-          · ${esc(fontePoder(b))}</p>
+        <p class="fi-pod-ficha">${g.emoji} ${L ? 'Poder de ' + esc(L.nome) : esc(g.nome)}${b.tags ? ' · ' + esc(b.tags) : ''}${b.deus ? ' · ' + esc(b.deus) : ''}
+          · ${esc(fontePoder(b))}${b.magica ? ' · <span class="fi-pod-magica" title="' + esc(DICA_MAGICA) + '">✦<span>mágica</span></span>' : ''}</p>
         <div class="fi-mag-texto">
           ${(b.texto || []).map(t => '<p>' + esc(t) + '</p>').join('')}
           ${b.quadro ? '<div class="fi-pod-quadro"><strong>' + esc(b.quadro.titulo) + '</strong>' +
@@ -4091,7 +4534,8 @@
       const add = corpo.querySelector('[data-add]');
       if (add && !jaTem) add.addEventListener('click', () => {
         f.poderes.push({
-          id: novoId(), pid: b.id, nome: b.nome, grupo: b.grupo, livro: b.livro || '',
+          id: novoId(), pid: b.id, nome: b.nome, grupo: b.classe ? 'classe' : b.grupo,
+          classe: b.classe || '', magica: !!b.magica, livro: b.livro || '',
           pagina: b.pagina || 0, tags: b.tags || '', deus: b.deus || '', preReq: b.preReq || '',
           custo: b.custo || '', texto: (b.texto || []).slice(), obs: '', contaTormenta: false,
         });
@@ -4117,34 +4561,48 @@
         <span>✍ ${p ? 'Editar poder' : 'Escrever um poder'}</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
-      <p class="ga-modal-dica">Para o que não está na base: poder de classe, poder caseiro, o que o mestre inventou.
-        Uma linha em branco separa parágrafos.</p>
+      <p class="ga-modal-dica">Para o que não está nos livros: o poder caseiro, o que o mestre inventou, a
+        variação da mesa. (Os <strong>de classe</strong> saíram daqui em 17/09/2026 — agora estão no
+        <strong>＋ Adicionar poder</strong>, no grupo ⚔ Classe.) Uma linha em branco separa parágrafos.</p>
       <label class="fi-campo"><span class="fi-rot">Nome</span>
         <input type="text" class="fi-txt" id="fiPodNome" autocomplete="off"
                value="${p ? esc(p.nome) : ''}" placeholder="Golpe Pessoal, Fúria do Bárbaro…"></label>
       <label class="fi-campo"><span class="fi-rot">Grupo</span>
         <select class="fi-sel" id="fiPodGrupo">${gruposDePoder().map(g =>
           `<option value="${esc(g.chave)}"${p && p.grupo === g.chave ? ' selected' : ''}>${g.emoji} ${esc(g.nome)}</option>`).join('')}</select></label>
+      <label class="fi-campo" id="fiPodClasseCampo" ${p && p.grupo === 'classe' ? '' : 'hidden'}>
+        <span class="fi-rot">De qual classe</span>
+        <select class="fi-sel" id="fiPodClasse">
+          <option value="">— nenhuma —</option>
+          ${listasDeClasse().map(L =>
+            `<option value="${esc(L.chave)}"${p && p.classe === L.chave ? ' selected' : ''}>${esc(L.nome)}</option>`).join('')}
+        </select></label>
       <label class="fi-campo"><span class="fi-rot">Texto</span>
         <textarea class="fi-txt fi-pod-area" id="fiPodTexto" rows="6"
-                  placeholder="o que o poder faz, como está no livro da classe">${p ? esc((p.texto || []).join('\n\n')) : ''}</textarea></label>
+                  placeholder="o que o poder faz, como está escrito">${p ? esc((p.texto || []).join('\n\n')) : ''}</textarea></label>
       <div class="ga-modal-acoes">
         <button type="button" class="ga-btn-sec" data-ga-fechar>Cancelar</button>
         <button type="button" class="ga-btn-principal" id="fiPodSalvar">${p ? 'Salvar' : '＋ Adicionar'}</button>
       </div>`);
     const campoNome = overlay.querySelector('#fiPodNome');
+    // "de qual classe" só faz sentido no grupo ⚔ Classe
+    const selGrupo = overlay.querySelector('#fiPodGrupo');
+    const campoClasse = overlay.querySelector('#fiPodClasseCampo');
+    selGrupo.addEventListener('change', () => { campoClasse.hidden = selGrupo.value !== 'classe'; });
     overlay.querySelector('#fiPodSalvar').addEventListener('click', () => {
       const nome = (campoNome.value || '').trim();
       if (!nome) return campoNome.focus();
       const texto = (overlay.querySelector('#fiPodTexto').value || '')
         .split(/\n{2,}/).map(t => t.replace(/\s+/g, ' ').trim()).filter(Boolean);
-      const grupo = overlay.querySelector('#fiPodGrupo').value || 'livre';
+      const grupo = selGrupo.value || 'livre';
+      const classe = grupo === 'classe' ? (overlay.querySelector('#fiPodClasse').value || '') : '';
       if (p) {
-        p.nome = nome; p.grupo = grupo; p.texto = texto;
+        p.nome = nome; p.grupo = grupo; p.classe = classe; p.texto = texto;
       } else {
         f.poderes.push({
-          id: novoId(), pid: '', nome: nome, grupo: grupo, livro: '', pagina: 0, tags: '',
-          deus: '', preReq: '', custo: '', texto: texto, obs: '', contaTormenta: false,
+          id: novoId(), pid: '', nome: nome, grupo: grupo, classe: classe, magica: false,
+          livro: '', pagina: 0, tags: '', deus: '', preReq: '', custo: '', texto: texto,
+          obs: '', contaTormenta: false,
         });
       }
       sujar(f.id, 'poderes');
