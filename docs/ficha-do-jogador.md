@@ -1539,3 +1539,216 @@ O `-raw` do pdftotext não marca borda nenhuma. As que custaram rodada:
 | ▸ recolher todos / ▾ abrir todos | 4 fechados → 0 ✔ |
 | F5 | os quatro poderes, o contador e os grupos de volta ✔ |
 | console | sem erro nas duas páginas ✔ |
+
+---
+
+# A leva de 17 de setembro de 2026 — ordem, deslocamento, condições e os poderes de TODAS as classes
+
+Quatro pedidos numa mensagem só. Os três primeiros são pequenos e vinham
+incomodando; o quarto é o que ele chamou de "a grande parte do projeto".
+
+> "Poder mover as RD, Resistência e imunidade! As vezes quero que o novo item que
+> eu coloquei esteja lá em cima invés de eu ficar escrevendo tudo para baixo…
+> Mesma coisa com os Poderes! […] Poder colocar o número de deslocamento
+> (Inclusive colocar penalidades, tipo, eu me desloco 12 metros mas eu tenho −3m
+> por causa da armadura). […] Poder colocar condições (Semelhante aos dos
+> monstros). E agora vem a grande parte do projeto que é: Os poderes de TODAS as
+> classes! Inclusive as variantes. Mas NÃO remova o bloco de texto de habilidades
+> lá em baixo porque já existem players com fichas prontas e qualquer atitude que
+> você tomar pode acabar 'ferindo' alguma ficha!"
+
+**A condição dele foi cumprida ao pé da letra:** a caixa **⚔ Habilidades de classe
+e poderes** continua onde estava, com o que estiver escrito nela. Nada foi movido
+para dentro do cartão de poderes, e nenhum campo foi renomeado ou apagado.
+
+## 1. ⇈ ↑ ↓ nas resistências, na RD, nas imunidades e nos poderes
+
+As mesmas três setas que o inventário já tinha desde 11/09, agora em mais duas
+listas. `setasDeOrdem()` (em `js/ficha.js`) desenha as três; o clique cai em
+`<prefixo>-topo` / `-sobe` / `-desce`.
+
+**Nos poderes há uma sutileza que vale escrever:** a ficha guarda UMA lista
+(`f.poderes`), e a tela a mostra em gavetas (combate, destino, … e uma por
+classe). O vizinho da tela quase nunca é o vizinho de índice. Então o ↑ não troca
+`i` com `i−1`: ele monta a lista dos irmãos de gaveta, acha a posição nela e move
+para o índice do irmão certo. O ⇈ leva para o topo **da gaveta**, não da ficha.
+
+Depois de mover, `seguirItem()` mantém o botão embaixo do ponteiro (a página rola
+o tanto que a linha andou) e devolve o foco do teclado — senão o segundo clique no
+mesmo lugar acerta o vizinho e desfaz o primeiro.
+
+De quebra, a linha de resistência/RD/imunidade **desdobrou**: com as setas não
+cabiam três campos lado a lado num cartão de 15 rem, então a anotação ("de onde
+vem, quando vale…") passou a ocupar a segunda linha inteira, em qualquer largura.
+
+## 2. O deslocamento com penalidades
+
+A **base** (o que a raça dá, 9 m para quase todas) continua no mesmo campo de
+sempre, ao lado do Tamanho — só ganhou o rótulo "Desloc. base (m)". O que soma ou
+tira metros virou lista, dentro do cartão **Defesa & Carga**, colada no número que
+ela explica:
+
+```
+Deslocamento            9 m (6 quadrados)
+O QUE MEXE NO DESLOCAMENTO              ＋ Acrescentar
+  [−3] m [armadura pesada]                          ✕
+  12 m − 3 m (armadura pesada) = 9 m
+```
+
+- o valor de cada linha é em **metros** e pode ser negativo (a linha nova nasce
+  com −3, que é o caso que ele deu) ou positivo (+6 m do Ímpeto);
+- o total **não desce de 0**: imóvel é 0 m (p. 394), e abaixo disso não existe.
+  Quando a conta dá negativo, a linha por extenso avisa que o 0 é o piso;
+- o quadrado continua sendo **conta** (q = m ÷ 1,5), como manda a política do
+  site: 15 m viram 10 quadrados.
+
+Um campo só, em um lugar só: o `data-campo="deslocamento"` **não** foi duplicado
+no cartão da Defesa, de propósito — dois campos ligados ao mesmo dado ficariam
+fora de sincronia até o próximo redesenho.
+
+## 3. 🌀 Condições
+
+Um cartão novo, logo abaixo da identidade — igual ao dos monstros na ideia (a
+fileira de etiquetas, a cor do tipo de efeito, o texto na nuvem), e diferente na
+origem do dado:
+
+- **o texto vem de `window.GA_CONDICOES`** (`js/condicoes-data.js`), a mesma
+  tabela de regra que a sub-aba 🌀 Condições das Consultas lê. Não é dado de
+  criatura — é do livro, como as magias e os poderes que a ficha já lê de lá. O
+  `js/monstros.js` tem a lista dele, e continua tendo: nada foi importado de lá;
+- a ficha guarda só a **chave** (o slug do nome), em `f.condicoes`;
+- a etiqueta inteira recebe foco (`tabindex="0"`): é o que faz a nuvem abrir no
+  **toque** e no teclado, não só no mouse. Sem isso, no celular o único jeito de
+  chegar ao texto seria tocar no ✕;
+- **🧹 Fim da cena** tira todas de uma vez ("a menos que especificado o contrário,
+  condições terminam no fim da cena", p. 394), perguntando antes.
+
+**A ficha mostra e não aplica.** Os −2 e os −5 continuam por conta da mesa, e a
+nota do cartão diz por quê: condições de mesmo efeito não se somam — "um
+personagem desprevenido e vulnerável sofre –5 na Defesa, não –7" (p. 394). Um
+número que aparecesse sozinho na conta seria impossível de conferir no meio do
+combate.
+
+## 4. Os poderes de TODAS as classes
+
+### A base: `js/poderes-classe-data.js` — 348 poderes em 16 listas
+
+Companheiro do `js/poderes-data.js` (os 460 de fora de classe, de 15/09). Saiu do
+PDF pelo `Inútil/_gerar-poderes-classe.js`, e o relatório está em
+`Inútil/_relatorio-poderes-classe.txt`.
+
+| Livro | Listas | Poderes | Páginas impressas |
+|---|---|---:|---|
+| Tormenta20 Jogo do Ano | as 14 classes básicas | 298 | 38–84 |
+| Deuses de Arton | Frade | 29 | 39–41 |
+| Heróis de Arton | Treinador | 21 | 18–19 |
+
+Por classe: Arcanista 21, Bárbaro 20, Bardo 20, Bucaneiro 19, Caçador 23,
+Cavaleiro 22, Clérigo 18, Druida 22, Guerreiro 19, Inventor 30, Ladino 20,
+Lutador 23, Nobre 18, Paladino 23, Frade 29, Treinador 21.
+
+**As 14 variantes não têm lista própria** — e isso não é atalho meu, é o que o
+livro diz, com estas palavras: "A partir do 2º nível, você recebe esta habilidade
+como o `<básica>` básico" (Heróis de Arton, p. 23–45). Então a variante aponta
+para a lista da básica, e **três trazem ressalva impressa**, que a ficha mostra
+junto:
+
+| Variante | Usa a lista de | A ressalva do livro |
+|---|---|---|
+| Ermitão | Druida (p. 30) | não pode escolher Forma Selvagem nem poderes que a tenham como pré-requisito |
+| Usurpador | Clérigo (p. 41) | não pode escolher Conhecimento Mágico; substitui Sabedoria por Carisma |
+| Vassalo | Cavaleiro (p. 42) | não escolhe um por nível: ganha no 2º, 6º, 7º (pode ser de guerreiro), 14º e 16º |
+
+As outras onze — Alquimista (p. 23), Atleta (25), Burguês (27), Duelista (28),
+Inovador (31), Machado de Pedra (33), Magimarcialista (34), Necromante (35),
+Santo (38), Seteiro (39) e Ventanista (45) — usam a lista da básica sem ressalva.
+
+### O que o `-raw` erra nos capítulos de classe
+
+Três coisas, e cada uma custou uma faixa de linha a mais no gerador:
+
+1. **O título "Poderes de X" é desenho**, não texto: não dá para achar a seção por
+   ele. O que se acha é o parágrafo que a abre ("Poder de Arcanista. No 2º nível,
+   e a cada nível seguinte…"), e o que delimita cada poder é o bullet.
+2. **Nem todo bullet é poder.** No meio da lista entram os quadros de regra
+   (Músicas de Bardo, Posturas de Combate, Missas, Sacrários, Armadilhas,
+   Julgamentos Divinos), os quadros de bicho (Familiares Arcanos, Animais
+   Totêmicos, Companheiro Animal, Formas Selvagens, Mascotes) e as opções de
+   habilidade de classe (Caminho do Arcanista, Linhagens Sobrenaturais, Bravatas,
+   Bênção da Justiça, Treino Especializado, Dádiva da Fé). Por isso o gerador
+   recorta faixas de linha declaradas à mão, e não filtra por padrão.
+3. **A ordem dentro da página não é a de leitura.** O caso extremo é o lutador: a
+   segunda coluna da p. 77 ABRE com o fim de "Sequência Destruidora", que só
+   começa no pé da primeira. No bucaneiro, quatro poderes da p. 47 saem antes do
+   parágrafo que abre a lista. As faixas de cada classe vêm na ordem de leitura, e
+   uma faixa pode começar no meio de um poder.
+
+De quebra, dois detalhes tipográficos: a fonte do livro devolve dois `U+FFFD` no
+lugar de um hífen (no Título do cavaleiro, "de cava⍰⍰ / - / leiro"), e a
+translineação às vezes sai sozinha numa linha com um `-` só. As duas coisas o
+gerador conserta.
+
+### A conferência
+
+Os 348 nomes foram comparados com uma extração **independente**, em `-layout`
+(ordem de leitura diferente do `-raw`): **os 348 batem**, e o que sobra no
+`-layout` é só quadro e opção de habilidade — conferido um a um. Além disso o
+gerador exige que todo texto feche frase, que nenhum carregue resto de tabela
+("18º Poder de inventor") e que nenhum id se repita. O id é
+`<classe>--<slug do nome>` porque o mesmo nome existe em várias classes: "Aumento
+de Atributo" está nas 16, e Ímpeto, Solidez, Valentão, Título, Ambidestria,
+Arqueiro, Esgrimista, Destruidor, Emboscar, Companheiro Animal e Conhecimento
+Mágico em duas ou três.
+
+### Na ficha
+
+- a busca do **＋ Adicionar poder** passou a ver **808** poderes (460 + 348). O
+  grupo **⚔ Classe** abre uma segunda fileira de chips, uma por classe, com as
+  **da ficha na frente**, marcadas com ★ — e resolvendo a variante para a básica
+  ("para todos os efeitos, ambas são a mesma classe", Heróis, p. 22). Com uma
+  classe só na ficha, ela já vem aberta;
+- no cartão, os de classe ganham **uma gaveta por classe** ("Poderes de
+  Guerreiro"): numa ficha multiclasse, saber de quem é cada poder é metade da
+  leitura;
+- o **✦** do livro entrou junto: aquele poder é uma habilidade **mágica**, e pode
+  ser alvo de Dissipar Magia (e de contramágica), e é anulado onde a magia não
+  funciona. São 41 dos 348. A marca é a mesma dos statblocks, escrita de novo em
+  `js/ficha.js` — a ficha não puxa nada de criatura;
+- o **✍ Escrever** continua, agora para o que não está em livro nenhum (o caseiro,
+  o que o mestre inventou). Escolhendo o grupo ⚔ Classe, ele pergunta de qual
+  classe é, para o poder caseiro cair na gaveta certa.
+
+### O que a ficha guarda de novo
+
+| Campo | O que é |
+|---|---|
+| `deslocMods` | lista de `{ id, valor, de }` — metros que somam ou tiram |
+| `condicoes` | lista de chaves (o slug do nome da condição) |
+| `poderes[].classe` | de qual classe é o poder, quando o grupo é `classe` |
+| `poderes[].magica` | o selo ✦ do livro |
+
+Os quatro nascem vazios no `normalizar()`, então **a ficha velha continua certa**:
+a que não tem nenhum deles abre inteira, e o que estiver escrito na caixa ⚔
+Habilidades de classe e poderes continua lá. A conferência (§3 da leva de 15/09)
+não se assusta com os campos novos: a cópia do banco passa pelo MESMO
+`normalizar`, então as duas digitais batem e o `sinc` só se atualiza.
+
+### Testado (servidor local, Firebase desligado)
+
+| O que | Resultado |
+|---|---|
+| as bases carregam no `index.html` e no `jogadores.html` | 460 + 348, 16 listas, 14 variantes, 35 condições ✔ |
+| ↓ na 1ª resistência, ⇈ na 2ª RD | as duas andam, e só a lista delas ✔ |
+| ↑ e ⇈ num poder | anda dentro da gaveta; a lista guardada acompanha ✔ |
+| ＋ Acrescentar no deslocamento | 12 − 3 (armadura) + 6 (Ímpeto) = **15 m (10 quadrados)** ✔ |
+| ＋ Condição, buscando "vulner" | acha pelo TEXTO (Enredado, Exausto, Fatigado, Vulnerável) ✔ |
+| foco na etiqueta | a nuvem abre com o texto do livro (toque e teclado) ✔ |
+| 🧹 Fim da cena | pergunta, e tira as três ✔ |
+| ⚔ Classe na busca | ★ Cavaleiro e ★ Guerreiro na frente; a ressalva do Vassalo aparece ✔ |
+| adicionar Golpe Pessoal | grupo `classe`, classe `guerreiro`, p. 65, pré-requisito à parte ✔ |
+| adicionar Abençoar Arma (clérigo) | ✦ mágica no cartão e na tela de leitura ✔ |
+| ✍ Escrever no grupo ⚔ Classe | o campo "de qual classe" aparece; cai na gaveta do Cavaleiro ✔ |
+| F5 | os 8 poderes, as gavetas, o deslocamento e as condições de volta ✔ |
+| **ficha VELHA** (sem `deslocMods`, sem `condicoes`, poderes sem `classe`) | abre inteira; a caixa ⚔ Habilidades de classe e poderes com o texto dela ✔ |
+| celular (390 px) | a linha de resistência desdobra, sem rolagem lateral ✔ |
+| console | sem erro nas duas páginas ✔ |

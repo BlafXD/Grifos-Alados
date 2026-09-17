@@ -13,9 +13,13 @@
 //    • Atlas de Arton — Presente de Wynlla p. 111
 //    • Ameaças de Arton — as quatro de montaria p. 223, Coração de Dragão p. 67
 //
-//  FICAM DE FORA, por decisão dele (15/09/2026): poderes de CLASSE, origens
-//  e distinções. Habilidade que já vem com a raça não é poder — "poder de
-//  raça" é o grupo novo do Heróis de Arton, e está aqui.
+//  FICAM DE FORA, por decisão dele (15/09/2026): origens e distinções.
+//  Habilidade que já vem com a raça não é poder — "poder de raça" é o grupo
+//  novo do Heróis de Arton, e está aqui.
+//  Os poderes DE CLASSE também ficaram de fora deste arquivo, e em
+//  17/09/2026 ganharam o seu: js/poderes-classe-data.js, com os 348 das 16
+//  listas (as 14 variantes usam a lista da básica). Os dois são lidos juntos
+//  pela ficha.
 //  O levantamento que deu origem a este arquivo, com o que o Suplemento tem
 //  e o que falta nele: docs/poderes-levantamento.md
 //

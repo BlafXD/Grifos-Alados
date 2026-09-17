@@ -5,6 +5,11 @@
 na ficha: a lista virou `js/poderes-data.js` e o cartão ✨ Poderes, na noite de 15/09/2026.
 Origens e distinções ficaram de fora, por decisão.
 
+> **Os poderes DE CLASSE não estão neste levantamento** — eles entraram depois, em 17/09/2026,
+> num arquivo próprio (`js/poderes-classe-data.js`, 348 poderes em 16 listas). Se um dia o
+> Suplemento for conferido contra eles, é outro levantamento: veja `docs/ficha-do-jogador.md`,
+> "A leva de 17 de setembro de 2026".
+
 > O pedido: *"Não inclua as origens e nem as distinções! Consegue só destacar no documento o que NÃO
 > está no livro e suas páginas? Porque dai eu coloco no suplemento para ter certeza que está tudo certo
 > em relação a esses poderes. […] Além de anotar as diferenças também!"*
