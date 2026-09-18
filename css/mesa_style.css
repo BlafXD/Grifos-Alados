@@ -240,6 +240,36 @@
    "Porta aberta · aberta" */
 .me-chips .me-chip--atual::after { content: ' ·  aberta'; font-size: 0.7rem; opacity: 0.85; }
 
+/* ── A PORTA PARA O OUTRO LADO (18/09/2026) ────────────────────── */
+/* Fica no cabeçalho e aparece mesmo sem login: é o único caminho da
+   visão do mestre para a dos jogadores sem decorar o endereço. */
+.me-verjog {
+  margin: 0.9rem 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+.me-verjog a {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--raio);
+}
+.me-verjog a:hover { background: var(--gold-pale); border-color: var(--ink); }
+.me-verjog .me-mini { margin: 0; }
+
+/* o "abrir" ao lado do "copiar" é um <a>, e não um <button>: precisa
+   herdar o desenho do botão sem herdar o sublinhado do link */
+.me-link a.me-btn { text-decoration: none; display: inline-block; }
+
 /* ── O LINK DA MESA ────────────────────────────────────────────── */
 .me-link {
   display: flex;
