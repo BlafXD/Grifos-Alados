@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🧳 Mudança — Grifos Alados</title>
+<link rel="icon" href="favicon.png">
+<style>
+  /* ═══════════════════════════════════════════════════════════════
+     MUDANCA.HTML — a mala da mudança de endereço.
+     Página SOLTA de propósito: não carrega nenhum js/ do site, para
+     funcionar em qualquer endereço, inclusive num que ainda não tem
+     o site inteiro no ar. Tudo o que ela precisa está aqui dentro.
+     ═══════════════════════════════════════════════════════════════ */
+  :root {
+    --ink: #1a1008; --ink-faded: #3d2b1f; --parchment: #f2e8d5;
+    --rust: #8b2c0a; --rust-dark: #5c1a04; --gold-deep: #6e5a1a;
+    --gold-pale: #f0e3c2; --border: #d9c9a8; --verde: #2f6f3f;
+    --carmim: #8b1020;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 1.5rem 1rem 4rem; background: var(--parchment);
+    color: var(--ink); font: 1rem/1.6 Georgia, 'Times New Roman', serif;
+  }
+  .folha { max-width: 46rem; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; letter-spacing: .02em; }
+  h2 { font-size: 1.15rem; margin: 2rem 0 .5rem; border-bottom: 2px solid var(--gold-deep);
+       padding-bottom: .2rem; }
+  p  { margin: .5rem 0; }
+  .sub { color: var(--ink-faded); margin: 0 0 1.5rem; font-style: italic; }
+  .caixa { border: 1px solid var(--border); background: #fbf5e8; padding: 1rem;
+           border-radius: 2px; margin: .75rem 0; }
+  .onde { background: var(--gold-pale); border: 1px solid var(--gold-deep);
+          padding: .75rem 1rem; border-radius: 2px; margin-bottom: 1rem; }
+  .onde code { font-size: 1.05rem; font-weight: bold; word-break: break-all; }
+  button {
+    font: inherit; font-size: 1rem; padding: .6rem 1.1rem; cursor: pointer;
+    border: 1px solid var(--rust-dark); background: var(--rust); color: var(--parchment);
+    border-radius: 2px; margin: .35rem .35rem .35rem 0;
+  }
+  button:hover { background: var(--rust-dark); }
+  button.leve { background: transparent; color: var(--ink); border-color: var(--ink-faded); }
+  button.leve:hover { background: var(--gold-pale); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button:focus-visible, input:focus-visible { outline: 3px solid var(--rust); outline-offset: 2px; }
+  table { border-collapse: collapse; width: 100%; margin: .5rem 0; font-size: .95rem; }
+  th, td { text-align: left; padding: .3rem .5rem; border-bottom: 1px solid var(--border); }
+  th { font-variant: small-caps; letter-spacing: .04em; }
+  td.n { text-align: right; white-space: nowrap; color: var(--ink-faded); }
+  .aviso { border-left: 4px solid var(--carmim); padding-left: .8rem; }
+  .ok    { color: var(--verde); font-weight: bold; }
+  .erro  { color: var(--carmim); font-weight: bold; }
+  .nota  { font-size: .9rem; color: var(--ink-faded); }
+  .recado { margin-top: .75rem; min-height: 1.5rem; }
+  ol li { margin: .4rem 0; }
+  input[type=file] { font: inherit; font-size: .95rem; }
+  @media (prefers-reduced-motion: no-preference) { button { transition: background .15s; } }
+</style>
+</head>
+<body>
+<div class="folha">
+
+  <h1>🧳 Mudança — Grifos Alados</h1>
+  <p class="sub">Levar tudo o que está guardado neste navegador para outro endereço.</p>
+
+  <div class="onde">
+    Você está na gaveta de <code id="origem">—</code><br>
+    <span class="nota">Cada endereço tem a sua própria gaveta. O que está guardado aqui
+    <strong>não</strong> aparece sozinho em outro endereço — é para isso que esta página existe.</span>
+  </div>
+
+  <h2>1 · O que está guardado aqui</h2>
+  <div id="inventario" class="caixa">lendo…</div>
+
+  <h2>2 · Fazer a mala</h2>
+  <p>Baixa <strong>um arquivo só</strong> com tudo: bestiário, anotações e mapa, bases, viagens,
+     tempo livre, lojas roladas, fichas de personagem, preferências — e as fichas em PDF que
+     estiverem importadas.</p>
+  <button id="btBaixar">📥 Baixar a mala (.json)</button>
+  <div id="recadoBaixar" class="recado"></div>
+
+  <h2>3 · Abrir a mala no endereço novo</h2>
+  <p>Abra esta mesma página <em>no endereço novo</em>, escolha o arquivo e traga tudo de volta.</p>
+  <p><input type="file" id="arquivo" accept=".json,application/json"></p>
+  <div id="previa"></div>
+  <div id="recadoTrazer" class="recado"></div>
+
+  <div class="caixa aviso" style="margin-top:2rem">
+    <strong>Duas coisas que valem a viagem:</strong>
+    <ol>
+      <li>Faça a mala <strong>antes</strong> de parar de usar o endereço velho. Depois que o
+          site sai do ar, a gaveta dele ainda existe no navegador — mas achar esta página
+          fica mais difícil.</li>
+      <li>Guarde o arquivo <strong>fora do computador</strong> também (Drive, pendrive,
+          mandar para si mesmo). Formatar a máquina apaga a gaveta junto.</li>
+    </ol>
+  </div>
+
+  <p class="nota" style="margin-top:2rem">
+    Esta página não manda nada para lugar nenhum: o arquivo é feito e lido dentro do
+    seu próprio navegador. O que está na <strong>mesa</strong> (a ficha de personagem que
+    você entrou com o Google, a loja publicada, a gazeta) já está no banco e volta sozinho —
+    a mala é para o que é só seu.
+  </p>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var DB_NOME = 'grifosAladosFichas', STORE = 'pdfs';
+  var PREFIXO = 'grifosAlados.';
+  var q = function (id) { return document.getElementById(id); };
+
+  // ── Nomes de gente para as chaves técnicas ──────────────────────
+  var NOMES = {
+    'monstros':                'Bestiário e combates',
+    'anotacoes':               'Anotações (ramos)',
+    'anotacoesMapa':           'Mapa / linha do tempo',
+    'bases':                   'Bases e refúgios',
+    'viagens':                 'Viagens',
+    'tempo':                   'Tempo livre',
+    'lojaLog':                 'Lojas roladas (histórico)',
+    'lojaConfig':              'Ajustes da Loja',
+    'lojaComunidade':          'Classificação da comunidade',
+    'magiasConfig':            'Ajustes dos pergaminhos',
+    'recompensasLog':          'Recompensas sorteadas',
+    'recompensasFiltros':      'Filtros de recompensa',
+    'recompensasModo':         'Modo das recompensas',
+    'criacaoItensTabela':      'Criação de itens',
+    'criarAmeaca':             'Oficina de criar ameaça',
+    'fichasPersonagem':        'Fichas de personagem',
+    'fichaRolagens':           'Histórico de rolagens da ficha',
+    'fichaGuardadas':          'Fichas guardadas (o "↩ voltar")',
+    'fichaSincronia':          'Sincronia das fichas',
+    'iniciativaLocal':         'Iniciativa (fora da mesa)',
+    'iniciativaGrupo':         'Grupo da iniciativa',
+    'noticiasCampanha':        'Campanha da gazeta',
+    'acessibilidade':          'Preferências de acessibilidade',
+    'syncSala':                'Sala do 📡',
+    'syncConhecido':           'Digital do 📡 (a trava)',
+    'basesJogadoresInventario':'Caixa de entrada dos jogadores'
+  };
+  function bonito(chave) {
+    var curto = chave.indexOf(PREFIXO) === 0 ? chave.slice(PREFIXO.length) : chave;
+    return NOMES[curto] || curto;
+  }
+  // O que é pequeno demais para merecer uma linha na tabela.
+  function miudeza(chave) {
+    var curto = chave.indexOf(PREFIXO) === 0 ? chave.slice(PREFIXO.length) : chave;
+    return !NOMES[curto] || /Abert|Visivel|Subaba|Selecionada|Fechad|Sel$|Forma|Segredo|Ocultas|Recolhido/.test(curto);
+  }
+  function kb(n) {
+    if (n < 1024) return n + ' B';
+    if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
+    return (n / 1048576).toFixed(1) + ' MB';
+  }
+
+  // ── A gaveta deste navegador ────────────────────────────────────
+  function lerLocalStorage() {
+    var tudo = {};
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k.indexOf(PREFIXO) === 0) tudo[k] = localStorage.getItem(k);
+      }
+    } catch (e) { /* navegador com armazenamento bloqueado */ }
+    return tudo;
+  }
+
+  // ── As fichas em PDF (IndexedDB) ────────────────────────────────
+  function abrirBanco() {
+    return new Promise(function (res) {
+      if (!window.indexedDB) return res(null);
+      var r;
+      try { r = indexedDB.open(DB_NOME, 1); } catch (e) { return res(null); }
+      r.onupgradeneeded = function () {
+        try {
+          if (!r.result.objectStoreNames.contains(STORE))
+            r.result.createObjectStore(STORE, { keyPath: 'id' });
+        } catch (e) {}
+      };
+      r.onsuccess = function () { res(r.result); };
+      r.onerror = function () { res(null); };
+      r.onblocked = function () { res(null); };
+      setTimeout(function () { res(null); }, 3000);
+    });
+  }
+  function lerPdfs() {
+    return abrirBanco().then(function (db) {
+      if (!db) return [];
+      return new Promise(function (res) {
+        try {
+          var p = db.transaction(STORE, 'readonly').objectStore(STORE).getAll();
+          p.onsuccess = function () { res(p.result || []); };
+          p.onerror = function () { res([]); };
+        } catch (e) { res([]); }
+      });
+    });
+  }
+  function gravarPdfs(lista) {
+    return abrirBanco().then(function (db) {
+      if (!db || !lista.length) return 0;
+      return new Promise(function (res) {
+        var t = db.transaction(STORE, 'readwrite'), o = t.objectStore(STORE), n = 0;
+        lista.forEach(function (f) { try { o.put(f); n++; } catch (e) {} });
+        t.oncomplete = function () { res(n); };
+        t.onerror = function () { res(n); };
+      });
+    });
+  }
+  // ArrayBuffer ↔ base64, em pedaços: um PDF inteiro de uma vez
+  // estoura a pilha do apply().
+  function paraBase64(buffer) {
+    var b = new Uint8Array(buffer), s = '', passo = 8192;
+    for (var i = 0; i < b.length; i += passo)
+      s += String.fromCharCode.apply(null, b.subarray(i, i + passo));
+    return btoa(s);
+  }
+  function deBase64(txt) {
+    var s = atob(txt), b = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i);
+    return b.buffer;
+  }
+
+  // ── 1 · O inventário desta gaveta ───────────────────────────────
+  function mostrarInventario() {
+    q('origem').textContent = location.origin + location.pathname.replace(/[^/]*$/, '');
+    var ls = lerLocalStorage();
+    lerPdfs().then(function (pdfs) {
+      var chaves = Object.keys(ls);
+      if (!chaves.length && !pdfs.length) {
+        q('inventario').innerHTML = '<p class="aviso"><strong>Esta gaveta está vazia.</strong> ' +
+          'Ou este navegador nunca abriu o site neste endereço, ou você já está no endereço novo — ' +
+          'nesse caso, vá direto ao passo 3.</p>';
+        return;
+      }
+      var linhas = chaves.filter(function (k) { return !miudeza(k); })
+        .sort(function (a, b) { return (ls[b] || '').length - (ls[a] || '').length; })
+        .map(function (k) {
+          return '<tr><td>' + bonito(k) + '</td><td class="n">' + kb((ls[k] || '').length) + '</td></tr>';
+        });
+      pdfs.forEach(function (f) {
+        linhas.push('<tr><td>📄 ' + (f.nome || 'ficha em PDF') + '</td><td class="n">' +
+                    kb(f.dados ? f.dados.byteLength : 0) + '</td></tr>');
+      });
+      var total = chaves.reduce(function (s, k) { return s + (ls[k] || '').length; }, 0);
+      q('inventario').innerHTML =
+        '<table><thead><tr><th>O quê</th><th class="n">Tamanho</th></tr></thead><tbody>' +
+        linhas.join('') + '</tbody></table>' +
+        '<p class="nota">' + chaves.length + ' itens guardados (' + kb(total) + ')' +
+        (pdfs.length ? ' e ' + pdfs.length + ' ficha(s) em PDF' : '') +
+        '. Os ajustes miúdos (aba aberta, painel recolhido) vão na mala junto, sem aparecer aqui.</p>';
+    });
+  }
+
+  // ── 2 · Fazer a mala ────────────────────────────────────────────
+  q('btBaixar').addEventListener('click', function () {
+    var bt = this, recado = q('recadoBaixar');
+    bt.disabled = true; recado.textContent = 'Juntando…';
+    var ls = lerLocalStorage();
+    lerPdfs().then(function (pdfs) {
+      var pacote = {
+        formato: 'grifos-alados/mala',
+        versao: 1,
+        origem: location.origin + location.pathname,
+        quando: new Date().toISOString(),
+        localStorage: ls,
+        pdfs: pdfs.map(function (f) {
+          return { id: f.id, nome: f.nome, tamanho: f.tamanho,
+                   dados64: f.dados ? paraBase64(f.dados) : '' };
+        })
+      };
+      var texto = JSON.stringify(pacote);
+      var data = new Date().toISOString().slice(0, 10);
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([texto], { type: 'application/json' }));
+      a.download = 'grifos-alados-mala-' + data + '.json';
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 5000);
+      recado.innerHTML = '<span class="ok">✓ Mala feita</span> — ' + kb(texto.length) +
+        ', com ' + Object.keys(ls).length + ' itens' +
+        (pdfs.length ? ' e ' + pdfs.length + ' PDF(s)' : '') +
+        '. Guarde o arquivo em um lugar seguro antes de fechar esta página.';
+      bt.disabled = false;
+    })['catch'](function (e) {
+      recado.innerHTML = '<span class="erro">Não deu para fazer a mala:</span> ' + e.message;
+      bt.disabled = false;
+    });
+  });
+
+  // ── 3 · Abrir a mala ────────────────────────────────────────────
+  var pacoteLido = null;
+
+  q('arquivo').addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    q('previa').innerHTML = ''; q('recadoTrazer').innerHTML = ''; pacoteLido = null;
+    if (!f) return;
+    var leitor = new FileReader();
+    leitor.onload = function () {
+      try { pacoteLido = JSON.parse(leitor.result); }
+      catch (e) {
+        q('recadoTrazer').innerHTML = '<span class="erro">Este arquivo não é uma mala do Grifos Alados.</span>';
+        return;
+      }
+      if (!pacoteLido || !pacoteLido.localStorage) {
+        q('recadoTrazer').innerHTML = '<span class="erro">Falta o conteúdo: este arquivo não é uma mala ' +
+          '(os backups .json de UMA aba do site se importam pela própria aba, não aqui).</span>';
+        pacoteLido = null; return;
+      }
+      previsao();
+    };
+    leitor.readAsText(f);
+  });
+
+  function previsao() {
+    var daMala = pacoteLido.localStorage, aqui = lerLocalStorage();
+    var novos = [], porCima = [], iguais = 0;
+    Object.keys(daMala).forEach(function (k) {
+      if (miudeza(k)) return;
+      if (!(k in aqui)) novos.push(k);
+      else if (aqui[k] === daMala[k]) iguais++;
+      else porCima.push(k);
+    });
+    var pdfs = (pacoteLido.pdfs || []).length;
+    var quando = pacoteLido.quando ? new Date(pacoteLido.quando).toLocaleString('pt-BR') : '?';
+    var html = '<div class="caixa"><p><strong>Mala de ' + (pacoteLido.origem || '?') + '</strong><br>' +
+      '<span class="nota">feita em ' + quando + '</span></p>';
+    html += '<p>' + novos.length + ' item(ns) que <strong>não existem</strong> aqui' +
+            (pdfs ? ', ' + pdfs + ' ficha(s) em PDF' : '') + '.</p>';
+    if (iguais) html += '<p class="nota">' + iguais + ' já estão idênticos.</p>';
+    if (porCima.length) {
+      html += '<p class="aviso"><strong>' + porCima.length + ' item(ns) existem aqui e estão diferentes:</strong><br>' +
+        porCima.map(bonito).join(' · ') + '<br>' +
+        '<span class="nota">"Trazer só o que falta" não encosta neles. ' +
+        '"Trazer tudo por cima" troca o daqui pelo da mala.</span></p>';
+    }
+    html += '<button id="btFalta">📦 Trazer só o que falta</button>' +
+            '<button id="btTudo" class="leve">⚠ Trazer tudo por cima</button></div>';
+    q('previa').innerHTML = html;
+    q('btFalta').addEventListener('click', function () { trazer(false); });
+    q('btTudo').addEventListener('click', function () { trazer(true); });
+  }
+
+  function trazer(porCima) {
+    if (!pacoteLido) return;
+    var daMala = pacoteLido.localStorage, n = 0, pulados = 0, falhou = 0;
+    Object.keys(daMala).forEach(function (k) {
+      var existe = false;
+      try { existe = localStorage.getItem(k) !== null; } catch (e) {}
+      if (existe && !porCima) { pulados++; return; }
+      try { localStorage.setItem(k, daMala[k]); n++; }
+      catch (e) { falhou++; }
+    });
+    var pdfs = (pacoteLido.pdfs || []).map(function (f) {
+      return { id: f.id, nome: f.nome, tamanho: f.tamanho,
+               dados: f.dados64 ? deBase64(f.dados64) : new ArrayBuffer(0) };
+    });
+    gravarPdfs(pdfs).then(function (quantos) {
+      var msg = '<span class="ok">✓ ' + n + ' item(ns) trazido(s)</span>';
+      if (quantos) msg += ' e ' + quantos + ' ficha(s) em PDF';
+      if (pulados) msg += ' · ' + pulados + ' pulado(s) por já existirem aqui';
+      if (falhou) msg += ' · <span class="erro">' + falhou + ' não couberam</span> ' +
+        '(a gaveta do navegador tem limite; apague o que não usa e tente de novo)';
+      msg += '.<br><strong>Agora abra o site</strong> — está tudo no lugar.';
+      q('recadoTrazer').innerHTML = msg;
+      mostrarInventario();
+    });
+  }
+
+  mostrarInventario();
+})();
+</script>
+</body>
+</html>
