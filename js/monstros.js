@@ -6221,4 +6221,61 @@
     });
   });
 
+
+  // ── A GAVETA DA CONTA (18/09/2026) ──────────────────────────────
+  //  O bestiário é a maior área (370 KB) e a que mais se ganha em ter
+  //  na conta. Também é a primeira que NÃO pode subir inteira: na mesma
+  //  chave moram o acervo (`sessoes`) e o estado desta tela —
+  //  `cenaNarrada`, `painel`, `campanhaAberta`, `modoPainel` — que
+  //  mudam a cada clique enquanto se narra.
+  //
+  //  Não é questão de tamanho: as sessões são 370 dos 370 KB. É que sem
+  //  a poda, narrar outra cena contaria como mudança de CONTEÚDO — a
+  //  cada clique subiriam 370 KB, e a tela do outro aparelho pularia
+  //  junto. O `log` também fica de fora: rolagem é registro da sessão,
+  //  não acervo (a mesma regra que deixou o fichaRolagens fora).
+  function acervoDaqui(texto) {
+    const d = JSON.parse(texto);
+    return JSON.stringify({ sessoes: Array.isArray(d.sessoes) ? d.sessoes : [] });
+  }
+
+  //  O caminho de volta: o acervo vem de lá, o estado de tela fica daqui.
+  //  E os ponteiros efêmeros são CONFERIDOS — `painel` e `cenaNarrada`
+  //  guardam ids, e um id que veio do outro aparelho pode não existir
+  //  mais no acervo que chegou. Apontar para o vazio deixaria o painel
+  //  de combate mudo, sem dizer por quê.
+  function idsDoAcervo(v, achados) {
+    if (!v || typeof v !== 'object') return achados;
+    if (Array.isArray(v)) { v.forEach(function (x) { idsDoAcervo(x, achados); }); return achados; }
+    Object.keys(v).forEach(function (k) {
+      if (k === 'id' && typeof v[k] === 'string') achados[v[k]] = true;
+      else idsDoAcervo(v[k], achados);
+    });
+    return achados;
+  }
+  function mesclarDaConta(texto) {
+    const deLa = JSON.parse(texto);
+    let aqui = {};
+    try { aqui = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch (e) { aqui = {}; }
+    aqui.sessoes = Array.isArray(deLa.sessoes) ? deLa.sessoes : [];
+    const ids = idsDoAcervo(aqui.sessoes, {});
+    if (Array.isArray(aqui.painel)) aqui.painel = aqui.painel.map(function (id) { return ids[id] ? id : null; });
+    if (aqui.cenaNarrada && !ids[aqui.cenaNarrada]) aqui.cenaNarrada = null;
+    return JSON.stringify(aqui);
+  }
+
+  (function () {
+    const inscricao = {
+      nome: 'bestiario',
+      rotulo: 'Bestiário e combates',
+      chave: STORAGE_KEY,
+      politica: 'perguntar',
+      paraGuardar: acervoDaqui,
+      mesclar: mesclarDaConta,
+      aoReceber: function () { carregar(); render(); }
+    };
+    if (window.GA_Gaveta) window.GA_Gaveta.registrar(inscricao);
+    else (window.GA_GavetaFila = window.GA_GavetaFila || []).push(inscricao);
+  })();
+
 })();
