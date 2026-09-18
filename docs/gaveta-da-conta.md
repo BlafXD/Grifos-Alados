@@ -205,7 +205,8 @@ O histórico continua inteiro no navegador do mestre, como sempre.
 1. ~~**`prefs` primeiro** (< 1 KB): o ⚙ Acessibilidade seguindo a conta. É a área
    mais boba do site e serve de cobaia para o nó, a regra e a conferência.~~
    **FEITA em 18/09/2026** — ver §11.
-2. **`anotacoes` + `mapa`**: as duas juntas, porque uma referencia a outra.
+2. ~~**`anotacoes` + `mapa`**: as duas juntas, porque uma referencia a outra.~~
+   **FEITA em 18/09/2026** — ver §12.
 3. **`bestiario`**: a maior, e a que mais se ganha.
 4. **`tempo`, `recompensas`, `criarAmeaca`**: pequenas, em uma leva.
 5. **A digital antes do conteúdo** (§7a) — só depois que houver duas áreas de
@@ -298,3 +299,63 @@ O teste de ponta a ponta com **duas contas de verdade em dois aparelhos** — es
 depende de ele entrar com o Google no site publicado. O caminho é: entrar,
 mudar o tamanho do texto, abrir em outro navegador com a mesma conta e ver o
 tamanho chegar sozinho.
+
+---
+
+## 12. Etapa 2 — as Anotações, o Mapa e a tela da escolha (18 de setembro de 2026)
+
+### O que entrou
+
+| Arquivo | O quê |
+|---|---|
+| `js/anotacoes.js` | registra a área **`anotacoes`**, política `'perguntar'` |
+| `js/mapa.js` | registra a área **`mapa`**, política `'perguntar'` |
+| `js/gaveta.js` | a **tarja da escolha**, o guardar da perdedora e o `desfazer()` |
+| `css/style.css` | `.gv-tarja` e companhia |
+
+**Duas áreas, e não uma.** O Mapa anda junto das Anotações na mesma aba, mas é
+nó próprio: juntos, abrir os Ramos baixaria os 162 KB do mapa por nada.
+
+### A tarja, e por que ela é assim
+
+A ficha pergunta dentro da própria ficha, porque lá há tela para isso. Bestiário
+e Anotações são abas inteiras — não há canto óbvio. Então a pergunta vem numa
+tarja no alto, irmã da do armazenamento cheio, com três decisões de propósito:
+
+- **Âmbar, não carmim.** A vermelha diz *"você está perdendo dado agora"*; esta
+  diz *"há uma escolha a fazer"*. Não houve perda.
+- **Não tem ✕.** Enquanto a área está retida, **nada sobe e nada desce**.
+  Deixar dispensar o aviso seria deixar a pessoa sem sincronia sem saber por quê.
+- **A perdedora fica guardada** (`grifosAlados.gavetaGuardadas`) e a tarja vira
+  *"ficou com a daqui · ↩ Voltar para a outra · Está certo"*. Sem isso, a tarja
+  seria uma armadilha de um clique só — e é o mesmo acordo que a ficha faz desde
+  15/09. **Isto é conteúdo, e não digital: pode viajar na mala.**
+
+O `↩ voltar` não só devolve a versão guardada: **sobe também**. Quem voltou atrás
+quer aquela versão nos dois lados, não só neste navegador.
+
+### Como foi provado
+
+Além dos 12 casos do arreio em Node (§11), uma página de teste com um **Firebase
+de mentira** montado antes do `gaveta.js`, num navegador de verdade e com o CSS
+do site. O roteiro inteiro, todo verificado:
+
+| Passo | O que se esperava | Resultado |
+|---|---|---|
+| o banco responde, e as duas versões diferem | a tarja aparece e **nada** sobe nem desce | ✓ 0 envios, 0 recebimentos, local intacto |
+| "Ficar com a daqui" | sobe a daqui, guarda a da conta | ✓ e a tarja vira "↩ voltar" |
+| "↩ Voltar para a outra" | a da conta volta, **sobe**, e a aba é avisada | ✓ nos três |
+| "Está certo" | a tarja some e a guardada é descartada | ✓ |
+
+> **A armadilha que essa página revelou, e que vale para qualquer teste daqui
+> em diante:** o `gaveta.js` lê a digital **uma vez, na carga**. Semear o
+> `gavetaSinc` depois da tag do script não tem efeito nenhum — e o teste passa a
+> medir outra coisa sem avisar. A mesma pegadinha derrubou três casos do arreio
+> em Node antes de eu perceber.
+
+### O que ainda falta
+
+- O teste de ponta a ponta com **conta de verdade em dois aparelhos** (§11).
+- O **bestiário** (379 KB), que é a área seguinte e a que mais se ganha.
+- E, só depois de duas áreas grandes de pé, a **digital antes do conteúdo**
+  (§7a), quando já der para medir o custo.

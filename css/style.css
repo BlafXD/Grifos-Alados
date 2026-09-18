@@ -1518,6 +1518,70 @@ footer {
    até o mestre fechá-la, porque perder uma sessão de anotações sem
    nunca ter visto um aviso é a única perda de dados possível aqui.
    ══════════════════════════════════════════════════════════════════ */
+/* ── A TARJA DA GAVETA DA CONTA (18/09/2026) ────────────────────────
+   Irmã da .ga-tarja, mas ÂMBAR e não carmim: a vermelha diz "você está
+   perdendo dado agora"; esta diz "há uma escolha a fazer". E ela não
+   tem ✕: enquanto a área está retida nada sobe nem desce, e deixar
+   dispensar o aviso seria deixar a pessoa sem sincronia sem saber. */
+.gv-tarja {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10059;              /* logo abaixo da tarja de armazenamento cheio */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.9rem;
+  padding: 0.6rem 1rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--gold-pale);
+  border-bottom: 2px solid var(--gold-deep);
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.25);
+}
+.gv-selo {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  align-self: center;
+}
+.gv-caso {
+  flex: 1 1 22rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.6rem;
+}
+.gv-caso strong { font-family: 'Cinzel', serif; font-size: 0.86rem; letter-spacing: 0.02em; }
+.gv-caso + .gv-caso { border-top: 1px solid var(--gold-deep); padding-top: 0.5rem; }
+.gv-caso--feito { opacity: 0.9; }
+.gv-botoes { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.gv-btn {
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+  color: var(--parchment);
+  background: var(--rust);
+  border: 1px solid var(--rust-dark);
+  border-radius: var(--raio);
+}
+.gv-btn:hover { background: var(--rust-dark); }
+.gv-btn--fim { color: var(--ink); background: transparent; border-color: var(--ink-faded); }
+.gv-btn--fim:hover { background: rgba(0, 0, 0, 0.07); }
+.gv-mini { font-size: 0.82rem; color: var(--text-dim); font-style: italic; }
+@media (max-width: 820px) {
+  .gv-tarja { font-size: 0.88rem; padding: 0.55rem 0.8rem; }
+  .gv-caso { flex: 1 1 100%; }
+}
+
 .ga-tarja {
   position: fixed;
   top: 0;
