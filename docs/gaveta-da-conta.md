@@ -207,7 +207,7 @@ O histórico continua inteiro no navegador do mestre, como sempre.
    **FEITA em 18/09/2026** — ver §11.
 2. ~~**`anotacoes` + `mapa`**: as duas juntas, porque uma referencia a outra.~~
    **FEITA em 18/09/2026** — ver §12.
-3. **`bestiario`**: a maior, e a que mais se ganha.
+3. ~~**`bestiario`**: a maior, e a que mais se ganha.~~ **FEITA em 18/09/2026** — ver §13.
 4. **`tempo`, `recompensas`, `criarAmeaca`**: pequenas, em uma leva.
 5. **A digital antes do conteúdo** (§7a) — só depois que houver duas áreas de
    pé, quando o custo já se mede.
@@ -359,3 +359,81 @@ do site. O roteiro inteiro, todo verificado:
 - O **bestiário** (379 KB), que é a área seguinte e a que mais se ganha.
 - E, só depois de duas áreas grandes de pé, a **digital antes do conteúdo**
   (§7a), quando já der para medir o custo.
+
+---
+
+## 13. Etapa 3 — o bestiário, e o acervo separado do estado de tela (18/09/2026)
+
+### O que entrou
+
+| Arquivo | O quê |
+|---|---|
+| `js/monstros.js` | registra a área **`bestiario`**, com `paraGuardar` e `mesclar` |
+| `js/gaveta.js` | dois ganchos novos: **`paraGuardar`** e **`mesclar`** |
+
+### O problema que só o bestiário tinha
+
+Na mesma chave `grifosAlados.monstros` moram duas coisas de naturezas
+diferentes:
+
+| | O quê | Tamanho |
+|---|---|---|
+| **acervo** | `sessoes` — as 5 sessões, cenas e criaturas | **370 KB** |
+| **estado de tela** | `cenaNarrada`, `painel`, `campanhaAberta`, `modoPainel`, `painelAmbientes`, `combateViagem…` | ~0 KB |
+| **registro da sessão** | `log` — as rolagens | ~0 KB |
+
+**Medi antes de decidir, e a medição mudou o argumento.** A poda **não
+economiza bytes**: as sessões são 370 dos 370 KB. Ela é necessária por outro
+motivo — sem ela, **narrar outra cena contaria como mudança de conteúdo**. Cada
+clique em "narrar" subiria 370 KB e ainda empurraria a tela do outro aparelho
+para a cena que este está narrando.
+
+O `log` fica de fora pela mesma regra que deixou o `fichaRolagens` fora: rolagem
+é registro da sessão, não acervo.
+
+### Os dois ganchos
+
+```js
+paraGuardar(texto) → texto     // tira o estado de tela: é o que sobe E o que a digital mede
+mesclar(textoDeLa) → texto     // devolve o texto INTEIRO a gravar, com o estado de tela daqui
+```
+
+**O `paraGuardar` é aplicado no `lerLocal()`, e não só no envio.** Essa é a
+decisão que faz a coisa funcionar: assim a **digital também é a do texto
+podado**, e mexer no que é de tela nunca chega a parecer uma edição.
+
+**O `mesclar` confere os ponteiros.** `painel` e `cenaNarrada` guardam ids, e um
+id daqui pode não existir no acervo que chegou do outro aparelho. O `mesclar`
+varre os ids do acervo novo e anula o que não existe mais — apontar para o vazio
+deixaria o painel de combate mudo, sem dizer por quê.
+
+### Como foi provado
+
+**O arreio em Node subiu de 12 para 15 casos**, todos passando. Os três novos:
+
+| | Caso | Resultado |
+|---|---|---|
+| M | mexer só no estado de tela | **não** conta como mudança: 0 envios, 0 recebimentos |
+| N | o acervo muda de verdade | acervo de lá + estado de tela daqui, e o ponteiro morto anulado |
+| O | o que sobe | só `sessoes`, sem nada do estado de tela |
+
+**E contra os 370 KB reais do bestiário dele**, com as funções extraídas do
+próprio `js/monstros.js` (não uma cópia):
+
+- podado: 5 sessões → 5 sessões, **conteúdo byte a byte idêntico**;
+- na volta: as 9 chaves preservadas, `painelAmbientes` com os mesmos 5, e os
+  ponteiros `cenaNarrada` e `painel` mantidos, porque os ids existiam no acervo.
+
+No navegador, deslogado: as **quatro** áreas registradas (`prefs`, `bestiario`,
+`anotacoes`, `mapa`), `ligada: false`, nada gravado, e o bestiário na tela como
+sempre.
+
+### O que falta
+
+- O teste de ponta a ponta com conta de verdade em dois aparelhos.
+- As áreas pequenas (`tempo`, `recompensas`, `criarAmeaca`), que agora são uma
+  leva só.
+- E a **digital antes do conteúdo** (§7a). Agora dá para medir: com o bestiário
+  dentro, são ~560 KB por abertura de página logada. Para uma mesa, é pouco
+  perto dos 10 GB/mês do plano gratuito; o que incomoda antes disso é a
+  **escrita**, porque hoje cada edição de criatura reenvia o acervo inteiro.

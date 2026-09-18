@@ -104,8 +104,27 @@
     return (e && e.usuario && e.usuario.uid) || '';
   }
 
+  //  ── O ACERVO E O ESTADO DE TELA (18/09/2026) ────────────────────
+  //  Algumas áreas guardam, na MESMA chave, o acervo e o que é só desta
+  //  tela. O bestiário é o caso: junto das sessões moram `cenaNarrada`,
+  //  `painel`, `campanhaAberta` e `modoPainel` — que mudam a cada clique
+  //  durante uma sessão de jogo.
+  //
+  //  Medi antes de decidir: a poda **não economiza bytes** (as sessões
+  //  são 370 dos 370 KB). Ela existe por outro motivo: sem ela, narrar
+  //  outra cena contaria como mudança de conteúdo — subiria 370 KB a
+  //  cada clique e ainda empurraria a tela do outro aparelho.
+  //
+  //  `paraGuardar` é aplicado no lerLocal(), e não só no envio, de
+  //  propósito: assim a DIGITAL também é a do texto podado, e o que é
+  //  estado de tela nunca chega a parecer uma edição.
   function lerLocal(nome) {
-    try { return localStorage.getItem(areas[nome].chave); } catch (e) { return null; }
+    const a = areas[nome];
+    let v = null;
+    try { v = localStorage.getItem(a.chave); } catch (e) { return null; }
+    if (v == null || typeof a.paraGuardar !== 'function') return v;
+    try { return a.paraGuardar(v); }
+    catch (e) { console.warn('[gaveta] não deu para podar', nome, e && e.message); return v; }
   }
   function gravarLocal(nome, texto) {
     escrevendoEuMesmo = true;
@@ -278,7 +297,17 @@
   }
 
   function descer(nome, texto) {
-    gravarLocal(nome, texto);
+    const a = areas[nome];
+    // O que veio de lá é o acervo podado; quem tem `mesclar` devolve o
+    // texto INTEIRO a gravar, com o estado de tela daqui preservado.
+    // A digital, essa, continua sendo a do podado — é ele que o
+    // lerLocal() vai devolver na próxima conferência.
+    let paraGravar = texto;
+    if (typeof a.mesclar === 'function') {
+      try { paraGravar = a.mesclar(texto); }
+      catch (e) { console.warn('[gaveta] não deu para mesclar', nome, e && e.message); }
+    }
+    gravarLocal(nome, paraGravar);
     marcarSinc(nome, texto);
     const fn = areas[nome].aoReceber;
     if (typeof fn === 'function') {
@@ -395,6 +424,8 @@
         rotulo: o.rotulo || o.nome,        // o nome que a tarja mostra
         politica: o.politica === 'maisNovo' ? 'maisNovo' : 'perguntar',
         aoReceber: o.aoReceber,
+        paraGuardar: o.paraGuardar,        // tira o estado de tela antes de guardar/comparar
+        mesclar: o.mesclar,                // devolve o texto inteiro ao receber de volta
       };
       porChave[o.chave] = o.nome;
       ligarPendentes();
