@@ -828,6 +828,37 @@
   window.GA_Acess = {
     abrirPainel: abrirPainel,
     anunciar: anunciar,
-    prefs: function () { return Object.assign({}, prefs); }
+    prefs: function () { return Object.assign({}, prefs); },
+    // As preferências chegando de fora — hoje, da gaveta da conta. O
+    // <head> aplica as do localStorage antes da primeira pintura; isto
+    // é para o que chega DEPOIS, sem esperar um F5.
+    receber: function (texto) {
+      let novas;
+      try { novas = JSON.parse(texto || '{}') || {}; } catch (e) { return; }
+      prefs = novas;
+      aplicarPrefs();
+    }
   };
+
+  // ── A GAVETA DA CONTA (18/09/2026) ──────────────────────────────
+  //  As preferências são a primeira área a seguir a conta, e são a
+  //  cobaia de propósito: menos de 1 KB, e nenhum estrago possível se
+  //  a conferência escolher errado. Política 'maisNovo' — abrir uma
+  //  janela perguntando "qual tamanho de letra fica?" seria pior do
+  //  que qualquer engano que ela possa cometer.
+  //  O acessibilidade.js carrega bem ANTES do gaveta.js (que precisa do
+  //  mesa.js, e esse vem lá no fim). Por isso a inscrição vai para uma
+  //  fila quando a gaveta ainda não existe, e ela mesma esvazia a fila
+  //  ao nascer. Sem isso, a área simplesmente nunca se registraria — e
+  //  em silêncio, que é o pior jeito de não funcionar.
+  (function () {
+    const inscricao = {
+      nome: 'prefs',
+      chave: CHAVE,
+      politica: 'maisNovo',
+      aoReceber: function (texto) { window.GA_Acess.receber(texto); }
+    };
+    if (window.GA_Gaveta) window.GA_Gaveta.registrar(inscricao);
+    else (window.GA_GavetaFila = window.GA_GavetaFila || []).push(inscricao);
+  })();
 })();
