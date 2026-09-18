@@ -114,6 +114,31 @@
   var PREFIXO = 'grifosAlados.';
   var q = function (id) { return document.getElementById(id); };
 
+  // ── AS DIGITAIS NÃO VIAJAM (18/09/2026) ─────────────────────────
+  //  Estas duas chaves não são conteúdo: são a memória de "o que ESTE
+  //  navegador já combinou com o banco", chave a chave. O 📡 usa uma
+  //  (`syncConhecido`) e a conferência da ficha usa a outra
+  //  (`fichaSincronia`).
+  //
+  //  Levá-las na mala faz o navegador novo MENTIR: ele chega dizendo
+  //  "eu já conversei com o banco e combinamos isto", sem nunca ter
+  //  conversado. E aí a conferência conclui "aqui não mudou nada, lá
+  //  mudou" — e deixa a cópia do banco descer por cima, calada.
+  //
+  //  Foi o laço de 18/09: a ficha boa (9 poderes, 14 itens) entrava
+  //  pela mala e, no primeiro F5, a cópia pobre do banco (0 poderes,
+  //  0 itens) descia por cima dela. Restaurar de novo não adiantava,
+  //  porque a mala trazia a digital junto e a mentira se repetia.
+  //
+  //  Sem elas, o navegador novo chega dizendo a verdade — "nunca
+  //  conversei com você" — e aí o site PERGUNTA em vez de sobrescrever:
+  //  a ficha fica retida com "qual delas fica?", e o 📡 pausa em âmbar.
+  //  É exatamente o que essas travas foram feitas para fazer.
+  var DIGITAIS = {
+    'grifosAlados.fichaSincronia': 'a conferência da ficha',
+    'grifosAlados.syncConhecido':  'a trava do 📡'
+  };
+
   // ── Nomes de gente para as chaves técnicas ──────────────────────
   var NOMES = {
     'monstros':                'Bestiário e combates',
@@ -194,7 +219,7 @@
     try {
       for (var i = 0; i < localStorage.length; i++) {
         var k = localStorage.key(i);
-        if (k.indexOf(PREFIXO) === 0) tudo[k] = localStorage.getItem(k);
+        if (k.indexOf(PREFIXO) === 0 && !DIGITAIS[k]) tudo[k] = localStorage.getItem(k);
       }
     } catch (e) { /* navegador com armazenamento bloqueado */ }
     return tudo;
@@ -399,14 +424,21 @@
 
   function trazer(porCima) {
     if (!pacoteLido) return;
-    var daMala = pacoteLido.localStorage, n = 0, pulados = 0, falhou = 0;
+    var daMala = pacoteLido.localStorage, n = 0, pulados = 0, falhou = 0, digitais = 0;
     Object.keys(daMala).forEach(function (k) {
+      // Uma mala antiga pode trazer as digitais; elas ficam de fora, e
+      // as que houver AQUI são apagadas — este navegador não combinou
+      // nada com o banco ainda, e tem de chegar dizendo isso.
+      if (DIGITAIS[k]) { try { localStorage.removeItem(k); } catch (e) {} digitais++; return; }
       // Sem "tudo por cima", só entra o que não existe, o que está vazio
       // e o que já é idêntico (esse não muda nada, mas não custa).
       if (!porCima && plano[k] === 'conflito') { pulados++; return; }
       try { localStorage.setItem(k, daMala[k]); n++; }
       catch (e) { falhou++; }
     });
+    // e mesmo que a mala não as trouxesse, o destino não pode ficar com
+    // uma digital velha de uma conversa que não foi deste navegador
+    Object.keys(DIGITAIS).forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
     var pdfs = (pacoteLido.pdfs || []).map(function (f) {
       return { id: f.id, nome: f.nome, tamanho: f.tamanho,
                dados: f.dados64 ? deBase64(f.dados64) : new ArrayBuffer(0) };
@@ -418,6 +450,10 @@
       if (falhou) msg += ' · <span class="erro">' + falhou + ' não couberam</span> ' +
         '(a gaveta do navegador tem limite; apague o que não usa e tente de novo)';
       msg += '.<br><strong>Agora abra o site</strong> — está tudo no lugar.';
+      msg += '<br><span class="nota">Se você já tinha entrado com o Google, o site pode ' +
+        'perguntar <em>“esta ficha mudou aqui e na mesa — qual fica?”</em>. É esperado: ' +
+        'este navegador é novo para o banco. Escolha <strong>a daqui</strong> se a mala ' +
+        'for a sua cópia boa — a outra fica guardada, com um “↩ voltar”.</span>';
       q('recadoTrazer').innerHTML = msg;
       mostrarInventario();
     });
