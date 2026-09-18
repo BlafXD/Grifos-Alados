@@ -107,14 +107,20 @@ carregava 756 KB de histórico de loja em toda abertura de página (consertado e
 - `em` — carimbo do servidor. É o desempate da conferência.
 - `porQuem` — apelido do aparelho, só para a tela dizer *"mudou no celular"*.
 
-**As regras são as mais simples do projeto** — a gaveta é privada e só do dono:
+**E não há regra nova a publicar.** A que já está no ar cobre tudo isto:
 
+```json
+"usuarios": { "$uid": {
+  ".read":  "auth != null && $uid === auth.uid",
+  ".write": "auth != null && $uid === auth.uid"
+} }
 ```
-usuarios/$uid/gaveta {
-  ".read":  "auth != null && auth.uid === $uid",
-  ".write": "auth != null && auth.uid === $uid"
-}
-```
+
+No Firebase a permissão de um nó **desce para todos os filhos**, então
+`usuarios/<uid>/gaveta/<área>` já nasce lendo e escrevendo só para o dono. É a
+mesma regra que a ficha usa desde 09/09 — e é a primeira vez que essa cascata
+joga a favor: em 08/09 ela foi a armadilha que obrigou a mover os valores da
+iniciativa para um nó irmão (`docs/mesa-de-verdade.md` §17).
 
 Nada de leitura pública aqui. A gaveta é do mestre; a **mesa** continua sendo o
 lugar do que é compartilhado, com as regras que já existem.
@@ -196,8 +202,9 @@ O histórico continua inteiro no navegador do mestre, como sempre.
 
 ## 9. A ordem de construir
 
-1. **`prefs` primeiro** (< 1 KB): o ⚙ Acessibilidade seguindo a conta. É a área
-   mais boba do site e serve de cobaia para o nó, a regra e a conferência.
+1. ~~**`prefs` primeiro** (< 1 KB): o ⚙ Acessibilidade seguindo a conta. É a área
+   mais boba do site e serve de cobaia para o nó, a regra e a conferência.~~
+   **FEITA em 18/09/2026** — ver §11.
 2. **`anotacoes` + `mapa`**: as duas juntas, porque uma referencia a outra.
 3. **`bestiario`**: a maior, e a que mais se ganha.
 4. **`tempo`, `recompensas`, `criarAmeaca`**: pequenas, em uma leva.
@@ -216,3 +223,78 @@ ainda não subiram, e o site precisa seguir funcionando deslogado o tempo inteir
 - Deslogado, tudo continuar funcionando como hoje, inclusive offline.
 - E a `mudanca.html` virar o que ela deve ser: a saída de emergência de quem
   não usa conta — não o caminho normal de ninguém.
+
+---
+
+## 11. Etapa 1 — o motor e a cobaia (18 de setembro de 2026)
+
+### O que entrou
+
+| Arquivo | O quê |
+|---|---|
+| **`js/gaveta.js`** (novo) | o motor: registra áreas, assina `usuarios/<uid>/gaveta/<área>`, confere e decide |
+| `js/acessibilidade.js` | ganhou `GA_Acess.receber()` e registra a área `prefs` |
+| `index.html`, `jogadores.html` | `<script src="js/gaveta.js" defer>` logo depois do `mesa.js` |
+| `mudanca.html` | `grifosAlados.gavetaSinc` entrou na lista das digitais que **não viajam** |
+
+**Nenhuma regra nova no Firebase.** Descoberta ao conferir: `usuarios/$uid` já é
+`.read`/`.write` só do dono, e no Firebase a permissão **desce para os filhos**.
+`usuarios/<uid>/gaveta/<área>` já nasce protegido. É a primeira vez que essa
+cascata joga a favor — em 08/09 ela foi a armadilha que obrigou a mover os
+valores da iniciativa para um nó irmão.
+
+### A porta
+
+```js
+GA_Gaveta.registrar({
+  nome: 'prefs',                    // o nó no banco (e no gavetaSinc)
+  chave: 'grifosAlados.acessibilidade',
+  politica: 'maisNovo',             // ou 'perguntar' (o padrão)
+  aoReceber: texto => { … }         // aplicar sem esperar um F5
+});
+GA_Gaveta.decidir(nome, 'daqui' | 'dela');   // quando a área ficou retida
+GA_Gaveta.estado();                          // { ligada, areas, retidas, erro }
+```
+
+### Duas decisões desta etapa
+
+**`prefs` usa `'maisNovo'`, e é a exceção.** Abrir uma janela perguntando *"qual
+tamanho de letra fica?"* seria pior do que qualquer engano que o desempate possa
+cometer. **Conteúdo não usa isso:** `'maisNovo'` compara o relógio do servidor
+com o desta máquina, e computador com a hora errada erra o desempate junto. Para
+bestiário, anotações e mapa vale `'perguntar'`, que não depende de relógio nenhum.
+
+**A fila de inscrição.** O `acessibilidade.js` carrega na linha 435 do
+`index.html`; o `gaveta.js`, na 528 (ele precisa do `mesa.js`). Quem quer se
+registrar cedo deixa o pedido em `window.GA_GavetaFila`, e o `gaveta.js` esvazia
+a fila ao nascer. Sem isso a área nunca se registraria — **e em silêncio**, que é
+o pior jeito de não funcionar.
+
+### Como foi provado
+
+Um arreio em Node monta um mundo de mentira (`localStorage`, `firebase`,
+`GA_Mesa`) e roda a tabela de decisão inteira — **12 casos, todos passando**:
+
+| | Caso | Esperado |
+|---|---|---|
+| A | o banco não conhece a área | sobe |
+| B | só de lá mudou | desce, e avisa a aba |
+| C | só daqui mudou | sobe |
+| D/E | os dois mudaram · `maisNovo` | fica o mais recente |
+| F | os dois mudaram · `perguntar` | **retém**: nada sobe nem desce |
+| G | iguais | não faz nada |
+| H | navegador novo, nunca combinou nada | **retém** — é a trava do dia 18/09 |
+| I/J | vazio dos dois lados · vazio aqui | não inventa · desce |
+| K/L | `decidir('daqui')` · `decidir('dela')` | sobe a daqui · desce a de lá |
+
+E no navegador, **deslogado**, nas duas páginas: `GA_Gaveta` existe, a área
+`prefs` está registrada, a fila esvaziou, `ligada: false`, **nada é gravado no
+banco nem no `gavetaSinc`**, e o `receber()` aplica e desfaz o tamanho de texto e
+o contraste sem F5. Sem conta, o site é exatamente o que sempre foi.
+
+### O que falta para fechar a etapa
+
+O teste de ponta a ponta com **duas contas de verdade em dois aparelhos** — esse
+depende de ele entrar com o Google no site publicado. O caminho é: entrar,
+mudar o tamanho do texto, abrir em outro navegador com a mesma conta e ver o
+tamanho chegar sozinho.
