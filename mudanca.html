@@ -158,6 +158,36 @@
     return (n / 1048576).toFixed(1) + ' MB';
   }
 
+  // ── A ARMADILHA DO "JÁ EXISTE" (consertada em 18/09/2026) ───────
+  //  O caso real: ele abriu o site novo ANTES de trazer a mala. Só de
+  //  abrir, cada aba grava a sua caixa vazia — `{"sessoes":[]}`,
+  //  `{"bases":[]}`. Aí "trazer só o que falta" olhou, viu que a chave
+  //  existia e PULOU justamente o bestiário, o mapa, as anotações e as
+  //  bases: 379 KB de criaturas paradas do lado de fora porque 173 bytes
+  //  de nada estavam na frente. A tela não mudava e não havia por quê.
+  //
+  //  Agora "existe" não basta: tem de ter ALGUMA COISA dentro. A conta é
+  //  o total de itens em todas as listas — é a forma de todo arquivo
+  //  deste site (sessões, ramos, nós, bases, viagens, fichas). E o
+  //  desempate só vale quando a mala TEM conteúdo e o daqui não: assim
+  //  uma chave sem lista nenhuma (as preferências, por exemplo) continua
+  //  sendo "diferente", e ninguém a sobrescreve sem pedir.
+  function itensDentro(texto) {
+    var j;
+    try { j = JSON.parse(texto); } catch (e) { return -1; }   // -1 = não é JSON: não opino
+    var n = 0;
+    (function anda(v) {
+      if (!v || typeof v !== 'object') return;
+      if (Array.isArray(v)) { n += v.length; v.forEach(anda); return; }
+      Object.keys(v).forEach(function (k) { anda(v[k]); });
+    })(j);
+    return n;
+  }
+  function vazioPertoDeCheio(aqui, naMala) {
+    var a = itensDentro(aqui), m = itensDentro(naMala);
+    return a === 0 && m > 0;
+  }
+
   // ── A gaveta deste navegador ────────────────────────────────────
   function lerLocalStorage() {
     var tudo = {};
@@ -315,29 +345,52 @@
     leitor.readAsText(f);
   });
 
+  // chave → 'novo' | 'vazio' | 'conflito' | 'igual'; decidido uma vez só,
+  // na prévia, e é o MESMO mapa que o trazer() usa. Assim o que a tela
+  // promete e o que o botão faz não podem divergir.
+  var plano = {};
+
   function previsao() {
     var daMala = pacoteLido.localStorage, aqui = lerLocalStorage();
-    var novos = [], porCima = [], iguais = 0;
+    var novos = [], vazios = [], porCima = [], iguais = 0;
+    plano = {};
     Object.keys(daMala).forEach(function (k) {
-      if (miudeza(k)) return;
-      if (!(k in aqui)) novos.push(k);
-      else if (aqui[k] === daMala[k]) iguais++;
-      else porCima.push(k);
+      if (!(k in aqui))                            { plano[k] = 'novo';     if (!miudeza(k)) novos.push(k); }
+      else if (aqui[k] === daMala[k])              { plano[k] = 'igual';    iguais++; }
+      else if (vazioPertoDeCheio(aqui[k], daMala[k])) { plano[k] = 'vazio'; if (!miudeza(k)) vazios.push(k); }
+      else                                         { plano[k] = 'conflito'; if (!miudeza(k)) porCima.push(k); }
     });
     var pdfs = (pacoteLido.pdfs || []).length;
     var quando = pacoteLido.quando ? new Date(pacoteLido.quando).toLocaleString('pt-BR') : '?';
-    var html = '<div class="caixa"><p><strong>Mala de ' + (pacoteLido.origem || '?') + '</strong><br>' +
+    var deFora = String(pacoteLido.origem || '');
+    var html = '<div class="caixa"><p><strong>Mala de ' + deFora + '</strong><br>' +
       '<span class="nota">feita em ' + quando + '</span></p>';
+
+    // Uma mala feita do arquivo no disco é a cópia velha, e foi assim que
+    // a primeira mudança quase perdeu o bestiário. Avisar aqui é barato.
+    if (deFora.indexOf('file:///') === 0) {
+      html += '<p class="aviso"><strong>⚠ Esta mala foi feita do arquivo no disco</strong> ' +
+        '(<code>file:///…</code>), não do site publicado. Essa costuma ser uma cópia ' +
+        '<strong>mais velha</strong>. Se você tem outra, feita com o site aberto em ' +
+        '<code>https://…</code>, prefira aquela.</p>';
+    }
+
     html += '<p>' + novos.length + ' item(ns) que <strong>não existem</strong> aqui' +
             (pdfs ? ', ' + pdfs + ' ficha(s) em PDF' : '') + '.</p>';
+    if (vazios.length) {
+      html += '<p><strong>' + vazios.length + ' item(ns) existem aqui mas estão VAZIOS</strong> — ' +
+        'é a caixa que o site cria sozinho só de você abrir a aba:<br>' +
+        vazios.map(bonito).join(' · ') + '<br>' +
+        '<span class="nota">Estes entram junto com "o que falta": um vazio não é conteúdo.</span></p>';
+    }
     if (iguais) html += '<p class="nota">' + iguais + ' já estão idênticos.</p>';
     if (porCima.length) {
-      html += '<p class="aviso"><strong>' + porCima.length + ' item(ns) existem aqui e estão diferentes:</strong><br>' +
+      html += '<p class="aviso"><strong>' + porCima.length + ' item(ns) têm conteúdo aqui E na mala, e são diferentes:</strong><br>' +
         porCima.map(bonito).join(' · ') + '<br>' +
-        '<span class="nota">"Trazer só o que falta" não encosta neles. ' +
-        '"Trazer tudo por cima" troca o daqui pelo da mala.</span></p>';
+        '<span class="nota">Só estes ficam de fora. ' +
+        '"Trazer tudo por cima" troca o daqui pelo da mala — inclusive estes.</span></p>';
     }
-    html += '<button id="btFalta">📦 Trazer só o que falta</button>' +
+    html += '<button id="btFalta">📦 Trazer o que falta' + (vazios.length ? ' e o que está vazio' : '') + '</button>' +
             '<button id="btTudo" class="leve">⚠ Trazer tudo por cima</button></div>';
     q('previa').innerHTML = html;
     q('btFalta').addEventListener('click', function () { trazer(false); });
@@ -348,9 +401,9 @@
     if (!pacoteLido) return;
     var daMala = pacoteLido.localStorage, n = 0, pulados = 0, falhou = 0;
     Object.keys(daMala).forEach(function (k) {
-      var existe = false;
-      try { existe = localStorage.getItem(k) !== null; } catch (e) {}
-      if (existe && !porCima) { pulados++; return; }
+      // Sem "tudo por cima", só entra o que não existe, o que está vazio
+      // e o que já é idêntico (esse não muda nada, mas não custa).
+      if (!porCima && plano[k] === 'conflito') { pulados++; return; }
       try { localStorage.setItem(k, daMala[k]); n++; }
       catch (e) { falhou++; }
     });
@@ -361,7 +414,7 @@
     gravarPdfs(pdfs).then(function (quantos) {
       var msg = '<span class="ok">✓ ' + n + ' item(ns) trazido(s)</span>';
       if (quantos) msg += ' e ' + quantos + ' ficha(s) em PDF';
-      if (pulados) msg += ' · ' + pulados + ' pulado(s) por já existirem aqui';
+      if (pulados) msg += ' · ' + pulados + ' pulado(s) por já terem conteúdo diferente aqui';
       if (falhou) msg += ' · <span class="erro">' + falhou + ' não couberam</span> ' +
         '(a gaveta do navegador tem limite; apague o que não usa e tente de novo)';
       msg += '.<br><strong>Agora abra o site</strong> — está tudo no lugar.';
