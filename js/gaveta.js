@@ -40,11 +40,21 @@
   //  isso mudou AQUI, e serve de desempate para quem usa 'maisNovo'.
   const SINC_KEY = 'grifosAlados.gavetaSinc';
 
+  //  A rede de segurança da escolha. Quando a pessoa decide entre a
+  //  versão daqui e a da conta, a PERDEDORA fica guardada aqui, e a
+  //  tarja oferece um "↩ voltar" — é o mesmo acordo que a ficha faz
+  //  desde 15/09: nunca se apaga uma versão sem deixar saída. Isto é
+  //  conteúdo, e não digital: pode viajar na mala sem problema.
+  const GUARDADAS_KEY = 'grifosAlados.gavetaGuardadas';
+
   const areas = {};        // nome → { nome, chave, politica, aoReceber }
   const porChave = {};     // chave do localStorage → nome da área
   let sinc = {};
   try { sinc = JSON.parse(localStorage.getItem(SINC_KEY) || '{}') || {}; }
   catch (e) { sinc = {}; }
+  let guardadas = {};
+  try { guardadas = JSON.parse(localStorage.getItem(GUARDADAS_KEY) || '{}') || {}; }
+  catch (e) { guardadas = {}; }
 
   let uidLigado = '';                 // de quem é a gaveta que estamos ouvindo
   const refs = {};                    // nome → { ref, cb }
@@ -117,10 +127,88 @@
     } catch (e) {}
   }
 
+  function guardarGuardadas() {
+    try {
+      const grava = window.GA_guardar || function (c, v) { localStorage.setItem(c, v); return true; };
+      grava(GUARDADAS_KEY, JSON.stringify(guardadas));
+    } catch (e) {}
+  }
+
   function avisar() {
     ouvintes.forEach(function (fn) {
       try { fn(estado()); } catch (e) { console.warn('[gaveta] ouvinte:', e && e.message); }
     });
+    desenharTarja();
+  }
+
+  // ── A TARJA DA ESCOLHA ──────────────────────────────────────────
+  //  A conferência da ficha pergunta dentro da própria ficha, porque lá
+  //  há uma tela para isso. As áreas da gaveta não têm — o bestiário e
+  //  as anotações são abas inteiras —, então a pergunta vem numa tarja
+  //  no alto, como a do armazenamento cheio. Ela é ÂMBAR e não vermelha:
+  //  não houve perda, há uma escolha a fazer.
+  //
+  //  E ela NÃO se fecha sozinha nem tem ✕: enquanto a área está retida,
+  //  nada sobe nem desce. Deixar a pessoa dispensar o aviso seria deixá-la
+  //  sem sincronia sem saber por quê.
+  const RETIDA_ID = 'ga-gaveta-tarja';
+  function desenharTarja() {
+    if (typeof document === 'undefined' || !document.body) return;
+    const velha = document.getElementById(RETIDA_ID);
+    const nomes = Object.keys(retidas);
+    const comVolta = Object.keys(guardadas);
+    if (!nomes.length && !comVolta.length) { if (velha) velha.remove(); return; }
+
+    const esc = window.GA_esc || function (s) { return String(s == null ? '' : s); };
+    let html = '';
+    nomes.forEach(function (nome) {
+      const r = retidas[nome];
+      html += '<div class="gv-caso" data-gv-area="' + esc(nome) + '">' +
+        '<strong>' + esc(rotuloDe(nome)) + '</strong> mudou <em>aqui</em> e também <em>na sua conta</em>' +
+        (r && r.de ? ' (' + esc(r.de) + ')' : '') + '. Qual fica?' +
+        '<span class="gv-botoes">' +
+          '<button type="button" class="gv-btn" data-gv="daqui" data-gv-area="' + esc(nome) + '">Ficar com a daqui</button>' +
+          '<button type="button" class="gv-btn" data-gv="dela" data-gv-area="' + esc(nome) + '">Ficar com a da conta</button>' +
+        '</span>' +
+        '<span class="gv-mini">A outra fica guardada — dá para voltar.</span>' +
+      '</div>';
+    });
+    comVolta.forEach(function (nome) {
+      if (retidas[nome]) return;
+      const g = guardadas[nome];
+      html += '<div class="gv-caso gv-caso--feito" data-gv-area="' + esc(nome) + '">' +
+        '<strong>' + esc(rotuloDe(nome)) + '</strong>: ficou com a ' + esc((g && g.ficou) || 'escolhida') + '.' +
+        '<span class="gv-botoes">' +
+          '<button type="button" class="gv-btn" data-gv="voltar" data-gv-area="' + esc(nome) + '">↩ Voltar para a outra</button>' +
+          '<button type="button" class="gv-btn gv-btn--fim" data-gv="ok" data-gv-area="' + esc(nome) + '">Está certo</button>' +
+        '</span>' +
+      '</div>';
+    });
+
+    let caixa = velha;
+    if (!caixa) {
+      caixa = document.createElement('div');
+      caixa.id = RETIDA_ID;
+      caixa.className = 'gv-tarja';
+      caixa.setAttribute('role', 'alert');
+      caixa.addEventListener('click', aoClicarTarja);
+      document.body.appendChild(caixa);
+    }
+    caixa.innerHTML = '<span class="gv-selo">🗂 Gaveta da conta</span>' + html;
+  }
+
+  function aoClicarTarja(e) {
+    const btn = e.target.closest ? e.target.closest('[data-gv]') : null;
+    if (!btn) return;
+    e.preventDefault();
+    const nome = btn.dataset.gvArea, acao = btn.dataset.gv;
+    if (acao === 'ok')     { delete guardadas[nome]; guardarGuardadas(); return avisar(); }
+    if (acao === 'voltar') return window.GA_Gaveta.desfazer(nome);
+    window.GA_Gaveta.decidir(nome, acao);
+  }
+
+  function rotuloDe(nome) {
+    return (areas[nome] && areas[nome].rotulo) || nome;
   }
 
   // ── A CONFERÊNCIA ───────────────────────────────────────────────
@@ -304,21 +392,51 @@
       areas[o.nome] = {
         nome: o.nome,
         chave: o.chave,
+        rotulo: o.rotulo || o.nome,        // o nome que a tarja mostra
         politica: o.politica === 'maisNovo' ? 'maisNovo' : 'perguntar',
         aoReceber: o.aoReceber,
       };
       porChave[o.chave] = o.nome;
       ligarPendentes();
     },
-    // a escolha, quando a área ficou retida: 'daqui' ou 'dela'
+    // a escolha, quando a área ficou retida: 'daqui' ou 'dela'.
+    //  A PERDEDORA fica guardada antes de qualquer coisa — é o que
+    //  torna a escolha reversível, e sem isso a tarja seria uma
+    //  armadilha de um clique só.
     decidir: function (nome, qual) {
-      if (!retidas[nome]) return;
+      if (!retidas[nome] || !areas[nome]) return;
+      const daqui = lerLocal(nome);
+      const r = remoto[nome];
+      const dela = r && typeof r.conteudo === 'string' ? r.conteudo : null;
+      const ficaComADela = qual === 'dela' && dela != null;
+      const perdedora = ficaComADela ? daqui : dela;
       delete retidas[nome];
-      if (qual === 'dela') {
-        const r = remoto[nome];
-        if (r && typeof r.conteudo === 'string') return descer(nome, r.conteudo);
+      if (perdedora != null) {
+        guardadas[nome] = {
+          quando: Date.now(),
+          ficou: ficaComADela ? 'da conta' : 'daqui',
+          conteudo: perdedora,
+        };
+        guardarGuardadas();
       }
-      subir(nome, lerLocal(nome));
+      if (ficaComADela) return descer(nome, dela);
+      subir(nome, daqui);
+    },
+
+    // o "↩ voltar": a guardada volta a valer, e sobe — quem voltou
+    // atrás quer essa versão nos dois lados, não só neste navegador.
+    desfazer: function (nome) {
+      const g = guardadas[nome];
+      if (!g || typeof g.conteudo !== 'string' || !areas[nome]) return;
+      const atual = lerLocal(nome);
+      descer(nome, g.conteudo);                 // grava e avisa a aba
+      guardadas[nome] = {
+        quando: Date.now(),
+        ficou: g.ficou === 'da conta' ? 'daqui' : 'da conta',
+        conteudo: atual,                        // agora a outra é a guardada
+      };
+      guardarGuardadas();
+      subir(nome, g.conteudo);
     },
     estado: estado,
     aoMudar: function (fn) {

@@ -428,4 +428,23 @@
     });
   });
 
+
+  // ── A GAVETA DA CONTA (18/09/2026) ──────────────────────────────
+  //  As Anotações seguem a conta. Política 'perguntar': isto é
+  //  conteúdo, e conteúdo não se resolve por relógio — se mudou dos
+  //  dois lados, quem escolhe é quem escreveu.
+  //  A inscrição vai para a fila porque este arquivo carrega bem antes
+  //  do js/gaveta.js, que precisa do mesa.js.
+  (function () {
+    const inscricao = {
+      nome: 'anotacoes',
+      rotulo: 'Anotações',
+      chave: STORAGE_KEY,
+      politica: 'perguntar',
+      aoReceber: function () { carregar(); render(); }
+    };
+    if (window.GA_Gaveta) window.GA_Gaveta.registrar(inscricao);
+    else (window.GA_GavetaFila = window.GA_GavetaFila || []).push(inscricao);
+  })();
+
 })();

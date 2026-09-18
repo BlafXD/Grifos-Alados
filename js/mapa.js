@@ -1247,4 +1247,20 @@
     window.addEventListener('resize', () => { if (montado) desenharLigacoes(); });
   });
 
+
+  // ── A GAVETA DA CONTA (18/09/2026) ──────────────────────────────
+  //  O Mapa anda junto com as Anotações, mas é ÁREA PRÓPRIA: um nó por
+  //  área, senão abrir os Ramos baixaria os 162 KB do mapa junto.
+  (function () {
+    const inscricao = {
+      nome: 'mapa',
+      rotulo: 'Mapa / linha do tempo',
+      chave: STORAGE_KEY,
+      politica: 'perguntar',
+      aoReceber: function () { carregar(); renderTudo(); }
+    };
+    if (window.GA_Gaveta) window.GA_Gaveta.registrar(inscricao);
+    else (window.GA_GavetaFila = window.GA_GavetaFila || []).push(inscricao);
+  })();
+
 })();

@@ -854,6 +854,7 @@
   (function () {
     const inscricao = {
       nome: 'prefs',
+      rotulo: 'Preferências de acessibilidade',
       chave: CHAVE,
       politica: 'maisNovo',
       aoReceber: function (texto) { window.GA_Acess.receber(texto); }
