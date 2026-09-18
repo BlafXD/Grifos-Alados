@@ -470,6 +470,7 @@
         '<button type="button" class="me-btn" data-mesa="salvar-nome">Salvar</button>' +
       '</div>' +
       '<p class="me-link"><code>' + esc(l) + '</code>' +
+        '<a class="me-btn me-btn--mini" href="' + esc(l) + '" target="_blank" rel="noopener">abrir</a>' +
         '<button type="button" class="me-btn me-btn--mini" data-mesa="copiar" data-link="' + esc(l) + '">copiar</button></p>' +
       '<p class="me-mini">Mande esse link para a sua mesa. O id da sala é <code>' + esc(id) +
         '</code> e não muda — o nome acima é só de tela.</p>' +
@@ -506,12 +507,23 @@
       'O nome vira o endereço da sala (<code>?sala=…</code>) e vale primeiro a chegar.</p>');
   }
 
+  //  A PORTA PARA O OUTRO LADO (18/09/2026). O link dos jogadores só
+  //  existia dentro do "✒ Esta campanha", que pede estar logado E ser
+  //  mestre da sala — quem abria o site não tinha como chegar à visão
+  //  deles sem saber o endereço de cor. Agora está no cabeçalho, que
+  //  aparece sempre, e abre em outra aba para não derrubar esta.
+  //  Só no index: no jogadores.html já se está do outro lado.
   function cabecalho() {
     const id = mesaId();
     const nome = (est.mesa && est.mesa.nome) || id;
+    const l = linkDosJogadores();
     return '<div class="me-cab">' +
       '<h2 class="me-titulo">🎲 ' + esc(nome) + '</h2>' +
       (nome === id ? '' : '<p class="me-mini">sala <code>' + esc(id) + '</code></p>') +
+      (ehJogador() ? '' :
+        '<p class="me-verjog"><a href="' + esc(l) + '" target="_blank" rel="noopener">' +
+        '👥 Abrir a visão dos jogadores</a>' +
+        '<span class="me-mini">é o que eles veem desta sala — abre em outra aba</span></p>') +
     '</div>';
   }
 
