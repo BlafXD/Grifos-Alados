@@ -25,6 +25,9 @@
   'use strict';
 
   // chave curta no banco → chave real no localStorage
+  //  Nem tudo vai inteiro: o `valorParaEnviar()` poda o que é só do
+  //  mestre (o 🙈 das bases e viagens) e, desde 18/09/2026, manda do
+  //  `lojaLog` apenas a loja EXIBIDA — ver lojaExibida().
   const CHAVES = {
     lojaLog:        'grifosAlados.lojaLog',
     lojaLogSel:     'grifosAlados.lojaLogSel',
@@ -224,8 +227,44 @@
   // de uma viagem visível, para cada linha do diário e cada parada.
   const visivel = x => x && x.visivelJogadores !== false;
 
+  //  ── A LOJA EXIBIDA, NÃO O ARMARINHO INTEIRO (18/09/2026) ────────
+  //  O `lojaLog` guarda TODAS as lojas que o mestre já rolou, com item,
+  //  descrição e encanto de cada uma — na mesa do Caique eram 756 KB em
+  //  5 lojas (três delas com 206 KB). E ele ia inteiro para o banco.
+  //
+  //  O problema não é o tamanho guardado, é que os dois lados escutam o
+  //  nó PAI (`mesas/<sala>/dados`), e no Realtime Database ler um nó traz
+  //  tudo o que está embaixo. Ou seja: cada vez que QUALQUER pessoa abria
+  //  o site — mestre ou jogador — baixava 756 KB de histórico só para ver
+  //  a loja da vez. Seis pessoas, seis aberturas por sessão: ~27 MB por
+  //  sessão, por mesa.
+  //
+  //  E os jogadores nunca viram esse histórico: a edição deles mostra só
+  //  a loja EXIBIDA (o "Gerar nova loja" e o histórico são do mestre).
+  //  Então manda-se só a exibida, numa lista de um item só — que é a
+  //  forma que o `loja.js` do outro lado já sabe ler, sem mudar nada lá:
+  //  o `entradaSelecionada()` procura o id do `lojaLogSel` e, não achando,
+  //  cai no primeiro da lista, que aqui é o único.
+  //
+  //  O histórico continua inteiro no navegador do mestre, como sempre.
+  function lojaExibida(v) {
+    const log = JSON.parse(v);
+    if (!Array.isArray(log) || !log.length) return v;
+    let sel = null;
+    try { sel = localStorage.getItem(CHAVES.lojaLogSel); } catch (e) {}
+    // o `_log` do loja.js é unshift: o [0] é a mais nova, e é também o
+    // que o entradaSelecionada() escolhe quando não há seleção
+    const atual = log.filter(l => l && l.id === sel)[0] || log[0];
+    return JSON.stringify(atual ? [atual] : []);
+  }
+
   function valorParaEnviar(nome, v) {
-    if (v == null || (nome !== 'bases' && nome !== 'viagens')) return v;
+    if (v == null) return v;
+    if (nome === 'lojaLog') {
+      try { return lojaExibida(v); }
+      catch (e) { console.warn('[sync] não deu para podar o histórico de lojas:', e.message); return v; }
+    }
+    if (nome !== 'bases' && nome !== 'viagens') return v;
     try {
       const dados = JSON.parse(v);
       if (nome === 'bases' && dados && Array.isArray(dados.bases)) {
@@ -430,6 +469,12 @@
     try {
       if (this === window.localStorage && NOME_POR_CHAVE[k] && podeTransmitir) {
         pendentes.add(NOME_POR_CHAVE[k]);
+        // Trocar de loja no histórico muda só o `lojaLogSel` no
+        // localStorage — mas, desde que só a loja EXIBIDA viaja, o que
+        // vai no `lojaLog` DEPENDE dessa seleção. Sem isto, o mestre
+        // trocaria a loja da vitrine e os jogadores continuariam vendo
+        // a anterior, sem nada parecer errado de nenhum dos dois lados.
+        if (NOME_POR_CHAVE[k] === 'lojaLogSel') pendentes.add('lojaLog');
         clearTimeout(timer);
         timer = setTimeout(enviarPendentes, 2500);   // junta rajadas de edição
       }
