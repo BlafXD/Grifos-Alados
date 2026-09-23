@@ -360,6 +360,147 @@
     'Você recebe uma ação de movimento extra por rodada, que só pode ser usada para pilotar sua aeronave, e não sofre penalidades para atacar à distância ou lançar magias por estar a bordo de uma aeronave.',
   ] },
 
+  //  Algoz da Tormenta (p. 109–111) — 1 marca + 5 poderes. É uma
+  //  distinção de VILÃO (o livro diz: "não, o algoz da Tormenta não é um
+  //  herói"), e seus poderes têm o descritor "Tormenta" — são também
+  //  poderes da Tormenta. Aqui eles moram no grupo distinção; quem quiser
+  //  que contem para a escala/Carisma da Tormenta usa o 🩸 do cartão.
+  { id: 'dist-algoz-servo-e-senhor', nome: 'Servo e Senhor', grupo: 'distincao', livro: 'herois', pagina: 111,
+    tags: 'Algoz da Tormenta · Tormenta', distincao: 'algoz-da-tormenta', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Após ter sua existência remodelada pela Tormenta, um algoz não questiona seus senhores.',
+    'Você se torna imune à Insanidade da Tormenta e a efeitos de medo e mentais, exceto aqueles causados pelo lekael a quem serve.',
+  ] },
+  { id: 'dist-algoz-lar-infernal', nome: 'Lar Infernal', grupo: 'distincao', livro: 'herois', pagina: 111,
+    tags: 'Algoz da Tormenta · Tormenta', distincao: 'algoz-da-tormenta', marca: false, deus: null, magica: false,
+    preReq: 'dois poderes da Tormenta', custo: null, quadro: null, texto: [
+    'Acostumado às áreas de Tormenta, o algoz só se sente em casa nesses infernos.',
+    'Você se torna imune aos efeitos de áreas de Tormenta (Tormenta20, p. 319). Além disso, nessas áreas você recebe +5 em testes de perícia e seu descanso conta como luxuoso.',
+  ] },
+  { id: 'dist-algoz-desprezo-profano', nome: 'Desprezo Profano', grupo: 'distincao', livro: 'herois', pagina: 111,
+    tags: 'Algoz da Tormenta · Tormenta', distincao: 'algoz-da-tormenta', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Vontade, Ataque Corrupto, não ser devoto (exceto de Aharadak)', custo: null, quadro: null, texto: [
+    'Qualquer forma de magia é patética contra a Anticriação.',
+    'Você recebe resistência a magia +1 para cada poder da distinção e pode lançar Dissipar Magia, substituindo o teste de Misticismo por Vontade. Esta não é uma habilidade mágica e provém de seu desprezo pela Criação (veja “Magias Simuladas”, p. 44).',
+  ] },
+  { id: 'dist-algoz-ataque-corrupto', nome: 'Ataque Corrupto', grupo: 'distincao', livro: 'herois', pagina: 111,
+    tags: 'Algoz da Tormenta · Tormenta', distincao: 'algoz-da-tormenta', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Luta ou Pontaria, Lar Infernal', custo: null, quadro: null, texto: [
+    'Os golpes do algoz carregam a Tormenta consigo.',
+    'Seus ataques recebem o benefício de matéria vermelha (Tormenta20, p. 167), cumulativo com melhorias de material especial (incluindo a própria matéria vermelha), mas seus efeitos nocivos não o afetam. Para cada dois outros poderes da distinção que você possui, o dano extra causado por este poder aumenta em +1d6.',
+  ] },
+  { id: 'dist-algoz-general-rubro', nome: 'General Rubro', grupo: 'distincao', livro: 'herois', pagina: 111,
+    tags: 'Algoz da Tormenta · Tormenta', distincao: 'algoz-da-tormenta', marca: false, deus: null, magica: false,
+    preReq: 'Desprezo Profano, 11º nível', custo: null, quadro: null, texto: [
+    'Os lefeu reconhecem o algoz como um deles.',
+    'Lefeu de ND menor do que o seu nível são prestativos a você, enquanto criaturas tocadas pela Tormenta (lefou, pessoas com poderes da Tormenta, cultistas, devotos de Aharadak etc.) capazes de percebê-lo ficam enfeitiçados (Vontade CD Sab +2 para cada poder da Tormenta evita). Além disso, se você já possuir um parceiro fornecido por outra habilidade, ele se torna também um parceiro aberrante iniciante (veja p. 66).',
+  ] },
+  { id: 'dist-algoz-abracar-anticriacao', nome: 'Abraçar Anticriação', grupo: 'distincao', livro: 'herois', pagina: 111,
+    tags: 'Algoz da Tormenta · Tormenta', distincao: 'algoz-da-tormenta', marca: false, deus: null, magica: false,
+    preReq: 'General Rubro, 17º nível', custo: null, quadro: null, texto: [
+    'O algoz trai tudo que Arton é, tornando-se de corpo e alma como os invasores.',
+    'Seu tipo muda para monstro (lefeu) e você recebe todas as habilidades lefeu (Tormenta20, p. 315) — sua Insanidade da Tormenta causa perda de 1d6 PM para cada poder da distinção que você possui (atributo-chave Sabedoria).',
+  ] },
+
+  //  Amazona (p. 112–114) — 1 marca + 6 poderes.
+  { id: 'dist-amazona-armadura-das-amazonas', nome: 'Armadura das Amazonas', grupo: 'distincao', livro: 'herois', pagina: 113,
+    tags: 'Amazona', distincao: 'amazona', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Orgulhosas, as amazonas vestem sua autoconfiança como uma verdadeira armadura.',
+    'Se não estiver usando armadura pesada, você recebe +2 na Defesa.',
+  ] },
+  { id: 'dist-amazona-predadora', nome: 'Predadora', grupo: 'distincao', livro: 'herois', pagina: 113,
+    tags: 'Amazona', distincao: 'amazona', marca: false, deus: null, magica: false,
+    preReq: 'treinada em Sobrevivência', custo: null, quadro: null, texto: [
+    'Improvise. Adapte. Supere.',
+    'Você pode gastar uma ação de movimento e 2 PM para analisar um inimigo em alcance médio. Até o fim da cena, você recebe +1 em testes de perícia e rolagens de dano contra esse inimigo e outras criaturas do mesmo tipo. Para cada outro poder da distinção, você pode gastar +1 PM para aumentar esses bônus em +1.',
+  ] },
+  { id: 'dist-amazona-arquearia-montada', nome: 'Arquearia Montada', grupo: 'distincao', livro: 'herois', pagina: 114,
+    tags: 'Amazona', distincao: 'amazona', marca: false, deus: null, magica: false,
+    preReq: 'Bênção de Hippion', custo: null, quadro: null, texto: [
+    'A morte é uma amazona montada.',
+    'Enquanto está montada, você pode aplicar quaisquer bônus em testes de ataque e rolagens de dano fornecidos pela montaria em seus ataques à distância.',
+  ] },
+  { id: 'dist-amazona-bencao-de-hippion', nome: 'Bênção de Hippion', grupo: 'distincao', livro: 'herois', pagina: 114,
+    tags: 'Amazona', distincao: 'amazona', marca: false, deus: null, magica: false,
+    preReq: 'Ginete, Predadora', custo: null, quadro: null, texto: [
+    'Que o Trono das Rainhas Guerreiras sempre a acompanhe.',
+    'Você recebe um cavalo de guerra parceiro veterano. Caso já possua uma montaria fornecida por outra habilidade, em vez disso essa montaria fornece +2 em sua Destreza. Você e sua montaria possuem um vínculo emocional, sendo sempre capazes de entender um ao outro (não é preciso fazer testes de Adestramento). Caso perca sua montaria, você pode treinar outra com uma semana de trabalho.',
+  ] },
+  { id: 'dist-amazona-estilo-da-amazona', nome: 'Estilo da Amazona', grupo: 'distincao', livro: 'herois', pagina: 114,
+    tags: 'Amazona', distincao: 'amazona', marca: false, deus: null, magica: false,
+    preReq: 'Estilo de Arremesso, Predadora', custo: null, quadro: null, texto: [
+    'A amazona é uma guerreira rápida, versátil e letal.',
+    'Uma vez por rodada, quando faz um ataque corpo a corpo, se uma de suas mãos estiver livre ou empunhando um escudo leve, você pode gastar 2 PM para fazer um ataque adicional com uma arma de arremesso com essa mão.',
+  ] },
+  { id: 'dist-amazona-nunca-ceder', nome: 'Nunca Ceder', grupo: 'distincao', livro: 'herois', pagina: 113,
+    tags: 'Amazona', distincao: 'amazona', marca: false, deus: null, magica: false,
+    preReq: 'Estilo da Amazona', custo: null, quadro: null, texto: [
+    'Amazonas não se dobram às ferramentas dos opressores.',
+    'Quando falha em um teste de resistência contra um efeito de um inimigo, você pode gastar 2 PM para repetir esse teste, com um bônus igual ao total de poderes da distinção que você possui. Você só pode usar este poder uma vez por efeito.',
+  ] },
+  { id: 'dist-amazona-rainha-amazona', nome: 'Rainha Amazona', grupo: 'distincao', livro: 'herois', pagina: 114,
+    tags: 'Amazona', distincao: 'amazona', marca: false, deus: null, magica: false,
+    preReq: 'Arquearia Montada, Nunca Ceder, ter realizado um grande feito ou missão em nome das amazonas', custo: null, quadro: null, texto: [
+    'A amazona se torna uma campeã de sua causa — uma inspiração para suas irmãs e um pesadelo para seus inimigos.',
+    'Você recebe +1 em Carisma e, quando usa Predadora, aplica o bônus recebido como RD contra criaturas desse tipo.',
+  ] },
+
+  //  Armadilheiro Mestre (p. 114–117) — 1 marca + 6 poderes.
+  { id: 'dist-armadilheiro-experiente', nome: 'Armadilheiro Experiente', grupo: 'distincao', livro: 'herois', pagina: 116,
+    tags: 'Armadilheiro Mestre', distincao: 'armadilheiro-mestre', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Você recebe +2 em testes de perícia relacionados a armadilhas, incluindo testes para encontrar, desarmar e resistir a seus efeitos. Além disso, sempre que desarma uma armadilha que não seja sua, você recupera 1 PM.',
+  ] },
+  { id: 'dist-armadilheiro-armadilha-instantanea', nome: 'Armadilha Instantânea', grupo: 'distincao', livro: 'herois', pagina: 116,
+    tags: 'Armadilheiro Mestre', distincao: 'armadilheiro-mestre', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Ladinagem e Ofício (artesão)', custo: null,
+    quadro: { titulo: 'Armadilhas de armadilheiro', texto: [
+      'Atordoante — a criatura sofre 4d8 de impacto e fica atordoada por 1 rodada (Fortitude CD Int evita a condição); uma vez por cena por criatura.',
+      'Barril de Óleo — criaturas na área ficam vulneráveis a fogo até se limparem (ação completa).',
+      'Buraco Portátil — um fosso se abre na área; queda de 6m causa 4d6 de impacto (Atletismo CD 20 para escalar de volta, Reflexos CD Int evita e move para fora da área).',
+      'Constrangedora — a criatura fica pasma por 1 rodada e frustrada (Vontade CD Int evita o pasmo); uma vez por cena por criatura.',
+      'Fumaça — nuvem espessa obscurece a visão na área até o fim da cena (camuflagem leve a até 1,5m, total a partir de 3m).',
+      'Luz — criaturas na área ficam cegas por 1d4 rodadas e depois ofuscadas (Reflexos CD Int evita a cegueira).',
+      'Mola — a criatura é empurrada 9m para longe do centro e fica caída (Reflexos CD Int evita o empurrão); se colidir com obstáculo, sofre 2d6 de impacto.',
+      'Mina — criaturas na área sofrem 4d6 de impacto e são empurradas 3m para longe do centro (Reflexos CD Int reduz à metade e evita o empurrão).',
+      'Substância Enervante — criaturas na área não podem fazer ações que exijam calma ou concentração (como lançar magias) até se limparem (ação padrão).',
+    ] },
+    texto: [
+    'Combinando o ambiente e seus próprios mecanismos, o armadilheiro produz armadilhas em um piscar de olhos.',
+    'Escolha duas armadilhas entre as de armadilheiro e as de caçador. Uma vez feita, essa escolha não pode ser mudada. Você pode preparar as armadilhas escolhidas conforme as regras de Armadilhas (Tormenta20, p. 51), mas não precisa estar em um ambiente propício (porque usa seus próprios materiais) e pode usar Inteligência como atributo-chave da CD para encontrar, desarmar e evitar essas armadilhas. A cada novo poder da distinção, você pode escolher uma nova armadilha.',
+  ] },
+  { id: 'dist-armadilheiro-armadilha-distante', nome: 'Armadilha Distante', grupo: 'distincao', livro: 'herois', pagina: 116,
+    tags: 'Armadilheiro Mestre', distincao: 'armadilheiro-mestre', marca: false, deus: null, magica: false,
+    preReq: 'Des 1, Armadilha Instantânea', custo: null, quadro: null, texto: [
+    'Se o alvo não vem até a armadilha, a armadilha vai até o alvo.',
+    'Quando prepara uma armadilha, você pode gastar 1 PM para preparar essa armadilha em qualquer espaço desocupado em alcance curto.',
+  ] },
+  { id: 'dist-armadilheiro-armadilha-furtiva', nome: 'Armadilha Furtiva', grupo: 'distincao', livro: 'herois', pagina: 116,
+    tags: 'Armadilheiro Mestre', distincao: 'armadilheiro-mestre', marca: false, deus: null, magica: false,
+    preReq: 'Armadilha Instantânea, Ataque Furtivo', custo: null, quadro: null, texto: [
+    'O armadilheiro prepara surpresas particularmente letais.',
+    'A CD para encontrar, desarmar e resistir às suas armadilhas aumenta em +5 e você adiciona o dano de seu Ataque Furtivo ao dano que elas causam. Este poder não funciona contra criaturas que não fiquem desprevenidas ou surpreendidas.',
+  ] },
+  { id: 'dist-armadilheiro-armadilha-recarregavel', nome: 'Armadilha Recarregável', grupo: 'distincao', livro: 'herois', pagina: 116,
+    tags: 'Armadilheiro Mestre', distincao: 'armadilheiro-mestre', marca: false, deus: null, magica: false,
+    preReq: 'Armadilha Instantânea', custo: null, quadro: null, texto: [
+    'As armadilhas do armadilheiro continuam perigosas mesmo após serem disparadas.',
+    'Quando uma de suas armadilhas em alcance médio é disparada, você pode gastar 1 PM. Se fizer isso, a armadilha é rearmada automaticamente no início do seu próximo turno.',
+  ] },
+  { id: 'dist-armadilheiro-aumentar-complexidade', nome: 'Aumentar Complexidade', grupo: 'distincao', livro: 'herois', pagina: 116,
+    tags: 'Armadilheiro Mestre', distincao: 'armadilheiro-mestre', marca: false, deus: null, magica: false,
+    preReq: 'Armadilha Instantânea', custo: null, quadro: null, texto: [
+    'Mais complexas, mais engenhosas, mais perigosas, mais mortais.',
+    'Você soma sua Inteligência no dano e na CD de suas armadilhas (cumulativo) e elas passam a ocupar uma área de 4,5m de lado. Além disso, se você estiver em alcance médio de uma de suas armadilhas, pode dispará-la como uma ação livre.',
+  ] },
+  { id: 'dist-armadilheiro-tripla-ameaca', nome: 'Tripla Ameaça', grupo: 'distincao', livro: 'herois', pagina: 117,
+    tags: 'Armadilheiro Mestre', distincao: 'armadilheiro-mestre', marca: false, deus: null, magica: false,
+    preReq: 'Aumentar Complexidade', custo: null, quadro: null, texto: [
+    'Mas e se pudesse ser mais…?',
+    'Você pode gastar 10 PM para preparar até 3 armadilhas ao mesmo tempo. Cada uma aparece em um ponto diferente em alcance curto.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.

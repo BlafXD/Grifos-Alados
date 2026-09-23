@@ -38,6 +38,7 @@
   const p4 = n => Math.floor((n - 1) / 4);
   const outros = n => n - 1;
   const nOutros = n => `${outros(n)} outro${outros(n) !== 1 ? 's' : ''} poder${outros(n) !== 1 ? 'es' : ''} da distinção`;
+  const nTodos = n => `${n} poder${n !== 1 ? 'es' : ''} da distinção`;
   const calc2 = n => `1 base + ${p2(n)} (um a cada dois dos ${nOutros(n)})`;
   const calc4 = n => `1 base + ${p4(n)} (um a cada quatro dos ${nOutros(n)})`;
 
@@ -49,6 +50,42 @@
         const b = 1 + p2(n);
         return { txt: `+${b} em testes de perícia, rolagens de dano e na CD de suas habilidades e itens enquanto pilota`,
                  calc: calc2(n) };
+      },
+    },
+
+    // ── Algoz da Tormenta (Heróis de Arton, p. 111) ─────────────────
+    'dist-algoz-desprezo-profano': {
+      escala(n) {
+        return { txt: `resistência a magia +${n}`, calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-algoz-ataque-corrupto': {
+      escala(n) {
+        const d = p2(n);
+        return { txt: d ? `dano extra da matéria vermelha +${d}d6` : 'dano extra da matéria vermelha — ainda sem d6 extra',
+                 calc: `+1d6 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+
+    // ── Amazona (Heróis de Arton, p. 113–114) ───────────────────────
+    'dist-amazona-predadora': {
+      escala(n) {
+        return { txt: `+1 nos testes e no dano (até +${n} gastando 1 PM por ponto extra)`,
+                 calc: `+1 base + até ${outros(n)} (um por PM, um por cada um dos ${nOutros(n)})` };
+      },
+    },
+    'dist-amazona-nunca-ceder': {
+      escala(n) {
+        return { txt: `bônus +${n} no teste repetido`, calc: `igual ao total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Armadilheiro Mestre (Heróis de Arton, p. 116) ───────────────
+    'dist-armadilheiro-armadilha-instantanea': {
+      escala(n) {
+        const q = 2 + outros(n);
+        return { txt: `${q} armadilhas escolhidas`,
+                 calc: `2 base + ${outros(n)} (uma a cada novo poder da distinção — os ${nOutros(n)})` };
       },
     },
   };
