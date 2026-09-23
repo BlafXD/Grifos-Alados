@@ -1152,7 +1152,7 @@
     }
 
     html += bloqueIdentidade(f) + blocoComplicacoes(f) + blocoCondicoes(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
-            blocoAmigos(f) + blocoPoderes(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
+            blocoAmigos(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
             blocoCompras(f);
     const donoAberta = donoDe(f.id);
     html += `
@@ -2832,6 +2832,26 @@
   //  o <básica> básico" (Heróis de Arton, p. 22–45). Quem responde pela
   //  variante é a básica — a mesma regra que o resto da ficha já usa.
   function classeDosPoderes(chave) { return D.basicaDe(chave) || chave; }
+  //  ── QUAL CARTÃO DE BAIXO É DONO DE CADA GRUPO (23/09/2026) ────────
+  //  O ✨ Poderes lá de cima foi desmontado: os grupos de poder passaram
+  //  a morar nos dois cartões que já existiam embaixo — 🌿 Habilidades de
+  //  raça e origem e ⚔ Habilidades de classe e poderes —, cada um com o
+  //  seu ✍ Escrever, ＋ Adicionar e Abrir/Recolher todos. Raça e origem
+  //  juntam a habilidade de raça, o poder de raça e o poder de origem;
+  //  classe e poderes ficam com o resto (combate, destino, magia,
+  //  concedidos, Tormenta, grupo, distinção, os de classe e os escritos
+  //  à mão). A caixa de texto livre de cada cartão CONTINUA embaixo — a
+  //  condição dele de 15/09: quem escreveu à mão não perde uma linha.
+  const POD_BLOCO_DE_GRUPO = {
+    'raca-hab': 'racaOrigem', 'raca': 'racaOrigem', 'origem': 'racaOrigem',
+  };
+  function blocoDoGrupo(chave) { return POD_BLOCO_DE_GRUPO[chave] || 'classePoderes'; }
+  //  A gaveta 'classe:guerreiro' pertence ao grupo 'classe'; as outras
+  //  têm a chave igual ao grupo.
+  function grupoDaGaveta(chaveGaveta) {
+    return chaveGaveta.slice(0, 7) === 'classe:' ? 'classe' : chaveGaveta;
+  }
+  function blocoDaGaveta(chaveGaveta) { return blocoDoGrupo(grupoDaGaveta(chaveGaveta)); }
   function ressalvaDaVariante(chave) {
     const v = (window.GA_PODERES_CLASSE_VARIANTES || []).find(x => x.chave === chave);
     return (v && v.nota) ? v : null;
@@ -3016,11 +3036,28 @@
     return saida;
   }
 
+  //  As gavetas de UM dos dois cartões de baixo, já na ordem. A posição
+  //  de cada uma é recomputada DENTRO do cartão — é ela que as setas
+  //  ⇈ ↑ ↓ do título da gaveta usam para andar sem sair do cartão.
+  function gavetasDoBloco(f, campo) {
+    return gavetasDePoder(f).filter(g => blocoDaGaveta(g.chave) === campo);
+  }
+  //  Quantos poderes DOS LIVROS caem neste cartão — para o rótulo do
+  //  cabeçalho e a dica da busca. Os de classe só contam no de classe.
+  function baseDoBloco(campo) {
+    const geral = (window.GA_PODERES || []).filter(p => blocoDoGrupo(p.grupo) === campo).length;
+    return geral + (campo === 'classePoderes' ? baseClasse().length : 0);
+  }
+  //  Os poderes da ficha que moram neste cartão.
+  function poderesDoBloco(f, campo) {
+    return f.poderes.filter(p => blocoDoGrupo(p.grupo) === campo);
+  }
+
   //  Uma gaveta desenhada: o título, as setas que a movem inteira, e os
   //  cartões com a posição que cada um ocupa NELA (é com essa posição
   //  que as setas do poder andam). `itens` são pares { p, i } — o poder
   //  e o índice guardado.
-  function gavetaDePoder(f, g, pos, quantas) {
+  function gavetaDePoder(f, g, pos, quantas, campo) {
     const n = g.itens.length;
     return `
       <div class="fi-pod-grupo">
@@ -3029,51 +3066,65 @@
           <em>${n} poder${n > 1 ? 'es' : ''}</em>
           ${quantas > 1 ? `<span class="fi-pod-ordem fi-pod-grupo-ordem">${
             setasDeOrdem('podgrp', pos, pos, quantas, 'a gaveta ' + g.titulo,
-                         ' data-k="' + esc(g.chave) + '"')}</span>` : ''}
+                         ' data-k="' + esc(g.chave) + '" data-bloco="' + esc(campo || '') + '"')}</span>` : ''}
         </h3>
         <ul class="fi-pod-lista">${g.itens.map((x, i) =>
           cartaoPoder(f, x.p, x.i, i, n)).join('')}</ul>
       </div>`;
   }
 
-  function blocoPoderes(f) {
-    const temBase = Array.isArray(window.GA_PODERES) && window.GA_PODERES.length;
-    const nBase = (temBase ? window.GA_PODERES.length : 0) + baseClasse().length;
-    const todosFechados = f.poderes.length > 0 && f.poderes.every(p => poderesFechados[p.id]);
-    const gavetas = gavetasDePoder(f);
-    const grupos = gavetas.map((g, pos) => gavetaDePoder(f, g, pos, gavetas.length)).join('');
-    const mexida = (f.poderesOrdem || []).length > 0;
+  //  Um dos dois cartões de baixo, agora com os poderes do grupo dele —
+  //  o que era o ✨ Poderes, fragmentado (23/09/2026). `campo` é
+  //  'racaOrigem' ou 'classePoderes'. Cada um tem os seus botões (só
+  //  mexem nos poderes DELE), as suas gavetas, e a caixa de texto livre
+  //  que já existia, embaixo. A conta da Tormenta mora no de classe.
+  function blocoDePoderes(f, campo) {
+    const b = BLOCOS.find(x => x.campo === campo) || { campo: campo, titulo: campo, dica: '' };
+    const daClasse = campo === 'classePoderes';
+    const nBase = baseDoBloco(campo);
+    const meus = poderesDoBloco(f, campo);
+    const todosFechados = meus.length > 0 && meus.every(p => poderesFechados[p.id]);
+    const gavetas = gavetasDoBloco(f, campo);
+    const grupos = gavetas.map((g, pos) => gavetaDePoder(f, g, pos, gavetas.length, campo)).join('');
+    const mexida = (f.poderesOrdem || []).some(k => blocoDaGaveta(k) === campo);
+    const vazia = daClasse
+      ? `<p class="fi-pod-vazia">Nenhum poder ainda. O <strong>＋ Adicionar poder</strong> abre a busca nos
+          ${nBase || 808} poderes deste cartão — <strong>classe</strong> (com uma gaveta para cada uma das 16),
+          combate, destino, magia, concedidos, Tormenta, grupo e distinção. Para o que não está em livro nenhum,
+          o <strong>✍ Escrever</strong>.</p>`
+      : `<p class="fi-pod-vazia">Nenhuma habilidade ainda. O <strong>＋ Adicionar</strong> abre a busca nas
+          <strong>habilidades de raça</strong>, nos <strong>poderes de raça</strong> e nos
+          <strong>poderes de origem</strong> dos livros. Para o que não está em livro nenhum, o
+          <strong>✍ Escrever</strong>.</p>`;
 
     return `
-      <div class="fi-cartao fi-bloco fi-poderes">
-        <h2 class="fi-cartao-tit">✨ Poderes
-          <span class="fi-cartao-nota">${f.poderes.length} na ficha${nBase
-            ? ' · ' + nBase + ' nos livros, com os de classe' : ''}</span>
+      <div class="fi-cartao fi-bloco fi-poderes fi-poderes--${campo}">
+        <h2 class="fi-cartao-tit">${b.titulo}
+          <span class="fi-cartao-nota">${meus.length} na ficha${nBase
+            ? ' · ' + nBase + ' nos livros' + (daClasse ? ', com os de classe' : '') : ''}</span>
           <span class="fi-pod-botoes">
-            ${mexida ? `<button type="button" class="fi-add fi-add--menor" data-acao="pod-ordem-livro"
-                    title="Devolver as gavetas à ordem dos livros: combate, destino, magia, concedidos, Tormenta, raça, grupo, classe e escritos à mão"
+            ${mexida ? `<button type="button" class="fi-add fi-add--menor" data-acao="pod-ordem-livro" data-bloco="${campo}"
+                    title="Devolver as gavetas deste cartão à ordem dos livros"
               >↺ Ordem do livro</button>` : ''}
-            ${f.poderes.length > 1 ? `<button type="button" class="fi-add fi-add--menor" data-acao="dobra-poderes"
-                    title="${todosFechados ? 'Mostrar o texto de todos os poderes' : 'Deixar só os nomes'}"
+            ${meus.length > 1 ? `<button type="button" class="fi-add fi-add--menor" data-acao="dobra-poderes" data-bloco="${campo}"
+                    title="${todosFechados ? 'Mostrar o texto de todos' : 'Deixar só os nomes'}"
               >${todosFechados ? '▾ Abrir todos' : '▸ Recolher todos'}</button>` : ''}
-            <button type="button" class="fi-add fi-add--menor" data-acao="escrever-poder"
+            <button type="button" class="fi-add fi-add--menor" data-acao="escrever-poder" data-bloco="${campo}"
                     title="Um poder que não está na base: o caseiro, o que o mestre inventou">✍ Escrever</button>
-            <button type="button" class="fi-add fi-add--menor fi-pod-add" data-acao="add-poder" ${temBase || baseClasse().length ? '' : 'disabled'}>
-              ＋ Adicionar poder</button>
+            <button type="button" class="fi-add fi-add--menor fi-pod-add" data-acao="add-poder" data-bloco="${campo}" ${nBase ? '' : 'disabled'}>
+              ＋ Adicionar${daClasse ? ' poder' : ''}</button>
           </span>
         </h2>
-        ${blocoTormenta(f)}
-        ${grupos || `<p class="fi-pod-vazia">Nenhum poder ainda. O <strong>＋ Adicionar poder</strong> abre a busca
-          nos ${nBase || 808} poderes dos livros, com filtro por grupo — <strong>classe</strong> (com uma gaveta
-          para cada uma das 16), combate, destino, magia, concedidos, Tormenta, raça e grupo. Para o que não está
-          em livro nenhum, o <strong>✍ Escrever</strong>.</p>`}
+        ${daClasse ? blocoTormenta(f) : ''}
+        ${grupos || vazia}
         <p class="fi-nota">Cada poder traz o <strong>texto inteiro</strong> do livro, com a página. Clique no
           <strong>nome</strong> para recolher ou abrir, e use <strong>⇈ ↑ ↓</strong> para pôr na ordem que você quer
           ler — as setas <em>do cartão</em> andam com o poder dentro da gaveta dele, e as setas <em>do título de
-          cada gaveta</em> levam o grupo inteiro para cima ou para baixo (é como se põe Combate, ou Magia, na
-          frente de tudo). O <strong>🩸</strong> de um poder marca que ele <em>conta como</em> poder da Tormenta sem ser um:
-          entra na escala dos outros, mas não na perda de Carisma. O <strong>✦</strong> é do livro: aquele poder é
-          uma habilidade <em>mágica</em>.</p>
+          cada gaveta</em> levam a gaveta inteira para cima ou para baixo.${daClasse ? ` O <strong>🩸</strong> de um
+          poder marca que ele <em>conta como</em> poder da Tormenta sem ser um: entra na escala dos outros, mas não
+          na perda de Carisma.` : ''} O <strong>✦</strong> é do livro: aquele poder é uma habilidade
+          <em>mágica</em>.</p>
+        ${caixaRica(f, b)}
       </div>`;
   }
 
@@ -3451,12 +3502,15 @@
              data-campo="${campo}" data-ph="${esc(dica)}">${html || ''}</div>
       </div>`;
   }
+  //  Raça e origem e Classe e poderes viraram cartões de poder (têm
+  //  gavetas, busca e os botões); Anotações continua caixa de texto pura.
   function blocoTextos(f) {
-    return BLOCOS.map(b => `
-      <div class="fi-cartao fi-bloco">
-        <h2 class="fi-cartao-tit">${b.titulo}</h2>
-        ${caixaRica(f, b)}
-      </div>`).join('');
+    return BLOCOS.map(b => (b.campo === 'racaOrigem' || b.campo === 'classePoderes')
+      ? blocoDePoderes(f, b.campo)
+      : `<div class="fi-cartao fi-bloco">
+           <h2 class="fi-cartao-tit">${b.titulo}</h2>
+           ${caixaRica(f, b)}
+         </div>`).join('');
   }
 
   // ═══ SÓ OS NÚMEROS, SEM REDESENHAR ════════════════════════════════
@@ -4015,8 +4069,8 @@
     }
 
     // ── PODERES ────────────────────────────────────────────────────
-    if (acao === 'add-poder')      return abrirBuscaPoder(f);
-    if (acao === 'escrever-poder') return escreverPoder(f);
+    if (acao === 'add-poder')      return abrirBuscaPoder(f, btn.dataset.bloco);
+    if (acao === 'escrever-poder') return escreverPoder(f, undefined, btn.dataset.bloco);
     if (acao === 'editar-poder')   return escreverPoder(f, +btn.dataset.i);
     if (acao === 'tira-poder') {
       const p = f.poderes[+btn.dataset.i];
@@ -4051,27 +4105,34 @@
       seguirItem(acao, irmaos[alvo], antes);
       return;
     }
-    //  ⇈ ↑ ↓ da GAVETA (22/09/2026): o grupo inteiro sobe ou desce.
-    //  A lista de chaves é a mesma que a tela desenhou (gavetasDePoder),
-    //  então o que se move é exatamente o que se vê — e é ela, já
-    //  remexida, que fica guardada em f.poderesOrdem.
+    //  ⇈ ↑ ↓ da GAVETA (22/09/2026, escopada por cartão em 23/09): a
+    //  gaveta sobe ou desce DENTRO do cartão dela. Reordena as gavetas
+    //  daquele cartão e reescreve a ordem global preservando as do outro
+    //  cartão no lugar — onde havia uma gaveta deste cartão, entra a
+    //  próxima da nova ordem.
     if (acao === 'podgrp-sobe' || acao === 'podgrp-desce' || acao === 'podgrp-topo') {
-      const chaves = gavetasDePoder(f).map(g => g.chave);
-      const de = chaves.indexOf(btn.dataset.k || '');
+      const campo = btn.dataset.bloco;
+      const doBloco = gavetasDoBloco(f, campo).map(g => g.chave);
+      const de = doBloco.indexOf(btn.dataset.k || '');
       if (de < 0) return;
       const para = acao === 'podgrp-topo' ? 0 : de + (acao === 'podgrp-sobe' ? -1 : 1);
-      if (para < 0 || para >= chaves.length || para === de) return;
+      if (para < 0 || para >= doBloco.length || para === de) return;
       const antes = btn.getBoundingClientRect().top;
-      const [k] = chaves.splice(de, 1);
-      chaves.splice(para, 0, k);
-      f.poderesOrdem = chaves;
+      const [k] = doBloco.splice(de, 1);
+      doBloco.splice(para, 0, k);
+      const todas = gavetasDePoder(f).map(g => g.chave);
+      let j = 0;
+      f.poderesOrdem = todas.map(ch => blocoDaGaveta(ch) === campo ? doBloco[j++] : ch);
       sujar(f.id, 'poderesOrdem'); salvar(); render();
       seguirItem(acao, para, antes, '[data-k="' + k + '"]');
       return;
     }
     if (acao === 'pod-ordem-livro') {
-      if (!(f.poderesOrdem || []).length) return;
-      f.poderesOrdem = [];
+      const campo = btn.dataset.bloco;
+      const antes = f.poderesOrdem || [];
+      const nova = antes.filter(k => blocoDaGaveta(k) !== campo);
+      if (nova.length === antes.length) return;
+      f.poderesOrdem = nova;
       sujar(f.id, 'poderesOrdem'); salvar(); return render();
     }
     // o 🩸: este poder conta como um poder da Tormenta sem ser um
@@ -4095,8 +4156,9 @@
       guardarPodFechados(); return render();
     }
     if (acao === 'dobra-poderes') {
-      const abrir = f.poderes.every(p => poderesFechados[p.id]);
-      f.poderes.forEach(p => { if (abrir) delete poderesFechados[p.id]; else poderesFechados[p.id] = 1; });
+      const meus = poderesDoBloco(f, btn.dataset.bloco);
+      const abrir = meus.every(p => poderesFechados[p.id]);
+      meus.forEach(p => { if (abrir) delete poderesFechados[p.id]; else poderesFechados[p.id] = 1; });
       guardarPodFechados(); return render();
     }
 
@@ -4861,17 +4923,21 @@
     campo.focus();
   }
 
-  function abrirBuscaPoder(f) {
-    //  Duas bases numa lista só: os de fora de classe (GA_PODERES) e os
-    //  DE classe (GA_PODERES_CLASSE). O grupo "⚔ Classe" abre a segunda
-    //  fileira de chips, uma por classe, com as DA FICHA na frente — é
-    //  quase sempre uma delas que se procura.
-    const base = (window.GA_PODERES || []).concat(baseClasse());
+  function abrirBuscaPoder(f, campo) {
+    //  A busca é ESCOPADA ao cartão que a abriu (23/09/2026): o de raça e
+    //  origem só acha habilidade de raça, poder de raça e poder de origem;
+    //  o de classe e poderes acha o resto, com os DE classe (GA_PODERES_
+    //  CLASSE). O grupo "⚔ Classe" abre a segunda fileira de chips, uma
+    //  por classe, com as DA FICHA na frente — quase sempre é uma delas.
+    const daClasse = campo === 'classePoderes';
+    const base = (window.GA_PODERES || []).filter(p => blocoDoGrupo(p.grupo) === campo)
+      .concat(daClasse ? baseClasse() : []);
+    const gruposAqui = gruposDePoder().filter(g => g.chave !== 'livre' && blocoDoGrupo(g.chave) === campo);
     if (!base.length || !window.GA_abrirModal) return;
 
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
-        <span>✨ Adicionar poder</span>
+        <span>✨ ${daClasse ? 'Adicionar poder' : 'Adicionar habilidade'}</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
       <div id="fiPodCorpo"></div>`);
@@ -4898,7 +4964,7 @@
 
     function telaBusca(termo) {
       const chips = [{ chave: '', nome: 'Todos', emoji: '✨', quantos: base.length }]
-        .concat(gruposDePoder().filter(g => g.chave !== 'livre'))
+        .concat(gruposAqui)
         .map(g => `<button type="button" class="fi-pod-chip${grupo === g.chave ? ' fi-pod-chip--on' : ''}"
                 data-grupo="${esc(g.chave)}">${g.emoji} ${esc(g.nome)} <em>${g.quantos}</em></button>`).join('');
       const minhas = minhasClasses();
@@ -4919,8 +4985,10 @@
           ${esc((D.classe(D.basicaDe(x.C.chave)) || {}).nome || '')} — ${esc(x.v.nota)}
           <em>(Heróis de Arton, p. ${x.v.pagina})</em></p>`).join('')}`;
       corpo.innerHTML = `
-        <p class="ga-modal-dica">Os ${base.length} poderes dos livros — <strong>com os ${baseClasse().length}
-          de classe</strong>. Busque pelo nome, pelo texto, pelo deus, pela raça ou pela classe — ou filtre
+        <p class="ga-modal-dica">${daClasse
+          ? 'Os ' + base.length + ' poderes deste cartão — <strong>com os ' + baseClasse().length +
+            ' de classe</strong>. Busque pelo nome, pelo texto, pelo deus ou pela classe'
+          : 'As ' + base.length + ' habilidades de raça e origem dos livros. Busque pelo nome, pelo texto ou pela raça'} — ou filtre
           pelo grupo.</p>
         <div class="fi-pod-chips" id="fiPodChips">${chips}</div>
         ${chipsClasse}
@@ -5031,24 +5099,30 @@
   //  O poder que não está na base: os de CLASSE (que ficaram para outra
   //  hora) e os caseiros. Fica com o grupo que a pessoa escolher e o
   //  texto que ela escrever — o resto do cartão funciona igual.
-  function escreverPoder(f, i) {
+  function escreverPoder(f, i, campo) {
     if (!window.GA_abrirModal) return;
     const p = (typeof i === 'number') ? f.poderes[i] : null;
     if (typeof i === 'number' && !p) return;
+    //  Editando, o cartão é o do próprio poder; escrevendo, é o que
+    //  clicou. Os grupos oferecidos são só os DAQUELE cartão — um poder
+    //  escrito à mão não pula para o outro cartão sem querer.
+    campo = campo || (p ? blocoDoGrupo(p.grupo) : 'classePoderes');
+    const daClasse = campo === 'classePoderes';
+    const gruposAqui = gruposDePoder().filter(g => blocoDoGrupo(g.chave) === campo);
+    const grupoPadrao = p ? p.grupo : (daClasse ? 'livre' : 'raca-hab');
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
-        <span>✍ ${p ? 'Editar poder' : 'Escrever um poder'}</span>
+        <span>✍ ${p ? 'Editar' : 'Escrever'} ${daClasse ? 'um poder' : 'uma habilidade'}</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
-      <p class="ga-modal-dica">Para o que não está nos livros: o poder caseiro, o que o mestre inventou, a
-        variação da mesa. (Os <strong>de classe</strong> saíram daqui em 17/09/2026 — agora estão no
-        <strong>＋ Adicionar poder</strong>, no grupo ⚔ Classe.) Uma linha em branco separa parágrafos.</p>
+      <p class="ga-modal-dica">Para o que não está nos livros: o caseiro, o que o mestre inventou, a
+        variação da mesa. Uma linha em branco separa parágrafos.</p>
       <label class="fi-campo"><span class="fi-rot">Nome</span>
         <input type="text" class="fi-txt" id="fiPodNome" autocomplete="off"
-               value="${p ? esc(p.nome) : ''}" placeholder="Golpe Pessoal, Fúria do Bárbaro…"></label>
+               value="${p ? esc(p.nome) : ''}" placeholder="${daClasse ? 'Golpe Pessoal, Fúria do Bárbaro…' : 'Visão na Penumbra, Herança…'}"></label>
       <label class="fi-campo"><span class="fi-rot">Grupo</span>
-        <select class="fi-sel" id="fiPodGrupo">${gruposDePoder().map(g =>
-          `<option value="${esc(g.chave)}"${p && p.grupo === g.chave ? ' selected' : ''}>${g.emoji} ${esc(g.nome)}</option>`).join('')}</select></label>
+        <select class="fi-sel" id="fiPodGrupo">${gruposAqui.map(g =>
+          `<option value="${esc(g.chave)}"${g.chave === grupoPadrao ? ' selected' : ''}>${g.emoji} ${esc(g.nome)}</option>`).join('')}</select></label>
       <label class="fi-campo" id="fiPodClasseCampo" ${p && p.grupo === 'classe' ? '' : 'hidden'}>
         <span class="fi-rot">De qual classe</span>
         <select class="fi-sel" id="fiPodClasse">
