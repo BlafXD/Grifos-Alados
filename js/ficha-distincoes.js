@@ -120,6 +120,39 @@
                  calc: `PI limitado pelo total de poderes da distinção (${nTodos(n)})` };
       },
     },
+
+    // ── Caçador de Cabeças (Heróis de Arton, p. 126) ────────────────
+    'dist-cacador-cabecas-exterminar-presa': {
+      escala(n) {
+        return { txt: `${n} PM temporário${n !== 1 ? 's' : ''} contra a criatura marcada`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Caçador de Dragões (Heróis de Arton, p. 128) ────────────────
+    'dist-cacador-dragoes-destemor-inflamado': {
+      escala(n) {
+        return { txt: `+${2 + p2(n)} em testes de perícia e rolagens de dano ao sofrer medo`, calc: `2 base + ${p2(n)} (um a cada dois dos ${nOutros(n)})` };
+      },
+    },
+    'dist-cacador-dragoes-alcar-aos-ceus': {
+      escala(n) {
+        const d = 1 + p2(n);
+        return { txt: `+${d} dado${d !== 1 ? 's' : ''} extra${d !== 1 ? 's' : ''} de dano na investida (dobrado contra dragão)`, calc: calc2(n) };
+      },
+    },
+    'dist-cacador-dragoes-danificar-as-asas': {
+      escala(n) {
+        return { txt: `CD +${n} para o caído e lento (dobrado contra dragão: +${2 * n})`, calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-cacador-dragoes-entortar-escamas': {
+      escala(n) {
+        return n >= 5
+          ? { txt: '–5 na Defesa e –10 na RD do alvo até o fim da cena', calc: 'com 5+ poderes da distinção' }
+          : { txt: '–2 na Defesa e –5 na RD do alvo até o fim da cena', calc: `passa a –5/–10 ao chegar a 5 poderes da distinção (você tem ${n})` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {

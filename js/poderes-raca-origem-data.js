@@ -598,6 +598,82 @@
     'Você aprende e pode lançar Resistência a Energia. Caso aprenda novamente essa magia, seu custo diminui em –1 PM. Além disso, ela recebe o seguinte aprimoramento. +2 PM: o alvo é protegido de certos efeitos de áreas de Tormenta e templos de Aharadak (Ameaças de Arton, p. 60). Ao entrar nesses locais, ele não fica frustrado, seus itens mágicos encantados não perdem encantos e ele recebe +5 em testes de resistência contra Fenômenos Rubros (Ameaças de Arton, p. 360).',
   ] },
 
+  //  Caçador de Cabeças (p. 123–126) — 1 marca + 5 poderes.
+  { id: 'dist-cacador-cabecas-terror-de-lamnor', nome: 'Terror de Lamnor', grupo: 'distincao', livro: 'herois', pagina: 126,
+    tags: 'Caçador de Cabeças', distincao: 'cacador-de-cabecas', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. No continente bestial, o silêncio assusta mais que qualquer rugido.',
+    'Você recebe +2 em Furtividade e +2 na margem de ameaça de ataques contra criaturas desprevenidas.',
+  ] },
+  { id: 'dist-cacador-cabecas-predador-alfa', nome: 'Predador Alfa', grupo: 'distincao', livro: 'herois', pagina: 126,
+    tags: 'Caçador de Cabeças', distincao: 'cacador-de-cabecas', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Furtividade, Lobo Solitário, ser duyshidakk', custo: null, quadro: null, texto: [
+    'O caçador de cabeças se move tão silenciosamente que parece se teleportar.',
+    'Uma vez por rodada, você pode gastar uma ação de movimento e 2 PM para fazer um teste de Furtividade oposto à Percepção de uma criatura em alcance curto. Se vencer o teste, você “surge” adjacente ao alvo e é considerado invisível contra ele até o início do seu próximo turno. Esta habilidade exige liberdade de movimentos; você não pode usá-la se estiver de armadura pesada ou na condição imóvel.',
+  ] },
+  { id: 'dist-cacador-cabecas-arsenal-do-cacador', nome: 'Arsenal do Caçador', grupo: 'distincao', livro: 'herois', pagina: 125,
+    tags: 'Caçador de Cabeças', distincao: 'cacador-de-cabecas', marca: false, deus: null, magica: false,
+    preReq: 'Predador Alfa, Saque Rápido', custo: null, quadro: null, texto: [
+    'Além de furtividade, o caçador de cabeças emprega uma variedade de itens alquímicos.',
+    'Você soma sua Sabedoria na CD e nas rolagens de dano (ou de perda de vida) dos preparados alquímicos e venenos que usa, e o alcance em que pode arremessá-los aumenta em uma categoria (de curto para médio e de médio para longo). Além disso, se o item exigir uma ação de movimento para ser preparado (como acender o pavio de uma bomba ou aplicar um veneno em sua arma), você pode fazer isso como uma ação livre.',
+  ] },
+  { id: 'dist-cacador-cabecas-camuflagem-do-cacador', nome: 'Camuflagem do Caçador', grupo: 'distincao', livro: 'herois', pagina: 125,
+    tags: 'Caçador de Cabeças', distincao: 'cacador-de-cabecas', marca: false, deus: null, magica: false,
+    preReq: 'Camuflagem, Predador Alfa', custo: null, quadro: null, texto: [
+    'Quando está oculto, o caçador de cabeças é capaz de apagar completamente sua presença.',
+    'Quando você está sob camuflagem, seus inimigos aplicam a chance de erro por camuflagem a qualquer efeito contra você (não apenas ataques).',
+  ] },
+  { id: 'dist-cacador-cabecas-exterminar-presa', nome: 'Exterminar Presa', grupo: 'distincao', livro: 'herois', pagina: 126,
+    tags: 'Caçador de Cabeças', distincao: 'cacador-de-cabecas', marca: false, deus: null, magica: false,
+    preReq: 'Espreitar, Predador Alfa', custo: null, quadro: null, texto: [
+    'Quando alcança seu alvo, o caçador de cabeças não oferece segundas chances.',
+    'Quando usa Marca da Presa, para cada poder da distinção você recebe 1 PM temporário que só pode ser usado contra a criatura marcada. Além disso, se fizer um acerto crítico contra essa criatura, seu dano adicional por Marca da Presa também é multiplicado.',
+  ] },
+  { id: 'dist-cacador-cabecas-sentidos-de-cacada', nome: 'Sentidos de Caçada', grupo: 'distincao', livro: 'herois', pagina: 126,
+    tags: 'Caçador de Cabeças', distincao: 'cacador-de-cabecas', marca: false, deus: null, magica: false,
+    preReq: 'Predador Alfa, Sentidos Aguçados', custo: null, quadro: null, texto: [
+    'O caçador de cabeças aprende a não depender dos sentidos para abater sua presa.',
+    'Você enxerga perfeitamente no escuro, incluindo escuridão mágica, e ignora camuflagem por fumaça ou névoa.',
+  ] },
+
+  //  Caçador de Dragões (p. 126–129) — 1 marca + 5 poderes.
+  { id: 'dist-cacador-dragoes-escama-da-honra', nome: 'Escama da Honra', grupo: 'distincao', livro: 'herois', pagina: 128,
+    tags: 'Caçador de Dragões', distincao: 'cacador-de-dragoes', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Como símbolo de sua iniciação, cada caçador de dragões ostenta um amuleto feito de uma escama do primeiro dragão que derrotou.',
+    'Você recebe um amuleto de escama da honra, um item de vestuário que não ocupa espaço nem conta em seu limite de itens vestidos. Enquanto estiver usando esse amuleto, uma vez por rodada, quando causa dano com um ataque corpo a corpo, você pode causar +1d6 pontos de dano de um tipo escolhido entre os dos sopros dos dragões que você já derrotou. Se perder seu amuleto, você pode confeccionar outro em um processo que demora 1 dia e exige uma escama de um dragão que você tenha matado há menos de 30 dias.',
+  ] },
+  { id: 'dist-cacador-dragoes-destemor-inflamado', nome: 'Destemor Inflamado', grupo: 'distincao', livro: 'herois', pagina: 128,
+    tags: 'Caçador de Dragões', distincao: 'cacador-de-dragoes', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Vontade', custo: null, quadro: null, texto: [
+    'A presença de um dragão é suficiente para destruir a coragem de muitos, mas não de um caçador de dragões.',
+    'Você é imune a medo (exceto fobias raciais). Além disso, quando um inimigo usa um efeito de medo contra você, você recebe +2 em testes de perícia e rolagens de dano até o fim da cena. Para cada dois outros poderes da distinção que você possuir, esse bônus aumenta em +1.',
+  ] },
+  { id: 'dist-cacador-dragoes-alcar-aos-ceus', nome: 'Alçar aos Céus', grupo: 'distincao', livro: 'herois', pagina: 128,
+    tags: 'Caçador de Dragões', distincao: 'cacador-de-dragoes', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Atletismo, Destemor Inflamado', custo: null, quadro: null, texto: [
+    'O caçador pega impulso, dando um salto impressionante para reduzir a distância até seu alvo, acertando-o com um ataque fulminante.',
+    'Você pode gastar 2 PM e uma ação completa para fazer uma investida saltando sobre uma criatura em alcance médio. Esse ataque causa um dado extra de dano, mais um dado extra para cada dois outros poderes da distinção. Se o alvo for um dragão, esses dados extras são dobrados. Após o ataque, você aterrissa em um espaço desocupado adjacente à criatura. Se a criatura for maior que você, você pode aterrissar sobre ela (nas costas, no dorso etc.) enquanto faz o ataque.',
+  ] },
+  { id: 'dist-cacador-dragoes-danificar-as-asas', nome: 'Danificar as Asas', grupo: 'distincao', livro: 'herois', pagina: 128,
+    tags: 'Caçador de Dragões', distincao: 'cacador-de-dragoes', marca: false, deus: null, magica: false,
+    preReq: 'Destemor Inflamado', custo: null, quadro: null, texto: [
+    'Com um ataque certeiro, o caçador de dragões atrapalha os movimentos do dragão.',
+    'Quando você faz um ataque, pode gastar 2 PM para machucar as asas ou outro membro locomotor do alvo. Se você acertar o ataque, o alvo fica caído e lento (Fort CD For ou Des reduz para lento por 1 rodada e a criatura não pode mais ser afetada por este poder nessa cena). Para cada poder da distinção, a CD aumenta em +1. Esse aumento é dobrado contra dragões.',
+  ] },
+  { id: 'dist-cacador-dragoes-entortar-escamas', nome: 'Entortar Escamas', grupo: 'distincao', livro: 'herois', pagina: 128,
+    tags: 'Caçador de Dragões', distincao: 'cacador-de-dragoes', marca: false, deus: null, magica: false,
+    preReq: 'Destemor Inflamado, outro poder da distinção', custo: null, quadro: null, texto: [
+    'O caçador sabe enfraquecer aos poucos sua presa dracônica.',
+    'Quando faz um acerto crítico, você enfraquece as defesas do alvo. Até o fim da cena, a criatura sofre –2 na Defesa e sua redução de dano diminui em –5. Se você tiver cinco poderes da distinção, em vez disso a criatura sofre –5 na Defesa e sua redução de dano diminui em –10.',
+  ] },
+  { id: 'dist-cacador-dragoes-evasao-do-cacador', nome: 'Evasão do Caçador', grupo: 'distincao', livro: 'herois', pagina: 129,
+    tags: 'Caçador de Dragões', distincao: 'cacador-de-dragoes', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Reflexos, Destemor Inflamado', custo: null, quadro: null, texto: [
+    'O caçador de dragões sabe o momento exato em que deve se esquivar.',
+    'Quando sofre um efeito que permite um teste de Reflexos para reduzir o dano à metade, você não sofre dano nenhum se passar e sofre apenas metade do dano se falhar. Além disso, uma vez por rodada, quando passa em um teste de Reflexos, você pode percorrer até metade do seu deslocamento. Esta habilidade exige liberdade de movimentos; você não pode usá-la se estiver na condição imóvel.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.
