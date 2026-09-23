@@ -410,6 +410,10 @@
       grupo: String((p && p.grupo) || 'livre'),
       // de qual classe é o poder, quando o grupo é 'classe'
       classe: String((p && p.classe) || ''),
+      // de qual distinção é o poder, quando o grupo é 'distincao', e se
+      // ele é a MARCA dela (a marca não conta no escalonamento — p. 104)
+      distincao: String((p && p.distincao) || ''),
+      marca: !!(p && p.marca),
       // o selo ✦ do livro: habilidade mágica, alvo de Dissipar Magia
       magica: !!(p && p.magica),
       livro: String((p && p.livro) || ''),
@@ -2846,10 +2850,20 @@
     'raca-hab': 'racaOrigem', 'raca': 'racaOrigem', 'origem': 'racaOrigem',
   };
   function blocoDoGrupo(chave) { return POD_BLOCO_DE_GRUPO[chave] || 'classePoderes'; }
-  //  A gaveta 'classe:guerreiro' pertence ao grupo 'classe'; as outras
-  //  têm a chave igual ao grupo.
+  //  A gaveta 'classe:guerreiro' pertence ao grupo 'classe', e a
+  //  'distincao:aeronauta-goblin' ao grupo 'distincao'; as outras têm a
+  //  chave igual ao grupo.
   function grupoDaGaveta(chaveGaveta) {
-    return chaveGaveta.slice(0, 7) === 'classe:' ? 'classe' : chaveGaveta;
+    if (chaveGaveta.slice(0, 7) === 'classe:') return 'classe';
+    if (chaveGaveta.slice(0, 10) === 'distincao:') return 'distincao';
+    return chaveGaveta;
+  }
+  //  Quantos poderes DAQUELA distinção a ficha tem — a conta que faz os
+  //  poderes que escalam crescer (Heróis de Arton, p. 104). A MARCA não
+  //  conta: ela é habilidade automática, não "poder da distinção".
+  function nDistincao(f, slug) {
+    if (!slug) return 0;
+    return f.poderes.filter(p => p.grupo === 'distincao' && (p.distincao || '') === slug && !p.marca).length;
   }
   function blocoDaGaveta(chaveGaveta) { return blocoDoGrupo(grupoDaGaveta(chaveGaveta)); }
   function ressalvaDaVariante(chave) {
@@ -2954,7 +2968,13 @@
   function cartaoPoder(f, p, i, pos, quantos) {
     const fechado = !!poderesFechados[p.id];
     const T = window.GA_FICHA_TORMENTA;
-    const escala = (p.grupo === 'tormenta' && T) ? T.escala(p.pid, totalDaTormenta(f)) : null;
+    const DIST = window.GA_FICHA_DISTINCOES;
+    //  O "Agora:" de um poder que cresce: os da Tormenta contam TODOS os
+    //  poderes da Tormenta; os de distinção contam só os da MESMA
+    //  distinção (a marca fica de fora). Um poder nunca é dos dois.
+    const escala = (p.grupo === 'tormenta' && T) ? T.escala(p.pid, totalDaTormenta(f))
+      : (p.grupo === 'distincao' && DIST && p.distincao) ? DIST.escala(p.pid, nDistincao(f, p.distincao))
+      : null;
     const fonte = fontePoder(p);
     const base = daBasePoder(p.pid);
     const magica = (base && base.magica) || p.magica;
@@ -3011,23 +3031,41 @@
     gruposDePoder().filter(g => porGrupo[g.chave]).forEach(g => {
       //  Os de classe ganham uma gaveta POR CLASSE: numa ficha
       //  multiclasse, saber de quem é cada poder é metade da leitura.
-      if (g.chave !== 'classe') {
-        saida.push({ chave: g.chave, titulo: g.nome, emoji: g.emoji, itens: porGrupo[g.chave] });
+      if (g.chave === 'classe') {
+        const porClasse = {};
+        porGrupo.classe.forEach(x => {
+          const k = x.p.classe || '';
+          (porClasse[k] || (porClasse[k] = [])).push(x);
+        });
+        Object.keys(porClasse).forEach(k => {
+          const L = listaDeClasse(k), C = D.classe(k);
+          saida.push({
+            chave: 'classe:' + k,
+            titulo: 'Poderes de ' + ((L && L.nome) || (C && C.nome) || 'classe'),
+            emoji: g.emoji, itens: porClasse[k],
+          });
+        });
         return;
       }
-      const porClasse = {};
-      porGrupo.classe.forEach(x => {
-        const k = x.p.classe || '';
-        (porClasse[k] || (porClasse[k] = [])).push(x);
-      });
-      Object.keys(porClasse).forEach(k => {
-        const L = listaDeClasse(k), C = D.classe(k);
-        saida.push({
-          chave: 'classe:' + k,
-          titulo: 'Poderes de ' + ((L && L.nome) || (C && C.nome) || 'classe'),
-          emoji: g.emoji, itens: porClasse[k],
+      //  As distinções também ganham uma gaveta CADA — porque o
+      //  escalonamento conta só os poderes da MESMA distinção, então vê-los
+      //  juntos é o que faz a conta do "Agora:" fazer sentido.
+      if (g.chave === 'distincao') {
+        const porDist = {};
+        porGrupo.distincao.forEach(x => {
+          const k = x.p.distincao || '';
+          (porDist[k] || (porDist[k] = [])).push(x);
         });
-      });
+        Object.keys(porDist).forEach(k => {
+          const nome = k ? (porDist[k][0].p.tags || 'Distinção') : 'Distinção (escrita à mão)';
+          saida.push({
+            chave: k ? 'distincao:' + k : 'distincao',
+            titulo: nome, emoji: g.emoji, itens: porDist[k],
+          });
+        });
+        return;
+      }
+      saida.push({ chave: g.chave, titulo: g.nome, emoji: g.emoji, itens: porGrupo[g.chave] });
     });
     const ordem = f.poderesOrdem || [];
     const lugar = g => { const i = ordem.indexOf(g.chave); return i < 0 ? ordem.length : i; };
@@ -4093,6 +4131,7 @@
       f.poderes.forEach((x, k) => {
         if (x.grupo !== p.grupo) return;
         if (p.grupo === 'classe' && (x.classe || '') !== (p.classe || '')) return;
+        if (p.grupo === 'distincao' && (x.distincao || '') !== (p.distincao || '')) return;
         irmaos.push(k);
       });
       const pos = irmaos.indexOf(de);
@@ -5082,7 +5121,8 @@
       if (add && !jaTem) add.addEventListener('click', () => {
         f.poderes.push({
           id: novoId(), pid: b.id, nome: b.nome, grupo: b.classe ? 'classe' : b.grupo,
-          classe: b.classe || '', magica: !!b.magica, livro: b.livro || '',
+          classe: b.classe || '', distincao: b.distincao || '', marca: !!b.marca,
+          magica: !!b.magica, livro: b.livro || '',
           pagina: b.pagina || 0, tags: b.tags || '', deus: b.deus || '', preReq: b.preReq || '',
           custo: b.custo || '', texto: (b.texto || []).slice(), obs: '', contaTormenta: false,
         });

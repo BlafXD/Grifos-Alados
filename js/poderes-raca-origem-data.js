@@ -309,6 +309,57 @@
     'Você não teme trabalho duro, nem prazos apertados. Você recebe um bônus de +2 em todos os testes de perícias estendidos (incluindo perigos complexos).',
   ] },
 
+  // ── DISTINÇÕES · Heróis de Arton, cap. 2 (p. 102–155) ─────────────
+  //  Um card por poder. Cada distinção tem uma MARCA (automática, com
+  //  `marca: true` — não conta no escalonamento) e vários poderes
+  //  (escolhidos um a um, como poder geral). O `distincao` é o slug que
+  //  liga o poder à sua distinção; a conta que faz os poderes que escalam
+  //  crescer mora em js/ficha-distincoes.js. Os poderes que escalam trazem
+  //  o texto do livro (o "Agora:" na ficha faz a conta sozinho).
+  //
+  //  Aeronauta Goblin (p. 105–108) — 1 marca + 5 poderes.
+  { id: 'dist-aeronauta-cabeca-nas-nuvens', nome: 'Cabeça nas Nuvens', grupo: 'distincao', livro: 'herois', pagina: 106,
+    tags: 'Aeronauta Goblin', distincao: 'aeronauta-goblin', marca: false, deus: null, magica: false,
+    preReq: 'Int 2, treinado em Ofício (artesão) e Pilotagem', custo: null, quadro: null, texto: [
+    'O aeronauta goblin se sente em casa nos céus, sua mente inspirada pela liberdade de voar.',
+    'Quando está pilotando uma aeronave, você recebe +1 em testes de perícia, rolagens de dano e na CD das suas habilidades e itens. Esse bônus aumenta em +1 para cada dois outros poderes da distinção que você possui.',
+  ] },
+  { id: 'dist-aeronauta-engenharia-aeronautica', nome: 'Engenharia Aeronáutica', grupo: 'distincao', livro: 'herois', pagina: 106,
+    tags: 'Aeronauta Goblin', distincao: 'aeronauta-goblin', marca: false, deus: null, magica: false,
+    preReq: 'Cabeça nas Nuvens, Engenhoqueiro', custo: null,
+    quadro: { titulo: 'Ornitópteros goblins', texto: [
+      'Todo ornitóptero é um veículo Grande capaz de transportar uma criatura Pequena e 10 espaços. Tem deslocamento de voo 15m, Defesa 15 (+ Des do piloto), RD 5 e PV iguais à metade dos pontos de vida de seu criador. Dentro dele, o piloto recebe cobertura leve e pode executar investidas montadas como se estivesse sobre uma montaria. É fabricado com Ofício (artesão) com CD 20, uma semana de trabalho e custo T$ 300, e só pode ser operado por seu criador.',
+      'Melhorias (ornitópteros superiores): Armado — arma de fogo acoplada, usada pelo piloto, com espaço para 20 munições. Blindado — +10 na Defesa. Bombardeiro — compartimento para quatro preparados alquímicos ou poções arremessáveis (+1 categoria de alcance e +2 na CD; recarregar é ação completa). Camuflado — +10 em Furtividade e, voando, esconde-se sem camuflagem ou cobertura. Dobrável — vira veículo Médio deslocamento 12m (sem voo), dobra/desdobra com ação completa. Durável — PV iguais aos do criador (em vez de metade). Espaçoso — mais um passageiro Pequeno ou +10 espaços. Estável — +5 em Pilotagem. Resistente — RD +5. Veloz — voo +6m. Material Especial — vários materiais e custos (Aço-rubi, Adamante, Gelo eterno, Mitral…), descritos no livro.',
+    ] },
+    texto: [
+    'Tendo “dominado” a fabricação de aeronaves, é hora de aprimorar o ornitóptero.',
+    'Você pode fabricar ornitópteros superiores (veja adiante) e acoplar até duas engenhocas neles, seguindo as regras normais de engenhocas. Elas não contam em seu limite de engenhocas e não precisam ser empunhadas ou vestidas, mas só podem ser ativadas se você estiver pilotando o ornitóptero.',
+  ] },
+  { id: 'dist-aeronauta-estou-bem-pessoal', nome: 'Estou Bem, Pessoal!', grupo: 'distincao', livro: 'herois', pagina: 106,
+    tags: 'Aeronauta Goblin', distincao: 'aeronauta-goblin', marca: false, deus: null, magica: false,
+    preReq: 'Cabeça nas Nuvens', custo: null, quadro: null, texto: [
+    'Mais do que aprender a pilotar, um bom aeronauta aprende a se acidentar.',
+    'Você recebe redução de fogo e impacto 5 e sofre apenas metade do dano de quedas.',
+  ] },
+  { id: 'dist-aeronauta-manobras-defensivas', nome: 'Manobras Defensivas', grupo: 'distincao', livro: 'herois', pagina: 107,
+    tags: 'Aeronauta Goblin', distincao: 'aeronauta-goblin', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Reflexos, Estou Bem, Pessoal!', custo: null, quadro: null, texto: [
+    'Às vezes, mais importante que preservar a própria vida é proteger a aeronave!',
+    'Você soma sua Inteligência na Defesa de qualquer aeronave que estiver pilotando. Além disso, quando você ou a aeronave que você está pilotando sofre dano, você pode gastar 2 PM para fazer um teste de Pilotagem e subtrair o resultado do dano sofrido.',
+  ] },
+  { id: 'dist-aeronauta-senhor-dos-ceus', nome: 'Senhor dos Céus', grupo: 'distincao', livro: 'herois', pagina: 107,
+    tags: 'Aeronauta Goblin', distincao: 'aeronauta-goblin', marca: false, deus: null, magica: false,
+    preReq: 'Manobras Defensivas, derrotar cinco aeronaves e/ou inimigos voadores enquanto pilota uma aeronave', custo: null, quadro: null, texto: [
+    'Tendo derrotado inimigos suficientes, o aeronauta se tornou um verdadeiro ás.',
+    'Uma vez por rodada, enquanto está pilotando uma aeronave, você pode gastar 3 PM para realizar uma ação padrão adicional.',
+  ] },
+  { id: 'dist-aeronauta-combate-aereo', nome: 'Combate Aéreo', grupo: 'distincao', livro: 'herois', pagina: 107,
+    tags: 'Aeronauta Goblin', distincao: 'aeronauta-goblin', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. O aeronauta goblin sabe se virar contra inimigos nas alturas.',
+    'Você recebe uma ação de movimento extra por rodada, que só pode ser usada para pilotar sua aeronave, e não sofre penalidades para atacar à distância ou lançar magias por estar a bordo de uma aeronave.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.
