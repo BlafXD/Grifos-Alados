@@ -501,6 +501,103 @@
     'Você pode gastar 10 PM para preparar até 3 armadilhas ao mesmo tempo. Cada uma aparece em um ponto diferente em alcance curto.',
   ] },
 
+  //  Arqueiro de Lenórienn (p. 118–120) — 1 marca + 7 poderes. Quase
+  //  todos são habilidades MÁGICAS (o ✦ do livro).
+  { id: 'dist-arqueiro-o-arco-arcano', nome: 'O Arco Arcano', grupo: 'distincao', livro: 'herois', pagina: 120,
+    tags: 'Arqueiro de Lenórienn', distincao: 'arqueiro-de-lenorienn', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. A conquista do título de arqueiro de Lenórienn é marcada pela transformação da arma do candidato em um arco arcano.',
+    'Seu arco se transforma em um arco arcano. Além de seus benefícios normais, ele conta como um item esotérico de um tipo a sua escolha e pode receber melhorias e encantos tanto de armas quanto de esotéricos (respeitando os limites normais). Se receber um desses benefícios que se aplique tanto a armas quanto a esotéricos, você deve escolher a qual dos dois ele será aplicado. Se perder seu arco arcano, você pode transformar outro com um ritual que dura 1 dia e consome T$ 100 em componentes.',
+  ] },
+  { id: 'dist-arqueiro-energizar-arco', nome: 'Energizar Arco', grupo: 'distincao', livro: 'herois', pagina: 120,
+    tags: 'Arqueiro de Lenórienn', distincao: 'arqueiro-de-lenorienn', marca: false, deus: null, magica: true,
+    preReq: 'treinado em Misticismo e Pontaria, habilidade de classe Magias, Foco em Arma (qualquer arco)', custo: null, quadro: null, texto: [
+    'A primeira técnica aprendida pelo arqueiro de Lenórienn é entrelaçar sua magia com sua arma.',
+    'Você aprende a magia Arma Mágica e pode lançá-la em seu arco arcano como uma ação de movimento (em vez de uma ação padrão). Se aprender novamente essa magia, seu custo diminui em –1 PM.',
+  ] },
+  { id: 'dist-arqueiro-chuva-de-flechas', nome: 'Chuva de Flechas', grupo: 'distincao', livro: 'herois', pagina: 120,
+    tags: 'Arqueiro de Lenórienn', distincao: 'arqueiro-de-lenorienn', marca: false, deus: null, magica: true,
+    preReq: 'Energizar Arco, lançar magias arcanas de 3º círculo', custo: null, quadro: null, texto: [
+    'Combinando magia e arco, o arqueiro de Lenórienn cobre seus inimigos com flechas mortais.',
+    'Você pode gastar uma ação padrão e 2 PM para multiplicar seu disparo. Faça um ataque à distância com seu arco e compare-o com a Defesa de um número de inimigos a sua escolha, no alcance do arco, limitado por seu atributo-chave para magias arcanas. Então faça uma única rolagem de dano e aplique-a a cada inimigo atingido. Você gasta apenas uma munição.',
+  ] },
+  { id: 'dist-arqueiro-encantar-flechas', nome: 'Encantar Flechas', grupo: 'distincao', livro: 'herois', pagina: 120,
+    tags: 'Arqueiro de Lenórienn', distincao: 'arqueiro-de-lenorienn', marca: false, deus: null, magica: true,
+    preReq: 'treinado em Ofício (armeiro), Energizar Arco, lançar magias arcanas de 2º círculo', custo: null, quadro: null, texto: [
+    'O arqueiro de Lenórienn aprende a usar sua magia para criar flechas encantadas.',
+    'Você recebe 20 flechas mágicas menores a sua escolha e passa a poder fabricar flechas mágicas menores. Se tiver acesso a magias arcanas de 3º círculo, você pode fabricar flechas mágicas médias e, se tiver acesso a magias arcanas de 4º círculo, pode fabricar flechas maiores. Se você disparar todo o pacote de flechas, a energia mística imbuída nelas volta para você e você recupera os PM sacrificados para fabricá-las.',
+  ] },
+  { id: 'dist-arqueiro-flecha-da-morte', nome: 'Flecha da Morte', grupo: 'distincao', livro: 'herois', pagina: 120,
+    tags: 'Arqueiro de Lenórienn', distincao: 'arqueiro-de-lenorienn', marca: false, deus: null, magica: true,
+    preReq: 'Encantar Flechas, deve ter feito um acerto crítico com um arco em uma criatura de cada tipo (Tormenta20, p. 284)', custo: null, quadro: null, texto: [
+    'Tendo superado todos os tipos de inimigos, o arqueiro de Lenórienn aprende a infundir a essência da morte em suas flechas.',
+    'Você pode gastar 1 dia e T$ 100 para criar uma flecha mágica chamada flecha da morte. Ela causa 1 dado extra de dano, fornece +2 na margem de ameaça e, se for usada em conjunto com Flecha de Toque ou Flecha Explosiva, aumenta a CD para resistir às magias em +2. Para cada dois outros poderes da distinção que você possui, esses bônus, e a quantidade de dados extras de dano, aumentam em +1. Você pode ter um máximo de flechas da morte igual ao total de poderes da distinção que possui (se criar uma além do seu limite, a flecha mais antiga perde seu poder).',
+  ] },
+  { id: 'dist-arqueiro-flecha-de-toque', nome: 'Flecha de Toque', grupo: 'distincao', livro: 'herois', pagina: 120,
+    tags: 'Arqueiro de Lenórienn', distincao: 'arqueiro-de-lenorienn', marca: false, deus: null, magica: true,
+    preReq: 'Energizar Arco', custo: null, quadro: null, texto: [
+    'Com um sussurro mágico, o arqueiro faz sua flecha transportar uma de suas magias.',
+    'Quando lança uma magia que permite fazer um ataque corpo a corpo como parte de sua execução (como Infligir Ferimentos ou Toque Chocante aprimoradas), você pode substituir esse ataque por um ataque à distância com seu arco arcano.',
+  ] },
+  { id: 'dist-arqueiro-flecha-explosiva', nome: 'Flecha Explosiva', grupo: 'distincao', livro: 'herois', pagina: 120,
+    tags: 'Arqueiro de Lenórienn', distincao: 'arqueiro-de-lenorienn', marca: false, deus: null, magica: true,
+    preReq: 'Flecha de Toque', custo: null, quadro: null, texto: [
+    'Aprofundando seu treinamento, o arqueiro de Lenórienn aprende a lançar magias mais potentes com suas flechas.',
+    'Suas magias de área recebem um novo aprimoramento. +2 PM: como parte da execução da magia, você faz um ataque à distância com seu arco arcano contra uma criatura ou objeto. Se acertar, causa o dano do ataque e o efeito da magia (o centro desse efeito é o alvo atingido).',
+  ] },
+  { id: 'dist-arqueiro-flecha-fantasma', nome: 'Flecha Fantasma', grupo: 'distincao', livro: 'herois', pagina: 120,
+    tags: 'Arqueiro de Lenórienn', distincao: 'arqueiro-de-lenorienn', marca: false, deus: null, magica: true,
+    preReq: 'Energizar Arco, Forma Etérea', custo: null, quadro: null, texto: [
+    'Com um sussurro arcano, o arqueiro faz com que sua flecha alterne entre os Planos.',
+    'Quando faz um ataque com arco, você pode gastar 2 PM para transformar sua flecha em uma munição etérea. Uma flecha etérea fornece +5 no teste de ataque e ignora cobertura leve e 20 pontos da redução de dano do alvo.',
+  ] },
+
+  //  Bruxo da Tormenta (p. 120–123) — 1 marca + 5 poderes. Usa Pontos de
+  //  Insanidade (PI): o LIMITE de PI é 5× o total de poderes da Tormenta
+  //  (no quadro da marca); o PI recebido por magia é limitado pelo total
+  //  de poderes da DISTINÇÃO — é essa conta que o motor mostra.
+  { id: 'dist-bruxo-insanidade-controlada', nome: 'Insanidade Controlada', grupo: 'distincao', livro: 'herois', pagina: 123,
+    tags: 'Bruxo da Tormenta', distincao: 'bruxo-da-tormenta', marca: true, deus: null, magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'Pontos de Insanidade (PI)', texto: [
+      'Você possui um limite de pontos de insanidade (PI) igual a 5 vezes seu total de poderes da Tormenta. Quando usa seus poderes de bruxo da Tormenta, você pode receber PI para fortalecer seus efeitos.',
+      'Se seu total de PI ultrapassar metade do limite, você fica frustrado; se alcançar o limite, fica alquebrado e esmorecido (e não pode receber mais PI que o limite). PI são removidos por descanso, à taxa de 1 PI por nível, modificado pelas condições do descanso.',
+    ] },
+    texto: [
+    'Marca da distinção. Um bruxo da Tormenta já testemunhou numerosas atrocidades lefeu.',
+    'Quando lança uma magia, você pode receber uma quantidade de pontos de insanidade (veja o quadro) limitada pelo círculo da magia. Cada PI recebido dessa forma paga 1 PM do custo da magia.',
+  ] },
+  { id: 'dist-bruxo-conjuracao-insana', nome: 'Conjuração Insana', grupo: 'distincao', livro: 'herois', pagina: 123,
+    tags: 'Bruxo da Tormenta', distincao: 'bruxo-da-tormenta', marca: false, deus: null, magica: false,
+    preReq: 'Int 2, Caminho do Arcanista (Mago ou Bruxo), um poder da Tormenta', custo: null, quadro: null, texto: [
+    'O bruxo da Tormenta alimenta suas magias com seus próprios demônios.',
+    'Quando lança uma magia, você pode receber uma quantidade de pontos de insanidade, limitada pelo total de poderes da distinção que você possui. Se fizer isso, a CD dessa magia aumenta em +1 por PI recebido.',
+  ] },
+  { id: 'dist-bruxo-corromper-magia', nome: 'Corromper Magia', grupo: 'distincao', livro: 'herois', pagina: 123,
+    tags: 'Bruxo da Tormenta', distincao: 'bruxo-da-tormenta', marca: false, deus: null, magica: false,
+    preReq: 'Magia Antiaberrante, Resistência à Tormenta', custo: null, quadro: null, texto: [
+    'A corrupção empregada pelo bruxo da Tormenta se espalha através de suas magias.',
+    'Quando lança uma magia de dano, você pode receber uma quantidade de pontos de insanidade limitada pelo total de poderes da distinção que você possui. Se fizer isso, para cada PI recebido, a magia causa +1d6 pontos de dano de essência.',
+  ] },
+  { id: 'dist-bruxo-escudo-rubro', nome: 'Escudo Rubro', grupo: 'distincao', livro: 'herois', pagina: 123,
+    tags: 'Bruxo da Tormenta', distincao: 'bruxo-da-tormenta', marca: false, deus: null, magica: false,
+    preReq: 'Resistência à Tormenta', custo: null, quadro: null, texto: [
+    'O bruxo da Tormenta usa sua loucura como uma armadura.',
+    'Quando faz um teste de resistência ou sofre dano, você pode receber uma quantidade de pontos de insanidade limitada pelo total de poderes da distinção que possui. Se fizer isso, para cada PI recebido você recebe +2 nesse teste de resistência ou 5 pontos de RD contra esse dano. Esses benefícios são dobrados contra efeitos da Tormenta, de suas criaturas e de devotos de Aharadak.',
+  ] },
+  { id: 'dist-bruxo-magia-antiaberrante', nome: 'Magia Antiaberrante', grupo: 'distincao', livro: 'herois', pagina: 123,
+    tags: 'Bruxo da Tormenta', distincao: 'bruxo-da-tormenta', marca: false, deus: null, magica: false,
+    preReq: 'Conjuração Insana', custo: null, quadro: null, texto: [
+    'Um bruxo da Tormenta conjura magias mais efetivas contra seres antinaturais.',
+    'Quando lança uma magia, você pode receber uma quantidade de pontos de insanidade igual ao círculo dela. Se fizer isso, ela ignora 10 pontos da RD dos alvos e, se algum deles for lefeu, ignora também suas imunidades.',
+  ] },
+  { id: 'dist-bruxo-resistencia-a-tormenta', nome: 'Resistência à Tormenta', grupo: 'distincao', livro: 'herois', pagina: 123,
+    tags: 'Bruxo da Tormenta', distincao: 'bruxo-da-tormenta', marca: false, deus: null, magica: false,
+    preReq: 'Conjuração Insana', custo: null, quadro: null, texto: [
+    'O relâmpago de sangue cai dos céus, mas o bárbaro não parece ter sido afetado.',
+    'Você aprende e pode lançar Resistência a Energia. Caso aprenda novamente essa magia, seu custo diminui em –1 PM. Além disso, ela recebe o seguinte aprimoramento. +2 PM: o alvo é protegido de certos efeitos de áreas de Tormenta e templos de Aharadak (Ameaças de Arton, p. 60). Ao entrar nesses locais, ele não fica frustrado, seus itens mágicos encantados não perdem encantos e ele recebe +5 em testes de resistência contra Fenômenos Rubros (Ameaças de Arton, p. 360).',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.
