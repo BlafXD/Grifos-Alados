@@ -88,6 +88,38 @@
                  calc: `2 base + ${outros(n)} (uma a cada novo poder da distinção — os ${nOutros(n)})` };
       },
     },
+
+    // ── Arqueiro de Lenórienn (Heróis de Arton, p. 120) ─────────────
+    'dist-arqueiro-flecha-da-morte': {
+      escala(n) {
+        const d = 1 + p2(n), b = 2 + p2(n);
+        return { txt: `dado extra +${d}, margem +${b}, CD +${b} (com Flecha de Toque/Explosiva) · até ${n} flecha${n !== 1 ? 's' : ''} da morte`,
+                 calc: `+1 a cada dois dos ${nOutros(n)}; máximo de flechas = ${nTodos(n)}` };
+      },
+    },
+
+    // ── Bruxo da Tormenta (Heróis de Arton, p. 123) ─────────────────
+    //  O PI que se recebe por magia é limitado pelo TOTAL de poderes da
+    //  distinção (n). (O LIMITE de PI é outra conta — 5× poderes da
+    //  Tormenta —, que mora na marca; a ficha não a calcula.)
+    'dist-bruxo-conjuracao-insana': {
+      escala(n) {
+        return { txt: `até +${n} na CD da magia (1 por PI recebido)`,
+                 calc: `PI limitado pelo total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-bruxo-corromper-magia': {
+      escala(n) {
+        return { txt: `até +${n}d6 de dano de essência (1d6 por PI recebido)`,
+                 calc: `PI limitado pelo total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-bruxo-escudo-rubro': {
+      escala(n) {
+        return { txt: `até +${2 * n} em resistência OU ${5 * n} de RD (2/5 por PI; dobrado contra a Tormenta)`,
+                 calc: `PI limitado pelo total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
