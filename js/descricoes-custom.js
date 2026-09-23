@@ -158,11 +158,84 @@ window.GA_Tip = (function () {
       (C.INGREDIENTES || []).forEach(i => add(i.nome, i.desc, 'ingrediente'));
       (C.PRATOS || []).forEach(p => add(p.nome, (p.flavor || '') + ' Benefício: ' + (p.beneficio || '') + '.', 'prato'));
     }
-    (((window.GA_DEVOTOS || {}).poderes) || []).forEach(p =>
-      add(p.nome, (p.magica ? 'Habilidade mágica. ' : '') + p.texto, 'poder concedido'));
+    // ── OS PODERES, TODOS (22/09/2026) ───────────────────────────────
+    //  Antes só os 147 concedidos do js/devotos-data.js entravam aqui, e
+    //  ele pediu o resto: "preciso que TODOS os poderes apareçam na opção
+    //  Descrição, porque é bem útil na verdade". São as duas bases da
+    //  ficha — os 460 de fora de classe (GA_PODERES) e os 348 de classe
+    //  (GA_PODERES_CLASSE) —, com o texto integral, o pré-requisito, o
+    //  custo e a página do livro, que é o que se quer ler na nuvem sem
+    //  abrir o PDF.
+    const vistosPod = {};
+    (window.GA_PODERES || []).forEach(p => {
+      const k = window.GA_semAcento(p.nome);
+      vistosPod[k] = true;
+      add(p.nome, textoDePoder(p, rotuloGrupo(p)), 'poder ' + GRUPOS_PODER[p.grupo]);
+    });
+    //  Os de classe: 16 nomes se repetem entre classes, e cinco deles com
+    //  o texto IGUAL nas 16 (o Aumento de Atributo). Texto igual vira UMA
+    //  linha só, dizendo de quantas classes ele é — senão buscar "aumento"
+    //  enchia a lista inteira com a mesma coisa.
+    const porTexto = {};
+    (window.GA_PODERES_CLASSE || []).forEach(p => {
+      const k = p.nome + '|' + (p.texto || []).join(' ') + '|' + (p.preReq || '');
+      (porTexto[k] || (porTexto[k] = [])).push(p);
+    });
+    Object.keys(porTexto).forEach(k => {
+      const iguais = porTexto[k], p = iguais[0];
+      const nomes = iguais.map(x => nomeDaClasse(x.classe));
+      add(p.nome, textoDePoder(p, 'Poder de ' + listaEmTexto(nomes) + '.'),
+          iguais.length === 1 ? 'poder de ' + nomes[0].toLowerCase() : 'poder de classe');
+    });
+    //  O concedido que a base de poderes não tiver ainda entra pela base
+    //  dos devotos, como entrava antes. Hoje são zero — os 147 estão
+    //  todos entre os 208 —, e é de propósito: se um dia uma das duas
+    //  bases crescer sozinha, a busca continua achando o poder.
+    (((window.GA_DEVOTOS || {}).poderes) || []).forEach(p => {
+      if (vistosPod[window.GA_semAcento(p.nome)]) return;
+      add(p.nome, (p.magica ? 'Habilidade mágica. ' : '') + p.texto, 'poder concedido');
+    });
 
     _indice = lista;
     return lista;
+  }
+
+  // ── O TEXTO DE UM PODER, PARA A NUVEM ──────────────────────────────
+  //  Na ordem em que o livro imprime: o que ele é, o texto integral, o
+  //  quadro (quando há), o pré-requisito, o custo — e a página no fim,
+  //  que é o que faz a nuvem substituir o PDF.
+  const GRUPOS_PODER = {
+    combate: 'de combate', destino: 'de destino', magia: 'de magia',
+    concedido: 'concedido', tormenta: 'da Tormenta', raca: 'de raça', grupo: 'de grupo',
+  };
+  function rotuloGrupo(p) {
+    const g = GRUPOS_PODER[p.grupo] || 'geral';
+    // as tags são o que vem depois do nome no título do livro: os deuses
+    // de um concedido, as raças de um poder de raça
+    return 'Poder ' + g + (p.tags ? ' (' + p.tags + ')' : '') + '.';
+  }
+  function nomeDaClasse(chave) {
+    const L = (window.GA_PODERES_CLASSE_LISTAS || []).find(x => x.chave === chave);
+    return (L && L.nome) || chave;
+  }
+  function listaEmTexto(nomes) {
+    const n = nomes.map(x => x.toLowerCase());
+    if (n.length === 1) return n[0];
+    if (n.length > 6) return n.length + ' classes';
+    return n.slice(0, -1).join(', ') + ' e ' + n[n.length - 1];
+  }
+  function textoDePoder(p, rotulo) {
+    const paras = (p.texto || []).join(' ');
+    const q = p.quadro ? ' ' + p.quadro.titulo + ': ' + (p.quadro.texto || []).join(' ') : '';
+    const fonte = (window.GA_PODERES_LIVROS || {})[p.livro];
+    return [
+      rotulo,
+      p.magica ? 'Habilidade mágica.' : '',
+      paras + q,
+      p.preReq ? 'Pré-requisito: ' + p.preReq + '.' : '',
+      p.custo ? 'Custo: ' + p.custo + '.' : '',
+      fonte ? '(' + fonte + (p.pagina ? ', p. ' + p.pagina : '') + ')' : '',
+    ].filter(Boolean).join(' ');
   }
 
   function buscar(termo) {
