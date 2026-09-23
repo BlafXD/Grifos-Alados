@@ -163,6 +163,152 @@
     'Sangue Frio. Você sofre 1 ponto de dano adicional por dado de dano de frio.',
   ] },
 
+  // ── PODERES DE ORIGEM · Tormenta20 Jogo do Ano (p. 85–95) ──────────
+  //  O "Poder Único" de cada origem: descrito após os benefícios dela,
+  //  e só quem tem aquela origem pode escolhê-lo (p. 85). Um card por
+  //  poder; a origem dona vai na etiqueta, para a busca achar por ela.
+  //  São 35 origens, 35 poderes.
+  { id: 'origem-membro-da-igreja', nome: 'Membro da Igreja', grupo: 'origem', livro: 't20', pagina: 85,
+    tags: 'Acólito', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você consegue hospedagem confortável e informação em qualquer templo de sua divindade, para você e seus aliados.',
+  ] },
+  { id: 'origem-amigo-especial', nome: 'Amigo Especial', grupo: 'origem', livro: 't20', pagina: 85,
+    tags: 'Amigo dos Animais', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você recebe +5 em testes de Adestramento com animais. Além disso, possui um animal de estimação que o auxilia e o acompanha em suas aventuras. Em termos de jogo, é um parceiro que fornece +2 em uma perícia a sua escolha (exceto Luta ou Pontaria e aprovada pelo mestre) e não conta em seu limite de parceiros.',
+  ] },
+  { id: 'origem-lembrancas-graduais', nome: 'Lembranças Graduais', grupo: 'origem', livro: 't20', pagina: 86,
+    tags: 'Amnésico', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Durante suas aventuras, em determinados momentos a critério do mestre, você pode fazer um teste de Sabedoria (CD 10) para reconhecer pessoas, criaturas ou lugares que tenha encontrado antes de perder a memória.',
+  ] },
+  { id: 'origem-sangue-azul', nome: 'Sangue Azul', grupo: 'origem', livro: 't20', pagina: 86,
+    tags: 'Aristocrata', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você tem alguma influência política, suficiente para ser tratado com mais leniência pela guarda, conseguir uma audiência com o nobre local etc.',
+  ] },
+  { id: 'origem-frutos-do-trabalho', nome: 'Frutos do Trabalho', grupo: 'origem', livro: 't20', pagina: 86,
+    tags: 'Artesão', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'No início de cada aventura, você recebe até 5 itens gerais que possa fabricar num valor total de até T$ 50. Esse valor aumenta para T$ 100 no patamar veterano, T$ 300 no heroico e T$ 500 no lenda.',
+  ] },
+  { id: 'origem-dom-artistico', nome: 'Dom Artístico', grupo: 'origem', livro: 't20', pagina: 87,
+    tags: 'Artista', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você recebe +2 em testes de Atuação, e recebe o dobro de tibares em apresentações.',
+  ] },
+  { id: 'origem-esse-cheiro', nome: 'Esse Cheiro...', grupo: 'origem', livro: 't20', pagina: 88,
+    tags: 'Assistente de Laboratório', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você recebe +2 em Fortitude e detecta automaticamente a presença (mas não a localização ou natureza) de itens alquímicos em alcance curto.',
+  ] },
+  { id: 'origem-a-prova-de-tudo', nome: 'À Prova de Tudo', grupo: 'origem', livro: 't20', pagina: 88,
+    tags: 'Batedor', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você não sofre penalidade em deslocamento e Sobrevivência por clima ruim e por terreno difícil natural.',
+  ] },
+  { id: 'origem-confissao', nome: 'Confissão', grupo: 'origem', livro: 't20', pagina: 88,
+    tags: 'Capanga', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você pode usar Intimidação para interrogar sem custo e em uma hora (veja Investigação).',
+  ] },
+  { id: 'origem-alpinista-social', nome: 'Alpinista Social', grupo: 'origem', livro: 't20', pagina: 89,
+    tags: 'Charlatão', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você pode substituir testes de Diplomacia por testes de Enganação.',
+  ] },
+  { id: 'origem-truque-de-magica', nome: 'Truque de Mágica', grupo: 'origem', livro: 't20', pagina: 89,
+    tags: 'Circense', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você pode lançar Explosão de Chamas, Hipnotismo e Queda Suave, mas apenas com o aprimoramento Truque. Esta não é uma habilidade mágica — os efeitos provêm de prestidigitação.',
+  ] },
+  { id: 'origem-punguista', nome: 'Punguista', grupo: 'origem', livro: 't20', pagina: 89,
+    tags: 'Criminoso', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você pode fazer testes de Ladinagem para sustento (como a perícia Ofício), mas em apenas um dia. Se passar, recebe o dobro do dinheiro, mas, se falhar, pode ter problemas com a lei (a critério do mestre).',
+  ] },
+  { id: 'origem-medico-de-campo', nome: 'Médico de Campo', grupo: 'origem', livro: 't20', pagina: 89,
+    tags: 'Curandeiro', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você soma sua Sabedoria aos PV restaurados por suas habilidades e itens mundanos de cura.',
+  ] },
+  { id: 'origem-busca-interior', nome: 'Busca Interior', grupo: 'origem', livro: 't20', pagina: 89,
+    tags: 'Eremita', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Quando você e seus companheiros estão diante de um mistério, incapazes de prosseguir, você pode gastar 1 PM para meditar sozinho durante algum tempo e receber uma dica do mestre.',
+  ] },
+  { id: 'origem-desejo-de-liberdade', nome: 'Desejo de Liberdade', grupo: 'origem', livro: 't20', pagina: 90,
+    tags: 'Escravo', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Ninguém voltará a torná-lo um escravo! Você recebe +5 em testes contra a manobra agarrar e efeitos de movimento.',
+  ] },
+  { id: 'origem-palpite-fundamentado', nome: 'Palpite Fundamentado', grupo: 'origem', livro: 't20', pagina: 90,
+    tags: 'Estudioso', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você pode gastar 2 PM para substituir um teste de qualquer perícia originalmente baseada em Inteligência ou Sabedoria por um teste de Conhecimento.',
+  ] },
+  { id: 'origem-agua-no-feijao', nome: 'Água no Feijão', grupo: 'origem', livro: 't20', pagina: 90,
+    tags: 'Fazendeiro', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você não sofre a penalidade de –5 e não gasta matéria prima adicional para fabricar pratos para cinco pessoas.',
+  ] },
+  { id: 'origem-cultura-exotica', nome: 'Cultura Exótica', grupo: 'origem', livro: 't20', pagina: 90,
+    tags: 'Forasteiro', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Por sua diferente visão de mundo, você encontra soluções inesperadas. Você pode gastar 1 PM para fazer um teste de perícia somente treinada, mesmo sem ser treinado na perícia.',
+  ] },
+  { id: 'origem-pao-e-circo', nome: 'Pão e Circo', grupo: 'origem', livro: 't20', pagina: 91,
+    tags: 'Gladiador', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Por seu treino em combates de exibição, você sabe “bater sem machucar”. Pode escolher causar dano não letal sem sofrer a penalidade de –5.',
+  ] },
+  { id: 'origem-detetive', nome: 'Detetive', grupo: 'origem', livro: 't20', pagina: 91,
+    tags: 'Guarda', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você pode gastar 1 PM para substituir testes de Percepção e Intuição por testes de Investigação até o fim da cena.',
+  ] },
+  { id: 'origem-heranca', nome: 'Herança', grupo: 'origem', livro: 't20', pagina: 91,
+    tags: 'Herdeiro', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você herdou um item de preço de até T$ 1.000. Você pode escolher este poder duas vezes, para um item de até T$ 2.000.',
+  ] },
+  { id: 'origem-coracao-heroico', nome: 'Coração Heroico', grupo: 'origem', livro: 't20', pagina: 92,
+    tags: 'Herói Camponês', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você recebe +3 pontos de mana. Quando atinge um novo patamar (no 5º, 11º e 17º níveis), recebe +3 PM.',
+  ] },
+  { id: 'origem-passagem-de-navio', nome: 'Passagem de Navio', grupo: 'origem', livro: 't20', pagina: 92,
+    tags: 'Marujo', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você consegue transporte marítimo para você e seus aliados, sem custos, desde que todos paguem com trabalho (passar em pelo menos um teste de perícia adequado durante a viagem).',
+  ] },
+  { id: 'origem-vendedor-de-carcacas', nome: 'Vendedor de Carcaças', grupo: 'origem', livro: 't20', pagina: 92,
+    tags: 'Mateiro', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você pode extrair recursos de criaturas em um minuto, em vez de uma hora, e recebe +5 no teste.',
+  ] },
+  { id: 'origem-rede-de-contatos', nome: 'Rede de Contatos', grupo: 'origem', livro: 't20', pagina: 92,
+    tags: 'Membro de Guilda', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Graças à influência de sua guilda, você pode usar Diplomacia para interrogar sem custo e em uma hora (veja Investigação).',
+  ] },
+  { id: 'origem-negociacao', nome: 'Negociação', grupo: 'origem', livro: 't20', pagina: 93,
+    tags: 'Mercador', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você pode vender itens 10% mais caro (não cumulativo com barganha).',
+  ] },
+  { id: 'origem-escavador', nome: 'Escavador', grupo: 'origem', livro: 't20', pagina: 93,
+    tags: 'Minerador', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você se torna proficiente em picaretas, causa +1 de dano com elas e não é afetado por terreno difícil em masmorras e subterrâneos.',
+  ] },
+  { id: 'origem-mochileiro', nome: 'Mochileiro', grupo: 'origem', livro: 't20', pagina: 93,
+    tags: 'Nômade', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Seu limite de carga aumenta em 5 espaços.',
+  ] },
+  { id: 'origem-quebra-galho', nome: 'Quebra-Galho', grupo: 'origem', livro: 't20', pagina: 93,
+    tags: 'Pivete', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Em cidades ou metrópoles, você pode comprar qualquer item mundano não superior por metade do preço normal. Esses itens não podem ser matérias-primas e não podem ser revendidos (são velhos, sujos, furtados...).',
+  ] },
+  { id: 'origem-estoico', nome: 'Estoico', grupo: 'origem', livro: 't20', pagina: 93,
+    tags: 'Refugiado', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Sua condição de descanso é uma categoria acima do padrão pela situação (normal em condições ruins, confortável em condições normais e luxuosa em condições confortáveis ou melhores). Veja as regras de recuperação na página 106.',
+  ] },
+  { id: 'origem-antigo-mestre', nome: 'Antigo Mestre', grupo: 'origem', livro: 't20', pagina: 94,
+    tags: 'Seguidor', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você ainda mantém contato com o herói que costumava servir. Uma vez por aventura, ele surge para ajudá-lo por uma cena. Ele é um parceiro mestre de um tipo a sua escolha (definido ao obter este poder) que não conta em seu limite de aliados.',
+  ] },
+  { id: 'origem-vida-rustica', nome: 'Vida Rústica', grupo: 'origem', livro: 't20', pagina: 94,
+    tags: 'Selvagem', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você come coisas que fariam um avestruz vomitar (sendo imune a efeitos prejudiciais de itens ingeríveis) e também consegue descansar nos lugares mais desconfortáveis (mesmo dormindo ao relento, sua recuperação de PV e PM nunca é inferior a seu próprio nível).',
+  ] },
+  { id: 'origem-influencia-militar', nome: 'Influência Militar', grupo: 'origem', livro: 't20', pagina: 94,
+    tags: 'Soldado', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você fez amigos nas forças armadas. Onde houver acampamentos ou bases militares, você pode conseguir hospedagem e informações para você e seus aliados.',
+  ] },
+  { id: 'origem-gororoba', nome: 'Gororoba', grupo: 'origem', livro: 't20', pagina: 95,
+    tags: 'Taverneiro', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você não sofre a penalidade de –5 para fabricar um prato especial adicional.',
+  ] },
+  { id: 'origem-esforcado', nome: 'Esforçado', grupo: 'origem', livro: 't20', pagina: 95,
+    tags: 'Trabalhador', deus: null, magica: false, preReq: null, custo: null, quadro: null, texto: [
+    'Você não teme trabalho duro, nem prazos apertados. Você recebe um bônus de +2 em todos os testes de perícias estendidos (incluindo perigos complexos).',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.
