@@ -46,14 +46,22 @@ window.GA_PODERES_LIVROS = {
 };
 
 // A ordem é a que a ficha mostra, e o rótulo é o do livro.
+//  Desde 23/09/2026, os grupos moram nos dois cartões de baixo da ficha
+//  ('racaOrigem' e 'classePoderes'), não mais num cartão ✨ Poderes lá em
+//  cima. Três grupos entraram nessa mudança — habilidade de raça (que NÃO
+//  é o poder de raça do Heróis), origem e distinção —, e o 'quantos' de
+//  cada um é a conta dos que estão em js/poderes-raca-origem-data.js.
 window.GA_PODERES_GRUPOS = [
   { chave: 'combate', nome: 'Combate', emoji: '⚔', quantos: 68 },
   { chave: 'destino', nome: 'Destino', emoji: '🎲', quantos: 36 },
   { chave: 'magia', nome: 'Magia', emoji: '✨', quantos: 23 },
   { chave: 'concedido', nome: 'Concedidos', emoji: '🙏', quantos: 208 },
   { chave: 'tormenta', nome: 'Tormenta', emoji: '🩸', quantos: 28 },
-  { chave: 'raca', nome: 'Raça', emoji: '🧬', quantos: 77 },
   { chave: 'grupo', nome: 'Grupo', emoji: '🤝', quantos: 20 },
+  { chave: 'distincao', nome: 'Distinção', emoji: '🎖', quantos: 0 },
+  { chave: 'raca-hab', nome: 'Habilidade de raça', emoji: '🌿', quantos: 0 },
+  { chave: 'raca', nome: 'Poder de raça', emoji: '🧬', quantos: 77 },
+  { chave: 'origem', nome: 'Origem', emoji: '🎯', quantos: 0 },
 ];
 
 window.GA_PODERES = [
