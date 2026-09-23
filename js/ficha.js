@@ -169,6 +169,22 @@
     if (typeof f.pm.atual  !== 'number') f.pm.atual  = null;
     if (typeof f.pm.temp   !== 'number') f.pm.temp   = 0;
     if (typeof f.pm.outros !== 'number') f.pm.outros = 0;
+    // ── PV MANCHADOS (22/09/2026) ──────────────────────────────────
+    //  Há dano que não volta com cura nenhuma até uma condição ser
+    //  cumprida. O livro escreve isso com todas as letras na
+    //  complicação de idade Gota (Heróis de Arton, p. 290): "você perde
+    //  1d6 pontos de vida. Você SÓ PODE RECUPERAR ESSES PV COM
+    //  DESCANSO". Antes, esses pontos sumiam na conta — o jogador
+    //  curava até o máximo e ninguém lembrava que quatro deles estavam
+    //  presos. Agora cada mancha é uma linha, com quantos pontos e o
+    //  que os solta, e ela baixa o TETO da cura: curar para ali, e a
+    //  parte manchada aparece riscada no fim da barra.
+    if (!Array.isArray(f.pv.manchas)) f.pv.manchas = [];
+    f.pv.manchas = f.pv.manchas.map(m => ({
+      id: (m && m.id) || novoId(),
+      pontos: Math.max(0, parseInt((m && m.pontos), 10) || 0),
+      motivo: String((m && m.motivo) || ''),     // "descanso", "magia de restauração"…
+    }));
 
     f.defesa = f.defesa || {};
     ['armadura', 'escudo', 'outros', 'penalidade'].forEach(k => {
@@ -192,6 +208,21 @@
     ['usada', 'outros'].forEach(k => { if (typeof f.carga[k] !== 'number') f.carga[k] = 0; });
     if (typeof f.cdAtributo !== 'string') f.cdAtributo = 'int';
     if (typeof f.xp !== 'number') f.xp = 0;
+    // ── O CADERNO DO XP (22/09/2026) ───────────────────────────────
+    //  "para saber se já coloquei XP ou não": o campo do XP guarda o
+    //  total e mais nada, então depois da sessão ninguém lembra se os
+    //  400 da noite já entraram. Cada soma feita pelo botão vira uma
+    //  linha — quanto, quando, por quê, e em quanto ficou —, e a linha
+    //  tem volta (o ↩ desfaz a soma e acerta o total).
+    //  Mora DENTRO da ficha, como o recibo da Loja: sobe para a mesa e
+    //  acompanha o jogador de aparelho.
+    if (!Array.isArray(f.xpLog)) f.xpLog = [];
+    f.xpLog = f.xpLog.slice(0, XPLOG_MAX).map(x => ({
+      quando: (x && typeof x.quando === 'number') ? x.quando : 0,
+      quanto: (x && typeof x.quanto === 'number') ? x.quanto : 0,   // pode ser negativo
+      nota:   String((x && x.nota) || ''),
+      total:  (x && typeof x.total === 'number') ? x.total : 0,     // o XP logo depois desta linha
+    }));
 
     // ── RESISTÊNCIAS, RD E IMUNIDADES (Tormenta 20, p. 229) ────────
     //  Três coisas diferentes, que a mesa confunde o tempo todo — e por
@@ -233,6 +264,22 @@
     if (!Array.isArray(f.condicoes)) f.condicoes = [];
     f.condicoes = f.condicoes.map(c => String(c || '')).filter(Boolean)
       .filter((c, i, todas) => todas.indexOf(c) === i);
+
+    // ── AS CONDIÇÕES QUE NÃO ESTÃO NA LISTA (22/09/2026) ───────────
+    //  Duas caixas, pedido dele. A primeira é SUSTENTADA, que não é
+    //  condição do capítulo 9 — é duração de habilidade (p. 227) —, mas
+    //  é o que mais se esquece na mesa: 1 PM de ação livre no começo de
+    //  cada turno seu, ou o efeito cai. Ela vem com o texto do livro e
+    //  guarda O QUE está sendo sustentado. A segunda é OUTROS: linha em
+    //  branco para o que o mestre inventou na hora.
+    if (!Array.isArray(f.condicoesLivres)) f.condicoesLivres = [];
+    f.condicoesLivres = f.condicoesLivres.map(c => ({
+      id: (c && c.id) || novoId(),
+      tipo: (c && c.tipo) === 'sustentada' ? 'sustentada' : 'outros',
+      texto: String((c && c.texto) || ''),
+      // só na sustentada: é MAGIA? "apenas uma magia sustentada por vez"
+      magia: !!(c && c.magia),
+    }));
 
     //  `atr` é a MESMA ideia da Defesa, perícia por perícia: a Tabela
     //  2-1 (p. 115) diz o atributo-chave de cada uma, e é esse que vale
@@ -380,6 +427,18 @@
     // o que conta como poder da Tormenta e não é poder nenhum (os bônus
     // da Deformidade do lefou, p. 24)
     f.tormentaConta = Math.max(0, parseInt((f.tormentaConta || 0), 10) || 0);
+    // ── A ORDEM DAS GAVETAS DE PODER (22/09/2026) ──────────────────
+    //  Pedido dele: "jogar os poderes de Combate para cima, ou os de
+    //  magia". A ordem de fábrica é a dos livros (combate, destino,
+    //  magia, concedidos, Tormenta, raça, grupo, classe, escritos à
+    //  mão); quem mexe nas setas escreve a dele aqui. É uma lista de
+    //  CHAVES DE GAVETA — 'combate', 'magia', 'classe:guerreiro' —, e
+    //  o que não estiver nela cai depois, na ordem do livro. Guardar
+    //  chave, e não posição, é o que faz um poder novo de um grupo
+    //  ainda não visto aparecer sem desarrumar o resto.
+    if (!Array.isArray(f.poderesOrdem)) f.poderesOrdem = [];
+    f.poderesOrdem = f.poderesOrdem.map(k => String(k || '')).filter(Boolean)
+      .filter((k, i, todas) => todas.indexOf(k) === i);
 
     if (!Array.isArray(f.ataques)) f.ataques = [];
     f.ataques = f.ataques.map(a => ({
@@ -547,6 +606,7 @@
   // livre de cada uma passou a morar dentro do cartão novo — o que
   // alguém já tinha escrito continua onde estava.
   const COMPRAS_MAX = 30;      // o mesmo fôlego do histórico de rolagens
+  const XPLOG_MAX = 40;        // o caderno do XP: uma campanha inteira cabe
 
   const BLOCOS = [
     { campo: 'racaOrigem',    titulo: '🌿 Habilidades de raça e origem',
@@ -557,12 +617,17 @@
       dica: 'História, aliados, contatos, dívidas, o que ficou pendente…' },
   ];
   // Ficaram no modelo (nada do que foi escrito se perde), mas são
-  // desenhadas dentro dos cartões de Magias e Inventário.
+  // desenhadas dentro dos cartões de Magias e Inventário — e, desde
+  // 22/09/2026, no cartão ⚠ Complicações, que fica lá em cima.
   const BLOCOS_EMBUTIDOS = [
     { campo: 'magias',
       dica: 'Anotações de magia: o que você preparou hoje, aprimoramentos que costuma usar, truques…' },
     { campo: 'inventario',
       dica: 'Anotações do inventário: o que ficou na base, o que é de outro personagem, dívidas…' },
+    { campo: 'complicacoes',
+      dica: 'A complicação que você escolheu na criação — o nome e o que ela faz…' },
+    { campo: 'complicacoesIdade',
+      dica: 'Abatido, Catarata, Dedos Trêmulos, Gota… uma por faixa etária, e os efeitos se acumulam' },
   ];
   const TODOS_BLOCOS = BLOCOS.concat(BLOCOS_EMBUTIDOS);
 
@@ -726,13 +791,28 @@
   }
   // Curar NÃO devolve temporário: "você nunca pode recuperar mais pontos
   // de vida ou mana do que perdeu" (p. 105), e o temporário não é perda.
+  // O teto do PV é o máximo MENOS o que está manchado: aqueles pontos
+  // não voltam com cura nenhuma até a condição da mancha ser cumprida.
   function curarPontos(f, qual, quanto) {
     const n = Math.max(0, Math.round(quanto || 0));
-    const teto = qual === 'pv' ? pvMax(f) : pmMax(f);
+    const teto = qual === 'pv' ? tetoPv(f) : pmMax(f);
     const agora = qual === 'pv' ? pvAtual(f) : pmAtual(f);
-    f[qual].atual = Math.min(teto, agora + n);
+    // quem já está ACIMA do teto (o dano manchado ainda não foi tirado)
+    // não é empurrado para baixo pela cura: fica onde está
+    f[qual].atual = agora >= teto ? agora : Math.min(teto, agora + n);
     return f[qual].atual - agora;
   }
+
+  // ── PV MANCHADOS (Heróis de Arton, p. 290) ──────────────────────
+  //  Quantos pontos do máximo estão presos, e o teto que sobra para a
+  //  cura. A ficha MOSTRA e faz a conta; quem cumpre a condição (dormir
+  //  a noite, rezar, achar o antídoto) é a mesa — e o ✓ de cada linha é
+  //  o que devolve os pontos.
+  function manchas(f) { return (f.pv && f.pv.manchas) || []; }
+  function manchado(f) {
+    return manchas(f).reduce((s, m) => s + Math.max(0, m.pontos || 0), 0);
+  }
+  function tetoPv(f) { return Math.max(0, pvMax(f) - manchado(f)); }
   // O total à vista: atual + temporários. É este número que aparece
   // grande, porque é o que o jogador tem de fato para gastar.
   function pvTotal(f) { return pvAtual(f) + (f.pv.temp || 0); }
@@ -806,6 +886,7 @@
   let direcionar = {};        // id do amigo → true
   let truquesAbertos = {};    // id do amigo → true
   let tabelaPassosAberta = false;   // a Tabela 3-2 do cartão dos Ataques, aberta nesta tela
+  let xpLogAberto = false;          // o caderno do XP, aberto nesta tela
   const HIST_KEY = 'grifosAlados.fichaRolagens';
   const HIST_MAX = 30;
 
@@ -913,11 +994,20 @@
   }
   function aplicarCura(f, qual, n) {
     const rot = qual === 'pv' ? 'PV' : 'PM';
+    const preso = qual === 'pv' ? manchado(f) : 0;
+    const noTeto = qual === 'pv' && preso > 0 && pvAtual(f) >= tetoPv(f);
     const ganho = curarPontos(f, qual, n);
     sujar(f.id, qual);
+    // o "o resto passaria do máximo" vira outra frase quando quem
+    // segurou a cura foi a mancha: ali o teto não é o máximo
+    const porQue = noTeto || (preso && ganho < n)
+      ? ' — <strong>' + preso + '</strong> ' + rot + ' manchado' + (preso > 1 ? 's' : '') +
+        ' não voltam por cura, só cumprindo a condição'
+      : (ganho < n ? ' (o resto passaria do máximo)' : '');
     ultimoDano = ganho
-      ? '✚ +' + ganho + ' ' + rot + (ganho < n ? ' (o resto passaria do máximo)' : '')
-      : '✚ nada a recuperar — o ' + rot + ' já está cheio';
+      ? '✚ +' + ganho + ' ' + rot + porQue
+      : '✚ nada a recuperar — o ' + rot +
+        (noTeto ? ' já está no teto' + porQue : ' já está cheio');
     atualizarDerivados();
     salvar();
   }
@@ -1061,7 +1151,7 @@
       return;
     }
 
-    html += bloqueIdentidade(f) + blocoCondicoes(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
+    html += bloqueIdentidade(f) + blocoComplicacoes(f) + blocoCondicoes(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
             blocoAmigos(f) + blocoPoderes(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
             blocoCompras(f);
     const donoAberta = donoDe(f.id);
@@ -1229,11 +1319,56 @@
           <label class="fi-campo fi-campo--curto"><span class="fi-rot">XP</span>
             <input class="fi-num" type="number" min="0" step="100" value="${f.xp}" data-campo="xp"
                    title="Pontos de experiência acumulados (Tabela 1-4, p. 34)"></label>
+          <span class="fi-xp-somar">
+            <span class="fi-rot">Ganhou agora</span>
+            <input class="fi-num fi-xp-quanto" type="number" step="50" id="fiXpQuanto" placeholder="400"
+                   aria-label="Quanto de XP entrou agora"
+                   title="Quanto de XP entrou agora. O ＋ Somar acrescenta isto ao total, e anota a linha no caderno.">
+            <input class="fi-txt fi-xp-nota" type="text" id="fiXpNota" autocomplete="off"
+                   aria-label="De onde veio este XP" placeholder="de onde veio (a sessão, a missão…)">
+            <button type="button" class="fi-add fi-add--menor" data-acao="xp-somar"
+                    title="Somar ao total e anotar no caderno">＋ Somar</button>
+          </span>
           <span class="fi-xp-conta" data-der="xpconta">${contaXp(f)}</span>
           <span class="fi-xp-barra" data-der="xpbarra" aria-hidden="true">${barraXp(f)}</span>
+          ${blocoXpLog(f)}
         </div>
       </div>`;
   }
+
+  // ── O CADERNO DO XP ──────────────────────────────────────────────
+  //  Recolhido, mostra só a última soma — que é a resposta da pergunta
+  //  dele ("já coloquei o XP desta sessão?"). Aberto, mostra todas, com
+  //  o total em que cada uma deixou a ficha e o ↩ que desfaz.
+  //  Aberto ou fechado é deste NAVEGADOR, como o resto do que dobra.
+  function blocoXpLog(f) {
+    const n = f.xpLog.length;
+    if (!n) {
+      return `<p class="fi-xp-vazio">Nenhuma soma anotada ainda. Escreva quanto ganhou em
+        <strong>Ganhou agora</strong> e clique em <strong>＋ Somar</strong>: o total sobe sozinho e a
+        linha fica guardada aqui.</p>`;
+    }
+    const u = f.xpLog[0];
+    const linhas = f.xpLog.map((x, i) => `
+      <li class="fi-xp-linha">
+        <span class="fi-xp-quando">${esc(dataHora(x.quando))}</span>
+        <strong class="fi-xp-quanto-val${x.quanto < 0 ? ' fi-xp-quanto-val--neg' : ''}">${sinalXp(x.quanto)}</strong>
+        <span class="fi-xp-linha-nota">${x.nota ? esc(x.nota) : '<em>sem anotação</em>'}</span>
+        <span class="fi-xp-linha-total">ficou em ${num(x.total)}</span>
+        <button type="button" class="fi-mini" data-acao="xp-desfaz" data-i="${i}"
+                title="Desfazer: tira ${sinalXp(x.quanto)} XP do total e apaga esta linha">↩</button>
+      </li>`).join('');
+    return `
+      <details class="fi-xp-log"${xpLogAberto ? ' open' : ''}>
+        <summary data-acao="xp-log">📜 ${n} soma${n > 1 ? 's' : ''} anotada${n > 1 ? 's' : ''}
+          <em>última: ${sinalXp(u.quanto)} XP${u.nota ? ' (' + esc(u.nota) + ')' : ''}
+            em ${esc(dataHora(u.quando))}</em></summary>
+        <ul class="fi-xp-lista">${linhas}</ul>
+        <p class="fi-nota">O caderno guarda as ${XPLOG_MAX} últimas somas feitas pelo botão. Mexer no
+          campo <strong>XP</strong> à mão não passa por aqui — é a porta de escape de sempre.</p>
+      </details>`;
+  }
+  function sinalXp(v) { return (v >= 0 ? '+' : '−') + num(Math.abs(v)); }
 
   // ── A MESMA CLASSE EM DUAS LINHAS ────────────────────────────────
   //  "Não é possível fazer multiclasse entre uma classe básica e uma de
@@ -1262,6 +1397,56 @@
     // três linhas de Guerreiro dariam o mesmo aviso duas vezes
     return avisos.filter((a, i) => avisos.indexOf(a) === i)
       .map(a => `<p class="fi-classes-aviso">⚠ ${a}</p>`).join('');
+  }
+
+  // ═══ ⚠ COMPLICAÇÕES (Heróis de Arton, p. 282 e 289) ═══════════════
+  //  Pedido dele em 22/09/2026: "alguma caixa para escrever
+  //  COMPLICAÇÕES e COMPLICAÇÕES DE IDADE, ele teria que ser lá em cima
+  //  para lembrar sempre dele". É exatamente o que o livro quer delas:
+  //  pôr a restrição em regras "garante que essa característica
+  //  apareça nas aventuras e tenha peso na história" (p. 282). No fim
+  //  da ficha, junto das anotações, ninguém lembra — então o cartão
+  //  fica logo abaixo do nome, antes de qualquer número.
+  //
+  //  São duas coisas diferentes no livro, e por isso duas caixas:
+  //   • COMPLICAÇÃO (p. 282): UMA por personagem, escolhida na criação,
+  //     e em troca vem um poder geral extra. Conta como habilidade — se
+  //     impõe uma condição, você a sofre mesmo sendo imune a ela. As
+  //     comportamentais cobram caro se violadas: perde todos os PM e só
+  //     os recupera a partir do dia seguinte;
+  //   • COMPLICAÇÕES DE IDADE (p. 289): uma POR FAIXA ETÁRIA — adulto
+  //     1, maduro 2, velho 3, ancião 4 —, e "seus efeitos se acumulam".
+  //  A caixa é de texto rico, como o resto do que se escreve na ficha:
+  //  a ficha não tem lista de complicações, e nem vai ter — o site não
+  //  policia escolha de ninguém.
+  function dicaDoBloco(campo) {
+    const b = TODOS_BLOCOS.find(x => x.campo === campo);
+    return (b && b.dica) || '';
+  }
+  function blocoComplicacoes(f) {
+    return `
+      <div class="fi-cartao fi-bloco fi-compl">
+        <h2 class="fi-cartao-tit">⚠ Complicações
+          <span class="fi-cartao-nota">Heróis de Arton, p. 282 e 289 — aqui em cima para não esquecer delas</span>
+        </h2>
+        <div class="fi-compl-grade">
+          <div class="fi-compl-caixa">
+            <h3 class="fi-compl-tit">🎭 Complicação
+              <em>uma só, escolhida na criação — e por ela veio um poder geral extra</em></h3>
+            ${caixaRicaCampo('blocos.complicacoes', f.blocos.complicacoes, dicaDoBloco('complicacoes'))}
+          </div>
+          <div class="fi-compl-caixa">
+            <h3 class="fi-compl-tit">⏳ Complicações de idade
+              <em>uma por faixa etária: adulto 1, maduro 2, velho 3, ancião 4</em></h3>
+            ${caixaRicaCampo('blocos.complicacoesIdade', f.blocos.complicacoesIdade, dicaDoBloco('complicacoesIdade'))}
+          </div>
+        </div>
+        <p class="fi-nota">Complicação <strong>conta como habilidade</strong>: se ela impõe uma condição, você a
+          sofre <em>mesmo sendo imune</em> a ela. As comportamentais cobram caro — violou, perde todos os PM e só
+          recupera a partir do dia seguinte. As <strong>de idade se acumulam</strong>, e é numa delas que nasceu o
+          <strong>🩶 PV manchado</strong> da Vida &amp; Mana: a Gota (p. 290) tira 1d6 PV que "só podem ser
+          recuperados com descanso".</p>
+      </div>`;
   }
 
   // ── XP: FALTA MUITO PARA SUBIR? ──────────────────────────────────
@@ -1348,6 +1533,7 @@
           <p class="fi-nota fi-nota--temp">Os temporários entram <em>por cima</em> do seu total, mesmo passando do
             máximo, e são <strong>sempre os primeiros a serem gastos</strong> — por isso o dano daqui desce
             deles antes de tocar no seu PV. No fim do dia, somem.</p>
+          ${blocoManchas(f)}
           <p class="fi-conta" data-der="pvconta">${contaPv(f)}</p>
         </div>
 
@@ -1436,12 +1622,16 @@
   //  no PV, azul no PM) e o temporário logo depois, em ouro. É a
   //  "marca" pedida: dá para ver de longe que há escudo em cima da
   //  vida, e a etiqueta ao lado diz quantos são, por escrito.
+  //  E, desde 22/09/2026, a MANCHA: o pedaço do fim da barra que a cura
+  //  não alcança. Fica encostado no máximo (é de lá que ele some), com
+  //  hachura cinza — de longe se vê que o teto daquela ficha desceu.
   function medidor(f, qual) {
     const ehPv  = qual === 'pv';
     const atual = ehPv ? pvAtual(f) : pmAtual(f);
     const max   = ehPv ? pvMax(f)   : pmMax(f);
     const temp  = f[qual].temp || 0;
     const rot   = ehPv ? 'PV' : 'PM';
+    const preso = ehPv ? manchado(f) : 0;
     return `
       <div class="fi-medidor">
         <span class="fi-medidor-rot">${rot}</span>
@@ -1453,12 +1643,71 @@
               title="${rot} temporários — gastos antes do seu ${rot} de verdade">
           ${ehPv ? '⛨' : '✦'} <strong>${temp}</strong> temp
         </span>
+        ${ehPv ? `<span class="fi-temp-selo fi-temp-selo--mancha" data-der="pvmanchaselo" ${preso ? '' : 'hidden'}
+              title="PV manchados: a cura para no ${tetoPv(f)}, e esses pontos só voltam quando a condição de cada mancha for cumprida">
+          🩶 <strong>${preso}</strong> manchados
+        </span>` : ''}
       </div>
       <div class="fi-barra-pv fi-barra-pv--${qual}">
         <span class="fi-barra-parte" data-der="${qual}barra" style="width:${fatia(atual, max, temp)}%"></span>
         <span class="fi-barra-temp" data-der="${qual}barratemp" style="width:${fatia(temp, max, temp)}%"></span>
+        ${ehPv ? `<span class="fi-barra-mancha" data-der="pvbarramancha"
+              style="width:${fatia(preso, max, temp)}%"></span>` : ''}
       </div>`;
   }
+  // ── 🩶 OS PV MANCHADOS, NA TELA ──────────────────────────────────
+  //  Uma linha por mancha: quantos pontos, e o que os solta. O ✓ é o
+  //  cumprimento da condição (dormiu a noite, achou a magia): tira a
+  //  mancha E devolve os pontos, que é o que se quer com um clique só.
+  //  O ✕ é para a linha digitada errado — sai sem devolver nada.
+  function blocoManchas(f) {
+    const lista = manchas(f);
+    const linhas = lista.map((m, i) => `
+      <li class="fi-mancha-linha">
+        <input class="fi-num fi-num--mini" type="number" min="0" value="${m.pontos}"
+               data-campo="pv.manchas.${i}.pontos" title="Quantos PV estão presos nesta mancha">
+        <span class="fi-mancha-rot" aria-hidden="true">PV</span>
+        <input class="fi-txt" type="text" value="${esc(m.motivo)}" data-campo="pv.manchas.${i}.motivo"
+               aria-label="O que solta estes PV" title="O que devolve estes PV: descanso, uma magia, um ritual…"
+               placeholder="só com descanso, só com magia de restauração…" autocomplete="off">
+        <button type="button" class="fi-mini fi-mancha-ok" data-acao="cura-mancha" data-i="${i}"
+                title="Cumpriu a condição: tira a mancha e devolve ${m.pontos} PV">✓</button>
+        <button type="button" class="fi-mini fi-mini--x" data-acao="tira-mancha" data-i="${i}"
+                title="Tirar esta linha — sem devolver PV nenhum">✕</button>
+      </li>`).join('');
+    return `
+      <div class="fi-mancha">
+        <div class="fi-desl-topo">
+          <span class="fi-desl-rot">🩶 PV manchados — o que a cura não alcança</span>
+          <button type="button" class="fi-add fi-add--menor" data-acao="add-mancha"
+                  title="Marcar PV que só voltam cumprindo uma condição — o 1d6 da Gota, por exemplo (Heróis de Arton, p. 290)"
+            >＋ Manchar</button>
+        </div>
+        ${linhas ? `<ul class="fi-desl-lista">${linhas}</ul>`
+          : '<p class="fi-desl-vazio">Nada manchado: a cura vai até o máximo.</p>'}
+        <p class="fi-conta fi-mancha-conta" data-der="manchaconta"
+           ${manchado(f) ? '' : 'hidden'}>${contaManchas(f)}</p>
+      </div>`;
+  }
+  //  A conta por extenso, do jeito que se explica na mesa: "36 − 4
+  //  manchados = a cura para em 32". E o aviso de quem marcou a mancha
+  //  sem ter tirado o dano ainda, com o botão que tira.
+  function contaManchas(f) {
+    const preso = manchado(f);
+    if (!preso) return '';
+    const porQue = manchas(f).filter(m => m.pontos > 0)
+      .map(m => m.pontos + ' ' + (m.motivo ? esc(m.motivo) : '<em>sem condição escrita</em>')).join(' · ');
+    const sobra = pvAtual(f) - tetoPv(f);
+    return 'PV máximo <strong>' + pvMax(f) + '</strong> − <strong>' + preso + '</strong> manchado' +
+      (preso > 1 ? 's' : '') + ' = a cura para em <strong>' + tetoPv(f) + '</strong>' +
+      (porQue ? ' <em>(' + porQue + ')</em>' : '') +
+      (sobra > 0
+        ? ' · <span class="fi-mancha-aviso">⚠ o seu PV está ' + sobra + ' acima desse teto: o dano da mancha ' +
+          'ainda não foi tirado <button type="button" class="fi-mini" data-acao="mancha-dano" ' +
+          'title="Tirar agora os ' + sobra + ' PV que esta mancha custou">🩸 tirar ' + sobra + '</button></span>'
+        : '');
+  }
+
   // A barra precisa caber atual + temporário, e o temporário pode passar
   // do máximo (é o que a regra manda). Então a régua é o maior dos dois.
   function fatia(parte, max, temp) {
@@ -1588,25 +1837,85 @@
       </span>`;
   }
 
+  // ── AS DUAS CAIXAS ESCRITAS (22/09/2026) ─────────────────────────
+  //  Sustentada não está na lista de condições do livro — é DURAÇÃO de
+  //  habilidade (p. 227) —, mas é a que mais se esquece na mesa, e é
+  //  por isso que ele a pediu aqui: o 1 PM de ação livre no começo de
+  //  cada turno seu. O texto abaixo é o do livro, palavra por palavra.
+  const TXT_SUSTENTADA =
+    'A habilidade precisa de um fluxo constante de mana. O personagem deve gastar 1 PM como uma ação ' +
+    'livre no início de cada turno seu para manter o efeito ativo. Se não o fizer, a habilidade termina. ' +
+    'Você pode manter diversas habilidades sustentadas, pagando o custo de cada uma, mas apenas uma ' +
+    'magia sustentada por vez.';
+
+  function condLivres(f) { return f.condicoesLivres || []; }
+  function linhaCondLivre(c, i) {
+    const sust = c.tipo === 'sustentada';
+    const id = 'ficondl-' + c.id;
+    return `
+      <li class="fi-condl fi-condl--${c.tipo}">
+        <span class="fi-condl-rot"${sust ? ` tabindex="0" aria-describedby="${id}"` : ''}>
+          ${sust ? '✋ Sustentada' : '✎ Outros'}
+          ${sust ? `<span class="fi-cond-nuvem" role="tooltip" id="${id}">
+            <strong>Sustentada</strong> <em>duração de habilidade — Tormenta 20, p. 227</em>
+            <span>${esc(TXT_SUSTENTADA)}</span>
+          </span>` : ''}
+        </span>
+        <input class="fi-txt" type="text" value="${esc(c.texto)}" data-campo="condicoesLivres.${i}.texto"
+               aria-label="${sust ? 'O que você está sustentando' : 'A condição, com as suas palavras'}"
+               placeholder="${sust ? 'o que você está sustentando — a magia, o poder, o item…'
+                                   : 'o que está pegando agora, com as suas palavras…'}" autocomplete="off">
+        ${sust ? `<button type="button" class="fi-mini${c.magia ? ' fi-mini--on' : ''}" data-acao="livre-magia"
+                data-i="${i}" aria-pressed="${!!c.magia}"
+                title="${c.magia ? 'Não é magia: desmarcar' : 'É uma MAGIA sustentada — e só cabe uma delas por vez'}"
+          >✦</button>` : ''}
+        <button type="button" class="fi-mini fi-mini--x" data-acao="tira-livre" data-i="${i}"
+                title="Tirar esta linha">✕</button>
+      </li>`;
+  }
+  //  O preço de manter tudo de pé, somado: é a conta que ninguém faz no
+  //  meio do combate e que derruba magia por falta de 1 PM.
+  function contaSustentadas(f) {
+    const s = condLivres(f).filter(c => c.tipo === 'sustentada');
+    if (!s.length) return '';
+    const magias = s.filter(c => c.magia).length;
+    return '<strong>' + s.length + '</strong> sustentada' + (s.length > 1 ? 's' : '') + ': <strong>' +
+      s.length + ' PM</strong> como ação livre no início de cada turno seu, ou o efeito termina' +
+      (magias > 1
+        ? ' · <span class="fi-mancha-aviso">⚠ ' + magias + ' delas estão marcadas como <strong>magia</strong>, e o ' +
+          'livro deixa manter <em>apenas uma magia sustentada por vez</em></span>'
+        : '');
+  }
+
   function blocoCondicoes(f) {
     const minhas = condicoesDa(f);
+    const livres = condLivres(f);
     const temBase = baseCondicoes().length;
+    const quantas = minhas.length + livres.length;
     return `
       <div class="fi-cartao fi-bloco fi-condicoes">
         <h2 class="fi-cartao-tit">🌀 Condições
-          <span class="fi-cartao-nota">${minhas.length ? minhas.length + ' agora' : 'nenhuma agora'}${
+          <span class="fi-cartao-nota">${quantas ? quantas + ' agora' : 'nenhuma agora'}${
             temBase ? ' · ' + temBase + ' na lista do livro (p. 394)' : ''}</span>
           <span class="fi-pod-botoes">
-            ${minhas.length ? `<button type="button" class="fi-add fi-add--menor" data-acao="limpa-condicoes"
+            ${quantas ? `<button type="button" class="fi-add fi-add--menor" data-acao="limpa-condicoes"
                     title="Tirar todas — é o que acontece no fim da cena">🧹 Fim da cena</button>` : ''}
+            <button type="button" class="fi-add fi-add--menor" data-acao="add-livre" data-tipo="sustentada"
+                    title="Uma habilidade sustentada: 1 PM de ação livre no início de cada turno seu (p. 227)"
+              >✋ Sustentada</button>
+            <button type="button" class="fi-add fi-add--menor" data-acao="add-livre" data-tipo="outros"
+                    title="Uma linha em branco, para o que não está na lista do livro">✎ Outros</button>
             <button type="button" class="fi-add fi-add--menor" data-acao="add-condicao" ${temBase ? '' : 'disabled'}
                     >＋ Condição</button>
           </span>
         </h2>
         <div class="fi-cond-fila">
           ${minhas.length ? minhas.map(etiquetaCond).join('')
-            : '<span class="fi-cond-nenhuma">Nenhuma condição agora. O <strong>＋ Condição</strong> abre a lista do livro.</span>'}
+            : '<span class="fi-cond-nenhuma">Nenhuma condição do livro agora. O <strong>＋ Condição</strong> abre a lista.</span>'}
         </div>
+        ${livres.length ? `<ul class="fi-condl-lista">${livres.map(linhaCondLivre).join('')}</ul>` : ''}
+        <p class="fi-conta fi-condl-conta" data-der="sustconta"
+           ${contaSustentadas(f) ? '' : 'hidden'}>${contaSustentadas(f)}</p>
         <p class="fi-nota">Passe o mouse (ou toque) numa etiqueta para ler o texto inteiro do livro.
           <strong>A ficha mostra, não aplica</strong>: os −2 e os −5 continuam por sua conta, porque
           condições de mesmo efeito <em>não se somam</em> — "um personagem desprevenido e vulnerável
@@ -2666,18 +2975,64 @@
       </li>`;
   }
 
-  //  Uma gaveta da lista desenhada: o título, e os cartões com a
-  //  posição que cada um ocupa NELA (é com essa posição que as setas
-  //  andam). `itens` são pares { p, i } — o poder e o índice guardado.
-  function gavetaDePoder(f, titulo, emoji, itens) {
+  //  ── AS GAVETAS, E A ORDEM DELAS (22/09/2026) ─────────────────────
+  //  Cada gaveta é um grupo desenhado: 'combate', 'magia', e uma por
+  //  classe ('classe:guerreiro'). Quem monta a lista é esta função — e
+  //  ela é a mesma que o clique das setas consulta, para a ordem que se
+  //  vê e a ordem que se move serem uma coisa só.
+  //  Pedido dele: "jogar os poderes de Combate para cima, ou os de
+  //  magia". A ordem de fábrica é a dos livros; as setas ⇈ ↑ ↓ do
+  //  título escrevem a dele em f.poderesOrdem, e o que ela não citar
+  //  continua na ordem do livro, depois do que foi escolhido.
+  function gavetasDePoder(f) {
+    const porGrupo = {};
+    f.poderes.forEach((p, i) => { (porGrupo[p.grupo] || (porGrupo[p.grupo] = [])).push({ p: p, i: i }); });
+    const saida = [];
+    gruposDePoder().filter(g => porGrupo[g.chave]).forEach(g => {
+      //  Os de classe ganham uma gaveta POR CLASSE: numa ficha
+      //  multiclasse, saber de quem é cada poder é metade da leitura.
+      if (g.chave !== 'classe') {
+        saida.push({ chave: g.chave, titulo: g.nome, emoji: g.emoji, itens: porGrupo[g.chave] });
+        return;
+      }
+      const porClasse = {};
+      porGrupo.classe.forEach(x => {
+        const k = x.p.classe || '';
+        (porClasse[k] || (porClasse[k] = [])).push(x);
+      });
+      Object.keys(porClasse).forEach(k => {
+        const L = listaDeClasse(k), C = D.classe(k);
+        saida.push({
+          chave: 'classe:' + k,
+          titulo: 'Poderes de ' + ((L && L.nome) || (C && C.nome) || 'classe'),
+          emoji: g.emoji, itens: porClasse[k],
+        });
+      });
+    });
+    const ordem = f.poderesOrdem || [];
+    const lugar = g => { const i = ordem.indexOf(g.chave); return i < 0 ? ordem.length : i; };
+    saida.forEach((g, i) => { g.pos = i; });          // o desempate: a ordem do livro
+    saida.sort((a, b) => (lugar(a) - lugar(b)) || (a.pos - b.pos));
+    return saida;
+  }
+
+  //  Uma gaveta desenhada: o título, as setas que a movem inteira, e os
+  //  cartões com a posição que cada um ocupa NELA (é com essa posição
+  //  que as setas do poder andam). `itens` são pares { p, i } — o poder
+  //  e o índice guardado.
+  function gavetaDePoder(f, g, pos, quantas) {
+    const n = g.itens.length;
     return `
       <div class="fi-pod-grupo">
         <h3 class="fi-pod-grupo-tit">
-          <span class="fi-pod-emoji" aria-hidden="true">${emoji}</span>${esc(titulo)}
-          <em>${itens.length} poder${itens.length > 1 ? 'es' : ''}</em>
+          <span class="fi-pod-emoji" aria-hidden="true">${g.emoji}</span>${esc(g.titulo)}
+          <em>${n} poder${n > 1 ? 'es' : ''}</em>
+          ${quantas > 1 ? `<span class="fi-pod-ordem fi-pod-grupo-ordem">${
+            setasDeOrdem('podgrp', pos, pos, quantas, 'a gaveta ' + g.titulo,
+                         ' data-k="' + esc(g.chave) + '"')}</span>` : ''}
         </h3>
-        <ul class="fi-pod-lista">${itens.map((x, pos) =>
-          cartaoPoder(f, x.p, x.i, pos, itens.length)).join('')}</ul>
+        <ul class="fi-pod-lista">${g.itens.map((x, i) =>
+          cartaoPoder(f, x.p, x.i, i, n)).join('')}</ul>
       </div>`;
   }
 
@@ -2685,23 +3040,9 @@
     const temBase = Array.isArray(window.GA_PODERES) && window.GA_PODERES.length;
     const nBase = (temBase ? window.GA_PODERES.length : 0) + baseClasse().length;
     const todosFechados = f.poderes.length > 0 && f.poderes.every(p => poderesFechados[p.id]);
-    const porGrupo = {};
-    f.poderes.forEach((p, i) => { (porGrupo[p.grupo] || (porGrupo[p.grupo] = [])).push({ p: p, i: i }); });
-    const grupos = gruposDePoder().filter(g => porGrupo[g.chave]).map(g => {
-      //  Os de classe ganham uma gaveta POR CLASSE: numa ficha
-      //  multiclasse, saber de quem é cada poder é metade da leitura.
-      if (g.chave !== 'classe') return gavetaDePoder(f, g.nome, g.emoji, porGrupo[g.chave]);
-      const porClasse = {};
-      porGrupo.classe.forEach(x => {
-        const k = x.p.classe || '';
-        (porClasse[k] || (porClasse[k] = [])).push(x);
-      });
-      return Object.keys(porClasse).map(k => {
-        const L = listaDeClasse(k), C = D.classe(k);
-        const nome = 'Poderes de ' + ((L && L.nome) || (C && C.nome) || 'classe');
-        return gavetaDePoder(f, nome, g.emoji, porClasse[k]);
-      }).join('');
-    }).join('');
+    const gavetas = gavetasDePoder(f);
+    const grupos = gavetas.map((g, pos) => gavetaDePoder(f, g, pos, gavetas.length)).join('');
+    const mexida = (f.poderesOrdem || []).length > 0;
 
     return `
       <div class="fi-cartao fi-bloco fi-poderes">
@@ -2709,6 +3050,9 @@
           <span class="fi-cartao-nota">${f.poderes.length} na ficha${nBase
             ? ' · ' + nBase + ' nos livros, com os de classe' : ''}</span>
           <span class="fi-pod-botoes">
+            ${mexida ? `<button type="button" class="fi-add fi-add--menor" data-acao="pod-ordem-livro"
+                    title="Devolver as gavetas à ordem dos livros: combate, destino, magia, concedidos, Tormenta, raça, grupo, classe e escritos à mão"
+              >↺ Ordem do livro</button>` : ''}
             ${f.poderes.length > 1 ? `<button type="button" class="fi-add fi-add--menor" data-acao="dobra-poderes"
                     title="${todosFechados ? 'Mostrar o texto de todos os poderes' : 'Deixar só os nomes'}"
               >${todosFechados ? '▾ Abrir todos' : '▸ Recolher todos'}</button>` : ''}
@@ -2725,7 +3069,9 @@
           em livro nenhum, o <strong>✍ Escrever</strong>.</p>`}
         <p class="fi-nota">Cada poder traz o <strong>texto inteiro</strong> do livro, com a página. Clique no
           <strong>nome</strong> para recolher ou abrir, e use <strong>⇈ ↑ ↓</strong> para pôr na ordem que você quer
-          ler. O <strong>🩸</strong> de um poder marca que ele <em>conta como</em> poder da Tormenta sem ser um:
+          ler — as setas <em>do cartão</em> andam com o poder dentro da gaveta dele, e as setas <em>do título de
+          cada gaveta</em> levam o grupo inteiro para cima ou para baixo (é como se põe Combate, ou Magia, na
+          frente de tudo). O <strong>🩸</strong> de um poder marca que ele <em>conta como</em> poder da Tormenta sem ser um:
           entra na escala dos outros, mas não na perda de Carisma. O <strong>✦</strong> é do livro: aquele poder é
           uma habilidade <em>mágica</em>.</p>
       </div>`;
@@ -3175,6 +3521,20 @@
         const forte = el.querySelector('strong');
         if (forte) forte.textContent = t;
       }
+      // 🩶 os PV manchados: o pedaço riscado no fim da barra, o selo ao
+      // lado do medidor e a conta do teto
+      if (d === 'pvbarramancha') el.style.width = fatia(manchado(f), pvMax(f), f.pv.temp) + '%';
+      if (d === 'pvmanchaselo') {
+        const m = manchado(f);
+        el.hidden = !m;
+        el.title = 'PV manchados: a cura para no ' + tetoPv(f) + ', e esses pontos só voltam quando a ' +
+                   'condição de cada mancha for cumprida';
+        const forte = el.querySelector('strong');
+        if (forte) forte.textContent = m;
+      }
+      if (d === 'manchaconta') { el.innerHTML = contaManchas(f); el.hidden = !manchado(f); }
+      // ✋ o preço das sustentadas, por turno
+      if (d === 'sustconta') { el.innerHTML = contaSustentadas(f); el.hidden = !el.innerHTML; }
     });
     // A marca de "este atributo não é o do livro" acende e apaga junto
     // com o <select>. Fica aqui, e não num render(), porque redesenhar a
@@ -3435,13 +3795,44 @@
       sujar(f.id, 'condicoes'); salvar(); return render();
     }
     // "a menos que especificado o contrário, condições terminam no fim
-    // da cena" (p. 394) — o botão é esse fim de cena, de uma vez
+    // da cena" (p. 394) — o botão é esse fim de cena, de uma vez. As
+    // escritas saem junto: a sustentada acaba quando ninguém mais paga
+    // o PM, e é no fim da cena que isso acontece.
     if (acao === 'limpa-condicoes') {
-      if (!f.condicoes.length) return;
-      if (!confirm('Tirar as ' + f.condicoes.length + ' condições desta ficha?\n\n' +
-                   'É o que acontece no fim da cena — mas as que duram mais que ela saem junto.')) return;
+      const quantas = f.condicoes.length + condLivres(f).length;
+      if (!quantas) return;
+      if (!confirm('Tirar as ' + quantas + ' condições desta ficha?\n\n' +
+                   'É o que acontece no fim da cena — mas as que duram mais que ela saem junto, ' +
+                   'e o que você escreveu nas linhas ✋ e ✎ vai junto também.')) return;
       f.condicoes = [];
-      sujar(f.id, 'condicoes'); salvar(); return render();
+      f.condicoesLivres = [];
+      sujar(f.id, 'condicoes'); sujar(f.id, 'condicoesLivres'); salvar(); return render();
+    }
+    // ── AS DUAS CAIXAS ESCRITAS: ✋ Sustentada e ✎ Outros ──────────
+    if (acao === 'add-livre') {
+      f.condicoesLivres.push({
+        id: novoId(),
+        tipo: btn.dataset.tipo === 'sustentada' ? 'sustentada' : 'outros',
+        texto: '', magia: false,
+      });
+      sujar(f.id, 'condicoesLivres'); salvar(); return render();
+    }
+    if (acao === 'tira-livre') {
+      const c = f.condicoesLivres[+btn.dataset.i];
+      if (!c) return;
+      if (temConteudo(c.texto) &&
+          !confirm('Tirar esta linha' + (c.tipo === 'sustentada' ? ' de sustentada' : '') + '?\n\n' +
+                   '"' + c.texto + '"')) return;
+      f.condicoesLivres.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'condicoesLivres'); salvar(); return render();
+    }
+    // o ✦: esta sustentada é uma MAGIA — "apenas uma magia sustentada
+    // por vez" (p. 227), e a conta avisa quando passa de uma
+    if (acao === 'livre-magia') {
+      const c = f.condicoesLivres[+btn.dataset.i];
+      if (!c) return;
+      c.magia = !c.magia;
+      sujar(f.id, 'condicoesLivres'); salvar(); return render();
     }
     // o ✕ do ataque mora colado no ✎ — no dedo, errar um pelo outro é
     // fácil; a pergunta só aparece se houver algo escrito
@@ -3480,6 +3871,68 @@
     }
     if (acao === 'pv-mais' || acao === 'pm-mais') {
       aplicarCura(f, acao.slice(0, 2), 1); return;
+    }
+    // ── 🩶 PV MANCHADOS ────────────────────────────────────────────
+    if (acao === 'add-mancha') {
+      f.pv.manchas.push({ id: novoId(), pontos: 0, motivo: '' });
+      sujar(f.id, 'pv'); salvar(); return render();
+    }
+    if (acao === 'tira-mancha') {
+      f.pv.manchas.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'pv'); salvar(); return render();
+    }
+    // o ✓: cumpriu a condição (dormiu a noite, achou a magia). A mancha
+    // sai E os pontos voltam — que é o que se quer com um clique só.
+    if (acao === 'cura-mancha') {
+      const i = +btn.dataset.i, m = f.pv.manchas[i];
+      if (!m) return;
+      const pontos = Math.max(0, m.pontos || 0);
+      f.pv.manchas.splice(i, 1);
+      sujar(f.id, 'pv');
+      if (pontos) aplicarCura(f, 'pv', pontos);    // já salva e escreve o eco
+      else salvar();
+      return render();
+    }
+    // marcou a mancha e ainda não tinha tirado o dano: o botão do aviso
+    if (acao === 'mancha-dano') {
+      const sobra = pvAtual(f) - tetoPv(f);
+      if (sobra <= 0) return;
+      aplicarDano(f, 'pv', sobra, 'PV manchados');
+      return;
+    }
+
+    // ── XP: SOMAR, E O CADERNO ─────────────────────────────────────
+    //  "eu coloco 400 e o sistema já calcula com a soma" — e a linha
+    //  fica anotada, para no fim da sessão seguinte dar para saber se o
+    //  XP daquela noite já entrou.
+    if (acao === 'xp-log') { xpLogAberto = !(btn.closest('details') || {}).open; return; }
+    if (acao === 'xp-somar') {
+      const campo = secao.querySelector('#fiXpQuanto');
+      const nota  = secao.querySelector('#fiXpNota');
+      const quanto = parseInt((campo && campo.value) || '', 10);
+      if (!quanto) { if (campo) campo.focus(); return; }
+      f.xp = Math.max(0, (f.xp || 0) + quanto);
+      f.xpLog.unshift({
+        quando: Date.now(), quanto: quanto,
+        nota: ((nota && nota.value) || '').trim(), total: f.xp,
+      });
+      f.xpLog = f.xpLog.slice(0, XPLOG_MAX);
+      xpLogAberto = true;                          // somou: o caderno abre na linha nova
+      sujar(f.id, 'xp'); sujar(f.id, 'xpLog');
+      salvar(); return render();
+    }
+    if (acao === 'xp-desfaz') {
+      const i = +btn.dataset.i, x = f.xpLog[i];
+      if (!x) return;
+      const volta = Math.max(0, (f.xp || 0) - x.quanto);
+      if (!confirm('Desfazer ' + sinalXp(x.quanto) + ' XP' + (x.nota ? ' (' + x.nota + ')' : '') + '?\n\n' +
+                   'O total volta para ' + num(volta) + ', e a linha sai do caderno.')) return;
+      f.xp = volta;
+      f.xpLog.splice(i, 1);
+      // as linhas MAIS NOVAS que ela diziam um total que já não existe
+      for (let k = 0; k < i; k++) f.xpLog[k].total = Math.max(0, f.xpLog[k].total - x.quanto);
+      sujar(f.id, 'xp'); sujar(f.id, 'xpLog');
+      salvar(); return render();
     }
 
     // ── OFÍCIOS ────────────────────────────────────────────────────
@@ -3597,6 +4050,29 @@
       sujar(f.id, 'poderes'); salvar(); render();
       seguirItem(acao, irmaos[alvo], antes);
       return;
+    }
+    //  ⇈ ↑ ↓ da GAVETA (22/09/2026): o grupo inteiro sobe ou desce.
+    //  A lista de chaves é a mesma que a tela desenhou (gavetasDePoder),
+    //  então o que se move é exatamente o que se vê — e é ela, já
+    //  remexida, que fica guardada em f.poderesOrdem.
+    if (acao === 'podgrp-sobe' || acao === 'podgrp-desce' || acao === 'podgrp-topo') {
+      const chaves = gavetasDePoder(f).map(g => g.chave);
+      const de = chaves.indexOf(btn.dataset.k || '');
+      if (de < 0) return;
+      const para = acao === 'podgrp-topo' ? 0 : de + (acao === 'podgrp-sobe' ? -1 : 1);
+      if (para < 0 || para >= chaves.length || para === de) return;
+      const antes = btn.getBoundingClientRect().top;
+      const [k] = chaves.splice(de, 1);
+      chaves.splice(para, 0, k);
+      f.poderesOrdem = chaves;
+      sujar(f.id, 'poderesOrdem'); salvar(); render();
+      seguirItem(acao, para, antes, '[data-k="' + k + '"]');
+      return;
+    }
+    if (acao === 'pod-ordem-livro') {
+      if (!(f.poderesOrdem || []).length) return;
+      f.poderesOrdem = [];
+      sujar(f.id, 'poderesOrdem'); salvar(); return render();
     }
     // o 🩸: este poder conta como um poder da Tormenta sem ser um
     if (acao === 'poder-conta') {
@@ -4104,9 +4580,12 @@
     tamanho: 'tamanho', deslocamento: 'deslocamento', deslocMods: 'penalidades de deslocamento',
     classes: 'classes e níveis', atributos: 'atributos',
     pv: 'PV', pm: 'PM', defesa: 'Defesa', carga: 'carga', cdAtributo: 'atributo da CD', xp: 'XP',
+    xpLog: 'caderno do XP',
     resistencias: 'resistências', reducoes: 'RD', imunidades: 'imunidades', proficiencias: 'proficiências',
-    condicoes: 'condições', pericias: 'perícias', oficios: 'ofícios', inventario: 'inventário', tibares: 'T$',
+    condicoes: 'condições', condicoesLivres: 'sustentadas e outras condições',
+    pericias: 'perícias', oficios: 'ofícios', inventario: 'inventário', tibares: 'T$',
     compras: 'recibo da Loja', magias: 'magias', poderes: 'poderes', tormentaConta: 'conta da Tormenta',
+    poderesOrdem: 'ordem das gavetas de poder',
     ataques: 'ataques', treinador: 'treinador', moedasPesam: 'peso das moedas',
     amigos: 'melhor amigo', amigosPv: 'PV do melhor amigo', blocos: 'textos',
   };

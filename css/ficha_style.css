@@ -677,9 +677,12 @@
   height: 100%;
   transition: width 0.18s ease-out;
 }
-.fi-barra-parte { background: linear-gradient(90deg, var(--rust), var(--rust-dark)); }
+/* as fatias precisam do .fi-barra-pv na frente: ".fi-barra-pv span" (lá em
+   cima) pinta TODA fatia de ferrugem e ganharia por especificidade — era o
+   que fazia o ouro hachurado do temporário nunca aparecer (visto em 22/09/2026) */
+.fi-barra-pv .fi-barra-parte { background: linear-gradient(90deg, var(--rust), var(--rust-dark)); }
 .fi-barra-pv--pm .fi-barra-parte { background: linear-gradient(90deg, #4a86ae, var(--azul)); }
-.fi-barra-temp {
+.fi-barra-pv .fi-barra-temp {
   background: repeating-linear-gradient(45deg,
     var(--gold-light) 0 4px, var(--gold) 4px 8px);   /* hachurado: é emprestado */
   box-shadow: inset 1px 0 0 var(--parchment);
@@ -2746,4 +2749,249 @@
 @media (max-width: 560px) {
   .fi-desl-linha { grid-template-columns: 4rem 1rem 1fr auto; }
   .fi-cond-nuvem { left: auto; right: 0; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ⚠ COMPLICAÇÕES · 📜 O CADERNO DO XP · 🩶 PV MANCHADOS ·
+   ✋ SUSTENTADA E ✎ OUTROS · A ORDEM DAS GAVETAS DE PODER
+   (22 de setembro de 2026)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── ⚠ Complicações: duas caixas, e ficam LÁ EM CIMA ────────────── */
+.fi-compl-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.7rem;
+}
+.fi-compl-caixa { min-width: 0; }
+.fi-compl-tit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  margin: 0 0 0.3rem;
+}
+.fi-compl-tit em {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.78rem;
+  font-style: italic;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-dim);
+}
+/* a caixa de complicação é um lembrete, não um capítulo: nasce menor
+   que as caixas grandes do fim da ficha, e cresce com o que se escreve */
+.fi-compl .fi-texto { min-height: 4.2rem; }
+
+/* ── 📜 O caderno do XP ─────────────────────────────────────────── */
+.fi-xp-somar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.fi-xp-somar .fi-rot { flex: 0 0 auto; }
+.fi-xp-quanto { flex: 0 0 4.6rem; width: 4.6rem; text-align: center; }
+.fi-xp-nota   { flex: 1 1 8rem; min-width: 6rem; }
+.fi-xp-vazio {
+  flex: 1 1 100%;
+  margin: 0.15rem 0 0;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+.fi-xp-log { flex: 1 1 100%; margin-top: 0.1rem; }
+.fi-xp-log > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.25rem 0.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-xp-log > summary::-webkit-details-marker { display: none; }
+.fi-xp-log > summary:hover { background: var(--gold-pale); color: var(--ink); }
+.fi-xp-log > summary em {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.82rem;
+  font-style: italic;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-mid);
+}
+.fi-xp-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0.35rem 0 0.2rem;
+}
+.fi-xp-linha {
+  display: grid;
+  grid-template-columns: 5.4rem 4.4rem 1fr auto auto;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.3rem;
+  border-bottom: 1px dotted var(--parchment3);
+}
+.fi-xp-quando {
+  font-family: 'Courier New', monospace;
+  font-size: 0.76rem;
+  color: var(--text-dim);
+}
+.fi-xp-quanto-val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  text-align: right;
+  color: var(--verde-dark);
+}
+.fi-xp-quanto-val--neg { color: var(--carmim); }
+.fi-xp-linha-nota {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.9rem;
+  color: var(--ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.fi-xp-linha-nota em { color: var(--text-dim); font-style: italic; }
+.fi-xp-linha-total {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.8rem;
+  font-style: italic;
+  white-space: nowrap;
+  color: var(--text-dim);
+}
+
+/* ── 🩶 PV manchados: o que a cura não alcança ───────────────────── */
+/* o pedaço riscado fica encostado no FIM da barra — é de lá que ele
+   some, e é de lá que ele volta quando a condição for cumprida */
+.fi-barra-pv .fi-barra-mancha {
+  display: block;
+  height: 100%;
+  margin-left: auto;
+  background: repeating-linear-gradient(-45deg,
+    #b9b1a2 0 3px, var(--neutra) 3px 6px);
+  box-shadow: inset 1px 0 0 var(--parchment);
+  transition: width 0.18s ease-out;
+}
+.fi-temp-selo--mancha {
+  color: var(--ink);
+  background: #ded8cc;
+  border-color: var(--neutra);
+}
+.fi-mancha {
+  margin-top: 0.5rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed var(--parchment3);
+}
+.fi-mancha-linha {
+  display: grid;
+  grid-template-columns: 4.2rem 1.6rem 1fr auto auto;
+  align-items: center;
+  gap: 0.3rem;
+}
+.fi-mancha-linha .fi-txt { min-width: 0; }
+.fi-mancha-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+.fi-mancha-ok:hover { background: var(--verde-dark); color: var(--parchment); border-color: var(--verde-dark); }
+.fi-mancha-conta strong { color: var(--rust-dark); }
+.fi-mancha-conta em { font-style: italic; }
+.fi-mancha-conta[hidden] { display: none; }
+.fi-mancha-aviso {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  color: var(--carmim);
+}
+.fi-mancha-aviso .fi-mini { color: var(--carmim); border-color: var(--carmim); }
+.fi-mancha-aviso .fi-mini:hover { background: var(--carmim); color: var(--parchment); }
+
+/* ── ✋ Sustentada e ✎ Outros: as condições que se escrevem ──────── */
+.fi-condl-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0 0 0.35rem;
+}
+.fi-condl {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.35rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-left: 4px solid var(--cond, var(--neutra));
+  border-radius: var(--raio);
+}
+.fi-condl--sustentada { --cond: var(--azul); }
+.fi-condl--outros     { --cond: var(--neutra); }
+.fi-condl-rot {
+  position: relative;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--cond, var(--rust-dark));
+}
+.fi-condl--sustentada .fi-condl-rot { cursor: help; }
+/* o rótulo é de uma linha só, mas a nuvem que mora dentro dele NÃO:
+   sem isto o texto do livro sai numa régua só e some pela direita */
+.fi-condl-rot .fi-cond-nuvem { white-space: normal; }
+.fi-condl-rot:hover .fi-cond-nuvem,
+.fi-condl-rot:focus .fi-cond-nuvem,
+.fi-condl-rot:focus-within .fi-cond-nuvem { opacity: 1; visibility: visible; }
+.fi-condl .fi-txt { min-width: 0; }
+/* o ✦ de "isto é uma MAGIA sustentada" leva o mesmo dourado do selo
+   mágico dos poderes — é marca, não alarme (o carmim é do 🩸) */
+.fi-condl .fi-mini--on {
+  color: var(--gold-deep);
+  background: var(--gold-pale);
+  border-color: var(--gold-deep);
+}
+.fi-condl-conta[hidden] { display: none; }
+.fi-condl-conta strong { color: var(--rust-dark); }
+
+/* ── as setas que movem a GAVETA de poder inteira ───────────────── */
+/* o <em> com a contagem tem order:3 e a régua ::after vem antes dele:
+   as setas entram depois de tudo, no canto direito do título */
+.fi-pod-grupo-ordem { order: 4; }
+.fi-pod-grupo-ordem .fi-mini { padding: 0.12rem 0.3rem; font-size: 0.78rem; }
+
+@media (max-width: 560px) {
+  /* no celular a linha do caderno vira três andares: a hora, a soma com
+     a anotação e o ↩, e o total embaixo (o order manda o total para o fim
+     da fila, senão ele empurraria o ↩ para um quarto andar sozinho) */
+  .fi-xp-linha { grid-template-columns: auto 1fr auto; }
+  .fi-xp-quando { grid-column: 1 / -1; }
+  .fi-xp-linha-total { order: 1; grid-column: 1 / -1; text-align: right; }
+  .fi-mancha-linha { grid-template-columns: 3.6rem 1.4rem 1fr auto auto; }
+  .fi-condl { grid-template-columns: 1fr auto auto; }
+  .fi-condl-rot { grid-column: 1 / -1; }
 }

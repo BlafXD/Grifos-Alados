@@ -1752,3 +1752,171 @@ não se assusta com os campos novos: a cópia do banco passa pelo MESMO
 | **ficha VELHA** (sem `deslocMods`, sem `condicoes`, poderes sem `classe`) | abre inteira; a caixa ⚔ Habilidades de classe e poderes com o texto dela ✔ |
 | celular (390 px) | a linha de resistência desdobra, sem rolagem lateral ✔ |
 | console | sem erro nas duas páginas ✔ |
+
+---
+
+# A leva de 22 de setembro de 2026 — a ordem das gavetas, o PV manchado, o caderno do XP, as complicações e as duas condições escritas
+
+Cinco pedidos dele, todos na ficha, e uma ideia anotada para depois.
+
+## 1. A ordem das gavetas de poder
+
+> "Opção para organizar o TIPO de poderes (tipo, jogar para cima os poderes de
+> Combate para cima ou de magias para cima etc…)"
+
+O cartão ✨ Poderes já agrupava — combate, destino, magia, concedidos, Tormenta,
+raça, grupo, uma gaveta por classe e os escritos à mão —, mas **na ordem dos
+livros, sempre**. Agora o título de cada gaveta tem as mesmas **⇈ ↑ ↓** do resto
+da ficha, e elas movem o **grupo inteiro**:
+
+- as setas **do cartão** continuam andando com o poder dentro da gaveta dele;
+- as setas **do título** levam a gaveta para cima, para baixo ou para o topo;
+- quem mexeu ganha um **↺ Ordem do livro** no cabeçalho, que devolve tudo.
+
+O que fica guardado é uma **lista de chaves de gaveta** (`combate`, `magia`,
+`classe:guerreiro`), e não posições: um poder de um grupo que ainda não estava na
+ficha entra **no fim**, sem desarrumar o que foi escolhido. A mesma lista que a
+tela desenha (`gavetasDePoder`) é a que o clique remexe — a ordem que se vê e a
+ordem que se move são uma coisa só.
+
+## 2. 🩶 PV manchados — o que a cura não alcança
+
+> "tem efeitos que só podem ser regenerados com certas condições, exemplo: 'Só
+> pode ser recuperado com descanso', daí eu perdi 4 de vida nisso"
+
+É regra escrita, e com todas as letras: a complicação de idade **Gota** (Heróis
+de Arton, p. 290) diz "você perde 1d6 pontos de vida. **Você só pode recuperar
+esses PV com descanso**". Antes esses pontos sumiam na conta — curava-se até o
+máximo e ninguém lembrava que quatro deles estavam presos.
+
+Na Vida & Mana, embaixo dos temporários, entrou **🩶 PV manchados**: uma linha
+por mancha, com quantos pontos e o que os solta ("só com descanso", "só com
+Restauração"). O que cada mancha faz:
+
+| Onde | O quê |
+|---|---|
+| a barra de PV | um pedaço **cinza hachurado encostado no fim** — é de lá que ele some |
+| ao lado do medidor | o selo **🩶 N manchados** |
+| a cura | **para no teto** (máximo − manchados), e o eco diz por que parou |
+| o ✓ da linha | cumpriu a condição: tira a mancha **e devolve os pontos** |
+| o ✕ da linha | tira a linha sem devolver nada (é para o número digitado errado) |
+
+Quem marca a mancha **sem ter tirado o dano ainda** recebe o aviso com o botão
+pronto: "⚠ o seu PV está 4 acima desse teto — 🩸 tirar 4".
+
+A porta de escape é a de sempre: **digitar o PV no campo** continua passando por
+cima de tudo. A ficha conta e mostra; não policia.
+
+## 3. O botão de somar XP, e o caderno
+
+> "Botão de 'Adicionar XP', tipo, eu coloco 400 e o sistema já calcula com a soma
+> […] e seria ótimo ter um log pequeno para ver QUANTO de xp já coloquei no
+> passado para saber se já coloquei XP ou não!"
+
+Ao lado do campo XP entrou **Ganhou agora [400] [de onde veio] ＋ Somar**. O total
+sobe sozinho, e a soma vira linha no **📜 caderno**, que fica recolhido mostrando
+só o que interessa depois da sessão: *"última: +400 XP (sessão 12) em 22/09
+22:40"*. Aberto, mostra todas, com a hora, a anotação, **em quanto a ficha ficou**
+e um **↩** que desfaz (tira do total e acerta os totais das linhas mais novas).
+
+Guarda as 40 últimas. Mexer no campo XP à mão **não passa pelo caderno** — é a
+porta de escape, e a nota embaixo diz isso.
+
+## 4. ⚠ Complicações, lá em cima
+
+> "Alguma caixa para escrever COMPLICAÇÕES e COMPLICAÇÕES DE IDADE, ele teria que
+> ser lá em cima para lembrar sempre dele."
+
+É o que o próprio livro quer delas: pôr a restrição em regras "garante que essa
+característica apareça nas aventuras e tenha peso na história" (Heróis de Arton,
+p. 282). Enterrada no fim da ficha, junto das anotações, ninguém lembra — então o
+cartão nasceu **logo abaixo do nome, antes de qualquer número**.
+
+São duas caixas porque são duas coisas no livro:
+
+| Caixa | A regra |
+|---|---|
+| 🎭 **Complicação** (p. 282) | **uma só**, escolhida na criação, e em troca vem um poder geral extra. Conta como habilidade: se impõe uma condição, você a sofre *mesmo sendo imune*. As comportamentais cobram caro — violou, perde todos os PM e só recupera a partir do dia seguinte |
+| ⏳ **Complicações de idade** (p. 289) | **uma por faixa etária** — adulto 1, maduro 2, velho 3, ancião 4 — e "seus efeitos se acumulam" |
+
+As duas são caixas de texto rico, como o resto do que se escreve na ficha: **não
+há lista de complicações no site**, e nem vai ter — o site não policia escolha de
+ninguém.
+
+## 5. ✋ Sustentada e ✎ Outros, nas Condições
+
+> "Colocar 2 caixas especiais na parte de 'Condições'"
+
+**Sustentada não é condição do capítulo 9** — é *duração de habilidade* (Tormenta
+20, p. 227) —, mas é a que mais se esquece na mesa, e é por isso que ele a pediu
+ali. Os dois botões novos no cabeçalho do cartão 🌀 Condições acrescentam linhas:
+
+- **✋ Sustentada** — o texto do livro inteiro na nuvem de mouse (e de toque, e de
+  teclado), e um campo para escrever *o que* está sendo sustentado. O **✦** marca
+  que aquilo é uma **magia**;
+- **✎ Outros** — linha em branco, para o que o mestre inventou na hora.
+
+Embaixo, a conta que ninguém faz no meio do combate: **"2 sustentadas: 2 PM como
+ação livre no início de cada turno seu, ou o efeito termina"** — e, se duas
+estiverem marcadas com ✦, o aviso de que o livro deixa manter *"apenas uma magia
+sustentada por vez"*.
+
+O **🧹 Fim da cena** agora leva as escritas junto (a sustentada acaba quando
+ninguém mais paga o PM), e a pergunta diz isso antes.
+
+## 🐛 De quebra: o ouro do PV temporário nunca tinha aparecido
+
+Ao pôr a terceira fatia na barra de PV, a mancha saiu **ferrugem** em vez de
+cinza. O culpado estava na ficha desde sempre: `.fi-barra-pv span` (0,1,1) pinta
+*toda* fatia de ferrugem e ganhava por especificidade de `.fi-barra-temp` (0,1,0)
+— ou seja, **o ouro hachurado do PV temporário nunca tinha sido visto por
+ninguém**. As três fatias passaram a ter o `.fi-barra-pv` na frente, e agora a
+barra conta a história inteira: ferrugem, ouro hachurado (emprestado) e cinza
+hachurado (preso).
+
+## O que a ficha guarda de novo
+
+| Campo | O que é |
+|---|---|
+| `pv.manchas` | lista de `{ id, pontos, motivo }` — os PV presos e o que os solta |
+| `xpLog` | as 40 últimas somas: `{ quando, quanto, nota, total }` |
+| `condicoesLivres` | lista de `{ id, tipo, texto, magia }` — `tipo` é `sustentada` ou `outros` |
+| `poderesOrdem` | a ordem escolhida das gavetas, por chave (`magia`, `classe:barbaro`…) |
+| `blocos.complicacoes` e `blocos.complicacoesIdade` | as duas caixas de texto rico |
+
+Todos nascem vazios no `normalizar()`: **a ficha velha continua certa**, e abre
+inteira sem nenhum deles. Os quatro primeiros são chaves de primeiro nível, então
+a publicação por grupo do `ficha-mesa.js` os manda sozinhos, e a conferência
+(§3 da leva de 15/09) sabe o nome de cada um — `NOMES_GRUPO` ganhou "caderno do
+XP", "sustentadas e outras condições" e "ordem das gavetas de poder".
+
+## Anotado, não feito: as rodadas automáticas
+
+Ideia dele, no mesmo dia, para **quando tudo estiver rodando na Vercel**: quando
+chegar o turno do jogador na iniciativa, um aviso na tela dele com o que está
+pendurado — "você tomou 1d6 de sangramento (já rolado: 4)" e "deseja manter a
+magia sustentada (1 PM)?" —, podendo aceitar as duas coisas ou largar uma. E, no
+mesmo caminho, o teste para não perder a concentração ao sofrer dano sustentando
+magia. **Não foi feito**; está aqui e na memória para o dia em que ele pedir.
+
+## Testado (servidor local, Firebase desligado)
+
+| O que | Resultado |
+|---|---|
+| ficha VELHA (sem nenhum campo novo) | abre inteira, e os cinco blocos novos aparecem vazios ✔ |
+| ＋ Somar 400 com anotação | XP 6.400 → **6.800**, "faltam 14.200 para o nível 7", linha no caderno ✔ |
+| ↩ desfazer a soma mais velha | XP volta, a linha sai, e **o total da linha mais nova é corrigido** ✔ |
+| ＋ Manchar 4 "Gota — só com descanso" | selo 🩶 4, fatia cinza no fim da barra, "64 − 4 = a cura para em 60" ✔ |
+| ＋ no PV, com 4 manchados | 58 → 59 → **60 e para**; o eco diz que 4 não voltam por cura ✔ |
+| PV cheio com mancha marcada | aviso "⚠ 4 acima desse teto" e o botão **🩸 tirar 4** funcionando ✔ |
+| ✓ na mancha | a linha sai, **+4 PV de volta**, selo e fatia somem ✔ |
+| ✋ Sustentada ×2 e ✎ Outros | "2 sustentadas: 2 PM…"; com dois ✦, o aviso da magia única ✔ |
+| nuvem da ✋ Sustentada (foco do teclado) | o texto da p. 227 inteiro, quebrando linha ✔ |
+| 🧹 Fim da cena | pergunta citando as linhas ✋ e ✎, e leva as 5 ✔ |
+| ⇈ na gaveta ✨ Magia, ↓ na ⚔ Combate, ⇈ na de Arcanista | a ordem anda e fica guardada ✔ |
+| poder novo de um grupo ainda não visto (🩸 Tormenta) | entra **no fim**, sem mexer na ordem escolhida ✔ |
+| ⇈ num poder, depois de remexer as gavetas | continua andando **dentro** da gaveta dele ✔ |
+| ↺ Ordem do livro | volta à ordem dos livros e o botão some ✔ |
+| F5 | XP, caderno, manchas, sustentadas e ordem de volta ✔ |
+| celular (390 px) | as três linhas novas desdobram, sem rolagem lateral ✔ |
+| console | sem erro nas duas páginas ✔ |
