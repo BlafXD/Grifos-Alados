@@ -16,7 +16,7 @@
   🩸 do cartão integra à conta da Tormenta se a mesa quiser.
 - Dados em `js/poderes-raca-origem-data.js`; escalas em `js/ficha-distincoes.js`.
 
-## ✅ Feitas (8 de 36)
+## ✅ Feitas (12 de 36)
 
 1. **Aeronauta Goblin** (p. 105–108) — escala: Cabeça nas Nuvens.
 2. **Algoz da Tormenta** (p. 109–111) — escalam: Desprezo Profano, Ataque Corrupto.
@@ -26,17 +26,22 @@
 6. **Bruxo da Tormenta** (p. 120–123) — escalam: Conjuração Insana, Corromper Magia, Escudo Rubro.
 7. **Caçador de Cabeças** (p. 123–126) — escala: Exterminar Presa.
 8. **Caçador de Dragões** (p. 126–129) — escalam: Destemor Inflamado, Alçar aos Céus, Danificar as Asas, Entortar Escamas.
+9. **Campeão de Dojo** (p. 130–132) — escala: Controlar a Respiração (a cura sobe um PASSO de dado, 2d6 → 3d6…, teto 4d12, reusando `passoDeDano` da ficha-data).
+10. **Capitão do Conclave Pirata** (p. 132–135) — escalam: Içar a Bandeira Preta (5 PV + 1 PM temp por poder), Língua Afiada (2d6 psíquico por poder). Marca traz o quadro *Solidariedade Pirata*.
+11. **Carteador** (p. 135–138) — escalam: Dado Viciado (1d6 + 1d6 a cada dois outros), Jogo Perigoso (círculo das magias sobe; **único poder mágico ✦** da leva).
+12. **Cavaleiro do Corvo** (p. 138–141) — 7 poderes; escalam: A Qualquer Custo (benefícios de missão), Postura de Combate: Tomada Furtiva (+1 a cada dois outros). Marca traz o quadro *A Língua dos Corvos*.
 
-## ⏭ Faltam (28) — lista PROVISÓRIA
+## ⏭ Faltam (24) — lista PROVISÓRIA
 
 A extração de 2 colunas embaralha títulos e ordem; **o título e a página de cada uma são
-conferidos no PDF na hora de transcrever**. A próxima é a 9.
+conferidos no PDF na hora de transcrever**. A próxima é a 13.
 
-- [ ] 9. **Campeão de Dojo** (~p. 130–131) — artista marcial tamuraniano
-- [ ] 10. **Conclave Pirata** (~p. 132)
-- [ ] 11. **Carteador** (~p. 133) — jogo/sorte
-- [ ] 12. **Cavaleiro do Corvo** (~p. 135)
-- [ ] 13. **Cavaleiro Feérico** (~p. 144–145)
+> **Achado da leva 9–12 (o ✦ mágico).** No `-layout -enc UTF-8`, o ícone ✦ de "poder
+> mágico" é extraído como um " e" solto grudado no fim do poder (ex.: "…Ás na Manga. e").
+> Cace o marcador com `awk '/\. e[[:space:]]*$/'` na região da distinção — foi assim que se
+> viu que só o **Jogo Perigoso** (Carteador) é mágico entre a 9 e a 12.
+
+- [ ] 13. **Cavaleiro Feérico** (p. 141–145) — Conexão Feérica (marca); escalam Armadura da Floresta e Flagelo dos Duyshidakk
 - [ ] 14. **Chapéu-Preto** (~p. 146) — marca "A Maldição do Chapéu Preto"
 - [ ] 15. **Dracomante Real** (~p. 148)
 - [ ] 16. **Drogadora** (~p. 149)
