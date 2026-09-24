@@ -153,6 +153,63 @@
           : { txt: '–2 na Defesa e –5 na RD do alvo até o fim da cena', calc: `passa a –5/–10 ao chegar a 5 poderes da distinção (você tem ${n})` };
       },
     },
+
+    // ── Campeão de Dojo (Heróis de Arton, p. 131) ───────────────────
+    //  A cura sobe um PASSO de dado (Tabela 3-2) a cada dois outros
+    //  poderes; o passo em si é a mesma conta do dano da ficha.
+    'dist-campeao-dojo-controlar-a-respiracao': {
+      escala(n) {
+        const passos = p2(n);
+        const D = (window.GA_FichaData && window.GA_FichaData.passoDeDano)
+          ? window.GA_FichaData.passoDeDano('2d6', passos).dado : '2d6';
+        return { txt: `cura ${D} pontos de vida por PM gasto`,
+                 calc: `2d6 base, +1 passo a cada dois dos ${nOutros(n)} (${passos} passo${passos !== 1 ? 's' : ''})` };
+      },
+    },
+
+    // ── Capitão do Conclave Pirata (Heróis de Arton, p. 134) ────────
+    'dist-conclave-icar-a-bandeira-preta': {
+      escala(n) {
+        return { txt: `aliados recebem ${5 * n} PV e ${n} PM temporário${n !== 1 ? 's' : ''}`,
+                 calc: `5 PV e 1 PM por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-conclave-lingua-afiada': {
+      escala(n) {
+        return { txt: `até +${2 * n}d6 de dano psíquico não letal`,
+                 calc: `2d6 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Carteador (Heróis de Arton, p. 137) ─────────────────────────
+    'dist-carteador-dado-viciado': {
+      escala(n) {
+        const d = 1 + p2(n);
+        return { txt: `${d}d6 de dado de auxílio no início da cena`, calc: calc2(n) };
+      },
+    },
+    'dist-carteador-jogo-perigoso': {
+      escala(n) {
+        const c = 1 + p2(n);
+        return { txt: `pode escolher magias até o ${c}º círculo`,
+                 calc: `1º base + ${p2(n)} círculo${p2(n) !== 1 ? 's' : ''} (um a cada dois dos ${nOutros(n)})` };
+      },
+    },
+
+    // ── Cavaleiro do Corvo (Heróis de Arton, p. 140–141) ────────────
+    'dist-corvo-a-qualquer-custo': {
+      escala(n) {
+        const b = 1 + p2(n);
+        return { txt: `${b} benefício${b !== 1 ? 's' : ''} de missão (Busca e Destruição, Guerra Não Convencional, Inteligência Militar)`,
+                 calc: calc2(n) };
+      },
+    },
+    'dist-corvo-tomada-furtiva': {
+      escala(n) {
+        return { txt: `+${2 + p2(n)} em ataque e dano à distância (sob a postura)`,
+                 calc: `2 base + ${p2(n)} (um a cada dois dos ${nOutros(n)})` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {

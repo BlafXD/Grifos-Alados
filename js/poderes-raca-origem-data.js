@@ -674,6 +674,179 @@
     'Quando sofre um efeito que permite um teste de Reflexos para reduzir o dano à metade, você não sofre dano nenhum se passar e sofre apenas metade do dano se falhar. Além disso, uma vez por rodada, quando passa em um teste de Reflexos, você pode percorrer até metade do seu deslocamento. Esta habilidade exige liberdade de movimentos; você não pode usá-la se estiver na condição imóvel.',
   ] },
 
+  //  Campeão de Dojo (p. 130–132) — 1 marca + 5 poderes.
+  { id: 'dist-campeao-dojo-foco-marcial', nome: 'Foco Marcial', grupo: 'distincao', livro: 'herois', pagina: 131,
+    tags: 'Campeão de Dojo', distincao: 'campeao-de-dojo', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. O campeão de dojo aprende a concentrar sua mente em um único ataque.',
+    'Você pode gastar uma ação de movimento para receber +1d8 na rolagem de dano de seu próximo ataque desarmado feito nessa rodada.',
+  ] },
+  { id: 'dist-campeao-dojo-golpe-concentrado', nome: 'Golpe Concentrado', grupo: 'distincao', livro: 'herois', pagina: 131,
+    tags: 'Campeão de Dojo', distincao: 'campeao-de-dojo', marca: false, deus: null, magica: false,
+    preReq: 'Sab 2, Briga', custo: null, quadro: null, texto: [
+    'A primeira técnica dominada pelo campeão é canalizar sua energia em seus golpes.',
+    'Você pode gastar uma ação de movimento e 2 PM para se concentrar em seus golpes. Quando faz isso, até o fim da cena você recebe +1d8 em suas rolagens de dano desarmado.',
+  ] },
+  { id: 'dist-campeao-dojo-caminho-da-mao-armada', nome: 'Caminho da Mão Armada', grupo: 'distincao', livro: 'herois', pagina: 131,
+    tags: 'Campeão de Dojo', distincao: 'campeao-de-dojo', marca: false, deus: null, magica: false,
+    preReq: 'Golpe Concentrado', custo: null, quadro: null, texto: [
+    'O treinamento de um campeão por vezes envolve dominar as armas tradicionais de seu dojo.',
+    'Escolha três armas corpo a corpo com as quais tenha proficiência. Para você, essas armas contam como ataques desarmados para efeitos que interagem com eles de qualquer forma e, quando ataca com uma delas, você pode usar o dano básico da arma ou seu dano desarmado, o que for melhor.',
+  ] },
+  { id: 'dist-campeao-dojo-caminhar-do-dragao', nome: 'Caminhar do Dragão', grupo: 'distincao', livro: 'herois', pagina: 131,
+    tags: 'Campeão de Dojo', distincao: 'campeao-de-dojo', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Atletismo, Golpe Concentrado', custo: null, quadro: null, texto: [
+    'O treinamento do campeão de dojo torna seus passos mais leves que o ar.',
+    'Você recebe +5 em Atletismo e pode gastar 1 PM para “correr no ar” por 1 rodada, como se tivesse deslocamento de voo igual ao seu deslocamento base. Você deve terminar seu movimento sobre o chão ou outra superfície firme, ou cairá ao solo.',
+  ] },
+  { id: 'dist-campeao-dojo-controlar-a-respiracao', nome: 'Controlar a Respiração', grupo: 'distincao', livro: 'herois', pagina: 131,
+    tags: 'Campeão de Dojo', distincao: 'campeao-de-dojo', marca: false, deus: null, magica: false,
+    preReq: 'Golpe Concentrado', custo: null, quadro: null, texto: [
+    'Graças a seu treinamento intenso, o campeão de dojo se torna mestre do próprio corpo.',
+    'Você pode gastar uma ação de movimento e uma quantidade de PM limitada por sua Sabedoria. Para cada PM que gastar, recupera 2d6 pontos de vida. Para cada dois outros poderes da distinção que você possui, cada dado de cura aumenta em um passo.',
+  ] },
+  { id: 'dist-campeao-dojo-sentidos-do-tigre', nome: 'Sentidos do Tigre', grupo: 'distincao', livro: 'herois', pagina: 131,
+    tags: 'Campeão de Dojo', distincao: 'campeao-de-dojo', marca: false, deus: null, magica: false,
+    preReq: 'Golpe Concentrado', custo: null, quadro: null, texto: [
+    'Aprimorados por anos de treinamento, os sentidos do campeão protegem-no de qualquer ameaça.',
+    'Você soma sua Sabedoria na Defesa e em Reflexos. Esta habilidade exige liberdade de movimentos; você não pode usá-la se estiver de armadura pesada ou na condição imóvel.',
+  ] },
+
+  //  Capitão do Conclave Pirata (p. 132–135) — 1 marca + 5 poderes.
+  { id: 'dist-conclave-membro-do-conclave', nome: 'Membro do Conclave', grupo: 'distincao', livro: 'herois', pagina: 134,
+    tags: 'Capitão do Conclave Pirata', distincao: 'capitao-do-conclave-pirata', marca: true, deus: null, magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'Solidariedade Pirata', texto: [
+      'Uma vez por aventura, você pode solicitar ajuda ao Conclave Pirata através de uma rede de comunicação envolvendo pássaros, informantes e mensageiros mágicos. Uma mensagem enviada terá resposta em 1d3 dias. O Conclave pode oferecer ajuda na forma de pessoal (até quatro parceiros iniciantes ou um parceiro veterano, de tipos a sua escolha), equipamento (valor máximo igual a T$ 1.000 × seu nível) ou informações (efetivamente escolher 20 em um teste para interrogar). Essa ajuda não é gratuita: a contrapartida é ajudar outros capitães nos mesmos termos quando eles precisarem.',
+      'Também é possível solicitar a ajuda do próprio Sentença. Nesse caso, o pedido será avaliado por Izzy e Sirius. Somente as mais terríveis ameaças e os mais desprezíveis puristas justificam uma resposta positiva, mas nessas situações os recursos disponibilizados costumam bastar para virar a maré a favor do capitão solicitante. Depois de um feito como esse, a Dupla Coroa exigirá uma retribuição de seu capitão, em geral uma missão de extrema importância e dificuldade.',
+    ] },
+    texto: [
+    'Marca da distinção. Quando enfrenta um capitão do Conclave, você enfrenta todos.',
+    'Você recebe +2 em Acrobacia e Pilotagem e não sofre as penalidades por atacar à distância ou lançar magias a bordo de um veículo (Tormenta20, p. 243). Além disso, pode recorrer à Solidariedade Pirata (veja o quadro).',
+  ] },
+  { id: 'dist-conclave-icar-a-bandeira-preta', nome: 'Içar a Bandeira Preta', grupo: 'distincao', livro: 'herois', pagina: 134,
+    tags: 'Capitão do Conclave Pirata', distincao: 'capitao-do-conclave-pirata', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Intimidação e Pilotagem, Audácia', custo: null, quadro: null, texto: [
+    'A bandeira do Conclave Pirata inspira medo nos inimigos e esperança nos aliados.',
+    'Uma vez por cena, você pode gastar uma ação de movimento e 5 PM para motivar seus aliados e assustar seus inimigos. Aliados em alcance curto recebem 5 PV e 1 PM temporários para cada poder da distinção que você possui, que duram até o fim da cena. Inimigos em alcance curto ficam abalados por 1d4 rodadas (Vontade CD Car evita). Caso sua bandeira já esteja visível no começo da cena, você pode usar este poder gastando apenas uma ação livre e 3 PM.',
+  ] },
+  { id: 'dist-conclave-lingua-afiada', nome: 'Língua Afiada', grupo: 'distincao', livro: 'herois', pagina: 134,
+    tags: 'Capitão do Conclave Pirata', distincao: 'capitao-do-conclave-pirata', marca: false, deus: null, magica: false,
+    preReq: 'Içar a Bandeira Preta', custo: null, quadro: null, texto: [
+    'Certos insultos doem mais do que golpes de espada.',
+    'Quando vence um teste oposto de Enganação contra uma criatura inteligente (Int –3 ou maior), para cada poder da distinção que possuir você também pode causar 2d6 pontos de dano psíquico não letal a ela (apenas uma vez por cena). Além disso, se você usar Audácia em testes de Enganação, Diplomacia ou Intimidação, seu custo diminui em –1 PM.',
+  ] },
+  { id: 'dist-conclave-lutar-sujo', nome: 'Lutar Sujo', grupo: 'distincao', livro: 'herois', pagina: 134,
+    tags: 'Capitão do Conclave Pirata', distincao: 'capitao-do-conclave-pirata', marca: false, deus: null, magica: false,
+    preReq: 'Içar a Bandeira Preta', custo: null, quadro: null, texto: [
+    'Um pirata não tem nenhum pudor sobre chutar ferimentos ou enfiar dedos em olhos. Qualquer coisa vale a pena para vencer.',
+    'Você pode fazer um teste de manobra (Tormenta20, p. 234) para executar um truque sujo contra um inimigo. Se vencer, o inimigo sofre uma condição a sua escolha entre cego, enjoado, lento ou surdo por 1 rodada — ou até ele usar uma ação padrão para se recompor.',
+  ] },
+  { id: 'dist-conclave-sentenca-de-bolso', nome: 'Sentença de Bolso', grupo: 'distincao', livro: 'herois', pagina: 134,
+    tags: 'Capitão do Conclave Pirata', distincao: 'capitao-do-conclave-pirata', marca: false, deus: null, magica: false,
+    preReq: 'proficiência com armas de fogo, Içar a Bandeira Preta', custo: null, quadro: null, texto: [
+    'Os canhões do Sentença são os mais terríveis de toda Arton. A mera menção de seu poder deixa qualquer marujo com as pernas bambas.',
+    'Você recebe +2 em Intimidação e na margem de ameaça com armas de fogo, e causa +2d6 pontos de dano com armas de fogo em oponentes desprevenidos.',
+  ] },
+  { id: 'dist-conclave-vento-em-popa', nome: 'Vento em Popa', grupo: 'distincao', livro: 'herois', pagina: 135,
+    tags: 'Capitão do Conclave Pirata', distincao: 'capitao-do-conclave-pirata', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Pilotagem, Içar a Bandeira Preta, Pernas do Mar', custo: null, quadro: null, texto: [
+    'Os capitães mais ligeiros têm os navios mais rápidos.',
+    'Uma vez por rodada, você pode gastar 2 PM para realizar uma ação de movimento adicional em seu turno. Se tiver o poder Velocidade Ladina, em vez disso o custo para usá-lo diminui em –1 PM. Em ambos os casos, o custo diminui em –1 PM (cumulativo com este poder) se você estiver a bordo de um veículo aquático. Por fim, se você usar Audácia em testes de Acrobacia, Atletismo ou Pilotagem, seu custo diminui em –1 PM.',
+  ] },
+
+  //  Carteador (p. 135–138) — 1 marca + 5 poderes.
+  { id: 'dist-carteador-sorte-de-principiante', nome: 'Sorte de Principiante', grupo: 'distincao', livro: 'herois', pagina: 137,
+    tags: 'Carteador', distincao: 'carteador', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Sorte grande, não é?',
+    'Você aprende e pode lançar Orientação, mas apenas em você mesmo e apenas para testes de Jogatina. Alternativamente, se possuir o suplemento Deuses de Arton, você aprende e pode lançar Sorriso da Fortuna (atributo-chave Carisma, p. 64) e pode usá-la em jogos mágicos. Em ambos os casos, esta não é uma habilidade mágica e provém de sua capacidade de sutilmente torcer as regras do jogo a seu favor (veja “Magias Simuladas”, p. 44).',
+  ] },
+  { id: 'dist-carteador-dado-viciado', nome: 'Dado Viciado', grupo: 'distincao', livro: 'herois', pagina: 137,
+    tags: 'Carteador', distincao: 'carteador', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Jogatina', custo: null, quadro: null, texto: [
+    'A realidade é só mais uma mesa de jogo, onde vence quem tem os melhores dados.',
+    'No início de cada cena, você recebe 1d6 como dado de auxílio, +1d6 para cada outros dois poderes da distinção que possua. Quando faz um teste de perícia, você pode pagar 1 PM para cada dado de auxílio que quiser gastar, e soma o resultado deles como bônus no teste. Além disso, sempre que rolar mais de um dado de auxílio e o resultado de pelo menos dois deles for igual, você ganha 1 PM temporário por dado igual.',
+  ] },
+  { id: 'dist-carteador-as-na-manga', nome: 'Ás na Manga', grupo: 'distincao', livro: 'herois', pagina: 137,
+    tags: 'Carteador', distincao: 'carteador', marca: false, deus: null, magica: false,
+    preReq: 'Dado Viciado', custo: null, quadro: null, texto: [
+    'O arsenal de trapaças de um carteador é praticamente infinito.',
+    'Quando você faz um teste de perícia, pode gastar 2 PM para usar Jogatina no lugar dessa perícia. Você só pode fazer isso uma vez para cada perícia a cada cena.',
+  ] },
+  { id: 'dist-carteador-jogo-perigoso', nome: 'Jogo Perigoso', grupo: 'distincao', livro: 'herois', pagina: 137,
+    tags: 'Carteador', distincao: 'carteador', marca: false, deus: null, magica: true,
+    preReq: 'treinado em Misticismo, Ás na Manga', custo: null, quadro: null, texto: [
+    'Só um tolo joga com as cartas que lhe foram dadas.',
+    'Você pode gastar uma ação completa para fazer uma aposta com uma entidade sobrenatural. Escolha uma magia de 1º círculo, arcana ou divina, e faça um teste de Jogatina (CD 20 + o custo em PM da magia). Se passar, até o fim da cena, ou até usar este poder novamente, você pode lançar essa magia (atributo-chave Carisma) e pode usar seus aprimoramentos como se tivesse acesso aos mesmos círculos de magia que um bardo do seu nível. Se falhar, você perde 2 PM para cada círculo da magia. A cada dois outros poderes da distinção, você pode escolher magias de um círculo acima do 1º.',
+  ] },
+  { id: 'dist-carteador-resultado-destinado', nome: 'Resultado Destinado', grupo: 'distincao', livro: 'herois', pagina: 137,
+    tags: 'Carteador', distincao: 'carteador', marca: false, deus: null, magica: false,
+    preReq: 'Jogo Perigoso, 17º nível de personagem', custo: null, quadro: null, texto: [
+    'Um carteador é capaz de trapacear com seus inimigos, com os deuses e com o próprio destino.',
+    'Uma vez por cena, você pode pagar 5 PM. Escolha uma habilidade de classe de até 5º nível de uma classe que não seja a sua. Você recebe essa habilidade e pode usá-la como se tivesse 5 níveis nessa classe (se escolher a habilidade Magias, você aprende uma única magia, mas não soma o atributo-chave da habilidade em seu total de PM) até o fim da cena. Seu atributo-chave para a habilidade é Carisma. Você não pode escolher a mesma habilidade de classe duas vezes na mesma aventura.',
+  ] },
+  { id: 'dist-carteador-seduzir-a-sorte', nome: 'Seduzir a Sorte', grupo: 'distincao', livro: 'herois', pagina: 137,
+    tags: 'Carteador', distincao: 'carteador', marca: false, deus: null, magica: false,
+    preReq: 'Dado Viciado', custo: null, quadro: null, texto: [
+    'Contam-se histórias sobre um carteador capaz de rolar um 7 num dado de 6 faces.',
+    'Quando rola um ou mais dados de auxílio, você pode pagar 1 PM para fazer uma aposta com o mestre. Você rola os seus dados de auxílio e soma o resultado, enquanto o mestre rola a mesma quantidade do mesmo tipo de dados em segredo. Após rolar seus dados, você deve adivinhar qual o maior resultado total (entre a sua rolagem e a do mestre). Se adivinhar corretamente, você recupera os dados de auxílio gastos. Se perder, fica frustrado.',
+  ] },
+
+  //  Cavaleiro do Corvo (p. 138–141) — 1 marca + 7 poderes.
+  { id: 'dist-corvo-nao-tenho-nome', nome: 'Não Tenho Nome', grupo: 'distincao', livro: 'herois', pagina: 140,
+    tags: 'Cavaleiro do Corvo', distincao: 'cavaleiro-do-corvo', marca: true, deus: null, magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'A Língua dos Corvos', texto: [
+      'Composta por uma combinação de jargões, expressões e gestos, a Língua dos Corvos foi criada para transmitir informações e comandos de forma silenciosa e discreta em qualquer cenário de missão. Você pode gastar uma ação de movimento e 1 PM para transmitir informações para um aliado em alcance curto. Isso funciona como o efeito básico da magia Aviso, mas você não precisa falar (comunica-se por gestos) e o alvo deve ser capaz de vê-lo.',
+    ] },
+    texto: [
+    'Marca da distinção. O treinamento de um Cavaleiro do Corvo é potencialmente letal, mas eficiente.',
+    'Você aprende a Língua dos Corvos (veja o quadro) e recebe imunidade a medo. Além disso, perde a habilidade Código de Honra (caso a tenha).',
+  ] },
+  { id: 'dist-corvo-reconhecimento-e-infiltracao', nome: 'Reconhecimento e Infiltração', grupo: 'distincao', livro: 'herois', pagina: 140,
+    tags: 'Cavaleiro do Corvo', distincao: 'cavaleiro-do-corvo', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Furtividade e Guerra, proficiência com armaduras pesadas', custo: null, quadro: null, texto: [
+    'Para cumprir sua missão, o Corvo deve se mover de forma rápida e silenciosa mesmo equipado.',
+    'Seu deslocamento aumenta em +3m, você não sofre penalidade por armadura e a penalidade que você sofre por fazer uma ação chamativa quando usa Furtividade muda para –10.',
+  ] },
+  { id: 'dist-corvo-a-qualquer-custo', nome: 'A Qualquer Custo', grupo: 'distincao', livro: 'herois', pagina: 140,
+    tags: 'Cavaleiro do Corvo', distincao: 'cavaleiro-do-corvo', marca: false, deus: null, magica: false,
+    preReq: 'Reconhecimento e Infiltração', custo: null, quadro: null, texto: [
+    'Para um Cavaleiro do Corvo, nada é mais importante que o sucesso da missão.',
+    'Você pode declarar um determinado objetivo como sua missão. Esse objetivo deve ser algo específico, como “eliminar o dragão da Floresta dos Cem Olhos” ou “resgatar o sacerdote capturado pelos bandidos de estrada”. A preparação para a missão leva 1 dia, exige o gasto de T$ 500 em materiais e serviços (mapas, informantes etc.) e fornece um dos benefícios abaixo. Para cada outros dois poderes da distinção, fornece um benefício adicional diferente. • Busca e Destruição: uma de suas armas se torna uma arma anticriatura contra um tipo a sua escolha. • Guerra Não Convencional: você se torna treinado em duas perícias a sua escolha. • Inteligência Militar: você pode usar Guerra no lugar de duas perícias a sua escolha entre Conhecimento, Intuição, Investigação, Percepção e Sobrevivência. Você só pode ter uma missão de cada vez.',
+  ] },
+  { id: 'dist-corvo-atras-das-linhas-inimigas', nome: 'Atrás das Linhas Inimigas', grupo: 'distincao', livro: 'herois', pagina: 140,
+    tags: 'Cavaleiro do Corvo', distincao: 'cavaleiro-do-corvo', marca: false, deus: null, magica: false,
+    preReq: 'Reconhecimento e Infiltração', custo: null, quadro: null, texto: [
+    'O Cavaleiro do Corvo aprende a sobreviver em território dominado pelo inimigo.',
+    'Você recebe imunidade a atordoamento e cansaço e sua recuperação por descanso nunca é inferior a normal.',
+  ] },
+  { id: 'dist-corvo-das-trevas', nome: 'Das Trevas', grupo: 'distincao', livro: 'herois', pagina: 141,
+    tags: 'Cavaleiro do Corvo', distincao: 'cavaleiro-do-corvo', marca: false, deus: null, magica: false,
+    preReq: 'Duelo, Atrás das Linhas Inimigas', custo: null, quadro: null, texto: [
+    'Para o Cavaleiro do Corvo, a melhor tática é matar o inimigo antes que ele perceba a morte chegando.',
+    'Quando ataca um oponente desprevenido ou que você esteja flanqueando, e que você tenha escolhido como alvo da habilidade Duelo, os bônus dessa habilidade contra esse oponente aumentam em +2.',
+  ] },
+  { id: 'dist-corvo-ferramenta-de-morte', nome: 'Ferramenta de Morte', grupo: 'distincao', livro: 'herois', pagina: 141,
+    tags: 'Cavaleiro do Corvo', distincao: 'cavaleiro-do-corvo', marca: false, deus: null, magica: false,
+    preReq: 'A Qualquer Custo, ter liderado um grupo de aventureiros em pelo menos dois combates vitoriosos (liderar = participar do combate apenas auxiliando os aliados)', custo: null, quadro: null, texto: [
+    'O Cavaleiro do Corvo aprende a compartilhar seu treinamento com seus aliados.',
+    'Você pode gastar uma ação de movimento e uma quantidade de PM a sua escolha (limitada pela sua Inteligência) para coordenar um ataque contra um oponente em alcance curto. Até o início do seu próximo turno, você e seus aliados recebem um bônus igual ao total de PM gastos em testes de ataque e rolagens de dano e na margem de ameaça contra esse oponente. Este poder só pode ser usado uma vez contra a mesma criatura em cada cena.',
+  ] },
+  { id: 'dist-corvo-tomada-furtiva', nome: 'Postura de Combate: Tomada Furtiva', grupo: 'distincao', livro: 'herois', pagina: 141,
+    tags: 'Cavaleiro do Corvo', distincao: 'cavaleiro-do-corvo', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Pontaria, Reconhecimento e Infiltração', custo: null, quadro: null, texto: [
+    'Cavaleiros do Corvo aprendem a se mover em silêncio, enquanto avançam pelas linhas inimigas.',
+    'Você pode realizar a ação mirar como ação livre, não sofre penalidade em testes de Furtividade por se mover ao seu deslocamento normal e recebe +2 em testes de ataque e rolagens de dano com ataques à distância. Esse bônus aumenta em +1 para cada dois outros poderes da distinção.',
+  ] },
+  { id: 'dist-corvo-trazemos-a-luz', nome: 'Trazemos a Luz', grupo: 'distincao', livro: 'herois', pagina: 141,
+    tags: 'Cavaleiro do Corvo', distincao: 'cavaleiro-do-corvo', marca: false, deus: null, magica: false,
+    preReq: 'Das Trevas', custo: null, quadro: null, texto: [
+    'O Cavaleiro do Corvo une corpo, mente e conhecimento em um conjunto letal.',
+    'Uma vez por combate, você pode gastar uma ação de movimento e 3 PM para fazer um teste de Guerra. Você recebe uma quantidade de PV temporários igual ao resultado desse teste e, para cada 10 pontos no resultado, recebe +1 em testes de ataque e rolagens de dano. Além disso, se o resultado for 30 ou mais, você ignora a imunidade a acertos críticos e ataques furtivos de seus inimigos. Esses efeitos duram até o fim da cena.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.
