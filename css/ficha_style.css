@@ -2348,6 +2348,11 @@
 }
 .fi-pod:hover { border-left-color: var(--rust); background: var(--parchment2); }
 .fi-pod--conta { border-left-color: var(--carmim); }
+/* habilidades de classe AUTOMÁTICAS (por nível): elas vêm sozinhas, não
+   se adiciona nem se remove — um tom de pergaminho e a borda cheia as
+   separam do que se ESCOLHE, logo abaixo, no mesmo cartão ⚔ */
+.fi-pod-grupo--fixa .fi-pod { border-left-width: 4px; background: var(--parchment2); }
+.fi-pod-grupo--fixa .fi-pod:hover { background: var(--parchment); }
 
 /* o nome inteiro é o botão que recolhe e abre o texto do poder */
 .fi-pod-abrir {

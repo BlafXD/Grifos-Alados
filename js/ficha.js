@@ -1155,7 +1155,12 @@
       return;
     }
 
+    //  As habilidades de raça/origem e as de classe e poderes sobem para
+    //  logo DEPOIS de Ataques e ANTES de Magias (pedido dele em 24/09/2026):
+    //  são o que o personagem "sabe fazer", e ficavam soterradas embaixo das
+    //  listas de magia e inventário. Anotações (📜) segue mais abaixo.
     html += bloqueIdentidade(f) + blocoComplicacoes(f) + blocoCondicoes(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
+            blocoDePoderes(f, 'racaOrigem') + blocoDePoderes(f, 'classePoderes') +
             blocoAmigos(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
             blocoCompras(f);
     const donoAberta = donoDe(f.id);
@@ -3111,6 +3116,57 @@
       </div>`;
   }
 
+  //  ── HABILIDADES DE CLASSE AUTOMÁTICAS (24/09/2026) ────────────────
+  //  As habilidades FIXAS da tabela de cada classe (Devoto Fiel, Fúria,
+  //  Inspiração, Mão da Divindade…) não se escolhem: vêm por NÍVEL. Elas
+  //  aparecem sozinhas no topo do cartão ⚔, uma gaveta por classe da
+  //  ficha, mostrando só as que o nível daquela classe já alcançou.
+  //  Fonte: js/habilidades-classe-data.js. Só as classes que estão nesse
+  //  mapa entram — as 14 variantes têm fixas PRÓPRIAS (Heróis de Arton
+  //  reimprime cada tabela) e ainda não foram transcritas, então não
+  //  recebem nada, em vez de herdar da básica (que seria errado). Cada
+  //  cartão recolhe/abre como um poder (dobra-fixa), guardado com a chave
+  //  'fixa:<classe>:<nome>' no mesmo poderesFechados.
+  function fixasDaClasse(f) {
+    const MAPA = window.GA_HABILIDADES_CLASSE;
+    if (!MAPA) return '';
+    const partes = [];
+    (f.classes || []).forEach(c => {
+      const chave = (c && c.classe) || '';
+      const nivel = (c && c.nivel) || 0;
+      const lista = MAPA[chave];
+      if (!chave || !Array.isArray(lista)) return;
+      const fixas = lista.filter(a => nivel >= a.nivel);
+      if (!fixas.length) return;
+      const C = D.classe(chave);
+      const nomeClasse = (C && C.nome) || chave;
+      const cards = fixas.map(a => {
+        const key = 'fixa:' + chave + ':' + a.nome;
+        const fechado = !!poderesFechados[key];
+        return `
+        <li class="fi-pod fi-pod--fixa${fechado ? ' fi-pod--fechado' : ''}">
+          <button type="button" class="fi-pod-abrir" data-acao="dobra-fixa" data-k="${esc(key)}"
+                  aria-expanded="${!fechado}" title="${fechado ? 'Abrir' : 'Recolher'} ${esc(a.nome)}">
+            <span class="fi-pod-seta" aria-hidden="true">${fechado ? '▸' : '▾'}</span>
+            <span class="fi-pod-nome">${esc(a.nome)}</span>
+            ${a.magica ? `<span class="fi-pod-magica" title="${esc(DICA_MAGICA)}">✦<span>mágica</span></span>` : ''}
+            <span class="fi-pod-tag">${a.nivel}º nível</span>
+          </button>
+          ${fechado ? '' : `<div class="fi-pod-corpo"><div class="fi-pod-desc">${esc(a.texto)}</div></div>`}
+        </li>`;
+      }).join('');
+      partes.push(`
+        <div class="fi-pod-grupo fi-pod-grupo--fixa">
+          <h3 class="fi-pod-grupo-tit">
+            <span class="fi-pod-emoji" aria-hidden="true">🎓</span>Habilidades de ${esc(nomeClasse)}
+            <em>automáticas, por nível</em>
+          </h3>
+          <ul class="fi-pod-lista">${cards}</ul>
+        </div>`);
+    });
+    return partes.join('');
+  }
+
   //  Um dos dois cartões de baixo, agora com os poderes do grupo dele —
   //  o que era o ✨ Poderes, fragmentado (23/09/2026). `campo` é
   //  'racaOrigem' ou 'classePoderes'. Cada um tem os seus botões (só
@@ -3153,7 +3209,7 @@
               ＋ Adicionar${daClasse ? ' poder' : ''}</button>
           </span>
         </h2>
-        ${daClasse ? blocoTormenta(f) : ''}
+        ${daClasse ? blocoTormenta(f) + fixasDaClasse(f) : ''}
         ${grupos || vazia}
         <p class="fi-nota">Cada poder traz o <strong>texto inteiro</strong> do livro, com a página. Clique no
           <strong>nome</strong> para recolher ou abrir, e use <strong>⇈ ↑ ↓</strong> para pôr na ordem que você quer
@@ -3543,9 +3599,11 @@
   //  Raça e origem e Classe e poderes viraram cartões de poder (têm
   //  gavetas, busca e os botões); Anotações continua caixa de texto pura.
   function blocoTextos(f) {
-    return BLOCOS.map(b => (b.campo === 'racaOrigem' || b.campo === 'classePoderes')
-      ? blocoDePoderes(f, b.campo)
-      : `<div class="fi-cartao fi-bloco">
+    //  Raça/origem e Classe/poderes já foram desenhados lá em cima (logo
+    //  após Ataques); aqui sobra só a caixa de texto pura (📜 Anotações).
+    return BLOCOS
+      .filter(b => b.campo !== 'racaOrigem' && b.campo !== 'classePoderes')
+      .map(b => `<div class="fi-cartao fi-bloco">
            <h2 class="fi-cartao-tit">${b.titulo}</h2>
            ${caixaRica(f, b)}
          </div>`).join('');
@@ -3781,6 +3839,14 @@
       if (campo.indexOf('classes.') === 0 || campo.indexOf('amigos.') === 0 ||
           campo.indexOf('treinador.') === 0) return render();
       atualizarDerivados();
+      return;
+    }
+    //  Mudar o NÍVEL de uma classe (input numérico) altera QUAIS habilidades
+    //  de classe automáticas já foram alcançadas — e o total de poderes etc.
+    //  Isso vai no 'change' (commit), não no 'input': redesenhar a cada tecla
+    //  atrapalharia a digitação. (Os números derivados já saem no 'input'.)
+    if (el.type === 'number' && /^classes\.\d+\.nivel$/.test(el.dataset.campo || '')) {
+      return render();
     }
   }
 
@@ -4198,6 +4264,12 @@
       const meus = poderesDoBloco(f, btn.dataset.bloco);
       const abrir = meus.every(p => poderesFechados[p.id]);
       meus.forEach(p => { if (abrir) delete poderesFechados[p.id]; else poderesFechados[p.id] = 1; });
+      guardarPodFechados(); return render();
+    }
+    if (acao === 'dobra-fixa') {
+      const k = btn.dataset.k;
+      if (!k) return;
+      if (poderesFechados[k]) delete poderesFechados[k]; else poderesFechados[k] = 1;
       guardarPodFechados(); return render();
     }
 
