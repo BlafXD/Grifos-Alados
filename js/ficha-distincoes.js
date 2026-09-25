@@ -36,6 +36,8 @@
   // "para cada dois / quatro OUTROS poderes" — n inclui o próprio poder
   const p2 = n => Math.floor((n - 1) / 2);
   const p4 = n => Math.floor((n - 1) / 4);
+  // "a cada dois poderes da distinção" (sem "outros") — conta TODOS, ⌊n/2⌋
+  const t2 = n => Math.floor(n / 2);
   const outros = n => n - 1;
   const nOutros = n => `${outros(n)} outro${outros(n) !== 1 ? 's' : ''} poder${outros(n) !== 1 ? 'es' : ''} da distinção`;
   const nTodos = n => `${n} poder${n !== 1 ? 'es' : ''} da distinção`;
@@ -208,6 +210,61 @@
       escala(n) {
         return { txt: `+${2 + p2(n)} em ataque e dano à distância (sob a postura)`,
                  calc: `2 base + ${p2(n)} (um a cada dois dos ${nOutros(n)})` };
+      },
+    },
+
+    // ── Cavaleiro Feérico (Heróis de Arton, p. 143–144) ─────────────
+    //  A marca (+1 PM por poder) e três poderes usam o TOTAL de poderes
+    //  da distinção; a Armadura conta os OUTROS (a cada dois). Lâminas
+    //  Feéricas diz "a cada dois poderes da distinção" (sem "outros") =
+    //  ⌊n/2⌋, então usa t2, não p2.
+    'dist-feerico-conexao-feerica': {
+      escala(n) {
+        return { txt: `+${n} PM (marca)`, calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-feerico-arte-elfica': {
+      escala(n) {
+        return { txt: `Música/magia arcana até o ${n}º círculo (limitado também pelo que você lança)`,
+                 calc: `círculo máximo = total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-feerico-armadura-da-floresta': {
+      escala(n) {
+        const m = p2(n);
+        return { txt: m ? `${m} melhoria${m !== 1 ? 's' : ''} na armadura (fora material especial)`
+                        : 'ainda sem melhoria extra na armadura',
+                 calc: `uma a cada dois dos ${nOutros(n)}` };
+      },
+    },
+    'dist-feerico-flagelo-dos-duyshidakk': {
+      escala(n) {
+        return { txt: `+${n} em rolagens de dano contra bandos, enxames e duyshidakk`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-feerico-laminas-feericas': {
+      escala(n) {
+        const b = t2(n);
+        return { txt: `margem de ameaça +${b} com espada longa ou florete`,
+                 calc: `+1 a cada dois poderes da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Chapéu-Preto (Heróis de Arton, p. 146–147) ──────────────────
+    'dist-chapeu-olhos-de-chumbo': {
+      escala(n) {
+        const p = 2 + p2(n);
+        return { txt: `−${p} em rolagens de dano e na Defesa (aura de medo 9m)`,
+                 calc: `−2 base, −1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+    'dist-chapeu-rapido-ou-morto': {
+      escala(n) {
+        const i = 2 + p2(n), d = 3 + 1.5 * p2(n);
+        const ds = String(d).replace('.', ',');
+        return { txt: `+${i} em Iniciativa e +${ds}m de deslocamento`,
+                 calc: `+2/+3m base, +1/+1,5m a cada dois dos ${nOutros(n)}` };
       },
     },
   };

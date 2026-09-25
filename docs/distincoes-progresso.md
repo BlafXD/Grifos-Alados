@@ -16,7 +16,7 @@
   🩸 do cartão integra à conta da Tormenta se a mesa quiser.
 - Dados em `js/poderes-raca-origem-data.js`; escalas em `js/ficha-distincoes.js`.
 
-## ✅ Feitas (12 de 36)
+## ✅ Feitas (14 de 36)
 
 1. **Aeronauta Goblin** (p. 105–108) — escala: Cabeça nas Nuvens.
 2. **Algoz da Tormenta** (p. 109–111) — escalam: Desprezo Profano, Ataque Corrupto.
@@ -30,8 +30,10 @@
 10. **Capitão do Conclave Pirata** (p. 132–135) — escalam: Içar a Bandeira Preta (5 PV + 1 PM temp por poder), Língua Afiada (2d6 psíquico por poder). Marca traz o quadro *Solidariedade Pirata*.
 11. **Carteador** (p. 135–138) — escalam: Dado Viciado (1d6 + 1d6 a cada dois outros), Jogo Perigoso (círculo das magias sobe; **único poder mágico ✦** da leva).
 12. **Cavaleiro do Corvo** (p. 138–141) — 7 poderes; escalam: A Qualquer Custo (benefícios de missão), Postura de Combate: Tomada Furtiva (+1 a cada dois outros). Marca traz o quadro *A Língua dos Corvos*.
+13. **Cavaleiro Feérico** (p. 142–144) — marca Conexão Feérica (+1 PM por poder); escalam Arte Élfica (círculo máx = total de poderes), Armadura da Floresta (melhorias a cada dois OUTROS), Flagelo dos Duyshidakk (+dano = total), Lâminas Feéricas (margem +1 "a cada dois poderes" = ⌊n/2⌋, sem "outros" — usa `t2`, novo helper). Só **Arma da Floresta** é ✦.
+14. **Chapéu-Preto** (p. 145–147) — marca Esse Maldito Chapéu (quadro *A Maldição do Chapéu Preto*); escalam Olhos de Chumbo (−2 −1 a cada dois outros) e Rápido ou Morto (Iniciativa +2 e deslocamento +3m, subindo +1/+1,5m a cada dois outros). Nenhum ✦.
 
-## ⏭ Faltam (24) — lista PROVISÓRIA
+## ⏭ Faltam (22) — lista PROVISÓRIA
 
 A extração de 2 colunas embaralha títulos e ordem; **o título e a página de cada uma são
 conferidos no PDF na hora de transcrever**. A próxima é a 13.
@@ -41,9 +43,9 @@ conferidos no PDF na hora de transcrever**. A próxima é a 13.
 > Cace o marcador com `awk '/\. e[[:space:]]*$/'` na região da distinção — foi assim que se
 > viu que só o **Jogo Perigoso** (Carteador) é mágico entre a 9 e a 12.
 
-- [ ] 13. **Cavaleiro Feérico** (p. 141–145) — Conexão Feérica (marca); escalam Armadura da Floresta e Flagelo dos Duyshidakk
-- [ ] 14. **Chapéu-Preto** (~p. 146) — marca "A Maldição do Chapéu Preto"
-- [ ] 15. **Dracomante Real** (~p. 148)
+- [x] 13. **Cavaleiro Feérico** — FEITA (p. 142–144).
+- [x] 14. **Chapéu-Preto** — FEITA (p. 145–147).
+- [ ] 15. **Dracomante Real** (p. 151 pela ToC) — próxima. ATENÇÃO: entre Chapéu-Preto (p.147) e Dracomante há a **Cobaia dos Médicos Monstros** (p.147–150, o "Doutor Genial"/goblin cientista da lista provisória) — conferir a ordem das marcas no PDF, a lista pode estar fora de ordem.
 - [ ] 16. **Drogadora** (~p. 149)
 - [ ] 17. **Doutor Genial** (~p. 150) — goblin cientista *(conferir título)*
 - [ ] 18. **Escapista Magnífico** (~p. 151)
