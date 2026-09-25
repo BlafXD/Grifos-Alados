@@ -16,7 +16,7 @@
   🩸 do cartão integra à conta da Tormenta se a mesa quiser.
 - Dados em `js/poderes-raca-origem-data.js`; escalas em `js/ficha-distincoes.js`.
 
-## ✅ Feitas (15 de 36)
+## ✅ Feitas (16 de 36)
 
 1. **Aeronauta Goblin** (p. 105–108) — escala: Cabeça nas Nuvens.
 2. **Algoz da Tormenta** (p. 109–111) — escalam: Desprezo Profano, Ataque Corrupto.
@@ -33,8 +33,9 @@
 13. **Cavaleiro Feérico** (p. 142–144) — marca Conexão Feérica (+1 PM por poder); escalam Arte Élfica (círculo máx = total de poderes), Armadura da Floresta (melhorias a cada dois OUTROS), Flagelo dos Duyshidakk (+dano = total), Lâminas Feéricas (margem +1 "a cada dois poderes" = ⌊n/2⌋, sem "outros" — usa `t2`, novo helper). Só **Arma da Floresta** é ✦.
 14. **Chapéu-Preto** (p. 145–147) — marca Esse Maldito Chapéu (quadro *A Maldição do Chapéu Preto*); escalam Olhos de Chumbo (−2 −1 a cada dois outros) e Rápido ou Morto (Iniciativa +2 e deslocamento +3m, subindo +1/+1,5m a cada dois outros). Nenhum ✦.
 15. **Cobaia dos Médicos Monstros** (p. 148–150) — marca Procedimento Inicial (quadro *Implantes*: regras + 10 implantes, Olho Anulador e Olho Desintegrador são ✦); escalam Enxerto Experimental (dado 1d4 sobe um passo por OUTRO poder, via `passoDeDano`) e Corpo Resiliente (limite de implantes +1, +1 a cada dois outros). Nenhum PODER é ✦ (o ✦ está nos implantes-item do quadro).
+16. **Dracomante Real** (p. 150–152) — marca Mestre Dracônico (escolhe o Dragão-Real mestre e a essência elemental, +2 de dano do tipo); escalam Afinidade Dracônica (redução 3 por poder da distinção contra o tipo do mestre) e Memória Dracônica (magias memorizadas a mais = total de poderes). ✦: Majestade Elemental e Verdadeiro Poder (aprende Metamorfose / Transformação em Dragão). Sem quadro (o box "Benthos e a Magia" é só lore de admissão).
 
-## ⏭ Faltam (21) — lista REAL da ToC (p. 148–211)
+## ⏭ Faltam (20) — lista REAL da ToC (p. 154–211)
 
 > **Lista corrigida em 25/09/2026 pela ToC do PDF** (p. 3–4 do arquivo). A antiga lista
 > provisória estava fora de ordem e com títulos inexistentes ("Doutor Genial",
@@ -46,8 +47,7 @@
 > " e" solto no fim do poder. Cace com `awk '/\. e[[:space:]]*$/'`; a coluna direita pode
 > esconder o marcador, então confirme no corpo reconstruído por página.
 
-- [ ] 16. **Dracomante Real** (p. 151)
-- [ ] 17. **Drogadora** (p. 154)
+- [ ] 17. **Drogadora** (p. 154) — próxima
 - [ ] 18. **Engenhoqueiro Goblin** (p. 157)
 - [ ] 19. **Escapista Magnífico** (p. 160)
 - [ ] 20. **Gigante Furioso** (p. 163)

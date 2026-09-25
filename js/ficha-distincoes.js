@@ -286,6 +286,20 @@
                  calc: `+1 base, +1 a cada dois dos ${nOutros(n)}` };
       },
     },
+
+    // ── Dracomante Real (Heróis de Arton, p. 152) ───────────────────
+    'dist-dracomante-afinidade-draconica': {
+      escala(n) {
+        return { txt: `redução ${3 * n} contra o dano do tipo do seu mestre (e +2 na CD dessas magias)`,
+                 calc: `3 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-dracomante-memoria-draconica': {
+      escala(n) {
+        return { txt: `+${n} magia${n !== 1 ? 's' : ''} memorizada${n !== 1 ? 's' : ''} por dia (do tipo do seu mestre)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
