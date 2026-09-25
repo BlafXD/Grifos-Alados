@@ -16,7 +16,7 @@
   🩸 do cartão integra à conta da Tormenta se a mesa quiser.
 - Dados em `js/poderes-raca-origem-data.js`; escalas em `js/ficha-distincoes.js`.
 
-## ✅ Feitas (31 de 36)
+## ✅ Feitas (36 de 36) — COMPLETO 🎉
 
 1. **Aeronauta Goblin** (p. 105–108) — escala: Cabeça nas Nuvens.
 2. **Algoz da Tormenta** (p. 109–111) — escalam: Desprezo Profano, Ataque Corrupto.
@@ -49,8 +49,18 @@
 29. **Mestre dos Desejos** (p. 189–192) — só qareen. Marca Desejo de Servir. **NÃO escala** pelo nº de poderes (efeitos fixos). ✦: O Segundo Desejo, O Último Desejo (lança a magia Desejo), Gênio da Lâmpada e Sempre Disponível (4).
 30. **Mestre Mahou-Jutsu** (p. 192–195) — marca Palma Mística. Escalam Mahou-jutsu (círculo = total) e Punho Arcano (CD +1 a cada dois outros). ✦: Defesa da Magia.
 31. **Mosqueteiro de Rishantor** (p. 195–198) — marca Equipamento Real (tabardo/florete/chapéu; não pode ser devoto de energia negativa). **NÃO escala** por nº de poderes (Heroísmo Galante tem limiar "todos os poderes"). Nenhum ✦ (Valentia é Heroísmo SIMULADO).
+32. **Mutagenista** (p. 199–201) — marca Preparação Corporal; quadro *Mutagênicos* em Fabricar Mutagênicos. Escalam Fabricar Mutagênicos (limite ativo = total; energizante com 2 outros, despersonalizante com 4) e Organismo Reagente. Nenhum ✦ (mutagênicos são magia simulada).
+33. **Pistoleiro de Smokestone** (p. 201–204) — marca Honra do Pistoleiro; quadro *O Código do Pistoleiro* (nada de armadura pesada, deuses, magia). Escala só Rápido no Gatilho (+2 Iniciativa por poder). Nenhum ✦. (7 cards — 6 poderes.)
+34. **Professor de Magia** (p. 204–207) — marca Pena e Pergaminho (✦, aprende magia de adivinhação). Escalam Pedagogia Mágica (usos por aluno) e Orgulho do Mestre (PM temporários = 2× poderes). Demonstrações Práticas não tem preReq impresso (null).
+35. **Senador** (p. 207–210) — minotauro; marca Retórica Impecável. Escalam Cofres Fundos (fundos e itens requisitados), Apoio Popular (nível dos parceiros), Inocência Convicta e Um Minotauro de Bem. O box "O Curso de Honra" é lore. Nenhum ✦.
+36. **Vigarista** (p. 210–213) — marca Tirar Leite de Pedra. Escalam Aquele Papinho, Efeito Placebo (elixir vira poção) e Relíquias Sagradas. Nenhum ✦ (tudo farsa/magia simulada).
 
-## ⏭ Faltam (5) — lista REAL da ToC (p. 199–211)
+## ⏭ Faltam (0) — nada! O Capítulo 2 (Distinções) do Heróis de Arton está COMPLETO
+
+As 36 distinções entraram (227 cards no grupo `distincao`: 36 marcas + 191 poderes,
+21 mágicas ✦). Fechado em 25/09/2026.
+
+<details><summary>lista real da ToC (histórico)</summary>
 
 > **Lista corrigida em 25/09/2026 pela ToC do PDF** (p. 3–4 do arquivo). A antiga lista
 > provisória estava fora de ordem e com títulos inexistentes ("Doutor Genial",
@@ -62,11 +72,13 @@
 > " e" solto no fim do poder. Cace com `awk '/\. e[[:space:]]*$/'`; a coluna direita pode
 > esconder o marcador, então confirme no corpo reconstruído por página.
 
-- [ ] 32. **Mutagenista** (p. 199) — próxima. Marca Mutagenia Adicional (vista de relance); a leva final.
-- [ ] 33. **Pistoleiro de Smokestone** (p. 202)
-- [ ] 34. **Professor de Magia** (p. 205)
-- [ ] 35. **Senador** (p. 208)
-- [ ] 36. **Vigarista** (p. 211)
+- [x] 32. **Mutagenista** (p. 199)
+- [x] 33. **Pistoleiro de Smokestone** (p. 202)
+- [x] 34. **Professor de Magia** (p. 205)
+- [x] 35. **Senador** (p. 208)
+- [x] 36. **Vigarista** (p. 211)
+
+</details>
 
 ## Método por distinção (o que fazer em cada uma)
 
