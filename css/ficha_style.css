@@ -2326,6 +2326,42 @@
   order: 3;
 }
 .fi-pod-emoji { font-size: 0.8rem; letter-spacing: 0; }
+
+/* Card recolhível de distinção (25/09/2026): cada distinção é um card
+   que abre/fecha os poderes; fechado por padrão. O cabeçalho é um botão
+   que ocupa o lugar do título e traz a seta ▸/▾ e o resumo. */
+.fi-pod-grupo--dist {
+  border: 1px solid var(--parchment3);
+  border-radius: 7px;
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.fi-pod-grupo--dist .fi-pod-grupo-tit { margin: 0; }
+.fi-pod-grupo--dist:not(.fi-pod-grupo--fechado) .fi-pod-grupo-tit { margin-bottom: 0.5rem; }
+.fi-pod-grupo-abrir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: left;
+}
+.fi-pod-grupo-abrir:hover { color: var(--text); }
+.fi-pod-grupo-abrir .fi-pod-seta { font-size: 0.7rem; opacity: 0.8; }
+.fi-pod-grupo-abrir em {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-dim);
+}
 .fi-pod-vazia {
   font-family: 'IM Fell English', serif;
   font-style: italic;

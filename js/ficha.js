@@ -3102,14 +3102,43 @@
   //  e o índice guardado.
   function gavetaDePoder(f, g, pos, quantas, campo) {
     const n = g.itens.length;
+    const setasGrupo = quantas > 1 ? `<span class="fi-pod-ordem fi-pod-grupo-ordem">${
+      setasDeOrdem('podgrp', pos, pos, quantas, 'a gaveta ' + g.titulo,
+                   ' data-k="' + esc(g.chave) + '" data-bloco="' + esc(campo || '') + '"')}</span>` : '';
+    //  DISTINÇÃO: um CARD por distinção, recolhido por padrão (decisão
+    //  dele, 25/09/2026). O cabeçalho vira botão que abre/fecha os poderes;
+    //  mesmo fechado, mostra "marca + N poderes" para bater o olho. O
+    //  estado (aberto) mora em poderesFechados com a chave 'distAberto:…'
+    //  (presença = aberto), então o padrão é fechado sem virar a semântica
+    //  do resto (onde presença = fechado).
+    if (g.chave === 'distincao' || g.chave.slice(0, 10) === 'distincao:') {
+      const key = 'distAberto:' + g.chave;
+      const aberto = !!poderesFechados[key];
+      const temMarca = g.itens.some(x => x.p.marca);
+      const nPod = g.itens.filter(x => !x.p.marca).length;
+      const resumo = (temMarca ? 'marca' : 'sem marca') +
+        (nPod ? ' + ' + nPod + ' poder' + (nPod > 1 ? 'es' : '') : '');
+      return `
+      <div class="fi-pod-grupo fi-pod-grupo--dist${aberto ? '' : ' fi-pod-grupo--fechado'}">
+        <h3 class="fi-pod-grupo-tit">
+          <button type="button" class="fi-pod-grupo-abrir" data-acao="dobra-distgrp" data-k="${esc(key)}"
+                  aria-expanded="${aberto}" title="${aberto ? 'Recolher' : 'Abrir'} ${esc(g.titulo)}">
+            <span class="fi-pod-seta" aria-hidden="true">${aberto ? '▾' : '▸'}</span>
+            <span class="fi-pod-emoji" aria-hidden="true">${g.emoji}</span>${esc(g.titulo)}
+            <em>${esc(resumo)}</em>
+          </button>
+          ${setasGrupo}
+        </h3>
+        ${aberto ? `<ul class="fi-pod-lista">${g.itens.map((x, i) =>
+          cartaoPoder(f, x.p, x.i, i, n)).join('')}</ul>` : ''}
+      </div>`;
+    }
     return `
       <div class="fi-pod-grupo">
         <h3 class="fi-pod-grupo-tit">
           <span class="fi-pod-emoji" aria-hidden="true">${g.emoji}</span>${esc(g.titulo)}
           <em>${n} poder${n > 1 ? 'es' : ''}</em>
-          ${quantas > 1 ? `<span class="fi-pod-ordem fi-pod-grupo-ordem">${
-            setasDeOrdem('podgrp', pos, pos, quantas, 'a gaveta ' + g.titulo,
-                         ' data-k="' + esc(g.chave) + '" data-bloco="' + esc(campo || '') + '"')}</span>` : ''}
+          ${setasGrupo}
         </h3>
         <ul class="fi-pod-lista">${g.itens.map((x, i) =>
           cartaoPoder(f, x.p, x.i, i, n)).join('')}</ul>
@@ -4267,6 +4296,13 @@
       guardarPodFechados(); return render();
     }
     if (acao === 'dobra-fixa') {
+      const k = btn.dataset.k;
+      if (!k) return;
+      if (poderesFechados[k]) delete poderesFechados[k]; else poderesFechados[k] = 1;
+      guardarPodFechados(); return render();
+    }
+    //  Abre/fecha o card de uma distinção inteira (padrão: fechado).
+    if (acao === 'dobra-distgrp') {
       const k = btn.dataset.k;
       if (!k) return;
       if (poderesFechados[k]) delete poderesFechados[k]; else poderesFechados[k] = 1;
