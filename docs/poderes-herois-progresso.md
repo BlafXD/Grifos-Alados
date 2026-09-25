@@ -157,9 +157,24 @@ com 492 poderes de classe):
   Fúria Elemental, Invocar os Ancestrais, Manifestar Totem; bardo Acorde Místico,
   Acorde Poderoso, Música: Réquiem Sombrio; caçador Elo com a Natureza Maior.
 
-**Leva 2 — pendente** (ordem: druida, guerreiro, inventor, ladino, lutador,
-nobre, paladino). Contagens provisórias da tabela acima (druida 22, guerreiro 21,
-inventor 20, ladino 20, lutador 16, nobre 20, paladino 21 ≈ 140), a fechar exato
-na leitura de cada classe. Atenção às armadilhas já vistas: títulos de duas linhas
-(Julgamento Divino:, Postura, Combinação:), caixas de regra que não são poder, e
-nomes repetidos entre classes ("Inércia do Aço" também é do guerreiro).
+**Leva 2 — FEITA em 25/09/2026** (144 poderes; base agora com 636 poderes de
+classe — o capítulo do Heróis está completo, 287 poderes ao todo):
+- [x] druida (22) · guerreiro (21) · inventor (20) · ladino (20) · lutador (20)
+  · nobre (20) · paladino (21)
+- Ajustes na conferência: a extração fundira guerreiro+inventor (o cabeçalho
+  "Inventor" não foi detectado) — reatribuí as 20 do inventor; a caixa de
+  propaganda "O Império de Tauron quer VOCÊ" (p.68-69) não é poder e mastigou
+  Operações Combinadas / Ordens de Engajamento / Recuperar Fôlego / Resiliência
+  Marcial / Xadrez de Batalha (reconstruídos do PDF cru). Lutador rende **20**
+  (não 16 do mapa): as Combinações estavam fundidas — 5 saíram do buraco (Boca do
+  Estômago, Chute Circular, Chute no Joelho, Técnica de Sacrifício, Mestre das
+  Combinações); "Combinações Desarmadas" é caixa de regra, não poder. Paladino
+  rende 21: de "Arremesso Devastador" em diante é a lista GERAL (já em
+  poderes-data.js), descartada; "Virtude Paladinesca: Paciência" é caixa, não poder.
+- Mágicas ✦ da leva 2 (14): druida Forma Aberrante/de Cardume/Elemental/
+  Esquelética/Vegetal; paladino Arma Juramentada, Aura Vingadora, Bloqueio Divino,
+  Convicção Heroica, Fulgor Ardente, Guardião Celestial, Julgamento Divino:
+  Redenção, Luz Purificadora, Manto de Batalha.
+
+**CAPÍTULO COMPLETO.** As 14 classes básicas têm agora seus Novos Poderes de
+Classe do Heróis de Arton. Nada mais pendente deste livro para poderes de classe.
