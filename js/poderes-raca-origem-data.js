@@ -952,6 +952,57 @@
     'O dano de seus ataques com armas contra alvos desprevenidos ou sob alguma condição de medo aumenta em um passo.',
   ] },
 
+  //  Cobaia dos Médicos Monstros (p. 148–150) — 1 marca + 5 poderes.
+  //  Clientes do sinistro Grêmio de Vectora que enxertam partes de
+  //  monstros. A marca traz o quadro Implantes (regras + 10 implantes,
+  //  dois deles mágicos ✦). Escalam Enxerto Experimental (dado sobe um
+  //  passo por outro poder) e Corpo Resiliente (limite de implantes).
+  //  Nenhum PODER é ✦ (o ✦ mora nos implantes-item do quadro).
+  { id: 'dist-cobaia-procedimento-inicial', nome: 'Procedimento Inicial', grupo: 'distincao', livro: 'herois', pagina: 149,
+    tags: 'Cobaia dos Médicos Monstros', distincao: 'cobaia-medicos-monstros', marca: true, deus: null, magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'Implantes', texto: [
+      'Implantes são enxertos de partes de outras criaturas que concedem habilidades especiais ao seu receptor. Para receber um implante, é necessário visitar a clínica do Grêmio dos Médicos Monstros e se submeter à cirurgia apropriada. Além, é claro, de pagar o preço do implante (que inclui o custo da cirurgia). Alguns aventureiros preferem levar suas próprias partes de criaturas para serem implantadas. Nesse caso, o preço é reduzido pela metade.',
+      'A cirurgia de enxerto demora um dia. Já a recuperação é um teste estendido de Fortitude (CD 25, 3 sucessos), em que cada teste representa um dia. Em uma falha total, o corpo rejeita o implante, que deve ser removido (o que o destrói) ou levará à morte do paciente.',
+      'Implantes conferem uma aparência monstruosa e desconcertante, e podem fragilizar a saúde do paciente. Para cada implante, você sofre uma penalidade de –2 em Adestramento, Diplomacia e Fortitude. O máximo de implantes que você pode receber é igual à sua Constituição (mínimo 1). Implantes contam como poderes para todos os efeitos.',
+      'Asas. Asas monstruosas de tamanho correspondente ao paciente. Você pode voar com deslocamento igual ao seu deslocamento base mas, enquanto estiver voando dessa forma, fica vulnerável. Preço T$ 20.000. — Braço de Ogro. Um enorme braço pertencente a uma criatura humanoide maior que o paciente. Você recebe +2 em Força e, com este braço, seu alcance natural aumenta em +1,5m. Este implante substitui um dos braços do paciente. Preço T$ 36.000. — Cauda com Ferrão. Você recebe uma arma natural de ferrão (dano 1d6, crítico x2, perfuração). Uma vez por rodada, quando usa a ação agredir para atacar com outra arma, pode gastar 1 PM para fazer um ataque corpo a corpo extra com o ferrão. Quando causa dano com ele, você pode gastar 1 PM para inocular veneno na vítima, que perde 1d12 PV. Preço T$ 27.000. — Escamas. Extraídas de vários monstros, formam uma armadura leve e poderosa. Fornecem +2 na Defesa. É possível enxertar este implante uma segunda vez, para aumentar o bônus na Defesa para +5. Preço T$ 12.000. — Garras. Suas mãos se transformam em armas naturais de garra (dano 1d6 cada, crítico x2, corte). Uma vez por rodada, quando usa a ação agredir para atacar com uma arma, você pode gastar 1 PM para fazer um ataque corpo a corpo extra com uma das garras, desde que ela esteja livre e não tenha sido usada para atacar nesse turno. Como alternativa, se tiver habilidades que exijam uma arma secundária (como Estilo de Duas Armas), você pode usá-las com suas garras. Preço T$ 27.000.',
+      'Olho Anulador (✦ mágico). Extraído de tiranos oculares e implantado no peito do paciente, este olho projeta um campo antimagia. Você pode lançar Dissipar Magia, mas apenas em um cone de 9m e usando Vontade no lugar do teste de Misticismo. Preço T$ 30.000. — Olho Desintegrador (✦ mágico). Também retirado de um tirano ocular, este olho monstruoso fica na ponta de uma haste carnosa, em geral implantada nas costas do paciente. Você pode lançar a magia Desintegrar (atributo-chave Constituição). Preço T$ 50.000. — Olho Petrificante. Um olho amarelo reptiliano, extraído de um basilisco. Você recebe a habilidade Olhar Atordoante (Tormenta20, p. 29). Caso já tenha essa habilidade, a CD para resistir a ela aumenta em +2. Preço T$ 18.000. — Patas de Aranha. Extraídos de uma aranha gigante, estes dois pares de patas são implantados no tronco. Não servem para atacar, mas fornecem deslocamento de escalada igual ao seu deslocamento base. Se já tiver um deslocamento de escalada, ele aumenta em +6m. Preço T$ 12.000. — Tentáculo com Garras. Extraído de monstros como otyughs e tigres-de-Hyninn, fornece uma arma natural de tentáculo (dano 1d4, crítico x2, impacto) com a qual seu alcance natural aumenta em +1,5m. Uma vez por rodada, quando usa a ação agredir para atacar com outra arma, você pode gastar 1 PM para fazer um ataque corpo a corpo extra com o tentáculo. Preço T$ 27.000.',
+    ] },
+    texto: [
+    'Marca da distinção. A cobaia se entrega de corpo, literalmente, à ciência dos Médicos Monstros.',
+    'Você se torna um monstro em adição ao seu tipo. Além disso, a penalidade em perícias que sofre por receber implantes diminui de –2 por implante para –1 (veja o quadro) e você paga 20% a menos pelos implantes enxertados em seu corpo.',
+  ] },
+  { id: 'dist-cobaia-enxerto-experimental', nome: 'Enxerto Experimental', grupo: 'distincao', livro: 'herois', pagina: 149,
+    tags: 'Cobaia dos Médicos Monstros', distincao: 'cobaia-medicos-monstros', marca: false, deus: null, magica: false,
+    preReq: 'Foco em Perícia (Fortitude)', custo: null, quadro: null, texto: [
+    'Em busca de aperfeiçoamento, a cobaia se submete a procedimentos altamente experimentais.',
+    'Você recebe um implante de até T$ 18.000. Ele não conta em seu limite de implantes, mas foi enxertado de forma experimental. No início de cada cena, role 1d4. Em um resultado 1, o implante não funciona nessa cena. Para cada outro poder da distinção, esse dado aumenta em um passo.',
+  ] },
+  { id: 'dist-cobaia-corpo-resiliente', nome: 'Corpo Resiliente', grupo: 'distincao', livro: 'herois', pagina: 149,
+    tags: 'Cobaia dos Médicos Monstros', distincao: 'cobaia-medicos-monstros', marca: false, deus: null, magica: false,
+    preReq: 'Enxerto Experimental', custo: null, quadro: null, texto: [
+    'Sucessivas cirurgias resultaram em um fortalecimento inesperado do organismo da cobaia.',
+    'Você não sofre a penalidade em Fortitude por implantes e seu limite de implantes aumenta em +1, +1 para cada dois outros poderes da distinção.',
+  ] },
+  { id: 'dist-cobaia-extrapolar-o-proprio-corpo', nome: 'Extrapolar o próprio Corpo', grupo: 'distincao', livro: 'herois', pagina: 149,
+    tags: 'Cobaia dos Médicos Monstros', distincao: 'cobaia-medicos-monstros', marca: false, deus: null, magica: false,
+    preReq: 'Implante Exclusivo', custo: null, quadro: null, texto: [
+    'Implantes convencionais extraídos de monstros não satisfazem mais a sede de alterações da cobaia.',
+    'Escolha um poder racial (p. 84) cujos pré-requisitos você cumpra (ignorando requisitos de raça) e que seja aprovado pelo mestre. Você recebe um implante que fornece o benefício do poder escolhido.',
+  ] },
+  { id: 'dist-cobaia-glandula-de-infusao', nome: 'Glândula de Infusão', grupo: 'distincao', livro: 'herois', pagina: 149,
+    tags: 'Cobaia dos Médicos Monstros', distincao: 'cobaia-medicos-monstros', marca: false, deus: null, magica: false,
+    preReq: 'Enxerto Experimental', custo: null, quadro: null, texto: [
+    'Como um verdadeiro experimento, a cobaia recebe a vanguarda dos procedimentos do Grêmio.',
+    'Escolha uma magia de até 2º círculo com alvo você ou 1 criatura. Você recebe um implante que permite lançar essa magia seguindo as regras de engenhocas (Tormenta20, p. 70), mas você usa Constituição e Fortitude respectivamente no lugar de Inteligência e Ofício (engenhoqueiro) e só pode ter você como alvo. Este é um efeito orgânico e não é afetado por efeitos que afetem especificamente engenhocas.',
+  ] },
+  { id: 'dist-cobaia-implante-exclusivo', nome: 'Implante Exclusivo', grupo: 'distincao', livro: 'herois', pagina: 149,
+    tags: 'Cobaia dos Médicos Monstros', distincao: 'cobaia-medicos-monstros', marca: false, deus: null, magica: false,
+    preReq: 'Enxerto Experimental', custo: null, quadro: null, texto: [
+    'Uma cobaia tem acesso a serviços exclusivos, reservados apenas aos melhores clientes do Grêmio.',
+    'Escolha um encanto de armas sem nenhum pré-requisito. Você pode gastar uma ação de movimento e 1 PM para colocar esse encanto em uma arma que esteja empunhando. Ele não conta no limite de encantos da arma, e termina se você soltar o item ou no fim da cena.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.

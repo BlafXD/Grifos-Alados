@@ -267,6 +267,25 @@
                  calc: `+2/+3m base, +1/+1,5m a cada dois dos ${nOutros(n)}` };
       },
     },
+
+    // ── Cobaia dos Médicos Monstros (Heróis de Arton, p. 149) ───────
+    //  Enxerto Experimental sobe o dado 1d4 um PASSO por cada OUTRO
+    //  poder (mesmo passoDeDano da ficha, como o Campeão de Dojo).
+    'dist-cobaia-enxerto-experimental': {
+      escala(n) {
+        const passos = outros(n);
+        const D = (window.GA_FichaData && window.GA_FichaData.passoDeDano)
+          ? window.GA_FichaData.passoDeDano('1d4', passos).dado : '1d4';
+        return { txt: `role ${D} no início da cena (o implante experimental só falha no 1)`,
+                 calc: `1d4 base, +1 passo por cada um dos ${nOutros(n)} (${passos} passo${passos !== 1 ? 's' : ''})` };
+      },
+    },
+    'dist-cobaia-corpo-resiliente': {
+      escala(n) {
+        return { txt: `limite de implantes +${1 + p2(n)}`,
+                 calc: `+1 base, +1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
