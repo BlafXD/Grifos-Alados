@@ -16,7 +16,7 @@
   🩸 do cartão integra à conta da Tormenta se a mesa quiser.
 - Dados em `js/poderes-raca-origem-data.js`; escalas em `js/ficha-distincoes.js`.
 
-## ✅ Feitas (18 de 36)
+## ✅ Feitas (23 de 36)
 
 1. **Aeronauta Goblin** (p. 105–108) — escala: Cabeça nas Nuvens.
 2. **Algoz da Tormenta** (p. 109–111) — escalam: Desprezo Profano, Ataque Corrupto.
@@ -36,8 +36,13 @@
 16. **Dracomante Real** (p. 150–152) — marca Mestre Dracônico (escolhe o Dragão-Real mestre e a essência elemental, +2 de dano do tipo); escalam Afinidade Dracônica (redução 3 por poder da distinção contra o tipo do mestre) e Memória Dracônica (magias memorizadas a mais = total de poderes). ✦: Majestade Elemental e Verdadeiro Poder (aprende Metamorfose / Transformação em Dragão). Sem quadro (o box "Benthos e a Magia" é só lore de admissão).
 17. **Drogadora** (p. 153–156) — marca Tradição da Cura (Sab como atributo-chave de Ofício alquimista); quadro *Receitas da Drogadora* em Remédios da Floresta. Quatro escalam por total/2-outros: Curandeira Exímia (+bônus = total), Aspersão Curativa (nº de secreções), Laboratório Natural (fabricações/dia = total), Perfume Intoxicante (+2 subindo a cada dois outros), e as receitas de Remédios da Floresta (+1 de até 2º círculo por poder). Nenhum ✦. **Plural em `ão`**: "secreção→secreções", "fabricação→fabricações" (não dá para só somar sufixo).
 18. **Engenhoqueiro Goblin** (p. 156–159) — marca Engenhocaria Goblinoide (fabrica pela metade do custo, mas a engenhoca explode ao falhar feio); quadro *Gambiarras* em Aprimorar Bugiganga. Escalam Aprimorar Bugiganga (gambiarras por engenhoca = total), Autodestruição (PM na explosão = total, +2d6/PM) e Manutenção Precária (1d3 + total de engenhocas). Nenhum ✦.
+19. **Escapista Magnífico** (p. 159–162) — marca Vantagem Secreta (anula uma fonte de penalidades). Escalam Aparência Insignificante (+CD do poder Aparência Inofensiva) e Peguei um Bobo (CD do Comando SIMULADO, +1 a cada dois outros). Nenhum ✦ (Peguei um Bobo é magia simulada).
+20. **Gigante Furioso** (p. 162–165) — marca Desprezar os Pequenos (RD 2 por categoria de diferença). Escala só Fúria dos Gigantes (categorias de tamanho, e é ✦); os demais crescem com o TAMANHO, não com o nº de poderes.
+21. **Ginete de Namalkah** (p. 165–168) — marca Amalkhan (quadro *Irmão Cavalo*). **NENHUMA escala no motor**: os poderes crescem com o NÍVEL do parceiro montaria, não com o nº de poderes (fica no texto). Nenhum ✦.
+22. **Guerreiro Mágico** (p. 168–171) — marca Arma Arcana (magia empunhando arma). Escala Estilo de Combate Arcano (bônus do estilo +1 por outro poder). ✦: Fogo e Aço.
+23. **Infiltrador de Wynlla** (p. 171–174) — marca Ladinagem Mágica (✦). Escala Trapaça Arcana (círculo: 1º, e 2º com 3+ poderes; magias conhecidas = 2 + outros). ✦: Ladinagem Mágica (marca) e Criar Armadilha Mágica. Magia Traiçoeira é um poder-Aprimoramento (Custo +2 PM).
 
-## ⏭ Faltam (18) — lista REAL da ToC (p. 160–211)
+## ⏭ Faltam (13) — lista REAL da ToC (p. 175–211)
 
 > **Lista corrigida em 25/09/2026 pela ToC do PDF** (p. 3–4 do arquivo). A antiga lista
 > provisória estava fora de ordem e com títulos inexistentes ("Doutor Genial",
@@ -49,12 +54,7 @@
 > " e" solto no fim do poder. Cace com `awk '/\. e[[:space:]]*$/'`; a coluna direita pode
 > esconder o marcador, então confirme no corpo reconstruído por página.
 
-- [ ] 19. **Escapista Magnífico** (p. 160) — próxima. Poderes já vistos de relance: Aparência Insignificante (escala na CD do poder Aparência Inofensiva), Fujão, Mão Leve, Não Há Ninguém Aqui (é pré-requisito de vários; ler no PDF).
-- [ ] 20. **Gigante Furioso** (p. 163)
-- [ ] 21. **Ginete de Namalkah** (p. 166)
-- [ ] 22. **Guerreiro Mágico** (p. 169)
-- [ ] 23. **Infiltrador de Wynlla** (p. 172)
-- [ ] 24. **Mago da Ordem do Vazio** (p. 175)
+- [ ] 24. **Mago da Ordem do Vazio** (p. 175) — próxima (marca Componente Especial; cada mago escolhe um componente alternativo único)
 - [ ] 25. **Mago de Batalha de Wynlla** (p. 178)
 - [ ] 26. **Médico de Salistick** (p. 181)
 - [ ] 27. **Mestre Bêbado** (p. 184)

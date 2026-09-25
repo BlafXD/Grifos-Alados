@@ -1143,6 +1143,221 @@
     'Você pode usar um tempo entre aventuras (Tormenta20, p. 276) para fabricar um número de engenhocas igual a 1d3 + o número de poderes da distinção que você possui. Você precisa pagar os custos normais e fazer os testes normais para fabricá-las. Essas engenhocas não contam no seu limite de engenhocas e deixam de funcionar no fim da próxima aventura.',
   ] },
 
+  //  Escapista Magnífico (p. 159–162) — 1 marca + 5 poderes. Espiões
+  //  supremos treinados pela Guilda sem Nome, mestres de passar
+  //  despercebidos. Escalam Aparência Insignificante (+CD do poder
+  //  Aparência Inofensiva) e Peguei um Bobo (CD do Comando simulado).
+  //  Nenhum ✦ (Peguei um Bobo é magia SIMULADA, não mágica).
+  { id: 'dist-escapista-vantagem-secreta', nome: 'Vantagem Secreta', grupo: 'distincao', livro: 'herois', pagina: 161,
+    tags: 'Escapista Magnífico', distincao: 'escapista-magnifico', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. O escapista transforma seus próprios defeitos em armas.',
+    'Escolha uma de suas fontes de penalidades (como uma habilidade racial, um poder da Tormenta ou uma complicação). Você não sofre as penalidades da fonte escolhida.',
+  ] },
+  { id: 'dist-escapista-nao-ha-ninguem-aqui', nome: 'Não Há Ninguém Aqui', grupo: 'distincao', livro: 'herois', pagina: 161,
+    tags: 'Escapista Magnífico', distincao: 'escapista-magnifico', marca: false, deus: null, magica: false,
+    preReq: 'Aparência Inofensiva, Escapista', custo: null, quadro: null, texto: [
+    'Até mesmo os inimigos do escapista esquecem que ele existe.',
+    'Você pode gastar 2 PM para se esconder mesmo sem camuflagem ou cobertura disponível. Se tiver o poder Camuflagem, além disso a penalidade em Furtividade para se esconder quando realiza uma ação chamativa é reduzida à metade (aplicado depois de outras reduções).',
+  ] },
+  { id: 'dist-escapista-aparencia-insignificante', nome: 'Aparência Insignificante', grupo: 'distincao', livro: 'herois', pagina: 161,
+    tags: 'Escapista Magnífico', distincao: 'escapista-magnifico', marca: false, deus: null, magica: false,
+    preReq: 'Não Há Ninguém Aqui', custo: null, quadro: null, texto: [
+    '“Eu queria atacar o escapista, mas só estou vendo esse garotinho...”',
+    'Você soma seu total de poderes da distinção na CD para resistir ao seu poder Aparência Inofensiva. Além disso, a cada cena, pode usar esse poder uma vez contra cada inimigo (em vez de apenas uma vez).',
+  ] },
+  { id: 'dist-escapista-fujao', nome: 'Fujão', grupo: 'distincao', livro: 'herois', pagina: 161,
+    tags: 'Escapista Magnífico', distincao: 'escapista-magnifico', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Acrobacia, Não Há Ninguém Aqui', custo: null, quadro: null, texto: [
+    'A maior proeza de um escapista é nunca estar onde seus inimigos esperam.',
+    'Quando é atingido por um ataque ou um efeito que exija um teste de resistência, você pode gastar 2 PM para fazer uma pirueta defensiva. Faça um teste de Acrobacia para escapar e use esse resultado no lugar de sua Defesa contra esse ataque, ou do teste de resistência contra o efeito.',
+  ] },
+  { id: 'dist-escapista-mao-leve', nome: 'Mão Leve', grupo: 'distincao', livro: 'herois', pagina: 161,
+    tags: 'Escapista Magnífico', distincao: 'escapista-magnifico', marca: false, deus: null, magica: false,
+    preReq: 'Não Há Ninguém Aqui', custo: null, quadro: null, texto: [
+    'Um escapista afana até mesmo itens nas mãos de seus oponentes!',
+    'Quando faz a manobra desarmar, você pode gastar 2 PM para substituir o teste de Luta por Ladinagem. Se vencer o teste de manobra e estiver com ao menos uma mão livre, pode ficar com o item na mão.',
+  ] },
+  { id: 'dist-escapista-peguei-um-bobo', nome: 'Peguei um Bobo', grupo: 'distincao', livro: 'herois', pagina: 161,
+    tags: 'Escapista Magnífico', distincao: 'escapista-magnifico', marca: false, deus: null, magica: false,
+    preReq: 'Aparência Insignificante', custo: null, quadro: null, texto: [
+    'Os inimigos do escapista ficam tão confusos e enervados que acabam agindo como ele quer.',
+    'Você pode gastar uma ação padrão e 2 PM para gerar o efeito da magia Comando (CD Car, +1 para cada dois outros poderes da distinção), ignorando a restrição de tipo de criatura. Este não é um efeito de encantamento ou mental, nem uma habilidade mágica, e provém da sua capacidade de enganar outras pessoas (veja “Magias Simuladas”, p. 44).',
+  ] },
+
+  //  Gigante Furioso (p. 162–165) — 1 marca + 5 poderes. Humanoides que
+  //  devoram o coração de gigantes para crescer em fúria. Escala só a
+  //  Fúria dos Gigantes (categorias de tamanho, e é ✦). Os demais crescem
+  //  com o TAMANHO, não com o nº de poderes — ficam no texto.
+  { id: 'dist-gigante-desprezar-os-pequenos', nome: 'Desprezar os Pequenos', grupo: 'distincao', livro: 'herois', pagina: 164,
+    tags: 'Gigante Furioso', distincao: 'gigante-furioso', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Ao passar pelo ritual de transformação, o gigante furioso adquire uma resistência sobrenatural contra seres menores.',
+    'Contra atacantes menores que você, você recebe redução de dano 2 por categoria de tamanho de diferença entre os dois (por exemplo, se for Enorme, você recebe RD 6 contra ataques de criaturas Pequenas).',
+  ] },
+  { id: 'dist-gigante-furia-dos-gigantes', nome: 'Fúria dos Gigantes', grupo: 'distincao', livro: 'herois', pagina: 164,
+    tags: 'Gigante Furioso', distincao: 'gigante-furioso', marca: false, deus: null, magica: true,
+    preReq: 'Con 3, treinado em Fortitude, Fúria', custo: null, quadro: null, texto: [
+    'O gigante transcende a simples fúria mental e passa a encarnar o desejo de destruição em seu corpo, tornando-se um avatar da ira.',
+    'Quando entra em fúria, você pode gastar 2 PM para aumentar seu tamanho em uma categoria; isso aumenta sua Força em +2 e faz com que seu equipamento aumente para o tamanho adequado. O aumento de tamanho dura até sua fúria terminar. Para cada dois outros poderes da distinção, você pode gastar +2 PM para aumentar seu tamanho em uma categoria adicional, aumentando o bônus na Força em +2. Seu tamanho com este poder nunca pode ser maior que o da maior criatura que você já matou.',
+  ] },
+  { id: 'dist-gigante-arremesso-de-rochas', nome: 'Arremesso de Rochas', grupo: 'distincao', livro: 'herois', pagina: 164,
+    tags: 'Gigante Furioso', distincao: 'gigante-furioso', marca: false, deus: null, magica: false,
+    preReq: 'Fúria dos Gigantes', custo: null, quadro: null, texto: [
+    'Qualquer oponente que tente correr de um gigante furioso descobrirá rapidamente que eles são letais a qualquer distância.',
+    'Enquanto estiver em fúria, você pode gastar uma ação de movimento e 1 PM para arrancar uma rocha do chão e arremessá-la contra seus oponentes. Trate essa rocha como uma arma de arremesso com alcance médio (dano 1d12 impacto, crítico x2) que atinge todas as criaturas em um quadrado com 4,5m de lado. Para atacar com a rocha, faça um ataque à distância e compare-o com a Defesa de cada criatura na área. Então faça uma única rolagem de dano e aplique-a em cada inimigo atingido. Para cada categoria de tamanho que você tiver acima de Médio, o dano da rocha aumenta em +1d12.',
+  ] },
+  { id: 'dist-gigante-golpes-pesados', nome: 'Golpes Pesados', grupo: 'distincao', livro: 'herois', pagina: 164,
+    tags: 'Gigante Furioso', distincao: 'gigante-furioso', marca: false, deus: null, magica: false,
+    preReq: 'Fúria dos Gigantes', custo: null, quadro: null, texto: [
+    'O tamanho e o volume do gigante são tão grandes que seus oponentes mal conseguem aguentar parados!',
+    'Quando faz um ataque corpo a corpo em fúria, você pode gastar 1 PM. Se fizer isso e acertar o ataque, além do dano você faz uma manobra empurrar contra o alvo como uma ação livre (use o resultado do ataque como o teste de manobra). Se houver uma parede ou outro objeto sólido (não uma criatura) no caminho do alvo, ele sofre 1d12 pontos de dano de impacto para cada 3m que for empurrado. Se você possuir o poder Ataque Pesado e usá-lo nesse ataque para empurrar, você executa uma única manobra, mas recebe +5 no teste de manobra.',
+  ] },
+  { id: 'dist-gigante-salto-tectonico', nome: 'Salto Tectônico', grupo: 'distincao', livro: 'herois', pagina: 164,
+    tags: 'Gigante Furioso', distincao: 'gigante-furioso', marca: false, deus: null, magica: false,
+    preReq: 'treinamento em Atletismo, Terremoto da Fúria', custo: null, quadro: null, texto: [
+    'Os saltos poderosos do gigante desencadeiam terremotos onde ele cai.',
+    'Quando usa Terremoto da Fúria, como parte da ação para usar esse poder você pode saltar, aterrissando em um ponto qualquer em alcance médio e desencadeando uma onda de choque que fortalece o terremoto. Faça um teste de Atletismo (CD 10). Se passar, você aumenta o raio do terremoto em +3m e seu dano em +2d12. Além disso, para cada 10 pontos em que o resultado superar a CD, o raio do terremoto aumenta em +3m.',
+  ] },
+  { id: 'dist-gigante-terremoto-da-furia', nome: 'Terremoto da Fúria', grupo: 'distincao', livro: 'herois', pagina: 165,
+    tags: 'Gigante Furioso', distincao: 'gigante-furioso', marca: false, deus: null, magica: false,
+    preReq: 'Fúria dos Gigantes', custo: null, quadro: null, texto: [
+    'O tamanho do gigante furioso é capaz de abalar o próprio terreno onde ele pisa.',
+    'Quando está em fúria, você pode gastar uma ação de movimento e 3 PM para pisotear o chão, gerando uma onda de choque em um raio de 9m ao seu redor. Criaturas na área sofrem dano de impacto igual a 1d12 + sua Força e ficam caídas (Fort CD For reduz à metade e evita a condição). Para cada categoria de tamanho acima de Médio que você tiver, o dano aumenta em +1d12.',
+  ] },
+
+  //  Ginete de Namalkah (p. 165–168) — 1 marca + 5 poderes. Cavaleiros
+  //  do reino dos ventos e seu "irmão cavalo". A marca traz o quadro
+  //  Irmão Cavalo. NÃO há escala pelo motor: os poderes crescem com o
+  //  NÍVEL do parceiro montaria, não com o nº de poderes. Nenhum ✦.
+  { id: 'dist-ginete-amalkhan', nome: 'Amalkhan', grupo: 'distincao', livro: 'herois', pagina: 167,
+    tags: 'Ginete de Namalkah', distincao: 'ginete-de-namalkah', marca: true, deus: null, magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'Irmão Cavalo', texto: [
+      'Parte fundamental da cultura dos ginetes de Namalkah, um irmão cavalo é um parceiro montaria com quem o ginete possui um forte vínculo fraterno. Esse cavalo pode ter sido adquirido com uma habilidade (como Montaria ou Montaria Sagrada) ou como parte da história. A companhia do irmão cavalo é um elemento fundamental da admissão nesta distinção e, por isso, ele deve ser adquirido antes que o candidato possa cumpri-la. Se perder seu irmão cavalo, você pode transformar outro parceiro cavalo em seu irmão com uma ação entre aventuras.',
+    ] },
+    texto: [
+    'Marca da distinção. Esse termo é uma das palavras que forma o nome do reino dos cavalos, e descreve ao mesmo tempo saudade de casa e ânsia por explorar.',
+    'Você e seu irmão cavalo desenvolvem um profundo laço de irmandade. Ele passa a fornecer +1 na Defesa e em Reflexos, além de seus outros benefícios.',
+  ] },
+  { id: 'dist-ginete-irmao-campestre', nome: 'Irmão Campestre', grupo: 'distincao', livro: 'herois', pagina: 167,
+    tags: 'Ginete de Namalkah', distincao: 'ginete-de-namalkah', marca: false, deus: null, magica: false,
+    preReq: 'Ginete, ter um irmão cavalo (veja o quadro)', custo: null, quadro: null, texto: [
+    'Nascido no lombo do cavalo, o ginete sabe contornar todos os problemas quando está junto de seu irmão.',
+    'Quando faz um teste de perícia enquanto está montado em seu irmão cavalo, você pode gastar 1 PM para receber um bônus de +2 nesse teste. Para cada nível de parceiro da montaria acima de iniciante, você pode gastar +1 PM para aumentar esse bônus em +2.',
+  ] },
+  { id: 'dist-ginete-caminho-das-coxilhas', nome: 'Caminho das Coxilhas', grupo: 'distincao', livro: 'herois', pagina: 167,
+    tags: 'Ginete de Namalkah', distincao: 'ginete-de-namalkah', marca: false, deus: null, magica: false,
+    preReq: 'Cavaleiro Rústico', custo: null, quadro: null, texto: [
+    'O corredor é estreito demais, mal é possível um humano adulto passar andando normalmente. Espere... ele está passando por aqui com um cavalo!?',
+    'O nível de parceiro de seu irmão cavalo aumenta em um (de iniciante para veterano ou de veterano para mestre). Se ele já for um parceiro mestre, esse aumento se aplica a outro de seus tipos. Além disso, enquanto estiver montando seu irmão cavalo, você pode substituir testes de perícias originalmente baseadas em Destreza por testes de Cavalgar.',
+  ] },
+  { id: 'dist-ginete-cavaleiro-rustico', nome: 'Cavaleiro Rústico', grupo: 'distincao', livro: 'herois', pagina: 167,
+    tags: 'Ginete de Namalkah', distincao: 'ginete-de-namalkah', marca: false, deus: null, magica: false,
+    preReq: 'Sab 1, Irmão Campestre', custo: null, quadro: null, texto: [
+    'Um verdadeiro ginete de Namalkah não teme nada e não precisa de um monte de metal para defendê-lo.',
+    'Você soma sua Sabedoria na Defesa e seu irmão cavalo recebe os benefícios de um parceiro guardião iniciante. Este poder exige liberdade de movimentos; você não pode usá-lo se estiver de armadura pesada ou imóvel.',
+  ] },
+  { id: 'dist-ginete-coice', nome: 'Coice', grupo: 'distincao', livro: 'herois', pagina: 167,
+    tags: 'Ginete de Namalkah', distincao: 'ginete-de-namalkah', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Luta ou Pontaria, Irmão Campestre', custo: null, quadro: null, texto: [
+    'Quando lutam juntos, cavalo e ginete agem como se fossem um só — a fúria dos ventos encarnada.',
+    'Enquanto estiver montado em seu irmão cavalo, você pode usar uma arma natural de cascos (1d8, crítico x2, impacto). Uma vez por rodada, quando usa as ações agredir ou investida montada para atacar com outra arma, você pode gastar 1 PM para fazer um ataque corpo a corpo extra com os cascos. O dano dos cascos aumenta em um passo para cada nível do irmão cavalo acima de iniciante.',
+  ] },
+  { id: 'dist-ginete-irmaos-inseparaveis', nome: 'Irmãos Inseparáveis', grupo: 'distincao', livro: 'herois', pagina: 168,
+    tags: 'Ginete de Namalkah', distincao: 'ginete-de-namalkah', marca: false, deus: null, magica: false,
+    preReq: 'Caminho das Coxilhas', custo: null, quadro: null, texto: [
+    'Um ginete de Namalkah não recebe uma montaria — recebe um irmão para toda a vida.',
+    'O nível de parceiro de seu irmão cavalo aumenta em um (de veterano para mestre). Se ele já for um parceiro mestre, esse aumento se aplica a outro de seus tipos. Além disso, a conexão entre vocês permite que se comuniquem telepaticamente enquanto estiverem em alcance longo um do outro.',
+  ] },
+
+  //  Guerreiro Mágico (p. 168–171) — 1 marca + 5 poderes. Arcanistas que
+  //  unem magia e aço, treinados na Academia Arcana. Escala Estilo de
+  //  Combate Arcano (bônus do estilo). ✦: Fogo e Aço.
+  { id: 'dist-guerreiro-magico-arma-arcana', nome: 'Arma Arcana', grupo: 'distincao', livro: 'herois', pagina: 169,
+    tags: 'Guerreiro Mágico', distincao: 'guerreiro-magico', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Para o guerreiro mágico, esgrima e magia se unem no mesmo movimento.',
+    'Quando lança uma magia empunhando uma arma corpo a corpo, você recebe +2 na rolagem de dano da magia e pode usar a mão que empunha a arma para executar os gestos dela.',
+  ] },
+  { id: 'dist-guerreiro-magico-estilo-de-combate-arcano', nome: 'Estilo de Combate Arcano', grupo: 'distincao', livro: 'herois', pagina: 170,
+    tags: 'Guerreiro Mágico', distincao: 'guerreiro-magico', marca: false, deus: null, magica: false,
+    preReq: 'habilidade de classe Magias, treinado em Luta', custo: null, quadro: null, texto: [
+    'Leves ou pesadas, armaduras fazem parte do treinamento de um guerreiro mágico.',
+    'Escolha um estilo de combate entre Encouraçado Místico e Dançarino Marcial. Uma vez feita, essa escolha não pode ser mudada. Se escolher Encouraçado Místico, você pode lançar magias arcanas vestindo armaduras sem precisar de testes de Misticismo e recebe +1 em testes de resistência se estiver de armadura. Se escolher Dançarino Marcial, você recebe +1 na Defesa e em rolagens de dano com armas. Em ambos os casos, os bônus aumentam em +1 para cada outro poder da distinção que você tiver.',
+  ] },
+  { id: 'dist-guerreiro-magico-aparar-magia', nome: 'Aparar Magia', grupo: 'distincao', livro: 'herois', pagina: 170,
+    tags: 'Guerreiro Mágico', distincao: 'guerreiro-magico', marca: false, deus: null, magica: false,
+    preReq: 'Fogo e Aço', custo: null, quadro: null, texto: [
+    'Com um golpe, o guerreiro mágico corta o fluxo da magia.',
+    'Uma vez por rodada, quando falha em um teste de resistência contra uma habilidade mágica, você pode gastar 2 PM para fazer um teste de ataque e usar seu resultado como o valor do teste de resistência. Se o resultado do ataque superar a CD do efeito por 10 ou mais, você evita totalmente o efeito e o reflete contra a fonte, que passa a ser afetada em seu lugar (outras partes do efeito, como outros alvos ou o resto de sua área, não são afetadas).',
+  ] },
+  { id: 'dist-guerreiro-magico-ataque-arcano', nome: 'Ataque Arcano', grupo: 'distincao', livro: 'herois', pagina: 170,
+    tags: 'Guerreiro Mágico', distincao: 'guerreiro-magico', marca: false, deus: null, magica: false,
+    preReq: 'Fogo e Aço', custo: null, quadro: null, texto: [
+    'A magia flui através dos golpes do guerreiro mágico.',
+    'Uma vez por rodada, quando faz um ataque corpo a corpo, você pode gastar 2 PM para desferir um ataque arcano. Se fizer isso e acertar o ataque, você pode lançar uma magia que tenha como alvo uma criatura ou que afete uma área como ação livre, tendo como alvo ou centro de sua área a criatura atingida. Apenas magias com execução de movimento ou padrão podem ser lançadas dessa forma.',
+  ] },
+  { id: 'dist-guerreiro-magico-fogo-e-aco', nome: 'Fogo e Aço', grupo: 'distincao', livro: 'herois', pagina: 170,
+    tags: 'Guerreiro Mágico', distincao: 'guerreiro-magico', marca: false, deus: null, magica: true,
+    preReq: 'Estilo de Combate Arcano', custo: null, quadro: null, texto: [
+    'Armas servem à magia, magia serve às armas.',
+    'Quando lança uma magia, você recebe um bônus em testes de ataque e rolagens de dano com armas igual ao círculo da magia lançada até o fim do seu próximo turno.',
+  ] },
+  { id: 'dist-guerreiro-magico-preparacao-veloz', nome: 'Preparação Veloz', grupo: 'distincao', livro: 'herois', pagina: 170,
+    tags: 'Guerreiro Mágico', distincao: 'guerreiro-magico', marca: false, deus: null, magica: false,
+    preReq: 'Fogo e Aço', custo: null, quadro: null, texto: [
+    'De seu treinamento marcial, o guerreiro mágico desenvolveu sua prontidão arcana.',
+    'Na primeira rodada de um combate, você pode lançar uma magia com alcance pessoal como uma ação livre.',
+  ] },
+
+  //  Infiltrador de Wynlla (p. 171–174) — 1 marca + 6 poderes. Espiões
+  //  arcanos do Reino da Magia (a lendária Ylena Elohim). Escala Trapaça
+  //  Arcana (círculo e magias conhecidas). ✦: Ladinagem Mágica (marca)
+  //  e Criar Armadilha Mágica.
+  { id: 'dist-infiltrador-ladinagem-magica', nome: 'Ladinagem Mágica', grupo: 'distincao', livro: 'herois', pagina: 173,
+    tags: 'Infiltrador de Wynlla', distincao: 'infiltrador-de-wynlla', marca: true, deus: null, magica: true,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Tudo surge no lugar certo na hora certa... quando você dispõe da magia certa.',
+    'Você cria um fluxo de energia capaz de manipular pequenos itens próximos. Você pode gastar uma ação de movimento para mover um objeto em alcance curto até 9m em qualquer direção (você só pode mover objetos que poderia manusear com uma mão). Além disso, pode gastar 1 PM para fazer um teste de Ladinagem para abrir fechaduras, ocultar itens, punga ou sabotar em alcance curto.',
+  ] },
+  { id: 'dist-infiltrador-trapaca-arcana', nome: 'Trapaça Arcana', grupo: 'distincao', livro: 'herois', pagina: 173,
+    tags: 'Infiltrador de Wynlla', distincao: 'infiltrador-de-wynlla', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Enganação, Ladinagem e Misticismo, capacidade de lançar pelo menos uma magia arcana', custo: null, quadro: null, texto: [
+    '“Meu nome é Elohim. Ylena Elohim.”',
+    'Você pode lançar magias arcanas de 1º círculo. Se tiver pelo menos três poderes da distinção, pode lançar também magias de 2º círculo. Você começa com duas magias de 1º círculo e, a cada outro poder da distinção, aprende uma magia de qualquer círculo que possa lançar. Você pode lançar essas magias vestindo armaduras leves sem precisar de testes de Misticismo. Seu atributo-chave para essas magias é Inteligência.',
+  ] },
+  { id: 'dist-infiltrador-conjuracao-furtiva', nome: 'Conjuração Furtiva', grupo: 'distincao', livro: 'herois', pagina: 173,
+    tags: 'Infiltrador de Wynlla', distincao: 'infiltrador-de-wynlla', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Furtividade, Magia Traiçoeira', custo: null, quadro: null, texto: [
+    '“Como você consegue ser espiã se todos conhecem o seu nome?”',
+    'Criaturas desprevenidas sofrem uma penalidade de –5 em testes de resistência contra suas habilidades mágicas.',
+  ] },
+  { id: 'dist-infiltrador-criar-armadilha-magica', nome: 'Criar Armadilha Mágica', grupo: 'distincao', livro: 'herois', pagina: 173,
+    tags: 'Infiltrador de Wynlla', distincao: 'infiltrador-de-wynlla', marca: false, deus: null, magica: true,
+    preReq: 'Trapaça Arcana', custo: null, quadro: null, texto: [
+    '“Não, sra. Elohim. Eu espero que você morra.”',
+    'Você aprende a magia Conjurar Armadilha (p. 252) como uma de suas magias arcanas. Se aprender essa magia novamente, seu custo diminui em –1 PM.',
+  ] },
+  { id: 'dist-infiltrador-disfarce-mental', nome: 'Disfarce Mental', grupo: 'distincao', livro: 'herois', pagina: 173,
+    tags: 'Infiltrador de Wynlla', distincao: 'infiltrador-de-wynlla', marca: false, deus: null, magica: false,
+    preReq: 'Trapaça Arcana, Disfarce Ilusório', custo: null, quadro: null, texto: [
+    '“Se sua identidade for descoberta, o Conselho negará qualquer envolvimento com você.”',
+    'Você pode usar Inteligência no lugar de Carisma para Enganação. Quando usa Disfarce Ilusório em si mesmo, você pode usar Inteligência no lugar do atributo-chave de uma perícia a sua escolha, adequada ao disfarce escolhido, e recebe +5 em testes de resistência contra efeitos mágicos de adivinhação.',
+  ] },
+  { id: 'dist-infiltrador-enganar-item-magico', nome: 'Enganar Item Mágico', grupo: 'distincao', livro: 'herois', pagina: 173,
+    tags: 'Infiltrador de Wynlla', distincao: 'infiltrador-de-wynlla', marca: false, deus: null, magica: false,
+    preReq: 'Trapaça Arcana', custo: null, quadro: null, texto: [
+    '“Passe no Bureau Theuderulf, há alguns brinquedos novos esperando por você...”',
+    'Quando lança uma magia através de um item mágico que só permite o uso de aprimoramentos caso você conheça a magia, você pode usá-los mesmo sem conhecê-la. Além disso, pode ativar itens mágicos sem cumprir requisitos de raça, classe e devoção.',
+  ] },
+  { id: 'dist-infiltrador-magia-traicoeira', nome: 'Magia Traiçoeira', grupo: 'distincao', livro: 'herois', pagina: 173,
+    tags: 'Infiltrador de Wynlla', distincao: 'infiltrador-de-wynlla', marca: false, deus: null, magica: false,
+    preReq: 'Ataque Furtivo 3d6, Disfarce Mental', custo: null, quadro: null, texto: [
+    '“Parece que ele ficou... chocado.”',
+    'Aprimoramento. Quando lança uma magia de dano em um ou mais alvos desprevenidos, você pode usar seu ataque furtivo com ela em um deles. Custo: +2 PM.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.

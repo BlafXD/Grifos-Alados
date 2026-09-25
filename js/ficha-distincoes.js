@@ -353,6 +353,47 @@
                  calc: `1d3 + 1 por poder da distinção (${nTodos(n)})` };
       },
     },
+
+    // ── Escapista Magnífico (Heróis de Arton, p. 161) ───────────────
+    'dist-escapista-aparencia-insignificante': {
+      escala(n) {
+        return { txt: `+${n} na CD para resistir à sua Aparência Inofensiva (e 1×/cena por inimigo)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-escapista-peguei-um-bobo': {
+      escala(n) {
+        return { txt: `Comando simulado com CD Car +${p2(n)}`,
+                 calc: `+1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+
+    // ── Gigante Furioso (Heróis de Arton, p. 164) ───────────────────
+    //  (Os outros poderes escalam com o TAMANHO, não com n — ficam no texto.)
+    'dist-gigante-furia-dos-gigantes': {
+      escala(n) {
+        const c = 1 + p2(n);
+        return { txt: `+${c} categoria${c !== 1 ? 's' : ''} de tamanho (Força +${2 * c}), gastando 2 PM por categoria`,
+                 calc: `1 base, +1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+
+    // ── Guerreiro Mágico (Heróis de Arton, p. 170) ──────────────────
+    'dist-guerreiro-magico-estilo-de-combate-arcano': {
+      escala(n) {
+        return { txt: `bônus do estilo escolhido em +${1 + outros(n)}`,
+                 calc: `1 base, +1 por cada um dos ${nOutros(n)}` };
+      },
+    },
+
+    // ── Infiltrador de Wynlla (Heróis de Arton, p. 173) ─────────────
+    'dist-infiltrador-trapaca-arcana': {
+      escala(n) {
+        const magias = 2 + outros(n);
+        return { txt: `${n >= 3 ? 'magias de 1º e 2º círculo' : 'magias de 1º círculo'} · ${magias} magia${magias !== 1 ? 's' : ''} conhecida${magias !== 1 ? 's' : ''}`,
+                 calc: `2 base + 1 por cada um dos ${nOutros(n)}; 2º círculo com 3+ poderes` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
