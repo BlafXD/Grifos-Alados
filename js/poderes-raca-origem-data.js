@@ -1457,6 +1457,47 @@
     'Se lançar uma magia empunhando um item esotérico, você soma o número de poderes da distinção que possui ao bônus de dano de seu poder Arcano de Batalha. Além disso, criaturas que rolem um resultado 1 no teste de resistência de uma magia de dano sua sofrem +50% de dano da magia.',
   ] },
 
+  //  Médico de Salistick (p. 180–183) — 1 marca + 5 poderes. Curandeiros
+  //  mundanos e céticos do Colégio Real (não podem ser devotos). Escalam
+  //  Medicina Avançada (usos por dia), Medicina Preventiva (PV e
+  //  resistência) e Saúde Perfeita (PM). Nenhum ✦.
+  { id: 'dist-medico-ciencias-medicas', nome: 'Ciências Médicas', grupo: 'distincao', livro: 'herois', pagina: 182,
+    tags: 'Médico de Salistick', distincao: 'medico-de-salistick', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Para aqueles formados no Colégio Real, a medicina é uma ciência fundamentada na lógica e na razão.',
+    'Você pode usar Inteligência como atributo-chave de Cura (em vez de Sabedoria). Se já faz isso por outro efeito, em vez disso recebe +2 nessa perícia.',
+  ] },
+  { id: 'dist-medico-medicina-avancada', nome: 'Medicina Avançada', grupo: 'distincao', livro: 'herois', pagina: 182,
+    tags: 'Médico de Salistick', distincao: 'medico-de-salistick', marca: false, deus: null, magica: false,
+    preReq: 'Foco em Perícia (Cura), Medicina', custo: null, quadro: null, texto: [
+    'Aplicando estudo e ciência a seus procedimentos, os membros do Colégio Real alcançam além das fronteiras da medicina artoniana.',
+    'Cada dado de cura de seu poder Medicina aumenta para d10. Além disso, para cada dois outros poderes da distinção que você possui, pode usar esse poder mais uma vez por criatura a cada dia.',
+  ] },
+  { id: 'dist-medico-acompanhamento-medico', nome: 'Acompanhamento Médico', grupo: 'distincao', livro: 'herois', pagina: 182,
+    tags: 'Médico de Salistick', distincao: 'medico-de-salistick', marca: false, deus: null, magica: false,
+    preReq: 'Medicina Avançada', custo: null, quadro: null, texto: [
+    'Acostumado a praticar seu ofício sob pressão, um médico de Salistick aprende a agir rapidamente.',
+    'Para você, a ação necessária para prestar primeiros socorros e usar itens alquímicos que recuperam PV, PM ou condições é reduzida em um passo (até um mínimo de ação de movimento). Além disso, você pode gastar 5 PM e uma ação completa para fazer um teste de Cura (CD 30) em uma criatura adjacente que tenha morrido há até uma rodada. Se você passar, a criatura é ressuscitada com 1 PV. Você pode usar esse efeito uma vez por dia por criatura.',
+  ] },
+  { id: 'dist-medico-medicina-preventiva', nome: 'Medicina Preventiva', grupo: 'distincao', livro: 'herois', pagina: 183,
+    tags: 'Médico de Salistick', distincao: 'medico-de-salistick', marca: false, deus: null, magica: false,
+    preReq: 'Medicina Avançada', custo: null, quadro: null, texto: [
+    'Melhor que curar doenças é impedir que elas surjam.',
+    'Você pode gastar 1 hora para cuidar da saúde de um número de pessoas igual ao seu nível. Para cada poder da distinção que você possui, cada pessoa atendida recebe 5 PV temporários e +1 em testes de resistência por 1 dia. Este poder pode ser usado ao mesmo tempo que cuidados prolongados (veja Cura, Tormenta20, p. 117) se você aplicar ambos às mesmas pessoas.',
+  ] },
+  { id: 'dist-medico-remedios', nome: 'Remédios', grupo: 'distincao', livro: 'herois', pagina: 183,
+    tags: 'Médico de Salistick', distincao: 'medico-de-salistick', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Ofício (alquimista), Medicina Avançada', custo: null, quadro: null, texto: [
+    'Um médico de Salistick estuda princípios científicos para a fabricação e o uso dos mais variados fármacos.',
+    'Quando você usa um preparado alquímico que fornece PV ou PM (temporários ou por cura), esse efeito aumenta em +1 por dado. Além disso, você pode fabricar preparados com esses efeitos em 10 minutos (em vez de 1 dia), mas eles duram apenas até o fim da cena.',
+  ] },
+  { id: 'dist-medico-saude-perfeita', nome: 'Saúde Perfeita', grupo: 'distincao', livro: 'herois', pagina: 183,
+    tags: 'Médico de Salistick', distincao: 'medico-de-salistick', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Fortitude, Acompanhamento Médico', custo: null, quadro: null, texto: [
+    'Um bom médico sabe cuidar de si mesmo (ou assim esperamos).',
+    'Você recebe +1 em Constituição e imunidade a veneno. Além disso, recebe +2 PM por poder da distinção que possui.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.
