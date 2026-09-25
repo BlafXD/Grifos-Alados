@@ -333,6 +333,26 @@
                  calc: `1 por poder da distinção (${nTodos(n)})` };
       },
     },
+
+    // ── Engenhoqueiro Goblin (Heróis de Arton, p. 158) ──────────────
+    'dist-engenhoqueiro-aprimorar-bugiganga': {
+      escala(n) {
+        return { txt: `até ${n} gambiarra${n !== 1 ? 's' : ''} por engenhoca (cada uma sobe +1 na falha automática)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-engenhoqueiro-autodestruicao': {
+      escala(n) {
+        return { txt: `até ${n} PM na explosão (+2d6 de dano por PM), raio 1d4 × 1,5m`,
+                 calc: `PM limitado pelo total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-engenhoqueiro-manutencao-precaria': {
+      escala(n) {
+        return { txt: `1d3 + ${n} engenhocas no tempo entre aventuras`,
+                 calc: `1d3 + 1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
