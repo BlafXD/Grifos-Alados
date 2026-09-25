@@ -394,6 +394,20 @@
                  calc: `2 base + 1 por cada um dos ${nOutros(n)}; 2º círculo com 3+ poderes` };
       },
     },
+
+    // ── Mago da Ordem do Vazio (Heróis de Arton, p. 176) ────────────
+    'dist-vazio-ingrediente-secreto': {
+      escala(n) {
+        return { txt: `até ${n} PM (+2d6 de essência por PM aos que falharem na resistência)`,
+                 calc: `PM limitado pelo total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-vazio-inovacao-particular': {
+      escala(n) {
+        return { txt: `quem tenta anular/dissipar faz Vontade (CD da magia +${2 * n})`,
+                 calc: `+2 por poder da distinção (${nTodos(n)})` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {

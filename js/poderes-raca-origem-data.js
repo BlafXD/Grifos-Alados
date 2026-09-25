@@ -1358,6 +1358,53 @@
     'Aprimoramento. Quando lança uma magia de dano em um ou mais alvos desprevenidos, você pode usar seu ataque furtivo com ela em um deles. Custo: +2 PM.',
   ] },
 
+  //  Mago da Ordem do Vazio (p. 175–177) — 1 marca + 5 poderes. Arcanistas
+  //  que trocam os componentes tradicionais por um componente especial
+  //  único (a marca traz o quadro Componentes Especiais). Escalam
+  //  Ingrediente Secreto (PM de dano extra) e Inovação Particular (CD
+  //  contra dissipar). Nenhum ✦.
+  { id: 'dist-vazio-componente-especial', nome: 'Componente Especial', grupo: 'distincao', livro: 'herois', pagina: 176,
+    tags: 'Mago da Ordem do Vazio', distincao: 'mago-da-ordem-do-vazio', marca: true, deus: null, magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'Componentes Especiais', texto: [
+      'Os magos da Ordem do Vazio empregam componentes especiais para canalizar seu mana na forma de magias. Um componente especial é um material mundano, como retalhos de tecido, pedaços de queijo ou fios de cabelo. Esse componente deve ser empunhado da mesma forma que um componente material (o mago pode usar a mesma mão para ambos) e é consumido da mesma maneira. Cada mago da Ordem do Vazio possui seu próprio componente especial, determinado quando ele ingressa na Ordem.',
+      'Um componente especial é algo de preço insignificante, que pode ser encontrado no meio ambiente. Uma vez por dia, você consegue reunir um punhado de seu componente especial enquanto executa suas outras tarefas. Se dedicar um dia inteiro para reunir seu componente especial, em vez disso encontra 1d3+1 punhados. Um punhado de componente especial ocupa 1 espaço e é suficiente para 5 magias. A critério do mestre, pode não ser possível encontrar seu componente especial em determinados lugares (um mago da Ordem do Vazio que usa sementes de maçã, por exemplo, poderia ter dificuldade de encontrá-las em uma masmorra abandonada).',
+    ] },
+    texto: [
+    'Marca da distinção. “Usamos meios alternativos de conjuração, em honra a Wynna.”',
+    'Para lançar magias arcanas, você precisa gastar um componente especial (veja o quadro), que funciona como um componente material. Se não tiver seu componente especial, você não consegue lançar suas magias. Contudo, quando lança uma magia usando seu componente especial, a CD para resistir a ela aumenta em +2.',
+  ] },
+  { id: 'dist-vazio-magia-experimental', nome: 'Magia Experimental', grupo: 'distincao', livro: 'herois', pagina: 176,
+    tags: 'Mago da Ordem do Vazio', distincao: 'mago-da-ordem-do-vazio', marca: false, deus: null, magica: false,
+    preReq: 'habilidade de classe Magias, treinado em Misticismo, um poder de aprimoramento', custo: null, quadro: null, texto: [
+    '“O tipo de magia que faço é instável. Quanto maior o efeito, maior o risco.”',
+    'Quando lança uma magia, você pode fazer um teste de Misticismo (CD 15 + o custo em PM da magia) para alterar seu funcionamento. Se passar, a magia recebe um dos benefícios a seguir, a sua escolha (ou dois, se o resultado for 20 natural): escolher um poder de aprimoramento que você não possui e aplicá-lo à magia pagando seu custo adicional em PM; escolher um poder de aprimoramento que você possui e aplicá-lo à magia sem custo adicional; ou reduzir o custo da magia em –1 PM (cumulativo com outras reduções). Se você falhar no teste, a magia não tem efeito, mas você paga o custo dela mesmo assim. Se o resultado do teste for 1 natural, além disso você gera uma explosão arcana que atinge um raio de 9m; criaturas e objetos soltos nessa área sofrem 2d8 pontos de dano de essência por círculo da magia (Reflexos CD da magia reduz à metade; você mesmo não tem direito ao teste de resistência!).',
+  ] },
+  { id: 'dist-vazio-conhecimento-obscuro', nome: 'Conhecimento Obscuro', grupo: 'distincao', livro: 'herois', pagina: 176,
+    tags: 'Mago da Ordem do Vazio', distincao: 'mago-da-ordem-do-vazio', marca: false, deus: null, magica: false,
+    preReq: 'Magia Experimental', custo: null, quadro: null, texto: [
+    'Os magos da Ordem do Vazio estudam tomos ocultos e podem tirar a melhor resposta de onde menos se espera.',
+    'Quando vai fazer um teste de perícia, você pode gastar 2 PM para substituí-la por Misticismo (isso permite fazer testes de perícias que exijam treinamento mesmo sem ser treinado nelas). A cada vez que usar este poder novamente na mesma cena, você fica fatigado (essa condição é cumulativa e o afeta mesmo que você seja imune a ela).',
+  ] },
+  { id: 'dist-vazio-exercitar-os-musculos-arcanos', nome: 'Exercitar os Músculos Arcanos', grupo: 'distincao', livro: 'herois', pagina: 176,
+    tags: 'Mago da Ordem do Vazio', distincao: 'mago-da-ordem-do-vazio', marca: false, deus: null, magica: false,
+    preReq: 'Magia Experimental', custo: null, quadro: null, texto: [
+    '“A magia é uma arte que deve ser domada como uma fera.”',
+    'Você pode executar uma rápida série de exercícios mágicos, evocando o treinamento de seus fundamentos arcanos. O custo da sua próxima magia lançada nessa cena diminui em –1 PM (cumulativo com outras reduções de custo). A cada vez que usar este poder novamente na mesma cena, você fica fatigado (essa condição é cumulativa e o afeta mesmo que você seja imune a ela).',
+  ] },
+  { id: 'dist-vazio-ingrediente-secreto', nome: 'Ingrediente Secreto', grupo: 'distincao', livro: 'herois', pagina: 176,
+    tags: 'Mago da Ordem do Vazio', distincao: 'mago-da-ordem-do-vazio', marca: false, deus: null, magica: false,
+    preReq: 'Magia Experimental', custo: null, quadro: null, texto: [
+    'As magias de um mago da Ordem do Vazio têm algo a mais.',
+    'Quando lança uma magia de dano que permita um teste de resistência, você pode gastar PM (limitados pelo número de poderes da distinção que você possui) para infundi-la com mana em estado bruto. Para cada PM gasto, cada criatura que falhar no teste de resistência sofre +2d6 pontos de dano de essência.',
+  ] },
+  { id: 'dist-vazio-inovacao-particular', nome: 'Inovação Particular', grupo: 'distincao', livro: 'herois', pagina: 176,
+    tags: 'Mago da Ordem do Vazio', distincao: 'mago-da-ordem-do-vazio', marca: false, deus: null, magica: false,
+    preReq: 'Magia Experimental', custo: null, quadro: null, texto: [
+    '“Cada mago tem seu método, e a criatividade é um escudo contra a intervenção alheia.”',
+    'Quando uma criatura tenta anular ou dissipar suas magias (como uma contramágica ou Dispersar as Trevas), ela precisa fazer um teste de Vontade (CD da sua magia, +2 para cada poder da distinção que você possui). Se falhar, o efeito que ela estava usando para isso falha.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.
