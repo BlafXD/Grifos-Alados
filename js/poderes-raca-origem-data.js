@@ -1093,6 +1093,56 @@
     'Você aprende suas primeiras receitas de drogadora (veja o quadro) e pode gastar uma ação padrão para fabricar uma poção com essas receitas instantaneamente. Você não paga seu custo em tibares, mas gasta uma quantidade de PV (que não podem ser temporários) igual ao custo em PM da magia, e a poção só dura até o fim da cena. Pontos de vida perdidos dessa forma só podem ser recuperados por descanso.',
   ] },
 
+  //  Engenhoqueiro Goblin (p. 156–159) — 1 marca + 5 poderes. Inventores
+  //  goblins que trocam segurança por potência: suas engenhocas explodem.
+  //  A marca já traz a regra da explosão. Escalam Aprimorar Bugiganga
+  //  (gambiarras por engenhoca; traz o quadro Gambiarras), Autodestruição
+  //  (PM na explosão) e Manutenção Precária (1d3 + engenhocas). Nenhum ✦.
+  { id: 'dist-engenhoqueiro-engenhocaria-goblinoide', nome: 'Engenhocaria Goblinoide', grupo: 'distincao', livro: 'herois', pagina: 157,
+    tags: 'Engenhoqueiro Goblin', distincao: 'engenhoqueiro-goblin', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Um bom engenhoqueiro aprende a tirar bobagens como segurança do caminho de seu ofício.',
+    'Você gasta 1 dia e metade do custo em tibares para fabricar uma engenhoca. Entretanto, você nunca pode escolher 0, 10 ou 20 para ativar uma engenhoca e, se falhar no teste de ativação por 5 ou mais (ou se rolar 1 no dado), a engenhoca explode e causa 2d6 pontos de dano de impacto por círculo da magia em você e todas as criaturas a até 3m (Reflexos CD da engenhoca reduz à metade).',
+  ] },
+  { id: 'dist-engenhoqueiro-aprimorar-bugiganga', nome: 'Aprimorar Bugiganga', grupo: 'distincao', livro: 'herois', pagina: 158,
+    tags: 'Engenhoqueiro Goblin', distincao: 'engenhoqueiro-goblin', marca: false, deus: null, magica: false,
+    preReq: 'Engenhoqueiro, Vitalidade', custo: null,
+    quadro: { titulo: 'Gambiarras', texto: [
+      'Bateria Potente. A CD para resistir à engenhoca aumenta em +1d4.',
+      'Bobina Poderosa. Aumenta os dados de cura ou de dano da engenhoca em um passo (até um máximo de d12).',
+      'Cristal Canalizador. Aumenta o limite de PM que você pode gastar em aprimoramentos da engenhoca em +1d4.',
+      'Etiqueta de Instruções. A CD do teste para ativar a engenhoca diminui em –1d10.',
+      'Luneta Aproximadora. Aumenta o alcance da engenhoca em 1d3 –1 passos (de curto para médio, de médio para longo).',
+    ] },
+    texto: [
+    'Aceitando uma explosão ocasional, o engenhoqueiro fica livre para tentar criações ainda “melhores”.',
+    'Você pode gastar 1 hora de trabalho e T$ 100 para instalar uma das gambiarras a seguir (veja o quadro) em uma de suas engenhocas. Cada engenhoca pode ter uma gambiarra para cada poder da distinção que você possui. Por sua natureza experimental, cada gambiarra aumenta o valor de falha automática da engenhoca em 1 (uma engenhoca com duas gambiarras falha automaticamente se você rolar 1, 2 ou 3 no teste de ativação). Gambiarras iguais não se acumulam, mas seus efeitos se acumulam com os de aparatos (veja p. 235). O efeito de cada gambiarra é rolado a cada uso da engenhoca.',
+  ] },
+  { id: 'dist-engenhoqueiro-abandonar-geringonca', nome: 'Abandonar Geringonça', grupo: 'distincao', livro: 'herois', pagina: 158,
+    tags: 'Engenhoqueiro Goblin', distincao: 'engenhoqueiro-goblin', marca: false, deus: null, magica: false,
+    preReq: 'Aprimorar Bugiganga, deve ter sofrido dano de uma de suas engenhocas que falhou em ativar pelo menos uma vez', custo: null, quadro: null, texto: [
+    'Acostumado a ver seus inventos explodindo, o engenhoqueiro goblin sabe reconhecer os sinais de mau funcionamento e pular fora na hora certa.',
+    'Quando falha na ativação de uma engenhoca por 5 ou mais (ou rola uma falha automática), você pode gastar 1 PM para arremessar a engenhoca em um ponto em alcance curto antes que ela exploda.',
+  ] },
+  { id: 'dist-engenhoqueiro-autodestruicao', nome: 'Autodestruição', grupo: 'distincao', livro: 'herois', pagina: 158,
+    tags: 'Engenhoqueiro Goblin', distincao: 'engenhoqueiro-goblin', marca: false, deus: null, magica: false,
+    preReq: 'Abandonar Geringonça', custo: null, quadro: null, texto: [
+    'O engenhoqueiro conhece muito bem a dor de uma explosão na cara. E está mais do que disposto a compartilhar esse conhecimento.',
+    'Você pode gastar uma ação completa e uma quantidade de PM limitada pelo total de poderes da distinção que possui para forçar uma falha crítica em uma engenhoca (veja Engenhocaria Goblinoide) e arremessá-la em um ponto em alcance curto para que exploda. A explosão atinge uma esfera com 1d4 x 1,5m de raio e seu dano aumenta em +2d6 pontos por PM gasto.',
+  ] },
+  { id: 'dist-engenhoqueiro-enjambracao', nome: 'Enjambração', grupo: 'distincao', livro: 'herois', pagina: 158,
+    tags: 'Engenhoqueiro Goblin', distincao: 'engenhoqueiro-goblin', marca: false, deus: null, magica: false,
+    preReq: 'Aprimorar Bugiganga, outro poder da distinção', custo: null, quadro: null, texto: [
+    'Um engenhoqueiro precavido sempre tem a ferramenta certa. Já um engenhoqueiro goblin improvisa.',
+    'Você pode gastar uma ação completa para fabricar uma engenhoca com uma magia qualquer de até um círculo abaixo do círculo máximo de engenhocas que você pode fabricar. Você não gasta tibares para fabricar essa engenhoca, mas gasta os PM da magia para ativá-la (mesmo se falhar no teste de ativação). A engenhoca não conta em seu limite, dura até o fim da cena e sua chance de falha automática aumenta em +1d6.',
+  ] },
+  { id: 'dist-engenhoqueiro-manutencao-precaria', nome: 'Manutenção Precária', grupo: 'distincao', livro: 'herois', pagina: 158,
+    tags: 'Engenhoqueiro Goblin', distincao: 'engenhoqueiro-goblin', marca: false, deus: null, magica: false,
+    preReq: 'Aprimorar Bugiganga', custo: null, quadro: null, texto: [
+    'Se algo se move e não devia, basta amarrar. Se não se move e devia, é só passar óleo.',
+    'Você pode usar um tempo entre aventuras (Tormenta20, p. 276) para fabricar um número de engenhocas igual a 1d3 + o número de poderes da distinção que você possui. Você precisa pagar os custos normais e fazer os testes normais para fabricá-las. Essas engenhocas não contam no seu limite de engenhocas e deixam de funcionar no fim da próxima aventura.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.

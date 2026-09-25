@@ -16,7 +16,7 @@
   🩸 do cartão integra à conta da Tormenta se a mesa quiser.
 - Dados em `js/poderes-raca-origem-data.js`; escalas em `js/ficha-distincoes.js`.
 
-## ✅ Feitas (17 de 36)
+## ✅ Feitas (18 de 36)
 
 1. **Aeronauta Goblin** (p. 105–108) — escala: Cabeça nas Nuvens.
 2. **Algoz da Tormenta** (p. 109–111) — escalam: Desprezo Profano, Ataque Corrupto.
@@ -35,8 +35,9 @@
 15. **Cobaia dos Médicos Monstros** (p. 148–150) — marca Procedimento Inicial (quadro *Implantes*: regras + 10 implantes, Olho Anulador e Olho Desintegrador são ✦); escalam Enxerto Experimental (dado 1d4 sobe um passo por OUTRO poder, via `passoDeDano`) e Corpo Resiliente (limite de implantes +1, +1 a cada dois outros). Nenhum PODER é ✦ (o ✦ está nos implantes-item do quadro).
 16. **Dracomante Real** (p. 150–152) — marca Mestre Dracônico (escolhe o Dragão-Real mestre e a essência elemental, +2 de dano do tipo); escalam Afinidade Dracônica (redução 3 por poder da distinção contra o tipo do mestre) e Memória Dracônica (magias memorizadas a mais = total de poderes). ✦: Majestade Elemental e Verdadeiro Poder (aprende Metamorfose / Transformação em Dragão). Sem quadro (o box "Benthos e a Magia" é só lore de admissão).
 17. **Drogadora** (p. 153–156) — marca Tradição da Cura (Sab como atributo-chave de Ofício alquimista); quadro *Receitas da Drogadora* em Remédios da Floresta. Quatro escalam por total/2-outros: Curandeira Exímia (+bônus = total), Aspersão Curativa (nº de secreções), Laboratório Natural (fabricações/dia = total), Perfume Intoxicante (+2 subindo a cada dois outros), e as receitas de Remédios da Floresta (+1 de até 2º círculo por poder). Nenhum ✦. **Plural em `ão`**: "secreção→secreções", "fabricação→fabricações" (não dá para só somar sufixo).
+18. **Engenhoqueiro Goblin** (p. 156–159) — marca Engenhocaria Goblinoide (fabrica pela metade do custo, mas a engenhoca explode ao falhar feio); quadro *Gambiarras* em Aprimorar Bugiganga. Escalam Aprimorar Bugiganga (gambiarras por engenhoca = total), Autodestruição (PM na explosão = total, +2d6/PM) e Manutenção Precária (1d3 + total de engenhocas). Nenhum ✦.
 
-## ⏭ Faltam (19) — lista REAL da ToC (p. 157–211)
+## ⏭ Faltam (18) — lista REAL da ToC (p. 160–211)
 
 > **Lista corrigida em 25/09/2026 pela ToC do PDF** (p. 3–4 do arquivo). A antiga lista
 > provisória estava fora de ordem e com títulos inexistentes ("Doutor Genial",
@@ -48,8 +49,7 @@
 > " e" solto no fim do poder. Cace com `awk '/\. e[[:space:]]*$/'`; a coluna direita pode
 > esconder o marcador, então confirme no corpo reconstruído por página.
 
-- [ ] 18. **Engenhoqueiro Goblin** (p. 157) — próxima (marca Engenhocaria Goblinoide)
-- [ ] 19. **Escapista Magnífico** (p. 160)
+- [ ] 19. **Escapista Magnífico** (p. 160) — próxima. Poderes já vistos de relance: Aparência Insignificante (escala na CD do poder Aparência Inofensiva), Fujão, Mão Leve, Não Há Ninguém Aqui (é pré-requisito de vários; ler no PDF).
 - [ ] 20. **Gigante Furioso** (p. 163)
 - [ ] 21. **Ginete de Namalkah** (p. 166)
 - [ ] 22. **Guerreiro Mágico** (p. 169)
