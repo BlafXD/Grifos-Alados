@@ -16,7 +16,7 @@
   🩸 do cartão integra à conta da Tormenta se a mesa quiser.
 - Dados em `js/poderes-raca-origem-data.js`; escalas em `js/ficha-distincoes.js`.
 
-## ✅ Feitas (24 de 36)
+## ✅ Feitas (25 de 36)
 
 1. **Aeronauta Goblin** (p. 105–108) — escala: Cabeça nas Nuvens.
 2. **Algoz da Tormenta** (p. 109–111) — escalam: Desprezo Profano, Ataque Corrupto.
@@ -42,8 +42,9 @@
 22. **Guerreiro Mágico** (p. 168–171) — marca Arma Arcana (magia empunhando arma). Escala Estilo de Combate Arcano (bônus do estilo +1 por outro poder). ✦: Fogo e Aço.
 23. **Infiltrador de Wynlla** (p. 171–174) — marca Ladinagem Mágica (✦). Escala Trapaça Arcana (círculo: 1º, e 2º com 3+ poderes; magias conhecidas = 2 + outros). ✦: Ladinagem Mágica (marca) e Criar Armadilha Mágica. Magia Traiçoeira é um poder-Aprimoramento (Custo +2 PM).
 24. **Mago da Ordem do Vazio** (p. 175–177) — marca Componente Especial (troca componentes materiais por um componente único; quadro *Componentes Especiais*). Escalam Ingrediente Secreto (PM de +2d6 essência por PM) e Inovação Particular (CD +2 por poder contra anular/dissipar). Nenhum ✦.
+25. **Mago de Batalha de Wynlla** (p. 177–180) — marca Armamento Esotérico (item esotérico → +1 na CD). Quadro *Conjuração Magibélica* (técnicas Expandir/Fortalecer/Intensificar/Potencializar) no poder Conjuração Magibélica. Escalam Conjurador Encouraçado (Defesa por outro poder), Conjuração Magibélica (nº de técnicas = 1 + outros exceto Conjurador Encouraçado) e Infantaria Arcana (+dano do Arcano de Batalha = total). Nenhum ✦.
 
-## ⏭ Faltam (12) — lista REAL da ToC (p. 178–211)
+## ⏭ Faltam (11) — lista REAL da ToC (p. 181–211)
 
 > **Lista corrigida em 25/09/2026 pela ToC do PDF** (p. 3–4 do arquivo). A antiga lista
 > provisória estava fora de ordem e com títulos inexistentes ("Doutor Genial",
@@ -55,8 +56,7 @@
 > " e" solto no fim do poder. Cace com `awk '/\. e[[:space:]]*$/'`; a coluna direita pode
 > esconder o marcador, então confirme no corpo reconstruído por página.
 
-- [ ] 25. **Mago de Batalha de Wynlla** (p. 178) — próxima. Marca Armamento Esotérico; tem o quadro *Conjuração Magibélica* (técnicas Expandir/Fortalecer/Intensificar/Potencializar) usado por Conjuração Magibélica; vários poderes escalam "a cada dois outros".
-- [ ] 26. **Médico de Salistick** (p. 181)
+- [ ] 26. **Médico de Salistick** (p. 181) — próxima. Cura mundana (não pode ser devoto); poderes vistos de relance: Medicina Avançada, Medicina Preventiva (escala 5 PV + 1 em resistência por poder).
 - [ ] 27. **Mestre Bêbado** (p. 184)
 - [ ] 28. **Mestre Cozinheiro** (p. 187)
 - [ ] 29. **Mestre dos Desejos** (p. 190) — qareen

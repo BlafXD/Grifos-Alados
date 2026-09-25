@@ -1405,6 +1405,58 @@
     'Quando uma criatura tenta anular ou dissipar suas magias (como uma contramágica ou Dispersar as Trevas), ela precisa fazer um teste de Vontade (CD da sua magia, +2 para cada poder da distinção que você possui). Se falhar, o efeito que ela estava usando para isso falha.',
   ] },
 
+  //  Mago de Batalha de Wynlla (p. 177–180) — 1 marca + 5 poderes.
+  //  Conjuradores-soldados de elite do Reino da Magia. O quadro
+  //  Conjuração Magibélica (as técnicas Expandir/Fortalecer/Intensificar/
+  //  Potencializar) fica no poder Conjuração Magibélica. Escalam
+  //  Conjurador Encouraçado (Defesa), Conjuração Magibélica (nº de
+  //  técnicas) e Infantaria Arcana (dano). Nenhum ✦.
+  { id: 'dist-batalha-armamento-esoterico', nome: 'Armamento Esotérico', grupo: 'distincao', livro: 'herois', pagina: 178,
+    tags: 'Mago de Batalha de Wynlla', distincao: 'mago-de-batalha-de-wynlla', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Nas mãos de um Mago de Batalha, qualquer item esotérico é uma arma.',
+    'Quando você usa um item esotérico para lançar uma magia, a CD para resistir a ela aumenta em +1.',
+  ] },
+  { id: 'dist-batalha-conjurador-encouracado', nome: 'Conjurador Encouraçado', grupo: 'distincao', livro: 'herois', pagina: 178,
+    tags: 'Mago de Batalha de Wynlla', distincao: 'mago-de-batalha-de-wynlla', marca: false, deus: null, magica: false,
+    preReq: 'habilidade de classe Magias, lançar magias arcanas de 2º círculo, treinado em Misticismo, Arcano de Batalha', custo: null, quadro: null, texto: [
+    'Como uma fortaleza móvel, o Mago de Batalha avança implacável, despejando morte e destruição.',
+    'Você recebe proficiência com armaduras pesadas e pode lançar magias arcanas de armadura sem fazer testes de Misticismo. Para cada outro poder da distinção que possui, você recebe +1 na Defesa com armaduras pesadas.',
+  ] },
+  { id: 'dist-batalha-arsenal-arcano', nome: 'Arsenal Arcano', grupo: 'distincao', livro: 'herois', pagina: 180,
+    tags: 'Mago de Batalha de Wynlla', distincao: 'mago-de-batalha-de-wynlla', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Luta ou Pontaria, Conjurador Encouraçado', custo: null, quadro: null, texto: [
+    'Embora magias sejam sua arma principal, Magos de Batalha também sabem usar certas armas.',
+    'Você recebe proficiência com armas marciais e pode usar armas como se fossem itens esotéricos. Quando usa uma arma dessa forma, você pode somar o bônus de dano de melhorias e encantos da arma ao de seu poder Arcano de Batalha. Além disso, o material especial da arma afeta suas magias com seu efeito de esotérico. Por fim, você pode trocar o atributo de dano da arma por seu atributo-chave de magias.',
+  ] },
+  { id: 'dist-batalha-conjuracao-magibelica', nome: 'Conjuração Magibélica', grupo: 'distincao', livro: 'herois', pagina: 180,
+    tags: 'Mago de Batalha de Wynlla', distincao: 'mago-de-batalha-de-wynlla', marca: false, deus: null, magica: false,
+    preReq: 'Conjurador Encouraçado', custo: null,
+    quadro: { titulo: 'Conjuração Magibélica', texto: [
+      'Desenvolvidas pelos Magos de Batalha de Wynlla, estas técnicas permitem modificar magias de formas únicas. Para fazer uma conjuração magibélica, ao lançar uma magia faça um teste de Misticismo (CD 10 + custo em PM da magia +5 por teste anterior na mesma cena). Se passar, você aplica uma de suas técnicas conhecidas à magia. Se falhar, fica fatigado até o fim da cena (essa condição é cumulativa e o afeta mesmo que você seja imune a ela).',
+      'Lançar uma magia com conjuração magibélica é mais demorado; o tempo de conjuração da magia aumenta em um passo (de livre para movimento, de movimento para padrão e de padrão para completa). Não é possível aplicar uma conjuração magibélica a magias com tempo de conjuração de reação ou maior que padrão, e esse aumento é aplicado após quaisquer reduções (como a de Magia Acelerada).',
+      'Expandir. A área da magia aumenta em +3m (de raio ou lado), +3m para cada dois outros poderes da distinção que você possui.',
+      'Fortalecer. A magia causa um dado de dano adicional do mesmo tipo, mais um dado para cada dois outros poderes da distinção que você possui.',
+      'Intensificar. A magia ignora até 5 pontos da redução de dano dos alvos. Esse valor aumenta em 5 para cada dois outros poderes da distinção que você possui.',
+      'Potencializar. O limite de PM da magia aumenta em +2, +1 para cada dois outros poderes da distinção que você possui (esses PM adicionais não aumentam a CD para usar este poder).',
+    ] },
+    texto: [
+    'As técnicas do Mago de Batalha tornam suas magias devastadoras, mas cobram um preço de seu corpo.',
+    'Escolha uma técnica de conjuração magibélica (veja o quadro). Uma vez feita, essa escolha não pode ser mudada. Para cada outro poder da distinção diferente (exceto Conjurador Encouraçado), você pode escolher uma técnica diferente.',
+  ] },
+  { id: 'dist-batalha-guarda-magica', nome: 'Guarda Mágica', grupo: 'distincao', livro: 'herois', pagina: 180,
+    tags: 'Mago de Batalha de Wynlla', distincao: 'mago-de-batalha-de-wynlla', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Fortitude, Conjurador Encouraçado', custo: null, quadro: null, texto: [
+    'Mestre em utilizar suas magias como arma, o Mago de Batalha também aprende a usá-las como defesa.',
+    'Quando lança uma magia arcana, você recebe uma quantidade de PV temporários, que duram até o início do seu próximo turno, igual ao total de PM gastos na magia.',
+  ] },
+  { id: 'dist-batalha-infantaria-arcana', nome: 'Infantaria Arcana', grupo: 'distincao', livro: 'herois', pagina: 180,
+    tags: 'Mago de Batalha de Wynlla', distincao: 'mago-de-batalha-de-wynlla', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Guerra, Conjurador Encouraçado, vencer dez combates usando um item esotérico pelo menos uma vez em cada um', custo: null, quadro: null, texto: [
+    'O Mago de Batalha é perito em usar itens esotéricos como armas.',
+    'Se lançar uma magia empunhando um item esotérico, você soma o número de poderes da distinção que possui ao bônus de dano de seu poder Arcano de Batalha. Além disso, criaturas que rolem um resultado 1 no teste de resistência de uma magia de dano sua sofrem +50% de dano da magia.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.
