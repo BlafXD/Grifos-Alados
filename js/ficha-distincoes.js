@@ -408,6 +408,29 @@
                  calc: `+2 por poder da distinção (${nTodos(n)})` };
       },
     },
+
+    // ── Mago de Batalha de Wynlla (Heróis de Arton, p. 178–180) ─────
+    'dist-batalha-conjurador-encouracado': {
+      escala(n) {
+        return { txt: `+${outros(n)} na Defesa com armaduras pesadas`,
+                 calc: `+1 por cada um dos ${nOutros(n)}` };
+      },
+    },
+    'dist-batalha-conjuracao-magibelica': {
+      escala(n) {
+        // 1 técnica base + 1 por outro poder da distinção, exceto o
+        // Conjurador Encouraçado (pré-requisito sempre presente) → n-1.
+        const t = Math.max(1, n - 1);
+        return { txt: `${t} técnica${t !== 1 ? 's' : ''} de conjuração magibélica`,
+                 calc: `1 base + 1 por outro poder da distinção (exceto Conjurador Encouraçado)` };
+      },
+    },
+    'dist-batalha-infantaria-arcana': {
+      escala(n) {
+        return { txt: `+${n} ao dano do Arcano de Batalha (empunhando esotérico)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
