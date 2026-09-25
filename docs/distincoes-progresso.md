@@ -16,7 +16,7 @@
   🩸 do cartão integra à conta da Tormenta se a mesa quiser.
 - Dados em `js/poderes-raca-origem-data.js`; escalas em `js/ficha-distincoes.js`.
 
-## ✅ Feitas (26 de 36)
+## ✅ Feitas (31 de 36)
 
 1. **Aeronauta Goblin** (p. 105–108) — escala: Cabeça nas Nuvens.
 2. **Algoz da Tormenta** (p. 109–111) — escalam: Desprezo Profano, Ataque Corrupto.
@@ -44,8 +44,13 @@
 24. **Mago da Ordem do Vazio** (p. 175–177) — marca Componente Especial (troca componentes materiais por um componente único; quadro *Componentes Especiais*). Escalam Ingrediente Secreto (PM de +2d6 essência por PM) e Inovação Particular (CD +2 por poder contra anular/dissipar). Nenhum ✦.
 25. **Mago de Batalha de Wynlla** (p. 177–180) — marca Armamento Esotérico (item esotérico → +1 na CD). Quadro *Conjuração Magibélica* (técnicas Expandir/Fortalecer/Intensificar/Potencializar) no poder Conjuração Magibélica. Escalam Conjurador Encouraçado (Defesa por outro poder), Conjuração Magibélica (nº de técnicas = 1 + outros exceto Conjurador Encouraçado) e Infantaria Arcana (+dano do Arcano de Batalha = total). Nenhum ✦.
 26. **Médico de Salistick** (p. 180–183) — marca Ciências Médicas (Int como atributo-chave de Cura; não pode ser devoto). Escalam Medicina Avançada (usos/dia, cura em d10), Medicina Preventiva (5 PV temp + 1 em resistência por poder) e Saúde Perfeita (+2 PM por poder). Nenhum ✦.
+27. **Mestre Bêbado** (p. 183–186) — marca Felicidade Engarrafada (recipiente 5 goles + 2 por poder). Escalam quase todos: Lógica Alcoólica (benefício aleatório +2 a cada dois outros), Bafo de Troll/Dragão (CD e goles = total), Bebida Revigorante (goles) e Luta Ridícula (finta). Nenhum ✦.
+28. **Mestre Cozinheiro** (p. 186–189) — marca Panela de Estimação; quadro *Ingredientes Monstruosos* em Tudo que Há de Bom. Escalam Tudo que Há de Bom (ingredientes por prato), Banquete de Aventureiros (ingredientes/dados = total) e Guardar num Potinho (dias do lanche). Nenhum ✦.
+29. **Mestre dos Desejos** (p. 189–192) — só qareen. Marca Desejo de Servir. **NÃO escala** pelo nº de poderes (efeitos fixos). ✦: O Segundo Desejo, O Último Desejo (lança a magia Desejo), Gênio da Lâmpada e Sempre Disponível (4).
+30. **Mestre Mahou-Jutsu** (p. 192–195) — marca Palma Mística. Escalam Mahou-jutsu (círculo = total) e Punho Arcano (CD +1 a cada dois outros). ✦: Defesa da Magia.
+31. **Mosqueteiro de Rishantor** (p. 195–198) — marca Equipamento Real (tabardo/florete/chapéu; não pode ser devoto de energia negativa). **NÃO escala** por nº de poderes (Heroísmo Galante tem limiar "todos os poderes"). Nenhum ✦ (Valentia é Heroísmo SIMULADO).
 
-## ⏭ Faltam (10) — lista REAL da ToC (p. 184–211)
+## ⏭ Faltam (5) — lista REAL da ToC (p. 199–211)
 
 > **Lista corrigida em 25/09/2026 pela ToC do PDF** (p. 3–4 do arquivo). A antiga lista
 > provisória estava fora de ordem e com títulos inexistentes ("Doutor Genial",
@@ -57,12 +62,7 @@
 > " e" solto no fim do poder. Cace com `awk '/\. e[[:space:]]*$/'`; a coluna direita pode
 > esconder o marcador, então confirme no corpo reconstruído por página.
 
-- [ ] 27. **Mestre Bêbado** (p. 184) — próxima. Artista marcial tamuraniano; marca Felicidade Engarrafada (recipiente de goles, +2 por poder); poderes vistos: Bafo de Troll (baforada de fogo, CD Con + nº de poderes).
-- [ ] 28. **Mestre Cozinheiro** (p. 187)
-- [ ] 29. **Mestre dos Desejos** (p. 190) — qareen
-- [ ] 30. **Mestre Mahou-Jutsu** (p. 193)
-- [ ] 31. **Mosqueteiro de Rishantor** (p. 196)
-- [ ] 32. **Mutagenista** (p. 199)
+- [ ] 32. **Mutagenista** (p. 199) — próxima. Marca Mutagenia Adicional (vista de relance); a leva final.
 - [ ] 33. **Pistoleiro de Smokestone** (p. 202)
 - [ ] 34. **Professor de Magia** (p. 205)
 - [ ] 35. **Senador** (p. 208)

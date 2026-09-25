@@ -1498,6 +1498,218 @@
     'Você recebe +1 em Constituição e imunidade a veneno. Além disso, recebe +2 PM por poder da distinção que possui.',
   ] },
 
+  //  Mestre Bêbado (p. 183–186) — 1 marca + 5 poderes. Artista marcial
+  //  tamuraniano que luta bêbado. A marca (goles) e quase todos os
+  //  poderes escalam. Nenhum ✦.
+  { id: 'dist-bebado-felicidade-engarrafada', nome: 'Felicidade Engarrafada', grupo: 'distincao', livro: 'herois', pagina: 185,
+    tags: 'Mestre Bêbado', distincao: 'mestre-bebado', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. O mestre bêbado nunca dispensa um traguinho.',
+    'Você possui um recipiente (uma garrafa, odre ou equivalente) que ocupa 0,5 espaço e comporta 5 goles de bebida, +2 goles para cada poder da distinção que você possuir. Se estiver empunhando o recipiente, você pode gastar uma ação de movimento para tomar um gole da bebida e ganhar 1 PM temporário. Seu recipiente recupera todos os goles de bebida ao amanhecer, apesar de você nunca se lembrar de como conseguiu mais bebida… Essa bebida não provoca penalidades, mas também não conta como água para saciar fome e sede (Tormenta20, p. 319). A critério do mestre, essa bebida pode ser compartilhada com outros personagens em situações de interpretação, mas não fornece nenhum bônus para eles e não pode ser alterada de nenhuma forma.',
+  ] },
+  { id: 'dist-bebado-logica-alcoolica', nome: 'Lógica Alcoólica', grupo: 'distincao', livro: 'herois', pagina: 185,
+    tags: 'Mestre Bêbado', distincao: 'mestre-bebado', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Fortitude e Luta, Briga ou Estilo Desarmado', custo: null, quadro: null, texto: [
+    'Quando o mestre bêbado entra em combate, ninguém sabe como ele vai lutar... Nem ele mesmo!',
+    'No início de cada rodada, você recebe um dos benefícios a seguir, que dura por 1 rodada. Role 1d6: 1) +2 em testes de ataque; 2) +2 em rolagens de dano; 3) +3m de deslocamento; 4) +2 na Defesa; 5) +2 na margem de ameaça com ataques desarmados; 6) +2 em testes de resistência. Para cada dois outros poderes da distinção, esses bônus aumentam em +1 (ou +1,5m).',
+  ] },
+  { id: 'dist-bebado-bafo-de-troll', nome: 'Bafo de Troll', grupo: 'distincao', livro: 'herois', pagina: 185,
+    tags: 'Mestre Bêbado', distincao: 'mestre-bebado', marca: false, deus: null, magica: false,
+    preReq: 'Lógica Alcoólica', custo: null, quadro: null, texto: [
+    'O hálito do mestre bêbado é capaz de fazer Megalokk perder o apetite.',
+    'Você pode gastar uma ação padrão e tomar um gole do seu recipiente para expelir um hálito horrível contra uma criatura adjacente. O alvo fica enjoado por 1d4+1 rodadas (Fort CD Con + número de poderes da distinção que você possui reduz para 1 rodada). Criaturas com Faro sofrem –5 no teste de Fortitude.',
+  ] },
+  { id: 'dist-bebado-bafo-de-dragao', nome: 'Bafo de Dragão', grupo: 'distincao', livro: 'herois', pagina: 185,
+    tags: 'Mestre Bêbado', distincao: 'mestre-bebado', marca: false, deus: null, magica: false,
+    preReq: 'Con 3, Bafo de Troll', custo: null, quadro: null, texto: [
+    'O hálito do mestre bêbado pode ser inflamável!',
+    'Uma vez por rodada, você pode gastar uma ação de movimento e beber um número de goles do seu recipiente (limitado pelo número de poderes da distinção que você possui) para desferir um sopro flamejante num cone de 9m. Criaturas na área sofrem 2d6 pontos de dano de fogo por gole e ficam em chamas (Reflexos CD Con + número de poderes da distinção que você possui reduz à metade e evita a condição).',
+  ] },
+  { id: 'dist-bebado-bebida-revigorante', nome: 'Bebida Revigorante', grupo: 'distincao', livro: 'herois', pagina: 185,
+    tags: 'Mestre Bêbado', distincao: 'mestre-bebado', marca: false, deus: null, magica: false,
+    preReq: 'Lógica Alcoólica', custo: null, quadro: null, texto: [
+    '“Eu bebo pra ficar mal, se fosse pra ficar bem eu tomava remédio!”',
+    'Você pode gastar uma ação de movimento e tomar um gole do seu recipiente para recuperar 4d6 PV ou remover uma condição entre abalado, alquebrado, apavorado, atordoado, cego, confuso, enfeitiçado, esmorecido, exausto, fatigado, frustrado, pasmo ou surdo. Quando usa este poder, você pode beber goles adicionais (limitados pelo número de poderes da distinção que você possui) para remover uma condição adicional ou aumentar a cura em +2d6 PV.',
+  ] },
+  { id: 'dist-bebado-luta-ridicula', nome: 'Luta Ridícula', grupo: 'distincao', livro: 'herois', pagina: 185,
+    tags: 'Mestre Bêbado', distincao: 'mestre-bebado', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Enganação, Lógica Alcoólica', custo: null, quadro: null, texto: [
+    'É difícil levar a sério um inimigo que está caindo de bêbado.',
+    'Quando passa em um teste para fintar contra uma criatura inteligente (Int –3 ou maior), além do normal, você faz essa criatura subestimá-lo por 1 rodada. Enquanto o está subestimando, a criatura não pode fazer ações hostis contra você, exceto a ação agredir — mas não pode fazer nenhum ataque adicional ao usá-la! Você pode beber um gole ao fintar para somar o número de poderes da distinção que possui no teste da finta.',
+  ] },
+
+  //  Mestre Cozinheiro (p. 186–189) — 1 marca + 5 poderes. Chefs que
+  //  cozinham monstros. O quadro Ingredientes Monstruosos fica em Tudo
+  //  que Há de Bom. Escalam Tudo que Há de Bom, Banquete de Aventureiros
+  //  e Guardar num potinho. Nenhum ✦.
+  { id: 'dist-cozinheiro-panela-de-estimacao', nome: 'Panela de Estimação', grupo: 'distincao', livro: 'herois', pagina: 187,
+    tags: 'Mestre Cozinheiro', distincao: 'mestre-cozinheiro', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Nas mãos de um mestre cozinheiro, utensílios de cozinha ganham novas utilidades.',
+    'Você recebe uma arma ou escudo com o qual seja proficiente, que pode ser usado como instrumentos de cozinheiro e fornece +2 em Ofício (cozinheiro). Se perder esse item, você pode comprar ou produzir outro com 1 dia e o gasto de T$ 100.',
+  ] },
+  { id: 'dist-cozinheiro-tudo-que-ha-de-bom', nome: 'Tudo que Há de Bom', grupo: 'distincao', livro: 'herois', pagina: 187,
+    tags: 'Mestre Cozinheiro', distincao: 'mestre-cozinheiro', marca: false, deus: null, magica: false,
+    preReq: 'Foco em Perícia (Ofício [cozinheiro])', custo: null,
+    quadro: { titulo: 'Ingredientes Monstruosos', texto: [
+      'Cauda de escorpião, musgo tóxico, larvas misteriosas do fundo de cavernas… Para um mestre cozinheiro, esses são insumos sofisticados — ingredientes monstruosos, que nenhum outro cozinheiro imaginaria usar. Quando usados em um prato especial, ingredientes monstruosos adicionam efeitos especiais aos benefícios fornecidos pelo prato. Os efeitos de ingredientes monstruosos diferentes são cumulativos.',
+      'Ingredientes monstruosos podem ser adquiridos em ambientes habitados por monstros. Encontrar um ingrediente monstruoso exige 1 dia de trabalho e um teste de Ofício (cozinheiro) contra CD 20. Se passar, você encontra um ingrediente, +1 para cada 10 pontos que o teste exceder a CD. O mestre tem a palavra final sobre quais ingredientes podem ser encontrados em terrenos variados. Um ingrediente monstruoso ocupa 0,5 espaço.',
+      'Carne Monstruosa. A carne de qualquer monstro. O prato fornece +5 PV temporários para cada poder da distinção que você possui.',
+      'Ervas Aromáticas. Ervas conhecidas por seu efeito calmante, que ajudam no foco. O prato fornece +1d4 em um teste de Misticismo, Ofício, Percepção ou Vontade realizado até o fim do dia. A cada outro poder da distinção que você possui, esse dado de bônus aumenta em um passo.',
+      'Especiarias Picantes. Tão ardidas que fazem bárbaros chorar, são encontradas em planícies e terrenos urbanos. O prato fornece +1d4 em um teste de Acrobacia, Atletismo, Iniciativa ou Reflexos realizado até o fim do dia. A cada outro poder da distinção que você possui, esse dado de bônus aumenta em um passo.',
+      'Núcleo de Temperatura. Encontrados em terrenos de temperaturas extremas, estes minerais emitem frio ou calor capazes de amplificar as propriedades dos alimentos. Os bônus numéricos e em dados do prato aumentam em +1.',
+      'Raízes Curativas. Encontradas em pântanos e subterrâneos, estas ervas fornecem +1d4 em um teste de resistência. A cada outro poder da distinção que você possui, esse dado de bônus aumenta em um passo.',
+      'Sal Azul. Encontrado em montanhas e terreno aquático, este ingrediente misterioso armazena energias místicas. O prato fornece +1 PM temporário. Esse bônus aumenta em +1 PM para cada outro poder da distinção que você possui.',
+    ] },
+    texto: [
+    '“Açúcar, tempero... O que mais está faltando?”',
+    'Você pode coletar e usar ingredientes monstruosos em seus pratos (veja o quadro). Quando você fabrica um prato especial, pode adicionar 1 ingrediente monstruoso à receita, +1 ingrediente diferente para cada dois outros poderes da distinção que possui.',
+  ] },
+  { id: 'dist-cozinheiro-a-moda-da-casa', nome: 'À Moda da Casa', grupo: 'distincao', livro: 'herois', pagina: 187,
+    tags: 'Mestre Cozinheiro', distincao: 'mestre-cozinheiro', marca: false, deus: null, magica: false,
+    preReq: 'Tudo que Há de Bom', custo: null, quadro: null, texto: [
+    '“...metade com pimenta, metade sem, e um terço sem cebola…”',
+    'Você pode preparar pratos especiais que combinam os efeitos de dois pratos diferentes — por exemplo, um caldo com os efeitos combinados de um prato de aventureiro e uma sopa de peixe. Fazer isso demora o mesmo tempo que um prato normal, mas consome os ingredientes de ambos e usa a mais alta CD para fabricar entre eles. Além disso, sempre que uma receita pedir um ingrediente específico, você pode substituí-lo por um ingrediente monstruoso.',
+  ] },
+  { id: 'dist-cozinheiro-banquete-de-aventureiros', nome: 'Banquete de Aventureiros', grupo: 'distincao', livro: 'herois', pagina: 188,
+    tags: 'Mestre Cozinheiro', distincao: 'mestre-cozinheiro', marca: false, deus: null, magica: false,
+    preReq: 'três poderes da distinção', custo: null, quadro: null, texto: [
+    '“Comida faz mais do que sustentar — ela conecta. Memórias. Sentimentos. Pessoas. E, conectados, somos mais fortes.”',
+    'Uma vez por tempo entre aventuras, você pode gastar uma quantidade de ingredientes monstruosos igual ao número de poderes da distinção que possui para preparar um banquete para seu grupo. Os participantes desse banquete recebem, durante a próxima aventura, uma quantidade de dados de auxílio (d6) igual à quantidade de ingredientes gastos no banquete. Sempre que fizer um teste de perícia, você pode gastar 1 dado de auxílio e adicionar o resultado como bônus no teste. Se 3 ou mais ingredientes diferentes forem usados no banquete, os dados de auxílio tornam-se d8.',
+  ] },
+  { id: 'dist-cozinheiro-guardar-num-potinho', nome: 'Guardar num Potinho', grupo: 'distincao', livro: 'herois', pagina: 188,
+    tags: 'Mestre Cozinheiro', distincao: 'mestre-cozinheiro', marca: false, deus: null, magica: false,
+    preReq: 'À Moda da Casa', custo: null, quadro: null, texto: [
+    '“Manda dois pra viagem!”',
+    'Quando prepara um prato especial, você pode gastar 1 ingrediente monstruoso adicional. Se fizer isso, ao fim da refeição você pode embalar os restos do prato na forma de um lanche — que pode ser consumido com uma ação padrão e fornece os mesmos benefícios do prato original. Lanches duram 1 dia por poder da distinção.',
+  ] },
+  { id: 'dist-cozinheiro-mise-en-place', nome: 'Mise en Place', grupo: 'distincao', livro: 'herois', pagina: 188,
+    tags: 'Mestre Cozinheiro', distincao: 'mestre-cozinheiro', marca: false, deus: null, magica: false,
+    preReq: 'Tudo que Há de Bom', custo: null, quadro: null, texto: [
+    '“Eu já disse que julienne é corte na vertical! NA VERTICAL!”',
+    'Você pode usar Ofício (cozinheiro) para identificar criaturas, exceto construtos e mortos-vivos, e para extrair itens de criaturas mortas. Além disso, quando você passa num teste para extrair itens consumíveis de uma criatura morta, extrai 1 item adicional para cada 10 pontos pelos quais o resultado do teste supera a CD.',
+  ] },
+
+  //  Mestre dos Desejos (p. 189–192) — 1 marca + 5 poderes. Qareen que
+  //  domina a força dos desejos. Não escala pelo nº de poderes. Quatro ✦
+  //  (O Segundo/Último Desejo, Gênio da Lâmpada, Sempre Disponível).
+  { id: 'dist-desejos-desejo-de-servir', nome: 'Desejo de Servir', grupo: 'distincao', livro: 'herois', pagina: 192,
+    tags: 'Mestre dos Desejos', distincao: 'mestre-dos-desejos', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Aproximando-se do seu sangue de gênio, o qareen aprende a empregar a força dos desejos como combustível.',
+    'A CD para resistir às magias que você lança com sua habilidade Desejos aumenta em +2.',
+  ] },
+  { id: 'dist-desejos-o-primeiro-desejo', nome: 'O Primeiro Desejo', grupo: 'distincao', livro: 'herois', pagina: 192,
+    tags: 'Mestre dos Desejos', distincao: 'mestre-dos-desejos', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Intuição e Misticismo', custo: null, quadro: null, texto: [
+    'O poder dos gênios aflora diante de um desejo sincero.',
+    'A redução de custo de suas magias lançadas com a habilidade Desejos muda para –2 PM.',
+  ] },
+  { id: 'dist-desejos-o-segundo-desejo', nome: 'O Segundo Desejo', grupo: 'distincao', livro: 'herois', pagina: 191,
+    tags: 'Mestre dos Desejos', distincao: 'mestre-dos-desejos', marca: false, deus: null, magica: true,
+    preReq: 'O Primeiro Desejo', custo: null, quadro: null, texto: [
+    'O poder dos desejos desbloqueia conhecimentos que um mestre dos desejos jamais imaginava possuir.',
+    'Uma vez por rodada, um aliado pode gastar uma ação livre para pedir que você lance uma magia arcana de 1º círculo que você não conheça. Até o fim do seu próximo turno, você pode lançar essa magia.',
+  ] },
+  { id: 'dist-desejos-o-ultimo-desejo', nome: 'O Último Desejo', grupo: 'distincao', livro: 'herois', pagina: 191,
+    tags: 'Mestre dos Desejos', distincao: 'mestre-dos-desejos', marca: false, deus: null, magica: true,
+    preReq: 'O Segundo Desejo, realizar três desejos grandiosos', custo: null, quadro: null, texto: [
+    'Não há nada mais forte que um desejo.',
+    'Uma vez por aventura, você pode lançar a magia Desejo sem pagar seu custo em PM (mas você ainda precisa pagar outros custos da magia, como sacrifício de PM). Você só pode usar esta habilidade em resposta a um pedido feito por um aliado desde seu último turno.',
+  ] },
+  { id: 'dist-desejos-genio-da-lampada', nome: 'Gênio da Lâmpada', grupo: 'distincao', livro: 'herois', pagina: 191,
+    tags: 'Mestre dos Desejos', distincao: 'mestre-dos-desejos', marca: false, deus: null, magica: true,
+    preReq: 'O Primeiro Desejo, Refúgio', custo: null, quadro: null, texto: [
+    'Além de uma morada, a lâmpada é um refúgio, um lugar onde o mestre dos desejos pode descansar.',
+    'Você recebe uma lâmpada mágica, um item Minúsculo com RD 10 e PV iguais à metade dos seus. Enquanto estiver de posse da lâmpada, você pode lançar a magia Refúgio sem pagar seu custo básico. Além disso, se for reduzido a 0 PV ou menos, você pode gastar 3 PM para ser transportado magicamente para dentro da lâmpada; isso interrompe qualquer perda de vida ou dano contínuo, mas o deixa inconsciente em um transe místico até você voltar a ter pelo menos 1 PV. Dentro da lâmpada, você recupera PV por descanso normalmente e pode ser afetado por efeitos mágicos de cura lançados sobre a lâmpada. Se perder sua lâmpada, você pode criar uma nova com uma semana de trabalho e T$ 100.',
+  ] },
+  { id: 'dist-desejos-sempre-disponivel', nome: 'Sempre Disponível', grupo: 'distincao', livro: 'herois', pagina: 192,
+    tags: 'Mestre dos Desejos', distincao: 'mestre-dos-desejos', marca: false, deus: null, magica: true,
+    preReq: 'Gênio da Lâmpada', custo: null, quadro: null, texto: [
+    'O mestre dos desejos sempre está onde é mais necessário.',
+    'Você aprende e pode lançar a magia Salto Dimensional. Caso aprenda novamente essa magia, seu custo diminui em –1 PM. Além disso, se um aliado estiver empunhando sua lâmpada e gastar uma ação livre para esfregá-la, até o fim do seu próximo turno você pode lançar essa magia sem pagar seu custo básico, mas deve ter como destino um espaço adjacente à lâmpada.',
+  ] },
+
+  //  Mestre Mahou-Jutsu (p. 192–195) — 1 marca + 5 poderes. Arte marcial
+  //  arcana dos gênios. Escalam Mahou-jutsu (círculo) e Punho Arcano
+  //  (CD). ✦: Defesa da Magia.
+  { id: 'dist-mahou-palma-mistica', nome: 'Palma Mística', grupo: 'distincao', livro: 'herois', pagina: 195,
+    tags: 'Mestre Mahou-Jutsu', distincao: 'mestre-mahou-jutsu', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. A primeira técnica do mahou-jutsu ensina a aplicar a precisão marcial na execução de magias.',
+    'Enquanto tiver pelo menos uma mão livre, você recebe +2 em testes de ataque realizados como parte de magias (como o aprimoramento de Toque Chocante) e na CD de suas magias arcanas contra alvos em seu alcance corpo a corpo.',
+  ] },
+  { id: 'dist-mahou-mahou-jutsu', nome: 'Mahou-jutsu', grupo: 'distincao', livro: 'herois', pagina: 195,
+    tags: 'Mestre Mahou-Jutsu', distincao: 'mestre-mahou-jutsu', marca: false, deus: null, magica: false,
+    preReq: 'lançar magias arcanas, treinado em Misticismo, Briga ou Estilo Desarmado', custo: null, quadro: null, texto: [
+    'O princípio fundamental do mahou-jutsu é a integração fluida de ataques desarmados e magias arcanas.',
+    'Uma vez por rodada, quando usa uma ação agredir para fazer dois ou mais ataques desarmados, você pode gastar 2 PM para lançar uma magia arcana com execução de ação de movimento ou padrão como ação livre. O círculo máximo de magias que você pode lançar com este poder é limitado pela quantidade de poderes da distinção que possui.',
+  ] },
+  { id: 'dist-mahou-defesa-da-magia', nome: 'Defesa da Magia', grupo: 'distincao', livro: 'herois', pagina: 195,
+    tags: 'Mestre Mahou-Jutsu', distincao: 'mestre-mahou-jutsu', marca: false, deus: null, magica: true,
+    preReq: 'Mahou-Jutsu', custo: null, quadro: null, texto: [
+    'O poder arcano fortalece as defesas do mestre mahou-jutsu.',
+    'Quando lança uma magia arcana, você recebe PV temporários iguais a 5x o círculo da magia lançada. Esses PV duram até o início do seu próximo turno.',
+  ] },
+  { id: 'dist-mahou-determinacao-da-dor', nome: 'Determinação da Dor', grupo: 'distincao', livro: 'herois', pagina: 195,
+    tags: 'Mestre Mahou-Jutsu', distincao: 'mestre-mahou-jutsu', marca: false, deus: null, magica: false,
+    preReq: 'Con 1, Mahou-Jutsu', custo: null, quadro: null, texto: [
+    'A disciplina do treino permite ao mestre mahou-jutsu tirar forças do próprio sofrimento.',
+    'Você soma sua Constituição nos testes de Vontade para concentração em magias (Tormenta20, p. 170). Além disso, quando sofre dano, você soma sua Constituição no seu limite de PM para magias arcanas até o fim do seu próximo turno.',
+  ] },
+  { id: 'dist-mahou-esplendor-vitorioso-inigualavel', nome: 'Esplendor Vitorioso Inigualável', grupo: 'distincao', livro: 'herois', pagina: 195,
+    tags: 'Mestre Mahou-Jutsu', distincao: 'mestre-mahou-jutsu', marca: false, deus: null, magica: false,
+    preReq: 'lançar magias arcanas de 2º círculo, Punho Arcano', custo: null, quadro: null, texto: [
+    'Para obter a vitória, o mestre mahou-jutsu pode sacrificar o próprio corpo.',
+    'Quando lança uma magia de dano, você pode gastar 10 PV para infundi-la com sua própria força vital. Se fizer isso, você soma sua Constituição à CD da magia e o dano básico de seu ataque desarmado ao dano dela.',
+  ] },
+  { id: 'dist-mahou-punho-arcano', nome: 'Punho Arcano', grupo: 'distincao', livro: 'herois', pagina: 195,
+    tags: 'Mestre Mahou-Jutsu', distincao: 'mestre-mahou-jutsu', marca: false, deus: null, magica: false,
+    preReq: 'Mahou-Jutsu', custo: null, quadro: null, texto: [
+    'Quando o punho de um mestre mahou-jutsu golpeia, carrega consigo os maiores segredos arcanos.',
+    'Uma vez por rodada, quando lança uma magia arcana com alcance de toque e execução de ação de movimento ou padrão, você pode gastar 2 PM para fazer um ataque desarmado contra o alvo da magia como ação livre. Se acertar esse ataque, a CD da magia aumenta em +1. Para cada dois outros poderes da distinção que você possui, a CD aumenta em +1.',
+  ] },
+
+  //  Mosqueteiro de Rishantor (p. 195–198) — 1 marca + 5 poderes.
+  //  Espadachins honrados e ostensivos de Ahlen. Não escala pelo nº de
+  //  poderes (efeitos fixos ou limiar). Nenhum ✦ (Valentia é simulada).
+  { id: 'dist-mosqueteiro-equipamento-real', nome: 'Equipamento Real', grupo: 'distincao', livro: 'herois', pagina: 197,
+    tags: 'Mosqueteiro de Rishantor', distincao: 'mosqueteiro-de-rishantor', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. O equipamento de um Mosqueteiro de Rishantor deveria ser um deboche. Mas é ostentado com orgulho.',
+    'Você recebe um tabardo, um florete ou rapieira e um chapéu emplumado (veja o Capítulo 3). Enquanto você estiver usando esses itens, recebe um bônus de +1 em Diplomacia, testes de ataque, rolagens de dano e na Defesa. Você não pode ser devoto de divindades capazes de canalizar energia negativa e deve seguir algum código de conduta (como Código de Honra). Se violá-lo, além das consequências normais, não poderá usar seus poderes de mosqueteiro até recuperar seus PM.',
+  ] },
+  { id: 'dist-mosqueteiro-mestre-esgrimista', nome: 'Mestre Esgrimista', grupo: 'distincao', livro: 'herois', pagina: 197,
+    tags: 'Mosqueteiro de Rishantor', distincao: 'mosqueteiro-de-rishantor', marca: false, deus: null, magica: false,
+    preReq: 'proficiência com armas marciais, Estilo de Uma Arma', custo: null, quadro: null, texto: [
+    'Por suas restrições de equipamento, o Mosqueteiro treina sua esgrima mais que qualquer um.',
+    'Seu multiplicador de crítico com florete e rapieira aumenta em +1. Além disso, quando faz um ataque com uma dessas armas, você pode gastar 1 PM para rolar dois dados e usar o melhor resultado.',
+  ] },
+  { id: 'dist-mosqueteiro-heroismo-galante', nome: 'Heroísmo Galante', grupo: 'distincao', livro: 'herois', pagina: 197,
+    tags: 'Mosqueteiro de Rishantor', distincao: 'mosqueteiro-de-rishantor', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Reflexos, Mestre Esgrimista', custo: null, quadro: null, texto: [
+    'Um Mosqueteiro não hesita em defender um inocente, mesmo que isso custe sua vida.',
+    'Quando um aliado adjacente é alvo de um ataque, você pode gastar 1 PM para se tornar o alvo do ataque, que então é resolvido normalmente. Se você tiver todos os poderes da distinção, quando um aliado em alcance curto é alvo de um ataque, você pode gastar 3 PM para se deslocar até um espaço adjacente a ele e ao atacante (desde que tenha um caminho desimpedido) e se tornar o alvo do ataque. Você só pode usar este poder uma vez por rodada e ele requer liberdade de movimentos; você não pode usá-lo se estiver de armadura pesada ou na condição imóvel.',
+  ] },
+  { id: 'dist-mosqueteiro-um-por-todos', nome: 'Um por Todos', grupo: 'distincao', livro: 'herois', pagina: 197,
+    tags: 'Mosqueteiro de Rishantor', distincao: 'mosqueteiro-de-rishantor', marca: false, deus: null, magica: false,
+    preReq: 'Mestre Esgrimista', custo: null, quadro: null, texto: [
+    'O Mosqueteiro sabe trabalhar em equipe como ninguém.',
+    'Quando você faz um teste para ajudar (exceto para ataques), o bônus que você fornece aumenta em +2. Além disso, uma vez por rodada, quando acerta um ataque de florete ou rapieira em um inimigo, você pode usar o resultado desse ataque como um teste para ajudar um ataque de um aliado feito contra esse inimigo até a próxima rodada.',
+  ] },
+  { id: 'dist-mosqueteiro-todos-por-um', nome: 'Todos Por Um', grupo: 'distincao', livro: 'herois', pagina: 197,
+    tags: 'Mosqueteiro de Rishantor', distincao: 'mosqueteiro-de-rishantor', marca: false, deus: null, magica: false,
+    preReq: 'Duelo, Um por Todos', custo: null, quadro: null, texto: [
+    'Quando podem confiar em seus aliados, os Mosqueteiros se tornam imbatíveis.',
+    'Quando você usa Duelo, pode gastar +1 PM para cada aliado a sua escolha em alcance curto (limitado pelo seu Carisma). Aliados escolhidos também recebem os benefícios de Duelo contra o alvo (mas perdem-no se atacarem outro oponente).',
+  ] },
+  { id: 'dist-mosqueteiro-valentia', nome: 'Valentia', grupo: 'distincao', livro: 'herois', pagina: 197,
+    tags: 'Mosqueteiro de Rishantor', distincao: 'mosqueteiro-de-rishantor', marca: false, deus: null, magica: false,
+    preReq: 'Mestre Esgrimista, dois outros poderes da distinção', custo: null, quadro: null, texto: [
+    'Um Mosqueteiro de Rishantor não teme nenhum perigo.',
+    'Você pode lançar Heroísmo, mas apenas sobre si mesmo. Esta não é uma habilidade mágica e provém de sua galanteria, panache e ousadia altaneira (veja “Magias Simuladas”, p. 44).',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.

@@ -452,6 +452,80 @@
                  calc: `+2 por poder da distinção (${nTodos(n)})` };
       },
     },
+
+    // ── Mestre Bêbado (Heróis de Arton, p. 185) ─────────────────────
+    'dist-bebado-felicidade-engarrafada': {
+      escala(n) {
+        return { txt: `recipiente com ${5 + 2 * n} goles`,
+                 calc: `5 base + 2 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-bebado-logica-alcoolica': {
+      escala(n) {
+        const b = 2 + p2(n), d = String(3 + 1.5 * p2(n)).replace('.', ',');
+        return { txt: `benefício aleatório +${b} (ou +${d}m de deslocamento)`,
+                 calc: `2 base, +1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+    'dist-bebado-bafo-de-troll': {
+      escala(n) {
+        return { txt: `hálito enjoa 1d4+1 rodadas (Fort CD Con +${n} reduz a 1)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-bebado-bafo-de-dragao': {
+      escala(n) {
+        return { txt: `sopro: até ${n} goles (2d6 de fogo cada; Reflexos CD Con +${n})`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-bebado-bebida-revigorante': {
+      escala(n) {
+        return { txt: `até ${n} gole${n !== 1 ? 's' : ''} extra${n !== 1 ? 's' : ''} (+2d6 PV ou +1 condição cada)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-bebado-luta-ridicula': {
+      escala(n) {
+        return { txt: `+${n} no teste de finta (bebendo um gole)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Mestre Cozinheiro (Heróis de Arton, p. 187–188) ─────────────
+    'dist-cozinheiro-tudo-que-ha-de-bom': {
+      escala(n) {
+        const i = 1 + p2(n);
+        return { txt: `${i} ingrediente${i !== 1 ? 's' : ''} monstruoso${i !== 1 ? 's' : ''} por prato`,
+                 calc: `1 base, +1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+    'dist-cozinheiro-banquete-de-aventureiros': {
+      escala(n) {
+        return { txt: `banquete: até ${n} ingredientes → ${n} dado${n !== 1 ? 's' : ''} de auxílio`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-cozinheiro-guardar-num-potinho': {
+      escala(n) {
+        return { txt: `lanche dura ${n} dia${n !== 1 ? 's' : ''}`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Mestre Mahou-Jutsu (Heróis de Arton, p. 195) ────────────────
+    'dist-mahou-mahou-jutsu': {
+      escala(n) {
+        return { txt: `magia arcana até o ${n}º círculo (limitado também pelo que você lança)`,
+                 calc: `círculo máximo = total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-mahou-punho-arcano': {
+      escala(n) {
+        return { txt: `CD da magia +${1 + p2(n)} ao acertar o soco`,
+                 calc: `1 base, +1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
