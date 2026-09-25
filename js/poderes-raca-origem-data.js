@@ -847,6 +847,111 @@
     'Uma vez por combate, você pode gastar uma ação de movimento e 3 PM para fazer um teste de Guerra. Você recebe uma quantidade de PV temporários igual ao resultado desse teste e, para cada 10 pontos no resultado, recebe +1 em testes de ataque e rolagens de dano. Além disso, se o resultado for 30 ou mais, você ignora a imunidade a acertos críticos e ataques furtivos de seus inimigos. Esses efeitos duram até o fim da cena.',
   ] },
 
+  //  Cavaleiro Feérico (p. 142–144) — 1 marca + 6 poderes. Guerreiros-
+  //  artistas élficos da extinta Ordem Perene. Escalam Arte Élfica (círculo),
+  //  Armadura da Floresta (melhorias), Flagelo dos Duyshidakk (+dano) e
+  //  Lâminas Feéricas (margem). Só Arma da Floresta é mágica (✦).
+  { id: 'dist-feerico-conexao-feerica', nome: 'Conexão Feérica', grupo: 'distincao', livro: 'herois', pagina: 143,
+    tags: 'Cavaleiro Feérico', distincao: 'cavaleiro-feerico', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. O cavaleiro feérico vive em harmonia com o mundo natural.',
+    'Você recebe a habilidade Empatia Selvagem (Tormenta20, p. 21) e +1 PM para cada poder da distinção que possuir.',
+  ] },
+  { id: 'dist-feerico-arte-elfica', nome: 'Arte Élfica', grupo: 'distincao', livro: 'herois', pagina: 143,
+    tags: 'Cavaleiro Feérico', distincao: 'cavaleiro-feerico', marca: false, deus: null, magica: false,
+    preReq: 'habilidade de classe Magias, treinado em Atuação e Luta, Foco em Arma (espada longa ou florete)', custo: null, quadro: null, texto: [
+    'Cada tinir da espada é um acorde. Cada rugido de batalha é um verso. O esplendor de cada vitória é uma canção.',
+    'Uma vez por rodada, quando acerta um ataque com espada longa ou florete, você pode gastar 2 PM para ativar uma Música de bardo ou lançar uma magia arcana com execução de ação de movimento ou padrão como uma ação livre. O círculo máximo de magias que você pode lançar com este poder é limitado pela quantidade de poderes da distinção que possui.',
+  ] },
+  { id: 'dist-feerico-arma-da-floresta', nome: 'Arma da Floresta', grupo: 'distincao', livro: 'herois', pagina: 143,
+    tags: 'Cavaleiro Feérico', distincao: 'cavaleiro-feerico', marca: false, deus: null, magica: true,
+    preReq: 'Arte Élfica', custo: null, quadro: null, texto: [
+    'Os espíritos da natureza tornam a elegante lâmina do cavaleiro feérico ainda mais letal.',
+    'Você pode gastar 1 PM para invocar elementos naturais, como madeira, folhas ou pólen, para cobrir uma espada longa ou florete. O dano da arma é considerado mágico e aumenta em um passo até o fim da cena. Caso você use este poder em uma floresta, o efeito dura 1 dia — ou até você sair dela.',
+  ] },
+  { id: 'dist-feerico-armadura-da-floresta', nome: 'Armadura da Floresta', grupo: 'distincao', livro: 'herois', pagina: 143,
+    tags: 'Cavaleiro Feérico', distincao: 'cavaleiro-feerico', marca: false, deus: null, magica: false,
+    preReq: 'Arte Élfica', custo: null, quadro: null, texto: [
+    'O tributo do candidato retorna ao cavaleiro na forma da mais magnífica das armaduras.',
+    'Você recebe uma armadura completa feita de madeira levíssima, folhas e flores. Essa armadura não reduz seu deslocamento, e com ela você pode somar sua Destreza na Defesa e lançar magias arcanas sem necessidade de testes de Misticismo. A cada dois outros poderes da distinção que você possui, a armadura recebe uma melhoria a sua escolha, cujos pré-requisitos ela cumpra (exceto material especial). Se outra criatura tentar vestir essa armadura, ela murcha e morre em instantes. Se a armadura for destruída, renasce ao seu redor em 1 dia.',
+  ] },
+  { id: 'dist-feerico-flagelo-dos-duyshidakk', nome: 'Flagelo dos Duyshidakk', grupo: 'distincao', livro: 'herois', pagina: 143,
+    tags: 'Cavaleiro Feérico', distincao: 'cavaleiro-feerico', marca: false, deus: null, magica: false,
+    preReq: 'Arte Élfica', custo: null, quadro: null, texto: [
+    'Dez deles por um dos nossos.',
+    'Você soma seu total de poderes da distinção em rolagens de dano contra bandos, enxames e duyshidakk. Além disso, uma vez por rodada, quando reduz um oponente a 0 PV ou menos com um ataque corpo a corpo, você pode gastar 2 PM para percorrer até o seu deslocamento e fazer um ataque corpo a corpo contra outro inimigo.',
+  ] },
+  { id: 'dist-feerico-laminas-feericas', nome: 'Lâminas Feéricas', grupo: 'distincao', livro: 'herois', pagina: 144,
+    tags: 'Cavaleiro Feérico', distincao: 'cavaleiro-feerico', marca: false, deus: null, magica: false,
+    preReq: 'Arte Élfica', custo: null, quadro: null, texto: [
+    'As tradicionais armas élficas são a base do treinamento de um cavaleiro feérico.',
+    'Para você, espadas longas são armas ágeis. Além disso, quando usa uma espada longa ou um florete, você soma o círculo máximo de magias que pode lançar ao dano e aumenta sua margem de ameaça em +1 para cada dois poderes da distinção.',
+  ] },
+  { id: 'dist-feerico-montaria-feerica', nome: 'Montaria Feérica', grupo: 'distincao', livro: 'herois', pagina: 144,
+    tags: 'Cavaleiro Feérico', distincao: 'cavaleiro-feerico', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Cavalgar, Arte Élfica', custo: null, quadro: null, texto: [
+    'O respeito do cavaleiro feérico pela natureza é recompensado na forma de um aliado leal.',
+    'Você recebe um parceiro montaria veterano, escolhido entre cavalo de guerra, trobo ou outra criatura que, a critério do mestre, tenha uma natureza feérica. Caso já possua uma montaria fornecida por outra habilidade, em vez disso essa montaria se torna também um parceiro combatente iniciante. Você recebe +5 em testes de Cavalgar para correr e saltar com sua montaria. Caso perca sua montaria, você pode treinar outra com uma semana de trabalho.',
+  ] },
+
+  //  Chapéu-Preto (p. 145–147) — 1 marca + 7 poderes. A maldição da pólvora,
+  //  amargurados que dominam o medo. A marca traz o quadro do objeto
+  //  amaldiçoado. Escalam Olhos de Chumbo e Rápido ou Morto. Nenhum ✦.
+  { id: 'dist-chapeu-esse-maldito-chapeu', nome: 'Esse Maldito Chapéu', grupo: 'distincao', livro: 'herois', pagina: 146,
+    tags: 'Chapéu-Preto', distincao: 'chapeu-preto', marca: true, deus: null, magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'A Maldição do Chapéu Preto', texto: [
+      'Todo chapéu-preto possui um objeto que é a marca de sua maldição. Esse objeto está sempre visível em sua pessoa e é imediatamente reconhecível como maligno ou sinistro. Pode ser um colar, uma fivela, um anel, uma arma… Contudo, as histórias de Smokestone geralmente identificam esse objeto como um chapéu de pistoleiro. Assim, seja o que for, é chamado de “chapéu preto”.',
+      'O chapéu nunca fica longe do personagem por muito tempo. Se for perdido, roubado ou destruído, surge no corpo do personagem na cena seguinte. Nem mesmo uma magia Purificação é capaz de separar o chapéu do personagem permanentemente. Habilidades como Forma Selvagem e magias como Disfarce Ilusório também não escondem o chapéu preto. Se o personagem puder ser visto, o chapéu preto também poderá.',
+      'A critério do mestre, o portador de um chapéu preto pode empreender uma jornada de redenção para se livrar da maldição. Se for bem-sucedido, ele se livra da maldição e do chapéu. Nesse caso, perde a distinção e todos os poderes de chapéu-preto que possui, mas pode usar as regras de treinamento para adquirir outros em seu lugar.',
+    ] },
+    texto: [
+    'Marca da distinção. Você recebe um “chapéu preto”, um item que representa sua maldição (veja o quadro).',
+    'Você recebe +2 em Intimidação e na CD dos seus efeitos de medo, mas sofre –2 em Adestramento, Atuação e Diplomacia.',
+  ] },
+  { id: 'dist-chapeu-coracao-duro', nome: 'Coração Duro', grupo: 'distincao', livro: 'herois', pagina: 146,
+    tags: 'Chapéu-Preto', distincao: 'chapeu-preto', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Luta ou Pontaria, Presença Aterradora', custo: null, quadro: null, texto: [
+    'Não é fácil abalar o chapéu-preto, pois ele próprio já cometeu todo tipo de atrocidades.',
+    'Você recebe +2 em rolagens de dano com armas e imunidade a medo (ou +2 em Vontade, se já for imune a medo). Este poder não elimina fobias raciais, como o medo de altura dos minotauros.',
+  ] },
+  { id: 'dist-chapeu-bala-nas-costas', nome: 'Bala nas Costas', grupo: 'distincao', livro: 'herois', pagina: 146,
+    tags: 'Chapéu-Preto', distincao: 'chapeu-preto', marca: false, deus: null, magica: false,
+    preReq: 'Coração Duro, dois outros poderes da distinção', custo: null, quadro: null, texto: [
+    'Se um chapéu-preto realmente hábil quiser matá-lo, você não ficará sabendo — já estará morto.',
+    'Sempre que atacar um oponente pela primeira vez na cena, você pode gastar 1 PM para receber +10 na margem de ameaça desse ataque.',
+  ] },
+  { id: 'dist-chapeu-congelar-o-inferno', nome: 'Congelar o Inferno', grupo: 'distincao', livro: 'herois', pagina: 146,
+    tags: 'Chapéu-Preto', distincao: 'chapeu-preto', marca: false, deus: null, magica: false,
+    preReq: 'Coração Duro, dois outros poderes da distinção', custo: null, quadro: null, texto: [
+    'Quando surge um bandido realmente assustador, o tempo esfria, o sol empalidece, os animais fogem e até as pedras tremem de medo. Os mais infames chapéus-pretos podem fazer uma estátua baixar os olhos.',
+    'Quando usa um efeito de medo, você pode gastar 2 PM para ignorar quaisquer imunidades a medo e efeitos mentais dos alvos.',
+  ] },
+  { id: 'dist-chapeu-dance', nome: 'Dance!', grupo: 'distincao', livro: 'herois', pagina: 146,
+    tags: 'Chapéu-Preto', distincao: 'chapeu-preto', marca: false, deus: null, magica: false,
+    preReq: 'Coração Duro', custo: null, quadro: null, texto: [
+    'Todos os gestos do chapéu-preto inspiram ameaça.',
+    'Quando faz um teste de Intimidação, você pode gastar 2 PM para fazer uma demonstração de habilidade com sua arma como parte desse teste. Se fizer isso, você recebe um bônus em seu teste de Intimidação igual ao atributo-chave de ataque com a arma que está usando.',
+  ] },
+  { id: 'dist-chapeu-olhos-de-chumbo', nome: 'Olhos de Chumbo', grupo: 'distincao', livro: 'herois', pagina: 146,
+    tags: 'Chapéu-Preto', distincao: 'chapeu-preto', marca: false, deus: null, magica: false,
+    preReq: 'Coração Duro, ser procurado pelas autoridades por um crime', custo: null, quadro: null, texto: [
+    'Quando um chapéu-preto chega à cidade, é melhor fugir. E quando ele olha em seus olhos, você logo precisa de uma calça limpa.',
+    'Você projeta uma aura de medo com 9m de raio. Todas as criaturas a sua escolha nessa aura sofrem –2 em rolagens de dano e na Defesa. Essa penalidade aumenta em –1 para cada dois outros poderes da distinção que você possuir. Medo.',
+  ] },
+  { id: 'dist-chapeu-rapido-ou-morto', nome: 'Rápido ou Morto', grupo: 'distincao', livro: 'herois', pagina: 147,
+    tags: 'Chapéu-Preto', distincao: 'chapeu-preto', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Iniciativa, Coração Duro', custo: null, quadro: null, texto: [
+    'Quanto mais notório o bandido, mais ele precisa estar preparado para matar.',
+    'Você recebe +2 em Iniciativa e +3m em seu deslocamento. Esses bônus aumentam respectivamente em +1 e +1,5m para cada dois outros poderes da distinção que você possuir.',
+  ] },
+  { id: 'dist-chapeu-tiro-a-traicao', nome: 'Tiro à Traição', grupo: 'distincao', livro: 'herois', pagina: 147,
+    tags: 'Chapéu-Preto', distincao: 'chapeu-preto', marca: false, deus: null, magica: false,
+    preReq: 'Coração Duro, ter feito pelo menos três acertos críticos em alvos desprevenidos', custo: null, quadro: null, texto: [
+    'Nunca dê as costas a um chapéu-preto.',
+    'O dano de seus ataques com armas contra alvos desprevenidos ou sob alguma condição de medo aumenta em um passo.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.
