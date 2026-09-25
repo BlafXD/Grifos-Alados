@@ -431,6 +431,27 @@
                  calc: `1 por poder da distinção (${nTodos(n)})` };
       },
     },
+
+    // ── Médico de Salistick (Heróis de Arton, p. 182–183) ───────────
+    'dist-medico-medicina-avancada': {
+      escala(n) {
+        const u = p2(n);
+        return { txt: `Medicina cura em d10 · +${u} uso${u !== 1 ? 's' : ''} por criatura a cada dia`,
+                 calc: `+1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+    'dist-medico-medicina-preventiva': {
+      escala(n) {
+        return { txt: `cada pessoa: ${5 * n} PV temporários e +${n} em testes de resistência (1 dia)`,
+                 calc: `5 PV e +1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-medico-saude-perfeita': {
+      escala(n) {
+        return { txt: `+${2 * n} PM (além de +1 Con e imunidade a veneno)`,
+                 calc: `+2 por poder da distinção (${nTodos(n)})` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
