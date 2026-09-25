@@ -1710,6 +1710,234 @@
     'Você pode lançar Heroísmo, mas apenas sobre si mesmo. Esta não é uma habilidade mágica e provém de sua galanteria, panache e ousadia altaneira (veja “Magias Simuladas”, p. 44).',
   ] },
 
+  //  Mutagenista (p. 199–201) — 1 marca + 5 poderes. Alquimistas que
+  //  alteram o próprio corpo com mutagênicos. O quadro Mutagênicos fica
+  //  em Fabricar Mutagênicos. Escalam Fabricar Mutagênicos (tipos e
+  //  limite ativo) e Organismo Reagente. Nenhum ✦ (mutagênicos são
+  //  magia SIMULADA).
+  { id: 'dist-mutagenista-preparacao-corporal', nome: 'Preparação Corporal', grupo: 'distincao', livro: 'herois', pagina: 200,
+    tags: 'Mutagenista', distincao: 'mutagenista', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Tendo estudado os textos zarkhassianos, o mutagenista prepara seu corpo para receber seus preparados.',
+    'Você recebe +2 em Fortitude e Ofício (alquimista).',
+  ] },
+  { id: 'dist-mutagenista-fabricar-mutagenicos', nome: 'Fabricar Mutagênicos', grupo: 'distincao', livro: 'herois', pagina: 200,
+    tags: 'Mutagenista', distincao: 'mutagenista', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Fortitude e Ofício (alquimista)', custo: null,
+    quadro: { titulo: 'Mutagênicos', texto: [
+      'Mutagênicos são preparados alquímicos que exigem treinamento próprio para sua fabricação e consumo. Um mutagênico só funciona com seu fabricante, e não funciona se ele for imune a efeitos de metabolismo.',
+      'Fabricação. Mutagênicos seguem as regras de fabricação de preparados (Tormenta20, p. 121). O preço de cada mutagênico é apresentado em sua descrição e para fabricá-los você precisa ter o poder Fabricar Mutagênicos.',
+      'Ativação. Para ativar um mutagênico você precisa gastar uma ação padrão para ingeri-lo. Seu efeito dura 1 dia e o máximo de mutagênicos ativos que você pode ter é igual ao seu total de poderes da distinção. Se ingerir outro, o efeito do mais antigo termina.',
+      'Biochoque. Ao ingerir um mutagênico, faça um teste de Fortitude (CD 10, +5 por teste adicional no mesmo dia). Se falhar, você sofre um biochoque de estágio 1. Cada nova falha no mesmo dia impõe um efeito de estágio adicional. Estágio 1: o mutagênico funciona, mas você fica enjoado. Estágio 2: o mutagênico não funciona e você perde 1d12 PV. Estágio 3: o mutagênico não funciona e você perde 1d12 PV, além de ficar confuso e em fúria (como um bárbaro) enquanto estiver confuso. Estágio 4: seu corpo sofre mutações desordenadas por 1d4 rodadas. Após isso, você morre.',
+      'Exaurir. Você pode gastar uma ação livre para exaurir um mutagênico em seu corpo. Se fizer isso, seu efeito aumenta, mas termina ao fim da cena.',
+      'Sobrecarga. Quando ingere um mutagênico acima do seu limite, você pode tentar sobrecarregar seu corpo para manter o efeito mais antigo ativo. Faça um novo teste de biochoque. Se passar, você não perde o efeito anterior. Se falhar, além do biochoque, você perde todos os efeitos sobrecarregados. Seu limite de efeitos em sobrecarga é igual ao seu limite de mutagênicos.',
+      'Uso Exclusivo. Se o mutagênico for ingerido por outra criatura que não seu fabricante, não gera seu efeito e causa a perda de 2d12 PV por veneno.',
+      'Tonificante. Altera as propriedades básicas de um organismo, fornecendo +1 em um atributo específico. Esse aumento não oferece PV, PM ou perícias adicionais. Exaurir. O bônus aumenta em +1. Preço: T$ 60.',
+      'Energizante. Desenvolve habilidades excepcionais. Você pode lançar uma magia arcana de 1º círculo específica (atributo-chave Constituição) como um arcanista de seu nível. Esta não é uma habilidade mágica e provém de alterações em seu organismo (veja “Magias Simuladas”, p. 44). Exaurir. O custo da magia diminui em –1 (cumulativo com outras reduções). Preço: T$ 90.',
+      'Despersonalizante. Promove mutações poderosas e grotescas. Ingerir este mutagênico fornece uma habilidade de raça específica (exceto construtos e mortos-vivos). Exaurir. Você recebe +1 em um atributo em que a raça tenha um modificador positivo (esse aumento não oferece PV, PM ou perícias adicionais). Preço: T$ 150.',
+    ] },
+    texto: [
+    'O mutagenista desenvolve suas primeiras fórmulas.',
+    'Você pode fabricar e usar tonificantes (veja o quadro Mutagênicos). Para cada dois outros poderes da distinção, você pode fabricar e usar respectivamente energizantes e despersonalizantes.',
+  ] },
+  { id: 'dist-mutagenista-ingestao-rapida', nome: 'Ingestão Rápida', grupo: 'distincao', livro: 'herois', pagina: 200,
+    tags: 'Mutagenista', distincao: 'mutagenista', marca: false, deus: null, magica: false,
+    preReq: 'Fabricar Mutagênicos', custo: null, quadro: null, texto: [
+    'Preparados são a chave do poder do mutagenista.',
+    'Uma vez por rodada, você pode ingerir uma poção ou preparado como ação livre.',
+  ] },
+  { id: 'dist-mutagenista-mutagenia-adicional', nome: 'Mutagenia Adicional', grupo: 'distincao', livro: 'herois', pagina: 200,
+    tags: 'Mutagenista', distincao: 'mutagenista', marca: false, deus: null, magica: false,
+    preReq: 'Fabricar Mutagênicos', custo: null, quadro: null, texto: [
+    'Através de exercícios e fórmulas especiais, o mutagenista aumenta a tolerância de seu corpo a alterações.',
+    'Seu limite de mutagênicos ativos aumenta em +1.',
+  ] },
+  { id: 'dist-mutagenista-potencializar-mutagenicos', nome: 'Potencializar Mutagênicos', grupo: 'distincao', livro: 'herois', pagina: 200,
+    tags: 'Mutagenista', distincao: 'mutagenista', marca: false, deus: null, magica: false,
+    preReq: 'Organismo Reagente', custo: null, quadro: null, texto: [
+    'Com a experimentação, o mutagenista desenvolve formas ainda mais eficientes de alterar seu corpo.',
+    'O efeito básico de seus mutagênicos se torna seu efeito de exaurir (você ainda pode exauri-lo com efeitos cumulativos).',
+  ] },
+  { id: 'dist-mutagenista-organismo-reagente', nome: 'Organismo Reagente', grupo: 'distincao', livro: 'herois', pagina: 200,
+    tags: 'Mutagenista', distincao: 'mutagenista', marca: false, deus: null, magica: false,
+    preReq: 'Mutagenia Adicional', custo: null, quadro: null, texto: [
+    'O corpo do mutagenista se torna um laboratório.',
+    'Quando você ingere um preparado alquímico, se ele fornece um bônus em perícias, esse bônus aumenta em +1 e, se ele fornece PV ou PM (temporários ou por cura), esse efeito aumenta em +1 por dado. Para cada dois outros poderes da distinção, esses efeitos aumentam em +1.',
+  ] },
+
+  //  Pistoleiro de Smokestone (p. 201–204) — 1 marca + 6 poderes. Durões
+  //  das planícies que rejeitam magia e autoridade. A marca traz o quadro
+  //  O Código do Pistoleiro. Escala só Rápido no Gatilho (Iniciativa).
+  //  Nenhum ✦.
+  { id: 'dist-pistoleiro-honra-do-pistoleiro', nome: 'Honra do Pistoleiro', grupo: 'distincao', livro: 'herois', pagina: 203,
+    tags: 'Pistoleiro de Smokestone', distincao: 'pistoleiro-de-smokestone', marca: true, deus: null, magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'O Código do Pistoleiro', texto: [
+      'Há muitos tipos de pistoleiros no mundo, cada um com suas próprias crenças e costumes. Mas todos, sem exceção, acreditam em duas coisas: honra e pólvora. Certo, eles também acreditam que um verdadeiro pistoleiro não se rende a certas firulas, cultos e subordinações. Enfim, um pistoleiro não usa armaduras pesadas e escudos, nem armas que não sejam pistolas ou outras armas de fogo leves ou de uma mão (uma honrosa exceção é feita para versões híbridas dessas armas e adagas). Você pode mentir e trapacear à vontade, mas uma vez que tenha dado sua palavra ou feito uma promessa, ela é lei. Por fim, nada de cultuar deuses, seguir organizações formais ou ter qualquer tipo de título ou honraria oficial. Ah, e nada de lançar magias! Seus disparos são toda a mágica de que você precisa.',
+      'A essa altura você já sabe como a banda toca, certo? Se pisar fora da linha e violar o código, seus PM vão-se embora mais rápido que uma bala e você só vai vê-los no dia seguinte.',
+    ] },
+    texto: [
+    'Marca da distinção. “Em Smokestone, a honra é fundamental. Você é respeitado de acordo com seus atos e todos acreditam naquilo que você os faz acreditar.”',
+    'Você recebe +2 em rolagens de dano com armas de fogo leves e de uma mão. Contudo, você passa a seguir o Código do Pistoleiro (veja o quadro).',
+  ] },
+  { id: 'dist-pistoleiro-rapido-no-gatilho', nome: 'Rápido no Gatilho', grupo: 'distincao', livro: 'herois', pagina: 203,
+    tags: 'Pistoleiro de Smokestone', distincao: 'pistoleiro-de-smokestone', marca: false, deus: null, magica: false,
+    preReq: 'proficiência com armas de fogo, Saque Rápido', custo: null, quadro: null, texto: [
+    '“Você chama o infeliz para um duelo, olha bem nos olhos, saca primeiro e manda ele para o reino dos pés-juntos.”',
+    'Você recebe +2 em Iniciativa para cada poder da distinção que possui e, se for o primeiro na iniciativa, seus inimigos ficam desprevenidos contra você nessa rodada. Além disso, seu multiplicador de crítico contra criaturas desprevenidas aumenta em +1.',
+  ] },
+  { id: 'dist-pistoleiro-balada-do-pistoleiro', nome: 'Balada do Pistoleiro', grupo: 'distincao', livro: 'herois', pagina: 203,
+    tags: 'Pistoleiro de Smokestone', distincao: 'pistoleiro-de-smokestone', marca: false, deus: null, magica: false,
+    preReq: 'Morrer não é Muita Vida', custo: null, quadro: null, texto: [
+    '“Vou dar a vocês uma última chance de desistir...”',
+    'Se estiver empunhando uma ou mais armas de fogo, você pode gastar uma ação completa e uma quantidade de PM a sua escolha (limitada pela quantidade de munição dessas armas) para desferir uma série de disparos com elas. Faça um ataque à distância contra cada inimigo a sua escolha, até um limite de inimigos igual ao total de PM gastos. Então faça uma única rolagem de dano com um dado extra de dano do mesmo tipo e aplique-a em cada inimigo atingido.',
+  ] },
+  { id: 'dist-pistoleiro-buscar-cobertura', nome: 'Buscar Cobertura', grupo: 'distincao', livro: 'herois', pagina: 203,
+    tags: 'Pistoleiro de Smokestone', distincao: 'pistoleiro-de-smokestone', marca: false, deus: null, magica: false,
+    preReq: 'Rápido no Gatilho', custo: null, quadro: null, texto: [
+    '“Um pistoleiro sabe a hora de atirar e a hora de correr.”',
+    'Uma vez por rodada, você pode gastar 1 PM para se mover até uma cobertura que possa alcançar com seu deslocamento (desde que tenha um caminho desimpedido até ela).',
+  ] },
+  { id: 'dist-pistoleiro-fornecedor-de-smokestone', nome: 'Fornecedor de Smokestone', grupo: 'distincao', livro: 'herois', pagina: 203,
+    tags: 'Pistoleiro de Smokestone', distincao: 'pistoleiro-de-smokestone', marca: false, deus: null, magica: false,
+    preReq: 'Rápido no Gatilho', custo: null, quadro: null, texto: [
+    '“Eu conheço um cara…”',
+    'Quando chega em uma comunidade equivalente a uma vila ou maior, você pode gastar 2 PM para fazer um teste de Carisma (CD 10). Se passar, enquanto estiver nessa comunidade, pode comprar armas de fogo de qualquer tipo e suas munições com 20% de desconto (não cumulativo com barganha e outros descontos) e pode conseguir qualquer cuidado ou manutenção necessários para essas armas.',
+  ] },
+  { id: 'dist-pistoleiro-morrer-nao-e-muita-vida', nome: 'Morrer não é Muita Vida', grupo: 'distincao', livro: 'herois', pagina: 203,
+    tags: 'Pistoleiro de Smokestone', distincao: 'pistoleiro-de-smokestone', marca: false, deus: null, magica: false,
+    preReq: 'Buscar Cobertura', custo: null, quadro: null, texto: [
+    '“A vida é dura, mas eu sou mais.”',
+    'Você aprendeu a se defender com o que tem. Quando se move 6m ou mais, você recebe +2 na Defesa e em Reflexos. Além disso, carrega um amuleto da sorte, como um tibar ou uma garrafinha de metal, que já salvou sua vida mais de uma vez. Uma vez por cena, quando sofre dano que o levaria a 0 PV ou menos, você pode ignorar esse dano.',
+  ] },
+  { id: 'dist-pistoleiro-viajante-das-planicies', nome: 'Viajante das Planícies', grupo: 'distincao', livro: 'herois', pagina: 203,
+    tags: 'Pistoleiro de Smokestone', distincao: 'pistoleiro-de-smokestone', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Cavalgar, Rápido no Gatilho', custo: null, quadro: null, texto: [
+    '“Você não trouxe um cavalo a menos, trouxe dois a mais…”',
+    'Você recebe um cavalo de guerra parceiro veterano. Caso já possua uma montaria fornecida por outra habilidade, em vez disso essa montaria se torna também um parceiro vigilante iniciante. Em ambos os casos, nessa montaria você não sofre a penalidade em testes de ataque à distância enquanto montado. Caso perca sua montaria, você pode treinar outra com uma semana de trabalho.',
+  ] },
+
+  //  Professor de Magia (p. 204–207) — 1 marca + 5 poderes. Docentes da
+  //  Academia Arcana. Escalam Pedagogia Mágica (usos por aluno) e Orgulho
+  //  do Mestre (PM temporários). ✦: Pena e Pergaminho (marca).
+  { id: 'dist-professor-pena-e-pergaminho', nome: 'Pena e Pergaminho', grupo: 'distincao', livro: 'herois', pagina: 206,
+    tags: 'Professor de Magia', distincao: 'professor-de-magia', marca: true, deus: null, magica: true,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Wynna e Tanna-Toh sorriem para aqueles que se dedicam ao ensino.',
+    'Você aprende e pode lançar uma magia de adivinhação, arcana ou divina, a sua escolha, de qualquer círculo a que tenha acesso.',
+  ] },
+  { id: 'dist-professor-pedagogia-magica', nome: 'Pedagogia Mágica', grupo: 'distincao', livro: 'herois', pagina: 206,
+    tags: 'Professor de Magia', distincao: 'professor-de-magia', marca: false, deus: null, magica: false,
+    preReq: 'lançar magias de 2º círculo, Foco em Perícia (Misticismo)', custo: null, quadro: null, texto: [
+    'Um professor de magia domina meios peculiares de transmissão do conhecimento.',
+    'Você pode gastar 1 hora e 1 PM para lecionar para uma quantidade de alunos igual à sua Inteligência. Escolha uma de suas magias de 1º círculo. Até o próximo dia, cada aluno pode lançar essa magia uma única vez, pagando seu custo normal (atributo-chave Inteligência). Para cada outros dois poderes da distinção que você possui, cada aluno pode lançar a magia “aprendida” uma vez adicional no mesmo dia. Se o aluno já conhecia essa magia, pode lançá-la esse número de vezes com custo diminuído em –1 PM.',
+  ] },
+  { id: 'dist-professor-introducao-a-magia', nome: 'Introdução à Magia', grupo: 'distincao', livro: 'herois', pagina: 206,
+    tags: 'Professor de Magia', distincao: 'professor-de-magia', marca: false, deus: null, magica: false,
+    preReq: 'Pedagogia Mágica', custo: null, quadro: null, texto: [
+    'Alunos nessa etapa de aprendizado precisam de tutoria mais próxima e atenta.',
+    'Você e seus aliados em alcance curto recebem +2 em Misticismo e Vontade. Além disso, sempre que você lança uma magia, o custo das magias de seus aliados diminui em –1 PM por 1 rodada.',
+  ] },
+  { id: 'dist-professor-demonstracoes-praticas', nome: 'Demonstrações Práticas', grupo: 'distincao', livro: 'herois', pagina: 206,
+    tags: 'Professor de Magia', distincao: 'professor-de-magia', marca: false, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Nessa fase do aprendizado, exemplos práticos falam mais alto do que qualquer outra coisa…',
+    'Quando um inimigo falha em um teste de resistência contra uma de suas magias, você pode fazer um teste de Misticismo para ajudar. Até a próxima rodada, cada aliado em alcance curto recebe um bônus em Misticismo e na CD de suas magias igual ao bônus fornecido por essa ajuda.',
+  ] },
+  { id: 'dist-professor-notorio-saber-arcano', nome: 'Notório Saber Arcano', grupo: 'distincao', livro: 'herois', pagina: 207,
+    tags: 'Professor de Magia', distincao: 'professor-de-magia', marca: false, deus: null, magica: false,
+    preReq: 'Orgulho do Mestre, dois poderes de aprimoramento', custo: null, quadro: null, texto: [
+    'Todo o respeito da Academia pelos mestres de notório saber.',
+    'Você recebe um assistente, um parceiro veterano a sua escolha entre adepto e magivocador. Além disso, o custo adicional de seus poderes de aprimoramento diminui em –1 PM (somente com magias arcanas).',
+  ] },
+  { id: 'dist-professor-orgulho-do-mestre', nome: 'Orgulho do Mestre', grupo: 'distincao', livro: 'herois', pagina: 207,
+    tags: 'Professor de Magia', distincao: 'professor-de-magia', marca: false, deus: null, magica: false,
+    preReq: 'Demonstrações Práticas', custo: null, quadro: null, texto: [
+    'Um verdadeiro professor vibra profundamente com as vitórias de seus alunos.',
+    'Sempre que um inimigo falha em um teste de resistência contra uma magia de um aliado em alcance curto, se essa magia custou pelo menos 1 PM, você recebe 1 PM temporário cumulativo. Você pode ganhar um máximo de PM temporários por cena igual ao dobro do número de poderes da distinção que possui, e eles desaparecem no fim da cena.',
+  ] },
+
+  //  Senador (p. 207–210) — 1 marca + 5 poderes. Políticos minotauros do
+  //  Império de Tauron (o box "O Curso de Honra" é lore, não vira quadro).
+  //  Escalam Cofres Fundos (fundos e itens), Apoio Popular (nível dos
+  //  parceiros), Inocência Convicta e Um Minotauro de Bem. Nenhum ✦.
+  { id: 'dist-senador-retorica-impecavel', nome: 'Retórica Impecável', grupo: 'distincao', livro: 'herois', pagina: 208,
+    tags: 'Senador', distincao: 'senador', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Enquanto as legiões lutam com gládios e escudos, o senador luta com palavras.',
+    'Você recebe +2 em Nobreza e pode usar Carisma como atributo-chave dessa perícia (em vez de Inteligência).',
+  ] },
+  { id: 'dist-senador-cofres-fundos', nome: 'Cofres Fundos', grupo: 'distincao', livro: 'herois', pagina: 209,
+    tags: 'Senador', distincao: 'senador', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Diplomacia e Nobreza', custo: null, quadro: null, texto: [
+    'Um senador que trabalha para o povo é a garantia de impostos bem gastos.',
+    'Uma vez por aventura, você pode receber fundos do Senado. Faça um teste de Carisma com um bônus de +4 por poder da distinção. Você recebe um número de tibares de ouro igual ao resultado do teste. Se tiver pelo menos três poderes da distinção, também pode requisitar um item mágico menor, que deve ser devolvido (ou reembolsado) ao Senado no fim da aventura. Se tiver cinco poderes da distinção, o item requisitado pode ser médio. O uso deste poder é condicionado ao local onde você se encontra e a sua possibilidade de contactar o Senado ou seus representantes.',
+  ] },
+  { id: 'dist-senador-apoio-popular', nome: 'Apoio Popular', grupo: 'distincao', livro: 'herois', pagina: 209,
+    tags: 'Senador', distincao: 'senador', marca: false, deus: null, magica: false,
+    preReq: 'Um Minotauro de Bem', custo: null, quadro: null, texto: [
+    'A voz do povo é a voz do Senado.',
+    'Você pode usar o poder Autoridade Feudal (Tormenta20, p. 79). Se já o possui, pode conclamar dois parceiros pagando os custos de cada um. Para cada dois outros poderes da distinção, o nível desses parceiros aumenta em um (de iniciante para veterano, de veterano para mestre).',
+  ] },
+  { id: 'dist-senador-deliberacao-desnorteante', nome: 'Deliberação Desnorteante', grupo: 'distincao', livro: 'herois', pagina: 209,
+    tags: 'Senador', distincao: 'senador', marca: false, deus: null, magica: false,
+    preReq: 'Cofres Fundos', custo: null, quadro: null, texto: [
+    'Sua argumentação complexa e intrincada é capaz de deixar seus adversários sem reação.',
+    'Quando usa uma habilidade que exige um teste de Vontade, você pode gastar 1 PM. Se fizer isso, as criaturas que falharem nesse teste ficam pasmas por 1 rodada (uma vez por cena).',
+  ] },
+  { id: 'dist-senador-inocencia-convicta', nome: 'Inocência Convicta', grupo: 'distincao', livro: 'herois', pagina: 209,
+    tags: 'Senador', distincao: 'senador', marca: false, deus: null, magica: false,
+    preReq: 'Um Minotauro de Bem', custo: null, quadro: null, texto: [
+    '“É uma mentira da Legião Imperial! Mentira da Legião Imperial! Mentira!”',
+    'Quando falha em um teste de resistência, você pode gastar 2 PM para rolar novamente, usando Nobreza em vez da perícia original, com um bônus igual ao total de poderes da distinção que você possui.',
+  ] },
+  { id: 'dist-senador-um-minotauro-de-bem', nome: 'Um Minotauro de Bem', grupo: 'distincao', livro: 'herois', pagina: 209,
+    tags: 'Senador', distincao: 'senador', marca: false, deus: null, magica: false,
+    preReq: 'Cofres Fundos', custo: null, quadro: null, texto: [
+    'Um senador é reconhecido como um membro honrado e prestigioso da sociedade.',
+    'Você recebe +1 em testes de perícias baseadas em Carisma e na CD dos testes de Vontade para resistir às suas habilidades. Para cada outro poder da distinção, esses bônus aumentam em +1.',
+  ] },
+
+  //  Vigarista (p. 210–213) — 1 marca + 5 poderes. Golpistas de charme e
+  //  cara de pau. Escalam Aquele Papinho, Efeito Placebo (poções) e
+  //  Relíquias Sagradas. Nenhum ✦ (é tudo magia SIMULADA/farsa).
+  { id: 'dist-vigarista-tirar-leite-de-pedra', nome: 'Tirar Leite de Pedra', grupo: 'distincao', livro: 'herois', pagina: 213,
+    tags: 'Vigarista', distincao: 'vigarista', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Onde os outros veem miséria, o vigarista vê oportunidade.',
+    'Quando está em qualquer tipo de comunidade, você pode usar Enganação para fazer testes de sustento (Tormenta20, p. 128) com pequenos golpes: vendendo poções falsas, lixo como relíquias sagradas ou qualquer outro produto enganoso. Você leva 1 dia, em vez de uma semana, para fazer esse teste, e recebe um bônus de +2 em cidades, +5 em vilas e +10 em aldeias. Se falhar em um teste, não pode tentar de novo na mesma comunidade durante um mês… e, se rolar 1 natural no teste, é desmascarado pela população!',
+  ] },
+  { id: 'dist-vigarista-aquele-papinho', nome: 'Aquele Papinho', grupo: 'distincao', livro: 'herois', pagina: 213,
+    tags: 'Vigarista', distincao: 'vigarista', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Enganação, Aparência Inofensiva', custo: null, quadro: null, texto: [
+    'Uma boa conversa, uma cara inocente… e o vigarista tem seu alvo na palma da sua mão.',
+    'Você recebe +1 em Diplomacia, Enganação e Intuição e na CD de suas habilidades (exceto magias) baseadas em Carisma. Esses bônus aumentam em +1 para cada outro poder da distinção que você possuir.',
+  ] },
+  { id: 'dist-vigarista-calma-la', nome: 'Calma Lá', grupo: 'distincao', livro: 'herois', pagina: 213,
+    tags: 'Vigarista', distincao: 'vigarista', marca: false, deus: null, magica: false,
+    preReq: 'Aquele Papinho', custo: null, quadro: null, texto: [
+    'Uma língua rápida é vital para quem vive de passar os outros para trás.',
+    'Você não sofre a penalidade de –10 por fazer um teste de Diplomacia para mudar atitude como uma ação completa e, quando a primeira rodada de combate se inicia, pode fazer um desses testes antes de todos os participantes agirem. Se mudar a atitude de algum inimigo para indiferente ou melhor dessa forma, em vez disso ele fica pasmo por 1 rodada.',
+  ] },
+  { id: 'dist-vigarista-efeito-placebo', nome: 'Efeito Placebo', grupo: 'distincao', livro: 'herois', pagina: 213,
+    tags: 'Vigarista', distincao: 'vigarista', marca: false, deus: null, magica: false,
+    preReq: 'Aquele Papinho', custo: null, quadro: null, texto: [
+    '“Mas é claro que funciona! Eu mentiria para você?”',
+    'Para cada poder da distinção, escolha uma magia de 1º círculo, arcana ou divina, que possa ser transformada em poção. Você pode gastar uma ação completa e 3 PM para transformar um de seus misteriosos elixires de água com açúcar em uma poção de uma dessas magias instantaneamente (atributo-chave Carisma). O custo do item é reduzido à metade e você não precisa fazer o teste de Ofício (alquimista), mas a poção só dura até o fim da cena.',
+  ] },
+  { id: 'dist-vigarista-na-cara-nao', nome: 'Na Cara Não!', grupo: 'distincao', livro: 'herois', pagina: 213,
+    tags: 'Vigarista', distincao: 'vigarista', marca: false, deus: null, magica: false,
+    preReq: 'Aquele Papinho, Rolamento Defensivo', custo: null, quadro: null, texto: [
+    'A melhor forma de vencer uma briga é nunca entrar nela… Mas, se o trobo já foi para o brejo, o vigarista sabe pelo menos evitar o pior.',
+    'Quando usa Rolamento Defensivo, você recebe um uso adicional de Aparência Inofensiva nessa cena.',
+  ] },
+  { id: 'dist-vigarista-reliquias-sagradas', nome: 'Relíquias Sagradas', grupo: 'distincao', livro: 'herois', pagina: 213,
+    tags: 'Vigarista', distincao: 'vigarista', marca: false, deus: null, magica: false,
+    preReq: 'Calma Lá, Efeito Placebo', custo: null, quadro: null, texto: [
+    'Certos vigaristas conseguem enredar até os deuses em sua teia de mentiras.',
+    'Você pode enfeitar um item mundano com motivos religiosos para que ele se pareça com um acessório mágico menor a sua escolha. Fazer isso gasta 1 hora de trabalho e 1/100 do preço do acessório. Para usar a “relíquia” primeiro você precisa empunhá-la (ou vesti-la) e gastar uma ação de movimento e 2 PM para professar seus poderes em voz alta. Se fizer isso, ela funciona como se fosse verdadeira até o fim da cena, ou até você ativar outra de suas relíquias. Você pode ter até uma relíquia sagrada por poder da distinção que possuir.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.

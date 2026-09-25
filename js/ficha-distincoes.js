@@ -526,6 +526,92 @@
                  calc: `1 base, +1 a cada dois dos ${nOutros(n)}` };
       },
     },
+
+    // ── Mutagenista (Heróis de Arton, p. 200) ───────────────────────
+    'dist-mutagenista-fabricar-mutagenicos': {
+      escala(n) {
+        const tipos = 'tonificantes' + (p2(n) >= 1 ? ', energizantes' : '') + (p2(n) >= 2 ? ' e despersonalizantes' : '');
+        return { txt: `${n} mutagênico${n !== 1 ? 's' : ''} ativo${n !== 1 ? 's' : ''}; fabrica ${tipos}`,
+                 calc: `limite ativo = total de poderes (${nTodos(n)}); energizante com 2 outros poderes, despersonalizante com 4` };
+      },
+    },
+    'dist-mutagenista-organismo-reagente': {
+      escala(n) {
+        return { txt: `+${1 + p2(n)} em perícia / por dado dos preparados que ingere`,
+                 calc: `1 base, +1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+
+    // ── Pistoleiro de Smokestone (Heróis de Arton, p. 203) ──────────
+    'dist-pistoleiro-rapido-no-gatilho': {
+      escala(n) {
+        return { txt: `+${2 * n} em Iniciativa`,
+                 calc: `+2 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Professor de Magia (Heróis de Arton, p. 206–207) ────────────
+    'dist-professor-pedagogia-magica': {
+      escala(n) {
+        const u = 1 + p2(n);
+        return { txt: `cada aluno lança a magia ${u}×/dia`,
+                 calc: `1 base, +1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+    'dist-professor-orgulho-do-mestre': {
+      escala(n) {
+        return { txt: `até ${2 * n} PM temporários por cena (1 por magia de aliado que acerta)`,
+                 calc: `2 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Senador (Heróis de Arton, p. 209) ───────────────────────────
+    'dist-senador-cofres-fundos': {
+      escala(n) {
+        const item = n >= 5 ? '; requisita item mágico médio' : (n >= 3 ? '; requisita item mágico menor' : '');
+        return { txt: `+${4 * n} no teste de Carisma para fundos${item}`,
+                 calc: `+4 por poder da distinção (${nTodos(n)}); item com 3, médio com 5` };
+      },
+    },
+    'dist-senador-apoio-popular': {
+      escala(n) {
+        const niv = p2(n);
+        return { txt: niv ? `parceiros da Autoridade Feudal +${niv} nível${niv !== 1 ? 'is' : ''}` : 'parceiros da Autoridade Feudal (iniciantes)',
+                 calc: `+1 nível a cada dois dos ${nOutros(n)}` };
+      },
+    },
+    'dist-senador-inocencia-convicta': {
+      escala(n) {
+        return { txt: `refaz a resistência com Nobreza +${n}`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-senador-um-minotauro-de-bem': {
+      escala(n) {
+        return { txt: `+${1 + outros(n)} em perícias de Carisma e na CD das suas habilidades`,
+                 calc: `1 base, +1 por cada um dos ${nOutros(n)}` };
+      },
+    },
+
+    // ── Vigarista (Heróis de Arton, p. 213) ─────────────────────────
+    'dist-vigarista-aquele-papinho': {
+      escala(n) {
+        return { txt: `+${1 + outros(n)} em Diplomacia, Enganação, Intuição e na CD das suas habilidades de Carisma`,
+                 calc: `1 base, +1 por cada um dos ${nOutros(n)}` };
+      },
+    },
+    'dist-vigarista-efeito-placebo': {
+      escala(n) {
+        return { txt: `${n} magia${n !== 1 ? 's' : ''} de 1º círculo à escolha (elixir vira poção)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-vigarista-reliquias-sagradas': {
+      escala(n) {
+        return { txt: `até ${n} relíquia${n !== 1 ? 's' : ''} sagrada${n !== 1 ? 's' : ''} (acessório mágico menor falso)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
