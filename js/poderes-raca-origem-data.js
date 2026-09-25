@@ -1046,6 +1046,53 @@
     'Você pode memorizar um número de magias adicionais por dia igual ao total de poderes da distinção que possui, mas só pode memorizar dessa forma magias que causam dano do mesmo tipo que a essência dracônica de seu mestre.',
   ] },
 
+  //  Drogadora (p. 153–156) — 1 marca + 5 poderes. Curandeiras dos povos-
+  //  trovão que usam o próprio corpo como laboratório. O quadro Receitas
+  //  da Drogadora fica em Remédios da Floresta (o poder que as concede).
+  //  Escalam quatro poderes (Curandeira Exímia, Aspersão Curativa,
+  //  Laboratório Natural, Perfume Intoxicante) + as receitas de Remédios
+  //  da Floresta. Nenhum ✦.
+  { id: 'dist-drogadora-tradicao-da-cura', nome: 'Tradição da Cura', grupo: 'distincao', livro: 'herois', pagina: 155,
+    tags: 'Drogadora', distincao: 'drogadora', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Para uma drogadora, o preparo de remédios e poções é um ato instintivo e natural.',
+    'Você pode usar Sabedoria como atributo-chave de Ofício (alquimista) em vez de Inteligência. Se já faz isso por outro efeito, em vez disso recebe +2 nessa perícia.',
+  ] },
+  { id: 'dist-drogadora-curandeira-exima', nome: 'Curandeira Exímia', grupo: 'distincao', livro: 'herois', pagina: 155,
+    tags: 'Drogadora', distincao: 'drogadora', marca: false, deus: null, magica: false,
+    preReq: 'treinada em Cura e Ofício (alquimista), Vitalidade', custo: null, quadro: null, texto: [
+    'A drogadora aprende técnicas curativas que usam seu próprio corpo para fortalecer remédios.',
+    'Seu corpo conta como uma maleta de medicamentos e instrumentos de Ofício (alquimista) e fornece um bônus nessas perícias igual ao total de poderes da distinção que você possui. Além disso, quando usa um preparado de cura que você mesma tenha fabricado, você soma sua Constituição no total de pontos de vida recuperados pelo item.',
+  ] },
+  { id: 'dist-drogadora-aspersao-curativa', nome: 'Aspersão Curativa', grupo: 'distincao', livro: 'herois', pagina: 155,
+    tags: 'Drogadora', distincao: 'drogadora', marca: false, deus: null, magica: false,
+    preReq: 'Curandeira Exímia', custo: null, quadro: null, texto: [
+    'As emanações corporais da drogadora atuam como medicamentos poderosos sob seu controle.',
+    'Você pode gastar uma ação padrão e 3 PV (que não podem ser temporários) para secretar um líquido curativo sobre outra criatura adjacente. A criatura cura 3d6+3 pontos de vida ou uma de suas condições entre abalado, apavorado, alquebrado, atordoado, cego, confuso, debilitado, enjoado, envenenado, esmorecido, exausto, fascinado, fatigado, fraco, frustrado, lento, ofuscado, paralisado, pasmo ou surdo. Para cada outros dois poderes da distinção, você pode gastar mais 3 PV quando usa este poder para curar mais 3d6+3 PV ou mais uma condição (em qualquer combinação de efeitos). Pontos de vida gastos dessa forma só podem ser recuperados com descanso.',
+  ] },
+  { id: 'dist-drogadora-laboratorio-natural', nome: 'Laboratório Natural', grupo: 'distincao', livro: 'herois', pagina: 155,
+    tags: 'Drogadora', distincao: 'drogadora', marca: false, deus: null, magica: false,
+    preReq: 'Remédios da Floresta', custo: null, quadro: null, texto: [
+    'O corpo da drogadora se torna um laboratório natural, capaz de converter ingredientes em fórmulas como um processo biológico.',
+    'Um número de vezes por dia igual ao seu número de poderes da distinção, você pode fazer um teste de Ofício (alquimista) para fabricar um item alquímico ou uma poção, sem gastar tempo (mas você ainda gasta as matérias-primas).',
+  ] },
+  { id: 'dist-drogadora-perfume-intoxicante', nome: 'Perfume Intoxicante', grupo: 'distincao', livro: 'herois', pagina: 155,
+    tags: 'Drogadora', distincao: 'drogadora', marca: false, deus: null, magica: false,
+    preReq: 'Curandeira Exímia', custo: null, quadro: null, texto: [
+    'A drogadora aprende a metabolizar feromônios em seu corpo, capazes de marcar perigos e preparar seus aliados contra eles.',
+    'Você recebe +2 em Adestramento e Diplomacia e, quando você sofre um ataque corpo a corpo (sendo acertada ou não), o atacante é marcado por seus feromônios até o fim da cena. Você e seus aliados ignoram a camuflagem de criaturas marcadas dessa forma e recebem +2 em testes de ataque corpo a corpo ou à distância em alcance curto contra elas. Para cada dois outros poderes da distinção, todos os bônus fornecidos por este poder aumentam em +1.',
+  ] },
+  { id: 'dist-drogadora-remedios-da-floresta', nome: 'Remédios da Floresta', grupo: 'distincao', livro: 'herois', pagina: 156,
+    tags: 'Drogadora', distincao: 'drogadora', marca: false, deus: null, magica: false,
+    preReq: 'Curandeira Exímia', custo: null,
+    quadro: { titulo: 'Receitas da Drogadora', texto: [
+      'Quando adquire o poder Remédios da Floresta, você aprende suas primeiras receitas. Uma receita é uma magia divina ou arcana que pode ser usada para fabricar poções com esse poder. Você começa com uma quantidade de receitas de 1º círculo igual à sua Sabedoria. Para cada poder da distinção, você aprende uma receita adicional, que pode ser de até 2º círculo. Suas receitas são aprendidas como parte da tradição oral das drogadoras e não dependem de um livro ou outra forma de registro.',
+    ] },
+    texto: [
+    'A drogadora aprende a empregar seu próprio corpo para produzir poções mágicas.',
+    'Você aprende suas primeiras receitas de drogadora (veja o quadro) e pode gastar uma ação padrão para fabricar uma poção com essas receitas instantaneamente. Você não paga seu custo em tibares, mas gasta uma quantidade de PV (que não podem ser temporários) igual ao custo em PM da magia, e a poção só dura até o fim da cena. Pontos de vida perdidos dessa forma só podem ser recuperados por descanso.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.

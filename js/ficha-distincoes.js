@@ -300,6 +300,39 @@
                  calc: `1 por poder da distinção (${nTodos(n)})` };
       },
     },
+
+    // ── Drogadora (Heróis de Arton, p. 155–156) ─────────────────────
+    'dist-drogadora-curandeira-exima': {
+      escala(n) {
+        return { txt: `+${n} em Cura e Ofício (alquimista) (seu corpo é a maleta)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-drogadora-aspersao-curativa': {
+      escala(n) {
+        const v = 1 + p2(n);
+        return { txt: `${v} ${v !== 1 ? 'secreções' : 'secreção'} por uso (cada: 3 PV → 3d6+3 PV ou 1 condição)`,
+                 calc: `1 base, +1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+    'dist-drogadora-laboratorio-natural': {
+      escala(n) {
+        return { txt: `${n} ${n !== 1 ? 'fabricações' : 'fabricação'} instantânea${n !== 1 ? 's' : ''} por dia`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-drogadora-perfume-intoxicante': {
+      escala(n) {
+        return { txt: `+${2 + p2(n)} em Adestramento, Diplomacia e nos ataques contra alvos marcados`,
+                 calc: `2 base, +1 a cada dois dos ${nOutros(n)}` };
+      },
+    },
+    'dist-drogadora-remedios-da-floresta': {
+      escala(n) {
+        return { txt: `+${n} receita${n !== 1 ? 's' : ''} de até 2º círculo (além das de 1º = Sabedoria)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
