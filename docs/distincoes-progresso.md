@@ -16,7 +16,7 @@
   🩸 do cartão integra à conta da Tormenta se a mesa quiser.
 - Dados em `js/poderes-raca-origem-data.js`; escalas em `js/ficha-distincoes.js`.
 
-## ✅ Feitas (14 de 36)
+## ✅ Feitas (15 de 36)
 
 1. **Aeronauta Goblin** (p. 105–108) — escala: Cabeça nas Nuvens.
 2. **Algoz da Tormenta** (p. 109–111) — escalam: Desprezo Profano, Ataque Corrupto.
@@ -32,44 +32,41 @@
 12. **Cavaleiro do Corvo** (p. 138–141) — 7 poderes; escalam: A Qualquer Custo (benefícios de missão), Postura de Combate: Tomada Furtiva (+1 a cada dois outros). Marca traz o quadro *A Língua dos Corvos*.
 13. **Cavaleiro Feérico** (p. 142–144) — marca Conexão Feérica (+1 PM por poder); escalam Arte Élfica (círculo máx = total de poderes), Armadura da Floresta (melhorias a cada dois OUTROS), Flagelo dos Duyshidakk (+dano = total), Lâminas Feéricas (margem +1 "a cada dois poderes" = ⌊n/2⌋, sem "outros" — usa `t2`, novo helper). Só **Arma da Floresta** é ✦.
 14. **Chapéu-Preto** (p. 145–147) — marca Esse Maldito Chapéu (quadro *A Maldição do Chapéu Preto*); escalam Olhos de Chumbo (−2 −1 a cada dois outros) e Rápido ou Morto (Iniciativa +2 e deslocamento +3m, subindo +1/+1,5m a cada dois outros). Nenhum ✦.
+15. **Cobaia dos Médicos Monstros** (p. 148–150) — marca Procedimento Inicial (quadro *Implantes*: regras + 10 implantes, Olho Anulador e Olho Desintegrador são ✦); escalam Enxerto Experimental (dado 1d4 sobe um passo por OUTRO poder, via `passoDeDano`) e Corpo Resiliente (limite de implantes +1, +1 a cada dois outros). Nenhum PODER é ✦ (o ✦ está nos implantes-item do quadro).
 
-## ⏭ Faltam (22) — lista PROVISÓRIA
+## ⏭ Faltam (21) — lista REAL da ToC (p. 148–211)
 
-A extração de 2 colunas embaralha títulos e ordem; **o título e a página de cada uma são
-conferidos no PDF na hora de transcrever**. A próxima é a 13.
+> **Lista corrigida em 25/09/2026 pela ToC do PDF** (p. 3–4 do arquivo). A antiga lista
+> provisória estava fora de ordem e com títulos inexistentes ("Doutor Genial",
+> "Cavaleiro Bandido"…) e omitia Cobaia, Engenhoqueiro Goblin, Infiltrador de Wynlla e os
+> dois Magos de Wynlla. A página é a de INÍCIO na ToC — os poderes vêm 1–2 páginas depois.
+> A próxima é a 16.
 
-> **Achado da leva 9–12 (o ✦ mágico).** No `-layout -enc UTF-8`, o ícone ✦ de "poder
-> mágico" é extraído como um " e" solto grudado no fim do poder (ex.: "…Ás na Manga. e").
-> Cace o marcador com `awk '/\. e[[:space:]]*$/'` na região da distinção — foi assim que se
-> viu que só o **Jogo Perigoso** (Carteador) é mágico entre a 9 e a 12.
+> **Achado (o ✦ mágico).** No `-layout -enc UTF-8`, o ✦ de "poder mágico" sai como um
+> " e" solto no fim do poder. Cace com `awk '/\. e[[:space:]]*$/'`; a coluna direita pode
+> esconder o marcador, então confirme no corpo reconstruído por página.
 
-- [x] 13. **Cavaleiro Feérico** — FEITA (p. 142–144).
-- [x] 14. **Chapéu-Preto** — FEITA (p. 145–147).
-- [ ] 15. **Dracomante Real** (p. 151 pela ToC) — próxima. ATENÇÃO: entre Chapéu-Preto (p.147) e Dracomante há a **Cobaia dos Médicos Monstros** (p.147–150, o "Doutor Genial"/goblin cientista da lista provisória) — conferir a ordem das marcas no PDF, a lista pode estar fora de ordem.
-- [ ] 16. **Drogadora** (~p. 149)
-- [ ] 17. **Doutor Genial** (~p. 150) — goblin cientista *(conferir título)*
-- [ ] 18. **Escapista Magnífico** (~p. 151)
-- [ ] 19. **Gigante Furioso** (~p. 152)
-- [ ] 20. **Ginete de Namalkah**
-- [ ] 21. **Guerreiro Mágico** — treina na Academia Arcana
-- [ ] 22. *(golpes + magia de Wynna)* — **conferir título** (~p. 150)
-- [ ] 23. *(esotérico / componente único — "os três magos")* — **conferir título** (~p. 151)
-- [ ] 24. **Médico de Salistick**
-- [ ] 25. **Mestre Bêbado**
-- [ ] 26. **Mestre Cozinheiro**
-- [ ] 27. **Mestre dos Desejos** — qareen
-- [ ] 28. **Mestre de Mahou-Jutsu** *(conferir título)*
-- [ ] 29. **Mosqueteiro**
-- [ ] 30. **Mutagenista**
-- [ ] 31. **Pistoleiro de Smokestone**
-- [ ] 32. **Professor de Magia**
-- [ ] 33. **Senador** — minotauro
-- [ ] 34. **Vigarista**
-
-> São 34 nomes provisórios acima para 28 vagas porque algumas linhas ainda podem ser
-> sidebar (não distinção) e outras podem estar faltando: **a contagem certa é 36 marcas**
-> ("Marca da Distinção") no PDF. Ao transcrever, siga as marcas em ordem e ajuste esta
-> lista — riscando o que entrar e corrigindo título/página.
+- [ ] 16. **Dracomante Real** (p. 151)
+- [ ] 17. **Drogadora** (p. 154)
+- [ ] 18. **Engenhoqueiro Goblin** (p. 157)
+- [ ] 19. **Escapista Magnífico** (p. 160)
+- [ ] 20. **Gigante Furioso** (p. 163)
+- [ ] 21. **Ginete de Namalkah** (p. 166)
+- [ ] 22. **Guerreiro Mágico** (p. 169)
+- [ ] 23. **Infiltrador de Wynlla** (p. 172)
+- [ ] 24. **Mago da Ordem do Vazio** (p. 175)
+- [ ] 25. **Mago de Batalha de Wynlla** (p. 178)
+- [ ] 26. **Médico de Salistick** (p. 181)
+- [ ] 27. **Mestre Bêbado** (p. 184)
+- [ ] 28. **Mestre Cozinheiro** (p. 187)
+- [ ] 29. **Mestre dos Desejos** (p. 190) — qareen
+- [ ] 30. **Mestre Mahou-Jutsu** (p. 193)
+- [ ] 31. **Mosqueteiro de Rishantor** (p. 196)
+- [ ] 32. **Mutagenista** (p. 199)
+- [ ] 33. **Pistoleiro de Smokestone** (p. 202)
+- [ ] 34. **Professor de Magia** (p. 205)
+- [ ] 35. **Senador** (p. 208)
+- [ ] 36. **Vigarista** (p. 211)
 
 ## Método por distinção (o que fazer em cada uma)
 
