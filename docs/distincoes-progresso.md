@@ -16,7 +16,7 @@
   🩸 do cartão integra à conta da Tormenta se a mesa quiser.
 - Dados em `js/poderes-raca-origem-data.js`; escalas em `js/ficha-distincoes.js`.
 
-## ✅ Feitas (23 de 36)
+## ✅ Feitas (24 de 36)
 
 1. **Aeronauta Goblin** (p. 105–108) — escala: Cabeça nas Nuvens.
 2. **Algoz da Tormenta** (p. 109–111) — escalam: Desprezo Profano, Ataque Corrupto.
@@ -41,8 +41,9 @@
 21. **Ginete de Namalkah** (p. 165–168) — marca Amalkhan (quadro *Irmão Cavalo*). **NENHUMA escala no motor**: os poderes crescem com o NÍVEL do parceiro montaria, não com o nº de poderes (fica no texto). Nenhum ✦.
 22. **Guerreiro Mágico** (p. 168–171) — marca Arma Arcana (magia empunhando arma). Escala Estilo de Combate Arcano (bônus do estilo +1 por outro poder). ✦: Fogo e Aço.
 23. **Infiltrador de Wynlla** (p. 171–174) — marca Ladinagem Mágica (✦). Escala Trapaça Arcana (círculo: 1º, e 2º com 3+ poderes; magias conhecidas = 2 + outros). ✦: Ladinagem Mágica (marca) e Criar Armadilha Mágica. Magia Traiçoeira é um poder-Aprimoramento (Custo +2 PM).
+24. **Mago da Ordem do Vazio** (p. 175–177) — marca Componente Especial (troca componentes materiais por um componente único; quadro *Componentes Especiais*). Escalam Ingrediente Secreto (PM de +2d6 essência por PM) e Inovação Particular (CD +2 por poder contra anular/dissipar). Nenhum ✦.
 
-## ⏭ Faltam (13) — lista REAL da ToC (p. 175–211)
+## ⏭ Faltam (12) — lista REAL da ToC (p. 178–211)
 
 > **Lista corrigida em 25/09/2026 pela ToC do PDF** (p. 3–4 do arquivo). A antiga lista
 > provisória estava fora de ordem e com títulos inexistentes ("Doutor Genial",
@@ -54,8 +55,7 @@
 > " e" solto no fim do poder. Cace com `awk '/\. e[[:space:]]*$/'`; a coluna direita pode
 > esconder o marcador, então confirme no corpo reconstruído por página.
 
-- [ ] 24. **Mago da Ordem do Vazio** (p. 175) — próxima (marca Componente Especial; cada mago escolhe um componente alternativo único)
-- [ ] 25. **Mago de Batalha de Wynlla** (p. 178)
+- [ ] 25. **Mago de Batalha de Wynlla** (p. 178) — próxima. Marca Armamento Esotérico; tem o quadro *Conjuração Magibélica* (técnicas Expandir/Fortalecer/Intensificar/Potencializar) usado por Conjuração Magibélica; vários poderes escalam "a cada dois outros".
 - [ ] 26. **Médico de Salistick** (p. 181)
 - [ ] 27. **Mestre Bêbado** (p. 184)
 - [ ] 28. **Mestre Cozinheiro** (p. 187)
