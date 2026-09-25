@@ -1003,6 +1003,49 @@
     'Escolha um encanto de armas sem nenhum pré-requisito. Você pode gastar uma ação de movimento e 1 PM para colocar esse encanto em uma arma que esteja empunhando. Ele não conta no limite de encantos da arma, e termina se você soltar o item ou no fim da cena.',
   ] },
 
+  //  Dracomante Real (p. 150–152) — 1 marca + 5 poderes. Magos que
+  //  estudam um Dragão-Real para roubar seus segredos e se tornar como
+  //  ele. A marca escolhe o mestre (e a essência elemental). Escalam
+  //  Afinidade Dracônica (redução 3 por poder) e Memória Dracônica
+  //  (magias memorizadas = total de poderes). ✦: Majestade Elemental
+  //  e Verdadeiro Poder.
+  { id: 'dist-dracomante-mestre-draconico', nome: 'Mestre Dracônico', grupo: 'distincao', livro: 'herois', pagina: 152,
+    tags: 'Dracomante Real', distincao: 'dracomante-real', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Um dracomante real não serve, ele almeja.',
+    'Escolha um Dragão-Real para ser seu mestre, entre Behluga (escolha entre frio ou luz), Benthos (ácido), Hydora (eletricidade), Mzzileyn (trevas), Sckhar (fogo), Tarso (trevas) e Zadbblein (veneno). Uma vez feita, essa escolha não pode ser mudada. Quando você lança uma magia de dano ou perda de PV do mesmo tipo da essência de seu mestre, ela causa +2 pontos de dano ou perda de PV.',
+  ] },
+  { id: 'dist-dracomante-afinidade-draconica', nome: 'Afinidade Dracônica', grupo: 'distincao', livro: 'herois', pagina: 152,
+    tags: 'Dracomante Real', distincao: 'dracomante-real', marca: false, deus: null, magica: false,
+    preReq: '5º nível de Mago', custo: null, quadro: null, texto: [
+    'O primeiro passo de um dracomante real é dominar o elemento regido por seu mestre.',
+    'Você recebe +2 na CD de suas magias que causam dano do tipo da essência dracônica do seu mestre e, para cada poder da distinção, recebe redução 3 contra esse tipo de dano.',
+  ] },
+  { id: 'dist-dracomante-dracomancia', nome: 'Dracomancia', grupo: 'distincao', livro: 'herois', pagina: 152,
+    tags: 'Dracomante Real', distincao: 'dracomante-real', marca: false, deus: null, magica: false,
+    preReq: 'Afinidade Dracônica', custo: null, quadro: null, texto: [
+    'Ao usar seu poder, o dracomante real se aproxima da forma de seu mestre.',
+    'Quando lança uma magia, você recebe redução de dano 5 e resistência a magia +5 até o início de seu próximo turno.',
+  ] },
+  { id: 'dist-dracomante-majestade-elemental', nome: 'Majestade Elemental', grupo: 'distincao', livro: 'herois', pagina: 152,
+    tags: 'Dracomante Real', distincao: 'dracomante-real', marca: false, deus: null, magica: true,
+    preReq: 'lançar magias arcanas de 3º círculo, Dracomancia', custo: null, quadro: null, texto: [
+    'Assim como a fúria de um Dragão-Real, o poder do dracomante não pode ser detido.',
+    'Suas magias que causam dano do mesmo tipo da essência dracônica do seu mestre ignoram até 20 pontos de RD e, contra criaturas imunes, ainda causam metade do dano.',
+  ] },
+  { id: 'dist-dracomante-verdadeiro-poder', nome: 'Verdadeiro Poder', grupo: 'distincao', livro: 'herois', pagina: 152,
+    tags: 'Dracomante Real', distincao: 'dracomante-real', marca: false, deus: null, magica: true,
+    preReq: 'lançar magias arcanas de 4º círculo, quatro poderes da distinção', custo: null, quadro: null, texto: [
+    'O ápice do poder dracônico é se tornar um dragão.',
+    'Você aprende e pode lançar Metamorfose e, enquanto estiver sob efeito dessa magia, pode lançar magias normalmente. Alternativamente, se tiver o suplemento Ameaças de Arton, em vez disso aprende e pode lançar Transformação em Dragão (p. 405) e não precisa de componente material para se transformar em um dragão do tipo da essência dracônica de seu mestre. Se você aprender a magia fornecida por este poder novamente, seu custo diminui em –1 PM.',
+  ] },
+  { id: 'dist-dracomante-memoria-draconica', nome: 'Memória Dracônica', grupo: 'distincao', livro: 'herois', pagina: 152,
+    tags: 'Dracomante Real', distincao: 'dracomante-real', marca: false, deus: null, magica: false,
+    preReq: 'Dracomancia', custo: null, quadro: null, texto: [
+    'Assim como um verdadeiro dragão, o dracomante usa seu elemento de forma natural e instintiva.',
+    'Você pode memorizar um número de magias adicionais por dia igual ao total de poderes da distinção que possui, mas só pode memorizar dessa forma magias que causam dano do mesmo tipo que a essência dracônica de seu mestre.',
+  ] },
+
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.
