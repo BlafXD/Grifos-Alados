@@ -1574,6 +1574,12 @@
           <div class="fi-compl-caixa">
             <h3 class="fi-compl-tit">🎭 Complicação
               <em>uma só, escolhida na criação — e por ela veio um poder geral extra</em></h3>
+            <select class="fi-sel fi-compl-sel" data-acao="escolher-complicacao"
+                    aria-label="Escolher uma complicação da lista do livro">
+              <option value="">＋ escolher da lista (Heróis de Arton, p. 282)…</option>
+              ${(window.GA_COMPLICACOES || []).map(c =>
+                `<option value="${esc(c.id)}">${esc(c.nome)}${c.comportamental ? ' †' : ''}</option>`).join('')}
+            </select>
             ${caixaRicaCampo('blocos.complicacoes', f.blocos.complicacoes, dicaDoBloco('complicacoes'))}
           </div>
           <div class="fi-compl-caixa">
@@ -4440,6 +4446,21 @@
 
   function aoMudar(e) {
     const el = e.target;
+    //  O seletor de Complicação: escolher uma da lista do livro INSERE o
+    //  nome + texto na caixa (em vez de digitar). O † marca a comportamental.
+    if (el && el.dataset && el.dataset.acao === 'escolher-complicacao') {
+      const f = fichaAberta();
+      const c = (window.GA_COMPLICACOES || []).find(x => x.id === el.value);
+      el.value = '';
+      if (!f || !c) return;
+      const cx = secao && secao.querySelector('[data-campo="blocos.complicacoes"]');
+      const atual = cx ? cx.innerHTML : (f.blocos.complicacoes || '');
+      const vazio = !String(atual || '').replace(/<br\s*\/?>/gi, '').replace(/&nbsp;/gi, '').trim();
+      const bloco = '<p><strong>' + esc(c.nome) + (c.comportamental ? ' †' : '') + '.</strong> ' + esc(c.texto) + '</p>';
+      f.blocos.complicacoes = vazio ? bloco : (atual + bloco);
+      sujar(f.id, 'blocos');
+      salvar(); return render();
+    }
     if (!el || !el.dataset || !el.dataset.campo) return;
     const f = fichaAberta();
     if (!f) return;

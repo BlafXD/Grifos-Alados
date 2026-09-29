@@ -2996,6 +2996,8 @@
   gap: 0.7rem;
 }
 .fi-compl-caixa { min-width: 0; }
+/* o seletor "＋ escolher da lista" acima da caixa de Complicação */
+.fi-compl-sel { width: 100%; margin-bottom: 0.4rem; }
 .fi-compl-tit {
   display: flex;
   flex-wrap: wrap;
