@@ -2590,6 +2590,42 @@
 }
 .fi-pod-escolha span { font-size: 0.9rem; line-height: 1.5; }
 .fi-pod-escolha:has(input:not(:checked)) { opacity: 0.55; }
+/* grupos de escolha de uma raça (herança do Moreau, bênçãos, passos do Duende) */
+.fi-pod-grupo {
+  margin: 0.7rem 0 0.2rem;
+  border-top: 1px solid var(--gold-deep);
+  padding-top: 0.5rem;
+}
+.fi-pod-grupo-cab {
+  margin: 0 0 0.3rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  color: var(--gold-deep);
+}
+.fi-pod-grupo-conta {
+  font-style: normal; font-family: 'Cinzel', serif; font-size: 0.82rem;
+  padding: 0.05rem 0.4rem; border-radius: 999px;
+  background: var(--parchment2); color: var(--text-dim);
+}
+.fi-pod-grupo-nota {
+  margin: 0 0 0.45rem; font-size: 0.84rem; font-style: italic; color: var(--text-dim);
+}
+.fi-pod-subs { display: flex; flex-direction: column; gap: 0.35rem; }
+.fi-pod-sub {
+  display: flex; gap: 0.55rem; align-items: flex-start;
+  padding: 0.45rem 0.6rem; border-radius: 8px;
+  background: var(--parchment2);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.12s, border-color 0.12s;
+}
+.fi-pod-sub input { margin: 0.2rem 0 0; flex-shrink: 0; cursor: pointer; }
+.fi-pod-sub-txt { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.9rem; line-height: 1.5; }
+.fi-pod-sub-txt strong { font-family: 'Cinzel', serif; font-size: 0.9rem; }
+.fi-pod-sub-linha { display: block; }
+.fi-pod-sub--off { opacity: 0.5; }
+.fi-pod-sub:not(.fi-pod-sub--off) { border-color: var(--gold-deep); opacity: 1; }
+.fi-pod-sub:has(input:disabled) { cursor: default; }
 /* o valor de AGORA de um poder da Tormenta, que muda com a quantidade */
 .fi-pod-agora {
   margin: 0.45rem 0 0;
