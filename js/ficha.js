@@ -3663,6 +3663,51 @@
     const extra = (m.apr || []).reduce((s, k) => s + ((lista[k] && lista[k].pm) || 0), 0);
     return { base: m.pm || 0, extra: extra, total: (m.pm || 0) + extra };
   }
+  //  ── ROLAR A MAGIA (dano/cura) ──────────────────────────────────
+  //  Acha os dados "NdM" no texto da magia e soma os aprimoramentos
+  //  LIGADOS que são cumulativos e têm DADO (+XdY) — os de área/alcance
+  //  usam "+Xm", sem dado, e por isso ficam de fora. Bola de Fogo com o
+  //  "+2d6" ligado 1× vira 6d6+2d6; ligado 2×, 6d6+4d6.
+  //  Devolve { bases:[{expr, rotulo}], bonus:'+2d6' }.
+  function bonusDadoApr(a, n) {
+    const x = /\+(\d+)(d\d+)/.exec((a && a.texto) || '');   // exige o "d" (dado)
+    return x ? '+' + (parseInt(x[1], 10) * (n || 1)) + x[2] : '';
+  }
+  function dadosDaMagia(m) {
+    const b = daBase(m.mid);
+    const desc = b ? (b.descricao || []).join(' ') : (m.resumo || '');
+    const bases = [];
+    const re = /(\d+d\d+)/g;
+    let mm;
+    while ((mm = re.exec(desc))) {
+      const expr = mm[1];
+      const depois = desc.slice(mm.index + expr.length, mm.index + expr.length + 44);
+      const antes = desc.slice(Math.max(0, mm.index - 30), mm.index);
+      //  Só dados de DANO/CURA/PV viram 🎲 — pula "dura 1d4 rodadas",
+      //  "6d4 dados de auxílio", "role 1d6 em segredo" e afins.
+      const ehCura = /\bcura|recupera/i.test(antes);
+      const ehDano = /dano|sofre|caus|perde|reduz/i.test(antes)
+        || /pontos de dano|de dano|pontos de vida|\bPV\b/i.test(depois);
+      if (!ehCura && !ehDano) continue;
+      const tipo = /(?:pontos de dano|dano) de (\w+)/i.exec(depois);
+      let rot = '';
+      if (tipo) rot = 'dano de ' + tipo[1].toLowerCase();
+      else if (ehCura) rot = 'cura';
+      else if (/pontos de vida tempor/i.test(depois)) rot = 'PV temporários';
+      else rot = 'dano';
+      bases.push({ expr: expr, rotulo: rot });
+    }
+    const lista = aprimoramentosDe(m);
+    const vistos = {};
+    let bonus = '';
+    (m.apr || []).forEach(k => {
+      if (vistos[k]) return;
+      vistos[k] = 1;
+      const a = lista[k];
+      if (a && cumulativo(a)) bonus += bonusDadoApr(a, quantos(m, k));
+    });
+    return { bases: bases, bonus: bonus };
+  }
   function blocoAprimoramentos(f, m, i) {
     const lista = aprimoramentosDe(m);
     if (!lista.length) return '';
@@ -3728,6 +3773,14 @@
   // para lançar sem precisar abrir.
   function cartaoMagia(f, m, i) {
     const p = pmDaMagia(m);
+    const dd = dadosDaMagia(m);
+    //  🎲: um só dado → rola direto; vários → um botão por dado (o jogador
+    //  escolhe qual). Sempre soma os aprimoramentos de dado ligados (dd.bonus).
+    const rollHtml = !dd.bases.length ? '' : (dd.bases.length === 1
+      ? `<button type="button" class="fi-mag-roll" data-acao="rolar-magia" data-i="${i}" data-b="0"
+              title="Rolar ${esc(dd.bases[0].expr + dd.bonus)}${dd.bases[0].rotulo ? ' — ' + esc(dd.bases[0].rotulo) : ''}">🎲</button>`
+      : dd.bases.map((d, bi) => `<button type="button" class="fi-mag-roll fi-mag-roll--multi" data-acao="rolar-magia" data-i="${i}" data-b="${bi}"
+              title="Rolar ${esc(d.expr + dd.bonus)}">🎲 ${esc(d.rotulo || d.expr)}</button>`).join(''));
     const fechada = !!magiasFechadas[m.id];
     return `
       <li class="fi-mag${fechada ? ' fi-mag--fechada' : ''}">
@@ -3744,8 +3797,10 @@
                   data-acao="gastar-magia" data-i="${i}"
                   title="Gastar ${p.total} PM${p.extra ? ' (' + p.base + ' da magia + ' + p.extra + ' de aprimoramento)' : ''} — os temporários saem primeiro"
             >🔥 ${p.total} PM</button>` : ''}
+          ${rollHtml}
           <button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
                   title="Tirar ${esc(m.nome)} da ficha">✕</button>
+          <span class="fi-res fi-res--mag" data-res="magia:${m.id}" hidden></span>
         </span>
         ${fechada ? '' : `
         <div class="fi-mag-corpo">
@@ -4720,6 +4775,17 @@
       if (p.total) aplicarDano(f, 'pm', p.total, m.nome + (p.extra ? ' (aprimorada)' : ''));
       return;
     }
+    if (acao === 'rolar-magia') {
+      const m = f.magias[+btn.dataset.i];
+      if (!m) return;
+      const dd = dadosDaMagia(m);
+      const d = dd.bases[+btn.dataset.b || 0];
+      if (!d) return;
+      rolar(d.expr + dd.bonus,
+            quem(f) + ' · ' + m.nome + (d.rotulo ? ' — ' + d.rotulo : '') + (dd.bonus ? ' (aprimorada)' : ''),
+            'magia:' + m.id, '🎲 ' + m.nome);
+      return;
+    }
     // ── APRIMORAMENTOS ─────────────────────────────────────────────
     //  O que começa com "aumenta" ACUMULA (p. 171): o ＋ soma mais uma
     //  vez, e a lista `apr` guarda o índice repetido. O resto é
@@ -5543,8 +5609,13 @@
           if (grupo === 'classe' && classe && p.classe !== classe) return false;
           if (!q) return true;
           const daClasse = p.classe ? (listaDeClasse(p.classe) || {}).nome || '' : '';
+          //  As sub-opções das escolhas (herança do Moreau, bênção, presente…)
+          //  também entram na busca: procurar "Raposa" ou "Sopro de Dragão" acha
+          //  a raça dona.
+          const escTexto = (p.escolhas || []).map(e => e.rotulo + ' ' +
+            (e.opcoes || []).map(o => o.nome + ' ' + (o.texto || []).join(' ')).join(' ')).join(' ');
           return semAcento([p.nome, p.tags || '', p.deus || '', p.preReq || '', (p.texto || []).join(' '),
-            daClasse, (window.GA_PODERES_LIVROS || {})[p.livro] || ''].join(' ')).indexOf(q) >= 0;
+            escTexto, daClasse, (window.GA_PODERES_LIVROS || {})[p.livro] || ''].join(' ')).indexOf(q) >= 0;
         });
         const mostra = achados.slice(0, 60);
         res.innerHTML = mostra.length
