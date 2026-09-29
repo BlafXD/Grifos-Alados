@@ -155,8 +155,8 @@
     'Sombras Profanas (Sulfure). Você recebe +2 em Enganação e Furtividade. Além disso, pode lançar Escuridão (como uma magia divina; atributo-chave Inteligência). Caso aprenda novamente essa magia, seu custo diminui em –1 PM. ✦',
     ],
     escolhas: [
-    { rotulo: 'Herança Planar (Deuses de Arton, p. 35 — substitui Luz Sagrada ou Sombras Profanas)', escolher: 1,
-      nota: 'Opcional. Um suraggel pode descender de criaturas de qualquer Plano. Escolha uma herança planar para substituir sua habilidade Luz Sagrada ou Sombras Profanas.',
+    { rotulo: 'Herança Planar (Deuses de Arton, p. 36 — substitui Luz Sagrada ou Sombras Profanas)', escolher: 1,
+      nota: 'Opcional. Um suraggel pode descender de criaturas de qualquer Plano. Ao escolher uma herança planar, DESMARQUE acima a habilidade que ela substitui — Luz Sagrada (se você for aggelus) ou Sombras Profanas (se for sulfure).',
       opcoes: [
       { nome: 'Al-Gazara', texto: ['Herança de Al-Gazara. Devido à presença do puro caos primordial de Nimb em seu sangue, você recebe +1 em um atributo aleatório.'] },
       { nome: 'Arbória', texto: ['Herança de Arbória. Como parte do Grande Ciclo de Allihanna, você recebe a habilidade Forma Selvagem para uma única forma, escolhida entre Ágil, Sorrateira e Veloz. Caso adquira essa habilidade novamente, o custo dessa forma diminui em –1 PM.'] },

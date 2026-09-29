@@ -128,3 +128,12 @@ subconjunto do Osteon (mostrava a raça inteira). **Correção:** para `grupo ==
 grupos seguem preferindo a base (para refletir errata). **Armadilha a lembrar:
 todo lugar que renderiza um poder pela BASE ignora escolhas/subconjuntos por
 card.**
+
+### Dois polimentos (29/09/2026)
+- **Busca acha as sub-escolhas.** O alvo de busca do "Adicionar habilidade"
+  (`listar`, js/ficha.js) passou a incluir o texto das `escolhas` (rótulo +
+  nome + texto de cada opção). Agora "Raposa" acha o Moreau, "Sopro de Dragão"
+  o Kallyanach, "Herança de Solaris" o Suraggel — conferido por node.
+- **Suraggel Variantes mais explícito.** A `nota` da escolha agora manda
+  DESMARCAR acima a habilidade substituída (Luz Sagrada se aggelus, Sombras
+  Profanas se sulfure). Página corrigida para 36 (era 35).

@@ -1401,6 +1401,21 @@
   border-radius: var(--raio);
 }
 .fi-mag-pm-btn:hover { background: var(--rust); color: var(--parchment); }
+/* 🎲 rolar o dano/cura da magia (um por dado, quando há mais de um) */
+.fi-mag-roll {
+  font-size: 0.8rem;
+  line-height: 1;
+  white-space: nowrap;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  color: var(--gold-deep);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-deep);
+  border-radius: var(--raio);
+}
+.fi-mag-roll:hover { background: var(--gold-deep); color: var(--parchment); }
+.fi-mag-roll--multi { font-family: 'Cinzel', serif; font-size: 0.64rem; font-weight: 700; }
+.fi-res--mag { margin-left: 0.15rem; }
 .fi-mag-corpo { grid-column: 1 / -1; }
 
 /* ── O MODAL DA MAGIA ──────────────────────────────────────────── */
