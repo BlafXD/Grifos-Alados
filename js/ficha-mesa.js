@@ -192,7 +192,13 @@
       // a hora da última mudança feita num navegador (a conferência mostra)
       if (p.ficha && p.ficha.editadoEm) carimbo.editadoEm = p.ficha.editadoEm;
       const caminhos = [];
-      if (ligado() && mesa.escreve) caminhos.push('mesas/' + salaLigada + '/fichas/' + p.dono + '/' + id);
+      //  A ficha vai para a campanha DELA (`f.mesa`), não para "a sala aberta
+      //  agora". É o que impede a ficha de cair no nó da mesa errada (o caso
+      //  do jogador que criou a ficha da Mesa estando no Nuevo Sol). Sem
+      //  campanha marcada (legado), cai na sala conectada, como era. O banco
+      //  ainda barra quem não é membro — esta é a trava do cliente.
+      const salaDaFicha = (p.ficha && p.ficha.mesa) || salaLigada;
+      if (ligado() && mesa.escreve && salaDaFicha) caminhos.push('mesas/' + salaDaFicha + '/fichas/' + p.dono + '/' + id);
       if (p.dono === meuUid())      caminhos.push('usuarios/' + meuUid() + '/fichas/' + id);
 
       caminhos.forEach(base => {
