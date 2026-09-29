@@ -1580,6 +1580,13 @@
     return html;
   }
 
+  function opcoesComplicacoesIdade() {
+    const comps = window.GA_COMPLICACOES_IDADE || [];
+    let html = '<option value="">＋ escolher da lista (Heróis de Arton, p. 290)…</option>';
+    html += comps.map(c => `<option value="${esc(c.id)}">${esc(c.nome)}</option>`).join('');
+    return html;
+  }
+
   function blocoComplicacoes(f) {
     return `
       <div class="fi-cartao fi-bloco fi-compl">
@@ -1597,6 +1604,8 @@
           <div class="fi-compl-caixa">
             <h3 class="fi-compl-tit">⏳ Complicações de idade
               <em>uma por faixa etária: adulto 1, maduro 2, velho 3, ancião 4</em></h3>
+            <select class="fi-sel fi-compl-sel" data-acao="escolher-complicacao-idade"
+                    aria-label="Escolher uma complicação de idade da lista do livro">${opcoesComplicacoesIdade()}</select>
             ${caixaRicaCampo('blocos.complicacoesIdade', f.blocos.complicacoesIdade, dicaDoBloco('complicacoesIdade'))}
           </div>
         </div>
@@ -4458,18 +4467,24 @@
 
   function aoMudar(e) {
     const el = e.target;
-    //  O seletor de Complicação: escolher uma da lista do livro INSERE o
+    //  Os seletores de Complicação: escolher uma da lista do livro INSERE o
     //  nome + texto na caixa (em vez de digitar). O † marca a comportamental.
-    if (el && el.dataset && el.dataset.acao === 'escolher-complicacao') {
+    //  Uma caixa é a das complicações normais (Gerais/Classe), a outra é a
+    //  das de idade (p. 290, que se acumulam e não têm comportamental).
+    if (el && el.dataset && (el.dataset.acao === 'escolher-complicacao' || el.dataset.acao === 'escolher-complicacao-idade')) {
+      const idade = el.dataset.acao === 'escolher-complicacao-idade';
+      const lista = idade ? (window.GA_COMPLICACOES_IDADE || []) : (window.GA_COMPLICACOES || []);
+      const campo = idade ? 'blocos.complicacoesIdade' : 'blocos.complicacoes';
       const f = fichaAberta();
-      const c = (window.GA_COMPLICACOES || []).find(x => x.id === el.value);
+      const c = lista.find(x => x.id === el.value);
       el.value = '';
       if (!f || !c) return;
-      const cx = secao && secao.querySelector('[data-campo="blocos.complicacoes"]');
-      const atual = cx ? cx.innerHTML : (f.blocos.complicacoes || '');
+      const cx = secao && secao.querySelector('[data-campo="' + campo + '"]');
+      const atual = cx ? cx.innerHTML : (idade ? (f.blocos.complicacoesIdade || '') : (f.blocos.complicacoes || ''));
       const vazio = !String(atual || '').replace(/<br\s*\/?>/gi, '').replace(/&nbsp;/gi, '').trim();
       const bloco = '<p><strong>' + esc(c.nome) + (c.comportamental ? ' †' : '') + '.</strong> ' + esc(c.texto) + '</p>';
-      f.blocos.complicacoes = vazio ? bloco : (atual + bloco);
+      const novo = vazio ? bloco : (atual + bloco);
+      if (idade) f.blocos.complicacoesIdade = novo; else f.blocos.complicacoes = novo;
       sujar(f.id, 'blocos');
       salvar(); return render();
     }
