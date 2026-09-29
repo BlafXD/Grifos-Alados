@@ -83,9 +83,44 @@ origem**". Guardar em `f.origemEscolha = { origem, beneficios:[...] }`.
 
 ## Total: 65 origens (35 núcleo + 30 especiais). Frente 3 COMPLETA.
 
+## Leva extra (29/09/2026) — Origens Regionais do Atlas de Arton (66)
+
+Ele notou que faltavam origens e pediu para achar as "Origens Regionais" nos
+livros oficiais. Ficam no **Atlas de Arton, Apêndice, p. 470–479** (a seção diz
+"São 66 Origens Regionais"). O suplemento (FIX Desmoralizar Burguês, p. 115) é só
+reimpressão — o oficial é o Atlas. Estrutura idêntica às especiais do Heróis
+(benefício único fixo + itens), mais o campo novo **`regiao`** (o reino/local,
+tirado da "Tabela: Origens Regionais", p. 472–473).
+
+- **Dado:** as 66 entradas em `js/origens-data.js`, `tipo: 'especial'`,
+  `livro: 'atlas'`, `regiao`, benefício e itens. `GA_ORIGENS_LIVROS.atlas =
+  'Atlas de Arton'`. Total geral de origens: **65 → 131**.
+- **UI (`js/ficha.js`, `blocoOrigem`):** o seletor ganhou um **3º optgroup**
+  ("Atlas de Arton — Origens Regionais"); o bloco da especial passou a mostrar a
+  📍 região e, quando regional, cita a regra da p. 470 (em vez da p. 46 do
+  Heróis). Nova classe CSS `.fi-orig-regiao`.
+- **Extração:** `pdftotext -enc UTF-8` em modo LEITURA (sem `-layout`/`-raw`) —
+  o único que sai limpo na coluna dupla. UTF-8 conserta os acentos que o modo
+  padrão embaralhava (é→�).
+- **Fidelidade conferida (node):** 66 entradas, ids únicos, todas com `regiao`,
+  sintaxe OK. O ✦ (habilidade mágica) só no **Descendente Colleniano** (o "PM. e"
+  da extração era o glifo ✦) — bytes `e2 9c a6`, não escape. "1o círculo" →
+  "1º círculo" (Estudante da Academia, Plebeu Arcano).
+- **Fielmente reproduzido um erro do livro:** Querido Filho imprime "Você
+  redução de frio e trevas 5…" (falta o "recebe"); as duas extrações batem, então
+  é do PDF — mantido como está.
+- **Páginas por origem:** atribuídas pelos cabeçalhos de folha (p. 470–479); nos
+  limites de página pode haver ±1 (o modo leitura reordena rodapé/box). Se ele
+  quiser, dá para afinar conferindo o `-layout` folha a folha.
+- **Ainda NÃO testado no clique-a-clique do navegador** (exigiria subir servidor
+  + Chrome com Firebase neutralizado; risco de tocar no banco oficial). O caminho
+  de render espelha o da especial do Heróis, que já foi testado.
+
 ## Armadilhas já conhecidas (memória)
 
 - PDF em colunas: `-layout` embaralha, `-raw` junta; os nomes das origens do
-  Heróis exigem transcrição cuidadosa, uma a uma (não dá para varrer).
+  Heróis exigem transcrição cuidadosa, uma a uma (não dá para varrer). Para uma
+  seção grande em coluna dupla, o **modo leitura (`pdftotext -enc UTF-8`, sem
+  flags)** saiu limpo — foi como as 66 regionais entraram.
 - Página do PDF ≠ impressa.
 - Conferir sempre contra o texto do livro (fidelidade é a prioridade dele).
