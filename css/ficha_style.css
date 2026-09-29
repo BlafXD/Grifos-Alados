@@ -206,6 +206,27 @@
   gap: 0.6rem;
   margin-bottom: 0.6rem;
 }
+/* a etiqueta EXPLÍCITA de campanha (mesa) da ficha — a isolação entre mesas */
+.fi-campanha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--raio);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-deep);
+}
+.fi-campanha-rot {
+  font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.04em;
+  color: var(--text-dim); text-transform: uppercase;
+}
+.fi-campanha-nome { font-family: 'Cinzel', serif; font-size: 0.95rem; color: var(--gold-deep); }
+.fi-campanha--vazia .fi-campanha-nome { color: var(--text-dim); font-style: italic; }
+.fi-campanha-aviso { font-size: 0.82rem; color: var(--rust-dark); flex-basis: 100%; }
+.fi-campanha-btn { font-family: 'Cinzel', serif; font-size: 0.7rem; }
+.fi-campanha--alerta { border-color: var(--rust); background: rgba(150, 40, 20, 0.08); }
 .fi-ident-classes {
   display: flex;
   flex-wrap: wrap;
@@ -1083,6 +1104,9 @@
   opacity: 0.8;
 }
 .fi-aba--mesa.fi-aba--ativa { border-style: solid; }
+/* a ficha da mesa + o ✕ do mestre para removê-la DESTA campanha */
+.fi-aba-mesa-wrap { display: inline-flex; align-items: center; gap: 0.1rem; }
+.fi-aba-mesa-x { align-self: center; }
 
 .fi-mesa-linha {
   margin: 0.35rem 0 0.9rem;
