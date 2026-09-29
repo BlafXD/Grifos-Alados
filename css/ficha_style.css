@@ -2561,6 +2561,35 @@
   font-size: 0.9rem;
   color: var(--text-dim);
 }
+/* escolher quais habilidades de uma raça pegar ao adicionar (caso Osteon) */
+.fi-pod-escolha-cab {
+  margin: 0 0 0.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+}
+.fi-pod-escolha-cab span {
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+.fi-pod-escolha {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  padding: 0.4rem 0.55rem;
+  margin: 0 0 0.35rem;
+  border-radius: 6px;
+  background: var(--parchment2);
+  cursor: pointer;
+}
+.fi-pod-escolha input {
+  margin: 0.2rem 0 0;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.fi-pod-escolha span { font-size: 0.9rem; line-height: 1.5; }
+.fi-pod-escolha:has(input:not(:checked)) { opacity: 0.55; }
 /* o valor de AGORA de um poder da Tormenta, que muda com a quantidade */
 .fi-pod-agora {
   margin: 0.45rem 0 0;

@@ -61,8 +61,24 @@ Moreau com 51 linhas, bytes do ✦/¼/⅓/’ literais em UTF-8, zero escape `\u
 **Ainda NÃO testado no clique-a-clique do navegador** (mesma razão das origens);
 é dado aditivo no grupo `raca-hab` já testado, sem mudança de código de UI.
 
-## A seguir (pedido dele, para depois)
-As **caixas de escolher habilidade ao adicionar** uma raça (o caso Osteon:
-clicar no Humano e pegar só "Versátil"). Servirá também para o Osteon/Yidishan
-pegarem "uma habilidade de outra raça", e para escolher a herança do Moreau e
-as bênçãos/talentos de Kallyanach/Kobolds.
+## Caixas de escolher habilidade ao adicionar (29/09/2026) — FEITO
+
+O caso Osteon: ao adicionar uma habilidade de raça pelo "Adicionar habilidade",
+se a raça tem mais de uma linha, a tela de detalhe vira **caixas (tudo marcado
+por padrão)**; desmarque o que não for pegar. O botão mostra "＋ Adicionar (N)"
+com a contagem e trava em 0. Só o que ficou marcado entra no `texto` do card.
+
+- Onde: `telaPoder` dentro de `abrirBuscaPoder`, em `js/ficha.js`. Gate
+  `escolheHab = grupo === 'raca-hab' && texto.length > 1 && !jaTem`. Fora daí
+  (outros grupos, raça já na ficha, uma linha só) o texto é só leitura, como era.
+- Ao adicionar: `texto` = só as linhas marcadas (`filter` pelos `data-hab`
+  marcados); o resto do card (nome, livro, página, pid) fica igual.
+- CSS: `.fi-pod-escolha` / `.fi-pod-escolha-cab` em `css/ficha_style.css`
+  (linha desmarcada esmaece via `:has(input:not(:checked))`).
+- Serve o **Osteon** e o **Yidishan** (pegar UMA habilidade de outra raça — é
+  só adicionar o card daquela raça e deixar só a linha desejada), a **herança
+  do Moreau** (deixar a base + uma herança) e as **bênçãos/talentos** de
+  Kallyanach e Kobolds (deixar as 2 escolhidas).
+- **Não testado no clique-a-clique do navegador** ainda; sintaxe conferida
+  (`node --check`), e o caminho de adicionar é o mesmo já existente, só com o
+  `texto` filtrado. Como é UI interativa, vale um teste no navegador.
