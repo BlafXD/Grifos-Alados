@@ -1890,6 +1890,26 @@ a publicação por grupo do `ficha-mesa.js` os manda sozinhos, e a conferência
 (§3 da leva de 15/09) sabe o nome de cada um — `NOMES_GRUPO` ganhou "caderno do
 XP", "sustentadas e outras condições" e "ordem das gavetas de poder".
 
+## Feito (29/09/2026): rolar a magia (o 🎲 no cartão)
+
+A ideia anotada em 11/09 saiu. Cada magia de dano/cura ganhou um **🎲** ao lado
+do 🔥 PM. Clicar rola o dano/cura e mostra a pílula de resultado (o mesmo
+`rolar()` das outras rolagens, que publica no histórico e respeita o 👁/🙈).
+
+- `dadosDaMagia(m)` acha os dados **NdM** no texto da magia, mas só os de
+  **dano/cura/PV** — pula "dura 1d4 rodadas", "6d4 dados de auxílio", "role 1d6
+  em segredo". Pega também dano por perda de PV (Ossos de Adamante: "o alvo
+  perde 1d6 PV") e PV temporário (Vitalidade Fantasma).
+- **Soma os aprimoramentos ligados** que são cumulativos e têm dado (`+XdY`, via
+  `bonusDadoApr`): Bola de Fogo com o "+2d6" ligado rola `6d6+2d6`; ligado 2×,
+  `6d6+4d6`. Os aprimoramentos de área/alcance (`+Xm`, sem dado) ficam de fora.
+- **Um dado só** → o 🎲 rola direto. **Vários dados** → um 🎲 por dado, com o
+  rótulo (Coluna de Chamas: 🎲 dano de fogo / 🎲 dano de luz).
+- **74 das 254 magias** têm 🎲; as de utilidade/duração não (Sono, Augúrio…).
+- Onde: `js/ficha.js` (`dadosDaMagia`/`bonusDadoApr`, `cartaoMagia`, handler
+  `rolar-magia`, slot `magia:<id>`) e `css/ficha_style.css` (`.fi-mag-roll`).
+  Detecção conferida por script contra as 254 magias; falta o teste no navegador.
+
 ## Anotado, não feito: as rodadas automáticas
 
 Ideia dele, no mesmo dia, para **quando tudo estiver rodando na Vercel**: quando
