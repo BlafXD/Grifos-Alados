@@ -4,8 +4,12 @@
 //
 //  O mestre seleciona um trecho ("Espada") numa caixa de texto rico e
 //  clica em "※ Descrição": abre um modal para ESCREVER a descrição ou
-//  BUSCAR uma pronta na base (itens, magias, condições, culinária,
-//  poderes concedidos). O trecho vira <span class="ga-tip" data-tip="…">
+//  BUSCAR uma pronta na base — itens (catálogo + lore), magias, condições,
+//  culinária e TODOS os poderes: de classe, gerais (combate/destino/magia/
+//  Tormenta), poder de raça e de grupo, HABILIDADE DE RAÇA (com as escolhas:
+//  herança do Moreau, passos do Duende…), PODER DE ORIGEM (núcleo, especiais
+//  do Heróis e regionais do Atlas), DISTINÇÃO e concedidos. O trecho vira
+//  <span class="ga-tip" data-tip="…">
 //  — a mesma nuvem dos termos de regra (itens-descricoes.js): aparece ao
 //  passar o mouse e FIXA ao clicar (para copiar).
 //
@@ -170,7 +174,7 @@ window.GA_Tip = (function () {
     (window.GA_PODERES || []).forEach(p => {
       const k = window.GA_semAcento(p.nome);
       vistosPod[k] = true;
-      add(p.nome, textoDePoder(p, rotuloGrupo(p)), 'poder ' + GRUPOS_PODER[p.grupo]);
+      add(p.nome, textoDePoder(p, rotuloGrupo(p)), fonteGrupo(p));
     });
     //  Os de classe: 16 nomes se repetem entre classes, e cinco deles com
     //  o texto IGUAL nas 16 (o Aumento de Atributo). Texto igual vira UMA
@@ -208,11 +212,25 @@ window.GA_Tip = (function () {
     combate: 'de combate', destino: 'de destino', magia: 'de magia',
     concedido: 'concedido', tormenta: 'da Tormenta', raca: 'de raça', grupo: 'de grupo',
   };
+  //  raca-hab (habilidade de raça), origem (poder de origem) e distincao
+  //  (distinção) não são "Poder de X" — têm nome próprio no título e na
+  //  etiqueta da busca. O resto é "Poder <grupo>".
+  function tituloGrupo(p) {
+    if (p.grupo === 'raca-hab') return 'Habilidade de raça';
+    if (p.grupo === 'origem') return 'Poder de origem';
+    if (p.grupo === 'distincao') return 'Distinção';
+    return 'Poder ' + (GRUPOS_PODER[p.grupo] || 'geral');
+  }
+  function fonteGrupo(p) {
+    if (p.grupo === 'raca-hab') return 'habilidade de raça';
+    if (p.grupo === 'origem') return 'poder de origem';
+    if (p.grupo === 'distincao') return 'distinção';
+    return 'poder ' + (GRUPOS_PODER[p.grupo] || 'geral');
+  }
   function rotuloGrupo(p) {
-    const g = GRUPOS_PODER[p.grupo] || 'geral';
     // as tags são o que vem depois do nome no título do livro: os deuses
-    // de um concedido, as raças de um poder de raça
-    return 'Poder ' + g + (p.tags ? ' (' + p.tags + ')' : '') + '.';
+    // de um concedido, a origem de um poder de origem, a distinção dona
+    return tituloGrupo(p) + (p.tags ? ' (' + p.tags + ')' : '') + '.';
   }
   function nomeDaClasse(chave) {
     const L = (window.GA_PODERES_CLASSE_LISTAS || []).find(x => x.chave === chave);
@@ -227,11 +245,18 @@ window.GA_Tip = (function () {
   function textoDePoder(p, rotulo) {
     const paras = (p.texto || []).join(' ');
     const q = p.quadro ? ' ' + p.quadro.titulo + ': ' + (p.quadro.texto || []).join(' ') : '';
+    //  As ESCOLHAS (herança do Moreau, bênçãos do Kallyanach, passos do
+    //  Duende, variantes do Suraggel…) não moram em p.texto — entram aqui
+    //  para a nuvem trazer a raça/origem COMPLETA, não só a base.
+    const escolhasTxt = (p.escolhas || []).map(e =>
+      ' ' + e.rotulo + (typeof e.escolher === 'number' ? ' (escolha ' + e.escolher + '): ' : ': ') +
+      (e.opcoes || []).map(o => o.nome + ' — ' + (o.texto || []).join(' ')).join(' / ')
+    ).join('');
     const fonte = (window.GA_PODERES_LIVROS || {})[p.livro];
     return [
       rotulo,
       p.magica ? 'Habilidade mágica.' : '',
-      paras + q,
+      paras + q + escolhasTxt,
       p.preReq ? 'Pré-requisito: ' + p.preReq + '.' : '',
       p.custo ? 'Custo: ' + p.custo + '.' : '',
       fonte ? '(' + fonte + (p.pagina ? ', p. ' + p.pagina : '') + ')' : '',
