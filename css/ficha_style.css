@@ -416,6 +416,30 @@
 .fi-linha > span:first-child { color: var(--text-dim); }
 .fi-linha strong { font-family: 'Cinzel', serif; font-size: 1rem; }
 .fi-linha > span:last-child { display: flex; align-items: center; gap: 0.3rem; }
+/* CD (28/09/2026): o "Outros" avulso de cada CD — o rótulo miúdo em cima
+   de um campo estreito, no mesmo espírito dos "Outros" da Defesa. */
+.fi-cd-outros { display: inline-flex; align-items: center; gap: 0.25rem; }
+.fi-cd-outros > span {
+  font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.03em;
+  color: var(--text-dim);
+}
+.fi-num--cd { width: 3rem; flex: 0 0 3rem; padding: 0.15rem 0.2rem; font-size: 0.88rem; }
+.fi-linha--cdatr > span:last-child { flex: 0 0 auto; }
+
+/* ── ESTADO DE COMBATE (28/09/2026) ──────────────────────────────── */
+.fi-combate-txt { margin: 0; font-size: 0.9rem; color: var(--text-dim); }
+.fi-combate-off-linha { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+.fi-combate-off-linha .fi-combate-txt { flex: 1 1 12rem; }
+.fi-combate-btn { white-space: nowrap; }
+/* ligado: a moldura carmim que não deixa esquecer que é modo de luta. A
+   dupla classe vence a camada "traço forte" do .fi-cartao, mais abaixo. */
+.fi-cartao.fi-combate--on {
+  border-color: var(--carmim);
+  box-shadow: 0 0 0 2px var(--carmim) inset;
+}
+.fi-combate--on .fi-cartao-tit { background: var(--carmim); border-bottom-color: var(--carmim); }
+.fi-combate--on .fi-combate-txt { color: var(--ink); margin-bottom: 0.5rem; }
+.fi-combate-btn--sair { margin-top: 0.2rem; }
 
 /* ── PERÍCIAS ──────────────────────────────────────────────────── */
 .fi-per-lista {
@@ -1876,7 +1900,7 @@
 }
 .fi-txt:focus, .fi-num:focus, .fi-sel:focus { border-bottom-color: var(--rust); }
 .fi-txt--nome { border: none; border-bottom: 2px solid var(--ink); }
-.fi-rot, .fi-extra > span { color: var(--ink-faded); }
+.fi-rot, .fi-extra > span, .fi-cd-outros > span { color: var(--ink-faded); }
 .fi-extra > span { font-size: 0.6rem; }
 
 /* ── os seis atributos: quadro de tinta, o nome na tarja de cima ── */
@@ -2384,11 +2408,70 @@
 }
 .fi-pod:hover { border-left-color: var(--rust); background: var(--parchment2); }
 .fi-pod--conta { border-left-color: var(--carmim); }
-/* habilidades de classe AUTOMÁTICAS (por nível): elas vêm sozinhas, não
-   se adiciona nem se remove — um tom de pergaminho e a borda cheia as
-   separam do que se ESCOLHE, logo abaixo, no mesmo cartão ⚔ */
+/* habilidades de classe AUTOMÁTICAS (por nível): vêm sozinhas — um tom de
+   pergaminho e a borda cheia as separam do que se ESCOLHE, logo abaixo, no
+   mesmo cartão ⚔. Desde 28/09 dá para TIRAR (poderes que removem uma
+   habilidade de classe) e ACRESCENTAR à mão (a de outra classe). */
 .fi-pod-grupo--fixa .fi-pod { border-left-width: 4px; background: var(--parchment2); }
 .fi-pod-grupo--fixa .fi-pod:hover { background: var(--parchment); }
+/* a acrescentada à mão: um pontilhado a distingue da que veio por nível */
+.fi-pod--fixaextra { border-left-style: dashed; }
+/* o rodapé "Removidas: … ↺": um lembrete miúdo com o caminho de volta */
+.fi-pod-fixa-devolver {
+  margin: 0.3rem 0 0;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+.fi-pod-devolver { font-size: 0.8rem; }
+
+/* ── ORIGEM E SEUS BENEFÍCIOS (28/09/2026) ───────────────────────── */
+.fi-orig { margin: 0 0 0.9rem; }
+.fi-orig-sel { max-width: 22rem; }
+.fi-orig-regra { margin: 0.5rem 0 0.3rem; font-size: 0.92rem; }
+.fi-orig-regra strong { font-family: 'Cinzel', serif; }
+.fi-orig-conta {
+  font-style: normal; font-family: 'Cinzel', serif; font-size: 0.86rem;
+  padding: 0.05rem 0.4rem; border-radius: 999px;
+  background: var(--parchment2); color: var(--text-dim);
+}
+.fi-orig-conta--cheio { background: var(--gold-deep); color: var(--parchment); }
+.fi-orig-fonte { font-size: 0.8rem; color: var(--text-dim); margin-left: 0.3rem; }
+.fi-orig-nota {
+  margin: 0.2rem 0 0.4rem; font-size: 0.86rem; color: var(--text-dim);
+  border-left: 3px solid var(--gold-deep); padding-left: 0.5rem;
+}
+.fi-orig-benefs { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.3rem 0; }
+.fi-orig-benef {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.28rem 0.55rem; border-radius: var(--raio); cursor: pointer;
+  border: 1px solid var(--parchment3); background: var(--parchment);
+  font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--ink);
+  transition: border-color 0.15s, background 0.15s;
+}
+.fi-orig-benef:hover:not(:disabled) { border-color: var(--rust); }
+.fi-orig-benef:disabled { opacity: 0.4; cursor: not-allowed; }
+.fi-orig-benef--on { border-color: var(--gold-deep); background: var(--gold-pale); }
+.fi-orig-benef-marca { font-family: 'Cinzel', serif; color: var(--rust-dark); }
+.fi-orig-benef--on .fi-orig-benef-marca { color: var(--gold-deep); }
+.fi-orig-benef em { font-size: 0.72rem; color: var(--text-dim); font-style: normal; }
+/* a perícia num tom, o poder noutro, e a vaga livre pontilhada */
+.fi-orig-benef--pericia { border-left: 3px solid var(--verde-dark); }
+.fi-orig-benef--poder { border-left: 3px solid var(--rust-dark); }
+.fi-orig-benef--flex { border-style: dashed; }
+/* origem especial (Heróis): o benefício fixo, num quadro só */
+.fi-orig-especial {
+  border-left: 3px solid var(--gold-deep);
+  padding: 0.1rem 0 0.1rem 0.6rem;
+  margin: 0.2rem 0 0.3rem;
+}
+.fi-orig-especial p { margin: 0 0 0.4rem; font-size: 0.92rem; }
+.fi-orig-especial p:last-child { margin-bottom: 0; }
+.fi-orig-especial strong { font-family: 'Cinzel', serif; }
+.fi-orig-itens { color: var(--text-dim); }
 
 /* o nome inteiro é o botão que recolhe e abre o texto do poder */
 .fi-pod-abrir {
