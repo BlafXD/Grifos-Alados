@@ -2,17 +2,17 @@
 //  COMPLICACOES-DATA.JS — as Complicações do Heróis de Arton (Cap. 4)
 //  Localização: /grifos-alados/js/complicacoes-data.js
 //
-//  As COMPLICAÇÕES GERAIS (p. 282–284), que QUALQUER personagem pode
-//  escolher (uma só, na criação — e por ela vem um poder geral extra).
+//  As COMPLICAÇÕES GERAIS (p. 282–284, 32) que QUALQUER personagem pode
+//  escolher, E as DE CLASSE (p. 284–287, 22 em 14 classes, campo `classe`).
+//  Escolhe-se UMA só, na criação — e por ela vem um poder geral extra.
 //  Lidas do PDF (Heróis de Arton) palavra por palavra; os hífens de
 //  quebra de linha da justificação foram removidos. O † marca as
 //  COMPORTAMENTAIS: se violadas, você perde todos os PM até o dia seguinte.
-//
-//  As complicações DE CLASSE (p. 284–287) ficam para uma leva à parte —
-//  a estrutura é a mesma, com o campo `classe`.
+//  (Complicação de classe só vale se metade dos seus níveis forem nela.)
 //
 //  Consumido pelo seletor do cartão ⚠ Complicações (js/ficha.js), que
-//  insere a escolhida na caixa. Carregado nas duas páginas.
+//  agrupa por Gerais + uma seção por classe e insere a escolhida na caixa.
+//  Carregado nas duas páginas.
 // ════════════════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -81,5 +81,54 @@
       texto: 'É fácil enganá-lo e manipulá-lo. Você sofre –5 em Intuição e Vontade.' },
     { id: 'vagaroso', nome: 'Vagaroso', comportamental: false,
       texto: '"Devagar e sempre vence a corrida" é o que você diz. E, se não vencer, pelo menos você não se cansou. Você está permanentemente sob efeito da condição lento (todas as suas formas de deslocamento são reduzidas à metade e você não pode correr ou fazer investidas).' },
+
+    // ── COMPLICAÇÕES DE CLASSE (Heróis de Arton, p. 284–287) ──────────
+    //  Só podem ser escolhidas por personagens da classe listada (e, se você
+    //  for multiclasse, só valem se pelo menos metade dos seus níveis forem
+    //  nessa classe — Heróis de Arton, p. 282). O `classe` diz de quem é.
+    { id: 'arcanista-de-rotina', nome: 'Arcanista de Rotina', classe: 'Arcanista', comportamental: false,
+      texto: 'Você não está acostumado a lançar magias sob pressão. Se estiver em alcance curto de qualquer ameaça, é considerado sob condição ruim para lançar magias. Se já estiver sob efeito de uma condição ruim ou terrível para conjurar, a CD do teste aumenta em +2.' },
+    { id: 'foco-exigente', nome: 'Foco Exigente', classe: 'Arcanista', comportamental: false,
+      texto: 'Seu foco o pune quando você falha. Sempre que uma criatura passa em um teste de resistência contra uma magia sua, você perde 1 PV por PM gasto na magia. Pré-requisito: Bruxo.' },
+    { id: 'linhagem-prepotente', nome: 'Linhagem Prepotente', classe: 'Arcanista', comportamental: false,
+      texto: 'Sua magia inata rejeita auxílio de cacarecos. Você não pode usar catalisadores e itens esotéricos mundanos. Você ainda pode usar itens esotéricos mágicos, já que esses são verdadeiramente imbuídos de magia — como você! Pré-requisito: Feiticeiro.' },
+    { id: 'mente-cansada', nome: 'Mente Cansada', classe: 'Arcanista', comportamental: false,
+      texto: 'Quanto mais magias você aprende, mais difícil fica lembrar de todas! Para cada círculo de magia que você pode lançar, o total de magias que pode memorizar diminui em 1. Pré-requisito: Mago.' },
+    { id: 'de-peito-aberto', nome: 'De Peito Aberto', classe: 'Bárbaro', comportamental: true,
+      texto: 'Você tem tatuagens tribais que quer exibir, confia na sua resistência natural ou só acha seu corpo lindo. Seja qual for o motivo, você não pode vestir armaduras e seu limite de itens vestidos diminui em dois.' },
+    { id: 'totem-gigante', nome: 'Totem Gigante', classe: 'Bárbaro', comportamental: true,
+      texto: 'Você interpreta a orientação de levar o totem de sua tribo consigo muito literalmente. Você carrega uma grande coluna de madeira esculpida que jamais pode abandonar. A coluna ocupa 10 espaços e impõe penalidade de armadura –5.' },
+    { id: 'estrelismo', nome: 'Estrelismo', classe: 'Bardo', comportamental: false,
+      texto: 'Você é lindo, talentoso e… extremamente egocêntrico. Você sofre –5 em testes de Diplomacia e Intuição. Além disso, sempre que falha em um teste de Atuação, fica alquebrado até o fim da cena.' },
+    { id: 'falastrao', nome: 'Falastrão', classe: 'Bardo', comportamental: true,
+      texto: 'Você está sempre dando suas palestrinhas. Você não consegue ficar quieto e deve ser sempre o primeiro a falar, por mais inconveniente que isso possa ser. Você sofre –5 em testes de Furtividade e Nobreza e pode se envolver em diversos problemas, especialmente se estiver diante de certas autoridades ou tentando passar discretamente por alguém.' },
+    { id: 'coragem-liquida', nome: 'Coragem Líquida', classe: 'Bucaneiro', comportamental: false,
+      texto: 'No início do seu turno, em cenas envolvendo qualquer risco ou perigo, role 1d4. Em um resultado 1, você precisa gastar uma ação de movimento para tomar um gole de bebida. Se não puder, fica pasmo pela rodada (mesmo se for imune a isso). Hic!' },
+    { id: 'esbanjador', nome: 'Esbanjador', classe: 'Bucaneiro', comportamental: false,
+      texto: 'Você tem certas necessidades, que alguns chamam de "luxo" — mas, para você, são o motivo de viver! Para subir de nível, além de acumular XP suficiente, você deve "torrar" tibares em festas e frivolidades, em um valor igual a 20% da diferença do dinheiro inicial do nível que vai alcançar para o nível atual (por exemplo, T$ 200 para subir para o 5º nível).' },
+    { id: 'limitado-a-criatura', nome: 'Limitado a (Criatura)', classe: 'Caçador', comportamental: false,
+      texto: 'Você se especializou em lutar contra um inimigo específico — e só. Escolha um tipo de criatura do poder Inimigo de (Criatura). O custo base para usar Marca da Presa contra criaturas de outros tipos muda para 3 PM.' },
+    { id: 'superprotetor', nome: 'Superprotetor', classe: 'Cavaleiro', comportamental: false,
+      texto: 'Você se preocupa com o bem-estar do seu grupo e faz questão de ficar perto de seus companheiros — mesmo que isso não seja a melhor estratégia! Durante qualquer cena envolvendo qualquer tipo de risco ou perigo, você sempre deve terminar seu turno adjacente a um aliado. Se não fizer isso, fica alquebrado e sofre –2 em seus testes por 1 rodada.' },
+    { id: 'divindade-exigente', nome: 'Divindade Exigente', classe: 'Clérigo', comportamental: false,
+      texto: 'Você serve a sua divindade com afinco, mas às vezes ela quer sua atenção exclusiva. Sempre que lançar uma magia divina, role 1d6. Em um resultado 1, você fica frustrado (essa condição é cumulativa).' },
+    { id: 'preparacao-liturgica', nome: 'Preparação Litúrgica', classe: 'Clérigo', comportamental: false,
+      texto: 'Você só pode lançar magias preparadas; suas outras magias não podem ser lançadas, mesmo que você tenha pontos de mana para isso. Para preparar magias, você precisa gastar uma hora de seu dia orando, meditando, entoando mantras ou fazendo qualquer outro tipo de ritual litúrgico. Ao fazer isso, você escolhe metade das magias que conhece (por exemplo, se conhece 5 magias, escolhe 2) e só pode lançar as magias escolhidas. Caso não possa se preparar, não pode trocar as magias escolhidas no dia anterior.' },
+    { id: 'tosco', nome: 'Tosco', classe: 'Druida', comportamental: true,
+      texto: 'Você não se dá bem com objetos civilizados. Você não pode usar itens superiores.' },
+    { id: 'precavido', nome: 'Precavido', classe: 'Guerreiro', comportamental: false,
+      texto: 'Enquanto não conhece as capacidades do inimigo, você prefere lutar de maneira cautelosa. Tanta preocupação causa –2 em testes de ataque e resistência. A partir da segunda rodada de combate, você pode se livrar dessa penalidade até o fim da cena gastando uma ação de movimento e passando em um teste de Guerra (CD 15 + ND do inimigo mais poderoso na cena).' },
+    { id: 'trabalhador-ocupado', nome: 'Trabalhador Ocupado', classe: 'Inventor', comportamental: false,
+      texto: 'Você está tão ocupado trabalhando para os outros que não tem tempo de fazer seus próprios projetos! Você não recebe a habilidade Protótipo e, quando recebe a habilidade Fabricar Item Superior, não recebe um item gratuito.' },
+    { id: 'honra-de-ladrao', nome: 'Honra de Ladrão', classe: 'Ladino', comportamental: true,
+      texto: 'Você pode ser um bandido e salafrário, mas tem seus princípios. Você sempre cumpre suas promessas e nunca rouba ou tira vantagem de pessoas com menos recursos que você e seu grupo. O mestre tem a palavra final sobre o que é "tirar vantagem" de alguém.' },
+    { id: 'firula', nome: 'Firula', classe: 'Lutador', comportamental: true,
+      texto: 'Na primeira rodada de cada combate, você deve gastar uma ação padrão apresentando-se, fazendo uma coreografia ou informando seu peso, altura e cartel.' },
+    { id: 'filantropo', nome: 'Filantropo', classe: 'Nobre', comportamental: false,
+      texto: 'Você doa parte de sua riqueza para fazer o bem. Você não recebe a habilidade Espólio e, quando usa sua habilidade Riqueza, recebe apenas metade do valor normal.' },
+    { id: 'mimado', nome: 'Mimado', classe: 'Nobre', comportamental: false,
+      texto: 'Bajulado desde criança, você fica desconcertado sempre que percebe que não é tão bom quanto lhe diziam. Na primeira vez em cada cena que falha em um teste de perícia, você perde 1 PM por patamar. Se já estiver sem PM, você fica frustrado por 1 rodada.' },
+    { id: 'certinho', nome: 'Certinho', classe: 'Paladino', comportamental: false,
+      texto: 'Você faz tudo do jeito correto e fica desconfortável quando um de seus companheiros não age dessa forma. Sempre que um aliado fizer algo que violaria seu Código do Herói, isso conta como uma violação sua — a menos que você não note, o que exige dele um teste de Enganação ou Furtividade contra a sua Percepção ou Intuição (o que for maior).' },
   ];
 })();

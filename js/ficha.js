@@ -1564,6 +1564,22 @@
     const b = TODOS_BLOCOS.find(x => x.campo === campo);
     return (b && b.dica) || '';
   }
+  //  As opções do seletor de Complicações: as Gerais (qualquer classe) e
+  //  depois uma seção (optgroup) por classe, em ordem. O † é a comportamental.
+  function opcoesComplicacoes() {
+    const comps = window.GA_COMPLICACOES || [];
+    const op = c => `<option value="${esc(c.id)}">${esc(c.nome)}${c.comportamental ? ' †' : ''}</option>`;
+    const gerais = comps.filter(c => !c.classe);
+    const porClasse = {};
+    comps.filter(c => c.classe).forEach(c => { (porClasse[c.classe] || (porClasse[c.classe] = [])).push(c); });
+    let html = '<option value="">＋ escolher da lista (Heróis de Arton)…</option>';
+    if (gerais.length) html += '<optgroup label="Gerais (qualquer classe)">' + gerais.map(op).join('') + '</optgroup>';
+    Object.keys(porClasse).sort((a, b) => a.localeCompare(b, 'pt-BR')).forEach(cl => {
+      html += '<optgroup label="' + esc(cl) + '">' + porClasse[cl].map(op).join('') + '</optgroup>';
+    });
+    return html;
+  }
+
   function blocoComplicacoes(f) {
     return `
       <div class="fi-cartao fi-bloco fi-compl">
@@ -1575,11 +1591,7 @@
             <h3 class="fi-compl-tit">🎭 Complicação
               <em>uma só, escolhida na criação — e por ela veio um poder geral extra</em></h3>
             <select class="fi-sel fi-compl-sel" data-acao="escolher-complicacao"
-                    aria-label="Escolher uma complicação da lista do livro">
-              <option value="">＋ escolher da lista (Heróis de Arton, p. 282)…</option>
-              ${(window.GA_COMPLICACOES || []).map(c =>
-                `<option value="${esc(c.id)}">${esc(c.nome)}${c.comportamental ? ' †' : ''}</option>`).join('')}
-            </select>
+                    aria-label="Escolher uma complicação da lista do livro">${opcoesComplicacoes()}</select>
             ${caixaRicaCampo('blocos.complicacoes', f.blocos.complicacoes, dicaDoBloco('complicacoes'))}
           </div>
           <div class="fi-compl-caixa">
