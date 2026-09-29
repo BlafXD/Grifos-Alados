@@ -43,6 +43,7 @@
   let linhas = {};            // id → { nome, tipo, ordem }
   let valores = {};           // id → { valor, mod }   (só o mestre)
   let atual = null, rodada = 1;
+  let turnoVisto;             // o 'atual' já visto: não repete o aviso de turno
   let refs = [], salaLigada = '';
   let recado = '';            // aviso de uma vez só, no lugar da lista vazia
 
@@ -182,7 +183,7 @@
     desligarRefs(); zerar(); recado = '';
     salaLigada = mesa.mesaId;
     ligar(base() + '/linhas', v => { linhas = v || {}; });
-    ligar(base() + '/atual',  v => { atual = v || null; });
+    ligar(base() + '/atual',  v => { atual = v || null; aoMudarAtual(); });
     ligar(base() + '/rodada', v => { rodada = v || 1; });
     // os valores são só do mestre — assinar sendo jogador daria um
     // "permission denied" no console a cada carga, e por nada
@@ -201,6 +202,22 @@
     if (!lista.length) return null;
     const i = lista.findIndex(l => l.id === atual);
     return { proximo: lista[(i + 1) % lista.length].id, virou: i >= 0 && i === lista.length - 1 };
+  }
+
+  //  RODADAS AUTOMÁTICAS: quando o turno chega numa linha ligada a uma ficha
+  //  DESTE aparelho, abre o aviso de início de turno (Sangrando, Em Chamas,
+  //  sustentadas, Outros). A 1ª sincronização só registra — não abre sozinho
+  //  ao carregar. O GA_Ficha.avisoTurno devolve false se a ficha não é daqui.
+  function aoMudarAtual() {
+    if (turnoVisto === undefined) { turnoVisto = atual; return; }
+    if (atual === turnoVisto) return;
+    turnoVisto = atual;
+    if (!atual) return;
+    const l = linhas[atual];
+    const fid = l && l.fichaId;
+    if (fid && window.GA_Ficha && window.GA_Ficha.avisoTurno) {
+      try { window.GA_Ficha.avisoTurno(String(fid), rodada); } catch (e) {}
+    }
   }
 
   // ── ESCRITAS (só quem manda) ─────────────────────────────────────

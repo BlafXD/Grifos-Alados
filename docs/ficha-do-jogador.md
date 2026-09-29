@@ -1910,14 +1910,31 @@ do 🔥 PM. Clicar rola o dano/cura e mostra a pílula de resultado (o mesmo
   `rolar-magia`, slot `magia:<id>`) e `css/ficha_style.css` (`.fi-mag-roll`).
   Detecção conferida por script contra as 254 magias; falta o teste no navegador.
 
-## Anotado, não feito: as rodadas automáticas
+## Feito (29/09/2026): as rodadas automáticas
 
-Ideia dele, no mesmo dia, para **quando tudo estiver rodando na Vercel**: quando
-chegar o turno do jogador na iniciativa, um aviso na tela dele com o que está
-pendurado — "você tomou 1d6 de sangramento (já rolado: 4)" e "deseja manter a
-magia sustentada (1 PM)?" —, podendo aceitar as duas coisas ou largar uma. E, no
-mesmo caminho, o teste para não perder a concentração ao sofrer dano sustentando
-magia. **Não foi feito**; está aqui e na memória para o dia em que ele pedir.
+Quando o turno chega numa ficha deste aparelho, a iniciativa (`aoMudarAtual` em
+`js/iniciativa.js`, no callback do `atual`, com guarda de 1ª carga) chama
+`GA_Ficha.avisoTurno(fichaId, rodada)`, que abre um **painel de início de turno**
+(`avisoDeTurno` em `js/ficha.js`, via `GA_abrirModal`). Ele junta o que é "por
+turno" e oferece 🎲 **rolar + aplicar** (só regra oficial):
+
+- **🩸 Sangrando** — teste de Constituição (CD 15 = `d20 + atr(con)`); falha →
+  aplica o dado de perda; passa → remove a condição. O dado é **editável** (padrão
+  1d6), o que cobre sangramento **acumulativo** (2d6, 3d6…) e por **passo de dano**
+  (1d8, 1d10…).
+- **🔥 Em Chamas** — dano de fogo do dado (editável).
+- **✋ Sustentadas** — Manter (−1 PM) ou Largar.
+- **✎ Outros** — a linha ganhou dois campos: um **efeito por turno** (dado/valor,
+  com toggle 💥 dano / 💚 cura) e uma **duração em turnos** que conta pra baixo (o
+  mestre rola "1d4 rodadas" e põe 3; some quando zera). Serve veneno (−1d12/turno),
+  regeneração (+5/turno), "confuso por N rodadas", etc.
+
+**Regra oficial conferida:** o teste de **Concentração é de LANÇAR** magia
+(Vontade, CD = dano recebido; Tormenta20 p. 170), **não** de manter uma sustentada
+— por isso ele NÃO entra no aviso de turno (manter custa só 1 PM). Dados novos:
+`condicoesLivres` (porTurno, porTurnoTipo, turnos) e `f.condTurno` (dado de
+sangrando/em-chamas). Dispara pela **mesa** (sync do Firebase do `atual`); jogo
+puramente local não passa turno por esse caminho. **Falta o teste no navegador.**
 
 ## Testado (servidor local, Firebase desligado)
 
