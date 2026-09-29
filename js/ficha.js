@@ -3289,22 +3289,26 @@
     const LIV = window.GA_ORIGENS_LIVROS || {};
     const opt = x => `<option value="${esc(x.id)}"${x.id === sel ? ' selected' : ''}>${esc(x.nome)}</option>`;
     const nuc = O.filter(x => (x.tipo || 'nucleo') === 'nucleo');
-    const esp = O.filter(x => x.tipo === 'especial');
+    const espH = O.filter(x => x.tipo === 'especial' && x.livro !== 'atlas');
+    const espA = O.filter(x => x.tipo === 'especial' && x.livro === 'atlas');
     const ops = '<option value="">— escolha a origem —</option>' +
       '<optgroup label="Tormenta20">' + nuc.map(opt).join('') + '</optgroup>' +
-      (esp.length ? '<optgroup label="Heróis de Arton — origens especiais">' + esp.map(opt).join('') + '</optgroup>' : '');
+      (espH.length ? '<optgroup label="Heróis de Arton — origens especiais">' + espH.map(opt).join('') + '</optgroup>' : '') +
+      (espA.length ? '<optgroup label="Atlas de Arton — Origens Regionais">' + espA.map(opt).join('') + '</optgroup>' : '');
     let corpo = '';
-    //  Origem ESPECIAL (Heróis): benefício único e fixo, não se escolhe 2.
+    //  Origem ESPECIAL (Heróis) ou REGIONAL (Atlas): benefício único e fixo,
+    //  não se escolhe 2. A regional ainda mostra a 📍 região e cita a p. 470.
     if (o && o.tipo === 'especial') {
+      const regional = o.livro === 'atlas';
       corpo = `
-        <p class="fi-orig-regra"><span class="fi-orig-fonte">${esc(LIV[o.livro] || o.livro)}, p. ${o.pagina}</span></p>
+        <p class="fi-orig-regra">${regional && o.regiao ? '<span class="fi-orig-regiao">📍 ' + esc(o.regiao) + '</span> ' : ''}<span class="fi-orig-fonte">${esc(LIV[o.livro] || o.livro)}, p. ${o.pagina}</span></p>
         <div class="fi-orig-especial">
           <p><strong>Benefício.</strong> ${esc(o.beneficio)}</p>
           ${o.itens ? `<p class="fi-orig-itens"><strong>Itens.</strong> ${esc(o.itens)}</p>` : ''}
         </div>
-        <p class="fi-nota">Origem <strong>especial</strong>: o benefício é único e fixo (não se escolhe 2). Efeitos de
-          origem contam como habilidades para acúmulo; se ela treina uma perícia em que você já é treinado, treine
-          outra de classe (Heróis de Arton, p. 46).</p>`;
+        <p class="fi-nota">${regional
+          ? 'Origem <strong>regional</strong>: escolhida no lugar de uma origem comum, se você for nativo da região (ou tiver passado lá seus anos formativos). O benefício é único e fixo; se ela treina uma perícia em que você já é treinado, treine outra de classe (Atlas de Arton, p. 470).'
+          : 'Origem <strong>especial</strong>: o benefício é único e fixo (não se escolhe 2). Efeitos de origem contam como habilidades para acúmulo; se ela treina uma perícia em que você já é treinado, treine outra de classe (Heróis de Arton, p. 46).'}</p>`;
       return `
         <div class="fi-orig">
           <label class="fi-campo fi-orig-sel"><span class="fi-rot">🎯 Origem</span>

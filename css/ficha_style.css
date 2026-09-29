@@ -2440,6 +2440,10 @@
 }
 .fi-orig-conta--cheio { background: var(--gold-deep); color: var(--parchment); }
 .fi-orig-fonte { font-size: 0.8rem; color: var(--text-dim); margin-left: 0.3rem; }
+.fi-orig-regiao {
+  font-size: 0.82rem; font-family: 'Cinzel', serif; color: var(--gold-deep);
+  padding: 0.05rem 0.4rem; border-radius: 999px; background: var(--parchment2);
+}
 .fi-orig-nota {
   margin: 0.2rem 0 0.4rem; font-size: 0.86rem; color: var(--text-dim);
   border-left: 3px solid var(--gold-deep); padding-left: 0.5rem;
