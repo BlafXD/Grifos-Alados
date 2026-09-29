@@ -303,7 +303,18 @@
       texto: String((c && c.texto) || ''),
       // só na sustentada: é MAGIA? "apenas uma magia sustentada por vez"
       magia: !!(c && c.magia),
+      //  só em OUTROS: um efeito POR TURNO (dado/valor de dano ou cura) e uma
+      //  DURAÇÃO em turnos que conta pra baixo no aviso de início de turno.
+      porTurno: String((c && c.porTurno) || ''),
+      porTurnoTipo: (c && c.porTurnoTipo) === 'cura' ? 'cura' : 'dano',
+      turnos: Math.max(0, parseInt((c && c.turnos), 10) || 0),
     }));
+    //  O dado por turno das condições do livro que sangram/queimam. O livro
+    //  dá 1d6, mas há efeitos que ACUMULAM (2d6, 3d6…) ou sobem o PASSO
+    //  (1d8, 1d10…) — por isso o valor é editável no aviso.
+    if (!f.condTurno || typeof f.condTurno !== 'object') f.condTurno = {};
+    if (!f.condTurno.sangrando) f.condTurno.sangrando = '1d6';
+    if (!f.condTurno['em-chamas']) f.condTurno['em-chamas'] = '1d6';
 
     //  `atr` é a MESMA ideia da Defesa, perícia por perícia: a Tabela
     //  2-1 (p. 115) diz o atributo-chave de cada uma, e é esse que vale
@@ -1992,7 +2003,15 @@
         ${sust ? `<button type="button" class="fi-mini${c.magia ? ' fi-mini--on' : ''}" data-acao="livre-magia"
                 data-i="${i}" aria-pressed="${!!c.magia}"
                 title="${c.magia ? 'Não é magia: desmarcar' : 'É uma MAGIA sustentada — e só cabe uma delas por vez'}"
-          >✦</button>` : ''}
+          >✦</button>` : `
+        <input class="fi-txt fi-txt--mini fi-condl-porturno" type="text" value="${esc(c.porTurno || '')}"
+               data-campo="condicoesLivres.${i}.porTurno" placeholder="por turno (1d6)" autocomplete="off"
+               title="Dano ou cura a cada turno — ex.: 1d12 (veneno), 2d6, 5, +5 (regeneração). Rolado no aviso de início de turno.">
+        <button type="button" class="fi-mini fi-condl-tipoturno" data-acao="livre-tipoturno" data-i="${i}"
+                title="${c.porTurnoTipo === 'cura' ? 'Cura por turno — clique para virar dano' : 'Dano por turno — clique para virar cura'}"
+          >${c.porTurnoTipo === 'cura' ? '💚' : '💥'}</button>
+        <input class="fi-num fi-num--mini fi-condl-turnos" type="number" min="0" value="${c.turnos || 0}"
+               data-campo="condicoesLivres.${i}.turnos" title="Dura quantos turnos (0 = sem contagem; conta pra baixo a cada turno)">`}
         <button type="button" class="fi-mini fi-mini--x" data-acao="tira-livre" data-i="${i}"
                 title="Tirar esta linha">✕</button>
       </li>`;
@@ -2009,6 +2028,162 @@
         ? ' · <span class="fi-mancha-aviso">⚠ ' + magias + ' delas estão marcadas como <strong>magia</strong>, e o ' +
           'livro deixa manter <em>apenas uma magia sustentada por vez</em></span>'
         : '');
+  }
+
+  //  ── AVISO DE INÍCIO DE TURNO (rodadas automáticas) ──────────────
+  //  Quando a iniciativa chega na ficha, junta o que é "por turno" e
+  //  oferece rolar + aplicar: Sangrando (Con CD 15 → dano), Em Chamas
+  //  (dano de fogo), sustentadas (1 PM ou largar) e os "Outros" com
+  //  efeito por turno e/ou duração. Só regra oficial; o teste de
+  //  concentração é de LANÇAR (p. 170), não de manter — fica de fora.
+  function efeitosDeTurno(f) {
+    const itens = [];
+    const cond = f.condicoes || [];
+    if (cond.indexOf(chaveCond('Sangrando')) >= 0) itens.push({ k: 'sangrando' });
+    if (cond.indexOf(chaveCond('Em Chamas')) >= 0) itens.push({ k: 'chamas' });
+    condLivres(f).forEach((c, i) => {
+      if (c.tipo === 'sustentada') itens.push({ k: 'sust', i: i });
+      else if ((c.porTurno && c.porTurno.trim()) || (c.turnos | 0) > 0) itens.push({ k: 'outros', i: i });
+    });
+    return itens;
+  }
+  function temEfeitosDeTurno(f) { return efeitosDeTurno(f).length > 0; }
+
+  function avisoDeTurno(f, rodada) {
+    if (!f || !window.GA_abrirModal) return false;
+    const itens = efeitosDeTurno(f);
+    if (!itens.length) return false;
+    const linha = (it, idx) => {
+      if (it.k === 'sangrando') return `
+        <div class="fi-turno-item" data-idx="${idx}">
+          <div class="fi-turno-cab">🩸 <strong>Sangrando</strong> <em>Constituição (CD 15): passa estabiliza, falha perde o dado</em></div>
+          <div class="fi-turno-linha">
+            <label class="fi-turno-dado">dado <input type="text" class="fi-txt fi-txt--mini" data-dado value="${esc(f.condTurno.sangrando || '1d6')}"></label>
+            <button type="button" class="ga-btn-sec" data-acao="turno-sangrando">🎲 Rolar Constituição</button>
+            <span class="fi-turno-out" data-out></span>
+          </div>
+        </div>`;
+      if (it.k === 'chamas') return `
+        <div class="fi-turno-item" data-idx="${idx}">
+          <div class="fi-turno-cab">🔥 <strong>Em Chamas</strong> <em>dano de fogo no início do turno</em></div>
+          <div class="fi-turno-linha">
+            <label class="fi-turno-dado">dado <input type="text" class="fi-txt fi-txt--mini" data-dado value="${esc(f.condTurno['em-chamas'] || '1d6')}"></label>
+            <button type="button" class="ga-btn-sec" data-acao="turno-chamas">🎲 Sofrer fogo</button>
+            <span class="fi-turno-out" data-out></span>
+          </div>
+        </div>`;
+      const c = condLivres(f)[it.i] || {};
+      if (it.k === 'sust') return `
+        <div class="fi-turno-item" data-idx="${idx}">
+          <div class="fi-turno-cab">✋ <strong>Sustentando</strong>${c.magia ? ' ✦' : ''}: ${esc(c.texto || 'algo')} <em>1 PM por turno</em></div>
+          <div class="fi-turno-linha">
+            <button type="button" class="ga-btn-sec" data-acao="turno-manter">Manter (−1 PM)</button>
+            <button type="button" class="ga-btn-sec" data-acao="turno-largar">Largar</button>
+            <span class="fi-turno-out" data-out></span>
+          </div>
+        </div>`;
+      // outros
+      const temDado = c.porTurno && c.porTurno.trim();
+      const cura = c.porTurnoTipo === 'cura';
+      const temTurnos = (c.turnos | 0) > 0;
+      return `
+        <div class="fi-turno-item" data-idx="${idx}">
+          <div class="fi-turno-cab">✎ <strong>${esc(c.texto || 'Efeito')}</strong>${temTurnos ? ' <em>resta<span data-turnos>' + (c.turnos | 0) + '</span> turno(s)</em>' : ''}</div>
+          <div class="fi-turno-linha">
+            ${temDado ? `<label class="fi-turno-dado">${cura ? '💚 cura' : '💥 dano'} <input type="text" class="fi-txt fi-txt--mini" data-dado value="${esc(c.porTurno)}"></label>
+            <button type="button" class="ga-btn-sec" data-acao="turno-outros">🎲 ${cura ? 'Curar' : 'Sofrer'}</button>` : ''}
+            ${temTurnos ? `<button type="button" class="ga-btn-sec" data-acao="turno-tick">−1 turno</button>` : ''}
+            <span class="fi-turno-out" data-out></span>
+          </div>
+        </div>`;
+    };
+    const overlay = window.GA_abrirModal(`
+      <div class="ga-modal-cab">
+        <span>🌀 Início do turno — ${esc(f.nome || 'personagem')}${rodada ? ' · rodada ' + rodada : ''}</span>
+        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
+      </div>
+      <p class="ga-modal-dica">Role cada efeito e aceite para aplicar na ficha. O que não quiser resolver agora, deixe para depois.</p>
+      <div class="fi-turno-lista">${itens.map(linha).join('')}</div>
+      <div class="ga-modal-acoes"><button type="button" class="ga-btn-principal" data-ga-fechar>Fechar</button></div>`);
+    if (!overlay) return false;
+    const dadoDe = row => {
+      const inp = row.querySelector('[data-dado]');
+      return (inp && inp.value.trim()) || '1d6';
+    };
+    const feito = (row, txt) => {
+      const out = row.querySelector('[data-out]');
+      if (out) out.innerHTML = '<span class="fi-turno-feito">✓ ' + esc(txt) + '</span>';
+      row.querySelectorAll('button[data-acao]').forEach(b => { b.disabled = true; });
+    };
+    overlay.addEventListener('click', e => {
+      const btn = e.target.closest('[data-acao]');
+      if (!btn) return;
+      const row = btn.closest('[data-idx]');
+      const it = itens[+row.dataset.idx];
+      if (!it) return;
+      const c = (it.i != null) ? condLivres(f)[it.i] : null;
+      if (btn.dataset.acao === 'turno-sangrando') {
+        const dado = dadoDe(row);
+        f.condTurno.sangrando = dado; sujar(f.id, 'condTurno');
+        const r = rolar(d20(atr(f, 'con')), quem(f) + ' · Sangrando (Constituição CD 15)', 'turno');
+        if (!r) return;
+        if (r.total >= 15) {
+          const cond = f.condicoes || [];
+          const j = cond.indexOf(chaveCond('Sangrando'));
+          if (j >= 0) cond.splice(j, 1);
+          sujar(f.id, 'condicoes');
+          feito(row, 'Constituição ' + r.total + ' ≥ 15 — estabilizou (Sangrando removido)');
+        } else {
+          const rd = rolar(dado, quem(f) + ' · Sangramento', 'turno');
+          const perda = rd ? rd.total : 0;
+          if (perda) aplicarDano(f, 'pv', perda, 'Sangrando');
+          feito(row, 'Constituição ' + r.total + ' < 15 — perdeu ' + perda + ' PV (continua sangrando)');
+        }
+        salvar();
+      } else if (btn.dataset.acao === 'turno-chamas') {
+        const dado = dadoDe(row);
+        f.condTurno['em-chamas'] = dado; sujar(f.id, 'condTurno');
+        const rd = rolar(dado, quem(f) + ' · Em Chamas (fogo)', 'turno');
+        const perda = rd ? rd.total : 0;
+        if (perda) aplicarDano(f, 'pv', perda, 'Em Chamas');
+        feito(row, 'perdeu ' + perda + ' PV de fogo'); salvar();
+      } else if (btn.dataset.acao === 'turno-manter') {
+        aplicarDano(f, 'pm', 1, 'Sustentar' + (c && c.texto ? ' ' + c.texto : ''));
+        feito(row, 'mantido — −1 PM'); salvar();
+      } else if (btn.dataset.acao === 'turno-largar') {
+        if (c) { const arr = f.condicoesLivres; const k = arr.indexOf(c); if (k >= 0) arr.splice(k, 1); sujar(f.id, 'condicoesLivres'); }
+        feito(row, 'largou'); salvar();
+      } else if (btn.dataset.acao === 'turno-outros') {
+        if (!c) return;
+        const dado = dadoDe(row);
+        c.porTurno = dado; sujar(f.id, 'condicoesLivres');
+        const rd = rolar(dado, quem(f) + ' · ' + (c.texto || 'efeito'), 'turno');
+        const v = rd ? rd.total : 0;
+        if (v) { if (c.porTurnoTipo === 'cura') aplicarCura(f, 'pv', v); else aplicarDano(f, 'pv', v, c.texto || 'efeito'); }
+        // se tiver duração, um turno se foi
+        let msg = (c.porTurnoTipo === 'cura' ? 'curou ' : 'perdeu ') + v + ' PV';
+        if ((c.turnos | 0) > 0) {
+          c.turnos = (c.turnos | 0) - 1;
+          const sp = row.querySelector('[data-turnos]'); if (sp) sp.textContent = c.turnos;
+          msg += ' · resta ' + c.turnos + ' turno(s)' + (c.turnos <= 0 ? ' (acabou)' : '');
+          if (c.turnos <= 0) { const arr = f.condicoesLivres; const k = arr.indexOf(c); if (k >= 0) arr.splice(k, 1); }
+          sujar(f.id, 'condicoesLivres');
+        }
+        feito(row, msg); salvar();
+      } else if (btn.dataset.acao === 'turno-tick') {
+        if (!c) return;
+        c.turnos = Math.max(0, (c.turnos | 0) - 1);
+        const sp = row.querySelector('[data-turnos]'); if (sp) sp.textContent = c.turnos;
+        if (c.turnos <= 0) { const arr = f.condicoesLivres; const k = arr.indexOf(c); if (k >= 0) arr.splice(k, 1); }
+        sujar(f.id, 'condicoesLivres');
+        feito(row, c.turnos <= 0 ? 'acabou — removido' : 'resta ' + c.turnos + ' turno(s)'); salvar();
+      }
+    });
+    //  Ao fechar (✕ ou Fechar), redesenha a ficha para o PV/PM já aparecerem
+    //  atualizados atrás do modal. O setTimeout deixa o modal fechar primeiro.
+    overlay.querySelectorAll('[data-ga-fechar]').forEach(b =>
+      b.addEventListener('click', () => setTimeout(render, 0)));
+    return true;
   }
 
   function blocoCondicoes(f) {
@@ -4398,6 +4573,12 @@
       c.magia = !c.magia;
       sujar(f.id, 'condicoesLivres'); salvar(); return render();
     }
+    if (acao === 'livre-tipoturno') {
+      const c = f.condicoesLivres[+btn.dataset.i];
+      if (!c) return;
+      c.porTurnoTipo = c.porTurnoTipo === 'cura' ? 'dano' : 'cura';
+      sujar(f.id, 'condicoesLivres'); salvar(); return render();
+    }
     // o ✕ do ataque mora colado no ✎ — no dedo, errar um pelo outro é
     // fácil; a pergunta só aparece se houver algo escrito
     if (acao === 'tira-ataque') {
@@ -6062,6 +6243,13 @@
     aoMudar: escutar,                  // avisa quando qualquer número muda
     receberItem: receberItem,          // um item comprado na 🏪 Loja
     abrirNaTela: abrirNaTela,          // trazer uma ficha para a frente
+    //  A iniciativa chama quando o turno chega numa ficha deste aparelho:
+    //  abre o aviso de início de turno. Devolve false se a ficha não é daqui
+    //  ou não há nada "por turno" a resolver.
+    avisoTurno: function (fichaId, rodada) {
+      const f = (dados.fichas || []).find(x => x.id === fichaId);
+      return f ? avisoDeTurno(f, rodada) : false;
+    },
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

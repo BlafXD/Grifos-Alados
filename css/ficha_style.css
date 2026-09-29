@@ -3158,6 +3158,30 @@
 }
 .fi-condl--sustentada { --cond: var(--azul); }
 .fi-condl--outros     { --cond: var(--neutra); }
+/* a linha OUTROS ganhou efeito-por-turno + duração: vira flex para caber */
+.fi-condl--outros { display: flex; flex-wrap: wrap; }
+.fi-condl--outros .fi-txt:not(.fi-txt--mini) { flex: 1 1 7rem; min-width: 6rem; }
+.fi-condl-porturno { width: 6.2rem; }
+.fi-condl-turnos { width: 3.4rem; }
+
+/* ── AVISO DE INÍCIO DE TURNO (rodadas automáticas) ─────────────── */
+.fi-turno-lista { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.3rem 0 0.6rem; }
+.fi-turno-item {
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  background: var(--parchment2);
+  border: 1px solid var(--gold-deep);
+}
+.fi-turno-cab { font-size: 0.92rem; margin-bottom: 0.4rem; }
+.fi-turno-cab em { font-style: italic; color: var(--text-dim); font-size: 0.8rem; }
+.fi-turno-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.fi-turno-dado {
+  font-size: 0.8rem; color: var(--text-dim);
+  display: inline-flex; align-items: center; gap: 0.3rem;
+}
+.fi-turno-dado .fi-txt--mini { width: 4.5rem; }
+.fi-turno-out { font-size: 0.88rem; }
+.fi-turno-feito { color: var(--gold-deep); font-family: 'Cinzel', serif; font-size: 0.85rem; }
 .fi-condl-rot {
   position: relative;
   flex: 0 0 auto;
