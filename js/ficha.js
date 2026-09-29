@@ -315,6 +315,11 @@
     if (!f.condTurno || typeof f.condTurno !== 'object') f.condTurno = {};
     if (!f.condTurno.sangrando) f.condTurno.sangrando = '1d6';
     if (!f.condTurno['em-chamas']) f.condTurno['em-chamas'] = '1d6';
+    //  A CAMPANHA (mesa) dona da ficha — a isolação entre mesas. Vazio = sem
+    //  campanha. A ficha só aparece na lista da mesa dona; a etiqueta no topo
+    //  deixa isso explícito. Vincular é ato deliberado, feito na mesa certa.
+    f.mesa = String(f.mesa || '');
+    f.mesaNome = String(f.mesaNome || '');
 
     //  `atr` é a MESMA ideia da Defesa, perícia por perícia: a Tabela
     //  2-1 (p. 115) diz o atributo-chave de cada uma, e é esse que vale
@@ -620,13 +625,49 @@
     return dono;
   }
   // As fichas de outra gente, agrupadas por dono, para a barra.
+  //  A campanha (mesa) a que a ficha pertence, e o estado atual da mesa.
+  function salaAtual() {
+    const est = window.GA_Mesa ? window.GA_Mesa.estado() : null;
+    return {
+      id: (est && est.mesaId) || '',
+      nome: (est && est.mesa && est.mesa.nome) || (est && est.mesaId) || '',
+      souMembro: !!(est && est.souMembro),
+    };
+  }
+  //  A etiqueta EXPLÍCITA de campanha no topo da ficha, mais o vínculo (só
+  //  se vincula à mesa em que se está conectado — muda de propósito, no
+  //  lugar certo). Se a ficha é de outra campanha, avisa em destaque.
+  function blocoCampanhaFicha(f) {
+    const s = salaAtual();
+    const tem = !!f.mesa;
+    const nome = tem ? esc(f.mesaNome || f.mesa) : 'sem campanha';
+    const diverge = tem && s.id && f.mesa !== s.id;
+    return `
+      <div class="fi-campanha${diverge ? ' fi-campanha--alerta' : ''}${!tem ? ' fi-campanha--vazia' : ''}">
+        <span class="fi-campanha-rot">🎲 Campanha</span>
+        <strong class="fi-campanha-nome">${nome}</strong>
+        ${diverge ? `<span class="fi-campanha-aviso">⚠ você está em «${esc(s.nome)}» — esta ficha é de outra campanha e não entra na lista dela</span>` : ''}
+        ${s.souMembro && s.id && f.mesa !== s.id
+          ? `<button type="button" class="fi-mini fi-campanha-btn" data-acao="ficha-vincular-mesa"
+                  title="Marcar que esta ficha pertence à campanha «${esc(s.nome)}»">↪ Vincular a «${esc(s.nome)}»</button>` : ''}
+        ${tem ? `<button type="button" class="fi-mini fi-campanha-btn" data-acao="ficha-desvincular-mesa"
+                  title="Tirar a campanha desta ficha (fica «sem campanha»)">tirar</button>` : ''}
+      </div>`;
+  }
+
   function fichasDaMesa() {
+    const s = salaAtual();
     const saida = [];
     Object.keys(remotas).forEach(uid => {
       if (uid === meuUid) return;
       const m = remotas[uid] || {};
       Object.keys(m).forEach(id => {
-        if (m[id] && typeof m[id] === 'object') saida.push({ uid: uid, ficha: m[id] });
+        const fc = m[id];
+        if (!fc || typeof fc !== 'object') return;
+        //  Isolação: uma ficha marcada para OUTRA campanha não aparece na
+        //  lista desta mesa (a órfã sem marca ainda aparece até ser tratada).
+        if (fc.mesa && s.id && fc.mesa !== s.id) return;
+        saida.push({ uid: uid, ficha: fc });
       });
     });
     return saida;
@@ -1321,12 +1362,17 @@
         <div class="fi-barra fi-barra--mesa">
           <span class="fi-barra-rot" title="Só o mestre e o auxiliar recebem estas fichas">👥 Da mesa, ao vivo</span>
           ${daMesa.length ? daMesa.map(({ uid, ficha }) => `
+            <span class="fi-aba-mesa-wrap">
             <button type="button" class="fi-aba fi-aba--mesa ${ficha.id === dados.aberta ? 'fi-aba--ativa' : ''}"
                     data-acao="abrir" data-id="${esc(ficha.id)}"
                     title="Ficha de ${esc(nomeDoDono(uid, ficha))} — você pode consultar, rolar e mexer">
               ${esc(ficha.nome || '(sem nome)')}
               <em>${esc(nomeDoDono(uid, ficha))}</em>
-            </button>`).join('')
+            </button>
+            <button type="button" class="fi-mini fi-mini--x fi-aba-mesa-x" data-acao="tira-ficha-mesa"
+                    data-id="${esc(ficha.id)}" data-uid="${esc(uid)}"
+                    title="Remover esta ficha DESTA campanha (a conta do jogador não é afetada — use se ela veio parar na mesa errada)">✕</button>
+            </span>`).join('')
             : '<span class="fi-barra-vazio">nenhum jogador subiu ficha ainda</span>'}
         </div>`;
     }
@@ -1399,6 +1445,7 @@
             <input class="fi-num" type="number" min="0" step="1.5" value="${f.deslocamento}" data-campo="deslocamento"
                    title="O deslocamento que a raça lhe dá — 9 m para quase todas (p. 95). O que soma ou tira metros (armadura, poder, carga) vai em «O que mexe no deslocamento», no cartão Defesa & Carga."></label>
         </div>
+        ${blocoCampanhaFicha(f)}
         <div class="fi-ident-classes">
           <span class="fi-rot">Classe(s) e nível</span>
           <div class="fi-classes">
@@ -4439,9 +4486,40 @@
 
     if (acao === 'nova') {
       const nova = normalizar({ nome: '' });
+      //  Nasce na campanha em que está sendo criada — é o vínculo certo na
+      //  maioria das vezes, e evita que ela vá parar na mesa errada.
+      const est = window.GA_Mesa ? window.GA_Mesa.estado() : null;
+      if (est && est.mesaId && est.souMembro) {
+        nova.mesa = est.mesaId;
+        nova.mesaNome = (est.mesa && est.mesa.nome) || est.mesaId;
+      }
       dados.fichas.push(nova);
       abrirFicha(nova.id);
       salvar(); return render();
+    }
+    if (acao === 'ficha-vincular-mesa') {
+      if (!f) return;
+      const est = window.GA_Mesa ? window.GA_Mesa.estado() : null;
+      if (!est || !est.mesaId || !est.souMembro) return;
+      f.mesa = est.mesaId;
+      f.mesaNome = (est.mesa && est.mesa.nome) || est.mesaId;
+      sujar(f.id, 'mesa'); sujar(f.id, 'mesaNome');
+      salvar(); return render();
+    }
+    if (acao === 'ficha-desvincular-mesa') {
+      if (!f) return;
+      f.mesa = ''; f.mesaNome = '';
+      sujar(f.id, 'mesa'); sujar(f.id, 'mesaNome');
+      salvar(); return render();
+    }
+    if (acao === 'tira-ficha-mesa') {
+      const id = btn.dataset.id, uid = btn.dataset.uid;
+      const item = fichasDaMesa().find(x => x.ficha.id === id && x.uid === uid);
+      const nome = (item && item.ficha.nome) || 'esta ficha';
+      if (!confirm('Remover «' + nome + '» DESTA campanha?\n\nSai só a cópia compartilhada com esta mesa. ' +
+          'A ficha continua na conta do jogador — ele pode vinculá-la à campanha certa e ela volta no lugar dela.')) return;
+      if (window.GA_FichaMesa && window.GA_FichaMesa.apagar) window.GA_FichaMesa.apagar(id, uid);
+      return;
     }
     if (acao === 'abrir') {
       abrirFicha(btn.dataset.id);
