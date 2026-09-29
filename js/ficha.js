@@ -207,6 +207,30 @@
     f.carga = f.carga || {};
     ['usada', 'outros'].forEach(k => { if (typeof f.carga[k] !== 'number') f.carga[k] = 0; });
     if (typeof f.cdAtributo !== 'string') f.cdAtributo = 'int';
+    //  DUAS CDs (28/09/2026): a base é a mesma (10 + ½ nível + atributo),
+    //  mas os bônus AVULSOS podem cair só numa. Vários efeitos aumentam a
+    //  CD de MAGIA sem tocar na de HABILIDADE, e vice-versa (a p. 106 fala
+    //  da CD das habilidades; cada magia herda a sua). Então cada uma tem
+    //  o seu "Outros" — o campo por onde entra esse bônus de fora.
+    if (typeof f.cdMagiaOutros !== 'number') f.cdMagiaOutros = 0;
+    if (typeof f.cdHabOutros !== 'number') f.cdHabOutros = 0;
+    //  Habilidades de classe tiradas e acrescentadas à mão (28/09/2026).
+    if (!Array.isArray(f.fixasRemovidas)) f.fixasRemovidas = [];
+    if (!Array.isArray(f.fixasExtras)) f.fixasExtras = [];
+    f.fixasExtras = f.fixasExtras.filter(x => x && x.classe && x.nome);
+    //  ESTADO DE COMBATE (28/09/2026): um rascunho temporário sobre a
+    //  própria ficha. `ativo` diz se está ligado; `snap` guarda o "antes"
+    //  dos números que a luta bagunça, para o "sair" devolver o valor REAL
+    //  (a perícia +5 volta a +5, não a 0). PV e PM NÃO entram no snap: o
+    //  que foi gasto na luta fica gasto.
+    if (!f.combate || typeof f.combate !== 'object') f.combate = { ativo: false, snap: null };
+    if (typeof f.combate.ativo !== 'boolean') f.combate.ativo = false;
+    //  ORIGEM ESCOLHIDA (28/09/2026): a origem do seletor e os benefícios
+    //  marcados (perícias/poderes; pela regra, 2). O campo `origem` de texto
+    //  livre continua existindo — é o rótulo; este é a escolha estruturada.
+    if (!f.origemEscolha || typeof f.origemEscolha !== 'object') f.origemEscolha = { origem: '', itens: [] };
+    if (typeof f.origemEscolha.origem !== 'string') f.origemEscolha.origem = '';
+    if (!Array.isArray(f.origemEscolha.itens)) f.origemEscolha.itens = [];
     if (typeof f.xp !== 'number') f.xp = 0;
     // ── O CADERNO DO XP (22/09/2026) ───────────────────────────────
     //  "para saber se já coloquei XP ou não": o campo do XP guarda o
@@ -762,6 +786,11 @@
   }
   // CD das suas habilidades = 10 + ⌊nível ÷ 2⌋ + atributo-chave
   function cdBase(f) { return 10 + Math.floor(nivel(f) / 2) + atr(f, f.cdAtributo); }
+  //  As duas CDs de verdade: a base mais o "Outros" avulso de cada lado.
+  //  A CD de magia e a de habilidade partem do mesmo atributo-chave (o
+  //  seletor continua um só), mas somam bônus de fora independentes.
+  function cdMagias(f) { return cdBase(f) + (f.cdMagiaOutros || 0); }
+  function cdHabilidades(f) { return cdBase(f) + (f.cdHabOutros || 0); }
   function valorAtaque(f, a) { return valorPericia(f, a.pericia) + (a.extra || 0); }
   function pvAtual(f) { return f.pv.atual == null ? pvMax(f) : f.pv.atual; }
   function pmAtual(f) { return f.pm.atual == null ? pmMax(f) : f.pm.atual; }
@@ -821,6 +850,51 @@
   // grande, porque é o que o jogador tem de fato para gastar.
   function pvTotal(f) { return pvAtual(f) + (f.pv.temp || 0); }
   function pmTotal(f) { return pmAtual(f) + (f.pm.temp || 0); }
+
+  // ── ESTADO DE COMBATE (28/09/2026) ───────────────────────────────
+  //  Entrar: guarda o "antes" dos números que a luta bagunça. Sair:
+  //  devolve exatamente esses números — a perícia com +5 passivo volta a
+  //  +5, não a 0, porque o que se guarda é o VALOR REAL. PV, PM, poderes,
+  //  magias, inventário, XP e condições ficam de fora do snap: gasto de
+  //  luta não volta, e o que se ganhou na luta não some.
+  //  O clone é raso-a-fundo o bastante para o que guardamos (números,
+  //  strings e listas simples) — JSON dá conta e não deixa referência viva.
+  function clonar(x) { try { return JSON.parse(JSON.stringify(x)); } catch (e) { return x; } }
+  function snapshotCombate(f) {
+    return {
+      atributos: clonar(f.atributos),
+      defesa: clonar(f.defesa),
+      pericias: clonar(f.pericias),
+      oficios: clonar(f.oficios),
+      deslocamento: f.deslocamento,
+      deslocMods: clonar(f.deslocMods),
+      cdMagiaOutros: f.cdMagiaOutros || 0,
+      cdHabOutros: f.cdHabOutros || 0,
+    };
+  }
+  //  Devolve campo a campo, sem destruir o que a luta acrescentou de
+  //  legítimo: perícia e ofício voltam só no BÔNUS e no treino guardados,
+  //  por índice/chave; linhas novas de ofício ficam onde estão.
+  function restaurarCombate(f) {
+    const s = f.combate && f.combate.snap;
+    if (!s) return;
+    if (s.atributos) f.atributos = clonar(s.atributos);
+    if (s.defesa) Object.keys(s.defesa).forEach(k => { f.defesa[k] = s.defesa[k]; });
+    if (typeof s.deslocamento === 'number') f.deslocamento = s.deslocamento;
+    if (Array.isArray(s.deslocMods)) f.deslocMods = clonar(s.deslocMods);
+    f.cdMagiaOutros = s.cdMagiaOutros || 0;
+    f.cdHabOutros = s.cdHabOutros || 0;
+    if (s.pericias) Object.keys(s.pericias).forEach(k => {
+      if (!f.pericias[k]) return;
+      f.pericias[k].outros = s.pericias[k].outros || 0;
+      f.pericias[k].treinada = !!s.pericias[k].treinada;
+    });
+    if (Array.isArray(s.oficios)) s.oficios.forEach((o, i) => {
+      if (!f.oficios[i]) return;
+      f.oficios[i].outros = o.outros || 0;
+      f.oficios[i].treinada = !!o.treinada;
+    });
+  }
 
   // ── CARGA (p. 141) ──────────────────────────────────────────────
   //  Sai do inventário, não mais de um número digitado à mão. Cada
@@ -1159,7 +1233,7 @@
     //  logo DEPOIS de Ataques e ANTES de Magias (pedido dele em 24/09/2026):
     //  são o que o personagem "sabe fazer", e ficavam soterradas embaixo das
     //  listas de magia e inventário. Anotações (📜) segue mais abaixo.
-    html += bloqueIdentidade(f) + blocoComplicacoes(f) + blocoCondicoes(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
+    html += bloqueIdentidade(f) + blocoCombate(f) + blocoComplicacoes(f) + blocoCondicoes(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
             blocoDePoderes(f, 'racaOrigem') + blocoDePoderes(f, 'classePoderes') +
             blocoAmigos(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
             blocoCompras(f);
@@ -1497,6 +1571,34 @@
   }
   function num(n) { return (n || 0).toLocaleString('pt-BR'); }
 
+  // ── ESTADO DE COMBATE: a barra que liga e desliga o rascunho ─────
+  //  Desligado, um convite discreto. Ligado, uma faixa carmim que não
+  //  deixa esquecer que os números estão em modo de luta — e o botão de
+  //  sair, que restaura e pergunta antes.
+  function blocoCombate(f) {
+    const on = f.combate && f.combate.ativo;
+    if (on) {
+      return `
+        <div class="fi-cartao fi-combate fi-combate--on">
+          <h2 class="fi-cartao-tit">⚔ Em combate</h2>
+          <p class="fi-combate-txt">Mexa à vontade em <strong>atributos, perícias, ofícios, defesa,
+            deslocamento</strong> e no <strong>Outros</strong> das CDs — é tudo rascunho. Ao sair, esses
+            valores voltam ao que eram; o <strong>PV e o PM</strong> que você gastou continuam gastos.</p>
+          <button type="button" class="fi-add fi-combate-btn fi-combate-btn--sair" data-acao="combate-sair">
+            ⏹ Sair do combate e restaurar</button>
+        </div>`;
+    }
+    return `
+      <div class="fi-cartao fi-combate fi-combate--off">
+        <div class="fi-combate-off-linha">
+          <button type="button" class="fi-add fi-combate-btn" data-acao="combate-entrar">⚔ Entrar em combate</button>
+          <p class="fi-combate-txt">Um rascunho por cima da ficha para a luta: bagunça atributos, perícias,
+            defesa e deslocamento à vontade. Ao sair, tudo isso volta ao <em>valor real</em> — só o PV e o PM
+            gastos é que ficam.</p>
+        </div>
+      </div>`;
+  }
+
   // ── OS NÚMEROS: atributos · vida e mana · defesa e carga ─────────
   function blocoNumeros(f) {
     const atrs = D.ATRIBUTOS.map(a => `
@@ -1579,11 +1681,24 @@
                 / <strong data-der="cargamax">${cargaMax(f)}</strong> espaços
                 <em class="fi-carga-estado" data-der="cargaestado">${rotuloCarga(f)}</em></span>
             </div>
-            <div class="fi-linha">
-              <span>CD das suas habilidades</span>
-              <span><strong data-der="cd">${cdBase(f)}</strong>
-                <select class="fi-sel fi-sel--mini" data-campo="cdAtributo"
-                        title="Atributo-chave das suas habilidades — no arcanista, é também o que ele soma no PM (Bruxo e Mago: Int; Feiticeiro: Car)">${opsCd}</select></span>
+            <div class="fi-linha fi-linha--cd">
+              <span>CD das magias</span>
+              <span><strong data-der="cdmag">${cdMagias(f)}</strong>
+                <label class="fi-cd-outros" title="Bônus de fora que sobem SÓ a CD das suas magias (um item, uma magia, um poder…). A base já entra sozinha.">
+                  <span>Outros</span>
+                  <input class="fi-num fi-num--cd" type="number" value="${f.cdMagiaOutros}" data-campo="cdMagiaOutros"></label></span>
+            </div>
+            <div class="fi-linha fi-linha--cd">
+              <span>CD das habilidades</span>
+              <span><strong data-der="cdhab">${cdHabilidades(f)}</strong>
+                <label class="fi-cd-outros" title="Bônus de fora que sobem SÓ a CD das suas habilidades (de classe, de raça, de origem). A base já entra sozinha.">
+                  <span>Outros</span>
+                  <input class="fi-num fi-num--cd" type="number" value="${f.cdHabOutros}" data-campo="cdHabOutros"></label></span>
+            </div>
+            <div class="fi-linha fi-linha--cdatr">
+              <span>Atributo das duas CDs</span>
+              <span><select class="fi-sel fi-sel--mini" data-campo="cdAtributo"
+                        title="Atributo-chave das suas magias E habilidades — no arcanista, é também o que ele soma no PM (Bruxo e Mago: Int; Feiticeiro: Car)">${opsCd}</select></span>
             </div>
             <div class="fi-linha">
               <span>Deslocamento</span>
@@ -2846,13 +2961,17 @@
   //  a morar nos dois cartões que já existiam embaixo — 🌿 Habilidades de
   //  raça e origem e ⚔ Habilidades de classe e poderes —, cada um com o
   //  seu ✍ Escrever, ＋ Adicionar e Abrir/Recolher todos. Raça e origem
-  //  juntam a habilidade de raça, o poder de raça e o poder de origem;
-  //  classe e poderes ficam com o resto (combate, destino, magia,
-  //  concedidos, Tormenta, grupo, distinção, os de classe e os escritos
-  //  à mão). A caixa de texto livre de cada cartão CONTINUA embaixo — a
+  //  juntam a habilidade de raça e o poder de origem; classe e poderes
+  //  ficam com o resto (combate, destino, magia, concedidos, Tormenta,
+  //  grupo, distinção, o poder de raça, os de classe e os escritos à
+  //  mão). A caixa de texto livre de cada cartão CONTINUA embaixo — a
   //  condição dele de 15/09: quem escreveu à mão não perde uma linha.
+  //  O 🧬 Poder de raça saiu daqui (28/09/2026, decisão dele): é grupo de
+  //  PODER, não de habilidade de raça, então mora no cartão ⚔ com os
+  //  outros poderes. No 🌿 ficam só a habilidade de raça (🌿) e o poder
+  //  de origem (🎯).
   const POD_BLOCO_DE_GRUPO = {
-    'raca-hab': 'racaOrigem', 'raca': 'racaOrigem', 'origem': 'racaOrigem',
+    'raca-hab': 'racaOrigem', 'origem': 'racaOrigem',
   };
   function blocoDoGrupo(chave) { return POD_BLOCO_DE_GRUPO[chave] || 'classePoderes'; }
   //  A gaveta 'classe:guerreiro' pertence ao grupo 'classe', e a
@@ -2885,6 +3004,12 @@
   }
   function daBasePoder(pid) {
     if (!pid) return null;
+    //  As habilidades fixas acrescentadas à mão têm pid 'fixa:classe:nome'
+    //  e não moram em base nenhuma — nascem do mapa de habilidades.
+    if (typeof pid === 'string' && pid.slice(0, 5) === 'fixa:') {
+      const p = partesFixa(pid);
+      return fixaPseudo(p.classe, p.nome);
+    }
     if (Array.isArray(window.GA_PODERES)) {
       const x = window.GA_PODERES.find(p => p.id === pid);
       if (x) return x;
@@ -3145,52 +3270,230 @@
       </div>`;
   }
 
-  //  ── HABILIDADES DE CLASSE AUTOMÁTICAS (24/09/2026) ────────────────
+  //  ── ORIGEM E SEUS BENEFÍCIOS (28/09/2026) ─────────────────────────
+  //  No topo do cartão 🌿: escolher a origem e marcar os benefícios. Pela
+  //  regra (Tormenta20, p. 85), pega-se DOIS — entre as perícias e os
+  //  poderes que a origem lista. A trava não deixa passar do limite; para
+  //  trocar, é só desmarcar um. Guarda em f.origemEscolha; o poder marcado
+  //  ainda precisa ser adicionado no ＋ Adicionar (a origem só diz QUAIS
+  //  pode pegar), e a perícia, treinada na lista de perícias — este cartão
+  //  é a ESCOLHA; aplicar fica com quem já faz isso na ficha.
+  function origemAtual(f) {
+    return (window.GA_ORIGENS || []).find(o => o.id === (f.origemEscolha || {}).origem) || null;
+  }
+  function blocoOrigem(f) {
+    const O = window.GA_ORIGENS || [];
+    if (!O.length) return '';
+    const sel = (f.origemEscolha || {}).origem || '';
+    const o = origemAtual(f);
+    const LIV = window.GA_ORIGENS_LIVROS || {};
+    const opt = x => `<option value="${esc(x.id)}"${x.id === sel ? ' selected' : ''}>${esc(x.nome)}</option>`;
+    const nuc = O.filter(x => (x.tipo || 'nucleo') === 'nucleo');
+    const esp = O.filter(x => x.tipo === 'especial');
+    const ops = '<option value="">— escolha a origem —</option>' +
+      '<optgroup label="Tormenta20">' + nuc.map(opt).join('') + '</optgroup>' +
+      (esp.length ? '<optgroup label="Heróis de Arton — origens especiais">' + esp.map(opt).join('') + '</optgroup>' : '');
+    let corpo = '';
+    //  Origem ESPECIAL (Heróis): benefício único e fixo, não se escolhe 2.
+    if (o && o.tipo === 'especial') {
+      corpo = `
+        <p class="fi-orig-regra"><span class="fi-orig-fonte">${esc(LIV[o.livro] || o.livro)}, p. ${o.pagina}</span></p>
+        <div class="fi-orig-especial">
+          <p><strong>Benefício.</strong> ${esc(o.beneficio)}</p>
+          ${o.itens ? `<p class="fi-orig-itens"><strong>Itens.</strong> ${esc(o.itens)}</p>` : ''}
+        </div>
+        <p class="fi-nota">Origem <strong>especial</strong>: o benefício é único e fixo (não se escolhe 2). Efeitos de
+          origem contam como habilidades para acúmulo; se ela treina uma perícia em que você já é treinado, treine
+          outra de classe (Heróis de Arton, p. 46).</p>`;
+      return `
+        <div class="fi-orig">
+          <label class="fi-campo fi-orig-sel"><span class="fi-rot">🎯 Origem</span>
+            <select class="fi-sel" data-campo="origemEscolha.origem"
+                    title="Escolha a origem do personagem">${ops}</select></label>
+          ${corpo}
+        </div>`;
+    }
+    if (o) {
+      const escolhidos = (f.origemEscolha.itens || []);
+      const tem = nome => escolhidos.some(i => i.nome === nome);
+      const n = escolhidos.length;
+      const limite = o.escolher || 2;
+      const cheio = n >= limite;
+      const chip = (nome, tipo) => {
+        const on = tem(nome);
+        const rot = tipo === 'pericia' ? 'perícia' : (tipo === 'flex' ? 'à escolha' : 'poder');
+        return `<button type="button" class="fi-orig-benef fi-orig-benef--${tipo}${on ? ' fi-orig-benef--on' : ''}"
+                  data-acao="origem-benef" data-nome="${esc(nome)}" data-tipo="${tipo}" aria-pressed="${on}"
+                  ${(!on && cheio) ? 'disabled title="Já escolheu ' + limite + ' — desmarque um para trocar"' : ''}>
+                  <span class="fi-orig-benef-marca" aria-hidden="true">${on ? '✓' : '＋'}</span>
+                  <span class="fi-orig-benef-nome">${esc(nome)}</span>
+                  <em>${rot}</em></button>`;
+      };
+      const pericias = (o.pericias || []).map(p => chip(p, 'pericia')).join('');
+      const poderes = (o.poderes || []).map(p => chip(p, 'poder')).join('');
+      const flex = (o.flexiveis || []).map(p => chip(p, 'flex')).join('');
+      corpo = `
+        <p class="fi-orig-regra">Escolha <strong>${limite}</strong> benefício${limite > 1 ? 's' : ''}
+          — entre perícias e poderes. <em class="fi-orig-conta${cheio ? ' fi-orig-conta--cheio' : ''}">${n}/${limite}</em>
+          <span class="fi-orig-fonte">${esc((window.GA_ORIGENS_LIVROS || {})[o.livro] || o.livro)}, p. ${o.pagina}</span></p>
+        ${o.nota ? `<p class="fi-orig-nota">${esc(o.nota)}</p>` : ''}
+        <div class="fi-orig-benefs">${pericias}${poderes}${flex}</div>
+        <p class="fi-nota">Marcar aqui é a <strong>escolha</strong>: a <strong>perícia</strong> você treina na lista de
+          perícias, e o <strong>poder</strong> você traz no <strong>＋ Adicionar</strong> abaixo. Assim a origem não
+          mexe no que você já ajustou à mão.</p>
+        <p class="fi-nota">Precisa só do <strong>poder de OUTRA origem</strong> (há efeitos que permitem)? Ele não
+          precisa ser a sua: abra o <strong>＋ Adicionar</strong> abaixo e filtre pelo grupo <strong>🎯 Origem</strong>
+          — os poderes-assinatura das 35 origens estão todos lá.</p>`;
+    }
+    return `
+      <div class="fi-orig">
+        <label class="fi-campo fi-orig-sel"><span class="fi-rot">🎯 Origem</span>
+          <select class="fi-sel" data-campo="origemEscolha.origem"
+                  title="Escolha a origem do personagem — a lista de benefícios aparece abaixo">${ops}</select></label>
+        ${corpo}
+      </div>`;
+  }
+
+  //  ── HABILIDADES DE CLASSE: TIRAR E ACRESCENTAR (24/09 → 28/09/2026) ─
   //  As habilidades FIXAS da tabela de cada classe (Devoto Fiel, Fúria,
   //  Inspiração, Mão da Divindade…) não se escolhem: vêm por NÍVEL. Elas
   //  aparecem sozinhas no topo do cartão ⚔, uma gaveta por classe da
   //  ficha, mostrando só as que o nível daquela classe já alcançou.
-  //  Fonte: js/habilidades-classe-data.js. Só as classes que estão nesse
-  //  mapa entram — as 14 variantes têm fixas PRÓPRIAS (Heróis de Arton
-  //  reimprime cada tabela) e ainda não foram transcritas, então não
-  //  recebem nada, em vez de herdar da básica (que seria errado). Cada
-  //  cartão recolhe/abre como um poder (dobra-fixa), guardado com a chave
-  //  'fixa:<classe>:<nome>' no mesmo poderesFechados.
+  //  Fonte: js/habilidades-classe-data.js.
+  //
+  //  MAS (28/09/2026) há poderes que TIRAM uma habilidade de classe e
+  //  poderes que DÃO a de outra classe. O Cavaleiro Bandido perde Código
+  //  de Honra e Duelo, e ganha Ataque Furtivo "como um ladino". Então:
+  //    f.fixasRemovidas  chaves 'fixa:classe:nome' que a ficha esconde
+  //                      (o ✕ da fixa automática); voltam pelo ↺ do rodapé
+  //    f.fixasExtras     { classe, nome } acrescentadas à mão pelo seletor,
+  //                      de QUALQUER classe e SEM porteiro de nível (quem
+  //                      concede é o poder). Aparecem no grupo 🎓 daquela
+  //                      classe, mesmo que o personagem não a tenha.
+  //  Cada cartão recolhe/abre como um poder (dobra-fixa), guardado com a
+  //  chave 'fixa:<classe>:<nome>' no mesmo poderesFechados.
+  function chaveFixa(classe, nome) { return 'fixa:' + classe + ':' + nome; }
+  //  A chave desmontada: split(':') estraga nomes com ':' — nenhum tem,
+  //  mas junto o resto por garantia.
+  function partesFixa(key) {
+    const p = key.split(':');
+    return { classe: p[1] || '', nome: p.slice(2).join(':') };
+  }
+  function fixaData(classe, nome) {
+    const L = (window.GA_HABILIDADES_CLASSE || {})[classe] || [];
+    return L.find(a => a.nome === nome) || null;
+  }
+  function fixaRemovida(f, key) { return (f.fixasRemovidas || []).indexOf(key) >= 0; }
+  function fixaNasExtras(f, classe, nome) {
+    return (f.fixasExtras || []).some(x => x.classe === classe && x.nome === nome);
+  }
+  //  A ficha ALCANÇA esta fixa sozinha? (tem a classe, no nível, e não a
+  //  removeu.) É o que decide o "já está na ficha" do seletor.
+  function fixaAutomatica(f, classe, nome) {
+    const a = fixaData(classe, nome);
+    if (!a) return false;
+    return (f.classes || []).some(c => c.classe === classe && (c.nivel || 0) >= a.nivel)
+      && !fixaRemovida(f, chaveFixa(classe, nome));
+  }
+  function fixaNaFicha(f, classe, nome) {
+    return fixaAutomatica(f, classe, nome) || fixaNasExtras(f, classe, nome);
+  }
+  //  Acrescentar: se estava removida, DEVOLVE; se já vem sozinha, não faz
+  //  nada; senão entra como extra.
+  function adicionarFixa(f, classe, nome) {
+    if (!Array.isArray(f.fixasRemovidas)) f.fixasRemovidas = [];
+    if (!Array.isArray(f.fixasExtras)) f.fixasExtras = [];
+    const key = chaveFixa(classe, nome);
+    const r = f.fixasRemovidas.indexOf(key);
+    if (r >= 0) { f.fixasRemovidas.splice(r, 1); return; }
+    if (fixaAutomatica(f, classe, nome)) return;
+    if (!fixaNasExtras(f, classe, nome)) f.fixasExtras.push({ classe: classe, nome: nome });
+  }
+  //  A fixa como se fosse um poder da base — para o seletor mostrar, buscar
+  //  e ler o texto inteiro antes de acrescentar. `ehFixa` a distingue dos
+  //  poderes de verdade em toda parte que decide rótulo, grupo e o "add".
+  function fixaPseudo(classe, nome) {
+    const a = fixaData(classe, nome);
+    if (!a) return null;
+    const key = chaveFixa(classe, nome);
+    return {
+      id: key, pid: key, nome: a.nome, grupo: 'classe', classe: classe,
+      texto: [a.texto], magica: !!a.magica, ehFixa: true, nivelFixa: a.nivel,
+      livro: '', pagina: 0, tags: '', deus: '', preReq: '', custo: '',
+    };
+  }
+  function todasFixasPseudo() {
+    const MAPA = window.GA_HABILIDADES_CLASSE || {};
+    const out = [];
+    Object.keys(MAPA).forEach(cl => (MAPA[cl] || []).forEach(a => out.push(fixaPseudo(cl, a.nome))));
+    return out;
+  }
+
   function fixasDaClasse(f) {
     const MAPA = window.GA_HABILIDADES_CLASSE;
     if (!MAPA) return '';
-    const partes = [];
+    //  As classes a desenhar: as do personagem (que têm tabela) e as que
+    //  ganharam uma fixa de fora, na ordem em que aparecem.
+    const classes = [];
     (f.classes || []).forEach(c => {
-      const chave = (c && c.classe) || '';
-      const nivel = (c && c.nivel) || 0;
-      const lista = MAPA[chave];
-      if (!chave || !Array.isArray(lista)) return;
-      const fixas = lista.filter(a => nivel >= a.nivel);
-      if (!fixas.length) return;
+      const k = (c && c.classe) || '';
+      if (k && Array.isArray(MAPA[k]) && classes.indexOf(k) < 0) classes.push(k);
+    });
+    (f.fixasExtras || []).forEach(x => {
+      if (x.classe && Array.isArray(MAPA[x.classe]) && classes.indexOf(x.classe) < 0) classes.push(x.classe);
+    });
+    const partes = [];
+    classes.forEach(chave => {
+      const lista = MAPA[chave] || [];
+      const temClasse = (f.classes || []).some(c => c.classe === chave);
+      const nivel = (f.classes || []).reduce((m, c) => c.classe === chave ? Math.max(m, c.nivel || 0) : m, 0);
+      //  automáticas ALCANÇADAS e não removidas
+      const auto = lista
+        .filter(a => temClasse && nivel >= a.nivel && !fixaRemovida(f, chaveFixa(chave, a.nome)))
+        .map(a => ({ a: a, origem: 'auto' }));
+      //  extras desta classe que ainda não estão entre as automáticas
+      const extras = (f.fixasExtras || [])
+        .filter(x => x.classe === chave)
+        .map(x => ({ a: fixaData(chave, x.nome), origem: 'extra' }))
+        .filter(o => o.a && !auto.some(z => z.a.nome === o.a.nome));
+      const itens = auto.concat(extras);
+      //  automáticas que foram REMOVIDAS — para o rodapé "↺ devolver"
+      const removidas = lista.filter(a => temClasse && nivel >= a.nivel && fixaRemovida(f, chaveFixa(chave, a.nome)));
+      if (!itens.length && !removidas.length) return;
       const C = D.classe(chave);
       const nomeClasse = (C && C.nome) || chave;
-      const cards = fixas.map(a => {
-        const key = 'fixa:' + chave + ':' + a.nome;
+      const cards = itens.map(({ a, origem }) => {
+        const key = chaveFixa(chave, a.nome);
         const fechado = !!poderesFechados[key];
         return `
-        <li class="fi-pod fi-pod--fixa${fechado ? ' fi-pod--fechado' : ''}">
+        <li class="fi-pod fi-pod--fixa${origem === 'extra' ? ' fi-pod--fixaextra' : ''}${fechado ? ' fi-pod--fechado' : ''}">
           <button type="button" class="fi-pod-abrir" data-acao="dobra-fixa" data-k="${esc(key)}"
                   aria-expanded="${!fechado}" title="${fechado ? 'Abrir' : 'Recolher'} ${esc(a.nome)}">
             <span class="fi-pod-seta" aria-hidden="true">${fechado ? '▸' : '▾'}</span>
             <span class="fi-pod-nome">${esc(a.nome)}</span>
             ${a.magica ? `<span class="fi-pod-magica" title="${esc(DICA_MAGICA)}">✦<span>mágica</span></span>` : ''}
-            <span class="fi-pod-tag">${a.nivel}º nível</span>
+            <span class="fi-pod-tag">${origem === 'extra' ? 'acrescentada' : a.nivel + 'º nível'}</span>
           </button>
+          <span class="fi-pod-acoes">
+            <button type="button" class="fi-mini fi-mini--x" data-acao="tira-fixa" data-k="${esc(key)}"
+                    title="${origem === 'extra' ? 'Tirar esta habilidade acrescentada'
+                      : 'Tirar esta habilidade de classe (há poderes que a removem)'}">✕</button>
+          </span>
           ${fechado ? '' : `<div class="fi-pod-corpo"><div class="fi-pod-desc">${esc(a.texto)}</div></div>`}
         </li>`;
       }).join('');
+      const rodape = removidas.length ? `
+        <p class="fi-pod-fixa-devolver">Removidas: ${removidas.map(a =>
+          `<button type="button" class="fi-mini fi-pod-devolver" data-acao="devolve-fixa" data-k="${esc(chaveFixa(chave, a.nome))}"
+                   title="Devolver ${esc(a.nome)}">↺ ${esc(a.nome)}</button>`).join(' ')}</p>` : '';
       partes.push(`
         <div class="fi-pod-grupo fi-pod-grupo--fixa">
           <h3 class="fi-pod-grupo-tit">
             <span class="fi-pod-emoji" aria-hidden="true">🎓</span>Habilidades de ${esc(nomeClasse)}
-            <em>automáticas, por nível</em>
+            <em>${temClasse ? 'automáticas, por nível' : 'acrescentadas à mão'}</em>
           </h3>
           <ul class="fi-pod-lista">${cards}</ul>
+          ${rodape}
         </div>`);
     });
     return partes.join('');
@@ -3213,12 +3516,12 @@
     const vazia = daClasse
       ? `<p class="fi-pod-vazia">Nenhum poder ainda. O <strong>＋ Adicionar poder</strong> abre a busca nos
           ${nBase || 808} poderes deste cartão — <strong>classe</strong> (com uma gaveta para cada uma das 16),
-          combate, destino, magia, concedidos, Tormenta, grupo e distinção. Para o que não está em livro nenhum,
-          o <strong>✍ Escrever</strong>.</p>`
+          combate, destino, magia, concedidos, Tormenta, grupo, distinção e o poder de raça. Para o que não
+          está em livro nenhum, o <strong>✍ Escrever</strong>.</p>`
       : `<p class="fi-pod-vazia">Nenhuma habilidade ainda. O <strong>＋ Adicionar</strong> abre a busca nas
-          <strong>habilidades de raça</strong>, nos <strong>poderes de raça</strong> e nos
-          <strong>poderes de origem</strong> dos livros. Para o que não está em livro nenhum, o
-          <strong>✍ Escrever</strong>.</p>`;
+          <strong>habilidades de raça</strong> e nos <strong>poderes de origem</strong> dos livros — o
+          <strong>poder de raça</strong> mudou para o cartão ⚔ (é grupo de poder). Para o que não está em
+          livro nenhum, o <strong>✍ Escrever</strong>.</p>`;
 
     return `
       <div class="fi-cartao fi-bloco fi-poderes fi-poderes--${campo}">
@@ -3238,7 +3541,7 @@
               ＋ Adicionar${daClasse ? ' poder' : ''}</button>
           </span>
         </h2>
-        ${daClasse ? blocoTormenta(f) + fixasDaClasse(f) : ''}
+        ${daClasse ? blocoTormenta(f) + fixasDaClasse(f) : blocoOrigem(f)}
         ${grupos || vazia}
         <p class="fi-nota">Cada poder traz o <strong>texto inteiro</strong> do livro, com a página. Clique no
           <strong>nome</strong> para recolher ou abrir, e use <strong>⇈ ↑ ↓</strong> para pôr na ordem que você quer
@@ -3274,8 +3577,8 @@
     return `
       <div class="fi-cartao fi-bloco fi-magias">
         <h2 class="fi-cartao-tit">✨ Magias
-          <span class="fi-cartao-nota">${f.magias.length} na ficha · a CD delas é a sua:
-            <strong data-der="cd2">${cdBase(f)}</strong></span>
+          <span class="fi-cartao-nota">${f.magias.length} na ficha · a CD delas:
+            <strong data-der="cdmag">${cdMagias(f)}</strong></span>
           <span class="fi-mag-botoes">
             ${f.magias.length > 1 ? `<button type="button" class="fi-add fi-add--menor fi-mag-dobra" data-acao="dobra-magias"
                     title="${todasFechadas ? 'Mostrar o texto de todas as magias' : 'Deixar só os nomes, para achar uma magia (ou chegar ao inventário) sem descer tanto'}"
@@ -3679,7 +3982,8 @@
         el.parentElement.classList.toggle('fi-barra-pv--cheia', estadoCarga(f) !== 'ok');
       }
       if (d === 'invconta')  el.innerHTML = contaCarga(f);
-      if (d === 'cd' || d === 'cd2') el.textContent = cdBase(f);
+      if (d === 'cdmag') el.textContent = cdMagias(f);
+      if (d === 'cdhab') el.textContent = cdHabilidades(f);
       if (d === 'desloc')    el.textContent = deslocamento(f);
       if (d === 'desloc2')   el.textContent = f.deslocamento;
       if (d === 'quadrados') el.textContent = quadrados(deslocamento(f));
@@ -3856,6 +4160,16 @@
     if (!f) return;
     if (el.tagName === 'SELECT') {
       const campo = el.dataset.campo;
+      //  Trocar de origem zera os benefícios marcados (a lista muda) e
+      //  acerta o rótulo de texto livre para o nome da origem.
+      if (campo === 'origemEscolha.origem') {
+        f.origemEscolha.origem = el.value;
+        f.origemEscolha.itens = [];
+        const o = origemAtual(f);
+        if (o) f.origem = o.nome;
+        sujar(f.id, 'origemEscolha'); sujar(f.id, 'origem');
+        salvar(); return render();
+      }
       // o tipo do amigo traz um pacote de atributos: sai o do velho e
       // entra o do novo, ANTES de gravar o nome do tipo
       const mt = /^amigos\.(\d+)\.tipo$/.exec(campo);
@@ -4300,6 +4614,63 @@
       if (!k) return;
       if (poderesFechados[k]) delete poderesFechados[k]; else poderesFechados[k] = 1;
       guardarPodFechados(); return render();
+    }
+    //  Tirar uma habilidade de classe: se foi acrescentada à mão, some da
+    //  lista de extras; se vem automática, entra na lista de removidas
+    //  (some da ficha, mas fica um ↺ para devolver). Poderes que TIRAM
+    //  habilidade de classe (Cavaleiro Bandido) usam este ✕.
+    if (acao === 'tira-fixa') {
+      const k = btn.dataset.k;
+      if (!k) return;
+      const pf = partesFixa(k);
+      if (fixaNasExtras(f, pf.classe, pf.nome)) {
+        f.fixasExtras = f.fixasExtras.filter(x => !(x.classe === pf.classe && x.nome === pf.nome));
+        sujar(f.id, 'fixasExtras');
+      } else {
+        if (!Array.isArray(f.fixasRemovidas)) f.fixasRemovidas = [];
+        if (f.fixasRemovidas.indexOf(k) < 0) f.fixasRemovidas.push(k);
+        sujar(f.id, 'fixasRemovidas');
+      }
+      salvar(); return render();
+    }
+    //  Devolver uma automática que fora removida.
+    if (acao === 'devolve-fixa') {
+      const k = btn.dataset.k;
+      if (!k) return;
+      f.fixasRemovidas = (f.fixasRemovidas || []).filter(x => x !== k);
+      sujar(f.id, 'fixasRemovidas'); salvar(); return render();
+    }
+
+    // ── ORIGEM: marcar/desmarcar um benefício (trava no limite) ─────
+    if (acao === 'origem-benef') {
+      const o = origemAtual(f);
+      if (!o) return;
+      const nome = btn.dataset.nome, tipo = btn.dataset.tipo;
+      if (!nome) return;
+      const itens = f.origemEscolha.itens || (f.origemEscolha.itens = []);
+      const i = itens.findIndex(x => x.nome === nome);
+      if (i >= 0) itens.splice(i, 1);
+      else {
+        if (itens.length >= (o.escolher || 2)) return;   // cheio: desmarque um antes
+        itens.push({ nome: nome, tipo: tipo });
+      }
+      sujar(f.id, 'origemEscolha'); salvar(); return render();
+    }
+
+    // ── ESTADO DE COMBATE ──────────────────────────────────────────
+    if (acao === 'combate-entrar') {
+      f.combate = { ativo: true, snap: snapshotCombate(f) };
+      sujar(f.id, 'combate'); salvar(); return render();
+    }
+    if (acao === 'combate-sair') {
+      if (!confirm('Sair do combate devolve atributos, perícias, ofícios, defesa e deslocamento ao ' +
+                   'que eram antes da luta. O PV e o PM gastos continuam gastos. Sair?')) return;
+      restaurarCombate(f);
+      f.combate = { ativo: false, snap: null };
+      // vários grupos podem ter voltado — sobe todos os que o snap mexe
+      ['atributos', 'defesa', 'pericias', 'oficios', 'deslocamento', 'deslocMods',
+       'cdMagiaOutros', 'cdHabOutros', 'combate'].forEach(g => sujar(f.id, g));
+      salvar(); return render();
     }
     //  Abre/fecha o card de uma distinção inteira (padrão: fechado).
     if (acao === 'dobra-distgrp') {
@@ -5072,13 +5443,16 @@
 
   function abrirBuscaPoder(f, campo) {
     //  A busca é ESCOPADA ao cartão que a abriu (23/09/2026): o de raça e
-    //  origem só acha habilidade de raça, poder de raça e poder de origem;
-    //  o de classe e poderes acha o resto, com os DE classe (GA_PODERES_
-    //  CLASSE). O grupo "⚔ Classe" abre a segunda fileira de chips, uma
-    //  por classe, com as DA FICHA na frente — quase sempre é uma delas.
+    //  origem só acha habilidade de raça e poder de origem; o de classe e
+    //  poderes acha o resto, com o poder de raça, os DE classe (GA_PODERES_
+    //  CLASSE) e as habilidades FIXAS de toda classe (28/09/2026), para
+    //  poder pegar a de OUTRA classe — Ataque Furtivo num cavaleiro. O
+    //  grupo "⚔ Classe" abre a segunda fileira de chips, uma por classe,
+    //  com as DA FICHA na frente — quase sempre é uma delas.
     const daClasse = campo === 'classePoderes';
     const base = (window.GA_PODERES || []).filter(p => blocoDoGrupo(p.grupo) === campo)
-      .concat(daClasse ? baseClasse() : []);
+      .concat(daClasse ? baseClasse() : [])
+      .concat(daClasse ? todasFixasPseudo() : []);
     const gruposAqui = gruposDePoder().filter(g => g.chave !== 'livre' && blocoDoGrupo(g.chave) === campo);
     if (!base.length || !window.GA_abrirModal) return;
 
@@ -5134,7 +5508,7 @@
       corpo.innerHTML = `
         <p class="ga-modal-dica">${daClasse
           ? 'Os ' + base.length + ' poderes deste cartão — <strong>com os ' + baseClasse().length +
-            ' de classe</strong>. Busque pelo nome, pelo texto, pelo deus ou pela classe'
+            ' de classe e as habilidades fixas de toda classe</strong>. Busque pelo nome, pelo texto, pelo deus ou pela classe'
           : 'As ' + base.length + ' habilidades de raça e origem dos livros. Busque pelo nome, pelo texto ou pela raça'} — ou filtre
           pelo grupo.</p>
         <div class="fi-pod-chips" id="fiPodChips">${chips}</div>
@@ -5146,6 +5520,13 @@
       const res = corpo.querySelector('#fiPodRes');
       const jaTem = {};
       f.poderes.forEach(p => { if (p.pid) jaTem[p.pid] = true; });
+      //  As fixas não moram em f.poderes: o "já está" delas é estar na
+      //  ficha por classe+nível (e não removida) ou acrescentada à mão.
+      base.forEach(p => { if (p.ehFixa && fixaNaFicha(f, p.classe, p.nome)) jaTem[p.id] = true; });
+
+      //  O rótulo de uma fixa: "Habilidade de <classe>", com o 🎓 — não
+      //  "Poder de <classe>", que é a lista dos selecionáveis.
+      function rotuloFixa(p) { return 'Habilidade de ' + esc((D.classe(p.classe) || {}).nome || p.classe); }
 
       function listar() {
         const q = semAcento((campo.value || '').trim());
@@ -5160,13 +5541,16 @@
         const mostra = achados.slice(0, 60);
         res.innerHTML = mostra.length
           ? mostra.map(p => {
-            const L = p.classe ? listaDeClasse(p.classe) : null;
-            const g = p.classe ? GRUPO_CLASSE : grupoDePoder(p.grupo);
+            const L = (!p.ehFixa && p.classe) ? listaDeClasse(p.classe) : null;
+            const g = p.ehFixa ? { emoji: '🎓', nome: 'Habilidade de classe' }
+              : (p.classe ? GRUPO_CLASSE : grupoDePoder(p.grupo));
+            const rot = p.ehFixa ? rotuloFixa(p) : (L ? 'Poder de ' + esc(L.nome) : esc(g.nome));
+            const fonte = fontePoder(p);
             return `
             <button type="button" class="fi-busca-item ${jaTem[p.id] ? 'fi-busca-item--tem' : ''}" data-pid="${esc(p.id)}">
               <span class="fi-busca-circ">${g.emoji}</span>
               <span class="fi-busca-nome">${esc(p.nome)}${p.magica ? ' ✦' : ''}${jaTem[p.id] ? ' <em>já está na ficha</em>' : ''}</span>
-              <span class="fi-busca-meta">${L ? 'Poder de ' + esc(L.nome) : esc(g.nome)}${p.tags ? ' · ' + esc(p.tags) : ''}${p.deus ? ' · ' + esc(p.deus) : ''} · ${esc(fontePoder(p))}</span>
+              <span class="fi-busca-meta">${rot}${p.tags ? ' · ' + esc(p.tags) : ''}${p.deus ? ' · ' + esc(p.deus) : ''}${fonte ? ' · ' + esc(fonte) : ''}</span>
               <span class="fi-busca-res-txt">${esc((p.texto || [])[0] || '')}</span>
             </button>`; }).join('') +
             (achados.length > mostra.length
@@ -5202,16 +5586,21 @@
     function telaPoder(pid, termo) {
       const b = daBasePoder(pid);
       if (!b) return;
-      const jaTem = f.poderes.some(x => x.pid === pid);
-      const L = b.classe ? listaDeClasse(b.classe) : null;
-      const g = b.classe ? GRUPO_CLASSE : grupoDePoder(b.grupo);
+      //  A fixa não vive em f.poderes: o "já está" dela é a conta de classe.
+      const jaTem = b.ehFixa ? fixaNaFicha(f, b.classe, b.nome) : f.poderes.some(x => x.pid === pid);
+      const L = (!b.ehFixa && b.classe) ? listaDeClasse(b.classe) : null;
+      const g = b.ehFixa ? { emoji: '🎓', nome: 'Habilidade de classe' }
+        : (b.classe ? GRUPO_CLASSE : grupoDePoder(b.grupo));
+      const rot = b.ehFixa ? 'Habilidade de ' + esc((D.classe(b.classe) || {}).nome || b.classe)
+        : (L ? 'Poder de ' + esc(L.nome) : esc(g.nome));
+      const fonte = fontePoder(b);
       corpo.innerHTML = `
         <div class="fi-mag-topo">
           <button type="button" class="fi-mag-voltar" data-voltar>← voltar à busca</button>
           <strong class="fi-mag-titulo">${esc(b.nome)}</strong>
         </div>
-        <p class="fi-pod-ficha">${g.emoji} ${L ? 'Poder de ' + esc(L.nome) : esc(g.nome)}${b.tags ? ' · ' + esc(b.tags) : ''}${b.deus ? ' · ' + esc(b.deus) : ''}
-          · ${esc(fontePoder(b))}${b.magica ? ' · <span class="fi-pod-magica" title="' + esc(DICA_MAGICA) + '">✦<span>mágica</span></span>' : ''}</p>
+        <p class="fi-pod-ficha">${g.emoji} ${rot}${b.tags ? ' · ' + esc(b.tags) : ''}${b.deus ? ' · ' + esc(b.deus) : ''}${fonte ? ' · ' + esc(fonte) : ''}${b.magica ? ' · <span class="fi-pod-magica" title="' + esc(DICA_MAGICA) + '">✦<span>mágica</span></span>' : ''}</p>
+        ${b.ehFixa ? `<p class="fi-pod-req"><strong>Habilidade fixa</strong> — normalmente vem por classe e nível (${b.nivelFixa}º). Acrescente à mão só quando um poder a concede (o Cavaleiro Bandido ganha Ataque Furtivo).</p>` : ''}
         <div class="fi-mag-texto">
           ${(b.texto || []).map(t => '<p>' + esc(t) + '</p>').join('')}
           ${b.quadro ? '<div class="fi-pod-quadro"><strong>' + esc(b.quadro.titulo) + '</strong>' +
@@ -5222,19 +5611,25 @@
         <div class="ga-modal-acoes">
           <button type="button" class="ga-btn-sec" data-voltar>← Voltar</button>
           <button type="button" class="ga-btn-principal" data-add ${jaTem ? 'disabled' : ''}>
-            ${jaTem ? '✓ já está na ficha' : '＋ Adicionar este poder'}</button>
+            ${jaTem ? '✓ já está na ficha' : (b.ehFixa ? '＋ Acrescentar esta habilidade' : '＋ Adicionar este poder')}</button>
         </div>`;
       corpo.querySelectorAll('[data-voltar]').forEach(x => x.addEventListener('click', () => telaBusca(termo)));
       const add = corpo.querySelector('[data-add]');
       if (add && !jaTem) add.addEventListener('click', () => {
-        f.poderes.push({
-          id: novoId(), pid: b.id, nome: b.nome, grupo: b.classe ? 'classe' : b.grupo,
-          classe: b.classe || '', distincao: b.distincao || '', marca: !!b.marca,
-          magica: !!b.magica, livro: b.livro || '',
-          pagina: b.pagina || 0, tags: b.tags || '', deus: b.deus || '', preReq: b.preReq || '',
-          custo: b.custo || '', texto: (b.texto || []).slice(), obs: '', contaTormenta: false,
-        });
-        sujar(f.id, 'poderes');
+        if (b.ehFixa) {
+          adicionarFixa(f, b.classe, b.nome);
+          sujar(f.id, 'fixasExtras');
+          sujar(f.id, 'fixasRemovidas');
+        } else {
+          f.poderes.push({
+            id: novoId(), pid: b.id, nome: b.nome, grupo: b.classe ? 'classe' : b.grupo,
+            classe: b.classe || '', distincao: b.distincao || '', marca: !!b.marca,
+            magica: !!b.magica, livro: b.livro || '',
+            pagina: b.pagina || 0, tags: b.tags || '', deus: b.deus || '', preReq: b.preReq || '',
+            custo: b.custo || '', texto: (b.texto || []).slice(), obs: '', contaTormenta: false,
+          });
+          sujar(f.id, 'poderes');
+        }
         salvar();
         overlay._fechar();
         render();
