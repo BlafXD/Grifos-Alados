@@ -131,4 +131,49 @@
     { id: 'certinho', nome: 'Certinho', classe: 'Paladino', comportamental: false,
       texto: 'Você faz tudo do jeito correto e fica desconfortável quando um de seus companheiros não age dessa forma. Sempre que um aliado fizer algo que violaria seu Código do Herói, isso conta como uma violação sua — a menos que você não note, o que exige dele um teste de Enganação ou Furtividade contra a sua Percepção ou Intuição (o que for maior).' },
   ];
+
+  //  ── COMPLICAÇÕES DE IDADE ("O Peso da Idade", Heróis de Arton, p. 290) ──
+  //  Personagens adultos ou mais velhos escolhem uma por faixa etária:
+  //  adulto 1 (opcional), maduro 2, velho 3, ancião 4. Contam como
+  //  complicações normais e os efeitos SE ACUMULAM. São 19.
+  window.GA_COMPLICACOES_IDADE = [
+    { id: 'abatido', nome: 'Abatido',
+      texto: 'Seu vigor se foi. Você recebe –2 PV por nível.' },
+    { id: 'catarata', nome: 'Catarata',
+      texto: 'Seus olhos já não são os mesmos. Você sofre –5 em Percepção e Pontaria.' },
+    { id: 'dedos-tremulos', nome: 'Dedos Trêmulos',
+      texto: 'Você sofre –2 em Luta e Pontaria. Além disso, quando usa um item que esteja empunhando, role 1d4. Em um resultado 1, você derruba esse item.' },
+    { id: 'definhamento', nome: 'Definhamento',
+      texto: 'A idade roubou seu peso, deixando-o um fiapo do que era antes. Você sofre –5 em Fortitude e em testes de manobras de combate.' },
+    { id: 'desatento', nome: 'Desatento',
+      texto: 'Você já não é mais tão atento quanto outrora. Na primeira rodada de qualquer cena de ação, role um dado. Em um resultado ímpar, você fica surpreendido (mesmo que um efeito possa evitar isso).' },
+    { id: 'devagar-jovem', nome: '"Devagar, Jovem!"',
+      texto: 'Você já não anda no mesmo ritmo que antes. Seu deslocamento diminui em –3m e você não pode correr ou fazer investidas.' },
+    { id: 'gota', nome: 'Gota',
+      texto: 'Sempre que faz um teste de Destreza ou de perícias baseadas nesse atributo você perde 1d6 pontos de vida. Você só pode recuperar esses PV com descanso.' },
+    { id: 'juntas-duras', nome: 'Juntas Duras',
+      texto: 'Suas articulações doem. Você sofre –5 em testes de Acrobacia e Reflexos.' },
+    { id: 'melancolico', nome: 'Melancólico',
+      texto: 'Você já não tem mais tanta motivação para realizar grandes façanhas. Você perde 1 PM por nível.' },
+    { id: 'memorias-tristes', nome: 'Memórias Tristes',
+      texto: 'Você passou por um trauma, como a perda de um ente querido ou a culpa por um erro que cometeu e pelo qual nunca se perdoou. Sempre que rola um resultado 1 natural em qualquer teste, você fica pasmo por 1 rodada e frustrado até o fim do dia (cumulativo).' },
+    { id: 'no-meu-tempo', nome: '"No Meu Tempo..."',
+      texto: 'Você se prende a visões idealizadas de um passado que nunca existiu e se torna presa fácil para manipulação. Você sofre –5 em Intuição e Vontade.' },
+    { id: 'pulmao-ruim', nome: 'Pulmão Ruim',
+      texto: 'Quando corre ou prende a respiração, você precisa fazer testes de Fortitude para não ficar fatigado a partir da primeira rodada (normalmente, personagens só precisam fazer esses testes após um número de rodadas igual a sua Constituição +1). Além disso, sempre que faz uma investida, você fica fatigado até o fim da cena.' },
+    { id: 'rabugento', nome: 'Rabugento',
+      texto: 'Você reclama de tudo. Você sofre –5 em testes de Carisma e de perícias baseadas nesse atributo, exceto Intimidação.' },
+    { id: 'recurvado', nome: 'Recurvado',
+      texto: 'A idade dobrou suas costas. Você conta como uma categoria de tamanho menor para alcance natural, modificador de manobras e armas que pode empunhar (mas não para espaço ocupado, modificador de Furtividade ou dano de armas naturais).' },
+    { id: 'sono-ruim', nome: 'Sono Ruim',
+      texto: 'Você acorda várias vezes no meio da noite, o que atrapalha seu descanso. Sua recuperação de PM e PV é sempre uma categoria pior. Se a condição de descanso já é ruim, você recupera apenas 1 PM e 1 PV, independentemente do seu nível. Se já recupera apenas 1 PM e 1 PV, não recupera nada!' },
+    { id: 'teimoso', nome: 'Teimoso',
+      texto: 'Sempre que falha em um teste de atributo ou de perícia que possa tentar novamente, você é obrigado a tentar pelo menos mais uma vez (mesmo que isso possa prejudicá-lo). Teimoso é quem teima com você!' },
+    { id: 'tosse', nome: 'Tosse',
+      texto: 'Em cenas de ação, role 1d6 no início de cada rodada. Num resultado 1, você tem uma crise de tosse e fica atordoado por 1 rodada. Em cenas de interpretação, role 1d6 sempre que fizer um teste de perícia baseada em Carisma. Num resultado 1, você tem uma crise de tosse e sofre uma penalidade de –5 nesse teste.' },
+    { id: 'turrao', nome: 'Turrão',
+      texto: 'Você faz tudo sempre do seu jeito e tem dificuldade de lidar com coisas nas quais não é perito. Você não recebe o bônus de metade do nível em perícias nas quais não é treinado.' },
+    { id: 'velha-ferida', nome: 'Velha Ferida',
+      texto: 'Você tem um machucado antigo, que nunca cicatrizou direito. Sempre que você sofre um acerto crítico, o multiplicador de dano aumenta em +1 e você fica fraco (mesmo que seja imune, cumulativo).' },
+  ];
 })();
