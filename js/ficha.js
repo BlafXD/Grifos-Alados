@@ -5598,18 +5598,35 @@
       const rot = b.ehFixa ? 'Habilidade de ' + esc((D.classe(b.classe) || {}).nome || b.classe)
         : (L ? 'Poder de ' + esc(L.nome) : esc(g.nome));
       const fonte = fontePoder(b);
-      //  RAÇA com mais de uma habilidade: deixa ESCOLHER quais pegar (tudo
-      //  marcado por padrão — o caso comum é a raça inteira). Serve o Osteon
-      //  e o Yidishan (pegar UMA habilidade de outra raça), a herança do
-      //  Moreau e as bênçãos/talentos de Kallyanach e Kobolds. Fora daí (já
-      //  na ficha, uma linha só, outros grupos), o texto é só leitura.
-      const escolheHab = b.grupo === 'raca-hab' && (b.texto || []).length > 1 && !jaTem;
-      const linhasHtml = escolheHab
-        ? '<p class="fi-pod-escolha-cab">Quais habilidades pegar? <span>desmarque o que não for pegar</span></p>' +
+      //  RAÇA: se tem mais de uma habilidade-base, deixa ESCOLHER quais pegar
+      //  (tudo marcado por padrão — o caso comum é a raça inteira; serve o
+      //  Osteon/Yidishan). E se tem GRUPOS DE ESCOLHA (b.escolhas: herança do
+      //  Moreau, bênçãos de Kallyanach, passos do Duende…), cada grupo vira
+      //  sub-cards — "escolha 1" é rádio; "escolha N" é caixa com limite.
+      const naFicha = jaTem;
+      const escolhas = (b.grupo === 'raca-hab' && !naFicha && Array.isArray(b.escolhas)) ? b.escolhas : [];
+      const escolheBase = b.grupo === 'raca-hab' && (b.texto || []).length > 1 && !naFicha;
+      const interativo = escolheBase || escolhas.length > 0;
+      const mostraCont = escolheBase && !escolhas.length;
+      const baseHtml = escolheBase
+        ? '<p class="fi-pod-escolha-cab">' + (escolhas.length ? 'Habilidades base' : 'Quais habilidades pegar?') +
+          ' <span>desmarque o que não for pegar</span></p>' +
           (b.texto || []).map((t, i) =>
-            `<label class="fi-pod-escolha"><input type="checkbox" data-hab="${i}" checked>
-               <span>${esc(t)}</span></label>`).join('')
+            `<label class="fi-pod-escolha"><input type="checkbox" data-hab="${i}" checked><span>${esc(t)}</span></label>`).join('')
         : (b.texto || []).map(t => '<p>' + esc(t) + '</p>').join('');
+      const escolhasHtml = escolhas.map((e, gi) => {
+        const lim = (typeof e.escolher === 'number' && e.escolher > 0) ? e.escolher : 0;
+        const conta = lim ? `<em class="fi-pod-grupo-conta" data-conta="${gi}">0/${lim}</em>` : '';
+        const nota = e.nota ? `<p class="fi-pod-grupo-nota">${esc(e.nota)}</p>` : '';
+        const ops = e.opcoes.map((o, oi) => {
+          const ctrl = `<input type="checkbox" data-esc="${gi}" data-opt="${oi}">`;
+          const linhas = (o.texto || []).map(t => `<span class="fi-pod-sub-linha">${esc(t)}</span>`).join('');
+          return `<label class="fi-pod-sub fi-pod-sub--off">${ctrl}<span class="fi-pod-sub-txt"><strong>${esc(o.nome)}</strong>${linhas}</span></label>`;
+        }).join('');
+        return `<div class="fi-pod-grupo" data-grupo="${gi}">
+          <p class="fi-pod-grupo-cab">${esc(e.rotulo)}${lim ? ' · escolha ' + lim : ''} ${conta}</p>
+          ${nota}<div class="fi-pod-subs">${ops}</div></div>`;
+      }).join('');
       corpo.innerHTML = `
         <div class="fi-mag-topo">
           <button type="button" class="fi-mag-voltar" data-voltar>← voltar à busca</button>
@@ -5618,7 +5635,8 @@
         <p class="fi-pod-ficha">${g.emoji} ${rot}${b.tags ? ' · ' + esc(b.tags) : ''}${b.deus ? ' · ' + esc(b.deus) : ''}${fonte ? ' · ' + esc(fonte) : ''}${b.magica ? ' · <span class="fi-pod-magica" title="' + esc(DICA_MAGICA) + '">✦<span>mágica</span></span>' : ''}</p>
         ${b.ehFixa ? `<p class="fi-pod-req"><strong>Habilidade fixa</strong> — normalmente vem por classe e nível (${b.nivelFixa}º). Acrescente à mão só quando um poder a concede (o Cavaleiro Bandido ganha Ataque Furtivo).</p>` : ''}
         <div class="fi-mag-texto">
-          ${linhasHtml}
+          ${baseHtml}
+          ${escolhasHtml}
           ${b.quadro ? '<div class="fi-pod-quadro"><strong>' + esc(b.quadro.titulo) + '</strong>' +
             (b.quadro.texto || []).map(t => '<p>' + esc(t) + '</p>').join('') + '</div>' : ''}
           ${b.preReq ? '<p class="fi-pod-req"><strong>Pré-requisito:</strong> ' + esc(b.preReq) + '</p>' : ''}
@@ -5626,19 +5644,36 @@
         </div>
         <div class="ga-modal-acoes">
           <button type="button" class="ga-btn-sec" data-voltar>← Voltar</button>
-          <button type="button" class="ga-btn-principal" data-add ${jaTem ? 'disabled' : ''}>
-            ${jaTem ? '✓ já está na ficha'
-              : (escolheHab ? '＋ Adicionar (<span data-cont>' + (b.texto || []).length + '</span>)'
+          <button type="button" class="ga-btn-principal" data-add ${naFicha ? 'disabled' : ''}>
+            ${naFicha ? '✓ já está na ficha'
+              : (interativo ? '＋ Adicionar' + (mostraCont ? ' (<span data-cont>' + (b.texto || []).length + '</span>)' : '')
               : (b.ehFixa ? '＋ Acrescentar esta habilidade' : '＋ Adicionar este poder'))}</button>
         </div>`;
       corpo.querySelectorAll('[data-voltar]').forEach(x => x.addEventListener('click', () => telaBusca(termo)));
       const add = corpo.querySelector('[data-add]');
-      //  Índices das habilidades marcadas (para o contador e para o que entra).
       function habsMarcadas() {
         return Array.prototype.slice.call(corpo.querySelectorAll('[data-hab]'))
           .filter(c => c.checked).map(c => +c.dataset.hab);
       }
-      if (escolheHab && add) {
+      function opcMarcadas(gi) {
+        return Array.prototype.slice.call(corpo.querySelectorAll('[data-esc="' + gi + '"]'))
+          .filter(c => c.checked).map(c => +c.dataset.opt);
+      }
+      //  Cada grupo de escolha: conta, trava no limite (caixas) e esmaece o não marcado.
+      escolhas.forEach((e, gi) => {
+        const lim = (typeof e.escolher === 'number' && e.escolher > 0) ? e.escolher : 0;
+        const conta = corpo.querySelector('[data-conta="' + gi + '"]');
+        const inputs = Array.prototype.slice.call(corpo.querySelectorAll('[data-esc="' + gi + '"]'));
+        function att() {
+          const marc = opcMarcadas(gi);
+          if (conta) conta.textContent = marc.length + '/' + lim;
+          if (lim) inputs.forEach(c => { if (!c.checked) c.disabled = marc.length >= lim; });
+          inputs.forEach(c => { const l = c.closest('.fi-pod-sub'); if (l) l.classList.toggle('fi-pod-sub--off', !c.checked); });
+        }
+        inputs.forEach(c => c.addEventListener('change', att));
+        att();
+      });
+      if (mostraCont && add) {
         const cont = add.querySelector('[data-cont]');
         corpo.querySelectorAll('[data-hab]').forEach(c => c.addEventListener('change', () => {
           const n = habsMarcadas().length;
@@ -5647,16 +5682,20 @@
         }));
       }
       if (add) add.addEventListener('click', () => {
-        if (jaTem) return;
+        if (naFicha) return;
         if (b.ehFixa) {
           adicionarFixa(f, b.classe, b.nome);
           sujar(f.id, 'fixasExtras');
           sujar(f.id, 'fixasRemovidas');
         } else {
-          const linhas = escolheHab
-            ? (b.texto || []).filter((_, i) => habsMarcadas().indexOf(i) >= 0)
-            : (b.texto || []).slice();
-          if (escolheHab && !linhas.length) return;
+          let linhas;
+          if (interativo) {
+            linhas = (b.texto || []).filter((_, i) => !escolheBase || habsMarcadas().indexOf(i) >= 0);
+            escolhas.forEach((e, gi) => opcMarcadas(gi).forEach(oi => { linhas = linhas.concat(e.opcoes[oi].texto || []); }));
+            if (!linhas.length) return;
+          } else {
+            linhas = (b.texto || []).slice();
+          }
           f.poderes.push({
             id: novoId(), pid: b.id, nome: b.nome, grupo: b.classe ? 'classe' : b.grupo,
             classe: b.classe || '', distincao: b.distincao || '', marca: !!b.marca,

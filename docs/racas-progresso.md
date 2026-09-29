@@ -82,3 +82,39 @@ com a contagem e trava em 0. Só o que ficou marcado entra no `texto` do card.
 - **Não testado no clique-a-clique do navegador** ainda; sintaxe conferida
   (`node --check`), e o caminho de adicionar é o mesmo já existente, só com o
   `texto` filtrado. Como é UI interativa, vale um teste no navegador.
+
+## Heróis + Deuses e sub-cards de escolha (29/09/2026) — total 49 raças
+
+Ele notou o Duende faltando e que o Moreau (51 caixas) estava horrível. Duas
+correções numa leva só (escolha dele):
+
+**1. As 7 raças que faltavam.** Eu tinha errado ao dizer que Heróis/Deuses não
+tinham raças — o `-layout` mangled me enganou. Achadas em modo leitura:
+- **Heróis de Arton, Cap. 1 "Novas Raças" (p. 8–15):** Duende (8), Eiradaan
+  (12), Galokk (13), Meio-Elfo (14), Sátiro (15).
+- **Deuses de Arton:** Inevitável (chassi de golem, p. 277) e **Suraggel
+  Variantes** (22 heranças planares, p. 36) — estas entraram como uma escolha
+  OPCIONAL no card do Suraggel (substituem Luz Sagrada ou Sombras Profanas).
+- O **Duende** é oficial (Heróis, p. 8–11); o suplemento só o reimprime.
+- Os Guias (NPCs, Deuses Menores) e o Atlas NÃO têm raças (conferido). Total de
+  `raca-hab`: 26 → **49** (17 núcleo + 26 Ameaças + 6 novas cards).
+
+**2. Sub-cards de escolha (o pedido do Moreau).** Raças com escolha ganharam um
+campo `escolhas` no dado, separando a habilidade-base das opções:
+```
+escolhas: [ { rotulo, escolher: <n>|null, nota?, opcoes: [ {nome, texto:[…]} ] } ]
+```
+- `escolher: 1` → só uma marcável (as outras travam ao marcar; desmarcável);
+  `escolher: 2` → até duas; `escolher: null` → sem limite (Mashin).
+- No seletor (`telaPoder`, `js/ficha.js`): habilidades-base viram caixas (tudo
+  marcado, como antes), e cada `escolha` vira um grupo com **sub-cards** e um
+  contador n/N; ao adicionar, o `texto` do card = base marcada + as opções
+  escolhidas. Reestruturadas: **Moreau** (1 herança de 12), **Kallyanach** (2
+  bênçãos de 6), **Kobolds** (2 talentos de 10), **Mashin** (maravilhas, sem
+  limite), e as novas **Duende** (Natureza 1/3 + Tamanho 1/4 + Presentes 3/12) e
+  **Suraggel** (herança planar 1/22, opcional).
+- CSS: `.fi-pod-grupo`, `.fi-pod-sub`, `.fi-pod-sub--off` (esmaece o não
+  escolhido) em `css/ficha_style.css`. Raças simples seguem com as caixas planas.
+- **Conferência (node):** 49 `raca-hab`, contrato das `escolhas` todo válido (79
+  sub-opções), ids únicos, sintaxe OK. **Falta o teste no clique-a-clique do
+  navegador** — é a parte mais interativa da leva, vale conferir aí.
