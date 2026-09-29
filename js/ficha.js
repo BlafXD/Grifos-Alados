@@ -3021,10 +3021,14 @@
     return nome ? nome + (p.pagina ? ', p. ' + p.pagina : '') : '';
   }
   //  O texto do livro: o da base quando ela está carregada; sem ela, a
-  //  cópia que a ficha guardou na hora de adicionar.
+  //  cópia que a ficha guardou na hora de adicionar. EXCEÇÃO: habilidade de
+  //  raça pode ter sido escolhida em partes (subconjunto do Osteon, herança do
+  //  Moreau, passos do Duende…) — aí a cópia guardada É a verdade, não a base.
   function textoDoPoder(p) {
     const b = daBasePoder(p.pid);
-    const paras = (b && b.texto) || p.texto || [];
+    const paras = (p.grupo === 'raca-hab')
+      ? ((p.texto && p.texto.length) ? p.texto : ((b && b.texto) || []))
+      : ((b && b.texto) || p.texto || []);
     const quadro = b && b.quadro;
     return paras.map(t => '<p>' + esc(t) + '</p>').join('') +
       (quadro ? '<div class="fi-pod-quadro"><strong>' + esc(quadro.titulo) + '</strong>' +
