@@ -116,6 +116,24 @@ tirado da "Tabela: Origens Regionais", p. 472–473).
   + Chrome com Firebase neutralizado; risco de tocar no banco oficial). O caminho
   de render espelha o da especial do Heróis, que já foi testado.
 
+## Origens especiais/regionais no "Adicionar habilidade" (29/09/2026)
+
+Buraco notado por ele: o chip **🎯 Origem** da busca "Adicionar habilidade" só
+tinha os **35** Poderes Únicos do núcleo. As **30 especiais** (Heróis) e as **66
+regionais** (Atlas) estavam só no seletor 🌿 — mas o benefício delas é uma
+habilidade e também deve poder ser adicionado.
+
+- **Ponte derivada, sem duplicar texto:** no fim de `js/origens-data.js`, para
+  cada origem `tipo:'especial'` (Heróis e Atlas), geramos uma entrada de busca
+  no grupo `origem` de `window.GA_PODERES` (id `origem-<slug>`, nome = a origem,
+  `tags` = a região nas regionais, `texto = [beneficio]`). `GA_ORIGENS` continua
+  a fonte única. Roda depois de `poderes-raca-origem-data.js` e antes de
+  `ficha.js`.
+- O grupo `origem` da busca foi de **35 → 131** (35 t20 + 30 herois + 66 atlas);
+  o contador do chip 🎯 é atualizado ali mesmo (o recount anterior via só 35).
+- **Sem mudança de UI:** a busca já lista o grupo `origem`; só cresceu a base.
+- Conferido por node: 131 no grupo, sem id duplicado, chip = 131.
+
 ## Armadilhas já conhecidas (memória)
 
 - PDF em colunas: `-layout` embaralha, `-raw` junta; os nomes das origens do

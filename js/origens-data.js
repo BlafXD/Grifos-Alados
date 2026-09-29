@@ -452,4 +452,30 @@
   ];
 
   window.GA_ORIGENS_LIVROS = { t20: 'Tormenta20', herois: 'Heróis de Arton', atlas: 'Atlas de Arton' };
+
+  //  ── PONTE: origens ESPECIAIS/REGIONAIS no "Adicionar habilidade" ──
+  //  O núcleo já tem seu Poder Único no grupo 'origem' de
+  //  js/poderes-raca-origem-data.js (35 entradas), então aparece na busca
+  //  (chip 🎯 Origem). As especiais do Heróis e as regionais do Atlas têm
+  //  um benefício ÚNICO — que é uma habilidade e também deve poder ser
+  //  adicionada. Em vez de duplicar o texto, DERIVAMOS uma entrada de busca
+  //  de cada uma aqui (GA_ORIGENS é a fonte única). Roda depois de
+  //  poderes-raca-origem-data.js e antes de ficha.js.
+  if (Array.isArray(window.GA_PODERES)) {
+    const jaNaBusca = {};
+    window.GA_PODERES.forEach(p => { if (p.grupo === 'origem') jaNaBusca[p.id] = true; });
+    window.GA_ORIGENS.forEach(o => {
+      if (o.tipo !== 'especial') return;   // núcleo já tem seu Poder Único
+      const id = 'origem-' + o.id;
+      if (jaNaBusca[id]) return;
+      window.GA_PODERES.push({
+        id: id, nome: o.nome, grupo: 'origem', livro: o.livro, pagina: o.pagina || 0,
+        tags: o.regiao || '', deus: null, magica: false, preReq: null, custo: null,
+        quadro: null, texto: [o.beneficio],
+      });
+    });
+    //  Atualiza o contador do chip 🎯 Origem (o recount anterior via só as 35).
+    const n = window.GA_PODERES.filter(p => p.grupo === 'origem').length;
+    (window.GA_PODERES_GRUPOS || []).forEach(g => { if (g.chave === 'origem') g.quantos = n; });
+  }
 })();
