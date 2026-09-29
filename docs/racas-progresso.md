@@ -116,5 +116,15 @@ escolhas: [ { rotulo, escolher: <n>|null, nota?, opcoes: [ {nome, texto:[…]} ]
 - CSS: `.fi-pod-grupo`, `.fi-pod-sub`, `.fi-pod-sub--off` (esmaece o não
   escolhido) em `css/ficha_style.css`. Raças simples seguem com as caixas planas.
 - **Conferência (node):** 49 `raca-hab`, contrato das `escolhas` todo válido (79
-  sub-opções), ids únicos, sintaxe OK. **Falta o teste no clique-a-clique do
-  navegador** — é a parte mais interativa da leva, vale conferir aí.
+  sub-opções), ids únicos, sintaxe OK.
+
+### Correção: a escolha não aparecia no card (29/09/2026)
+Ele testou e a herança do Moreau/os passos do Duende **não apareciam** no card
+depois de adicionar. Causa: `textoDoPoder(p)` (js/ficha.js) preferia
+`b.texto` (a BASE) sobre `p.texto` (o que a ficha guardou ao escolher) — e a base
+do Moreau/Duende só tem as linhas-base, sem as escolhas. Isso também escondia o
+subconjunto do Osteon (mostrava a raça inteira). **Correção:** para `grupo ===
+'raca-hab'`, `textoDoPoder` usa `p.texto` guardado (base como reserva); os demais
+grupos seguem preferindo a base (para refletir errata). **Armadilha a lembrar:
+todo lugar que renderiza um poder pela BASE ignora escolhas/subconjuntos por
+card.**
