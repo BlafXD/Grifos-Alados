@@ -25,52 +25,38 @@ mesa é de **leitura pública** (`".read": true`), **todo membro já lê** os ef
 sem mudar regra nenhuma. Fora de uma mesa (o mestre jogando offline), fica no
 `localStorage` deste navegador.
 
-## ⚠ O que VOCÊ precisa fazer no console (só para o JOGADOR criar)
+## ⚠ O que VOCÊ precisa fazer no console
 
-O **mestre já consegue criar** sem mexer em nada: a escrita do nó da mesa é dele.
-Para o **jogador** também poder lançar (o seu caso quando você joga na Mesa do
-Hadson), falta **uma regra**, no mesmo espírito da do inventário dos jogadores.
+> **Correção (30/09/2026):** o ruleset ATUAL da mesa é granular — cada nó tem a
+> sua regra, e **não há mais `.read: true` na mesa inteira**. Ou seja, aqui **nem o
+> mestre** escreve/lê `efeitosArea` sem uma regra própria (diferente do doc antigo,
+> que supunha `.read: true` + escrita geral do mestre). Então o `efeitosArea`
+> precisa de **`.read` E `.write` próprios**, no padrão dos vizinhos (`iniciativa`,
+> `jogadores/inventario`). Sem ele, o efeito só funciona **offline** (localStorage).
 
-Em **Realtime Database → Regras**, dentro de `mesas` → `$sala`, adicione o nó
-`efeitosArea` como irmão de `fichas`:
-
-```json
-"mesas": {
-  "$sala": {
-    ".read": true,
-    ".write": "auth != null && auth.token.email === 'SEU-EMAIL@AQUI.com'",
-
-    "efeitosArea": {
-      ".write": "auth != null && auth.token.email_verified"
-    }
-  }
-}
-```
-
-Isso deixa **qualquer pessoa logada (com e-mail verificado)** criar/encerrar efeito
-naquela mesa. Como o efeito é só um lembrete (não apaga ficha, não mexe em PV),
-esse nível é seguro e simples — é o mesmo grau de abertura que o
-`jogadores/inventario` já teve.
-
-**Se quiser fechar só para a sua lista** (como fez no inventário), troque a linha
-do `efeitosArea` pela mesma condição que você usa no `fichas`/`inventario` — por
-e-mail:
+Em **Realtime Database → Regras**, dentro de `mesas` → `$sala`, o `efeitosArea` é um
+**nó IRMÃO** de `fichas`, `iniciativa` e `jogadores` (filho direto de `$sala`) —
+**nunca dentro de `fichas`** (senão a regra governa o caminho errado E as regras do
+`fichas` se perdem, quebrando a subida de ficha do jogador e a leitura do mestre):
 
 ```json
 "efeitosArea": {
-  ".write": "auth != null && auth.token.email_verified && (
-     auth.token.email === 'MESTRE@gmail.com' ||
-     auth.token.email === 'jogador1@gmail.com' ||
-     auth.token.email === 'jogador2@gmail.com')"
+  ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
+  ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador'"
 }
 ```
 
-**Antes de publicar:** faça o **backup** e rode o **simulador de regras** (como você
-já faz) — uma escrita em `mesas/<sua-sala>/efeitosArea/teste` com uma conta de
-dentro tem de **passar**, e com uma conta de fora (ou deslogada) tem de **falhar**.
+- **Lê:** qualquer membro da mesa (como `iniciativa`).
+- **Escreve:** todo membro menos espectador (como `jogadores/inventario`) — mestre,
+  auxiliar e jogadores criam/encerram efeito.
 
-Enquanto a regra não estiver publicada, o jogador que tentar criar vê um recado na
-tela ("o banco recusou… peça ao mestre"); **o mestre cria normalmente**.
+**Antes de publicar:** faça o **backup** e rode o **simulador de regras** — uma
+escrita em `mesas/<sua-sala>/efeitosArea/teste` (com `.child('uid')` seu) por um
+membro tem de **passar**, e por uma conta de fora (ou deslogada) tem de **falhar**;
+uma leitura de `mesas/<sua-sala>/efeitosArea` por um membro tem de **passar**.
+
+Enquanto a regra não estiver publicada, quem tentar criar vê um recado na tela
+("o banco recusou…") e o efeito só vale **offline**, neste navegador.
 
 ## No código (já feito)
 - `js/efeitos-area.js` (novo): o modelo, o sync (`efeitosArea`), a oficina e o
