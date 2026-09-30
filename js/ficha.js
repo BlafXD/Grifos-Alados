@@ -159,6 +159,19 @@
     D.ATRIBUTOS.forEach(a => {
       if (typeof f.atributos[a.chave] !== 'number') f.atributos[a.chave] = 0;
     });
+    // ── ATRIBUTOS TEMPORÁRIOS (30/09/2026, pedido dele) ────────────
+    //  Um bônus (ou penalidade) de combate no atributo — de uma magia,
+    //  poção, poder ou condição. Ele soma em TUDO que o atributo faz:
+    //  perícias, Defesa, testes, CD, ataque. Mas NÃO no PV nem no PM
+    //  máximos: "muita magia dá Constituição mas diz que você NÃO ganha
+    //  PV/PM temporários" — e a regra vale para qualquer atributo. Por
+    //  isso o valor mora separado do atributo-base: `atr()` soma os dois
+    //  (o efetivo, que quase tudo usa), e `atrBase()` fica com o cru, que
+    //  só o pvMax/pmMax e a conta do PV enxergam.
+    f.atributosTemp = f.atributosTemp || {};
+    D.ATRIBUTOS.forEach(a => {
+      if (typeof f.atributosTemp[a.chave] !== 'number') f.atributosTemp[a.chave] = 0;
+    });
     // PV e PM: `atual` null quer dizer "cheio" (a ficha nova não precisa
     // saber o máximo antes de ter classe). `temp` é a regra da p. 105 —
     // ver gastarPontos(), que é onde ela de fato acontece.
@@ -721,7 +734,15 @@
     const n = f.classes.reduce((s, c) => s + (c.nivel || 0), 0);
     return Math.max(1, n);
   }
-  function atr(f, chave) { return f.atributos[chave] || 0; }
+  //  O CRU: só o atributo digitado, sem o temporário. É o que alimenta o
+  //  PV e o PM máximos — os únicos que o temporário não pode mexer.
+  function atrBase(f, chave) { return (f.atributos && f.atributos[chave]) || 0; }
+  //  O EFETIVO: base + temporário. É este que quase tudo usa (perícias,
+  //  Defesa, CD, ataque, testes), porque o bônus de combate soma em tudo
+  //  o que o atributo faz — menos PV/PM. Ver atrBase() e atributosTemp.
+  function atrTemp(f, chave) { return (f.atributosTemp && f.atributosTemp[chave]) || 0; }
+  function atr(f, chave) { return atrBase(f, chave) + atrTemp(f, chave); }
+  function temTemp(f) { return D.ATRIBUTOS.some(a => atrTemp(f, a.chave) !== 0); }
   // ── QUAL ATRIBUTO ENTRA ONDE ───────────────────────────────────
   //  A Defesa e cada perícia têm o atributo que o livro manda — e a
   //  ficha deixa trocar. Tudo passa por aqui, para que um campo em
@@ -752,7 +773,7 @@
   // PV: a PRIMEIRA classe dá o PV inicial dela; o primeiro nível de uma
   // classe nova dá PV de nível subsequente, não do 1º (p. 40).
   function pvMax(f) {
-    const con = atr(f, 'con');
+    const con = atrBase(f, 'con');   // o CRU: atributo temporário não dá PV
     let total = 0;
     f.classes.forEach((c, i) => {
       const C = D.classe(c.classe);
@@ -770,7 +791,7 @@
       const C = D.classe(c.classe);
       if (C) total += Math.max(0, c.nivel || 0) * C.pmNivel;
     });
-    atributosDoPm(f).forEach(x => { total += atr(f, x.atr); });
+    atributosDoPm(f).forEach(x => { total += atrBase(f, x.atr); });   // o CRU: temporário não dá PM
     return total + (f.pm.outros || 0);
   }
   // O atributo que as classes que lançam magia somam ao PM (e o paladino,
@@ -1686,12 +1707,41 @@
 
   // ── OS NÚMEROS: atributos · vida e mana · defesa e carga ─────────
   function blocoNumeros(f) {
-    const atrs = D.ATRIBUTOS.map(a => `
-      <label class="fi-atr">
+    const atrs = D.ATRIBUTOS.map(a => {
+      const t = atrTemp(f, a.chave);
+      return `
+      <label class="fi-atr${t ? ' fi-atr--temp' : ''}">
         <span class="fi-atr-nome">${esc(a.curto)}</span>
         <input class="fi-atr-val" type="number" value="${f.atributos[a.chave]}"
                data-campo="atributos.${a.chave}" title="${esc(a.nome)} — em T20 o valor já é o modificador">
+        <span class="fi-atr-efet" data-der="atrEfet:${a.chave}" ${t ? '' : 'hidden'}
+              title="Valor efetivo, com o temporário — é ele que entra nas perícias, na Defesa, na CD e nos ataques">→ ${atr(f, a.chave)}</span>
+      </label>`;
+    }).join('');
+
+    // ── O QUADRADINHO DOS TEMPORÁRIOS ──────────────────────────────
+    //  Aberto sozinho quando há algum valor, para o jogador não esquecer
+    //  que está sob um efeito. Some no PV/PM de propósito (ver atrBase).
+    const tempInputs = D.ATRIBUTOS.map(a => `
+      <label class="fi-atr-temp-cel">
+        <span class="fi-atr-temp-nome">${esc(a.curto)}</span>
+        <input class="fi-num fi-num--mini fi-atr-temp-val" type="number" value="${atrTemp(f, a.chave)}"
+               data-campo="atributosTemp.${a.chave}"
+               title="Bônus (ou penalidade) temporário em ${esc(a.nome)} — some no fim do efeito. Não dá PV nem PM.">
       </label>`).join('');
+    const temp = `
+      <details class="fi-atr-temp-caixa"${temTemp(f) ? ' open' : ''}>
+        <summary class="fi-atr-temp-tit">⏳ Atributos temporários${temTemp(f) ? ' <em class="fi-atr-temp-ativo">ativos</em>' : ''}</summary>
+        <div class="fi-atr-temp-grade">${tempInputs}</div>
+        <div class="fi-atr-temp-pe">
+          <p class="fi-nota fi-nota--temp">Bônus (ou penalidade) de combate — de uma magia, poção, poder ou condição.
+            Entram em <strong>tudo o que o atributo faz</strong> (perícias, Defesa, CD, ataque, testes), mas
+            <strong>não dão PV nem PM</strong>: muita magia dá Constituição e diz, com todas as letras, que você
+            não ganha PV/PM temporários — e a regra aqui vale para qualquer atributo.</p>
+          <button type="button" class="fi-add fi-add--menor" data-acao="limpar-temp-atr"
+                  title="Zerar todos os atributos temporários (fim do efeito, fim do combate)">✦ Zerar temporários</button>
+        </div>
+      </details>`;
 
     const opsCd = D.ATRIBUTOS.map(a =>
       `<option value="${a.chave}" ${a.chave === f.cdAtributo ? 'selected' : ''}>${esc(a.curto)}</option>`).join('');
@@ -1703,6 +1753,7 @@
           <div class="fi-atr-grade">${atrs}</div>
           <p class="fi-nota">Em Tormenta 20 o valor <em>já é</em> o modificador: Força 3 soma +3.
             Digite o total, com o que a raça deu.</p>
+          ${temp}
         </div>
 
         <div class="fi-cartao fi-vida">
@@ -1953,7 +2004,7 @@
   function contaPv(f) {
     const c = f.classes.filter(x => D.classe(x.classe) && x.nivel > 0);
     if (!c.length) return 'Escolha a classe e o nível para o PV e o PM aparecerem.';
-    const con = atr(f, 'con');
+    const con = atrBase(f, 'con');   // a conta do PV usa o CRU, como o próprio PV
     const partes = c.map((x, i) => {
       const C = D.classe(x.classe);
       return i === 0
@@ -1962,7 +2013,7 @@
     });
     const pm = c.map(x => `${D.classe(x.classe).pmNivel}×${x.nivel}`).join(' + ') +
       atributosDoPm(f).map(x => {
-        const v = atr(f, x.atr);
+        const v = atrBase(f, x.atr);
         return ` + ${atrCurto(x.atr)} ${v < 0 ? '−' + Math.abs(v) : v} <em>(${esc(x.classe.nome.toLowerCase())})</em>`;
       }).join('');
     return `PV = ${partes.join(' + ')}${f.pv.outros ? ' ' + sinal(f.pv.outros) : ''} · PM = ${pm}${f.pm.outros ? ' ' + sinal(f.pm.outros) : ''}`;
@@ -3156,6 +3207,107 @@
     try { window.GA_guardar(MAG_FECHADAS_KEY, JSON.stringify(magiasFechadas)); } catch (e) {}
   }
 
+  // ═══ MAGIAS QUE VÊM DA CLASSE (30/09/2026) ════════════════════════
+  //  O Usurpador (de clérigo, Heróis de Arton p. 40) não aprende magia a
+  //  magia: pela habilidade Usurpar, "você pode lançar QUALQUER magia
+  //  divina de um círculo a que tenha acesso" (com um teste de Enganação,
+  //  CD 15 + o custo em PM). Então ele CONHECE a lista divina inteira até
+  //  o círculo que alcança — e o pedido dele foi que a ficha mostrasse
+  //  isso sozinha: "se ele tem 2º Círculo, ganha todas as magias de 2º".
+  //
+  //  Essas magias NÃO ficam guardadas na ficha (seriam mais de cem, e
+  //  saem por conta da classe e do nível, como as Habilidades de Classe
+  //  fixas): são montadas na hora, da mesma base das Consultas. Quem
+  //  QUISER mexer numa delas — pôr aprimoramento, anotar — clica em
+  //  ＋ Adicionar e ela vira uma magia normal, sua, editável (e sai desta
+  //  lista automática, para não duplicar).
+  //
+  //  Fica um mapa por CHAVE de classe para o dia em que outra classe
+  //  também "conhecer a lista inteira".
+  const MAGIAS_AUTO = {
+    usurpador: {
+      lista: 'divina',
+      rotulo: 'Usurpar',
+      // "1º círculo, subindo a cada quatro níveis" (2º no 5º, 3º no 9º…),
+      // pelo NÍVEL de usurpador. Teto no 5º círculo.
+      circulo: n => Math.min(5, 1 + Math.floor((Math.max(1, n) - 1) / 4)),
+    },
+  };
+  //  O maior círculo automático que a ficha alcança, e por qual classe.
+  //  Multiclasse: cada classe conta com o SEU nível.
+  function classeAutoDe(f) {
+    let achado = null;
+    (f.classes || []).forEach(c => {
+      const cfg = MAGIAS_AUTO[c.classe];
+      if (!cfg || !(c.nivel > 0)) return;
+      const cir = cfg.circulo(c.nivel);
+      if (!achado || cir > achado.circulo) {
+        achado = { chave: c.classe, cfg: cfg, nivel: c.nivel, circulo: cir };
+      }
+    });
+    return achado;
+  }
+  //  Uma magia da base virada em cartão de ficha (mesma forma do que o
+  //  ＋ Adicionar guarda), marcada como automática. `id` é sintético
+  //  ("auto:<mid>") para os botões e para o estado de recolhida.
+  function magiaAutoDoMid(mid) {
+    const b = daBase(mid);
+    if (!b) return null;
+    return {
+      id: 'auto:' + mid, mid: mid, nome: b.nome, circulo: b.circulo, pm: b.pm,
+      tipo: b.tipo || '', escola: b.escola || '', execucao: b.execucao || '',
+      alcance: b.alcance || '', alvo: b.alvo || b.area || b.efeito || '',
+      duracao: b.duracao || '', resistencia: b.resistencia || '',
+      resumo: b.resumo || '', obs: '', apr: [], auto: true,
+    };
+  }
+  //  A lista automática da ficha (vazia quando não há classe do tipo, ou
+  //  a base das magias ainda não carregou). Pula o que o jogador já pôs à
+  //  mão, para não aparecer duas vezes.
+  function magiasAutoDe(f) {
+    const info = classeAutoDe(f);
+    const base = window.GA_MAGIAS || [];
+    if (!info || !base.length) return [];
+    const jaTem = {};
+    (f.magias || []).forEach(m => { jaTem[m.mid] = true; });
+    return base.filter(b =>
+        (b.circulo || 0) <= info.circulo &&
+        Array.isArray(b.listas) && b.listas.indexOf(info.cfg.lista) >= 0 &&
+        !jaTem[b.id])
+      .map(b => magiaAutoDoMid(b.id))
+      .filter(Boolean);
+  }
+
+  //  A magia de um botão: pela posição (magia normal, data-i) ou pelo mid
+  //  (magia automática da classe, data-mid). Os botões que ela responde —
+  //  abrir/recolher, 🔥 gastar PM e 🎲 rolar — não guardam nada na ficha,
+  //  então a automática (montada na hora) serve igual.
+  function magiaDoBotao(f, btn) {
+    if (btn.dataset && btn.dataset.mid != null && btn.dataset.i == null) {
+      return magiaAutoDoMid(btn.dataset.mid);
+    }
+    return f.magias[+btn.dataset.i];
+  }
+
+  //  Recolhida ou aberta. As magias NORMAIS nascem abertas (a chave, quando
+  //  existe, quer dizer "fechada"). As AUTOMÁTICAS nascem FECHADAS — são
+  //  muitas, e o jogador abre a que for usar (a chave = 0 quer dizer "esta
+  //  eu deixei aberta"). Assim os dois estados cabem no mesmo armazém.
+  function chaveFechada(m) { return m.auto ? ('auto:' + m.mid) : m.id; }
+  function estaFechada(m) {
+    const k = chaveFechada(m);
+    return m.auto ? (magiasFechadas[k] !== 0) : !!magiasFechadas[k];
+  }
+  function alternarFechada(m) {
+    const k = chaveFechada(m);
+    if (estaFechada(m)) {            // abrir
+      if (m.auto) magiasFechadas[k] = 0; else delete magiasFechadas[k];
+    } else {                         // recolher
+      if (m.auto) delete magiasFechadas[k]; else magiasFechadas[k] = 1;
+    }
+    guardarFechadas();
+  }
+
   // ═══ ✨ PODERES ═══════════════════════════════════════════════════
   //  Pedido dele em 15/09/2026: "ADICIONAR PODER… e dentro da aba um
   //  filtro e sub árvores de poder de classe, poder geral, poder
@@ -3813,13 +3965,22 @@
 
   function blocoMagias(f) {
     const temBase = Array.isArray(window.GA_MAGIAS) && window.GA_MAGIAS.length;
-    const todasFechadas = f.magias.length > 0 && f.magias.every(m => magiasFechadas[m.id]);
-    // agrupadas por círculo, como o livro lista e como se procura na mesa
+    const auto = magiasAutoDe(f);                 // as que a classe concede (Usurpador)
+    const infoAuto = classeAutoDe(f);
+    // agrupadas por círculo, como o livro lista e como se procura na mesa.
+    // as manhas normais levam o índice em f.magias; as automáticas não têm.
     const porCirculo = {};
     f.magias.forEach((m, i) => {
       const c = m.circulo || 0;
       (porCirculo[c] || (porCirculo[c] = [])).push({ m: m, i: i });
     });
+    auto.forEach(m => {
+      const c = m.circulo || 0;
+      (porCirculo[c] || (porCirculo[c] = [])).push({ m: m, i: -1 });
+    });
+    const totalMagias = f.magias.length + auto.length;
+    const todasFechadas = totalMagias > 0 &&
+      f.magias.every(m => estaFechada(m)) && auto.every(m => estaFechada(m));
 
     const grupos = Object.keys(porCirculo).sort((a, b) => a - b).map(c => `
       <div class="fi-mag-grupo">
@@ -3834,16 +3995,21 @@
     return `
       <div class="fi-cartao fi-bloco fi-magias">
         <h2 class="fi-cartao-tit">✨ Magias
-          <span class="fi-cartao-nota">${f.magias.length} na ficha · a CD delas:
+          <span class="fi-cartao-nota">${f.magias.length} na ficha${auto.length ? ' + ' + auto.length + ' da classe' : ''} · a CD delas:
             <strong data-der="cdmag">${cdMagias(f)}</strong></span>
           <span class="fi-mag-botoes">
-            ${f.magias.length > 1 ? `<button type="button" class="fi-add fi-add--menor fi-mag-dobra" data-acao="dobra-magias"
+            ${totalMagias > 1 ? `<button type="button" class="fi-add fi-add--menor fi-mag-dobra" data-acao="dobra-magias"
                     title="${todasFechadas ? 'Mostrar o texto de todas as magias' : 'Deixar só os nomes, para achar uma magia (ou chegar ao inventário) sem descer tanto'}"
               >${todasFechadas ? '▾ Abrir todas' : '▸ Recolher todas'}</button>` : ''}
             <button type="button" class="fi-add fi-add--menor fi-mag-add" data-acao="add-magia" ${temBase ? '' : 'disabled'}>
               ＋ Adicionar magia</button>
           </span>
         </h2>
+        ${infoAuto ? `<p class="fi-mag-auto-aviso">🔓 Como <strong>${esc(D.classe(infoAuto.chave).nome)}</strong>, você lança
+          <strong>qualquer magia ${esc(infoAuto.cfg.lista)}</strong> até o <strong>${infoAuto.circulo}º círculo</strong> pela
+          habilidade <em>${esc(infoAuto.cfg.rotulo)}</em> (teste de Enganação, CD 15 + o custo em PM). Por isso as
+          ${auto.length} abaixo já vêm na lista, recolhidas — abra a que for lançar. Para pôr aprimoramento ou anotar numa
+          delas, use <strong>＋ Adicionar magia</strong>: ela vira sua e sai da lista automática.</p>` : ''}
         ${grupos || '<p class="fi-mag-vazia">Nenhuma magia ainda. O <strong>＋ Adicionar magia</strong> abre a busca nas ' +
           (temBase ? window.GA_MAGIAS.length : 254) + ' magias do livro — as mesmas da aba 📚 Consultas.</p>'}
         <p class="fi-nota">Cada magia traz o <strong>texto inteiro</strong> do livro. Clique no <strong>nome</strong>
@@ -4023,32 +4189,36 @@
   function cartaoMagia(f, m, i) {
     const p = pmDaMagia(m);
     const dd = dadosDaMagia(m);
+    //  As magias NORMAIS são endereçadas pelo índice em f.magias; as
+    //  AUTOMÁTICAS (da classe) pelo mid, porque não moram na ficha.
+    const alvo = m.auto ? `data-mid="${esc(m.mid)}"` : `data-i="${i}"`;
     //  🎲: um só dado → rola direto; vários → um botão por dado (o jogador
     //  escolhe qual). Sempre soma os aprimoramentos de dado ligados (dd.bonus).
     const rollHtml = !dd.bases.length ? '' : (dd.bases.length === 1
-      ? `<button type="button" class="fi-mag-roll" data-acao="rolar-magia" data-i="${i}" data-b="0"
+      ? `<button type="button" class="fi-mag-roll" data-acao="rolar-magia" ${alvo} data-b="0"
               title="Rolar ${esc(dd.bases[0].expr + dd.bonus)}${dd.bases[0].rotulo ? ' — ' + esc(dd.bases[0].rotulo) : ''}">🎲</button>`
-      : dd.bases.map((d, bi) => `<button type="button" class="fi-mag-roll fi-mag-roll--multi" data-acao="rolar-magia" data-i="${i}" data-b="${bi}"
+      : dd.bases.map((d, bi) => `<button type="button" class="fi-mag-roll fi-mag-roll--multi" data-acao="rolar-magia" ${alvo} data-b="${bi}"
               title="Rolar ${esc(d.expr + dd.bonus)}">🎲 ${esc(d.rotulo || d.expr)}</button>`).join(''));
-    const fechada = !!magiasFechadas[m.id];
+    const fechada = estaFechada(m);
     return `
-      <li class="fi-mag${fechada ? ' fi-mag--fechada' : ''}">
-        <button type="button" class="fi-mag-abrir" data-acao="dobra-magia" data-i="${i}"
+      <li class="fi-mag${fechada ? ' fi-mag--fechada' : ''}${m.auto ? ' fi-mag--auto' : ''}">
+        <button type="button" class="fi-mag-abrir" data-acao="dobra-magia" ${alvo}
                 aria-expanded="${!fechada}"
                 title="${fechada ? 'Abrir' : 'Recolher'} o texto de ${esc(m.nome)}">
           <span class="fi-mag-seta" aria-hidden="true">${fechada ? '▸' : '▾'}</span>
           <span class="fi-mag-nome">${esc(m.nome)}</span>
+          ${m.auto ? '<span class="fi-mag-tag fi-mag-tag--auto" title="Você conhece esta magia pela sua classe (Usurpar) — não precisou aprendê-la">🔓 da classe</span>' : ''}
           ${m.escola ? `<span class="fi-mag-tag">${esc(m.escola)}</span>` : ''}
           ${m.tipo ? `<span class="fi-mag-tag fi-mag-tag--tipo">${esc(m.tipo)}</span>` : ''}
         </button>
         <span class="fi-mag-acoes">
           ${p.total ? `<button type="button" class="fi-mag-pm-btn${p.extra ? ' fi-mag-pm-btn--apr' : ''}"
-                  data-acao="gastar-magia" data-i="${i}"
+                  data-acao="gastar-magia" ${alvo}
                   title="Gastar ${p.total} PM${p.extra ? ' (' + p.base + ' da magia + ' + p.extra + ' de aprimoramento)' : ''} — os temporários saem primeiro"
             >🔥 ${p.total} PM</button>` : ''}
           ${rollHtml}
-          <button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
-                  title="Tirar ${esc(m.nome)} da ficha">✕</button>
+          ${m.auto ? '' : `<button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
+                  title="Tirar ${esc(m.nome)} da ficha">✕</button>`}
           <span class="fi-res fi-res--mag" data-res="magia:${m.id}" hidden></span>
         </span>
         ${fechada ? '' : `
@@ -4059,9 +4229,9 @@
             ${campoMag('Resistência', m.resistencia)}
           </div>
           <div class="fi-mag-desc">${descricaoDaMagia(m)}</div>
-          ${blocoAprimoramentos(f, m, i)}
-          <input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
-                 placeholder="sua anotação (alvo preferido, quem costuma acompanhar…)" autocomplete="off">
+          ${m.auto ? '' : blocoAprimoramentos(f, m, i)}
+          ${m.auto ? '' : `<input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
+                 placeholder="sua anotação (alvo preferido, quem costuma acompanhar…)" autocomplete="off">`}
         </div>`}
       </li>`;
   }
@@ -4263,6 +4433,16 @@
     secao.querySelectorAll('[data-der]').forEach(el => {
       const d = el.dataset.der;
       if (d.slice(0, 3) === 'am:')  { derivadoAmigo(f, el, d); return; }
+      //  O valor efetivo de um atributo (base + temporário): acende ao lado
+      //  do número quando há temporário, some quando volta a zero.
+      if (d.slice(0, 8) === 'atrEfet:') {
+        const k = d.slice(8), t = atrTemp(f, k);
+        el.hidden = (t === 0);
+        el.textContent = '→ ' + atr(f, k);
+        const cel = el.closest('.fi-atr');
+        if (cel) cel.classList.toggle('fi-atr--temp', t !== 0);
+        return;
+      }
       if (d.slice(0, 4) === 'per:') { el.textContent = sinal(valorPericia(f, d.slice(4))); return; }
       if (d.slice(0, 4) === 'atq:') { el.textContent = sinal(valorAtaque(f, f.ataques[+d.slice(4)] || {})); return; }
       if (d.slice(0, 7) === 'passos:') {
@@ -5064,18 +5244,21 @@
     }
     // recolher e abrir não mexem na ficha: é deste navegador (ver blocoMagias)
     if (acao === 'dobra-magia') {
-      const m = f.magias[+btn.dataset.i];
+      const m = magiaDoBotao(f, btn);
       if (!m) return;
-      if (magiasFechadas[m.id]) delete magiasFechadas[m.id]; else magiasFechadas[m.id] = 1;
-      guardarFechadas(); return render();
+      alternarFechada(m); return render();
     }
     if (acao === 'dobra-magias') {
-      const abrir = f.magias.every(m => magiasFechadas[m.id]);
-      f.magias.forEach(m => { if (abrir) delete magiasFechadas[m.id]; else magiasFechadas[m.id] = 1; });
-      guardarFechadas(); return render();
+      const auto = magiasAutoDe(f);
+      // tudo fechado agora → o clique abre tudo; senão, recolhe tudo. Só
+      // mexe no que está no estado contrário ao alvo (abrir === estaFechada).
+      const abrir = f.magias.every(estaFechada) && auto.every(estaFechada);
+      f.magias.forEach(m => { if (estaFechada(m) === abrir) alternarFechada(m); });
+      auto.forEach(m => { if (estaFechada(m) === abrir) alternarFechada(m); });
+      return render();
     }
     if (acao === 'gastar-magia') {
-      const m = f.magias[+btn.dataset.i];
+      const m = magiaDoBotao(f, btn);
       if (!m) return;
       const p = pmDaMagia(m);
       // o rótulo diz o que saiu: "Bola de Fogo · com +2 aprimorado"
@@ -5083,7 +5266,7 @@
       return;
     }
     if (acao === 'rolar-magia') {
-      const m = f.magias[+btn.dataset.i];
+      const m = magiaDoBotao(f, btn);
       if (!m) return;
       const dd = dadosDaMagia(m);
       const d = dd.bases[+btn.dataset.b || 0];
@@ -5167,6 +5350,13 @@
     if (acao === 'limpar-compras') {
       f.compras = [];
       sujar(f.id, 'compras');
+      salvar(); return render();
+    }
+    //  Zerar os atributos temporários de uma vez (fim do efeito/combate).
+    if (acao === 'limpar-temp-atr') {
+      if (!temTemp(f)) return;
+      D.ATRIBUTOS.forEach(a => { f.atributosTemp[a.chave] = 0; });
+      sujar(f.id, 'atributosTemp');
       salvar(); return render();
     }
   }
@@ -5539,7 +5729,7 @@
   const NOMES_GRUPO = {
     nome: 'nome', jogador: 'jogador', raca: 'raça', origem: 'origem', divindade: 'divindade',
     tamanho: 'tamanho', deslocamento: 'deslocamento', deslocMods: 'penalidades de deslocamento',
-    classes: 'classes e níveis', atributos: 'atributos',
+    classes: 'classes e níveis', atributos: 'atributos', atributosTemp: 'atributos temporários',
     pv: 'PV', pm: 'PM', defesa: 'Defesa', carga: 'carga', cdAtributo: 'atributo da CD', xp: 'XP',
     xpLog: 'caderno do XP',
     resistencias: 'resistências', reducoes: 'RD', imunidades: 'imunidades', proficiencias: 'proficiências',
@@ -5705,11 +5895,15 @@
         }).slice(0, 60);
         const jaTem = {};
         f.magias.forEach(m => { jaTem[m.mid] = true; });
+        // as que a classe já concede (Usurpar): marca, mas deixa adicionar —
+        // adicionar transforma numa magia sua, editável (com aprimoramentos).
+        const daClasse = {};
+        magiasAutoDe(f).forEach(m => { daClasse[m.mid] = true; });
 
         res.innerHTML = achadas.length ? achadas.map(m => `
-          <button type="button" class="fi-busca-item ${jaTem[m.id] ? 'fi-busca-item--tem' : ''}" data-mid="${esc(m.id)}">
+          <button type="button" class="fi-busca-item ${jaTem[m.id] ? 'fi-busca-item--tem' : ''}${daClasse[m.id] ? ' fi-busca-item--auto' : ''}" data-mid="${esc(m.id)}">
             <span class="fi-busca-circ">${m.circulo}º</span>
-            <span class="fi-busca-nome">${esc(m.nome)}${jaTem[m.id] ? ' <em>já está na ficha</em>' : ''}</span>
+            <span class="fi-busca-nome">${esc(m.nome)}${jaTem[m.id] ? ' <em>já está na ficha</em>' : (daClasse[m.id] ? ' <em>🔓 já vem da sua classe</em>' : '')}</span>
             <span class="fi-busca-meta">${esc(m.escola)} · ${esc(m.tipo)} · ${m.pm} PM</span>
             <span class="fi-busca-res-txt">${esc(m.resumo || '')}</span>
           </button>`).join('')
@@ -6380,4 +6574,19 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+
+  //  A base das magias (js/magias-data.js) é carregada DEPOIS deste arquivo
+  //  no HTML — e, com defer, este init() roda com o documento em
+  //  "interactive", ANTES dela existir (ver [[defer-readystate-interactive]]).
+  //  Então, no primeiro desenho, as magias automáticas do Usurpador não
+  //  teriam como aparecer. Ao terminar de carregar (DOMContentLoaded já
+  //  executou todos os defer, inclusive o das magias), redesenha uma vez —
+  //  só quando a ficha aberta tem uma classe que concede a lista inteira.
+  function redesenharSeConcede() {
+    if (!window.GA_MAGIAS || !document.getElementById('ficha-content')) return;
+    const f = fichaAberta();
+    if (f && classeAutoDe(f)) render();
+  }
+  if (document.readyState === 'complete') redesenharSeConcede();
+  else window.addEventListener('DOMContentLoaded', redesenharSeConcede);
 })();
