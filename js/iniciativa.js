@@ -676,6 +676,15 @@
     abrir: abrir,
     quantas: quantas,
     rodadaAtual: function () { return rodada; },
+    //  A lista de combatentes de agora — para o seletor de alvos dos
+    //  "efeitos em área" (js/efeitos-area.js). Só nome, tipo e os elos com
+    //  a ficha; nada de valor rolado (que é secreto do mestre).
+    combatentes: function () {
+      return emOrdem().map(function (l) {
+        return { id: l.id, nome: l.nome, tipo: l.tipo || 'criatura',
+                 fichaId: l.fichaId || '', uid: l.uid || '' };
+      });
+    },
   };
 
   // ⚠ O GA_Mesa nasce no mesa.js, que é carregado DEPOIS deste arquivo

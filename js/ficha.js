@@ -217,6 +217,17 @@
     //  "você não aplica sua Destreza na Defesa" (p. 152), e há poderes,
     //  condições e efeitos que dizem o mesmo.
     f.defesa.atributo = atributoDaDefesa(f.defesa.atributo);
+    // ── FONTES DE DEFESA (30/09/2026, pedido dele) ─────────────────
+    //  Além de Armadura/Escudo/Outros, uma LISTA de fontes com nome —
+    //  como a Redução de Dano: cada linha tem o valor e de onde vem
+    //  ("magia", um item, um poder). Assim o +2 da Bênção não some dentro
+    //  de "Outros"; fica escrito o que é. Some tudo na Defesa (defesa()).
+    if (!Array.isArray(f.defesa.fontes)) f.defesa.fontes = [];
+    f.defesa.fontes = f.defesa.fontes.map(x => ({
+      id: (x && x.id) || novoId(),
+      valor: (x && typeof x.valor === 'number') ? x.valor : 0,   // pode ser negativo
+      de: String((x && x.de) || ''),                             // "magia (Bênção)", "item"…
+    }));
     f.carga = f.carga || {};
     ['usada', 'outros'].forEach(k => { if (typeof f.carga[k] !== 'number') f.carga[k] = 0; });
     if (typeof f.cdAtributo !== 'string') f.cdAtributo = 'int';
@@ -815,8 +826,11 @@
   // é o padrão, não uma amarra: quem escolheu outro atributo na ficha
   // soma o dele, quem escolheu nenhum não soma atributo, e a conta por
   // extenso diz qual foi.
+  function somaFontesDefesa(f) {
+    return ((f.defesa && f.defesa.fontes) || []).reduce((s, x) => s + (x.valor || 0), 0);
+  }
   function defesa(f) {
-    return 10 + somaAtrDefesa(f) + f.defesa.armadura + f.defesa.escudo + f.defesa.outros;
+    return 10 + somaAtrDefesa(f) + f.defesa.armadura + f.defesa.escudo + f.defesa.outros + somaFontesDefesa(f);
   }
   // Carga = 10 espaços + 2 por ponto de Força, ou −1 por ponto negativo (p. 141)
   function cargaMax(f) {
@@ -1306,7 +1320,7 @@
     //  logo DEPOIS de Ataques e ANTES de Magias (pedido dele em 24/09/2026):
     //  são o que o personagem "sabe fazer", e ficavam soterradas embaixo das
     //  listas de magia e inventário. Anotações (📜) segue mais abaixo.
-    html += bloqueIdentidade(f) + blocoCombate(f) + blocoComplicacoes(f) + blocoCondicoes(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
+    html += bloqueIdentidade(f) + blocoCombate(f) + blocoComplicacoes(f) + blocoCondicoes(f) + blocoEfeitosArea(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
             blocoDePoderes(f, 'racaOrigem') + blocoDePoderes(f, 'classePoderes') +
             blocoAmigos(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
             blocoCompras(f);
@@ -1810,6 +1824,7 @@
               <input class="fi-num" type="number" value="${f.defesa.penalidade}" data-campo="defesa.penalidade"
                      title="O número do livro (ex.: 5). Cai só em Acrobacia, Furtividade e Ladinagem."></label>
           </div>
+          ${blocoFontesDefesa(f)}
           <div class="fi-linhas">
             <div class="fi-linha fi-linha--carga">
               <span>Carga</span>
@@ -1843,6 +1858,33 @@
           </div>
           ${blocoDesloc(f)}
         </div>
+      </div>`;
+  }
+
+  // ── FONTES DE DEFESA (30/09/2026) ────────────────────────────────
+  //  Uma linha por fonte de Defesa com nome — como a Redução de Dano.
+  //  O valor entra na conta; o texto diz de onde veio (uma magia, um
+  //  item, um poder). Fica colado no número da Defesa.
+  function blocoFontesDefesa(f) {
+    const fontes = (f.defesa.fontes) || [];
+    const linhas = fontes.map((x, i) => `
+      <li class="fi-desl-linha">
+        <input class="fi-num fi-num--mini" type="number" step="1" value="${x.valor}"
+               data-campo="defesa.fontes.${i}.valor" title="Quanto de Defesa esta fonte dá (ou tira, com o sinal −)">
+        <input class="fi-txt" type="text" value="${esc(x.de)}" data-campo="defesa.fontes.${i}.de"
+               placeholder="magia (Bênção), item, poder…" autocomplete="off">
+        <button type="button" class="fi-mini fi-mini--x" data-acao="tira-defesa-fonte" data-i="${i}"
+                title="Tirar esta fonte">✕</button>
+      </li>`).join('');
+    return `
+      <div class="fi-desl fi-defesa-fontes">
+        <div class="fi-desl-topo">
+          <span class="fi-desl-rot">Fontes de Defesa</span>
+          <button type="button" class="fi-add fi-add--menor" data-acao="add-defesa-fonte"
+                  title="Uma fonte de Defesa com nome — em vez de somar tudo em «Outros», diz de onde vem cada ponto">＋ Acrescentar</button>
+        </div>
+        ${linhas ? `<ul class="fi-desl-lista">${linhas}</ul>`
+          : '<p class="fi-desl-vazio">Nenhuma fonte com nome. Use para o +2 de uma magia, de um item ou de um poder — sem misturar em «Outros».</p>'}
       </div>`;
   }
 
@@ -2036,6 +2078,9 @@
     if (f.defesa.armadura) p.push('armadura ' + sinal(f.defesa.armadura));
     if (f.defesa.escudo)   p.push('escudo ' + sinal(f.defesa.escudo));
     if (f.defesa.outros)   p.push('outros ' + sinal(f.defesa.outros));
+    ((f.defesa.fontes) || []).forEach(x => {
+      if (x.valor) p.push((x.de ? esc(x.de) : 'fonte') + ' ' + sinal(x.valor));
+    });
     // quando o atributo não é o da p. 106, a conta diz o que está
     // fazendo — senão o número parece errado para quem olha de fora
     const nota = k === 'des' ? ''
@@ -2222,12 +2267,22 @@
           </div>
         </div>`;
     };
+    //  Lembrete dos efeitos em área sobre esta ficha — só aparece porque o
+    //  aviso já vai abrir por outro motivo (não nagueia por buff passivo).
+    const efArea = efeitosDaFicha(f);
+    const lembreteArea = efArea.length ? `
+      <div class="fi-turno-area">
+        <div class="fi-turno-area-tit">🔆 Você está sob:</div>
+        ${efArea.map(e => `<div class="fi-turno-area-item${e.rel === 'inimigo' ? ' fi-turno-area-item--in' : ''}">
+          <strong>${esc(e.nome)}</strong>${e.de ? ' <em>de ' + esc(e.de) + '</em>' : ''} — ${esc(e.texto || (e.rel === 'inimigo' ? '(efeito contrário)' : '(bônus)'))}</div>`).join('')}
+      </div>` : '';
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
         <span>🌀 Início do turno — ${esc(f.nome || 'personagem')}${rodada ? ' · rodada ' + rodada : ''}</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
       <p class="ga-modal-dica">Role cada efeito e aceite para aplicar na ficha. O que não quiser resolver agora, deixe para depois.</p>
+      ${lembreteArea}
       <div class="fi-turno-lista">${itens.map(linha).join('')}</div>
       <div class="ga-modal-acoes"><button type="button" class="ga-btn-principal" data-ga-fechar>Fechar</button></div>`);
     if (!overlay) return false;
@@ -2345,6 +2400,55 @@
           condições de mesmo efeito <em>não se somam</em> — "um personagem desprevenido e vulnerável
           sofre –5 na Defesa, não –7" (p. 394). No fim da cena, todas terminam, a menos que a condição
           diga o contrário.</p>
+      </div>`;
+  }
+
+  // ── 🔆 EFEITOS EM ÁREA (30/09/2026) ──────────────────────────────
+  //  O "lembrete guiado": os efeitos de área que miram ESTA ficha, vindos
+  //  do js/efeitos-area.js (que cuida da mesa e da autoria). Aliado → o
+  //  bônus; inimigo → o efeito contrário. A ficha MOSTRA; os números o
+  //  jogador aplica com os Atributos Temporários e as Fontes de Defesa.
+  function efeitosDaFicha(f) {
+    return (window.GA_EfeitosArea && window.GA_EfeitosArea.paraFicha)
+      ? window.GA_EfeitosArea.paraFicha(f) : [];
+  }
+  function blocoEfeitosArea(f) {
+    const lista = efeitosDaFicha(f);
+    const s = salaAtual();
+    // sem mesa e sem efeito nenhum, não polui a folha solo
+    if (!lista.length && !(s && s.souMembro)) return '';
+    const souMestre = !!(window.GA_Mesa && window.GA_Mesa.souMestre && window.GA_Mesa.souMestre());
+    const cards = lista.map(e => {
+      const inimigo = e.rel === 'inimigo';
+      const podeTirar = e.souAutor || souMestre;
+      return `
+        <li class="fi-ea${inimigo ? ' fi-ea--inimigo' : ''}">
+          <div class="fi-ea-topo">
+            <span class="fi-ea-nome">🔆 ${esc(e.nome)}</span>
+            ${e.de ? `<span class="fi-ea-de">de ${esc(e.de)}</span>` : ''}
+            <span class="fi-ea-rel">${inimigo ? '⚔ contra você' : '🛡 em você'}</span>
+            ${podeTirar ? `<button type="button" class="fi-mini fi-mini--x" data-acao="efeito-remover" data-id="${esc(e.id)}"
+                    title="Encerrar este efeito para todos">✕</button>` : ''}
+          </div>
+          ${e.texto ? `<p class="fi-ea-txt">${esc(e.texto)}</p>`
+            : `<p class="fi-ea-txt fi-ea-txt--vazio">${inimigo ? '(sem efeito contrário descrito)' : '(sem bônus descrito)'}</p>`}
+          ${e.duracao ? `<p class="fi-ea-dur">⏱ ${esc(e.duracao)}</p>` : ''}
+        </li>`;
+    }).join('');
+    return `
+      <div class="fi-cartao fi-bloco fi-efeitos-area">
+        <h2 class="fi-cartao-tit">🔆 Efeitos em área
+          <span class="fi-cartao-nota">${lista.length ? lista.length + ' sobre você' : 'nenhum sobre você agora'}</span>
+          <span class="fi-pod-botoes">
+            <button type="button" class="fi-add fi-add--menor" data-acao="efeito-criar"
+                    title="Lançar um efeito em área (magia/poder) e marcar quem está nele — aliados e inimigos">🔆 Lançar efeito</button>
+          </span>
+        </h2>
+        ${lista.length ? `<ul class="fi-ea-lista">${cards}</ul>`
+          : '<p class="fi-nota">Nenhum efeito em área sobre você agora. Quando alguém (você inclusive) lançar um e marcar você, ele aparece aqui.</p>'}
+        <p class="fi-nota">A ficha <strong>mostra, não aplica</strong>: some os bônus com os <strong>Atributos temporários</strong>
+          e as <strong>Fontes de Defesa</strong> ali em cima. As partes <em>por turno</em> (cura, dano) reaparecem no aviso de
+          início do seu turno.</p>
       </div>`;
   }
 
@@ -2604,6 +2708,14 @@
                 data-acao="atq-texto" data-i="${i}" aria-pressed="${a.aberto}"
                 title="${a.aberto ? 'Dobrar o texto desta arma' : 'Abrir o texto desta arma — o encanto, o que ela faz'}">✎</button>
         <button type="button" class="fi-mini fi-mini--x" data-acao="tira-ataque" data-i="${i}" title="Tirar este ataque">✕</button>
+        ${f.ataques.length > 1 ? `<span class="fi-atq-ordem">
+          <button type="button" class="fi-mini" data-acao="atq-topo" data-i="${i}" ${i === 0 ? 'disabled' : ''}
+                  title="Levar para o topo" aria-label="Levar ${esc(a.nome || 'este ataque')} para o topo">⇈</button>
+          <button type="button" class="fi-mini" data-acao="atq-sobe" data-i="${i}" ${i === 0 ? 'disabled' : ''}
+                  title="Mover para cima" aria-label="Mover ${esc(a.nome || 'este ataque')} para cima">↑</button>
+          <button type="button" class="fi-mini" data-acao="atq-desce" data-i="${i}" ${i === f.ataques.length - 1 ? 'disabled' : ''}
+                  title="Mover para baixo" aria-label="Mover ${esc(a.nome || 'este ataque')} para baixo">↓</button>
+        </span>` : ''}
         <span class="fi-atq-passos${avisoDePassos(a) ? ' fi-atq-passos--aviso' : ''}" data-der="passos:${i}"
               ${passosDe(a.passos) ? '' : 'hidden'}>${linhaDePassos(a)}</span>
         <span class="fi-res fi-res--atq" data-res="atq:${i}" hidden></span>
@@ -4088,28 +4200,49 @@
     const x = /\+(\d+)(d\d+)/.exec((a && a.texto) || '');   // exige o "d" (dado)
     return x ? '+' + (parseInt(x[1], 10) * (n || 1)) + x[2] : '';
   }
+  //  Os tipos de dano do T20, para nomear cada 🎲 quando uma magia tem
+  //  VÁRIOS (Momento de Tormenta tem quatro: ácido, veneno, eletricidade,
+  //  psíquico). Comparo sem acento, e paro no primeiro que aparece na
+  //  janela depois do dado — o texto põe o tipo logo em seguida.
+  const TIPOS_DANO = ['eletricidade', 'ácido', 'fogo', 'frio', 'veneno',
+    'psíquico', 'mental', 'luz', 'trevas', 'sombra', 'essência', 'profano',
+    'sagrado', 'radiante', 'impacto', 'corte', 'perfuração', 'sônico'];
+  function tipoDeDano(janela) {
+    const d = semAcento(janela);
+    for (let i = 0; i < TIPOS_DANO.length; i++) {
+      if (d.indexOf(semAcento(TIPOS_DANO[i])) >= 0) return TIPOS_DANO[i];
+    }
+    return '';
+  }
   function dadosDaMagia(m) {
     const b = daBase(m.mid);
     const desc = b ? (b.descricao || []).join(' ') : (m.resumo || '');
     const bases = [];
+    const vistosDado = {};
     const re = /(\d+d\d+)/g;
     let mm;
     while ((mm = re.exec(desc))) {
       const expr = mm[1];
-      const depois = desc.slice(mm.index + expr.length, mm.index + expr.length + 44);
+      const depois = desc.slice(mm.index + expr.length, mm.index + expr.length + 60);
       const antes = desc.slice(Math.max(0, mm.index - 30), mm.index);
-      //  Só dados de DANO/CURA/PV viram 🎲 — pula "dura 1d4 rodadas",
-      //  "6d4 dados de auxílio", "role 1d6 em segredo" e afins.
-      const ehCura = /\bcura|recupera/i.test(antes);
+      //  FORA da rolagem de dano: perda/gasto de PM ("perde 1d4 PM" — o 5º
+      //  botão falso de Momento de Tormenta) e duração ("dura 1d4 rodadas").
+      if (/^\s*PM\b/i.test(depois)) continue;
+      if (/^\s*(rodada|turno|dia|hora|minuto|cena|semana|m[êe]s|round)/i.test(depois)) continue;
+      //  Só dados de DANO/CURA/PV viram 🎲 — pula "6d4 dados de auxílio",
+      //  "role 1d6 em segredo" e afins.
+      const ehCura = /\bcura|recupera|restaura/i.test(antes);
       const ehDano = /dano|sofre|caus|perde|reduz/i.test(antes)
         || /pontos de dano|de dano|pontos de vida|\bPV\b/i.test(depois);
       if (!ehCura && !ehDano) continue;
-      const tipo = /(?:pontos de dano|dano) de (\w+)/i.exec(depois);
-      let rot = '';
-      if (tipo) rot = 'dano de ' + tipo[1].toLowerCase();
-      else if (ehCura) rot = 'cura';
+      let rot;
+      if (ehCura) rot = 'cura';
       else if (/pontos de vida tempor/i.test(depois)) rot = 'PV temporários';
-      else rot = 'dano';
+      else rot = tipoDeDano(depois) || 'dano';   // "ácido", "veneno"… ou só "dano"
+      //  Não repete a mesma linha (mesmo dado + mesmo rótulo).
+      const chave = expr + '|' + rot;
+      if (vistosDado[chave]) continue;
+      vistosDado[chave] = 1;
       bases.push({ expr: expr, rotulo: rot });
     }
     const lista = aprimoramentosDe(m);
@@ -4832,6 +4965,14 @@
       f.deslocMods.splice(+btn.dataset.i, 1);
       sujar(f.id, 'deslocMods'); salvar(); return render();
     }
+    if (acao === 'add-defesa-fonte') {
+      f.defesa.fontes.push({ id: novoId(), valor: 2, de: '' });
+      sujar(f.id, 'defesa'); salvar(); return render();
+    }
+    if (acao === 'tira-defesa-fonte') {
+      f.defesa.fontes.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'defesa'); salvar(); return render();
+    }
 
     // ── CONDIÇÕES ──────────────────────────────────────────────────
     if (acao === 'add-condicao')  return abrirBuscaCondicao(f);
@@ -4894,6 +5035,16 @@
           !confirm('Tirar o ataque "' + (a.nome || 'sem nome') + '"?' +
                    (temConteudo(a.notas) ? '\n\nO texto escrito nele vai junto.' : ''))) return;
       f.ataques.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'ataques'); salvar(); return render();
+    }
+    //  Levar um ataque para cima, para baixo ou para o topo — a mesma
+    //  lógica do inventário e dos poderes (pedido dele em 30/09/2026).
+    if (acao === 'atq-sobe' || acao === 'atq-desce' || acao === 'atq-topo') {
+      const de = +btn.dataset.i;
+      const para = acao === 'atq-topo' ? 0 : de + (acao === 'atq-sobe' ? -1 : 1);
+      if (!f.ataques[de] || para < 0 || para >= f.ataques.length || para === de) return;
+      const [at] = f.ataques.splice(de, 1);
+      f.ataques.splice(para, 0, at);
       sujar(f.id, 'ataques'); salvar(); return render();
     }
     // o texto da arma dobra e desdobra, e o estado fica guardado, como o
@@ -5358,6 +5509,16 @@
       D.ATRIBUTOS.forEach(a => { f.atributosTemp[a.chave] = 0; });
       sujar(f.id, 'atributosTemp');
       salvar(); return render();
+    }
+    //  🔆 EFEITOS EM ÁREA — a autoria e a sincronização moram no
+    //  js/efeitos-area.js; aqui só se abre a oficina e se encerra um efeito.
+    if (acao === 'efeito-criar') {
+      if (window.GA_EfeitosArea) window.GA_EfeitosArea.abrirCriar(f);
+      return;
+    }
+    if (acao === 'efeito-remover') {
+      if (window.GA_EfeitosArea) window.GA_EfeitosArea.remover(btn.dataset.id);
+      return;   // o aoMudar do módulo redesenha quando o banco confirmar
     }
   }
 
@@ -6575,18 +6736,24 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 
-  //  A base das magias (js/magias-data.js) é carregada DEPOIS deste arquivo
-  //  no HTML — e, com defer, este init() roda com o documento em
-  //  "interactive", ANTES dela existir (ver [[defer-readystate-interactive]]).
-  //  Então, no primeiro desenho, as magias automáticas do Usurpador não
-  //  teriam como aparecer. Ao terminar de carregar (DOMContentLoaded já
-  //  executou todos os defer, inclusive o das magias), redesenha uma vez —
-  //  só quando a ficha aberta tem uma classe que concede a lista inteira.
-  function redesenharSeConcede() {
-    if (!window.GA_MAGIAS || !document.getElementById('ficha-content')) return;
-    const f = fichaAberta();
-    if (f && classeAutoDe(f)) render();
+  //  Os efeitos em área (js/efeitos-area.js) e a base das magias
+  //  (js/magias-data.js) são carregados DEPOIS deste arquivo no HTML — e,
+  //  com defer, este init() roda em "interactive", ANTES deles (ver
+  //  [[defer-readystate-interactive]]). Por isso o redesenho ao terminar de
+  //  carregar (aoTerminarDeCarregar), e o registro do aoMudar dos efeitos.
+  function ligarEfeitosArea() {
+    if (!window.GA_EfeitosArea || !window.GA_EfeitosArea.aoMudar) return;
+    window.GA_EfeitosArea.aoMudar(function () {
+      if (document.getElementById('ficha-content') && fichaAberta()) render();
+    });
   }
-  if (document.readyState === 'complete') redesenharSeConcede();
-  else window.addEventListener('DOMContentLoaded', redesenharSeConcede);
+  function aoTerminarDeCarregar() {
+    ligarEfeitosArea();
+    //  Um redesenho quando TUDO já carregou (magias, efeitos em área): o
+    //  init() rodou em "interactive", antes destes módulos, então o
+    //  primeiro desenho não tinha nem as magias do Usurpador nem os efeitos.
+    if (document.getElementById('ficha-content') && fichaAberta()) render();
+  }
+  if (document.readyState === 'complete') aoTerminarDeCarregar();
+  else window.addEventListener('DOMContentLoaded', aoTerminarDeCarregar);
 })();
