@@ -317,6 +317,82 @@
 }
 .fi-atr-val:focus { outline: 2px solid var(--foco); border-radius: var(--raio); }
 
+/* ── ATRIBUTOS TEMPORÁRIOS (30/09/2026) ──────────────────────────── */
+/* o quadradinho dentro da caixa de Atributos: bônus de combate que
+   somam em tudo o que o atributo faz, MENOS PV e PM. */
+.fi-atr--temp {
+  border-color: var(--azul);
+  box-shadow: inset 0 0 0 1px var(--azul);
+}
+.fi-atr-efet {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--azul);
+  line-height: 1;
+}
+.fi-atr-efet[hidden] { display: none; }
+
+.fi-atr-temp-caixa {
+  margin-top: 0.6rem;
+  border-top: 1px dashed var(--parchment3);
+  padding-top: 0.5rem;
+}
+.fi-atr-temp-tit {
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--azul);
+  list-style: none;
+}
+.fi-atr-temp-tit::-webkit-details-marker { display: none; }
+.fi-atr-temp-tit::before { content: '▸ '; }
+.fi-atr-temp-caixa[open] .fi-atr-temp-tit::before { content: '▾ '; }
+.fi-atr-temp-ativo {
+  font-style: normal;
+  margin-left: 0.3rem;
+  padding: 0 0.4rem;
+  font-size: 0.62rem;
+  color: #fff;
+  background: var(--azul);
+  border-radius: 999px;
+}
+.fi-atr-temp-grade {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.35rem;
+  margin: 0.5rem 0 0.2rem;
+}
+.fi-atr-temp-cel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+.fi-atr-temp-nome {
+  font-family: 'Cinzel', serif;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.fi-atr-temp-val { width: 100%; flex: 1 1 auto; text-align: center; }
+.fi-atr-temp-pe {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.fi-atr-temp-pe .fi-nota { margin: 0; flex: 1 1 12rem; }
+@media (max-width: 560px) {
+  .fi-atr-temp-grade { grid-template-columns: repeat(3, 1fr); }
+}
+
 /* vida e mana */
 .fi-medidor {
   display: flex;
@@ -857,6 +933,27 @@
   border: 1px solid var(--gold-dim);
   border-radius: 999px;
 }
+/* ── MAGIAS DA CLASSE (Usurpador, 30/09/2026) ────────────────────── */
+/* a etiqueta "🔓 da classe" e o aviso do topo do cartão de Magias */
+.fi-mag-tag--auto {
+  color: var(--azul);
+  border-color: var(--azul);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+.fi-mag--auto .fi-mag-nome { font-style: italic; }
+.fi-mag-auto-aviso {
+  margin: 0.2rem 0 0.6rem;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--text-mid);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--azul);
+  border-radius: var(--raio);
+}
+.fi-busca-item--auto:not(.fi-busca-item--tem) .fi-busca-nome em { color: var(--azul); font-style: normal; }
 /* o texto do livro, direto no cartão (a descrição e o truque) */
 .fi-mag-desc {
   margin-top: 0.4rem;
