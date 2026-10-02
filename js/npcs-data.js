@@ -37,6 +37,7 @@ window.GUIA_NPCS = {
       fichas: [
         {
           chave: 'campones', nome: 'Camponês', nd: '1/4', tipo: 'Humanoide (humano) Médio',
+          papel: 'lacaio',
           resumo: 'Fazendeiros, pastores e o grosso da população do Reinado.',
           texto:
 `Camponês ND 1/4
@@ -53,6 +54,7 @@ Equipamento Bordão. Tesouro Nenhum.`
         },
         {
           chave: 'ferreiro', nome: 'Ferreiro', nd: '1', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Forjador de corpo forte; briga com o martelo da oficina.',
           texto:
 `Ferreiro ND 1
@@ -70,6 +72,7 @@ Equipamento Avental de couro (conta como armadura de couro), instrumentos de Of�
         },
         {
           chave: 'matuto', nome: 'Matuto', nd: '1/2', tipo: 'Humanoide (humano) Médio',
+          papel: 'solo',
           resumo: 'Lenhadores, mineradores e gente de trabalho pesado.',
           texto:
 `Matuto ND 1/2
@@ -86,6 +89,7 @@ Equipamento Gibão de peles, machado de lenha. Tesouro Nenhum.`
         },
         {
           chave: 'menestrel', nome: 'Menestrel', nd: '1/2', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Artista de rua; fascina plateias (e atira adagas).',
           texto:
 `Menestrel ND 1/2
@@ -105,6 +109,7 @@ Equipamento Adaga x2, instrumento musical. Tesouro Metade.`
         },
         {
           chave: 'mercador', nome: 'Mercador', nd: '1/2', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Comerciante comum, de mercados a mascates de estrada.',
           texto:
 `Mercador ND 1/2
@@ -122,6 +127,7 @@ Equipamento Besta leve, clava, virotes x20. Tesouro Padrão.`
         },
         {
           chave: 'sabio', nome: 'Sábio', nd: '1/2', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Ancião respeitado; aconselha, instrui e distrai com eloquência.',
           texto:
 `Sábio ND 1/2
@@ -140,6 +146,7 @@ Equipamento Bálsamo restaurador, bordão, gorro de ervas. Tesouro Padrão.`
         },
         {
           chave: 'mestreMercante', nome: 'Mestre Mercante', nd: '4', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Negociante veterano de caravanas, com estoque de poções.',
           texto:
 `Mestre Mercante ND 4
@@ -163,6 +170,7 @@ Equipamento Adaga, besta pesada certeira, couro batido reforçado, virotes x20. 
         },
         {
           chave: 'taverneiro', nome: 'Taverneiro', nd: '2', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Já viu muita briga de bar; fonte de fofocas da região.',
           texto:
 `Taverneiro ND 2
@@ -189,6 +197,7 @@ Equipamento Caneco de cerveja, clava. Tesouro Padrão.`
       fichas: [
         {
           chave: 'acolito', nome: 'Acólito', nd: '1/2', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Devoto sem poderes divinos; assistente e guarda de templo.',
           texto:
 `Acólito ND 1/2
@@ -206,6 +215,7 @@ Equipamento Maça, símbolo sagrado. Tesouro Nenhum.`
         },
         {
           chave: 'sacerdote', nome: 'Sacerdote', nd: '2', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Cuida de um pequeno templo; cura e protege os fiéis.',
           habilidadesExtra: ['resistenciaA'],
           texto:
@@ -231,6 +241,7 @@ Equipamento Bordão, manto eclesiástico, símbolo sagrado. Tesouro Padrão.`
         },
         {
           chave: 'altoSacerdote', nome: 'Alto Sacerdote', nd: '9', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Autoridade da fé; o clérigo mais poderoso da cidade.',
           habilidadesExtra: ['resistenciaA'],
           texto:
@@ -268,6 +279,7 @@ Equipamento Báculo da fé, batina consagrada, manto eclesiástico aprimorado, s
       fichas: [
         {
           chave: 'alcaideValkaria', nome: 'Alcaide de Valkaria', nd: '4', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Patrulheiro veterano; lidera patrulhas e chama reforços.',
           texto:
 `Alcaide de Valkaria ND 4
@@ -286,6 +298,7 @@ Equipamento Arco longo, algemas, apito, cota de malha reforçada, espada longa, 
         },
         {
           chave: 'besteiro', nome: 'Besteiro', nd: '1', tipo: 'Humanoide (humano) Médio',
+          papel: 'lacaio',
           resumo: 'Guarda de muralha; besta pesada e saraivadas em grupo.',
           texto:
 `Besteiro ND 1
@@ -304,6 +317,7 @@ Equipamento Besta pesada, couro batido, espada curta, virotes x20. Tesouro Metad
         },
         {
           chave: 'capitaoGuarda', nome: 'Capitão da Guarda', nd: '6', tipo: 'Humanoide (anão) Médio',
+          papel: 'solo',
           resumo: 'Oficial máximo da guarda local; comanda e inspira soldados.',
           texto:
 `Capitão da Guarda ND 6
@@ -323,6 +337,7 @@ Equipamento Apito, azagaia x2, enfeite de elmo, escudo pesado, machado anão, me
         },
         {
           chave: 'golemGuardiao', nome: 'Golem Guardião', nd: '7', tipo: 'Construto Grande',
+          papel: 'lacaio',
           resumo: 'Armadura animada com runas; detecta e eletrocuta invasores.',
           texto:
 `Golem Guardião ND 7
@@ -341,6 +356,7 @@ Tesouro Fragmentos de runas (CD 21 para extrair, valem T$ 200 para fabricar cata
         },
         {
           chave: 'guardaPalaciano', nome: 'Guarda Palaciano', nd: '3', tipo: 'Humanoide (humano) Médio',
+          papel: 'lacaio',
           resumo: 'Guarda de elite de castelos; defende seu posto com afinco.',
           texto:
 `Guarda Palaciano ND 3
@@ -359,6 +375,7 @@ Equipamento Besta pesada, escudo pesado, espada longa, meia armadura, virotes x2
         },
         {
           chave: 'miliciaArcana', nome: 'Milícia Arcana', nd: '5', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Arcanista de combate da guarda; lida com ameaças mágicas.',
           texto:
 `Milícia Arcana ND 5
@@ -383,6 +400,7 @@ Equipamento Essência de mana, espada longa, robe místico, varinha arcana. Teso
         },
         {
           chave: 'patrulheiroValkaria', nome: 'Patrulheiro de Valkaria', nd: '2', tipo: 'Humanoide (humano) Médio',
+          papel: 'lacaio',
           resumo: 'Base da Guarda de Valkaria; bem treinado e equipado.',
           texto:
 `Patrulheiro de Valkaria ND 2
@@ -410,6 +428,7 @@ Equipamento Arco longo, algemas, apito, couro batido reforçado, espada longa, f
       fichas: [
         {
           chave: 'assassino', nome: 'Assassino', nd: '3', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Matador de aluguel; lâminas envenenadas e ataques furtivos.',
           texto:
 `Assassino ND 3
@@ -430,6 +449,7 @@ Equipamento Adaga x2, couro batido ajustado, espada curta x2, estojo de disfarce
         },
         {
           chave: 'brucutu', nome: 'Brucutu', nd: '1/2', tipo: 'Humanoide (humano) Médio',
+          papel: 'lacaio',
           resumo: 'Capanga forte e pouco brilhante; bate em quem mandarem.',
           texto:
 `Brucutu ND 1/2
@@ -448,6 +468,7 @@ Parceiro O brucutu é um parceiro que impõe uma penalidade de –2 em Diplomaci
         },
         {
           chave: 'charlatao', nome: 'Charlatão', nd: '1/2', tipo: 'Humanoide (hynne) Pequeno',
+          papel: 'especial',
           resumo: 'Vigarista de elixires "milagrosos"; engana e escapa.',
           texto:
 `Charlatão ND 1/2
@@ -468,6 +489,7 @@ Equipamento Adaga, capa esvoaçante, funda, gazua, pedras x20, poção de curar 
         },
         {
           chave: 'mercadorDesonesto', nome: 'Mercador Desonesto', nd: '5', tipo: 'Humanoide (tritão) Médio',
+          papel: 'especial',
           resumo: 'Negociante salafrário; barganha mágica e capangas de aluguel.',
           texto:
 `Mercador Desonesto ND 5
@@ -489,6 +511,7 @@ Equipamento Azagaia x2, capa esvoaçante, gazua, luva de pelica, tridente. Tesou
         },
         {
           chave: 'mestreAssassino', nome: 'Mestre Assassino', nd: '9', tipo: 'Humanoide (elfo) Médio',
+          papel: 'especial',
           resumo: 'O melhor matador que o dinheiro paga; invisível e letal.',
           texto:
 `Mestre Assassino ND 9
@@ -511,6 +534,7 @@ Equipamento Besta pesada certeira com mira telescópica, cimitarra certeira x2, 
         },
         {
           chave: 'punguista', nome: 'Punguista', nd: '1/2', tipo: 'Humanoide (goblin) Pequeno',
+          papel: 'especial',
           resumo: 'Batedor de carteiras; furta e some pelos becos.',
           texto:
 `Punguista ND 1/2
@@ -535,6 +559,7 @@ Equipamento Adaga, gazua. Tesouro Metade.`
       fichas: [
         {
           chave: 'barao', nome: 'Barão', nd: '7', tipo: 'Humanoide (humano) Médio',
+          papel: 'solo',
           resumo: 'Baixa nobreza com castelo próprio; presença que desarma.',
           texto:
 `Barão ND 7
@@ -553,6 +578,7 @@ Equipamento Armadura completa reforçada, escudo pesado, espada bastarda certeir
         },
         {
           chave: 'castelao', nome: 'Castelão', nd: '4', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Administrador do castelo; grita ordens e chama a guarda.',
           texto:
 `Castelão ND 4
@@ -572,6 +598,7 @@ Equipamento Cota de malha, escudo pesado, maça certeira. Tesouro Padrão.`
         },
         {
           chave: 'cavaleiro', nome: 'Cavaleiro', nd: '5', tipo: 'Humanoide (humano) Médio',
+          papel: 'solo',
           resumo: 'Guerreiro de elite montado; investidas devastadoras.',
           texto:
 `Cavaleiro ND 5
@@ -591,6 +618,7 @@ Equipamento Cavalo de guerra, escudo pesado, espada longa, lança montada, meia 
         },
         {
           chave: 'cortesao', nome: 'Cortesão', nd: '1', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Bajulador da corte; adaga envenenada sob o traje fino.',
           texto:
 `Cortesão ND 1
@@ -609,6 +637,7 @@ Equipamento Adaga, peçonha concentrada x3, traje da corte. Tesouro Padrão.`
         },
         {
           chave: 'guardaCostasReal', nome: 'Guarda-costas Real', nd: '8', tipo: 'Humanoide (humano) Médio',
+          papel: 'lacaio',
           resumo: 'Elite do reino; alabarda pesada e reflexos de sentinela.',
           texto:
 `Guarda-costas Real ND 8
@@ -629,6 +658,7 @@ Equipamento Alabarda aumentada, armadura completa. Tesouro Padrão.`
         },
         {
           chave: 'magoCorte', nome: 'Mago da Corte', nd: '10', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Conselheiro arcano do regente; feitiços de guerra prontos.',
           texto:
 `Mago da Corte ND 10
@@ -656,6 +686,7 @@ Equipamento Bordão, chapéu arcano, essência de mana, medalhão de prata, poç
         },
         {
           chave: 'falcao', nome: 'Falcão', nd: '1/4', tipo: 'Animal Minúsculo',
+          papel: 'lacaio',
           resumo: 'Ave de caça treinada; mergulha e rasga o rosto da presa.',
           texto:
 `Falcão ND 1/4
@@ -681,6 +712,7 @@ Parceiro Um falcão é um parceiro especial (perseguidor) que fornece os benefí
       fichas: [
         {
           chave: 'arquivista', nome: 'Arquivista', nd: '6', tipo: 'Humanoide (humano) Médio',
+          papel: 'especial',
           resumo: 'Escriba e clérigo de Tanna-Toh da companhia mercenária.',
           texto:
 `Arquivista ND 6
@@ -706,6 +738,7 @@ Equipamento Bordão, cota de malha, essência de mana, símbolo sagrado de Tanna
         },
         {
           chave: 'carcereiro', nome: 'Carcereiro', nd: '5', tipo: 'Morto-vivo (osteon) Médio',
+          papel: 'solo',
           resumo: 'Osteon que aterroriza as celas do forte mercenário.',
           habilidadesExtra: ['reducaoDeDano'],
           texto:
@@ -725,6 +758,7 @@ Equipamento Couraça, ferro em brasa (equivalente a uma maça), gancho de carne 
         },
         {
           chave: 'condotiero', nome: 'Condotiero', nd: '9', tipo: 'Humanoide (centauro) Grande',
+          papel: 'solo',
           resumo: 'Líder mercenário centauro; comanda formações de batalha.',
           texto:
 `Condotiero ND 9
@@ -746,6 +780,7 @@ Equipamento Azagaia aumentada x3, couraça reforçada, escudo pesado, espada lon
         },
         {
           chave: 'espiao', nome: 'Espião', nd: '3', tipo: 'Humanoide (nezumi) Médio',
+          papel: 'especial',
           resumo: 'Nezumi furtivo; embosca, rola e some com informações.',
           texto:
 `Espião ND 3
@@ -768,6 +803,7 @@ Equipamento Bandana, besta leve, espada curta aumentada, gazua, sapatos de camur
         },
         {
           chave: 'guardaPortao', nome: 'Guarda do Portão', nd: '6', tipo: 'Humanoide (gigante) Grande',
+          papel: 'lacaio',
           resumo: 'Ogro enorme e teimoso; ninguém passa sem autorização.',
           texto:
 `Guarda do Portão ND 6
@@ -786,6 +822,7 @@ Equipamento Loriga segmentada, machado de guerra aumentado. Tesouro Metade.`
         },
         {
           chave: 'gorloggEstimacao', nome: 'Gorlogg de Estimação', nd: '2', tipo: 'Animal Grande',
+          papel: 'solo',
           resumo: '"Cão de guarda" selvagem dos mercenários; morde e agarra.',
           texto:
 `Gorlogg de Estimação ND 2
@@ -803,6 +840,7 @@ Equipamento Cota de malha espinhosa. Tesouro Nenhum.`
         },
         {
           chave: 'sargento', nome: 'Sargento', nd: '3', tipo: 'Humanoide (anão) Médio',
+          papel: 'especial',
           resumo: 'Anão durão que transforma bandidos em soldados.',
           texto:
 `Sargento ND 3
@@ -822,6 +860,7 @@ Equipamento Escudo pesado, machado anão, meia armadura. Tesouro Padrão.`
         },
         {
           chave: 'soldadoFortuna', nome: 'Soldado da Fortuna', nd: '1', tipo: 'Humanoide (humano) Médio',
+          papel: 'lacaio',
           resumo: 'Combatente de aluguel; a base de qualquer companhia.',
           texto:
 `Soldado da Fortuna ND 1
@@ -839,6 +878,7 @@ Equipamento Alabarda, arco longo, cota de malha, flechas x20. Tesouro Metade.`
         },
         {
           chave: 'tenente', nome: 'Tenente', nd: '5', tipo: 'Humanoide (minotauro) Médio',
+          papel: 'solo',
           resumo: 'Braço direito do condotiero; lidera e luta na linha de frente.',
           texto:
 `Tenente ND 5
@@ -859,6 +899,7 @@ Equipamento Azagaia x3, cota de malha, escudo pesado, espada longa. Tesouro Padr
         },
         {
           chave: 'vidente', nome: 'Vidente', nd: '5', tipo: 'Espírito (sulfure) Médio',
+          papel: 'especial',
           resumo: 'Sulfure adivinho; informação, raios arcanos e diabretes.',
           texto:
 `Vidente ND 5

@@ -12,12 +12,18 @@ window.GA_esc = function (s) {
 };
 window.GA_nl2br = function (s) { return window.GA_esc(s).replace(/\n/g, '<br>'); };
 // Remove acentos para busca, SEM regex (descarta os combining marks U+0300–U+036F).
+// Também unifica os apóstrofos: o teclado digita o reto (') mas o livro (e as
+// fichas copiadas dele) usam o tipográfico ('). Sem isso, buscar "Vuul'rak",
+// "Aquin'ne", "T'Peel" etc. não achava nada — os nomes guardam o curvo.
 window.GA_semAcento = function (s) {
   const nfd = String(s || '').normalize('NFD');
   let out = '';
   for (let i = 0; i < nfd.length; i++) {
     const c = nfd.charCodeAt(i);
     if (c >= 768 && c <= 879) continue;   // 0x300–0x36F = acentos combinantes
+    // apóstrofos e variantes → reto; aspas tipográficas → reta
+    if (c === 0x2019 || c === 0x2018 || c === 0x02bc || c === 0x0060 || c === 0x00b4) { out += "'"; continue; }
+    if (c === 0x201c || c === 0x201d) { out += '"'; continue; }
     out += nfd[i];
   }
   return out.toLowerCase();
