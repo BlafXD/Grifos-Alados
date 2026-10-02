@@ -20,8 +20,9 @@
 //    titulo  — como a entrada se chama no livro ("Coronel Barba Branca",
 //              "Irmãs da Nova Escama"), quando difere do nome da ficha
 //    fontes  — livros e aventuras em que o personagem apareceu
-//    papel   — vazio: no livro é um ÍCONE, que não sobrevive à cópia do
-//              PDF; o bestiário assume "lacaio" até o mestre trocar
+//    papel   — solo/lacaio/especial. No livro é um ÍCONE vetorial ao lado
+//              da linha de tipo; foi LIDO do PDF pela posição + ND e vem de
+//              "Inútil/Regras - Guia de NPCs (papéis).txt".
 // ════════════════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -38,7 +39,7 @@
     fichas: [
       {
         chave: "beluhga", nome: "Beluhga", nd: "S", tipo: "Monstro (dragão, deus menor) Colossal",
-        papel: '',
+        papel: "solo",
         titulo: "Beluhga, Dragoa Rainha do Gelo",
         fontes: "Holy Avenger, Lágrimas da Dragoa-Rainha, Duelo de Dragões",
         resumo: "Tão majestosa quanto as próprias Montanhas Uivantes, Beluhga é tanto guardiã quanto prisioneira da região — além de uma divindade menor vene",
@@ -75,7 +76,7 @@ Tesouro Triplo mais 10 peças de couro de dragão (CD 35 para extrair). * Veja A
       },
       {
         chave: "benthos", nome: "Benthos", nd: "S", tipo: "Monstro (dragão, deus menor) Colossal",
-        papel: '',
+        papel: "solo",
         titulo: "Benthos, Dragão-Rei dos Mares",
         fontes: "O Terceiro Deus, Guilda do Macaco",
         resumo: "Este magnífico dragão de poderes divinos quase nunca visita a terra firme.",
@@ -103,7 +104,7 @@ Tesouro Triplo mais 10 peças de couro de dragão (CD 35 para extrair).`
       },
       {
         chave: "barbaBranca", nome: "Barba Branca", nd: "10*", tipo: "Humanoide (raça desconhecida) Médio",
-        papel: '',
+        papel: "solo",
         titulo: "Coronel Barba Branca",
         fontes: "Ledd",
         resumo: "Acima de qualquer coisa, o homem conhecido como Coronel Barba Branca é um soldado.",
@@ -125,7 +126,7 @@ Equipamento Couraça polida reforçada, espada bastarda precisa pungente. Tesour
       },
       {
         chave: "cranioNegro", nome: "Crânio Negro", nd: "20", tipo: "Humanoide (humano/lefeu) Médio",
-        papel: '',
+        papel: "solo",
         fontes: "Trilogia da Tormenta",
         resumo: "Há duas décadas surgia um novo vilão em Arton.",
         texto:
@@ -152,7 +153,7 @@ Equipamento Anel da felicidade de Vallen, arco longo caçador magnífico, armadu
       },
       {
         chave: "dannaArantur", nome: "Danna Arantur", nd: "7", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "especial",
         fontes: "Atlas de Arton",
         resumo: "A filha bastarda do Rei Solast Arantur nasceu sob a sombra da nobreza.",
         texto:
@@ -175,7 +176,7 @@ Equipamento Cota de malha reforçada, escudo pesado reforçado de madeira Tollon
       },
       {
         chave: "dok", nome: "Dok", nd: "12", tipo: "Humanoide (goblin) Pequeno",
-        papel: '',
+        papel: "especial",
         fontes: "Crônicas da Tormenta Vol. 2, A Joia da Alma, A Deusa no Labirinto",
         resumo: "Muito se fala sobre o martírio dos elfos com a queda de Lenórienn, mas quando guerras explodem, o sofrimento se faz presente em todos os lados.",
         texto:
@@ -207,7 +208,7 @@ Equipamento Ácido x2, bálsamo restaurador x2, besta leve precisa de injeção 
       },
       {
         chave: "fizGrin", nome: "Fiz-grin", nd: "13", tipo: "Espírito Pequeno",
-        papel: '',
+        papel: "especial",
         fontes: "Guilda do Macaco, Atlas de Arton",
         resumo: "Fiz-grin é um dragão-fada que, como outros de sua espécie, lembra um dragão minúsculo com asas de borboleta.",
         texto:
@@ -230,7 +231,7 @@ Tesouro Padrão.`
       },
       {
         chave: "goblinHeroi", nome: "Goblin Herói", nd: "8", tipo: "Humanoide (goblin) Pequeno",
-        papel: '',
+        papel: "solo",
         fontes: "Fim dos Tempos",
         resumo: "A Favela dos Goblins é a região mais menosprezada de Valkaria, o lugar onde a desigualdade da capital se torna mais evidente e cruel.",
         texto:
@@ -256,7 +257,7 @@ Tesouro Metade.`
       },
       {
         chave: "gregorVahn", nome: "Gregor Vahn", nd: "12", tipo: "Humanoide (humano) Médio",
-        papel: '',
+        papel: "solo",
         fontes: "Trilogia da Tormenta",
         resumo: "Outrora um paladino imortal de Thyatis, Gregor Vahn nasceu em uma rica família mercante de Tyrondir, mas não se dedicou ao comércio — em vez",
         texto:
@@ -284,7 +285,7 @@ Perícias Atletismo +15, Cavalgar +11, Cura +11, Diplomacia +15, Nobreza +11, Re
       },
       {
         chave: "gwenHaggenfar", nome: "Gwen Haggenfar", nd: "15", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "especial",
         fontes: "Atlas de Arton",
         resumo: "Ex-sumo-sacerdotisa de Wynna, a Deusa da Magia, Haggenfar é uma feiticeira perigosamente cativante, que por muito tempo ostentou uma fachada",
         texto:
@@ -317,7 +318,7 @@ Equipamento Anel da energia, bola de cristal, cajado da destruição, dois instr
       },
       {
         chave: "gwendolynn", nome: "Gwendolynn", nd: "18", tipo: "Humanoide (elfa, deusa menor) Média",
-        papel: '',
+        papel: "especial",
         titulo: "Gwendolynn Libertadora",
         fontes: "Crônicas da Tormenta Vol. 2, A Joia da Alma, A Deusa no Labirinto",
         resumo: "Mais conhecida como Gwen, esta elfa cresceu em um templo de Tanna-Toh nas imediações de Lenórienn, a antiga capital de seu povo.",
@@ -349,7 +350,7 @@ Equipamento Cajado de batalha magnífico, meia armadura delicada guardiã de mit
       },
       {
         chave: "generalSupremo", nome: "General Supremo", nd: "20", tipo: "Humanoide (humano) Grande",
-        papel: '',
+        papel: "solo",
         titulo: "Hermann Von Krauser, o General Supremo",
         fontes: "Guilda do Macaco, Segredos de Arton",
         resumo: "Um dos piores flagelos de Arton, este veterano serviu em todas as patentes do exército real de Yudennach, de recruta a Lorde General.",
@@ -380,7 +381,7 @@ Tesouro Dobro.`
       },
       {
         chave: "guardaCostasDeElite", nome: "Guarda-costas de elite", nd: "–", tipo: "Humanoide (humano) Médio",
-        papel: '',
+        papel: "lacaio",
         resumo: "Humanoide (humano) Médio",
         texto:
 `Guarda-costas de elite ND –
@@ -398,7 +399,7 @@ Equipamento Armadura completa reforçada, besta pesada certeira, escudo pesado r
       },
       {
         chave: "hippion", nome: "Hippion", nd: "16", tipo: "Animal (deus menor) Grande",
-        papel: '',
+        papel: "solo",
         titulo: "Hippion, o Deus menor dos Cavalos",
         fontes: "Trilogia da Tormenta",
         resumo: "Este inigualável corcel é considerado a deus principal de Namalkah, sendo mais adorado até mesmo que as vinte divindades maiores.",
@@ -421,7 +422,7 @@ Parceiro Hippion é um parceiro montaria Grande mestre que aceita ser montado ap
       },
       {
         chave: "ichabod", nome: "Ichabod", nd: "12", tipo: "Monstro (lefou) Médio",
-        papel: '',
+        papel: "especial",
         fontes: "A Joia da Alma, A Deusa no Labirinto",
         resumo: "Trebuck foi um reino próspero no passado.",
         texto:
@@ -450,7 +451,7 @@ Equipamento Adaga certeira de matéria vermelha, instrumentos de Ofício (alquim
       },
       {
         chave: "imperadorTekametsu", nome: "Imperador Tekametsu", nd: "6", tipo: "Espírito (dragão celestial) Pequeno",
-        papel: '',
+        papel: "solo",
         fontes: "Império de Jade",
         resumo: "Por séculos, Tamu-ra esteve envolta em conflitos pelo poder, quando então este dragão celestial tomou a forma de um jovem imperador que trou",
         texto:
@@ -480,7 +481,7 @@ Equipamento Instrumento musical (flauta) aprimorado. Tesouro Triplo.`
       },
       {
         chave: "inghlblhpholtsgt", nome: "Inghlblhpholtsgt", nd: "10", tipo: "Humanoide (tabrachi, deus menor) Médio",
-        papel: '',
+        papel: "especial",
         titulo: "Inghlblhpholtsgt, a Grande divindade anfíbia",
         fontes: "Atlas de Arton",
         resumo: "Esta divindade menor tem nome impronunciável à maioria dos mortais e é conhecida como Grande Deus Sapo pelos povos tabrachi.",
@@ -505,7 +506,7 @@ Equipamento Alabarda maciça, gorro de ervas aprimorado, manto eclesiástico. Te
       },
       {
         chave: "ingramBrassbones", nome: "Ingram Brassbones", nd: "17", tipo: "Humanoide (anão) Médio",
-        papel: '',
+        papel: "solo",
         fontes: "O Crânio e o Corvo, O Terceiro Deus",
         resumo: "Este inventor anão difere de outros membros de seu povo em quase tudo.",
         texto:
@@ -531,7 +532,7 @@ Equipamento Adaga atroz precisa pungente, balas x20, bomba x4 (Ref CD 44 reduz �
       },
       {
         chave: "hemeraActeiaEIlitia", nome: "Hemera, Acteia e Ilítia", nd: "13", tipo: "Monstro (medusa) Média",
-        papel: '',
+        papel: "especial",
         titulo: "Irmãs da Nova Escama",
         fontes: "Dragão Brasil 134",
         resumo: "Esta tríade de medusas feiticeiras caminhou em Arton pela primeira vez há muito tempo, nascidas da união de Kallyadranoch com Acalântis, uma",
@@ -572,7 +573,7 @@ Equipamento Braceletes das escamas, face dracônica, instrumentos de Ofício (ar
       },
       {
         chave: "kasumi", nome: "Kasumi", nd: "8", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "solo",
         fontes: "Crônicas da Tormenta Vol. 2, Guilda do Macaco",
         resumo: "Última discípula viva de Miyashi, lendário lutador tamuraniano, nasceu em uma simples vila de pescadores.",
         texto:
@@ -594,7 +595,7 @@ Equipamento Faixas do pugilista. Tesouro Metade.`
       },
       {
         chave: "khorrBenn", nome: "Khorr’benn", nd: "9", tipo: "Morto-vivo (osteon) Médio",
-        papel: '',
+        papel: "especial",
         titulo: "Khorr’benn An-ug’atz, Sumo-Sacerdote de Thwor",
         resumo: "A Flecha de Fogo Corben era um jovem clérigo de Thyatis, um astrólogo e estudioso na cidade de Sternachten.",
         texto:
@@ -624,7 +625,7 @@ Tesouro Padrão.`
       },
       {
         chave: "klunc", nome: "Klunc", nd: "13", tipo: "Humanoide (humano) Grande",
-        papel: '',
+        papel: "solo",
         titulo: "Klunc, o Bárbaro",
         fontes: "Guilda do Macaco",
         resumo: "Pouco se sabe sobre este bárbaro conhecido apenas como Klunc, exceto tratar-se de um humano.",
@@ -648,7 +649,7 @@ Equipamento Armadura completa de adamante defensora, Presuntador . Tesouro Nenhu
       },
       {
         chave: "ladyAylethKarst", nome: "Lady Ayleth Karst", nd: "9", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "solo",
         fontes: "Guilda do Macaco",
         resumo: "Filha única do Barão Abelard — um nobre de ascendência svalana relegado a um feudo no interior do então Reino de Yudennach — esta aristocrat",
         texto:
@@ -671,7 +672,7 @@ Tesouro Nenhum.`
       },
       {
         chave: "lisandra", nome: "Lisandra", nd: "S", tipo: "Humanoide (dahllan) Média",
-        papel: '',
+        papel: "especial",
         titulo: "Lisandra de Allihanna",
         fontes: "Holy Avenger",
         resumo: "Nascida dahllan na remota Galrasia (o pai, ela saberia mais tarde, ninguém menos que Mestre Arsenal), Lisandra trazia no sangue a força de A",
@@ -706,7 +707,7 @@ Equipamento Coroa de Allihanna, símbolo sagrado de Allihanna. Tesouro Nenhum.`
       },
       {
         chave: "lordeNiebling", nome: "Lorde Niebling", nd: "13", tipo: "Humanoide (gnomo) Pequeno",
-        papel: '',
+        papel: "especial",
         fontes: "A Flecha de Fogo, Desafio dos Deuses",
         resumo: "Nieblingscarphittlestonefingeralonefauchard.",
         texto:
@@ -734,7 +735,7 @@ Equipamento Ácido x2, balas de adamante x20, bálsamo restaurador x2, bomba x2,
       },
       {
         chave: "lordeVectorius", nome: "Lorde Vectorius", nd: "S", tipo: "Humanoide (humano) Médio",
-        papel: '',
+        papel: "especial",
         fontes: "Holy Avenger, O Terceiro Deus",
         resumo: "Vectorius é um dos dois maiores conjuradores de Arton, com poder comparável apenas a Talude, antigo reitor da Academia Arcana — e seu maior rival.",
         texto:
@@ -764,7 +765,7 @@ Equipamento Braceletes de ouro, robe do arquimago. Vectorius não só é extrema
       },
       {
         chave: "maryx", nome: "Maryx", nd: "17", tipo: "Humanoide (hobgoblin) Média",
-        papel: '',
+        papel: "solo",
         titulo: "Maryx Corta-Sangue",
         fontes: "A Flecha de Fogo",
         resumo: "Maryx Nat’uyzkk, conhecida como “Corta-Sangue” pelos humanos, nasceu entre os batalhões de hobgoblins de Lamnor e, se o destino tivesse segu",
@@ -794,7 +795,7 @@ Equipamento Adaga x6, bomba x2, bomba de fumaça* x2, couro batido reforçado so
       },
       {
         chave: "mestreLuriel", nome: "Mestre Luriel", nd: "5", tipo: "Humanoide (elfo) Médio",
-        papel: '',
+        papel: "especial",
         fontes: "Fim dos Tempos, Segredos de Arton",
         resumo: "Um elfo sábio milenar, que já viu e já foi muitas coisas.",
         texto:
@@ -815,7 +816,7 @@ Parceiro Mestre Luriel é um parceiro mestre (claro!) que fornece +2 em todos os
       },
       {
         chave: "nargomMandibula", nome: "Nargom Mandíbula", nd: "13", tipo: "Humanoide (humano) Médio",
-        papel: '',
+        papel: "especial",
         fontes: "Guilda do Macaco, Segredos de Arton",
         resumo: "Este elusivo e eloquente pirata não lembra de como era sua vida antes de ser adotado por Draco Mandíbula e, na verdade, não se importa nada com isso.",
         texto:
@@ -841,7 +842,7 @@ Equipamento Capa esvoaçante aprimorada, florete atroz preciso, medalhão imperi
       },
       {
         chave: "nialandarena", nome: "Nialandarena", nd: "4", tipo: "Humanoide (qareen) Média",
-        papel: '',
+        papel: "especial",
         titulo: "Nialandarena de Wynna",
         fontes: "Holy Avenger: Paladina",
         resumo: "Nialandarena, ou apenas Niala, supostamente nasceu qareen no reino de Wynlla.",
@@ -866,7 +867,7 @@ Equipamento Bordão, braceletes de bronze, símbolo sagrado de Wynna. Tesouro Pa
       },
       {
         chave: "orionDrake", nome: "Orion Drake", nd: "20", tipo: "Humanoide (humano) Médio",
-        papel: '',
+        papel: "solo",
         fontes: "O Crânio e o Corvo, O Terceiro Deus",
         resumo: "Orion Drake nasceu numa família nobre de Bielefeld, mas seu nascimento marcou o início da queda da casa.",
         texto:
@@ -892,7 +893,7 @@ Equipamento Armadura completa reforçada de adamante abascanta guardiã, cinto d
       },
       {
         chave: "paladinaDeKhalmyr", nome: "Paladina de Khalmyr", nd: "4", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "solo",
         fontes: "Holy Avenger: Paladina",
         resumo: "Filha de Elaina e Mighel de Petrynia, esta jovem teve o nome peculiar recebido em sonhos pela mãe.",
         texto:
@@ -916,7 +917,7 @@ Tesouro Padrão.`
       },
       {
         chave: "paollus", nome: "Paollus", nd: "14", tipo: "Humanoide (meio-elfo) Médio",
-        papel: '',
+        papel: "especial",
         titulo: "Paollus, o Irmão Mais Velho",
         fontes: "O Crânio e o Corvo, Guilda do Macaco, Fim dos Tempos",
         resumo: "Líder da Companhia dos Irmãos, primeira e maior organização criminosa valkariana, este meio-elfo de cabelos bem penteados é normalmente calm",
@@ -940,7 +941,7 @@ Equipamento Anel de proteção, balestra explosiva, virotes de adamante x20. Tes
       },
       {
         chave: "rainhaEuphana", nome: "Rainha Euphana", nd: "3", tipo: "Morta-viva (osteon) Média",
-        papel: '',
+        papel: "especial",
         titulo: "Rainha Euphana, a Necromante",
         fontes: "Atlas de Arton",
         resumo: "Salistick, o Reino sem Deuses, era governado por quatro clãs que se revezavam no poder.",
@@ -961,7 +962,7 @@ Parceiro Euphana é uma parceira veterana que fornece +2 em Cura e permite que, 
       },
       {
         chave: "ladyShivara", nome: "Lady Shivara", nd: "18", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "solo",
         titulo: "Rainha-imperatriz Shivara I",
         fontes: "Trilogia da Tormenta, Guilda do Macaco",
         resumo: "“Beber vinho? Deveríamos estar lutando.",
@@ -988,7 +989,7 @@ Tesouro Dobro.`
       },
       {
         chave: "molossoDeheoni", nome: "Molosso deheoni", nd: "2", tipo: "Animal Grande",
-        papel: '',
+        papel: "solo",
         resumo: "Resultado de cruzamentos entre várias raças domésticas trazidas de Lamnor na Caravana dos Exilados, o molosso deheoni é um cão enorme, desti",
         texto:
 `Molosso deheoni ND 2
@@ -1008,7 +1009,7 @@ Parceiro Um molosso é um parceiro especial (vigilante) que fornece os benefíci
       },
       {
         chave: "rodleckLeverick", nome: "Rodleck Leverick", nd: "17", tipo: "Humanoide (hynne) Pequeno",
-        papel: '',
+        papel: "especial",
         fontes: "Atlas de Arton",
         resumo: "Filho de mãe artesã e pai com pretensões de inventor, Rodleck Leverick nasceu e cresceu em uma das várias comunidades nas colinas do antigo",
         texto:
@@ -1036,7 +1037,7 @@ Equipamento Adaga precisa dançarina formidável, anel da regeneração, anel do
       },
       {
         chave: "senhorPorrada", nome: "Senhor Porrada", nd: "11", tipo: "Humanoide (meio-orc) Médio",
-        papel: '',
+        papel: "solo",
         fontes: "Guilda do Macaco, Legado do Ódio",
         resumo: "Criado num bando orc, Syphos nunca conheceu seus pais.",
         texto:
@@ -1058,7 +1059,7 @@ Equipamento Armadura completa reforçada, Artefato de Cross, martelo de guerra m
       },
       {
         chave: "senhoraDosEspinhos", nome: "Senhora dos Espinhos", nd: "12", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "especial",
         fontes: "Atlas de arton",
         resumo: "Aigrah Vento Leste fazia parte da Ordem do Bosque de Allihanna, o principal círculo druídico do reino de Tollon.",
         texto:
@@ -1089,7 +1090,7 @@ Equipamento Capa pesada, dedo de ente, maleta de medicamentos, símbolo sagrado 
       },
       {
         chave: "shiroNomatsu", nome: "Shiro Nomatsu", nd: "14", tipo: "Humanoide (humano) Médio",
-        papel: '',
+        papel: "especial",
         fontes: "Império de Jade",
         resumo: "O clã Nomatsu sempre foi leal a Tamu-ra, servindo sua pátria por gerações na corte imperial.",
         texto:
@@ -1118,7 +1119,7 @@ Tesouro Padrão.`
       },
       {
         chave: "sirAlennToren", nome: "Sir Alenn Toren", nd: "19", tipo: "Humanoide (humano) Médio",
-        papel: '',
+        papel: "solo",
         titulo: "Sir alenn toren Greenfeld",
         fontes: "O Crânio e o Corvo, Guilda do Macaco",
         resumo: "Imediatamente reconhecível devido a sua armadura dourada e seu tapa-olho, Alenn Toren é o Alto Comandante da Ordem da Luz, sumo-sacerdote de",
@@ -1144,7 +1145,7 @@ Equipamento Armadura da Luz, Lâmina da Luz, símbolo sagrado de Khalmyr. Tesour
       },
       {
         chave: "sirrannamena", nome: "Sirrannamena", nd: "17*", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "solo",
         titulo: "Sirrannamena, A rainha barda",
         fontes: "Atlas de Arton, Segredos de Arton",
         resumo: "Uma das primeiras heroínas humanas, Sirrannamena nasceu na Cidade Dourada de Nhardmaran, civilização primordial na costa do continente sul.",
@@ -1175,7 +1176,7 @@ Tesouro Padrão. *Antes de perder sua voz para K’Athanoa.`
       },
       {
         chave: "sislachNarsogg", nome: "Sislach Narsogg", nd: "15", tipo: "Morto-vivo (osteon) Grande",
-        papel: '',
+        papel: "especial",
         fontes: "Atlas de Arton",
         resumo: "De voz grave e retumbante, este osteon gigantesco conduz os assuntos diplomáticos de Aslothia.",
         texto:
@@ -1204,7 +1205,7 @@ Equipamento Avir (veja p. 55), traje da corte banhado a ouro e cravejado de gema
       },
       {
         chave: "sislachRawia", nome: "Sislach Rawia", nd: "16", tipo: "Monstro (medusa) Média",
-        papel: '',
+        papel: "solo",
         fontes: "Atlas de Arton",
         resumo: "O braço forte de Ferren Asloth, esta medusa foi escolhida a dedo entre as fileiras de lacaios do vilão para resolver os problemas do Arquili",
         texto:
@@ -1234,7 +1235,7 @@ Equipamento Arco longo formidável sanguinário, couraça macabra de gelo eterno
       },
       {
         chave: "sislachVissanzi", nome: "Sislach Vissanzi", nd: "14", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "especial",
         fontes: "Atlas de Arton",
         resumo: "De todos os servos do Arquilich, esta talvez seja a mais temida.",
         texto:
@@ -1260,7 +1261,7 @@ Equipamento Adaga precisa ameaçadora sanguinária, capa esvoaçante aprimorada,
       },
       {
         chave: "stridnix", nome: "Stridnix", nd: "7", tipo: "Monstro (kallyanach) Média",
-        papel: '',
+        papel: "solo",
         fontes: "Crônicas da Tormenta Vol. 3",
         resumo: "Uma das incontáveis filhas de Sckhar, Stridnix é a favorita do pai.",
         texto:
@@ -1279,7 +1280,7 @@ Perícias Atuação +12, Diplomacia +12, Guerra +10, Intimidação +12, Nobreza 
       },
       {
         chave: "tannara", nome: "Tannara", nd: "12", tipo: "Monstro (kallyanach) Média",
-        papel: '',
+        papel: "solo",
         fontes: "Atlas de Arton",
         resumo: "Entre as geleiras das Uivantes, todos já ouviram falar desta astuta caçadora.",
         texto:
@@ -1302,7 +1303,7 @@ Equipamento Arco longo preciso, arpão cruel maciço de gelo eterno, flechas de 
       },
       {
         chave: "thantallaDhaedellinn", nome: "Thantalla-Dhaedellinn", nd: "S", tipo: "Espírito Médio",
-        papel: '',
+        papel: "solo",
         titulo: "Thantalla-Dhaedelin, A rainha das Fadas",
         resumo: "O Crânio e o Corvo Como o próprio reino que governa, a história e a figura da Rainha das Fadas, Thantalla-Dhaedelin, é cercada de lendas e mistérios.",
         texto:
@@ -1333,7 +1334,7 @@ Equipamento Gemas Eternas . Tesouro Triplo.`
       },
       {
         chave: "urazyel", nome: "Urazyel", nd: "S+", tipo: "Monstro (lekael*) Colossal",
-        papel: '',
+        papel: "solo",
         fontes: "Área de Tormenta, O Crânio e o Corvo",
         resumo: "Diferente de outros Lordes da Tormenta, que residem em suas fortalezas, esta entidade é um bastião em si mesmo.",
         texto:
@@ -1357,7 +1358,7 @@ Tesouro Triplo. *Veja Ameaças de Arton, p. 29.`
       },
       {
         chave: "val", nome: "Val", nd: "4", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "solo",
         resumo: "20Deuses A duelista urbana Val começou sua jornada ao lado de Mateo, jovem pescador dos rios de Callistia, região das Repúblicas Livres de Sambúrdia.",
         texto:
 `Val ND 4
@@ -1377,7 +1378,7 @@ Equipamento Couraça sob medida, florete certeiro preciso, sapato de camurça. T
       },
       {
         chave: "vanessaDrake", nome: "Vanessa Drake", nd: "20", tipo: "Humanoide (humana) Média",
-        papel: '',
+        papel: "especial",
         fontes: "Trilogia da Tormenta",
         resumo: "Vanessa Drake nasceu na família Derrigan, nobres menores de Bielefeld, em um feudo não muito longe da cidade de Norm.",
         texto:
@@ -1413,7 +1414,7 @@ Equipamento Armadura completa de adamante delicada fortificada guardiã, escudo 
       },
       {
         chave: "vladislavTpish", nome: "Vladislav Tpish", nd: "14", tipo: "Humanoide (humano) Médio",
-        papel: '',
+        papel: "especial",
         fontes: "Holy Avenger, O Terceiro Deus",
         resumo: "Dizem que, quando Talude abandonou seu posto na Academia Arcana, deixou-a nas mãos de um arcanista prestigiado por seus pares, de intelecto",
         texto:
@@ -1439,7 +1440,7 @@ Perícias Conhecimento +20, Cura +15, Diplomacia +14, Investigação +18, Mistic
       },
       {
         chave: "goBlinn", nome: "Go Blinn", nd: "1", tipo: "Humanoide (goblin) Pequeno",
-        papel: '',
+        papel: "especial",
         titulo: "Goblin do Cantinho",
         fontes: "Guilda do Macaco, A Última Lição",
         resumo: "Infelizmente, ainda é costumeiro que goblins sejam tratados como simples monstros por aventureiros.",
