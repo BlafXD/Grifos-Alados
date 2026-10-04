@@ -1957,3 +1957,88 @@ puramente local não passa turno por esse caminho. **Falta o teste no navegador.
 | F5 | XP, caderno, manchas, sustentadas e ordem de volta ✔ |
 | celular (390 px) | as três linhas novas desdobram, sem rolagem lateral ✔ |
 | console | sem erro nas duas páginas ✔ |
+
+---
+
+# A leva de 4 de outubro de 2026 — a barra de pesquisa das magias, e o fim das magias automáticas
+
+Dois pedidos dele, no mesmo recado — e o segundo explica o primeiro.
+
+## 1. Uma barra de pesquisa no bloco de Magias
+
+> "Tem que ter uma barra de pesquisa no bloco de Magias nas Fichas dos jogadores!"
+
+O cartão ✨ Magias já tinha o **▸ Recolher todas**, que encurta a lista até sobrar
+só os nomes — mas encurtar não é achar: num conjurador de nível alto continuam
+sendo dezenas de nomes para ler um a um. Agora há uma **🔍 barra** logo abaixo da
+faixa do título (aparece a partir da segunda magia).
+
+**O que ela varre:** o nome, a escola, o tipo, o círculo (`3º`) e **a anotação que
+o jogador escreveu na magia** — procurar "chefe" acha a magia onde ele anotou
+"guardar para o chefe". Sem acento e sem caixa: `relampago` acha *Relâmpago*
+(é o mesmo `GA_semAcento` da busca do site).
+
+**Três decisões de desenho:**
+
+- **O termo vive FORA do `<input>`** (na variável `filtroMagias` do módulo), porque
+  qualquer clique na ficha redesenha a tela inteira — `render()` reescreve o
+  `innerHTML`. Assim o filtro **sobrevive** a ligar um aprimoramento, gastar PM ou
+  abrir outra magia. Ele não é guardado em disco: é coisa do momento, não da ficha.
+- **Esconder é SEMPRE pela `aplicarFiltroMagias()`**, chamada no fim do `render()` e
+  a cada tecla. Um caminho só: o desenho e a digitação não podem divergir. Digitar
+  não redesenha nada (redesenhar tiraria o foco do campo a cada letra) — só marca
+  `hidden` nos cartões, acerta a contagem de cada círculo e o "7 de 87" do canto.
+- **O ▸ Recolher todas passou a mexer só no que está à vista.** Procurar "cura" e
+  clicar em *Abrir todas* abre as de cura, não as oitenta da ficha.
+
+**Armadilha achada no caminho:** `hidden` **não esconde** `.fi-mag`. O cartão é
+`display: grid` por regra de autor, e regra de autor ganha da folha do navegador —
+então o atributo não fazia nada. Precisa do par explícito no CSS:
+`.fi-mag[hidden], .fi-mag-grupo[hidden] { display: none; }`.
+
+## 2. Saiu: o Usurpador recebendo a lista divina inteira
+
+> "remover uma coisa: Usurpador ganhar todas as magias conforme o círculo dele como
+> classe, porque diabos quando eu ganho magias como usurpador ele vai em classe e
+> não posso usar os aprimoramentos delas?"
+
+Em 30/09 a ficha passou a montar sozinha, para o Usurpador, **todas** as magias
+divinas até o círculo que ele alcança (pela habilidade *Usurpar*, Heróis de Arton
+p. 40) — 87 magias num Usurpador de 5º nível. Elas eram **sintéticas**: montadas na
+hora, nunca guardadas na ficha. E é aí que a ideia morre: **o que não mora na ficha
+não tem onde guardar aprimoramento** — e aprimoramento é justamente o que se mexe
+na mesa. A escotilha que eu tinha deixado (clicar em ＋ Adicionar magia para a magia
+"virar sua") era um passo a mais para resolver um problema que a ficha mesma criou.
+
+**Agora toda magia do cartão é magia DA FICHA**, posta pelo ＋ Adicionar magia, com
+aprimoramentos, anotação e ✕. Saíram a etiqueta azul "🔓 da classe", o aviso do topo
+do cartão, o endereçamento por `data-mid`, o "já vem da sua classe" da busca e o
+estado de recolhida invertido das sintéticas — o cartão voltou a ter um só tipo de
+magia.
+
+**A regra não se perdeu.** *Usurpar* é **habilidade fixa de classe** e continua no
+alto do ⚔, com o texto inteiro: "você pode lançar qualquer magia divina de um
+círculo a que tenha acesso passando num teste de Enganação (CD 15 + custo em PM)".
+O próprio livro, na habilidade **Magias** do Usurpador, diz que ele "**NÃO** começa
+com magias nem as aprende automaticamente". Quem joga de Usurpador põe na ficha as
+magias que pretende usurpar — e essas, sim, aceitam aprimoramento.
+
+> Se um dia a lista automática voltar, tem de voltar **guardando na ficha**, nunca
+> como cartão sintético. Está anotado em comentário no `js/ficha.js`, no lugar onde
+> ela morava.
+
+## Testado (servidor local, Firebase desligado, 11 magias em 3 círculos)
+
+| O que | Resultado |
+|---|---|
+| `cura` | 1 de 11 — *Curar Ferimentos*; os círculos 2º e 3º somem da tela ✔ |
+| `evoca` (escola) | 4 de 11, em dois círculos, com a contagem de cada um certa ✔ |
+| `3º` (círculo) | 1 de 11 — *Voo* ✔ |
+| `chefe` (anotação do jogador) | 1 de 11 — *Relâmpago*, onde estava escrito ✔ |
+| `relampago` sem acento | acha *Relâmpago* ✔ |
+| `xyzw` | 0 de 11 e a linha "Nenhuma magia desta ficha com isso" ✔ |
+| ▾ Abrir todas **com filtro ligado** | abre só a magia à vista, e o termo **continua** no campo depois do redesenho ✔ |
+| ✕ da barra | volta às 11, e o foco fica no campo ✔ |
+| largura de 326 px | tudo em uma linha, sem rolagem lateral ✔ |
+| etiquetas "🔓 da classe" na tela | **nenhuma** ✔ |
+| console nas duas páginas | sem erro ✔ |

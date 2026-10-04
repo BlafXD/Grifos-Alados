@@ -284,6 +284,58 @@
   color: var(--ink-faded);
   margin-bottom: 0.25rem;
 }
+/* ── A NOTA "PERÍCIA FORA DA LISTA" (04/10/2026) ───────────────────
+   Fica colada embaixo da caixa de Perícias da criatura. Cabe em uma
+   linha, com as seis pílulas no meio: no meio do combate o mestre
+   precisa do NÚMERO, não do parágrafo — a regra inteira (e as perícias
+   de cada atributo) está nas nuvens de mouse. */
+.mz-per-nota {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.4rem;
+  margin-top: 0.3rem;
+  padding: 0.3rem 0.45rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px dashed var(--parchment3);
+  border-radius: var(--raio);
+}
+.mz-per-nota-rot {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+  cursor: help;
+  border-bottom: 1px dotted var(--rust);
+}
+.mz-per-conta b { color: var(--ink); }
+.mz-per-pil {
+  padding: 0.05rem 0.4rem;
+  white-space: nowrap;
+  cursor: help;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: 999px;
+}
+.mz-per-pil b {
+  font-family: 'Cinzel', serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-faded);
+}
+.mz-per-pil--off { opacity: 0.5; }
+.mz-per-nota-fim { flex: 1 1 100%; font-style: italic; }
+.mz-per-nota-fim abbr {
+  cursor: help;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--ink-faded);
+}
+
 
 .mz-input, .mz-textarea {
   width: 100%;
