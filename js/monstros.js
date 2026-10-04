@@ -2302,6 +2302,117 @@
           </div>`;
   }
 
+  // ══ A PERÍCIA QUE NÃO ESTÁ NA LISTA (04/10/2026) ═════════════════
+  //  Pedido dele: uma nota no bloco de perícias, "pois existe uma regra
+  //  que, se a criatura precisar rolar uma perícia que não está na
+  //  ficha, tem um cálculo para saber qual seria o bônus".
+  //  A regra é literal, do Passo 6 do manual de criar ameaças (Ameaças
+  //  de Arton, p. 384): "…e também para definir as perícias não
+  //  listadas em sua ficha (que, quando aplicáveis, possuem modificador
+  //  igual à metade do ND da criatura + seu atributo-chave, como
+  //  normal)". Não é "10 + metade do ND": o 10 não entra.
+  //  Três coisas que a nota precisa dizer, porque o livro diz:
+  //  • NÃO há bônus de treinamento. Ele é das perícias TREINADAS, e uma
+  //    que não está na ficha não é treinada.
+  //  • As que EXIGEM treinamento a criatura simplesmente não rola — é o
+  //    "quando aplicáveis" do texto.
+  //  • Luta e Pontaria são à parte: valem o ataque listado, e sem
+  //    ataque daquele tipo nem a perícia na lista, a criatura não é
+  //    treinada (Capítulo 1, "Luta e Pontaria": o ogro caçador de ND 7
+  //    atira com +3 = metade do ND 7 + Destreza 0 — e é esse +3 que
+  //    mostra que a metade do ND se arredonda PARA BAIXO).
+  const PER_ATRS = [
+    { k: 'For', nome: 'Força' },
+    { k: 'Des', nome: 'Destreza' },
+    { k: 'Con', nome: 'Constituição' },
+    { k: 'Int', nome: 'Inteligência' },
+    { k: 'Sab', nome: 'Sabedoria' },
+    { k: 'Car', nome: 'Carisma' },
+  ];
+  const PER_NOTA_FONTE =
+    'Ameaças de Arton, p. 384 (Passo 6, Estatísticas Secundárias): "as perícias não ' +
+    'listadas em sua ficha (que, quando aplicáveis, possuem modificador igual à metade ' +
+    'do ND da criatura + seu atributo-chave, como normal)". A metade do ND arredonda ' +
+    'para baixo, e os ND S e S+ contam como ND 20 para o que não está listado (p. 12).';
+  const PER_NOTA_LUTA =
+    'Ameaças de Arton, Capítulo 1: os valores de Luta e Pontaria são iguais aos ataques ' +
+    'listados, e uma criatura com um ataque é sempre treinada na perícia correspondente. ' +
+    'Sem ataque daquele tipo e sem a perícia na lista, ela não é treinada — o ogro caçador ' +
+    'de ND 7 atira com +3 (metade do ND 7 + Destreza 0).';
+  //  "For 11, Des 1, Con 8…" → { For: 11, Des: 1, Con: 8 }. Aceita o
+  //  travessão "–" dos negativos (o que as fichas do livro imprimem) e
+  //  o nome inteiro do atributo ("Força 11").
+  function _atributosDaCriatura(cr) {
+    const out = {};
+    const re = /\b(for|des|con|int|sab|car)[a-zà-ÿ]*\s*([+\-–—−]?\s*\d+)/gi;
+    let m;
+    while ((m = re.exec(String(cr.atributos || '')))) {
+      const k = m[1][0].toUpperCase() + m[1].slice(1).toLowerCase();
+      if (out[k] == null) {
+        out[k] = parseInt(m[2].replace(/[–—−]/g, '-').replace(/\s+/g, ''), 10);
+      }
+    }
+    return out;
+  }
+  //  O ND que vale para o que NÃO está na ficha (S e S+ = 20, p. 12).
+  //  Devolve null quando não há ND legível — a nota então só mostra a
+  //  fórmula, sem número.
+  function _ndDeNaoListadas(cr) {
+    const v = _ndValor(cr.nd);
+    if (v === 900 || v === 901) return 20;
+    if (v < 0 || v > 100) return null;
+    return v;
+  }
+  //  O traço do negativo é o EN DASH "–", como nas fichas do livro.
+  function _maisMenos(v) { return (v >= 0 ? '+' : '–') + Math.abs(v); }
+  //  As perícias de cada atributo, para a nuvem da pílula: só as que a
+  //  criatura pode rolar SEM treino, e fora as que já têm linha própria
+  //  no statblock (Iniciativa, Percepção, Fortitude, Reflexos, Vontade).
+  function _periciasDoAtributo(k) {
+    const D = window.GA_CRIAR_AMEACA;
+    if (!D || !D.PERICIAS) return '';
+    return D.PERICIAS
+      .filter(p => p.atr === k.toLowerCase() && !p.fixa && !p.soTreinada)
+      .map(p => p.nome).join(', ');
+  }
+  function _periciasDeTreino() {
+    const D = window.GA_CRIAR_AMEACA;
+    if (!D || !D.PERICIAS) return '';
+    return D.PERICIAS.filter(p => p.soTreinada).map(p => p.nome).join(', ');
+  }
+  function notaPericiasHtml(cr) {
+    const nd = _ndDeNaoListadas(cr);
+    const meio = nd == null ? null : Math.floor(nd / 2);
+    const atrs = _atributosDaCriatura(cr);
+    const pilulas = PER_ATRS.map(a => {
+      const tem = atrs[a.k] != null;
+      const v = (tem && meio != null) ? meio + atrs[a.k] : null;
+      const quais = _periciasDoAtributo(a.k);
+      const dica = a.nome + (tem ? ' ' + _maisMenos(atrs[a.k]) : ' — não está na linha de Atributos') +
+        (meio == null ? ' · falta o ND' : '') + (quais ? '\n' + quais : '');
+      return `<span class="mz-per-pil${v == null ? ' mz-per-pil--off' : ''}" title="${esc(dica)}"
+            ><b>${a.k}</b> ${v == null ? '?' : _maisMenos(v)}</span>`;
+    }).join('');
+    const treino = _periciasDeTreino();
+    return `
+          <p class="mz-per-nota">
+            <span class="mz-per-nota-rot" title="${esc(PER_NOTA_FONTE)}">ℹ Perícia fora da lista</span>
+            <span class="mz-per-conta">${meio == null ? 'metade do ND' : 'metade do ND <b>' + _maisMenos(meio) + '</b>'}
+              + o atributo-chave:</span>
+            ${pilulas}
+            <span class="mz-per-nota-fim">sem bônus de treinamento${treino
+              ? `; as que <abbr title="${esc('Exigem treinamento (Tormenta20, Tabela 2-1): ' + treino)}">exigem treino</abbr> ela não rola` : ''};
+              <abbr title="${esc(PER_NOTA_LUTA)}">Luta e Pontaria</abbr> valem o ataque listado.</span>
+          </p>`;
+  }
+  //  A nota se refaz na hora quando o ND ou os Atributos são digitados —
+  //  sem redesenhar, senão o campo perderia o foco a cada tecla.
+  function atualizarNotaPericias(el, cr) {
+    const ficha = el.closest && el.closest('.mz-criatura');
+    const nota = ficha && ficha.querySelector('.mz-per-nota');
+    if (nota) nota.outerHTML = notaPericiasHtml(cr);
+  }
+
   function construirCriatura(cr, si, ci, cri, total, painel) {
     const ds = `data-s="${si}" data-c="${ci}" data-cr="${cri}"`;
     // No painel a ficha usa um estado próprio (cr.painelAberto), aberto por padrão.
@@ -2347,7 +2458,7 @@
       caixasHtml += `
         <div class="mz-campo">
           <label class="mz-rotulo">${cx.rotulo}</label>
-          ${corpo}
+          ${corpo}${cx.chave === 'pericias' ? notaPericiasHtml(cr) : ''}
         </div>`;
     });
     const condicoes = CAIXAS.find(c => c.chave === 'condicoes');
@@ -3069,8 +3180,12 @@
     // demais campos da criatura (nome, tipoTamanho, nd,
     // atributos, pericias, equipamento)
     if (el.dataset.cr != null) {
-      pegarCriatura(el)[campo] = el.value;
-      salvar(); return;
+      const cr = pegarCriatura(el);
+      cr[campo] = el.value;
+      salvar();
+      // o ND e os Atributos alimentam a nota "perícia fora da lista"
+      if (campo === 'nd' || campo === 'atributos') atualizarNotaPericias(el, cr);
+      return;
     }
   }
 

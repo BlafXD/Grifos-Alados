@@ -1336,6 +1336,9 @@
     cont.innerHTML = html;
     // o innerHTML apagou os resultados — recoloca cada um no seu lugar
     Object.keys(resultados).forEach(pintarResultado);
+    // …e o desenho sai inteiro: é aqui que a 🔍 barra volta a esconder o
+    // que não casa (o termo vive fora do <input>, em filtroMagias)
+    aplicarFiltroMagias();
   }
 
   // ── A BARRA DA MESA ──────────────────────────────────────────────
@@ -3319,106 +3322,84 @@
     try { window.GA_guardar(MAG_FECHADAS_KEY, JSON.stringify(magiasFechadas)); } catch (e) {}
   }
 
-  // ═══ MAGIAS QUE VÊM DA CLASSE (30/09/2026) ════════════════════════
-  //  O Usurpador (de clérigo, Heróis de Arton p. 40) não aprende magia a
-  //  magia: pela habilidade Usurpar, "você pode lançar QUALQUER magia
-  //  divina de um círculo a que tenha acesso" (com um teste de Enganação,
-  //  CD 15 + o custo em PM). Então ele CONHECE a lista divina inteira até
-  //  o círculo que alcança — e o pedido dele foi que a ficha mostrasse
-  //  isso sozinha: "se ele tem 2º Círculo, ganha todas as magias de 2º".
-  //
-  //  Essas magias NÃO ficam guardadas na ficha (seriam mais de cem, e
-  //  saem por conta da classe e do nível, como as Habilidades de Classe
-  //  fixas): são montadas na hora, da mesma base das Consultas. Quem
-  //  QUISER mexer numa delas — pôr aprimoramento, anotar — clica em
-  //  ＋ Adicionar e ela vira uma magia normal, sua, editável (e sai desta
-  //  lista automática, para não duplicar).
-  //
-  //  Fica um mapa por CHAVE de classe para o dia em que outra classe
-  //  também "conhecer a lista inteira".
-  const MAGIAS_AUTO = {
-    usurpador: {
-      lista: 'divina',
-      rotulo: 'Usurpar',
-      // "1º círculo, subindo a cada quatro níveis" (2º no 5º, 3º no 9º…),
-      // pelo NÍVEL de usurpador. Teto no 5º círculo.
-      circulo: n => Math.min(5, 1 + Math.floor((Math.max(1, n) - 1) / 4)),
-    },
-  };
-  //  O maior círculo automático que a ficha alcança, e por qual classe.
-  //  Multiclasse: cada classe conta com o SEU nível.
-  function classeAutoDe(f) {
-    let achado = null;
-    (f.classes || []).forEach(c => {
-      const cfg = MAGIAS_AUTO[c.classe];
-      if (!cfg || !(c.nivel > 0)) return;
-      const cir = cfg.circulo(c.nivel);
-      if (!achado || cir > achado.circulo) {
-        achado = { chave: c.classe, cfg: cfg, nivel: c.nivel, circulo: cir };
-      }
-    });
-    return achado;
-  }
-  //  Uma magia da base virada em cartão de ficha (mesma forma do que o
-  //  ＋ Adicionar guarda), marcada como automática. `id` é sintético
-  //  ("auto:<mid>") para os botões e para o estado de recolhida.
-  function magiaAutoDoMid(mid) {
-    const b = daBase(mid);
-    if (!b) return null;
-    return {
-      id: 'auto:' + mid, mid: mid, nome: b.nome, circulo: b.circulo, pm: b.pm,
-      tipo: b.tipo || '', escola: b.escola || '', execucao: b.execucao || '',
-      alcance: b.alcance || '', alvo: b.alvo || b.area || b.efeito || '',
-      duracao: b.duracao || '', resistencia: b.resistencia || '',
-      resumo: b.resumo || '', obs: '', apr: [], auto: true,
-    };
-  }
-  //  A lista automática da ficha (vazia quando não há classe do tipo, ou
-  //  a base das magias ainda não carregou). Pula o que o jogador já pôs à
-  //  mão, para não aparecer duas vezes.
-  function magiasAutoDe(f) {
-    const info = classeAutoDe(f);
-    const base = window.GA_MAGIAS || [];
-    if (!info || !base.length) return [];
-    const jaTem = {};
-    (f.magias || []).forEach(m => { jaTem[m.mid] = true; });
-    return base.filter(b =>
-        (b.circulo || 0) <= info.circulo &&
-        Array.isArray(b.listas) && b.listas.indexOf(info.cfg.lista) >= 0 &&
-        !jaTem[b.id])
-      .map(b => magiaAutoDoMid(b.id))
-      .filter(Boolean);
-  }
-
-  //  A magia de um botão: pela posição (magia normal, data-i) ou pelo mid
-  //  (magia automática da classe, data-mid). Os botões que ela responde —
-  //  abrir/recolher, 🔥 gastar PM e 🎲 rolar — não guardam nada na ficha,
-  //  então a automática (montada na hora) serve igual.
-  function magiaDoBotao(f, btn) {
-    if (btn.dataset && btn.dataset.mid != null && btn.dataset.i == null) {
-      return magiaAutoDoMid(btn.dataset.mid);
-    }
-    return f.magias[+btn.dataset.i];
-  }
-
-  //  Recolhida ou aberta. As magias NORMAIS nascem abertas (a chave, quando
-  //  existe, quer dizer "fechada"). As AUTOMÁTICAS nascem FECHADAS — são
-  //  muitas, e o jogador abre a que for usar (a chave = 0 quer dizer "esta
-  //  eu deixei aberta"). Assim os dois estados cabem no mesmo armazém.
-  function chaveFechada(m) { return m.auto ? ('auto:' + m.mid) : m.id; }
-  function estaFechada(m) {
-    const k = chaveFechada(m);
-    return m.auto ? (magiasFechadas[k] !== 0) : !!magiasFechadas[k];
-  }
+  //  Recolhida ou aberta: a chave presente quer dizer "fechada".
+  function estaFechada(m) { return !!magiasFechadas[m.id]; }
   function alternarFechada(m) {
-    const k = chaveFechada(m);
-    if (estaFechada(m)) {            // abrir
-      if (m.auto) magiasFechadas[k] = 0; else delete magiasFechadas[k];
-    } else {                         // recolher
-      if (m.auto) delete magiasFechadas[k]; else magiasFechadas[k] = 1;
-    }
+    if (estaFechada(m)) delete magiasFechadas[m.id]; else magiasFechadas[m.id] = 1;
     guardarFechadas();
   }
+
+  //  A magia de um botão: pela posição dela em f.magias (data-i). Os três
+  //  botões do cartão — abrir/recolher, 🔥 gastar PM e 🎲 rolar — falam
+  //  dessa posição.
+  function magiaDoBotao(f, btn) { return f.magias[+btn.dataset.i]; }
+
+  //  ── POR QUE NÃO HÁ MAGIA AUTOMÁTICA DE CLASSE (04/10/2026) ──────
+  //  De 30/09 a 04/10 o Usurpador recebia sozinho a lista divina inteira
+  //  até o círculo que alcançava (a habilidade Usurpar, Heróis de Arton
+  //  p. 40), montada na hora e marcada "🔓 da classe". ELE PEDIU PARA
+  //  TIRAR, e a razão é boa: aquelas magias não moravam na ficha, então
+  //  não aceitavam aprimoramento — que é justamente o que se mexe na
+  //  mesa. Agora toda magia do cartão é magia DA FICHA, posta pelo
+  //  ＋ Adicionar magia, com aprimoramentos, anotação e ✕.
+  //  A regra do Usurpar não se perdeu: ela é habilidade fixa de classe e
+  //  aparece no alto do ⚔ (js/habilidades-classe-data.js). Se um dia a
+  //  lista automática voltar, tem de voltar GUARDANDO na ficha — nunca
+  //  como cartão sintético.
+
+  //  ── A BARRA DE PESQUISA DO CARTÃO (04/10/2026) ──────────────────
+  //  "tem que ter uma barra de pesquisa no bloco de Magias" — pedido
+  //  dele. Um conjurador de nível alto tem dezenas delas, e o
+  //  ▸ Recolher todas só encurta a lista: ainda é preciso ler nome a
+  //  nome para achar a magia.
+  //  O termo NÃO se guarda (é coisa do momento), mas vive aqui fora e
+  //  não dentro do <input>, porque qualquer clique na ficha redesenha a
+  //  tela toda (render() reescreve o innerHTML) — assim o filtro
+  //  sobrevive a ligar um aprimoramento ou a gastar PM.
+  //  E quem esconde/mostra é SEMPRE a aplicarFiltroMagias(), chamada no
+  //  fim do render() e a cada tecla: um caminho só, sem o desenho e a
+  //  digitação divergirem.
+  let filtroMagias = '';
+  //  O que a busca varre: nome, escola, tipo, círculo ("3º"), o resumo do
+  //  livro e A ANOTAÇÃO DO JOGADOR — procurar "chefe" acha a magia onde
+  //  ele escreveu "guardar para o chefe".
+  function textoDeBuscaMagia(m) {
+    return semAcento([m.nome, m.escola, m.tipo, (m.circulo || 0) + 'º',
+                      m.resumo || '', m.obs || ''].join(' '));
+  }
+  //  As magias que o filtro deixa à vista. É o conjunto em que o
+  //  ▸ Recolher todas mexe: procurar "cura" e abrir todas abre só elas.
+  function magiasVisiveis(f) {
+    const q = semAcento(String(filtroMagias).trim());
+    if (!q) return f.magias.slice();
+    return f.magias.filter(m => textoDeBuscaMagia(m).indexOf(q) >= 0);
+  }
+  function aplicarFiltroMagias() {
+    const cartao = secao && secao.querySelector('.fi-magias');
+    if (!cartao) return;
+    const q = semAcento(String(filtroMagias).trim());
+    let vistas = 0, total = 0;
+    cartao.querySelectorAll('.fi-mag-grupo').forEach(g => {
+      let n = 0;
+      g.querySelectorAll('.fi-mag').forEach(li => {
+        const casa = !q || (li.dataset.busca || '').indexOf(q) >= 0;
+        li.hidden = !casa;
+        total++;
+        if (casa) n++;
+      });
+      vistas += n;
+      g.hidden = (n === 0);
+      const conta = g.querySelector('[data-mag-conta-grupo]');
+      if (conta) conta.textContent = n + (n === 1 ? ' magia' : ' magias');
+    });
+    const conta = cartao.querySelector('[data-mag-conta]');
+    if (conta) conta.textContent = q ? (vistas + ' de ' + total) : '';
+    const nada = cartao.querySelector('[data-mag-nada]');
+    if (nada) nada.hidden = !(q && vistas === 0);
+    const limpar = cartao.querySelector('[data-acao="limpa-filtro-magias"]');
+    if (limpar) limpar.hidden = !q;
+  }
+
 
   // ═══ ✨ PODERES ═══════════════════════════════════════════════════
   //  Pedido dele em 15/09/2026: "ADICIONAR PODER… e dentro da aba um
@@ -4077,29 +4058,23 @@
 
   function blocoMagias(f) {
     const temBase = Array.isArray(window.GA_MAGIAS) && window.GA_MAGIAS.length;
-    const auto = magiasAutoDe(f);                 // as que a classe concede (Usurpador)
-    const infoAuto = classeAutoDe(f);
-    // agrupadas por círculo, como o livro lista e como se procura na mesa.
-    // as manhas normais levam o índice em f.magias; as automáticas não têm.
+    // agrupadas por círculo, como o livro lista e como se procura na mesa
     const porCirculo = {};
     f.magias.forEach((m, i) => {
       const c = m.circulo || 0;
       (porCirculo[c] || (porCirculo[c] = [])).push({ m: m, i: i });
     });
-    auto.forEach(m => {
-      const c = m.circulo || 0;
-      (porCirculo[c] || (porCirculo[c] = [])).push({ m: m, i: -1 });
-    });
-    const totalMagias = f.magias.length + auto.length;
-    const todasFechadas = totalMagias > 0 &&
-      f.magias.every(m => estaFechada(m)) && auto.every(m => estaFechada(m));
+    const total = f.magias.length;
+    //  O rótulo do ▸ Recolher todas fala do que o filtro deixou à vista
+    const aVista = magiasVisiveis(f);
+    const todasFechadas = aVista.length > 0 && aVista.every(m => estaFechada(m));
 
     const grupos = Object.keys(porCirculo).sort((a, b) => a - b).map(c => `
       <div class="fi-mag-grupo">
         <h3 class="fi-mag-circulo-tit">
           <span class="fi-mag-circ">${c === '0' ? '—' : c + 'º'}</span>
           ${c === '0' ? 'sem círculo' : 'círculo'}
-          <em>${porCirculo[c].length} magia${porCirculo[c].length > 1 ? 's' : ''}</em>
+          <em data-mag-conta-grupo>${porCirculo[c].length} magia${porCirculo[c].length > 1 ? 's' : ''}</em>
         </h3>
         <ul class="fi-mag-lista">${porCirculo[c].map(({ m, i }) => cartaoMagia(f, m, i)).join('')}</ul>
       </div>`).join('');
@@ -4107,26 +4082,35 @@
     return `
       <div class="fi-cartao fi-bloco fi-magias">
         <h2 class="fi-cartao-tit">✨ Magias
-          <span class="fi-cartao-nota">${f.magias.length} na ficha${auto.length ? ' + ' + auto.length + ' da classe' : ''} · a CD delas:
+          <span class="fi-cartao-nota">${total} na ficha · a CD delas:
             <strong data-der="cdmag">${cdMagias(f)}</strong></span>
           <span class="fi-mag-botoes">
-            ${totalMagias > 1 ? `<button type="button" class="fi-add fi-add--menor fi-mag-dobra" data-acao="dobra-magias"
-                    title="${todasFechadas ? 'Mostrar o texto de todas as magias' : 'Deixar só os nomes, para achar uma magia (ou chegar ao inventário) sem descer tanto'}"
+            ${total > 1 ? `<button type="button" class="fi-add fi-add--menor fi-mag-dobra" data-acao="dobra-magias"
+                    title="${todasFechadas ? 'Mostrar o texto de todas as magias à vista' : 'Deixar só os nomes, para achar uma magia (ou chegar ao inventário) sem descer tanto'}"
               >${todasFechadas ? '▾ Abrir todas' : '▸ Recolher todas'}</button>` : ''}
             <button type="button" class="fi-add fi-add--menor fi-mag-add" data-acao="add-magia" ${temBase ? '' : 'disabled'}>
               ＋ Adicionar magia</button>
           </span>
         </h2>
-        ${infoAuto ? `<p class="fi-mag-auto-aviso">🔓 Como <strong>${esc(D.classe(infoAuto.chave).nome)}</strong>, você lança
-          <strong>qualquer magia ${esc(infoAuto.cfg.lista)}</strong> até o <strong>${infoAuto.circulo}º círculo</strong> pela
-          habilidade <em>${esc(infoAuto.cfg.rotulo)}</em> (teste de Enganação, CD 15 + o custo em PM). Por isso as
-          ${auto.length} abaixo já vêm na lista, recolhidas — abra a que for lançar. Para pôr aprimoramento ou anotar numa
-          delas, use <strong>＋ Adicionar magia</strong>: ela vira sua e sai da lista automática.</p>` : ''}
+        ${total > 1 ? `
+        <div class="fi-mag-filtro">
+          <span class="fi-mag-filtro-lupa" aria-hidden="true">🔍</span>
+          <input type="text" class="fi-mag-filtro-campo" data-filtro="magias" value="${esc(filtroMagias)}"
+                 placeholder="achar uma magia: nome, escola, 3º, a sua anotação…"
+                 aria-label="Procurar entre as magias desta ficha" autocomplete="off">
+          <button type="button" class="fi-mag-filtro-x" data-acao="limpa-filtro-magias"
+                  title="Mostrar todas de novo" aria-label="Limpar a procura" hidden>✕</button>
+          <span class="fi-mag-filtro-conta" data-mag-conta aria-live="polite"></span>
+        </div>` : ''}
         ${grupos || '<p class="fi-mag-vazia">Nenhuma magia ainda. O <strong>＋ Adicionar magia</strong> abre a busca nas ' +
           (temBase ? window.GA_MAGIAS.length : 254) + ' magias do livro — as mesmas da aba 📚 Consultas.</p>'}
+        <p class="fi-mag-vazia" data-mag-nada hidden>Nenhuma magia desta ficha com isso.
+          O <strong>＋ Adicionar magia</strong> procura nas ${temBase ? window.GA_MAGIAS.length : 254} do livro.</p>
         <p class="fi-nota">Cada magia traz o <strong>texto inteiro</strong> do livro. Clique no <strong>nome</strong>
           para recolher ou abrir uma delas, e o <strong>▸ Recolher todas</strong> deixa só os nomes — para achar
-          uma magia, ou chegar ao inventário, sem descer a página inteira.
+          uma magia, ou chegar ao inventário, sem descer a página inteira. A <strong>🔍 barra</strong> lá em cima
+          procura entre as magias desta ficha: pelo nome, pela escola, pelo círculo (<code>3º</code>) ou pela
+          <em>sua anotação</em>.
           Os <strong>＋ aprimoramentos</strong> ligam e desligam: o total em PM se acerta sozinho, e fica
           guardado para a próxima vez. O <strong>🔥</strong> gasta esse total — <em>dos temporários
           primeiro</em>, como manda a p. 105.</p>
@@ -4322,36 +4306,33 @@
   function cartaoMagia(f, m, i) {
     const p = pmDaMagia(m);
     const dd = dadosDaMagia(m);
-    //  As magias NORMAIS são endereçadas pelo índice em f.magias; as
-    //  AUTOMÁTICAS (da classe) pelo mid, porque não moram na ficha.
-    const alvo = m.auto ? `data-mid="${esc(m.mid)}"` : `data-i="${i}"`;
     //  🎲: um só dado → rola direto; vários → um botão por dado (o jogador
     //  escolhe qual). Sempre soma os aprimoramentos de dado ligados (dd.bonus).
     const rollHtml = !dd.bases.length ? '' : (dd.bases.length === 1
-      ? `<button type="button" class="fi-mag-roll" data-acao="rolar-magia" ${alvo} data-b="0"
+      ? `<button type="button" class="fi-mag-roll" data-acao="rolar-magia" data-i="${i}" data-b="0"
               title="Rolar ${esc(dd.bases[0].expr + dd.bonus)}${dd.bases[0].rotulo ? ' — ' + esc(dd.bases[0].rotulo) : ''}">🎲</button>`
-      : dd.bases.map((d, bi) => `<button type="button" class="fi-mag-roll fi-mag-roll--multi" data-acao="rolar-magia" ${alvo} data-b="${bi}"
+      : dd.bases.map((d, bi) => `<button type="button" class="fi-mag-roll fi-mag-roll--multi" data-acao="rolar-magia" data-i="${i}" data-b="${bi}"
               title="Rolar ${esc(d.expr + dd.bonus)}">🎲 ${esc(d.rotulo || d.expr)}</button>`).join(''));
     const fechada = estaFechada(m);
+    //  data-busca: o que a 🔍 barra do cartão compara (ver aplicarFiltroMagias)
     return `
-      <li class="fi-mag${fechada ? ' fi-mag--fechada' : ''}${m.auto ? ' fi-mag--auto' : ''}">
-        <button type="button" class="fi-mag-abrir" data-acao="dobra-magia" ${alvo}
+      <li class="fi-mag${fechada ? ' fi-mag--fechada' : ''}" data-busca="${esc(textoDeBuscaMagia(m))}">
+        <button type="button" class="fi-mag-abrir" data-acao="dobra-magia" data-i="${i}"
                 aria-expanded="${!fechada}"
                 title="${fechada ? 'Abrir' : 'Recolher'} o texto de ${esc(m.nome)}">
           <span class="fi-mag-seta" aria-hidden="true">${fechada ? '▸' : '▾'}</span>
           <span class="fi-mag-nome">${esc(m.nome)}</span>
-          ${m.auto ? '<span class="fi-mag-tag fi-mag-tag--auto" title="Você conhece esta magia pela sua classe (Usurpar) — não precisou aprendê-la">🔓 da classe</span>' : ''}
           ${m.escola ? `<span class="fi-mag-tag">${esc(m.escola)}</span>` : ''}
           ${m.tipo ? `<span class="fi-mag-tag fi-mag-tag--tipo">${esc(m.tipo)}</span>` : ''}
         </button>
         <span class="fi-mag-acoes">
           ${p.total ? `<button type="button" class="fi-mag-pm-btn${p.extra ? ' fi-mag-pm-btn--apr' : ''}"
-                  data-acao="gastar-magia" ${alvo}
+                  data-acao="gastar-magia" data-i="${i}"
                   title="Gastar ${p.total} PM${p.extra ? ' (' + p.base + ' da magia + ' + p.extra + ' de aprimoramento)' : ''} — os temporários saem primeiro"
             >🔥 ${p.total} PM</button>` : ''}
           ${rollHtml}
-          ${m.auto ? '' : `<button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
-                  title="Tirar ${esc(m.nome)} da ficha">✕</button>`}
+          <button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
+                  title="Tirar ${esc(m.nome)} da ficha">✕</button>
           <span class="fi-res fi-res--mag" data-res="magia:${m.id}" hidden></span>
         </span>
         ${fechada ? '' : `
@@ -4362,9 +4343,9 @@
             ${campoMag('Resistência', m.resistencia)}
           </div>
           <div class="fi-mag-desc">${descricaoDaMagia(m)}</div>
-          ${m.auto ? '' : blocoAprimoramentos(f, m, i)}
-          ${m.auto ? '' : `<input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
-                 placeholder="sua anotação (alvo preferido, quem costuma acompanhar…)" autocomplete="off">`}
+          ${blocoAprimoramentos(f, m, i)}
+          <input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
+                 placeholder="sua anotação (alvo preferido, quem costuma acompanhar…)" autocomplete="off">
         </div>`}
       </li>`;
   }
@@ -4738,6 +4719,13 @@
   function aoEntrada(e) {
     const el = e.target;
     if (!el || !el.dataset) return;
+    //  A 🔍 barra do cartão de Magias não é campo da ficha: nada é
+    //  gravado, nada é redesenhado (redesenhar tiraria o foco do campo a
+    //  cada tecla) — só se esconde e se mostra o que já está na tela.
+    if (el.dataset.filtro === 'magias') {
+      filtroMagias = el.value;
+      return aplicarFiltroMagias();
+    }
     const campo = el.dataset.campo;
     if (!campo) return;
     const f = fichaAberta();
@@ -5383,6 +5371,12 @@
 
     // ── MAGIAS ─────────────────────────────────────────────────────
     if (acao === 'add-magia')  return abrirBuscaMagia(f);
+    if (acao === 'limpa-filtro-magias') {
+      filtroMagias = '';
+      const campo = secao.querySelector('[data-filtro="magias"]');
+      if (campo) { campo.value = ''; campo.focus(); }
+      return aplicarFiltroMagias();
+    }
     // o ✕ da magia mora colado no 🔥 de lançar — pergunta antes
     if (acao === 'tira-magia') {
       const m = f.magias[+btn.dataset.i];
@@ -5400,12 +5394,13 @@
       alternarFechada(m); return render();
     }
     if (acao === 'dobra-magias') {
-      const auto = magiasAutoDe(f);
       // tudo fechado agora → o clique abre tudo; senão, recolhe tudo. Só
       // mexe no que está no estado contrário ao alvo (abrir === estaFechada).
-      const abrir = f.magias.every(estaFechada) && auto.every(estaFechada);
-      f.magias.forEach(m => { if (estaFechada(m) === abrir) alternarFechada(m); });
-      auto.forEach(m => { if (estaFechada(m) === abrir) alternarFechada(m); });
+      // E só no que a 🔍 barra deixou à vista: procurar "cura" e clicar em
+      // "Abrir todas" abre as de cura, não as oitenta da ficha.
+      const lista = magiasVisiveis(f);
+      const abrir = lista.every(estaFechada);
+      lista.forEach(m => { if (estaFechada(m) === abrir) alternarFechada(m); });
       return render();
     }
     if (acao === 'gastar-magia') {
@@ -6056,15 +6051,11 @@
         }).slice(0, 60);
         const jaTem = {};
         f.magias.forEach(m => { jaTem[m.mid] = true; });
-        // as que a classe já concede (Usurpar): marca, mas deixa adicionar —
-        // adicionar transforma numa magia sua, editável (com aprimoramentos).
-        const daClasse = {};
-        magiasAutoDe(f).forEach(m => { daClasse[m.mid] = true; });
 
         res.innerHTML = achadas.length ? achadas.map(m => `
-          <button type="button" class="fi-busca-item ${jaTem[m.id] ? 'fi-busca-item--tem' : ''}${daClasse[m.id] ? ' fi-busca-item--auto' : ''}" data-mid="${esc(m.id)}">
+          <button type="button" class="fi-busca-item ${jaTem[m.id] ? 'fi-busca-item--tem' : ''}" data-mid="${esc(m.id)}">
             <span class="fi-busca-circ">${m.circulo}º</span>
-            <span class="fi-busca-nome">${esc(m.nome)}${jaTem[m.id] ? ' <em>já está na ficha</em>' : (daClasse[m.id] ? ' <em>🔓 já vem da sua classe</em>' : '')}</span>
+            <span class="fi-busca-nome">${esc(m.nome)}${jaTem[m.id] ? ' <em>já está na ficha</em>' : ''}</span>
             <span class="fi-busca-meta">${esc(m.escola)} · ${esc(m.tipo)} · ${m.pm} PM</span>
             <span class="fi-busca-res-txt">${esc(m.resumo || '')}</span>
           </button>`).join('')
@@ -6751,7 +6742,7 @@
     ligarEfeitosArea();
     //  Um redesenho quando TUDO já carregou (magias, efeitos em área): o
     //  init() rodou em "interactive", antes destes módulos, então o
-    //  primeiro desenho não tinha nem as magias do Usurpador nem os efeitos.
+    //  primeiro desenho não tinha nem o texto das magias nem os efeitos.
     if (document.getElementById('ficha-content') && fichaAberta()) render();
   }
   if (document.readyState === 'complete') aoTerminarDeCarregar();

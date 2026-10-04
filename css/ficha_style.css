@@ -933,27 +933,6 @@
   border: 1px solid var(--gold-dim);
   border-radius: 999px;
 }
-/* ── MAGIAS DA CLASSE (Usurpador, 30/09/2026) ────────────────────── */
-/* a etiqueta "🔓 da classe" e o aviso do topo do cartão de Magias */
-.fi-mag-tag--auto {
-  color: var(--azul);
-  border-color: var(--azul);
-  text-transform: none;
-  letter-spacing: 0.02em;
-}
-.fi-mag--auto .fi-mag-nome { font-style: italic; }
-.fi-mag-auto-aviso {
-  margin: 0.2rem 0 0.6rem;
-  padding: 0.5rem 0.7rem;
-  font-size: 0.86rem;
-  line-height: 1.5;
-  color: var(--text-mid);
-  background: var(--parchment2);
-  border: 1px solid var(--parchment3);
-  border-left: 3px solid var(--azul);
-  border-radius: var(--raio);
-}
-.fi-busca-item--auto:not(.fi-busca-item--tem) .fi-busca-nome em { color: var(--azul); font-style: normal; }
 /* o texto do livro, direto no cartão (a descrição e o truque) */
 .fi-mag-desc {
   margin-top: 0.4rem;
@@ -1509,6 +1488,55 @@
   gap: 0.4rem;
 }
 .fi-mag-botoes .fi-mag-add { margin-left: 0; }
+
+/* ── A 🔍 BARRA DE PESQUISA DO CARTÃO (04/10/2026) ────────────────── */
+/* Esconder é pelo atributo hidden, e ele PRECISA destas duas linhas: a
+   .fi-mag tem display: grid e o .fi-mag-grupo é bloco — regra de autor
+   ganha da folha do navegador, então o hidden sozinho não esconderia. */
+.fi-mag[hidden],
+.fi-mag-grupo[hidden] { display: none; }
+.fi-mag-filtro {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.6rem;
+  padding: 0.2rem 0.5rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-mag-filtro-lupa { flex: 0 0 auto; font-size: 0.85rem; opacity: 0.65; }
+.fi-mag-filtro-campo {
+  flex: 1 1 6rem;
+  min-width: 0;
+  padding: 0.3rem 0.1rem;
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: none;
+  border: none;
+}
+.fi-mag-filtro-campo:focus { outline: none; }
+.fi-mag-filtro-campo::placeholder { color: var(--text-dim); font-style: italic; }
+.fi-mag-filtro-x {
+  flex: 0 0 auto;
+  padding: 0.1rem 0.3rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+}
+.fi-mag-filtro-x:hover { color: var(--carmim); }
+.fi-mag-filtro-x[hidden] { display: none; }
+.fi-mag-filtro-conta {
+  flex: 0 0 auto;
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: var(--text-dim);
+}
 .fi-mag-pm-btn {
   font-family: 'Cinzel', serif;
   font-size: 0.62rem;
@@ -2036,6 +2064,12 @@
 }
 .fi-txt:focus, .fi-num:focus, .fi-sel:focus { border-bottom-color: var(--rust); }
 .fi-txt--nome { border: none; border-bottom: 2px solid var(--ink); }
+/* a 🔍 barra de procurar magia é um campo: mesmo poço, mesma linha */
+.fi-mag-filtro {
+  border: 1px solid rgba(26, 16, 8, 0.3);
+  border-bottom: 2px solid var(--ink-faded);
+}
+.fi-mag-filtro:focus-within { border-bottom-color: var(--rust); }
 .fi-rot, .fi-extra > span, .fi-cd-outros > span { color: var(--ink-faded); }
 .fi-extra > span { font-size: 0.6rem; }
 
