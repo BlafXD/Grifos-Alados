@@ -164,8 +164,26 @@ window.GA_FichasProntas = (function () {
     return (cat.fichas || []).filter(f => f.subgrupo === r.titulo).length === 1;
   }
 
+  // ── ⛩ A CARA DA DIVINDADE (04/10/2026) ──────────────────────────
+  //  Pedido dele: "alterar um pouco o visual de quando o mestre está
+  //  usando a ficha de algum dos Deuses — se estiver usando a ficha da
+  //  Allihanna ser um pouco mais verde e ter algumas raízes ou plantas".
+  //  A ficha de um avatar traz o campo `deus`; quando ele casa com uma
+  //  entrada do js/deuses-visual-data.js, o card recebe três variáveis
+  //  (a cor de moldura, a faixa de cores significativas e o desenho do
+  //  símbolo sagrado) e a classe que o CSS usa. Deus sem entrada — e os
+  //  dez da segunda leva, enquanto não chegarem — fica exatamente como
+  //  era: nada depende disto para desenhar.
+  function visualDoDeus(f) {
+    const V = window.GA_DEUSES_VISUAL;
+    if (!V || !f.deus) return null;
+    const d = V.de(f.deus);
+    return d ? { d: d, estilo: V.estilo(d) } : null;
+  }
+
   function cardFicha(ref) {
     const f = ref.def, cat = ref.cat, l = ref.livro;
+    const vis = visualDoDeus(f);
     // o quadro do subgrupo entra na busca junto com a ficha: é lá que moram
     // a arma preferida e a canalização de cada deus, e a abertura dos grupos
     // do Tormenta 20 ("Orcs", "Dragões")
@@ -177,9 +195,10 @@ window.GA_FichasProntas = (function () {
     // uma abertura comum ("Orcs", "Cobras", "Dragões") — vale mostrar
     const sub = f.subgrupo ? `<span class="fp-sub">${esc(f.subgrupo)}</span> · ` : '';
     return `
-      <details class="vc-card npc-card fp-card" data-busca="${esc(busca)}"
+      <details class="vc-card npc-card fp-card${vis ? ' fp-card--deus' : ''}" data-busca="${esc(busca)}"
                data-fp-ficha="${esc(f.chave)}" data-fp-livro="${esc(l.chave)}"
-               data-fp-cat="${esc(cat.chave)}" style="--cor:${cat.cor || l.cor}">
+               ${vis ? 'data-deus="' + esc(vis.d.chave) + '"' : ''}
+               data-fp-cat="${esc(cat.chave)}" style="--cor:${cat.cor || l.cor}${vis ? ';' + vis.estilo : ''}">
         <summary class="vc-card-cab">
           <span class="vc-card-nome">${esc(f.nome)} <span class="npc-nd">ND ${esc(f.nd)}</span></span>
           <span class="vc-card-meta">${sub}${esc(f.tipo || '')}${papel ? ` · <span class="fp-papel" title="${esc(papel.dica)}">${esc(papel.rot)}</span>` : ''}</span>

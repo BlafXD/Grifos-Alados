@@ -290,3 +290,50 @@ button.fp-ref:hover {
   .fp-livro-nome { font-size: 0.64rem; }
   .fp-livro { padding: 0.4rem 0.6rem; }
 }
+
+/* ── ⛩ A CARA DA DIVINDADE (04/10/2026) ────────────────────────────
+   Vale só para as fichas dos avatares dos Deuses Maiores. As três
+   variáveis (--deus-cor, --deus-faixa e --deus-motivo) chegam prontas no
+   style do card, montadas pelo js/deuses-visual-data.js a partir do
+   quadro de dados do próprio livro: as "Cores Significativas" viram a
+   faixa do topo e a moldura, e o "Símbolo Sagrado" vira a marca de água
+   do canto.
+   É de propósito que seja POUCO. O que o mestre lê aqui é um statblock
+   no meio do combate: nada pode disputar com ele. */
+.fp-card--deus,
+.fp-card--deus:hover,
+.fp-card--deus[open] { border-left-color: var(--deus-cor, var(--rust)); }
+
+/* a faixa das cores significativas, na ordem e na quantidade do livro —
+   Marah tem uma cor, Azgher duas, Kallyadranoch cinco */
+.fp-card--deus::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--deus-faixa, var(--gold-dim));
+  opacity: 0.85;
+}
+/* a faixa come 4px do alto: o título desce o mesmo tanto */
+.fp-card--deus > .vc-card-cab { padding-top: 0.78rem; }
+
+/* o símbolo sagrado, em marca de água no ALTO do card aberto — atrás do
+   quadro de dados da divindade, como iluminura. No pé do card não serve:
+   a ficha de um avatar passa de dois mil pixels de altura, e ninguém
+   rolaria até lá para ver o desenho. */
+.fp-card--deus .vc-card-corpo {
+  background-image: var(--deus-motivo, none);
+  background-repeat: no-repeat;
+  background-position: right -0.7rem top -0.7rem;
+  background-size: 7.5rem auto;
+}
+/* o quadro de dados da divindade (que já está no card) ganha a cor dela */
+.fp-card--deus .fp-sub-intro {
+  padding: 0.45rem 0.6rem;
+  border-left-color: var(--deus-cor, var(--gold-dim));
+  background: color-mix(in srgb, var(--deus-cor, #8a6a1f) 7%, transparent);
+}
+/* "Allihanna, Deusa da Natureza", no cabeçalho, na cor dela */
+.fp-card--deus .fp-sub { color: var(--deus-cor, var(--gold-deep)); }
