@@ -15,7 +15,7 @@
   border-bottom: 2px solid var(--parchment3);
 }
 .ca-subtab {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.76rem;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -52,7 +52,7 @@
   gap: 0.6rem;
 }
 .ca-barra-tit {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.86rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -76,7 +76,7 @@
   border: 1px solid var(--parchment3);
   border-radius: var(--raio);
   background: var(--parchment);
-  font-family: 'Crimson Pro', Georgia, serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   color: var(--ink-faded);
   cursor: pointer;
@@ -96,7 +96,7 @@
   white-space: nowrap;
 }
 .ca-chip-nd {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 700;
   padding: 0.05rem 0.3rem;
@@ -108,7 +108,7 @@
 
 /* ── BOTÕES ──────────────────────────────────────────────────────── */
 .ca-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -128,7 +128,7 @@
 .ca-btn--arquivo { display: inline-flex; align-items: center; }
 
 .ca-mini {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 600;
   padding: 0.22rem 0.45rem;
@@ -185,12 +185,12 @@
   border-radius: 50%;
   background: var(--ink);
   color: var(--gold-light);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.9rem;
   font-weight: 700;
 }
 .ca-passo-tit h2 {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -214,7 +214,7 @@
 .ca-livro > summary {
   list-style: none;
   cursor: pointer;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -246,7 +246,7 @@
   color: var(--text-dim);
 }
 .ca-man-sub {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -265,7 +265,7 @@
   margin: 0.8rem 0;
 }
 .ca-quadro-tit {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -311,15 +311,14 @@
 
 .ca-campo { display: flex; flex-direction: column; gap: 0.22rem; }
 .ca-campo-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--text-dim);
 }
 .ca-campo-rot em {
-  font-family: 'Crimson Pro', Georgia, serif;
+  font-family: var(--ga-fonte-corpo);
   text-transform: none;
   letter-spacing: 0;
   font-weight: 400;
@@ -327,7 +326,7 @@
 }
 
 .ca-input, .ca-select, .ca-area {
-  font-family: 'Crimson Pro', Georgia, serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: #fffaf0;
@@ -361,11 +360,10 @@
 .ca-chk em { font-style: italic; color: var(--text-dim); }
 
 .ca-sub-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
   color: var(--rust);
   margin-top: 0.45rem;
   padding-bottom: 0.2rem;
@@ -430,7 +428,7 @@
 .ca-papel-icone { font-size: 0.75rem; color: var(--rust); }
 .ca-papel--ativo .ca-papel-icone { color: var(--gold-light); }
 .ca-papel-nome {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -464,7 +462,7 @@
   gap: 0.25rem;
 }
 .ca-nd {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.82rem;
   font-weight: 700;
   padding: 0.4rem 0.2rem;
@@ -507,16 +505,15 @@
 }
 .ca-stat-rot {
   grid-area: rot;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--text-dim);
 }
 .ca-stat-val {
   grid-area: val;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--rust-dark);
@@ -524,7 +521,7 @@
 }
 .ca-stat-aj {
   grid-area: aj;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.7rem;
   padding: 0.15rem 0.2rem;
   border: 1px solid var(--parchment3);
@@ -572,11 +569,10 @@
 .ca-ataque-linha { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: flex-end; }
 .ca-mini-campo { display: flex; flex-direction: column; gap: 0.12rem; }
 .ca-mini-campo > span {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--text-dim);
 }
 .ca-mini-campo--larga { flex: 1 1 12rem; }
@@ -623,7 +619,7 @@
 .ca-bib > summary {
   list-style: none;
   cursor: pointer;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -632,20 +628,19 @@
 .ca-bib > summary::-webkit-details-marker { display: none; }
 .ca-bib > summary::before { content: '▸ '; }
 .ca-bib[open] > summary::before { content: '▾ '; }
-.ca-bib > summary em { font-family: 'Crimson Pro', Georgia, serif; letter-spacing: 0; font-weight: 400; }
+.ca-bib > summary em { font-family: var(--ga-fonte-corpo); letter-spacing: 0; font-weight: 400; }
 .ca-bib-lista { display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.4rem; }
 .ca-bib-grupo { display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: baseline; }
 .ca-bib-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--rust);
   min-width: 5.5rem;
 }
 .ca-bib-item {
-  font-family: 'Crimson Pro', Georgia, serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   padding: 0.18rem 0.45rem;
   border: 1px solid var(--parchment3);
@@ -675,11 +670,10 @@
 }
 .ca-atrib-rot {
   grid-area: rot;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--text-dim);
 }
 .ca-atrib-cat { grid-area: cat; font-size: 0.78rem; font-style: italic; color: var(--gold-deep); }
@@ -698,13 +692,13 @@
 }
 .ca-per-nome {
   min-width: 8rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.76rem;
   font-weight: 600;
   color: var(--ink);
 }
 .ca-per-nome em {
-  font-family: 'Crimson Pro', Georgia, serif;
+  font-family: var(--ga-fonte-corpo);
   font-weight: 400;
   font-size: 0.78rem;
   color: var(--text-dim);
@@ -712,7 +706,7 @@
 }
 .ca-per-val {
   margin-left: auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.02rem;
   font-weight: 700;
   color: var(--rust-dark);
@@ -741,11 +735,10 @@
   color: var(--parchment);
 }
 .ca-previa-tit {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.09em;
-  text-transform: uppercase;
   color: var(--gold-light);
 }
 .ca-previa-acoes { display: flex; gap: 0.25rem; }
@@ -755,7 +748,7 @@
   flex: 1 1 auto;
 }
 .ca-ficha-nome {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -795,7 +788,7 @@
   list-style: none;
   cursor: pointer;
   padding: 0.6rem 0.85rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.86rem;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -816,7 +809,7 @@
 }
 .ca-fonte {
   text-align: center;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.68rem;
   letter-spacing: 0.09em;
   color: var(--text-dim);
@@ -827,7 +820,7 @@
 .ca-tabelas { display: flex; flex-direction: column; gap: 1.4rem; }
 .ca-tabs-param { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.5rem; }
 .ca-tab-param {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 600;
   padding: 0.32rem 0.7rem;
@@ -879,17 +872,16 @@
 }
 .ca-base-lado { display: flex; flex-direction: column; gap: 0.1rem; min-width: 10rem; }
 .ca-base-lado > strong {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1rem;
   color: var(--ink);
   line-height: 1.15;
 }
 .ca-base-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.09em;
-  text-transform: uppercase;
   color: var(--rust);
 }
 .ca-base-meta { font-size: 0.78rem; color: var(--text-dim); }
@@ -917,7 +909,7 @@
   transition: background 0.15s, border-color 0.15s;
 }
 .ca-faixa:hover { background: var(--parchment3); }
-.ca-faixa-rot { font-family: 'Cinzel', serif; font-size: 0.76rem; font-weight: 700; }
+.ca-faixa-rot { font-family: var(--ga-fonte-rotulo); font-size: 0.76rem; font-weight: 700; }
 .ca-faixa-num { font-size: 0.72rem; font-style: italic; color: var(--text-dim); }
 .ca-faixa--ativa,
 .ca-faixa--ativa:hover { background: var(--rust); border-color: var(--rust); color: var(--parchment); }
@@ -933,7 +925,7 @@
 }
 .ca-stat-base,
 .ca-stat-tab {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.92rem;
   font-weight: 600;
   color: var(--text-dim);
@@ -975,7 +967,7 @@
 }
 button.ca-base-item:hover { background: var(--gold-pale); border-color: var(--gold-dim); }
 .ca-base-item--sempapel { cursor: default; background: var(--parchment); }
-.ca-base-item-nome { font-family: 'Cinzel', serif; font-size: 0.86rem; font-weight: 600; }
+.ca-base-item-nome { font-family: var(--ga-fonte-rotulo); font-size: 0.86rem; font-weight: 600; }
 .ca-base-item-meta { font-size: 0.74rem; color: var(--text-dim); }
 .ca-base-papeis { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.2rem; }
 

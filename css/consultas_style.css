@@ -21,7 +21,7 @@
   z-index: 90;
 }
 .cr-subtab {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -62,16 +62,16 @@
 .cr-cabecalho::before {                /* sobrancelha */
   content: '✦ Compêndio de Arton ✦';
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  text-transform: uppercase;
+
   color: var(--gold-dim);
   margin-bottom: 0.4rem;
 }
 .cr-cabecalho h1 {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.9rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -80,7 +80,7 @@
   margin: 0 0 0.3rem;
 }
 .cr-sub {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 1.02rem;
   line-height: 1.4;
@@ -95,7 +95,7 @@
   box-sizing: border-box;
   padding: 0.62rem 0.85rem;
   margin-bottom: 1.3rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 1rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -117,10 +117,10 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.8rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   padding-bottom: 0.4rem;
   margin: 0 0 0.9rem;
@@ -189,7 +189,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 0.95rem;
   font-weight: 700;
   line-height: 1;
@@ -207,14 +207,14 @@
   border-color: var(--ink);
 }
 .vc-card-nome {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.2;
   color: var(--ink);
 }
 .vc-card-meta {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 0.82rem;
   color: var(--ink-faded);
 }
@@ -224,7 +224,7 @@
   border-top: 1px solid var(--gold-dim);
 }
 .vc-desc {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.98rem;
   line-height: 1.5;
   color: var(--ink);
@@ -248,20 +248,20 @@
 }
 .vc-stat--wide { grid-column: 1 / -1; }  /* valores longos ocupam a linha inteira */
 .vc-stat-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
 }
 .vc-stat-val {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   line-height: 1.35;
   color: var(--ink);
 }
 .vc-regras {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   line-height: 1.55;
   color: var(--ink);
@@ -272,26 +272,26 @@
 }
 .vc-regras-rot {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--rust);
   margin-bottom: 0.3rem;
 }
 
 /* ── erro / em breve ────────────────────────────────────────────── */
 .cr-erro {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   color: var(--rust-dark);
   background: var(--parchment2);
   border: 2px solid var(--rust);
   padding: 1rem 1.2rem;
 }
-.cr-erro code { font-family: monospace; background: var(--parchment3); padding: 0.05rem 0.3rem; }
+.cr-erro code { font-family: var(--ga-fonte-mono); background: var(--parchment3); padding: 0.05rem 0.3rem; }
 .cr-embreve {
   text-align: center;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 1.1rem;
   color: var(--ink-faded);
   padding: 3rem 1rem;
@@ -313,14 +313,14 @@
   gap: 0.5rem;
 }
 .am-item-nome {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 0.98rem;
   font-weight: 700;
   color: var(--ink);
 }
 .am-badge {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -332,7 +332,7 @@
 .am-badge--desl { background: var(--ink); }
 .am-item-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.35rem 0; }
 .am-tag {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 0.74rem;
   color: var(--ink-faded);
   background: var(--parchment3);
@@ -340,7 +340,7 @@
   padding: 0.05rem 0.4rem;
 }
 .am-item-txt {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   line-height: 1.45;
   color: var(--ink);
@@ -350,7 +350,7 @@
 /* agrupamento por fonte dentro do bestiário */
 .am-fonte { margin-bottom: 1.1rem; }
 .am-fonte-titulo {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.95rem;
   color: var(--rust);
@@ -366,11 +366,11 @@
   align-items: start;
 }
 .am-tier-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   color: var(--parchment);
   background: var(--ink);
   padding: 0.12rem 0.3rem;
@@ -380,13 +380,13 @@
 .am-tier:nth-child(2) .am-tier-rot { background: var(--rust); }
 .am-tier:nth-child(3) .am-tier-rot { background: var(--rust-dark); }
 .am-tier-txt {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   line-height: 1.45;
   color: var(--ink);
 }
 .am-obs {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.9rem;
   color: var(--ink-faded);
@@ -410,7 +410,7 @@
   margin-bottom: 1.3rem;
 }
 .cul-calc-cab {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 0.95rem;
   letter-spacing: 0.05em;
   color: var(--ink);
@@ -428,7 +428,7 @@
 .cul-sel {
   flex: 1 1 16rem;
   padding: 0.4rem 0.5rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 1rem;
   color: var(--ink);
   background: var(--parchment);
@@ -440,7 +440,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   letter-spacing: 0.04em;
   cursor: pointer;
@@ -455,19 +455,19 @@
   padding: 0.7rem 0.85rem;
 }
 .cul-res-nome {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.06rem;
   color: var(--ink);
 }
 .cul-res-flavor {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.92rem;
   color: var(--ink-faded);
   margin-bottom: 0.5rem;
 }
 .cul-res-beneficio {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 1.03rem;
   font-weight: 600;
   color: var(--rust);
@@ -477,16 +477,16 @@
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 0.32rem 0.7rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.97rem;
   line-height: 1.4;
   color: var(--ink);
 }
 .cul-res-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
   white-space: nowrap;
 }
@@ -500,15 +500,15 @@
   margin-top: 0.65rem;
   padding-top: 0.55rem;
   border-top: 1px dashed var(--ink-faded);
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.93rem;
   color: var(--ink);
 }
 .cul-res-tempero-tag {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+
   color: var(--gold-deep);
   white-space: nowrap;
 }
@@ -524,11 +524,11 @@
 
 /* ── VIDA URBANA — rolador de eventos de perseguição ──────────────── */
 .urb-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--parchment);
   background: var(--rust);
   border: 1px solid var(--rust-dark);
@@ -540,7 +540,7 @@
 .urb-btn:hover { background: var(--rust-dark); }
 
 .urb-dica {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   font-style: italic;
   color: var(--ink-faded);
@@ -554,7 +554,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.5rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 0.98rem;
   color: var(--ink);
 }
@@ -566,19 +566,19 @@
   background: var(--parchment2);
 }
 .urb-res-teste {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--rust-dark);
 }
 .urb-res-exemplo {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 1rem;
   color: var(--ink);
   margin-top: 0.35rem;
 }
 .urb-res-efeito {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   color: var(--ink-faded);
   margin-top: 0.35rem;
@@ -588,7 +588,7 @@
 
 /* ── 👤 GUIA DE NPCS ─────────────────────────────────────────────── */
 .npc-intro {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.95rem;
   color: var(--ink-faded);
@@ -602,7 +602,7 @@
   display: inline-block;
   vertical-align: 0.12em;
   margin-left: 0.35rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -616,24 +616,24 @@
 /* statblock formatado */
 .npc-block { margin-top: 0.2rem; }
 .npc-desc {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.92rem;
   color: var(--ink-faded);
   margin: 0 0 0.5rem;
 }
 .npc-linha {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   line-height: 1.5;
   margin: 0.12rem 0;
 }
 .npc-linha--tipo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.09em;
-  text-transform: uppercase;
+
   color: var(--cor, var(--rust-dark));
   border-bottom: 1px dashed var(--gold-dim);
   padding-bottom: 0.25rem;
@@ -658,11 +658,11 @@
   border-top: 1px solid var(--gold-dim);
 }
 .npc-enviar {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   padding: 0.38rem 0.75rem;
   background: transparent;
   border: 1px solid var(--rust);
@@ -672,7 +672,7 @@
 }
 .npc-enviar:hover { background: var(--rust); color: var(--parchment); }
 .npc-envio-info {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.88rem;
   color: var(--verde);
@@ -691,11 +691,11 @@
   background: var(--parchment3, rgba(0, 0, 0, 0.03));
 }
 .dev-ir {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+
   padding: 0.24rem 0.5rem;
   background: transparent;
   border: 1px solid var(--ink-faded);
@@ -709,7 +709,7 @@
 .dev-culto { border-left: 3px solid var(--cor, var(--rust)); }
 .dev-culto .vc-card-nome { color: var(--rust-dark); }
 .dev-lore {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.92rem;
   color: var(--ink-faded);
@@ -739,11 +739,11 @@
 .dev-poder { border-left-color: var(--gold-dim); }
 .dev-badge {
   display: inline-block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   padding: 0.12rem 0.4rem;
   border: 1px solid var(--gold-dim);
   margin-left: 0.3rem;
@@ -759,7 +759,7 @@
   border: 1px solid var(--gold-dim);
   border-left: 4px solid var(--gold);
   background: var(--parchment2);
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   line-height: 1.5;
   color: var(--ink);
@@ -773,11 +773,11 @@
   margin-bottom: 0.8rem;
 }
 .cond-chip {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
+
   color: var(--cor, var(--ink));
   background: var(--parchment);
   border: 1px solid var(--cor, var(--ink-faded));
@@ -801,11 +801,11 @@
 /* etiqueta do tipo de efeito no cabeçalho do card */
 .cond-badge {
   align-self: flex-start;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--cor, var(--ink));
   border: 1px solid var(--cor, var(--ink-faded));
   background: var(--parchment);
@@ -829,18 +829,18 @@
 }
 .mag-filtro-rot {
   flex: 0 0 4.2rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.09em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
 }
 .mag-filtro-linha .cond-chips { margin-bottom: 0.4rem; }
 
 /* contagem de resultados */
 .mag-contagem {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 0.82rem;
   font-style: italic;
   color: var(--ink-faded);
@@ -857,11 +857,11 @@
 .mag-verbete[open] { grid-column: 1 / -1; }
 
 .mag-selo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--parchment);
   background: var(--rust-dark);
   padding: 0.08rem 0.36rem;
@@ -874,7 +874,7 @@
 
 /* resumo de uma linha, antes do texto integral */
 .mag-resumo {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   font-style: italic;
   color: var(--ink-faded);
@@ -896,11 +896,11 @@
   border-top: 1px dashed var(--parchment3);
 }
 .mag-pergaminho {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
 }
 .mag-rodape .ga-desc-copiar { margin: 0; }
@@ -922,11 +922,11 @@
   background: #7a4a9e;
   color: var(--parchment);
   border-radius: 2px;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+
   white-space: nowrap;
   cursor: help;
   vertical-align: 0.08em;

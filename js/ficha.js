@@ -837,6 +837,15 @@
     const F = atr(f, 'for');
     return (F >= 0 ? 10 + 2 * F : 10 + F) + (f.carga.outros || 0);
   }
+  //  O `carga.outros` já entrava na conta desde sempre, mas não tinha campo
+  //  em lugar nenhum da tela — dava para aumentar o limite só editando o
+  //  backup .json. Agora ele aparece nos dois lugares em que se lê a carga
+  //  (o cartão Defesa & Carga e o topo do 🎒 Inventário), com esta dica.
+  const DICA_CARGA_OUTROS =
+    'Espaços de carga que vêm de FORA da conta do livro (10 + 2 × Força, p. 141): ' +
+    'um poder, uma mochila que carrega por você, a besta de carga do grupo ' +
+    '(10/15/20 espaços, Ameaças de Arton p. 416), uma decisão da sua mesa. ' +
+    'Pode ser negativo, para quando algo TIRA espaço.';
   // Treino: +2 (1º–6º), +4 (7º–14º), +6 (15º+) — p. 114
   function treino(n, treinada) {
     if (!treinada) return 0;
@@ -1833,7 +1842,11 @@
               <span>Carga</span>
               <span><strong data-der="cargausada">${cargaUsada(f)}</strong>
                 / <strong data-der="cargamax">${cargaMax(f)}</strong> espaços
-                <em class="fi-carga-estado" data-der="cargaestado">${rotuloCarga(f)}</em></span>
+                <em class="fi-carga-estado" data-der="cargaestado">${rotuloCarga(f)}</em>
+                <label class="fi-cd-outros" title="${esc(DICA_CARGA_OUTROS)}">
+                  <span>Outros</span>
+                  <input class="fi-num fi-num--cd" type="number" value="${f.carga.outros}"
+                         data-campo="carga.outros" data-der="eco:carga.outros"></label></span>
             </div>
             <div class="fi-linha fi-linha--cd">
               <span>CD das magias</span>
@@ -4441,7 +4454,12 @@
             <span class="fi-barra-parte" data-der="cargabarra" style="width:${fatiaCarga(f)}%"></span>
           </span>
           <em class="fi-carga-estado" data-der="cargaestado2">${rotuloCarga(f)}</em>
+          <label class="fi-inv-carga-outros" title="${esc(DICA_CARGA_OUTROS)}">
+            <span>＋ espaços à mão</span>
+            <input class="fi-num fi-num--mini" type="number" value="${f.carga.outros}"
+                   data-campo="carga.outros" data-der="eco:carga.outros"></label>
         </div>
+        <p class="fi-conta fi-inv-conta-max" data-der="cargamaxconta">${contaCargaMax(f)}</p>
         <div class="fi-inv-cab">
           <span>Item</span><span>Quantas</span><span>Espaços</span><span>Ocupa</span><span>Anotação</span><span>Ordem</span><span></span>
         </div>
@@ -4500,6 +4518,20 @@
     if (foco && !foco.disabled) foco.focus({ preventScroll: true });
   }
 
+  //  O LIMITE por extenso: de onde vêm os espaços. Sem nada à mão é a conta
+  //  pura do livro; com o «＋ espaços à mão» preenchido, mostra as duas
+  //  parcelas, para ninguém esquecer que mexeu no teto.
+  function contaCargaMax(f) {
+    const F = atr(f, 'for');
+    const base = (F >= 0 ? 10 + 2 * F : 10 + F);
+    const basePorExtenso = F >= 0
+      ? '10 + 2 × ' + F + ' de Força'
+      : '10 − ' + Math.abs(F) + ' de Força negativa';
+    const x = f.carga.outros || 0;
+    if (!x) return 'Limite: ' + basePorExtenso + ' = ' + base + ' espaços (p. 141).';
+    return 'Limite: ' + basePorExtenso + ' = ' + base +
+           (x > 0 ? ' + ' + x : ' − ' + Math.abs(x)) + ' à mão = ' + cargaMax(f) + ' espaços.';
+  }
   function contaCarga(f) {
     const it = arredonda(cargaItens(f)), mo = cargaMoedas(f);
     const p = [];
@@ -4546,6 +4578,17 @@
     const n = nivel(f);
     secao.querySelectorAll('[data-der]').forEach(el => {
       const d = el.dataset.der;
+      //  `eco:<campo>` — o MESMO campo da ficha aparecendo em dois lugares da
+      //  tela (o «Outros» da carga está no cartão Defesa & Carga e no topo do
+      //  🎒 Inventário). Quem está com o foco é quem manda: o outro recebe o
+      //  valor novo sem redesenhar, e o cursor de quem digita não se move.
+      if (d.slice(0, 4) === 'eco:') {
+        if (el === document.activeElement) return;
+        const v = valorDoCampo(f, d.slice(4));
+        const novo = (v == null) ? '' : String(v);
+        if (el.value !== novo) el.value = novo;
+        return;
+      }
       if (d.slice(0, 3) === 'am:')  { derivadoAmigo(f, el, d); return; }
       //  O valor efetivo de um atributo (base + temporário): acende ao lado
       //  do número quando há temporário, some quando volta a zero.
@@ -4588,6 +4631,7 @@
         el.parentElement.classList.toggle('fi-barra-pv--cheia', estadoCarga(f) !== 'ok');
       }
       if (d === 'invconta')  el.innerHTML = contaCarga(f);
+      if (d === 'cargamaxconta') el.textContent = contaCargaMax(f);
       if (d === 'cdmag') el.textContent = cdMagias(f);
       if (d === 'cdhab') el.textContent = cdHabilidades(f);
       if (d === 'desloc')    el.textContent = deslocamento(f);
@@ -4705,6 +4749,19 @@
 
   // ═══ ESCRITAS ═════════════════════════════════════════════════════
   //  'atributos.for', 'pericias.percepcao.outros', 'ataques.0.dano'…
+  //  O par de leitura do gravarCampo: segue o caminho ('carga.outros') e
+  //  devolve o valor, ou null se o caminho não existir nesta ficha.
+  function valorDoCampo(f, caminho) {
+    const p = caminho.split('.');
+    let alvo = f;
+    for (let i = 0; i < p.length - 1; i++) {
+      alvo = alvo[p[i]];
+      if (!alvo) return null;
+    }
+    const v = alvo[p[p.length - 1]];
+    return (v === undefined) ? null : v;
+  }
+
   function gravarCampo(f, caminho, valor) {
     const p = caminho.split('.');
     let alvo = f;

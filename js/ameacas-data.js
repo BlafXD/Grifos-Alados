@@ -21,7 +21,7 @@ Exemplo: um ogro caçador tem um ataque de tacape corpo a corpo +24 — é trein
 `A descrição de cada ataque indica o tipo de dano (corte, perfuração etc.). Se nenhum tipo for indicado, o ataque causa o dano normal daquela arma. Assim como para personagens, bônus de dano e dados extras de criaturas NÃO são multiplicados num acerto crítico, a menos que a descrição da ameaça diga o contrário.` },
 
   { grupo: '👹 Ameaças de Arton — Ataques de Criaturas', titulo: 'Armas naturais — dano por tamanho',
-    texto: 'Como regra geral, armas naturais causam 1d6 de dano de seu tipo para uma criatura Pequena ou Média; o tamanho ajusta esse dado em passos. Criaturas com armas naturais mais fracas ou particularmente perigosas podem causar dano diferente desses valores.',
+    texto: 'Diversas criaturas são dotadas de armas naturais, como garras e chifres. Como regra geral, elas causam 1d6 de dano de seu tipo para uma criatura Pequena ou Média; o tamanho ajusta esse dado em passos. Criaturas com armas naturais mais fracas ou particularmente perigosas podem causar dano diferente desses valores. O TIPO de dano de cada arma natural está na Tabela 2-1, em «⚔ Arsenal & Regras» → Ataques Desarmados & Armas Naturais.',
     tabela: {
       cab: ['Tamanho da criatura', 'Passo', 'Dano'],
       linhas: [
@@ -30,7 +30,8 @@ Exemplo: um ogro caçador tem um ataque de tacape corpo a corpo +24 — é trein
         ['Grande / Enorme', '+1 passo',  '1d8'],
         ['Colossal',        '+2 passos', '1d10'],
       ],
-      nota: 'Base 1d6 (Pequena/Média); os passos seguem a Tabela 3-2 de passos de dano (Tormenta20 p. 117/143).',
+      nota: 'Base 1d6 (Pequena/Média); os passos seguem a Tabela 3-2: Dano de Armas (Tormenta20, p. 143), ' +
+            'como manda o próprio texto de Ameaças de Arton, p. 374.',
     } },
 
   { grupo: '👹 Ameaças de Arton — Ataques de Criaturas', titulo: 'Armas empunhadas por criaturas', texto:
@@ -40,6 +41,7 @@ Exemplo: um coletor de Arsenal usa um martelo de guerra (dano básico 1d8) que c
   { grupo: '👹 Ameaças de Arton — Ataques de Criaturas', titulo: 'Removendo equipamentos (ataque desarmado rápido)', texto:
 `Se uma criatura perde a arma e precisa recorrer a ataques desarmados, defina rapidamente: o modificador de ataque desarmado é igual ao do ataque principal, e o dano desarmado é 1d3 + o bônus de dano do ataque principal (sem bônus e dados extras específicos da arma). Esse é o dano de criaturas Pequenas/Médias — Minúscula diminui um passo; Grande/Enorme aumenta um passo; Colossal aumenta dois.
 Exemplo: criatura Grande com espada longa +23 (1d8+14, 19) → ataque desarmado +23 (1d4+14).
+Alternativamente, ao CRIAR uma ameaça nova, você pode já definir um ataque desarmado para ela — como ataque secundário ou como uma opção de ataque principal.
 Da mesma forma, ao perder o escudo ou ter a armadura destruída, ajuste as características afetadas conforme as estatísticas do item perdido (linha "Equipamento" + habilidades que dependam dele).` },
 
   { grupo: '👹 Ameaças de Arton — Ataques de Criaturas', titulo: 'CD de habilidades (atributo-chave)', texto:

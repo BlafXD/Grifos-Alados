@@ -17,23 +17,22 @@
 .an-cabecalho::before {                    /* sobrancelha de "seção da gazeta" */
   content: '✦ Crônicas do Mestre ✦';
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  text-transform: uppercase;
   color: var(--gold-dim);
   margin-bottom: 0.6rem;
 }
 .an-cabecalho h1 {
-  font-family: 'UnifrakturMaguntia', cursive;
+  font-family: var(--ga-fonte-gazeta);
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   font-weight: normal;
   color: var(--ink);
   line-height: 1;
 }
 .an-subtitulo {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--rust-dark);
   font-size: 1rem;
@@ -49,11 +48,10 @@
   margin-top: 1.1rem;
 }
 .an-backup-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.09em;
-  text-transform: uppercase;
   color: var(--ink);
   background: transparent;
   border: 1px solid var(--ink);
@@ -69,7 +67,7 @@
 .an-backup-btn--imp:hover { background: var(--rust-dark); color: var(--parchment); }
 
 .an-vazio {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--ink-faded);
   text-align: center;
@@ -108,11 +106,10 @@
 /* seletor de categoria — pequeno, com a cor do ramo */
 .an-cat {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--cor, var(--neutra));
   background: var(--parchment);
   border: 1px solid var(--cor, var(--neutra));
@@ -128,7 +125,7 @@
   border: none;
   border-bottom: 1px solid transparent;
   color: var(--ink);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -138,10 +135,9 @@
 
 .an-contador {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   opacity: 0.75;
 }
 
@@ -169,7 +165,7 @@
   box-sizing: border-box;
   min-height: 3.6rem;
   padding: 0.45rem 0.55rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--ink);
@@ -194,11 +190,10 @@
   display: block;
   width: 100%;
   padding: 0.55rem 1rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--ink);
   background: var(--parchment3);
   border: 1px dashed var(--ink-faded);

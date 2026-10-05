@@ -27,10 +27,14 @@
 //     alvo do dedo cresce por baixo, e o `title` que já existia vira
 //     nome de verdade para o leitor de tela.
 //
-//  5. O PAINEL ⚙. Tamanho do texto, contraste, movimento e foco.
-//     O tamanho é o que mais importa: as 869 declarações de fonte
+//  5. O PAINEL ⚙. Tamanho do texto, contraste, movimento, foco e a
+//     letra da gazeta.
+//     O tamanho é o que mais importa: as 896 declarações de fonte
 //     deste site são TODAS em rem (zero px), então mexer na raiz
 //     escala texto, respiro e botão juntos, sem quebrar layout.
+//     A "letra antiga" é a única chave daqui que não facilita a
+//     leitura: ela desfaz a troca de tipo de 05/10/2026, e existe
+//     para a troca ser reversível por quem preferia o de antes.
 // ═══════════════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -59,6 +63,11 @@
   function aplicarPrefs() {
     if (prefs.texto) RAIZ.setAttribute('data-ga-texto', prefs.texto);
     else RAIZ.removeAttribute('data-ga-texto');
+    //  A letra da gazeta: 'antiga' devolve a capitular Cinzel aos rótulos e
+    //  a IM Fell English às dicas. Quem lê isso é o css/fonts.css, que tem
+    //  os cinco papéis de fonte — o resto do site não sabe que há escolha.
+    if (prefs.letraAntiga) RAIZ.setAttribute('data-ga-letra', 'antiga');
+    else RAIZ.removeAttribute('data-ga-letra');
     Object.keys(CHAVES_CLASSE).forEach(function (k) {
       RAIZ.classList.toggle(CHAVES_CLASSE[k], !!prefs[k]);
     });
@@ -663,7 +672,13 @@
     { id: 'semMovimento', tit: 'Menos movimento',
       sub: 'Desliga as transições e a textura de papel que cobre a página.' },
     { id: 'focoForte', tit: 'Foco sempre visível',
-      sub: 'Mostra o anel de foco também para quem navega com o mouse.' }
+      sub: 'Mostra o anel de foco também para quem navega com o mouse.' },
+    //  O único desta lista que NÃO facilita a leitura — e está aqui por
+    //  isso: a troca de tipo de 05/10/2026 foi grande, e ninguém deve
+    //  ficar preso a ela. Ligado, o site volta a ser como era.
+    { id: 'letraAntiga', tit: 'Letra antiga da gazeta',
+      sub: 'Devolve a capitular Cinzel aos rótulos e a IM Fell English às dicas. ' +
+           'Mais bonitas de longe, mais difíceis de ler de perto.' }
   ];
 
   function abrirPainel() {

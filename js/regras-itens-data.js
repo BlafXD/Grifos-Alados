@@ -58,7 +58,7 @@ Surpreendente — uma vez por cena, sacá-la como ação livre e atacar no mesmo
         ['1d10', '2d6',  '2d8',            '3d8',  '4d8',  '4d10'],
         ['2d6',  '2d8',  '2d10',           '3d10', '4d10', '4d12 (máx.)'],
       ],
-      nota: 'Tabela 3-2 — Tormenta20, p. 117.',
+      nota: 'Tabela 3-2: Dano de Armas — Tormenta20, p. 143.',
     } },
 
   { grupo: '⚔ Armas — Regras Gerais', titulo: 'Munições',
@@ -95,7 +95,8 @@ Tempo para recarregar, por tipo de munição:`,
         ['Tentáculo', '',        ''],
         ['Tromba',    '',        ''],
       ],
-      nota: 'Tabela 2-1 — tipo de dano padrão das armas naturais (Tormenta20).',
+      nota: 'Tabela 2-1: Armas Naturais — tipo de dano padrão (Ameaças de Arton, p. 374). ' +
+            'A Tabela 2-1 do Tormenta20 é outra coisa: a das perícias, p. 115.',
     } },
 
   // ── ARMADURAS & ESCUDOS ─────────────────────────────────────────

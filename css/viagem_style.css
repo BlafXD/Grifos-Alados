@@ -11,16 +11,15 @@
 .vg-cabecalho::before {                    /* sobrancelha de "seção da gazeta" */
   content: '✦ Diário de Jornada ✦';
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  text-transform: uppercase;
   color: var(--gold-dim);
   margin-bottom: 0.55rem;
 }
 .vg-cabecalho h1 {
-  font-family: 'UnifrakturMaguntia', cursive;
+  font-family: var(--ga-fonte-gazeta);
   font-size: clamp(2.1rem, 5vw, 3.3rem);
   font-weight: normal;
   color: var(--ink);
@@ -28,7 +27,7 @@
   margin: 0;
 }
 .vg-subtitulo {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 1rem;
   color: var(--rust-dark);
@@ -36,10 +35,9 @@
 }
 .vg-backup { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
 .vg-backup-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--ink);
   background: var(--parchment3);
   border: 1px solid var(--ink-faded);
@@ -53,13 +51,13 @@
 
 .vg-vazio {
   text-align: center;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-style: italic;
   color: var(--ink-faded);
   padding: 2rem 0;
 }
 .vg-vazio-menor {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.9rem;
   color: var(--ink-faded);
@@ -69,11 +67,10 @@
 .vg-add {
   display: block;
   width: 100%;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--ink);
   background: var(--parchment3);
   border: 1px dashed var(--ink-faded);
@@ -115,7 +112,7 @@
   border: none;
   border-bottom: 1px solid transparent;
   color: inherit;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -156,8 +153,8 @@
    para jogadores.html (mesma linguagem visual das Bases ocultas) */
 .vg-tag-oculta {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.05em;
-  text-transform: uppercase; white-space: nowrap;
+  font-family: var(--ga-fonte-rotulo); font-size: 0.58rem; letter-spacing: 0.05em;
+white-space: nowrap;
   color: var(--rust); border: 1px solid var(--rust); background: rgba(139,44,10,0.18);
   padding: 0.12rem 0.4rem; border-radius: var(--raio);
 }
@@ -183,7 +180,7 @@
 }
 .vg-grade .vg-bloco { margin-bottom: 0; }
 .vg-bloco-tit {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.85rem;
   letter-spacing: 0.04em;
   color: var(--rust-dark);
@@ -198,10 +195,9 @@
   flex-direction: column;
   gap: 0.2rem;
   flex: 1 1 130px;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--ink-faded);
 }
 .vg-campo-inline--full { flex-basis: 100%; }
@@ -210,7 +206,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.4rem 0.5rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -223,7 +219,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   color: var(--ink);
   cursor: pointer;
@@ -231,7 +227,7 @@
 .vg-chk input { cursor: pointer; }
 
 .vg-ritmo-out {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 1.05rem;
   color: var(--ink);
   background: var(--parchment3);
@@ -241,7 +237,7 @@
 .vg-ritmo-out strong { color: var(--rust-dark); }
 .vg-aviso {
   margin-top: 0.5rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   color: var(--rust-dark);
   background: var(--parchment2);
@@ -263,7 +259,7 @@
   transition: width 0.25s ease;
 }
 .vg-bar-txt {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   color: var(--ink);
   margin-bottom: 0.7rem;
@@ -272,10 +268,9 @@
 
 .vg-linha--dias { align-items: center; gap: 0.4rem; }
 .vg-dias-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--ink-faded);
 }
 .vg-step {
@@ -290,14 +285,14 @@
   width: 3rem;
   text-align: center;
   padding: 0.3rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 1rem;
   color: var(--ink);
   background: var(--parchment2);
   border: 1px solid var(--ink-faded);
 }
 .vg-dica {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.82rem;
   color: var(--ink-faded);
@@ -308,7 +303,7 @@
 /* ── DIÁRIO ────────────────────────────────────────────────────────── */
 .vg-atalhos { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.7rem; }
 .vg-atalho {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   color: var(--ink);
   background: var(--parchment3);
@@ -325,7 +320,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.45rem 0.55rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   line-height: 1.45;
   color: var(--ink);
@@ -352,7 +347,7 @@
   flex: 1 1 auto;
   min-width: 0;
   padding: 0.35rem 0.5rem;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 1.05rem;
   color: var(--ink);
   background: var(--parchment);
@@ -369,10 +364,9 @@
 .vg-regras > summary {
   cursor: pointer;
   padding: 0.55rem 0.8rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--rust-dark);
   list-style: none;
 }
@@ -380,7 +374,7 @@
 .vg-regras[open] > summary { border-bottom: 1px solid var(--gold-dim); }
 .vg-regras-corpo {
   padding: 0.6rem 0.9rem 0.9rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   line-height: 1.5;
   color: var(--ink);
@@ -389,7 +383,7 @@
 .vg-regras-corpo strong { color: var(--rust-dark); }
 
 .vg-erro {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   color: var(--rust-dark);
   background: var(--parchment2);
   border: 2px solid var(--rust);
@@ -398,7 +392,7 @@
 
 /* ── MEIO DE TRANSPORTE (deslocamento fixado) ──────────────────────── */
 .vg-desloc-fix {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: var(--parchment3);
@@ -413,7 +407,7 @@
 .vg-desloc-manual .vg-input--num { text-align: center; }
 .vg-desloc-dica {
   flex: 1 1 100%;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.8rem;
   text-transform: none;
@@ -433,10 +427,9 @@
 .vg-combate-regras { margin-top: 0.8rem; }
 .vg-combate-rot {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--rust);
   margin-bottom: 0.4rem;
 }
@@ -448,7 +441,7 @@
 .vg-regra-mini > summary {
   cursor: pointer;
   padding: 0.4rem 0.6rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   color: var(--ink);
   list-style: none;
@@ -459,7 +452,7 @@
 .vg-regra-mini[open] > summary { border-bottom: 1px solid var(--gold-dim); }
 .vg-regra-mini-corpo {
   padding: 0.5rem 0.7rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   line-height: 1.5;
   color: var(--ink);
@@ -468,7 +461,7 @@
 /* ── FICHA DO VEÍCULO (transporte) ─────────────────────────────────── */
 .vg-ficha-veiculo { border-left: 5px solid var(--rust); }
 .vg-ficha-tam {
-  font-family: 'IM Fell English', serif; font-style: italic;
+  font-family: var(--ga-fonte-nota); font-style: italic;
   font-size: 0.85rem; color: var(--ink-faded);
 }
 .vg-pv {
@@ -476,18 +469,18 @@
   margin: 0.3rem 0 0.8rem;
 }
 .vg-pv-rot {
-  font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--rust-dark); margin-right: 0.3rem;
+  font-family: var(--ga-fonte-rotulo); font-size: 0.62rem; letter-spacing: 0.1em;
+color: var(--rust-dark); margin-right: 0.3rem;
 }
 .vg-pv-in {
   width: 3.6rem; text-align: center;
-  padding: 0.3rem; font-family: 'Crimson Pro', serif; font-size: 1rem;
+  padding: 0.3rem; font-family: var(--ga-fonte-corpo); font-size: 1rem;
   color: var(--ink); background: var(--parchment); border: 1px solid var(--ink-faded);
 }
 .vg-pv-in:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
-.vg-pv-max { font-family: 'Crimson Pro', serif; color: var(--ink-faded); }
+.vg-pv-max { font-family: var(--ga-fonte-corpo); color: var(--ink-faded); }
 .vg-pv-full {
-  font-family: 'Cinzel', serif; font-size: 0.62rem; cursor: pointer;
+  font-family: var(--ga-fonte-rotulo); font-size: 0.62rem; cursor: pointer;
   color: var(--ink); background: var(--parchment); border: 1px solid var(--gold-dim);
   padding: 0.28rem 0.5rem;
 }
@@ -499,15 +492,15 @@
 .vg-fic-stat {
   display: flex; flex-direction: column; gap: 0.1rem; min-width: 0;
   border-bottom: 1px dotted var(--gold-dim); padding: 0.1rem 0 0.3rem;
-  font-family: 'Crimson Pro', serif; font-size: 0.92rem; color: var(--ink);
+  font-family: var(--ga-fonte-corpo); font-size: 0.92rem; color: var(--ink);
 }
 .vg-fic-stat--wide { grid-column: 1 / -1; }   /* valores longos ocupam a linha inteira */
 .vg-fic-rot {
-  font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.05em;
-  text-transform: uppercase; color: var(--ink-faded);
+  font-family: var(--ga-fonte-rotulo); font-size: 0.58rem; letter-spacing: 0.05em;
+color: var(--ink-faded);
 }
 .vg-ficha-regras {
-  font-family: 'Crimson Pro', serif; font-size: 0.9rem; line-height: 1.5;
+  font-family: var(--ga-fonte-corpo); font-size: 0.9rem; line-height: 1.5;
   color: var(--ink); background: var(--parchment3); border-left: 3px solid var(--gold-dim);
   padding: 0.5rem 0.6rem; margin-bottom: 0.5rem;
 }

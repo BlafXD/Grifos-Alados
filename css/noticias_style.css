@@ -11,11 +11,10 @@
   right: 1.6rem;
   z-index: 800;
   display: none;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
   padding: 0.55rem 1.2rem;
   cursor: pointer;
   border: 2px solid var(--ink);
@@ -30,11 +29,10 @@
 
 /* ── BOTÕES BASE ────────────────────────────────────────────────── */
 .nc-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   padding: 0.3rem 0.8rem;
   cursor: pointer;
   border: 1px solid var(--ink-faded);
@@ -87,7 +85,7 @@
 /* ── VAZIO ──────────────────────────────────────────────────────── */
 .nc-vazio {
   text-align: center;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--ink-faded);
   padding: 3rem 0;
@@ -100,11 +98,10 @@
   bottom: 5rem;
   right: 1.6rem;
   z-index: 900;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   padding: 0.45rem 1rem;
   background: var(--ink);
   color: var(--parchment);
@@ -150,11 +147,10 @@
   justify-content: space-between;
   padding: 1rem 1.4rem 0.9rem;
   border-bottom: 2px solid var(--ink);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.85rem;
   font-weight: 900;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
   color: var(--ink);
 }
 
@@ -205,18 +201,17 @@
 
 .nc-campo > span,
 .nc-campo-inline > span {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
   color: var(--ink-faded);
 }
 
 .nc-campo input,
 .nc-campo select,
 .nc-campo textarea {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -272,11 +267,10 @@
   gap: 0.45rem;
 }
 .nc-quando-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
   color: var(--ink-faded);
 }
 
@@ -288,7 +282,7 @@
   overflow: hidden;
 }
 .nc-quando-modo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -308,7 +302,7 @@
 
 /* o texto livre tem o desenho dos outros campos do modal */
 .nc-quando-livre {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -339,7 +333,7 @@
 
 /* como a data vai sair no card */
 .nc-quando-previa {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.95rem;
   line-height: 1.4;
@@ -372,7 +366,7 @@
 .cal-mes,
 .cal-ano,
 .cal-apos select {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -388,11 +382,10 @@
   gap: 0.6rem;
 }
 .cal-ano-rot > span {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
   color: var(--ink-faded);
 }
 .cal-ano { width: 6.5rem; }
@@ -402,7 +395,7 @@
 .cal-grade { grid-template-columns: repeat(7, minmax(0, 1fr)); }
 .cal-nimb  { grid-template-columns: repeat(8, minmax(0, 1fr)); }
 .cal-sem {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.55rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -420,7 +413,7 @@
 .cal-dia {
   position: relative;
   min-height: 2.35rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.98rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -458,7 +451,7 @@
 .cal-info { font-size: 0.92rem; line-height: 1.5; color: var(--ink-faded); }
 .cal-info strong { color: var(--ink); }
 .cal-aviso {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.85rem;
   color: var(--ink-faded);
@@ -500,18 +493,17 @@
 }
 
 .nc-camp-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.2em;
-  text-transform: uppercase;
   color: var(--ink-faded);
   margin-right: 0.35rem;
   white-space: nowrap;
 }
 
 .nc-camp-aba {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -573,7 +565,7 @@
   gap: 0.5rem;
   margin: 0 0 1rem;
   padding: 0.45rem 0.9rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   line-height: 1.45;
   text-align: center;

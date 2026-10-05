@@ -772,4 +772,59 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 
+  // ── A GAVETA DA CONTA (05/10/2026) ──────────────────────────────
+  //  POR QUE ISTO EXISTIA DE MENOS. Desde 18/09/2026 o bestiário, o mapa,
+  //  as anotações e as preferências seguem a CONTA (docs/gaveta-da-conta.md).
+  //  As Bases e as Viagens ficaram de fora — e eram as duas únicas áreas
+  //  grandes do mestre ainda presas ao localStorage, que é por ENDEREÇO.
+  //  Resultado: trocar github.io por vercel.app, abrir o index.html do
+  //  disco, usar outro computador ou limpar os dados do site fazia as
+  //  bases e as viagens "sumirem" — enquanto tudo o mais reaparecia. Era
+  //  exatamente o que o Caique via: "eu coloco mas eles somem".
+  //
+  //  Política 'perguntar': isto é CONTEÚDO, e conteúdo não se resolve por
+  //  relógio. Se mudou dos dois lados, quem escolhe é quem escreveu.
+  //
+  //  SÓ NO index.html. No jogadores.html esta mesma chave é um ESPELHO
+  //  escrito pelo sync-jogador (e já podado pelo 🙈 do mestre). Subir esse
+  //  espelho para a gaveta de alguém faria a cópia podada descer, um dia,
+  //  por cima do arquivo inteiro. Por isso a inscrição não acontece lá.
+  //
+  //  `aberta` é estado de TELA (o cartão expandido ou recolhido) e sai da
+  //  cópia guardada: sem isso, abrir um cartão num aparelho já bastaria
+  //  para a gaveta achar que o conteúdo divergiu.
+  //
+  //  ARMADILHA DE ORDEM. Quem acende a trava de jogador é o modo-jogador.js,
+  //  que no jogadores.html carrega DEPOIS deste arquivo — perguntar agora
+  //  pelo GA_ehJogador() responderia "não" nas duas páginas. Por isso a
+  //  inscrição espera o DOMContentLoaded, que por definição só dispara
+  //  depois de TODOS os scripts `defer` terem rodado. (E não serve o
+  //  `readyState === 'loading'` de sempre: com `defer` ele já é
+  //  'interactive' quando este trecho roda — ver a nota do
+  //  defer-readystate-interactive.)
+  (function () {
+    function semEstadoDeTela(texto) {
+      try {
+        const d = JSON.parse(texto);
+        (d.bases || []).forEach(b => { delete b.aberta; });
+        return JSON.stringify(d);
+      } catch (e) { return texto; }
+    }
+    function inscrever() {
+      if (window.GA_ehJogador && window.GA_ehJogador()) return;
+      const inscricao = {
+        nome: 'bases',
+        rotulo: 'Bases do grupo',
+        chave: STORAGE_KEY,
+        politica: 'perguntar',
+        paraGuardar: semEstadoDeTela,
+        aoReceber: function () { carregar(); render(); },
+      };
+      if (window.GA_Gaveta) window.GA_Gaveta.registrar(inscricao);
+      else (window.GA_GavetaFila = window.GA_GavetaFila || []).push(inscricao);
+    }
+    if (document.readyState === 'complete') inscrever();
+    else document.addEventListener('DOMContentLoaded', inscrever);
+  })();
+
 })();

@@ -27,7 +27,7 @@
   border-bottom: 3px solid var(--cor, var(--rust));
   color: var(--ink);
   cursor: pointer;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   transition: background 0.12s, color 0.12s;
 }
 .fp-livro:hover { background: var(--parchment); }
@@ -39,9 +39,9 @@
 }
 .fp-livro--vazio { opacity: 0.62; font-style: italic; }
 .fp-livro-ico  { font-size: 1rem; line-height: 1; }
-.fp-livro-nome { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.fp-livro-nome { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;}
 .fp-livro-qtd {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   padding: 0.1rem 0.35rem;
@@ -57,11 +57,11 @@
   padding: 0.1rem 0.45rem;
   background: var(--ink);
   color: var(--gold-light);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
+
   white-space: nowrap;
 }
 
@@ -84,7 +84,7 @@
   background: var(--parchment2);
   border: 1px solid var(--gold-dim);
   color: var(--rust-dark);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 700;
   cursor: pointer;
@@ -107,11 +107,11 @@
   border: 1px solid var(--ink-faded);
   color: var(--ink);
   cursor: pointer;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+
 }
 .fp-cat:hover { border-color: var(--cor, var(--rust)); color: var(--cor, var(--rust)); }
 .fp-cat--ativa,
@@ -151,7 +151,7 @@
   list-style: none;
 }
 .fp-reforcos-cab::-webkit-details-marker { display: none; }
-.fp-reforcos-cab strong { color: var(--rust-dark); font-family: 'Cinzel', serif; letter-spacing: 0.05em; }
+.fp-reforcos-cab strong { color: var(--rust-dark); font-family: var(--ga-fonte-rotulo); letter-spacing: 0.05em; }
 .fp-reforcos-cab:hover strong { color: var(--rust); }
 .fp-reforcos-qtd { margin-left: 0.4rem; font-size: 0.68rem; opacity: 0.75; }
 .fp-reforcos-ajuda {
@@ -200,7 +200,7 @@ button.fp-ref:hover {
 
 /* ── CARD DE FICHA ─────────────────────────────────────────────────── */
 .fp-sub {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-weight: 700;
   color: var(--gold-deep);
 }
@@ -209,7 +209,7 @@ button.fp-ref:hover {
   border-left: 2px solid var(--gold-dim);
 }
 .fp-papel {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-weight: 700;
   color: var(--rust-dark);
   border-bottom: 1px dotted var(--gold-dim);
@@ -221,7 +221,7 @@ button.fp-ref:hover {
   background: var(--parchment2);
   border: 1px solid var(--gold-dim);
   color: var(--ink);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -234,7 +234,7 @@ button.fp-ref:hover {
 .fp-embreve p { margin: 0.5rem 0 0; }
 .fp-embreve-como { font-size: 0.8rem; color: var(--ink-faded); }
 .fp-embreve code {
-  font-family: monospace;
+  font-family: var(--ga-fonte-mono);
   background: var(--parchment3);
   padding: 0.05rem 0.3rem;
 }
@@ -254,11 +254,11 @@ button.fp-ref:hover {
   border-bottom: 2px solid var(--cor, var(--rust));
   color: var(--ink);
   cursor: pointer;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+
 }
 .mz-npc-livro:hover { background: var(--parchment); }
 .mz-npc-livro.ativo {

@@ -82,11 +82,10 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
   z-index: 10080;                 /* acima da tarja de aviso (10060) */
   transform: translate(-50%, -120%);
   padding: 0.7rem 1.4rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   text-decoration: none;
   color: var(--ink);
   background: var(--gold-light);
@@ -148,7 +147,7 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
     min-height: 3rem;
     padding: 0.5rem 0.9rem;
     text-align: left;
-    font-family: 'Cinzel', serif;
+    font-family: var(--ga-fonte-rotulo);
     color: var(--parchment);
     background: none;
     border: none;
@@ -171,14 +170,12 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
     font-size: 0.86rem;
     font-weight: 700;
     letter-spacing: 0.08em;
-    text-transform: uppercase;
     color: var(--gold-light);
   }
   .ga-menu-dica {
     flex: none;
     font-size: 0.6rem;
     letter-spacing: 0.16em;
-    text-transform: uppercase;
     color: var(--parchment3);
     opacity: 0.75;
   }
@@ -241,11 +238,10 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
     border-bottom: 1px solid var(--gold-dim);
   }
   .ga-gaveta-tit {
-    font-family: 'Cinzel', serif;
+    font-family: var(--ga-fonte-rotulo);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.22em;
-    text-transform: uppercase;
     color: var(--gold);
   }
   .ga-gaveta-x {
@@ -501,10 +497,9 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
 .ga-rola-dica {
   display: none;
   margin: 0.25rem 0 0.8rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--ink-faded);
   opacity: 0.85;
 }
@@ -559,11 +554,10 @@ body.ga-modal-aberto { overflow: hidden; }
   gap: 0.4rem;
   min-height: 2.4rem;
   padding: 0.35rem 0.7rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
   color: var(--rust-dark);
   background: var(--parchment2);
   border: 1px solid var(--rust);
@@ -586,16 +580,15 @@ body.ga-modal-aberto { overflow: hidden; }
 
 .ga-pref-rot {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.18em;
-  text-transform: uppercase;
   color: var(--ink-faded);
   margin-bottom: 0.5rem;
 }
 .ga-pref-nota {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.85rem;
   line-height: 1.4;
@@ -617,7 +610,7 @@ body.ga-modal-aberto { overflow: hidden; }
   gap: 0.25rem;
   min-height: 3.6rem;
   padding: 0.5rem 0.2rem 0.45rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   color: var(--ink);
   background: var(--parchment2);
   border: 1px solid var(--parchment3);
@@ -635,7 +628,6 @@ body.ga-modal-aberto { overflow: hidden; }
 .ga-pref-passo-n {
   font-size: 0.52rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   opacity: 0.85;
 }
 
@@ -648,7 +640,7 @@ body.ga-modal-aberto { overflow: hidden; }
   min-height: 3rem;
   padding: 0.5rem 0.75rem;
   text-align: left;
-  font-family: 'Crimson Pro', Georgia, serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -661,7 +653,7 @@ body.ga-modal-aberto { overflow: hidden; }
 .ga-pref-chave-txt { flex: 1 1 auto; }
 .ga-pref-chave-txt small {
   display: block;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.8rem;
   color: var(--ink-faded);

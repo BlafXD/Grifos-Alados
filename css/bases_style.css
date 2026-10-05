@@ -11,16 +11,15 @@
 .bs-cabecalho::before {
   content: '✦ Cartório de Arton ✦';
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  text-transform: uppercase;
   color: var(--gold-dim);
   margin-bottom: 0.55rem;
 }
 .bs-cabecalho h1 {
-  font-family: 'UnifrakturMaguntia', cursive;
+  font-family: var(--ga-fonte-gazeta);
   font-size: clamp(2.1rem, 5vw, 3.3rem);
   font-weight: normal;
   color: var(--ink);
@@ -28,7 +27,7 @@
   margin: 0;
 }
 .bs-subtitulo {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 1rem;
   color: var(--rust-dark);
@@ -36,8 +35,7 @@
 }
 .bs-backup { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
 .bs-backup-btn {
-  font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--ink); background: var(--parchment3); border: 1px solid var(--ink-faded);
+  font-family: var(--ga-fonte-rotulo); font-size: 0.62rem; letter-spacing: 0.06em; color: var(--ink); background: var(--parchment3); border: 1px solid var(--ink-faded);
   padding: 0.3rem 0.6rem; cursor: pointer; transition: background 0.15s, color 0.15s;
 }
 .bs-backup-btn:hover { background: var(--ink); color: var(--parchment); }
@@ -45,23 +43,22 @@
 .bs-backup-btn--imp:hover { background: var(--rust-dark); border-color: var(--rust-dark); color: var(--parchment); }
 
 .bs-vazio {
-  text-align: center; font-family: 'Crimson Pro', serif; font-style: italic;
+  text-align: center; font-family: var(--ga-fonte-corpo); font-style: italic;
   color: var(--ink-faded); padding: 2rem 0;
 }
 .bs-vazio-mini {
-  font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.88rem;
+  font-family: var(--ga-fonte-nota); font-style: italic; font-size: 0.88rem;
   color: var(--ink-faded); margin: 0.2rem 0 0.5rem;
 }
 .bs-erro {
-  font-family: 'Crimson Pro', serif; color: var(--rust-dark);
+  font-family: var(--ga-fonte-corpo); color: var(--rust-dark);
   background: var(--parchment2); border: 1px solid var(--rust); padding: 0.7rem 0.9rem;
 }
 
 .bs-add {
   display: block; width: 100%;
-  font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--ink); background: var(--parchment3); border: 1px dashed var(--ink-faded);
+  font-family: var(--ga-fonte-rotulo); font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.08em; color: var(--ink); background: var(--parchment3); border: 1px dashed var(--ink-faded);
   padding: 0.7rem; cursor: pointer; transition: background 0.15s, color 0.15s;
 }
 .bs-add:hover { background: var(--ink); color: var(--parchment); }
@@ -83,17 +80,17 @@
 .bs-base-nome {
   flex: 1 1 auto; min-width: 0; background: transparent; border: none;
   border-bottom: 1px solid transparent; color: inherit;
-  font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.05em;
+  font-family: var(--ga-fonte-titulo); font-size: 1.05rem; font-weight: 700; letter-spacing: 0.05em;
 }
 .bs-base-nome:hover { border-bottom-color: currentColor; }
 .bs-base-nome:focus { outline: 2px solid var(--foco); outline-offset: 2px; border-bottom-color: currentColor; }
 .bs-base-nome-ro {
-  font-family: 'Cinzel', serif; font-size: 1.02rem; font-weight: 700; letter-spacing: 0.05em;
+  font-family: var(--ga-fonte-titulo); font-size: 1.02rem; font-weight: 700; letter-spacing: 0.05em;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 14rem;
 }
 .bs-base-tag {
-  flex: 0 0 auto; font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.05em;
-  text-transform: uppercase; color: var(--parchment); border: 1px solid var(--gold);
+  flex: 0 0 auto; font-family: var(--ga-fonte-rotulo); font-size: 0.58rem; letter-spacing: 0.05em;
+color: var(--parchment); border: 1px solid var(--gold);
   padding: 0.12rem 0.4rem; border-radius: var(--raio); white-space: nowrap;
 }
 .bs-base-tag--tipo { border-color: var(--gold-light); }
@@ -126,24 +123,24 @@
   padding: 0.8rem 0.9rem; margin-bottom: 0.9rem;
 }
 .bs-bloco-tit {
-  font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 0.04em; color: var(--rust-dark);
+  font-family: var(--ga-fonte-rotulo); font-size: 0.85rem; letter-spacing: 0.04em; color: var(--rust-dark);
   margin: 0 0 0.7rem; border-bottom: 1px solid var(--gold-dim); padding-bottom: 0.35rem;
   display: flex; align-items: baseline; gap: 0.5rem;
 }
 .bs-bloco-cont {
-  font-family: 'Crimson Pro', serif; font-size: 0.82rem; font-weight: 400;
+  font-family: var(--ga-fonte-corpo); font-size: 0.82rem; font-weight: 400;
   letter-spacing: 0; color: var(--ink-faded); margin-left: auto; text-transform: none;
 }
 
 .bs-linha { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-bottom: 0.6rem; }
 .bs-campo {
   display: flex; flex-direction: column; gap: 0.2rem; flex: 1 1 180px;
-  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--ink-faded);
+  font-family: var(--ga-fonte-rotulo); font-size: 0.6rem; letter-spacing: 0.08em;
+color: var(--ink-faded);
 }
 .bs-select {
   width: 100%; box-sizing: border-box; padding: 0.4rem 0.5rem;
-  font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--ink);
+  font-family: var(--ga-fonte-corpo); font-size: 0.95rem; color: var(--ink);
   background: var(--parchment2); border: 1px solid var(--ink-faded); cursor: pointer;
 }
 .bs-select:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
@@ -152,23 +149,23 @@
 .bs-add-sel { background: var(--parchment3); font-weight: 600; }
 
 .bs-tipo-efeito {
-  font-family: 'Crimson Pro', serif; font-size: 0.9rem; line-height: 1.45; color: var(--ink);
+  font-family: var(--ga-fonte-corpo); font-size: 0.9rem; line-height: 1.45; color: var(--ink);
   background: var(--parchment3); border-left: 4px solid var(--gold-dim);
   padding: 0.45rem 0.6rem; margin-bottom: 0.5rem;
 }
 .bs-porte-info {
-  font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.85rem;
+  font-family: var(--ga-fonte-nota); font-style: italic; font-size: 0.85rem;
   color: var(--ink-faded); margin-bottom: 0.6rem;
 }
 .bs-tag-seg {
-  display: inline-block; font-family: 'Cinzel', serif; font-size: 0.56rem; font-weight: 700;
+  display: inline-block; font-family: var(--ga-fonte-rotulo); font-size: 0.56rem; font-weight: 700;
   letter-spacing: 0.04em; color: var(--parchment); background: var(--verde-dark);
   padding: 0.08rem 0.35rem; border-radius: var(--raio); white-space: nowrap;
 }
 
 .bs-chk {
   display: flex; align-items: flex-start; gap: 0.4rem;
-  font-family: 'Crimson Pro', serif; font-size: 0.92rem; color: var(--ink); cursor: pointer;
+  font-family: var(--ga-fonte-corpo); font-size: 0.92rem; color: var(--ink); cursor: pointer;
 }
 .bs-chk input { cursor: pointer; margin-top: 0.2rem; flex: 0 0 auto; }
 .bs-chk--sitio {
@@ -187,12 +184,12 @@
 }
 .bs-stat--alerta { border-top-color: var(--rust); }
 .bs-stat-rot {
-  font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.07em;
-  text-transform: uppercase; color: var(--ink-faded);
+  font-family: var(--ga-fonte-rotulo); font-size: 0.58rem; letter-spacing: 0.07em;
+color: var(--ink-faded);
 }
-.bs-stat-val { font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--rust-dark); }
+.bs-stat-val { font-family: var(--ga-fonte-titulo); font-size: 1.25rem; color: var(--rust-dark); }
 .bs-stat-sub {
-  font-family: 'Crimson Pro', serif; font-size: 0.78rem; color: var(--ink-faded);
+  font-family: var(--ga-fonte-corpo); font-size: 0.78rem; color: var(--ink-faded);
   display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap;
 }
 .bs-seg-btn {
@@ -201,11 +198,11 @@
 }
 .bs-seg-btn:hover { background: var(--gold); }
 .bs-seg-input {
-  width: 3rem; text-align: center; padding: 0.15rem; font-family: 'Crimson Pro', serif;
+  width: 3rem; text-align: center; padding: 0.15rem; font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem; color: var(--ink); background: var(--parchment); border: 1px solid var(--ink-faded);
 }
 .bs-nota {
-  margin-top: 0.5rem; font-family: 'IM Fell English', serif; font-style: italic;
+  margin-top: 0.5rem; font-family: var(--ga-fonte-nota); font-style: italic;
   font-size: 0.82rem; color: var(--rust-dark);
 }
 
@@ -216,29 +213,29 @@
 }
 .bs-item-cab { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .bs-item-nome {
-  font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 700; color: var(--ink);
+  font-family: var(--ga-fonte-rotulo); font-size: 0.92rem; font-weight: 700; color: var(--ink);
 }
 .bs-item-custo {
-  margin-left: auto; font-family: 'Crimson Pro', serif; font-size: 0.85rem;
+  margin-left: auto; font-family: var(--ga-fonte-corpo); font-size: 0.85rem;
   color: var(--rust-dark); white-space: nowrap;
 }
 .bs-item-efeito {
-  font-family: 'Crimson Pro', serif; font-size: 0.9rem; line-height: 1.4; color: var(--ink);
+  font-family: var(--ga-fonte-corpo); font-size: 0.9rem; line-height: 1.4; color: var(--ink);
   margin-top: 0.3rem;
 }
 .bs-item-onde {
-  font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.82rem;
+  font-family: var(--ga-fonte-nota); font-style: italic; font-size: 0.82rem;
   color: var(--ink-faded); margin-top: 0.25rem;
 }
 .bs-item-prereq {
-  font-family: 'Crimson Pro', serif; font-size: 0.84rem; color: var(--rust-dark);
+  font-family: var(--ga-fonte-corpo); font-size: 0.84rem; color: var(--rust-dark);
   background: var(--parchment3); border: 1px solid var(--rust); padding: 0.2rem 0.45rem;
   margin-top: 0.35rem;
 }
 .bs-item-vinc {
   display: flex; align-items: center; gap: 0.4rem; margin-top: 0.4rem;
-  font-family: 'Cinzel', serif; font-size: 0.56rem; letter-spacing: 0.06em;
-  text-transform: uppercase; color: var(--ink-faded);
+  font-family: var(--ga-fonte-rotulo); font-size: 0.56rem; letter-spacing: 0.06em;
+color: var(--ink-faded);
 }
 .bs-item-vinc .bs-select { width: auto; flex: 1 1 auto; max-width: 16rem; }
 
@@ -250,7 +247,7 @@
 }
 .bs-catalogo summary {
   cursor: pointer; list-style: none; padding: 0.6rem 0.9rem;
-  font-family: 'Cinzel', serif; font-size: 0.82rem; letter-spacing: 0.04em;
+  font-family: var(--ga-fonte-rotulo); font-size: 0.82rem; letter-spacing: 0.04em;
   color: var(--rust-dark); display: flex; align-items: center; gap: 0.4rem;
   transition: background 0.15s;
 }
@@ -262,7 +259,7 @@
 .bs-catalogo-corpo { padding: 0.8rem 0.9rem 0.9rem; }
 .bs-catalogo-busca {
   width: 100%; box-sizing: border-box; padding: 0.45rem 0.6rem; margin-bottom: 0.7rem;
-  font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--ink);
+  font-family: var(--ga-fonte-corpo); font-size: 0.95rem; color: var(--ink);
   background: var(--parchment); border: 1px solid var(--ink-faded);
 }
 .bs-catalogo-busca:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
@@ -275,22 +272,22 @@
   border-left: 3px solid var(--gold-dim); padding: 0.45rem 0.55rem; margin-bottom: 0.4rem;
 }
 .bs-cat-item-cab { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-.bs-cat-item-nome { font-family: 'Cinzel', serif; font-size: 0.86rem; font-weight: 700; color: var(--ink); }
+.bs-cat-item-nome { font-family: var(--ga-fonte-rotulo); font-size: 0.86rem; font-weight: 700; color: var(--ink); }
 .bs-catalogo-vazio {
-  font-family: 'IM Fell English', serif; font-style: italic; color: var(--ink-faded);
+  font-family: var(--ga-fonte-nota); font-style: italic; color: var(--ink-faded);
   text-align: center; padding: 0.6rem 0;
 }
 
 /* ── INVENTÁRIO DOS JOGADORES (caixa compartilhada, mesa ao vivo) ───── */
 .bs-bloco--compartilhado { border-left: 3px solid var(--gold); }
 .bs-tag-compart {
-  font-family: 'Crimson Pro', serif; font-size: 0.62rem; font-weight: 600;
+  font-family: var(--ga-fonte-corpo); font-size: 0.62rem; font-weight: 600;
   letter-spacing: 0.03em; text-transform: uppercase; color: var(--parchment);
   background: var(--gold-dim); border-radius: var(--raio); padding: 0.08rem 0.4rem;
   margin-left: 0.5rem; vertical-align: middle;
 }
 .bs-compart-dica {
-  font-family: 'IM Fell English', serif; font-style: italic; font-size: 0.84rem;
+  font-family: var(--ga-fonte-nota); font-style: italic; font-size: 0.84rem;
   color: var(--ink-faded); margin: 0.1rem 0 0.5rem;
 }
 .bs-compart-area {
@@ -299,8 +296,8 @@
 /* na tela do mestre a caixa é vitrine (quem escreve são os jogadores) */
 .bs-compart-area[contenteditable="false"] { background: rgba(232,217,188,0.4); color: var(--ink); cursor: default; }
 .bs-compart-limpar {
-  margin-top: 0.5rem; font-family: 'Cinzel', serif; font-size: 0.64rem;
-  letter-spacing: 0.04em; text-transform: uppercase; color: var(--rust-dark);
+  margin-top: 0.5rem; font-family: var(--ga-fonte-rotulo); font-size: 0.64rem;
+  letter-spacing: 0.04em;color: var(--rust-dark);
   background: var(--parchment); border: 1px dashed var(--rust); border-radius: var(--raio);
   padding: 0.35rem 0.6rem; cursor: pointer; transition: background 0.15s, color 0.15s;
 }
@@ -312,7 +309,7 @@
 .bs-meio { display: flex; flex-direction: column; }
 .bs-textarea {
   width: 100%; box-sizing: border-box; min-height: 5.5rem; resize: vertical;
-  padding: 0.5rem 0.6rem; font-family: 'Crimson Pro', serif; font-size: 0.95rem;
+  padding: 0.5rem 0.6rem; font-family: var(--ga-fonte-corpo); font-size: 0.95rem;
   line-height: 1.45; color: var(--ink); background: var(--parchment2); border: 1px solid var(--ink-faded);
 }
 .bs-textarea:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }

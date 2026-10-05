@@ -31,11 +31,10 @@
 .ga-rol-tit {
   flex: 1 1 auto;
   text-align: left;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--parchment);
   background: none;
   border: none;
@@ -76,15 +75,14 @@
 }
 .ga-rol-item:last-child { border-bottom: none; }
 .ga-rol-quem {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--gold-deep);
 }
 .ga-rol-alvo {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.74rem;
   font-weight: normal;
   letter-spacing: 0;
@@ -92,18 +90,18 @@
   color: var(--text-dim);
 }
 .ga-rol-pericia {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.82rem;
   color: var(--rust-dark);
 }
 .ga-rol-formula {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   overflow-wrap: anywhere;
 }
 .ga-rol-vazio {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.84rem;
   color: var(--text-dim);
@@ -120,7 +118,7 @@
 .ga-rol-chat input {
   flex: 1 1 auto;
   min-width: 0;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   padding: 0.28rem 0.45rem;
   color: var(--ink);
@@ -129,11 +127,10 @@
   border-radius: var(--raio);
 }
 .ga-rol-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   padding: 0.28rem 0.6rem;
   cursor: pointer;
   color: var(--parchment);
@@ -143,7 +140,7 @@
 }
 .ga-rol-btn:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
 .ga-rol-aviso {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.78rem;
   color: var(--carmim);
   margin: 0;
@@ -178,7 +175,7 @@
   justify-content: space-between;
   gap: 0.3rem 0.5rem;
   padding: 0.35rem 0.55rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.8rem;
   line-height: 1.3;
   color: var(--ink);
@@ -204,19 +201,17 @@
   margin-top: 0.2rem;
 }
 .ga-rol-tag {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.54rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--gold-deep);
 }
 .ga-rol-revelar {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   white-space: nowrap;
   padding: 0.22rem 0.5rem;
   cursor: pointer;
@@ -230,7 +225,7 @@
 .ga-rol-revelar--sec { border-color: var(--ink-faded); }
 .ga-rol-revelada {
   margin-top: 0.1rem;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.74rem;
   color: var(--text-dim);

@@ -31,8 +31,9 @@
 
   <!-- As preferências de acessibilidade precisam valer ANTES da primeira
        pintura: aplicadas pelo acessibilidade.js (que é `defer`) a página
-       piscaria no tamanho errado a cada F5. São as mesmas quatro chaves
-       que o painel ⚙ grava. -->
+       piscaria no tamanho errado a cada F5. São as mesmas chaves que o
+       painel ⚙ grava — inclusive a letra antiga, que no css/fonts.css
+       devolve o Cinzel aos rótulos e a IM Fell English às dicas. -->
   <script>
     try {
       var p = JSON.parse(localStorage.getItem('grifosAlados.acessibilidade') || '{}') || {};
@@ -41,6 +42,7 @@
       if (p.contraste)    r.classList.add('ga-contraste');
       if (p.semMovimento) r.classList.add('ga-sem-movimento');
       if (p.focoForte)    r.classList.add('ga-foco-forte');
+      if (p.letraAntiga)  r.setAttribute('data-ga-letra', 'antiga');
     } catch (e) {}
   </script>
 </head>
@@ -151,6 +153,18 @@
             <label class="custom-chk"><input type="checkbox" data-filtro="municoesExtras"> Quer adicionar mais esses itens para a possível aparição nas rolagens customizáveis?</label>
             <ul id="municoesExtrasLista" class="custom-filtros-lista"></ul>
             <p class="custom-filtros-nota">A tabela oficial de armas ocupa os 100 números do d% e não sobrou espaço para elas. Ligando esta caixa, entram no fim da tabela e o sorteio de <strong>arma</strong> passa a rolar <strong>d104</strong> — armadura e esotérico seguem no d%.</p>
+          </div>
+
+          <div class="custom-filtros-grupo">
+            <span class="custom-filtros-rot">🎒 Absolutamente todos os itens mundanos</span>
+            <label class="custom-chk"><input type="checkbox" data-filtro="catalogoCompleto"> Sortear no catálogo <strong>inteiro</strong> da Loja, não só na tabela do livro</label>
+            <p id="catalogoCompletoConta" class="custom-filtros-nota"></p>
+            <p class="custom-filtros-nota">As tabelas oficiais cabem nos 100 números de um d%, e 100 nomes não são o mundo
+              inteiro: ficam de fora a Alimentação, as Bebidas, os Venenos, os Aparatos, boa parte do Equipamento de Aventura,
+              do Vestuário, das Ferramentas e dos Instrumentos — e até os Dardos (20). Ligando esta caixa, os quatro sorteios de
+              item <strong>mundano</strong> (diverso, arma, armadura&nbsp;&amp;&nbsp;escudo e esotérico) passam a rolar no catálogo
+              inteiro, com peso igual para cada item e o dado do tamanho da lista. <strong>Nada de mágico muda</strong>: encanto,
+              item específico, acessório, poção e melhoria seguem nas tabelas do livro.</p>
           </div>
 
           <div class="custom-filtros-grupo">

@@ -18,14 +18,14 @@
 }
 
 .loja-titulo-principal {
-  font-family: 'UnifrakturMaguntia', cursive;
+  font-family: var(--ga-fonte-gazeta);
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   color: var(--ink);
   line-height: 1;
 }
 
 .loja-subtitulo {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--rust-dark);
   font-size: 1rem;
@@ -41,11 +41,10 @@
 }
 
 .loja-aba {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.15em;
-  text-transform: uppercase;
   padding: 0.65rem 1.8rem 0.65rem;
   cursor: pointer;
   border: 2px solid transparent;
@@ -89,7 +88,7 @@
   box-sizing: border-box;
   padding: 0.55rem 0.8rem;
   margin-bottom: 1.2rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.98rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -115,11 +114,11 @@
 
 @keyframes pulsar {
   0%, 100% { opacity: 0.25; transform: scale(1); }
-  50%       { opacity: 0.7;  transform: scale(1.07); }
+  50%       { opacity: 0.7; transform: scale(1.07); }
 }
 
 .loja-loading-text {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--ink-faded);
   font-size: 1rem;
@@ -137,7 +136,7 @@
 }
 
 .loja-error-titulo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--rust);
@@ -145,7 +144,7 @@
 }
 
 .loja-error-msg {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   color: var(--ink-faded);
   font-size: 0.95rem;
   line-height: 1.7;
@@ -153,7 +152,7 @@
 }
 
 .loja-error-msg code {
-  font-family: 'Courier New', monospace;
+  font-family: var(--ga-fonte-mono);
   background: var(--parchment2);
   padding: 0.1em 0.4em;
   border-radius: var(--raio);
@@ -162,7 +161,7 @@
 }
 
 .loja-error-detalhe {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-style: italic;
   font-size: 0.8rem;
   color: var(--parchment3);
@@ -182,11 +181,10 @@
 }
 
 .loja-resumo-item {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.67rem;
   letter-spacing: 0.1em;
   color: var(--ink-faded);
-  text-transform: uppercase;
 }
 
 .loja-resumo-item strong {
@@ -213,11 +211,10 @@
 }
 
 .loja-divisor-tipo h3 {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.28em;
-  text-transform: uppercase;
   color: var(--parchment);
   white-space: nowrap;
   padding: 0.34rem 1.2rem;
@@ -240,11 +237,10 @@
 }
 
 .loja-divisor-cat h4 {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.22em;
-  text-transform: uppercase;
   color: var(--ink-faded);
   white-space: nowrap;
   padding: 0.2rem 0.7rem;
@@ -283,7 +279,7 @@
 }
 
 .item-nome {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-weight: 700;
   font-size: 0.8rem;
   color: var(--ink);
@@ -292,7 +288,7 @@
 }
 
 .item-badge-desconto {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -312,7 +308,7 @@
 }
 
 .item-preco-orig {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.82rem;
   color: var(--ink-faded);
   font-weight: 600;
@@ -328,7 +324,7 @@
 
 /* preço final como uma "etiqueta" de loja (plaquinha com furo) */
 .item-preco-final {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--parchment);
@@ -364,7 +360,7 @@
 }
 
 .item-stat {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.75rem;
   color: var(--ink-faded);
   line-height: 1.5;
@@ -376,7 +372,7 @@
 }
 
 .loja-vazia {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--ink-faded);
   text-align: center;
@@ -416,16 +412,15 @@
 }
 
 .especial-label {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.2em;
-  text-transform: uppercase;
   flex: 1;
 }
 
 .especial-contagem {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   color: var(--gold-light);
   letter-spacing: 0.08em;
@@ -455,7 +450,7 @@
 }
 
 .enc-nome {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--rust-dark);
@@ -470,7 +465,7 @@
 }
 
 .enc-efeito {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   color: var(--ink-faded);
   line-height: 1.4;
@@ -479,7 +474,7 @@
 .especial-vazio {
   padding: 1.2rem 0.5rem;
   text-align: center;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.88rem;
   color: var(--parchment3);
@@ -502,11 +497,10 @@
 }
 
 .loja-btn-gerar {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   padding: 0.55rem 1.6rem;
   cursor: pointer;
   border: 2px solid var(--ink);
@@ -526,11 +520,10 @@
 }
 
 .loja-btn-exportar {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   padding: 0.5rem 1.2rem;
   cursor: pointer;
   border: 1px solid var(--ink);
@@ -545,7 +538,7 @@
 }
 
 .loja-btn-status {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.88rem;
   color: var(--ink-faded);
@@ -570,11 +563,10 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--ink);
   transition: background 0.15s;
 }
@@ -601,7 +593,7 @@
 .aj-linha:first-child { border-top: 1px solid var(--ink-faded); }
 
 .aj-tipo {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 1.02rem;
   color: var(--ink);
   min-width: 13rem;
@@ -611,10 +603,9 @@
 .aj-controle { display: flex; flex-direction: column; gap: 0.3rem; }
 
 .aj-label {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--ink-faded);
 }
 
@@ -650,7 +641,7 @@
 }
 
 .aj-valor {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--rust-dark);
@@ -663,7 +654,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   color: var(--ink-faded);
 }
@@ -671,7 +662,7 @@
 .aj-num {
   width: 3.6rem;
   padding: 0.25rem 0.35rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.85rem;
   text-align: center;
   color: var(--ink);
@@ -683,10 +674,9 @@
 /* ── total disponível no catálogo (ao lado do nome do tipo) ─────── */
 .aj-total {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--ink-faded);
   margin-top: 0.15rem;
 }
@@ -694,7 +684,7 @@
 /* ── seletor de modo ──────────────────────────────────────────── */
 .aj-sel {
   padding: 0.28rem 0.4rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.82rem;
   color: var(--ink);
   background: var(--parchment);
@@ -715,7 +705,7 @@
 
 .aj-dica {
   padding: 0.7rem 1.1rem 0.9rem;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.82rem;
   color: var(--ink-faded);
@@ -741,18 +731,16 @@
   padding: 0.5rem 0.8rem;
   background: var(--ink);
   color: var(--parchment);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
 .log-loja-limpar {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: inherit;
   background: transparent;
   border: 1px solid currentColor;
@@ -783,23 +771,22 @@
 .log-loja-item--ativa { background: var(--gold-pale); cursor: default; }
 
 .log-loja-quando {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--rust-dark);
 }
 .log-loja-resumo {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   color: var(--ink-faded);
 }
 .log-loja-atual {
   margin-left: auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--gold-dim);
   border: 1px solid var(--gold-dim);
   padding: 0.1rem 0.45rem;
@@ -809,7 +796,7 @@
    ABA MAGIAS (pergaminhos)
    ══════════════════════════════════════════════════════════════════ */
 .mag-nota {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   line-height: 1.6;
   color: var(--ink-faded);
@@ -824,7 +811,7 @@
 
 /* card de pergaminho */
 .mag-circulo-badge {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -837,10 +824,9 @@
 }
 
 .mag-preco-label {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--ink-faded);
   margin-right: auto;
 }
@@ -857,11 +843,10 @@
   margin: 0.35rem 0 0.2rem;
 }
 .mag-tipo-badge {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   padding: 0.1rem 0.45rem;
   color: var(--parchment);
   white-space: nowrap;
@@ -870,15 +855,14 @@
 .mag-tipo-badge.mag-tipo-divina { background: var(--gold); color: var(--ink); }
 
 .mag-escola {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--rust-dark);
 }
 
 .mag-desc {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   line-height: 1.45;
   color: var(--ink-faded);
@@ -892,7 +876,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   color: var(--ink-faded);
   cursor: pointer;
@@ -908,7 +892,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   color: var(--ink);
   cursor: pointer;
@@ -940,16 +924,15 @@
 }
 
 .comun-titulo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--ink);
 }
 
 .comun-sel {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   padding: 0.35rem 0.5rem;
   color: var(--ink);
@@ -963,7 +946,7 @@
 .comun-fogo input:disabled + span { opacity: 0.45; }
 
 .comun-resumo {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   line-height: 1.55;
   color: var(--ink-faded);
@@ -975,7 +958,7 @@
 .comun-resumo em     { color: var(--rust-dark); font-style: italic; }
 
 .comun-aplicar {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   color: var(--rust-dark);
   background: rgba(154, 78, 32, 0.08);
@@ -1001,15 +984,14 @@
 }
 
 .comun-caixa-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--ink);
 }
 .comun-caixa-rot em {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.82rem;
   font-weight: 400;
   letter-spacing: 0;
@@ -1019,13 +1001,13 @@
 }
 
 .comun-caixa-valor {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--rust-dark);
 }
 .comun-caixa-valor em {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   font-weight: 400;
   color: var(--ink-faded);
@@ -1043,7 +1025,7 @@
 .comun-caixa-input {
   width: 7rem;
   padding: 0.3rem 0.5rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -1051,11 +1033,10 @@
 }
 
 .comun-caixa-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--ink);
   background: var(--parchment3);
   border: 1px solid var(--ink-faded);
@@ -1066,7 +1047,7 @@
 .comun-caixa-btn:hover { background: var(--parchment2); border-color: var(--ink); }
 
 .comun-caixa-dica {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   font-style: italic;
   color: var(--ink-faded);
@@ -1083,7 +1064,7 @@
   margin-bottom: 1.4rem;
 }
 .comun-aviso-txt {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   line-height: 1.55;
   color: var(--ink-faded);
@@ -1092,7 +1073,7 @@
 .comun-aviso-txt strong { color: var(--ink); }
 
 .comun-teto-nota {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   font-style: italic;
   color: var(--rust-dark);
@@ -1107,11 +1088,10 @@
   align-self: flex-start;
   margin-top: 0.35rem;
   padding: 0.18rem 0.55rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--ink);
   background: var(--parchment3);
   border: 1px solid var(--ink-faded);
@@ -1142,11 +1122,10 @@
 .item-levar {
   align-self: flex-start;
   padding: 0.18rem 0.55rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--parchment);
   background: var(--verde-dark);
   border: 1px solid var(--verde-dark);
@@ -1172,7 +1151,7 @@
 }
 .item-levar-res {
   flex: 1 1 100%;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.78rem;
   line-height: 1.25;
   color: var(--ink);
@@ -1200,7 +1179,7 @@
    cena"), as faixas de preço de uma mesma linha e os mercenários.
    ══════════════════════════════════════════════════════════════════ */
 .serv-fonte {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.8rem;
   font-style: italic;
   color: var(--ink-faded);
@@ -1208,7 +1187,7 @@
 }
 
 .serv-intro {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   line-height: 1.55;
   color: var(--ink-faded);
@@ -1220,7 +1199,7 @@
 
 /* unidade do preço ("por noite", "por km", "por cena") */
 .serv-unidade {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.78rem;
   font-style: italic;
   color: var(--ink-faded);
@@ -1246,7 +1225,7 @@
 .serv-faixa:last-child { border-bottom: none; padding-bottom: 0; }
 
 .serv-faixa-nome {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   color: var(--ink);
 }
@@ -1255,7 +1234,7 @@
 .serv-merc-lista > summary::before { content: '⚔'; }
 
 .serv-merc-nota {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.8rem;
   font-style: italic;
   color: var(--ink-faded);
@@ -1285,23 +1264,22 @@
 }
 
 .serv-merc-nome {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--ink);
 }
 
 .serv-merc-tipo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--rust-dark);
   margin-top: 0.15rem;
 }
 
 .serv-merc-desc {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.82rem;
   line-height: 1.45;
   color: var(--ink-faded);

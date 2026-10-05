@@ -20,14 +20,14 @@
   margin-bottom: 2rem;
 }
 .mz-cabecalho h1 {
-  font-family: 'UnifrakturMaguntia', cursive;
+  font-family: var(--ga-fonte-gazeta);
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   font-weight: normal;
   color: var(--ink);
   line-height: 1;
 }
 .mz-subtitulo {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--rust-dark);
   font-size: 1rem;
@@ -43,11 +43,11 @@
   margin-top: 1.1rem;
 }
 .mz-backup-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.09em;
-  text-transform: uppercase;
+
   color: var(--ink);
   background: transparent;
   border: 1px solid var(--ink);
@@ -64,7 +64,7 @@
 
 /* ── MENSAGENS DE ESTADO ──────────────────────────────────────────── */
 .mz-vazio {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--ink-faded);
   text-align: center;
@@ -77,11 +77,11 @@
   display: block;
   width: 100%;
   padding: 0.7rem 1rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--ink);
   background: var(--parchment3);
   border: 1px dashed var(--ink-faded);
@@ -158,24 +158,24 @@
   border: none;
   border-bottom: 1px solid transparent;
   color: inherit;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
 }
 .mz-nome:hover  { border-bottom-color: currentColor; }
 .mz-nome:focus  { outline: 2px solid var(--foco); outline-offset: 2px; border-bottom-color: currentColor; }
 .mz-nome--sessao   { font-size: 1.05rem; font-weight: 700; letter-spacing: 0.06em; }
 .mz-nome--cena     { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.04em; }
 .mz-nome--criatura {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 1.25rem;
   font-weight: 400;
 }
 
 .mz-contador {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   opacity: 0.75;
 }
 
@@ -277,10 +277,10 @@
 .mz-campo { margin-bottom: 0.9rem; }
 .mz-rotulo {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
   margin-bottom: 0.25rem;
 }
@@ -304,10 +304,10 @@
   border-radius: var(--raio);
 }
 .mz-per-nota-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   cursor: help;
   border-bottom: 1px dotted var(--rust);
@@ -323,7 +323,7 @@
   border-radius: 999px;
 }
 .mz-per-pil b {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.06em;
   color: var(--ink-faded);
@@ -340,7 +340,7 @@
 .mz-input, .mz-textarea {
   width: 100%;
   padding: 0.4rem 0.55rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: var(--parchment);
@@ -359,10 +359,10 @@
   cursor: pointer;
   display: block;                 /* remove o marcador nativo do <summary> */
   padding: 0.4rem 0.6rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
   list-style: none;
   user-select: none;
@@ -381,15 +381,15 @@
 }
 .mz-ferr-lbl {
   flex: 0 0 5rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
 }
 .mz-ferr-tam, .mz-ferr-arma, .mz-ferr-mod, .mz-ferr-bonus {
   padding: 0.3rem 0.45rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   color: var(--ink);
   background: var(--parchment);
@@ -403,7 +403,7 @@
 .mz-ferr-add {
   flex: 0 0 auto;
   padding: 0.3rem 0.7rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   letter-spacing: 0.06em;
   cursor: pointer;
@@ -429,7 +429,7 @@
 /* ── VARIANTE DE MORTE (fim de combate) ──────────────────────────── */
 .mz-morte-papel {
   padding: 0.25rem 0.4rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   color: var(--ink);
   background: var(--parchment);
@@ -441,7 +441,7 @@
   display: inline-flex;
   align-items: center;
   padding: 0.2rem 0.5rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   font-weight: 600;
   border: 1px solid;
@@ -454,7 +454,7 @@
 .mz-crit-sel {
   flex: 0 1 auto;
   padding: 0.3rem 0.45rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   color: var(--ink);
   background: var(--parchment);
@@ -474,22 +474,22 @@
 }
 .mz-crit-res--falha { border-left-color: var(--carmim); }
 .mz-crit-res-cab {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   color: var(--ink);
   margin-bottom: 0.2rem;
 }
 .mz-crit-res-rol {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.8rem;
   font-style: italic;
   color: var(--ink-faded);
   margin-bottom: 0.3rem;
 }
 .mz-crit-res-efeito {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.98rem;
   line-height: 1.35;
   color: var(--ink);
@@ -497,7 +497,7 @@
 .mz-crit-aplicar {
   margin-top: 0.45rem;
   padding: 0.28rem 0.7rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.05em;
   cursor: pointer;
@@ -510,7 +510,7 @@
 .mz-crit-aplicada {
   display: inline-block;
   margin-top: 0.45rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.05em;
   color: var(--verde);
@@ -553,11 +553,11 @@
 .mz-dado:active  { transform: scale(0.9); }
 
 .mz-stat-rotulo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   text-align: center;
   margin-bottom: 0.35rem;
@@ -570,17 +570,17 @@
 }
 .mz-stat-linha span {
   flex: 0 0 3.1rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
 }
 .mz-stat-linha input {
   flex: 1 1 auto;
   min-width: 0;
   padding: 0.2rem 0.35rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.85rem;
   text-align: center;
   color: var(--ink);
@@ -608,11 +608,11 @@
 }
 .mz-grifo {
   padding: 0.3rem 0.6rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   cursor: pointer;
   border: 1px solid var(--ink-faded);
   background: var(--parchment3);
@@ -628,10 +628,10 @@
 /* rótulo "Grifar" antes das amostras de cor */
 .mz-toolbar-rot {
   align-self: center;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
 }
 /* botão-amostra de cor (swatch) */
@@ -647,7 +647,7 @@
 .mz-grifo--sw:hover { border-color: var(--ink); }
 
 .mz-toolbar-dica {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.78rem;
   color: var(--ink-faded);
@@ -656,7 +656,7 @@
 .mz-ataques {
   min-height: 200px;
   padding: 0.7rem 0.8rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.96rem;
   line-height: 1.5;
   color: var(--ink);
@@ -699,11 +699,11 @@
 .mz-notas-min {
   flex: 0 0 auto;
   padding: 0.22rem 0.5rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   cursor: pointer;
   border: 1px solid var(--ink-faded);
   background: var(--parchment3);
@@ -719,7 +719,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   font-style: italic;
   color: var(--ink-faded);
@@ -742,7 +742,7 @@
   flex: 0 0 auto;
   width: 3.2rem;
   padding: 0.2rem 0.3rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.9rem;
   font-weight: 700;
   text-align: center;
@@ -762,7 +762,7 @@
   flex: 0 0 auto;
   width: 3.2rem;
   padding: 0.2rem 0.3rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.9rem;
   font-weight: 700;
   text-align: center;
@@ -805,11 +805,11 @@
   padding: 0.5rem 0.7rem;
   background: var(--ink);
   color: var(--parchment);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
 }
 .mz-log-limpar {
   width: 1.4rem; height: 1.4rem;
@@ -828,7 +828,7 @@
   padding: 0.5rem;
 }
 .mz-log-vazio {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.82rem;
   color: var(--ink-faded);
@@ -848,22 +848,22 @@
   background: var(--gold-pale);
 }
 .mz-log-criatura {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 0.95rem;
   color: var(--ink);
   line-height: 1.2;
 }
 .mz-log-pericia {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   margin: 0.1rem 0;
   word-break: break-word;
 }
 .mz-log-formula {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.82rem;
   font-weight: 400;
   color: var(--ink);
@@ -886,26 +886,26 @@
   padding: 0.5rem 0.7rem;
   background: var(--ink);
   color: var(--parchment);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
 }
 .mz-chat-input {
   margin: 0.6rem 0.6rem 0.4rem;
   padding: 0.55rem 0.6rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.92rem;
   color: var(--ink);
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
 }
 .mz-chat-input:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
-.mz-chat-input::placeholder { font-family: 'IM Fell English', serif; font-style: italic; }
+.mz-chat-input::placeholder { font-family: var(--ga-fonte-nota); font-style: italic; }
 .mz-chat-status {
   margin: 0 0.6rem 0.6rem;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.76rem;
   color: var(--ink-faded);
@@ -925,10 +925,10 @@
 }
 .mz-cond-titulo {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
   margin-bottom: 0.4rem;
 }
@@ -939,18 +939,18 @@
   gap: 0.4rem;
 }
 .mz-cond-nenhuma {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.85rem;
   color: var(--ink-faded);
   align-self: center;
 }
 .mz-cond-add {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   color: var(--ink);
   background: var(--parchment3);
   border: 1px dashed var(--ink-faded);
@@ -973,16 +973,16 @@
 }
 .mz-cond-info { display: flex; flex-direction: column; line-height: 1.1; }
 .mz-cond-nome {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 0.95rem;
   color: var(--ink);
 }
 .mz-cond-cat {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.54rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--cor, var(--neutra));
 }
 .mz-cond-x {
@@ -1023,22 +1023,22 @@
   margin-bottom: 0.3rem;
 }
 .mz-cond-tip-topo strong {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.92rem;
   color: var(--ink);
 }
 .mz-cond-tip-cat {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--cor, var(--neutra));
   white-space: nowrap;
 }
 .mz-cond-tip-desc {
   display: block;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   line-height: 1.4;
   color: var(--ink);
@@ -1072,7 +1072,7 @@
   padding: 0.7rem 0.9rem;
   background: var(--ink);
   color: var(--parchment);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -1090,7 +1090,7 @@
 .mz-cond-busca {
   margin: 0.7rem 0.9rem 0.4rem;
   padding: 0.5rem 0.6rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -1103,11 +1103,11 @@
 }
 .mz-cond-grupo { margin-bottom: 0.8rem; }
 .mz-cond-grupo-titulo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--cor, var(--neutra));
   border-bottom: 2px solid var(--cor, var(--neutra));
   padding-bottom: 0.2rem;
@@ -1136,26 +1136,26 @@
 .mz-cond-opcao-check {
   flex: 0 0 auto;
   width: 1.2rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-weight: 700;
   color: var(--cor, var(--neutra));
 }
 .mz-cond-opcao-nome {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 1.05rem;
   color: var(--ink);
 }
 .mz-cond-opcao-cat {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.54rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--cor, var(--neutra));
 }
 .mz-cond-opcao-desc {
   display: block;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   line-height: 1.4;
   color: var(--ink-faded);
@@ -1164,7 +1164,7 @@
 .mz-cond-modal-pe {
   padding: 0.5rem 0.9rem;
   border-top: 1px solid var(--parchment3);
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.78rem;
   color: var(--ink-faded);
@@ -1193,11 +1193,11 @@
 .mz-lev-modo {
   flex: 1 1 0;
   padding: 0.45rem 0.5rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
   background: var(--parchment2);
   border: 1px solid var(--parchment3);
@@ -1224,17 +1224,17 @@
 }
 .mz-imp-rotulo {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
   margin-bottom: 0.4rem;
 }
 .mz-imp-entrada {
   width: 100%;
   box-sizing: border-box;
-  font-family: 'Courier New', monospace;
+  font-family: var(--ga-fonte-mono);
   font-size: 0.86rem;
   line-height: 1.4;
   color: var(--ink);
@@ -1251,7 +1251,7 @@
   padding-top: 0.6rem;
 }
 .mz-imp-vazio {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--ink-faded);
   font-size: 0.9rem;
@@ -1265,17 +1265,17 @@
 }
 .mz-imp-campo > span {
   flex: 0 0 130px;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   color: var(--gold-dim);
   padding-top: 0.15rem;
 }
-.mz-imp-campo > b { font-family: 'Crimson Pro', serif; font-weight: 600; color: var(--ink); }
+.mz-imp-campo > b { font-family: var(--ga-fonte-corpo); font-weight: 600; color: var(--ink); }
 .mz-imp-campo--bloco { flex-direction: column; gap: 0.3rem; }
 .mz-imp-bloco {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   line-height: 1.45;
   color: var(--ink);
@@ -1290,7 +1290,7 @@
   padding: 0.45rem 0.6rem;
   background: var(--gold-pale);
   border-left: 4px solid var(--gold-dim);
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 0.85rem;
   color: var(--rust-dark);
 }
@@ -1298,11 +1298,11 @@
 .mz-imp-dica { flex: 1; }
 .mz-imp-criar {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   color: var(--parchment);
   background: var(--rust);
   border: 1px solid var(--rust-dark);
@@ -1321,11 +1321,11 @@
   margin-bottom: 1.4rem;
 }
 .mz-visao-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--ink);
   background: var(--parchment3);
   border: 1px solid var(--ink-faded);
@@ -1336,7 +1336,7 @@
 .mz-visao-btn:hover { background: var(--ink); color: var(--parchment); }
 .mz-visao-btn--ativo { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
 .mz-visao-dica {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.85rem;
   color: var(--ink-faded);
@@ -1385,15 +1385,15 @@
   gap: 0.45rem;
 }
 .mz-painel-narr-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
 }
 .mz-painel-sessao {
   padding: 0.35rem 0.5rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
   background: var(--parchment);
@@ -1402,11 +1402,11 @@
 }
 .mz-painel-sessao:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .mz-painel-trazer {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   font-weight: 600;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   background: var(--parchment);
   border: 1px dashed var(--rust);
@@ -1419,11 +1419,11 @@
 
 /* botão que liga/desliga a faixa de combate em viagem */
 .mz-painel-cv-toggle {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   font-weight: 600;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   background: var(--parchment);
   border: 1px solid var(--rust);
@@ -1437,11 +1437,10 @@
    Vem cheio, e não vazado como o toggle ao lado: é a ação que se procura
    com o combate já começando. */
 .mz-painel-ini {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--parchment);
   background: var(--rust-dark);
   border: 1px solid var(--rust-dark);
@@ -1465,14 +1464,14 @@
 .mz-cv-mini { border: 1px solid var(--gold-dim); background: var(--parchment); }
 .mz-cv-mini > summary {
   cursor: pointer; padding: 0.35rem 0.55rem; list-style: none;
-  font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--ink);
+  font-family: var(--ga-fonte-rotulo); font-size: 0.7rem; color: var(--ink);
 }
 .mz-cv-mini > summary::-webkit-details-marker { display: none; }
 .mz-cv-mini > summary::before { content: '▸ '; color: var(--rust); }
 .mz-cv-mini[open] > summary::before { content: '▾ '; }
 .mz-cv-mini-corpo {
   padding: 0.45rem 0.6rem; border-top: 1px solid var(--gold-dim);
-  font-family: 'Crimson Pro', serif; font-size: 0.88rem; line-height: 1.5; color: var(--ink);
+  font-family: var(--ga-fonte-corpo); font-size: 0.88rem; line-height: 1.5; color: var(--ink);
 }
 
 /* faixa do veículo da viagem no painel (PV compartilhado) */
@@ -1481,18 +1480,18 @@
   display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-top: 0.4rem;
 }
 .mz-veic-pv-rot {
-  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--ink-faded); margin-right: 0.2rem;
+  font-family: var(--ga-fonte-rotulo); font-size: 0.6rem; letter-spacing: 0.08em;
+color: var(--ink-faded); margin-right: 0.2rem;
 }
 .mz-veic-pv-in {
   width: 3.6rem; text-align: center; padding: 0.3rem;
-  font-family: 'Crimson Pro', serif; font-size: 1.05rem; color: var(--ink);
+  font-family: var(--ga-fonte-corpo); font-size: 1.05rem; color: var(--ink);
   background: var(--parchment); border: 1px solid var(--ink-faded);
 }
 .mz-veic-pv-in:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
-.mz-veic-pv-max { font-family: 'Crimson Pro', serif; color: var(--ink-faded); }
+.mz-veic-pv-max { font-family: var(--ga-fonte-corpo); color: var(--ink-faded); }
 .mz-veic-def {
-  font-family: 'IM Fell English', serif; font-size: 0.85rem; color: var(--ink-faded);
+  font-family: var(--ga-fonte-nota); font-size: 0.85rem; color: var(--ink-faded);
   margin-left: 0.3rem;
 }
 /* botão −/＋ (passo) reutilizável no painel */
@@ -1518,18 +1517,18 @@
 .mz-mont-nivel { flex: 0 0 auto; }
 .mz-mont-sel, .mz-mont-nivel {
   padding: 0.3rem 0.4rem;
-  font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--ink);
+  font-family: var(--ga-fonte-corpo); font-size: 0.9rem; color: var(--ink);
   background: var(--parchment); border: 1px solid var(--ink-faded); cursor: pointer;
 }
 .mz-mont-beneficio {
   margin-top: 0.45rem;
-  font-family: 'Crimson Pro', serif; font-size: 0.92rem; line-height: 1.45; color: var(--ink);
+  font-family: var(--ga-fonte-corpo); font-size: 0.92rem; line-height: 1.45; color: var(--ink);
 }
 .mz-mont-beneficio + .mz-mont-beneficio { margin-top: 0.3rem; }
 .mz-mont-nivel-rot {
   display: inline-block;
-  font-family: 'Cinzel', serif; font-size: 0.56rem; font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase;
+  font-family: var(--ga-fonte-rotulo); font-size: 0.56rem; font-weight: 700;
+  letter-spacing: 0.06em;
   color: var(--parchment); background: var(--gold-deep);
   padding: 0.08rem 0.35rem; border-radius: var(--raio); margin-right: 0.35rem;
 }
@@ -1541,7 +1540,7 @@
 }
 .mz-mont-obs {
   margin-top: 0.3rem;
-  font-family: 'IM Fell English', serif; font-style: italic;
+  font-family: var(--ga-fonte-nota); font-style: italic;
   font-size: 0.85rem; color: var(--ink-faded);
 }
 
@@ -1563,11 +1562,11 @@
   display: inline-block;
   margin: 0 0 0.6rem;
   padding: 0.18rem 0.5rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--parchment);
   background: var(--ink);
   border-radius: var(--raio);
@@ -1584,7 +1583,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.8rem;
   font-weight: 700;
   background: var(--ink);
@@ -1594,7 +1593,7 @@
   flex: 1 1 auto;
   min-width: 0;
   padding: 0.35rem 0.4rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   color: var(--ink);
   background: var(--parchment);
@@ -1624,11 +1623,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--ink);
   background: var(--parchment3);
   border: 2px dashed var(--ink-faded);
@@ -1669,10 +1668,10 @@
   padding-top: 0.4rem;
 }
 .mz-perigos-titulo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   margin-bottom: 0.5rem;
 }
@@ -1687,10 +1686,10 @@
 .mz-perigo-cabecalho .mz-nome::placeholder { color: rgba(245, 236, 217, 0.6); }
 .mz-perigo-icone { flex: 0 0 auto; font-size: 1rem; line-height: 1; }
 .mz-perigo-fonte {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
   margin-bottom: 0.7rem;
 }
@@ -1698,7 +1697,7 @@
 /* badge de ND e linha na biblioteca de perigos (modal) */
 .mz-perigo-nd {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1725,10 +1724,10 @@
 }
 .mz-amb-titulo {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   margin-bottom: 0.5rem;
 }
@@ -1739,7 +1738,7 @@
   gap: 0.45rem;
 }
 .mz-amb-nenhum {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.85rem;
   color: var(--ink-faded);
@@ -1772,15 +1771,15 @@
 }
 .mz-amb-info:hover { background: rgba(0, 0, 0, 0.06); }
 .mz-amb-cat {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.54rem;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
+
   color: var(--cor, var(--ink-faded));
   white-space: nowrap;
 }
 .mz-amb-nome {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 1rem;
   line-height: 1.05;
   white-space: nowrap;
@@ -1818,11 +1817,11 @@
 
 .mz-amb-add {
   align-self: stretch;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   background: var(--parchment);
   border: 1px dashed var(--rust);
@@ -1845,24 +1844,24 @@
 }
 .mz-amb-pop-tag {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   opacity: 0.9;
   border-right: 1px solid rgba(245, 236, 217, 0.4);
   padding-right: 0.6rem;
 }
 .mz-amb-pop-nome {
   flex: 1 1 auto;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 1.25rem;
   line-height: 1.1;
 }
 .mz-amb-pop-cab .mz-cond-modal-x { color: var(--parchment); opacity: 0.85; }
 .mz-amb-pop-cab .mz-cond-modal-x:hover { opacity: 1; }
 .mz-amb-regras {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 1rem;
   line-height: 1.6;
   color: var(--ink);
@@ -1879,7 +1878,7 @@
   box-sizing: border-box;
   margin-top: 0.3rem;
   padding: 0.5rem 0.6rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.98rem;
   line-height: 1.5;
   color: var(--ink);
@@ -1891,7 +1890,7 @@
 .mz-amb-nota-dica {
   display: block;
   margin-top: 0.3rem;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.8rem;
   color: var(--ink-faded);
@@ -1901,17 +1900,17 @@
   padding: 0.7rem 0.8rem;
   background: var(--parchment2);
   border-left: 4px solid var(--gold-dim);
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.98rem;
   line-height: 1.5;
   color: var(--ink);
 }
 .mz-amb-nota-rot {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--rust);
   margin-bottom: 0.3rem;
 }
@@ -1931,7 +1930,7 @@
   box-sizing: border-box;
   margin: 0.3rem 0 0.9rem;
   padding: 0.45rem 0.6rem;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 1.05rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -1952,7 +1951,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.8rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -1969,7 +1968,7 @@
   min-height: 55vh;
   resize: vertical;
   padding: 0.8rem 0.95rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 1.05rem;
   line-height: 1.6;
   color: var(--ink);
@@ -1995,7 +1994,7 @@
 }
 .mz-ed-pe {
   margin-top: 0.6rem;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.85rem;
   color: var(--ink-faded);
@@ -2013,7 +2012,7 @@
 .mz-ler-cab { align-items: flex-start; }
 .mz-ler-ferramentas { display: flex; align-items: center; gap: 0.4rem; flex: 0 0 auto; }
 .mz-ler-az {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 700;
   padding: 0.15rem 0.5rem;
@@ -2028,7 +2027,7 @@
   flex: 1 1 auto;
   overflow-y: auto;
   padding: 0.4rem 0.3rem 0.6rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   line-height: 1.7;
   color: var(--ink);
   white-space: pre-wrap;        /* preserva as quebras das anotações */
@@ -2039,10 +2038,10 @@
 /* ── NAVEGAÇÃO RÁPIDA (recolher/expandir tudo + Índice) ───────────── */
 .mz-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.9rem; }
 .mz-nav-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   padding: 0.35rem 0.7rem;
   cursor: pointer;
   color: var(--ink);
@@ -2064,7 +2063,7 @@
 .mz-idx-grupo:last-child { margin-bottom: 0; }
 .mz-idx-link {
   display: inline-block;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   text-align: left;
   cursor: pointer;
@@ -2080,7 +2079,7 @@
 .mz-idx-vazio {
   display: inline-block;
   padding-left: 1rem;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.82rem;
   color: var(--ink-faded);
@@ -2126,11 +2125,11 @@
   border-bottom: 1px solid var(--gold-dim);
 }
 .mz-npc-cat {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+
   padding: 0.22rem 0.55rem;
   background: var(--parchment2);
   border: 1px solid var(--ink-faded);
@@ -2147,11 +2146,11 @@
 /* grupos por categoria dentro do modal */
 .mz-npc-grupo { margin-bottom: 0.85rem; }
 .mz-npc-grupo-titulo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--cor, var(--ink));
   border-bottom: 1px dashed var(--gold-dim);
   padding: 0.5rem 0 0.25rem;
@@ -2175,11 +2174,11 @@
   cursor: pointer;
   display: block;
   padding: 0.4rem 0.6rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   list-style: none;
   user-select: none;
@@ -2198,15 +2197,15 @@
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
 }
 .mz-npc-regra select {
   padding: 0.3rem 0.45rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   color: var(--ink);
   background: var(--parchment);
@@ -2239,10 +2238,10 @@
 .mz-devoto-icone { font-size: 1rem; }
 .mz-devoto-titulo {
   flex: 1 1 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
 }
 .mz-devoto-titulo strong { font-size: 0.8rem; color: var(--ink); }
@@ -2250,10 +2249,10 @@
 .mz-devoto-det > summary {
   cursor: pointer;
   list-style: none;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
   user-select: none;
 }
@@ -2262,7 +2261,7 @@
 .mz-devoto-det[open] > summary::before { content: '▾ '; }
 .mz-devoto-corpo {
   padding: 0.4rem 0.1rem 0.1rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   line-height: 1.45;
   color: var(--ink);
@@ -2277,7 +2276,7 @@
 /* ferramenta 🙏 Devoto & poder concedido (selects na linha) */
 .mz-dev-deus, .mz-dev-poder {
   padding: 0.3rem 0.45rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   color: var(--ink);
   background: var(--parchment);
@@ -2300,11 +2299,11 @@
 }
 .mz-mas-cab { display: flex; align-items: center; gap: 0.55rem; }
 .mz-mas-switch {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   background: var(--parchment);
   color: var(--ink-faded);
   border: 1px solid var(--ink-faded);
@@ -2336,7 +2335,7 @@
   padding: 0.45rem 0.65rem;
   border-left: 3px solid var(--gold);
   background: var(--parchment);
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-style: italic;
   font-size: 0.9rem;
   line-height: 1.5;
@@ -2359,16 +2358,16 @@
   gap: 0.4rem;
 }
 .mz-mas-bloco-tit {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
 }
 .mz-mas-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 .mz-mas-chip {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -2392,7 +2391,7 @@
   gap: 0.45rem;
 }
 .mz-mas-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -2407,7 +2406,7 @@
 .mz-mas-btn--sutil { border-color: var(--ink-faded); color: var(--ink-faded); background: var(--parchment); }
 .mz-mas-btn--sutil:hover { background: var(--ink-faded); color: var(--parchment); }
 .mz-mas-res {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   color: var(--ink);
 }
@@ -2419,7 +2418,7 @@
   font-weight: 600;
 }
 .mz-mas-nota {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.76rem;
   line-height: 1.4;
@@ -2436,7 +2435,7 @@
 }
 .mz-mas-seg-cheio { color: var(--rust-dark); }
 .mz-mas-seg-info {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.06em;
   color: var(--ink);
@@ -2448,15 +2447,15 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.55rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+
   color: var(--ink);
 }
 .mz-mas-desc-ctl label { display: inline-flex; align-items: center; gap: 0.3rem; }
 .mz-mas-desc-ctl select {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   color: var(--ink);
   background: var(--parchment);
@@ -2478,27 +2477,27 @@
 /* tabelas das regras (Tabela 6-2 / 6-3) */
 .mz-mas-tab-titulo {
   margin: 0.55rem 0 0.2rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
 }
 .mz-mas-tab {
   border-collapse: collapse;
   width: 100%;
   max-width: 30rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.86rem;
   color: var(--ink);
 }
 .mz-mas-tab th {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   text-align: left;
   background: var(--parchment3);
   color: var(--rust-dark);
@@ -2520,14 +2519,14 @@
 }
 .mz-mas-ex-cab {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.06em;
   color: var(--rust-dark);
   margin-bottom: 0.15rem;
 }
 .mz-mas-ex-cab em {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   text-transform: none;
   color: var(--ink-faded);
@@ -2564,7 +2563,7 @@
   color: var(--ink);
 }
 .mz-masp-ctl select {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   color: var(--ink);
   background: var(--parchment);
@@ -2574,7 +2573,7 @@
 .mz-mas-num {
   width: 3.1rem;
   padding: 0.14rem 0.25rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   color: var(--ink);
   background: var(--parchment);
@@ -2595,7 +2594,7 @@
 /* linha do livro: "Como um clérigo de 9º nível (CD 30)" */
 .mz-magias-cab {
   margin: 0.45rem 0 0.4rem;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 0.98rem;
   font-style: italic;
   background: var(--parchment2);
@@ -2603,7 +2602,7 @@
 .mz-magias-campo { margin-bottom: 0; }
 .mz-magias-caixa {
   min-height: 4.4rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
 }
 .mz-magias-caixa[data-ph]:empty::before { font-style: italic; }
 
@@ -2642,7 +2641,7 @@
 .mz-mag-exec {
   flex: 0 1 9rem;
   padding: 0.25rem 0.4rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   color: var(--ink);
   background: var(--parchment);
@@ -2652,7 +2651,7 @@
   flex: 0 0 3.4rem;
   width: 3.4rem;
   padding: 0.25rem 0.3rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   font-weight: 700;
   text-align: center;
@@ -2662,10 +2661,10 @@
 }
 .mz-mag-exec:focus, .mz-mag-pm:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .mz-mag-pm-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
 }
 .mz-mag-res {
@@ -2673,7 +2672,7 @@
   align-items: center;
   gap: 0.25rem;
   margin-left: auto;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   color: var(--ink-faded);
   cursor: pointer;
@@ -2724,7 +2723,7 @@
 .mz-mag-apr-btn {
   width: 1.35rem;
   padding: 0.1rem 0;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 700;
   line-height: 1;
@@ -2737,7 +2736,7 @@
 .mz-mag-apr-n {
   min-width: 1.6rem;
   text-align: center;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 700;
   color: var(--ink-faded);
@@ -2745,14 +2744,14 @@
 .mz-mag-apr--on .mz-mag-apr-n { color: #4a3f6b; }
 .mz-mag-apr-pm {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   color: #4a3f6b;
 }
 .mz-mag-apr-txt {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   line-height: 1.35;
   color: var(--ink-faded);
@@ -2765,14 +2764,14 @@
   margin-bottom: 0.5rem;
   background: var(--parchment);
   border-left: 3px solid var(--gold-dim);
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   line-height: 1.45;
   color: var(--ink);
 }
 .mz-mag-acoes { display: flex; align-items: center; gap: 0.6rem; }
 .mz-mag-ok {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.06em;
   color: #3f7a3f;
@@ -2790,10 +2789,10 @@
 .mz-torm-cab { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
 .mz-torm-add { margin-left: auto; }
 .mz-torm-conta {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--parchment);
   background: #8a1c4a;
   border-radius: 999px;
@@ -2807,7 +2806,7 @@
   background: var(--parchment);
   border: 1px dashed #8a1c4a;
   border-left: 4px solid #8a1c4a;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   line-height: 1.45;
   color: var(--ink);
@@ -2828,18 +2827,18 @@
   gap: 0.45rem;
 }
 .mz-torm-nome {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--rust-dark);
 }
 .mz-torm-fonte {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.52rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--ink-faded);
   border: 1px solid var(--parchment3);
   border-radius: 999px;
@@ -2848,43 +2847,43 @@
 /* o valor somado — é o que o mestre lê na mesa */
 .mz-torm-valor {
   flex: 1 1 12rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--ink);
 }
 .mz-torm-item .mz-cond-x { flex: 0 0 auto; align-self: center; }
 .mz-torm-calc {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.8rem;
   color: var(--ink-faded);
   margin-top: 0.1rem;
 }
 .mz-torm-falta {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.82rem;
   color: #8a1c4a;
   margin-top: 0.15rem;
 }
 .mz-torm-prereq {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.8rem;
   color: var(--ink-faded);
   margin-top: 0.1rem;
 }
 .mz-torm-det > summary {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+
   color: var(--rust-dark);
   cursor: pointer;
   margin-top: 0.25rem;
 }
 .mz-torm-det > p {
   margin: 0.25rem 0 0;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   line-height: 1.45;
   color: var(--ink-faded);
@@ -2901,7 +2900,7 @@
 .mz-torm-opcao-valor {
   display: block;
   margin: 0.1rem 0 0.15rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0;
@@ -2957,7 +2956,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -2986,7 +2985,7 @@
 
 /* o seletor de campanha no cabeçalho de cada sessão */
 .mz-camp-sel {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.8rem;
   max-width: 11rem;
   padding: 0.12rem 0.3rem;

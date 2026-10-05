@@ -20,16 +20,15 @@
 .pa-cabecalho::before {
   content: '✦ Compêndio de Arton ✦';
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  text-transform: uppercase;
   color: var(--gold-dim);
   margin-bottom: 0.4rem;
 }
 .pa-cabecalho h1 {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.9rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -38,7 +37,7 @@
   margin: 0 0 0.3rem;
 }
 .pa-subtitulo {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 1.02rem;
   line-height: 1.4;
@@ -58,7 +57,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.55rem 0.7rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 1rem;
   color: var(--ink);
   background: var(--parchment2);
@@ -83,7 +82,7 @@
   margin-top: 0.7rem;
 }
 .pa-cat-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   letter-spacing: 0.06em;
   padding: 0.35rem 0.7rem;
@@ -106,7 +105,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.05rem;
   letter-spacing: 0.05em;
   color: var(--rust-dark);
@@ -155,7 +154,7 @@
   min-height: 2.4rem;                       /* 1 e 2 linhas na mesma altura → grade alinhada */
   cursor: pointer;
   list-style: none;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 1.05rem;
   color: var(--ink);
 }
@@ -171,7 +170,7 @@
 
 .pa-nd {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -182,16 +181,15 @@
 }
 .pa-fonte {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.55rem;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--ink-faded);
 }
 
 .pa-item-corpo {
   padding: 0.2rem 0.8rem 0.85rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--ink);
@@ -204,24 +202,23 @@
 .pa-bloco { margin: 0.55rem 0; }
 .pa-bloco-rot {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--rust);
   margin-bottom: 0.15rem;
 }
 
 .pa-vazio {
   text-align: center;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-style: italic;
   color: var(--ink-faded);
   padding: 2rem 0;
 }
 
 .pa-erro {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 1rem;
   color: var(--rust-dark);
   background: var(--parchment2);
@@ -230,7 +227,7 @@
   margin: 1rem 0;
 }
 .pa-erro code {
-  font-family: monospace;
+  font-family: var(--ga-fonte-mono);
   background: var(--parchment3);
   padding: 0.05rem 0.3rem;
 }
