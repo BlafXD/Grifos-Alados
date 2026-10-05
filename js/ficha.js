@@ -6249,6 +6249,7 @@
     const corpo = overlay.querySelector('#fiPodCorpo');
     let grupo = '';        // '' = todos
     let classe = '';       // dentro de ⚔ Classe: '' = todas
+    let distAberta = '';   // dentro de 🎖 Distinção: '' = a vitrine de cartões
 
     //  As classes que ESTA ficha tem, já resolvendo a variante para a
     //  básica ("ambas são a mesma classe", Heróis de Arton, p. 22).
@@ -6260,6 +6261,53 @@
       });
       return vistas;
     }
+    //  ── A VITRINE DE DISTINÇÕES (05/10/2026) ───────────────────────
+    //  Pedido dele: "na parte de adicionar poderes da distinção seria
+    //  interessante ter o card DA distinção e não os poderes soltos".
+    //  Com os dois livros são 59 distinções e 365 poderes — uma lista
+    //  achatada obriga a saber o nome do poder ANTES de procurá-lo, que
+    //  é o contrário de como se escolhe uma distinção na mesa: primeiro
+    //  se escolhe a ORDEM, depois o que aprender dentro dela.
+    //
+    //  Então o chip 🎖 Distinção passa a mostrar um cartão por distinção
+    //  (nome, deus, livro e página, a marca, quantos poderes), e só
+    //  depois de entrar em uma é que aparecem os poderes dela.
+    //
+    //  A marca é o que o livro chama de automática: "o personagem recebe
+    //  sempre a marca da distinção correspondente e ganha acesso a seus
+    //  poderes" (Deuses de Arton, p. 68; Heróis de Arton, p. 104). Por
+    //  isso o botão de entrar TRAZ a marca — e, por isso mesmo, ele diz
+    //  o que vai fazer antes de fazer.
+    function distincoesDaBase() {
+      const mapa = {};
+      base.forEach(p => {
+        if (p.grupo !== 'distincao' || !p.distincao) return;
+        const d = mapa[p.distincao] || (mapa[p.distincao] = {
+          slug: p.distincao, nome: p.tags || p.distincao, deus: '', livro: p.livro,
+          pagIni: p.pagina || 0, pagFim: p.pagina || 0, marca: null, poderes: [],
+        });
+        if (p.deus && !d.deus) d.deus = p.deus;
+        if (p.pagina) {
+          d.pagIni = d.pagIni ? Math.min(d.pagIni, p.pagina) : p.pagina;
+          d.pagFim = Math.max(d.pagFim, p.pagina);
+        }
+        if (p.marca) d.marca = p; else d.poderes.push(p);
+      });
+      return Object.keys(mapa).map(k => mapa[k])
+        .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+    }
+    //  Quantos poderes DESTA distinção a ficha já tem (sem a marca) — é a
+    //  mesma conta que faz os poderes crescerem, então o cartão já mostra
+    //  o número que o "Agora:" vai usar.
+    function quantosNaFicha(slug) {
+      return f.poderes.filter(p => p.grupo === 'distincao' &&
+        (p.distincao || '') === slug && !p.marca).length;
+    }
+    function temAMarca(slug) {
+      return f.poderes.some(p => p.grupo === 'distincao' &&
+        (p.distincao || '') === slug && p.marca);
+    }
+
     //  A ressalva impressa da variante, quando a ficha tem uma delas.
     function ressalvas() {
       return f.classes.map(c => ({ v: ressalvaDaVariante(c.classe), C: D.classe(c.classe) }))
@@ -6289,6 +6337,20 @@
         ${ressalvas().map(x => `<p class="fi-pod-ressalva">⚠ <strong>${esc(x.C.nome)}</strong> usa a lista do
           ${esc((D.classe(D.basicaDe(x.C.chave)) || {}).nome || '')} — ${esc(x.v.nota)}
           <em>(Heróis de Arton, p. ${x.v.pagina})</em></p>`).join('')}`;
+      //  Dentro de uma distinção: a faixa de volta, no lugar dos chips.
+      const dAberta = distAberta ? distincoesDaBase().filter(d => d.slug === distAberta)[0] : null;
+      const faixaDist = !dAberta ? '' : `
+        <div class="fi-dist-faixa">
+          <button type="button" class="fi-pod-chip" data-dist-voltar>← todas as distinções</button>
+          <span class="fi-dist-faixa-nome">🎖 ${esc(dAberta.nome)}</span>
+          ${dAberta.deus ? `<span class="fi-pod-tag fi-pod-tag--deus">${esc(dAberta.deus)}</span>` : ''}
+          <span class="fi-dist-faixa-conta">${temAMarca(dAberta.slug) ? 'marca + ' : ''}${
+            quantosNaFicha(dAberta.slug)} de ${dAberta.poderes.length} poderes na ficha</span>
+        </div>
+        ${temAMarca(dAberta.slug) ? '' : `<p class="fi-pod-ressalva fi-dist-aviso">🎖 Você ainda não é
+          <strong>${esc(dAberta.nome)}</strong>. Ao entrar na distinção o personagem recebe a marca
+          <strong>${esc(dAberta.marca ? dAberta.marca.nome : '')}</strong> — ela é automática, está
+          primeiro na lista, e <em>não conta</em> na soma que faz os outros poderes crescerem.</p>`}`;
       corpo.innerHTML = `
         <p class="ga-modal-dica">${daClasse
           ? 'Os ' + base.length + ' poderes deste cartão — <strong>com os ' + baseClasse().length +
@@ -6297,7 +6359,11 @@
           pelo grupo.</p>
         <div class="fi-pod-chips" id="fiPodChips">${chips}</div>
         ${chipsClasse}
-        <input type="text" class="fi-busca-mag" id="fiBuscaPod" placeholder="esquiva, fúria, lefou, Wynna, +2 em Luta…"
+        ${faixaDist}
+        <input type="text" class="fi-busca-mag" id="fiBuscaPod" placeholder="${
+          grupo === 'distincao' && !distAberta
+            ? 'o nome da distinção, o deus, ou um poder dela…'
+            : 'esquiva, fúria, lefou, Wynna, +2 em Luta…'}"
                autocomplete="off" aria-label="Buscar poder" value="${esc(termo || '')}">
         <div class="fi-busca-res" id="fiPodRes"></div>`;
       const campo = corpo.querySelector('#fiBuscaPod');
@@ -6312,11 +6378,54 @@
       //  "Poder de <classe>", que é a lista dos selecionáveis.
       function rotuloFixa(p) { return 'Habilidade de ' + esc((D.classe(p.classe) || {}).nome || p.classe); }
 
+      //  A vitrine: um cartão por distinção, em vez dos poderes soltos.
+      //  A busca aqui procura na distinção INTEIRA (nome, deus, livro e o
+      //  texto de todos os poderes dela), para "clone sombrio" ou "trevas"
+      //  acharem o sombra de Tenebra sem você saber o nome da ordem.
+      function listarDistincoes(q) {
+        const todas = distincoesDaBase().filter(d => {
+          if (!q) return true;
+          const tudo = [d.nome, d.deus, (window.GA_PODERES_LIVROS || {})[d.livro] || '',
+            d.marca ? d.marca.nome + ' ' + (d.marca.texto || []).join(' ') : '',
+            d.poderes.map(p => p.nome + ' ' + (p.texto || []).join(' ')).join(' ')].join(' ');
+          return semAcento(tudo).indexOf(q) >= 0;
+        });
+        if (!todas.length) {
+          res.innerHTML = '<p class="fi-busca-vazio">Nenhuma distinção com isso.</p>';
+          return;
+        }
+        res.innerHTML = '<div class="fi-dist-vitrine">' + todas.map(d => {
+          const n = quantosNaFicha(d.slug), tem = temAMarca(d.slug);
+          const paginas = d.pagIni === d.pagFim ? 'p. ' + d.pagIni : 'p. ' + d.pagIni + '–' + d.pagFim;
+          const fonte = ((window.GA_PODERES_LIVROS || {})[d.livro] || '') + ', ' + paginas;
+          //  A primeira linha da marca é o floreio do livro: serve de
+          //  "o que é esta distinção" sem eu inventar resumo nenhum.
+          const resumo = d.marca ? ((d.marca.texto || [])[0] || '')
+            .replace(/^Marca da distinção\.\s*/, '') : '';
+          return `
+            <button type="button" class="fi-dist-card${tem ? ' fi-dist-card--minha' : ''}" data-dist="${esc(d.slug)}">
+              <span class="fi-dist-card-cab">
+                <span class="fi-dist-card-nome">🎖 ${esc(d.nome)}</span>
+                ${d.deus ? `<span class="fi-pod-tag fi-pod-tag--deus">${esc(d.deus)}</span>` : ''}
+              </span>
+              <span class="fi-dist-card-fonte">${esc(fonte)}</span>
+              ${d.marca ? `<span class="fi-dist-card-marca">Marca: <strong>${esc(d.marca.nome)}</strong></span>` : ''}
+              <span class="fi-dist-card-txt">${esc(resumo)}</span>
+              <span class="fi-dist-card-pe">${tem
+                ? `<em class="fi-dist-card-tem">✓ você já é — ${n} de ${d.poderes.length} poderes</em>`
+                : `<em>${d.poderes.length} poderes</em>`}</span>
+            </button>`;
+        }).join('') + '</div>';
+      }
+
       function listar() {
         const q = semAcento((campo.value || '').trim());
+        //  🎖 Distinção sem nenhuma aberta: mostra as distinções, não os poderes.
+        if (grupo === 'distincao' && !distAberta) return listarDistincoes(q);
         const achados = base.filter(p => {
           if (grupo && (p.classe ? 'classe' : p.grupo) !== grupo) return false;
           if (grupo === 'classe' && classe && p.classe !== classe) return false;
+          if (distAberta && (p.distincao || '') !== distAberta) return false;
           if (!q) return true;
           const daClasse = p.classe ? (listaDeClasse(p.classe) || {}).nome || '' : '';
           //  As sub-opções das escolhas (herança do Moreau, bênção, presente…)
@@ -6327,6 +6436,9 @@
           return semAcento([p.nome, p.tags || '', p.deus || '', p.preReq || '', (p.texto || []).join(' '),
             escTexto, daClasse, (window.GA_PODERES_LIVROS || {})[p.livro] || ''].join(' ')).indexOf(q) >= 0;
         });
+        //  Dentro de uma distinção, a MARCA vem primeiro: é o que se
+        //  recebe ao entrar, e o resto é escolha.
+        if (distAberta) achados.sort((a, b) => (b.marca ? 1 : 0) - (a.marca ? 1 : 0));
         const mostra = achados.slice(0, 60);
         res.innerHTML = mostra.length
           ? mostra.map(p => {
@@ -6338,7 +6450,9 @@
             return `
             <button type="button" class="fi-busca-item ${jaTem[p.id] ? 'fi-busca-item--tem' : ''}" data-pid="${esc(p.id)}">
               <span class="fi-busca-circ">${g.emoji}</span>
-              <span class="fi-busca-nome">${esc(p.nome)}${p.magica ? ' ✦' : ''}${jaTem[p.id] ? ' <em>já está na ficha</em>' : ''}</span>
+              <span class="fi-busca-nome">${esc(p.nome)}${p.magica ? ' ✦' : ''}${
+                p.marca ? ' <em class="fi-busca-marca">marca da distinção</em>' : ''}${
+                jaTem[p.id] ? ' <em>já está na ficha</em>' : ''}</span>
               <span class="fi-busca-meta">${rot}${p.tags ? ' · ' + esc(p.tags) : ''}${p.deus ? ' · ' + esc(p.deus) : ''}${fonte ? ' · ' + esc(fonte) : ''}</span>
               <span class="fi-busca-res-txt">${esc((p.texto || [])[0] || '')}</span>
             </button>`; }).join('') +
@@ -6354,6 +6468,17 @@
         if (grupo !== 'classe') classe = '';
         // entrando em ⚔ Classe com uma só classe na ficha, ela já vem aberta
         else if (!classe && minhasClasses().length === 1) classe = minhasClasses()[0];
+        //  Trocar de chip sempre volta para a vitrine: estar "dentro" do
+        //  bufão de Hyninn e clicar em ⚔ Classe não pode deixar o filtro
+        //  da distinção ligado por baixo.
+        distAberta = '';
+        telaBusca(campo.value);
+      });
+      //  A faixa de volta da distinção aberta.
+      const faixa = corpo.querySelector('.fi-dist-faixa');
+      if (faixa) faixa.addEventListener('click', e => {
+        if (!e.target.closest('[data-dist-voltar]')) return;
+        distAberta = '';
         telaBusca(campo.value);
       });
       const fileira = corpo.querySelector('#fiPodClasses');
@@ -6364,6 +6489,10 @@
         telaBusca(campo.value);
       });
       res.addEventListener('click', e => {
+        //  Entrar numa distinção: limpa a busca, porque o que ela filtrava
+        //  era a lista de distinções, e dentro já se vê tudo de uma vez.
+        const d = e.target.closest('[data-dist]');
+        if (d) { distAberta = d.dataset.dist; return telaBusca(''); }
         const b = e.target.closest('[data-pid]');
         if (b) telaPoder(b.dataset.pid, campo.value);
       });
