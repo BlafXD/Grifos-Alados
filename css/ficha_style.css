@@ -1644,6 +1644,12 @@
   .fi-pod { grid-template-columns: 1fr; }
   .fi-pod-acoes { justify-content: flex-end; }
   .fi-pod-chip { min-height: 2.4rem; }
+  /*  O "aplicar" do benefício e os cartões da vitrine de distinções
+      também precisam do alvo de toque — são pequenos de propósito no
+      desktop, mas no celular alvo pequeno é alvo errado. */
+  .fi-orig-aplicar { min-height: 2.4rem; padding-left: 0.7rem; padding-right: 0.7rem; }
+  .fi-orig-benef { min-height: 2.4rem; }
+  .fi-dist-card { min-height: 3rem; }
   .fi-inv-pe { flex-direction: column; align-items: stretch; }
 }
 
@@ -2665,6 +2671,33 @@
 .fi-orig-benef--pericia { border-left: 3px solid var(--verde-dark); }
 .fi-orig-benef--poder { border-left: 3px solid var(--rust-dark); }
 .fi-orig-benef--flex { border-style: dashed; }
+/*  O "aplicar" de um benefício já escolhido (05/10/2026): encostado no
+    chip, menor que ele, porque é o segundo passo e não a escolha.
+    Aplicado, vira um selo verde sem clique. */
+.fi-orig-aplicar {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0.35rem 0 -0.15rem;
+  padding: 0.18rem 0.45rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.66rem;
+  letter-spacing: 0.03em;
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border: 1px solid var(--rust-dark);
+  border-radius: var(--raio);
+  cursor: pointer;
+}
+.fi-orig-aplicar:hover:not(:disabled) { background: var(--rust); border-color: var(--rust); }
+.fi-orig-aplicar--feito {
+  color: var(--verde);
+  background: transparent;
+  border-color: var(--verde);
+}
+.fi-orig-aplicar:disabled { cursor: default; }
+.fi-orig-aplicar:disabled:not(.fi-orig-aplicar--feito) {
+  color: var(--text-dim); background: transparent; border-color: var(--parchment3);
+}
 /* origem especial (Heróis): o benefício fixo, num quadro só */
 .fi-orig-especial {
   border-left: 3px solid var(--gold-deep);

@@ -3792,6 +3792,95 @@
   function origemAtual(f) {
     return (window.GA_ORIGENS || []).find(o => o.id === (f.origemEscolha || {}).origem) || null;
   }
+  //  ── O BENEFÍCIO DA ORIGEM, APLICADO DE VERDADE (05/10/2026) ──────
+  //  Até aqui, marcar um benefício era SÓ a escolha: a nota mandava o
+  //  jogador treinar a perícia na lista e trazer o poder no ＋ Adicionar.
+  //  Funcionava, mas deixava a conta da origem meio no ar — e é o único
+  //  lugar da ficha em que algo escolhido não vira nada.
+  //
+  //  O "aplicar" fecha isso escrevendo a COISA DE VERDADE: marca o
+  //  `treinada` daquela perícia, ou empurra o cartão do poder. Nada
+  //  sintético, nada que a ficha tenha de lembrar: depois de aplicado, é
+  //  um treino e um poder como qualquer outro — dá para desmarcar na
+  //  lista de perícias e tirar no ✕ do cartão, sem passar por aqui.
+  //
+  //  Ofício é o caso à parte: "Ofício na verdade são várias perícias"
+  //  (p. 121), e mora em f.oficios com a especialidade escrita à mão.
+  //  Então o benefício "Ofício (alquimista)" cria a linha de ofício já
+  //  treinada e com a especialidade preenchida.
+  const RE_OFICIO = /^Of[ií]cio(?:\s*\(([^)]+)\))?$/i;
+
+  function periciaPorNome(nome) {
+    const alvo = semAcento(String(nome || '').trim());
+    return (D.PERICIAS || []).filter(p => semAcento(p.nome) === alvo)[0] || null;
+  }
+  function poderPorNome(nome) {
+    const alvo = semAcento(String(nome || '').trim());
+    return (window.GA_PODERES || []).filter(p => semAcento(p.nome) === alvo)[0] || null;
+  }
+  //  Em que pé está um benefício já escolhido: já virou ficha, ou ainda
+  //  falta aplicar? Devolve também o rótulo do botãozinho.
+  function estadoBenef(f, nome, tipo) {
+    if (tipo === 'flex') {
+      return { feito: false, podeAplicar: false, rotulo: 'com o mestre',
+               dica: 'Esta vaga é definida pelo mestre — escolha com ele e aplique à mão.' };
+    }
+    const mOf = RE_OFICIO.exec(String(nome || '').trim());
+    if (tipo === 'pericia' && mOf) {
+      const esp = semAcento(mOf[1] || '');
+      const achou = (f.oficios || []).some(o => o.treinada && (!esp || semAcento(o.esp) === esp));
+      return achou
+        ? { feito: true, podeAplicar: false, rotulo: '✓ na ficha', dica: 'O ofício já está treinado na ficha.' }
+        : { feito: false, podeAplicar: true, rotulo: 'aplicar',
+            dica: 'Cria a linha de Ofício' + (mOf[1] ? ' (' + mOf[1] + ')' : '') + ' já treinada.' };
+    }
+    if (tipo === 'pericia') {
+      const p = periciaPorNome(nome);
+      if (!p) return { feito: false, podeAplicar: false, rotulo: '—', dica: 'Perícia fora da lista da ficha.' };
+      return f.pericias[p.chave] && f.pericias[p.chave].treinada
+        ? { feito: true, podeAplicar: false, rotulo: '✓ treinada', dica: 'Você já é treinado em ' + p.nome + '.' }
+        : { feito: false, podeAplicar: true, rotulo: 'aplicar', dica: 'Marca ' + p.nome + ' como treinada.' };
+    }
+    const b = poderPorNome(nome);
+    if (!b) return { feito: false, podeAplicar: false, rotulo: '—', dica: 'Poder não encontrado na base.' };
+    return f.poderes.some(x => x.pid === b.id)
+      ? { feito: true, podeAplicar: false, rotulo: '✓ na ficha', dica: 'O poder já está na ficha.' }
+      : { feito: false, podeAplicar: true, rotulo: 'aplicar', dica: 'Traz o cartão de ' + b.nome + ' para a ficha.' };
+  }
+  //  Escreve o benefício na ficha. Devolve o que fez, para o aviso.
+  function aplicarBenefOrigem(f, nome, tipo) {
+    const mOf = RE_OFICIO.exec(String(nome || '').trim());
+    if (tipo === 'pericia' && mOf) {
+      const esp = mOf[1] || '';
+      //  Reaproveita uma linha de ofício vazia antes de criar outra — o
+      //  normalizar já deixa duas à vista, e criar uma terceira em branco
+      //  por cima delas seria sujeira.
+      const vaga = (f.oficios || []).filter(o => !String(o.esp || '').trim() && !o.treinada)[0];
+      if (vaga) { vaga.esp = esp; vaga.treinada = true; }
+      else f.oficios.push({ id: novoId(), esp: esp, treinada: true, outros: 0, atr: '' });
+      sujar(f.id, 'oficios');
+      return 'Ofício' + (esp ? ' (' + esp + ')' : '') + ' treinado.';
+    }
+    if (tipo === 'pericia') {
+      const p = periciaPorNome(nome);
+      if (!p) return '';
+      f.pericias[p.chave].treinada = true;
+      sujar(f.id, 'pericias');
+      return p.nome + ' marcada como treinada.';
+    }
+    const b = poderPorNome(nome);
+    if (!b) return '';
+    f.poderes.push({
+      id: novoId(), pid: b.id, nome: b.nome, grupo: b.classe ? 'classe' : b.grupo,
+      classe: b.classe || '', distincao: b.distincao || '', marca: !!b.marca,
+      magica: !!b.magica, livro: b.livro || '', pagina: b.pagina || 0,
+      tags: b.tags || '', deus: b.deus || '', preReq: b.preReq || '',
+      custo: b.custo || '', texto: (b.texto || []).slice(), obs: '', contaTormenta: false,
+    });
+    sujar(f.id, 'poderes');
+    return b.nome + ' entrou no bloco de poderes.';
+  }
+
   function blocoOrigem(f) {
     const O = window.GA_ORIGENS || [];
     if (!O.length) return '';
@@ -3837,12 +3926,20 @@
       const chip = (nome, tipo) => {
         const on = tem(nome);
         const rot = tipo === 'pericia' ? 'perícia' : (tipo === 'flex' ? 'à escolha' : 'poder');
+        //  O ESTADO do benefício escolhido: ele já está na ficha de verdade?
+        //  (a perícia treinada, o poder no cartão). Enquanto não estiver,
+        //  aparece o "aplicar" — ver aplicarBenefOrigem.
+        const ap = on ? estadoBenef(f, nome, tipo) : null;
         return `<button type="button" class="fi-orig-benef fi-orig-benef--${tipo}${on ? ' fi-orig-benef--on' : ''}"
                   data-acao="origem-benef" data-nome="${esc(nome)}" data-tipo="${tipo}" aria-pressed="${on}"
                   ${(!on && cheio) ? 'disabled title="Já escolheu ' + limite + ' — desmarque um para trocar"' : ''}>
                   <span class="fi-orig-benef-marca" aria-hidden="true">${on ? '✓' : '＋'}</span>
                   <span class="fi-orig-benef-nome">${esc(nome)}</span>
-                  <em>${rot}</em></button>`;
+                  <em>${rot}</em></button>` +
+               (ap ? `<button type="button" class="fi-orig-aplicar${ap.feito ? ' fi-orig-aplicar--feito' : ''}"
+                  data-nome="${esc(nome)}" data-tipo="${tipo}"
+                  ${ap.podeAplicar ? 'data-acao="origem-aplicar"' : 'disabled'}
+                  title="${esc(ap.dica)}">${esc(ap.rotulo)}</button>` : '');
       };
       const pericias = (o.pericias || []).map(p => chip(p, 'pericia')).join('');
       const poderes = (o.poderes || []).map(p => chip(p, 'poder')).join('');
@@ -3853,9 +3950,10 @@
           <span class="fi-orig-fonte">${esc((window.GA_ORIGENS_LIVROS || {})[o.livro] || o.livro)}, p. ${o.pagina}</span></p>
         ${o.nota ? `<p class="fi-orig-nota">${esc(o.nota)}</p>` : ''}
         <div class="fi-orig-benefs">${pericias}${poderes}${flex}</div>
-        <p class="fi-nota">Marcar aqui é a <strong>escolha</strong>: a <strong>perícia</strong> você treina na lista de
-          perícias, e o <strong>poder</strong> você traz no <strong>＋ Adicionar</strong> abaixo. Assim a origem não
-          mexe no que você já ajustou à mão.</p>
+        <p class="fi-nota">Marcar é a <strong>escolha</strong>; o <strong>aplicar</strong> ao lado é que escreve na ficha
+          — marca a perícia como treinada (ou cria a linha de Ofício) e traz o cartão do poder. Depois disso é
+          treino e poder como qualquer outro: dá para desmarcar na lista de perícias e tirar no ✕ do cartão,
+          sem passar por aqui. Nada é aplicado sozinho.</p>
         <p class="fi-nota">Precisa só do <strong>poder de OUTRA origem</strong> (há efeitos que permitem)? Ele não
           precisa ser a sua: abra o <strong>＋ Adicionar</strong> abaixo e filtre pelo grupo <strong>🎯 Origem</strong>
           — os poderes-assinatura das 35 origens estão todos lá.</p>`;
@@ -5401,6 +5499,22 @@
         itens.push({ nome: nome, tipo: tipo });
       }
       sujar(f.id, 'origemEscolha'); salvar(); return render();
+    }
+    //  "aplicar": escreve o benefício escolhido na ficha de verdade —
+    //  marca o treino da perícia (ou cria a linha de Ofício) e empurra o
+    //  cartão do poder. Daí para a frente é treino e poder como qualquer
+    //  outro: desmarca na lista, tira no ✕ do cartão.
+    if (acao === 'origem-aplicar') {
+      const nome = btn.dataset.nome, tipo = btn.dataset.tipo;
+      if (!nome) return;
+      const fez = aplicarBenefOrigem(f, nome, tipo);
+      if (!fez) return;
+      salvar();
+      //  O leitor de tela precisa ouvir o que mudou: o botão some (vira
+      //  "✓ treinada") e a mudança acontece longe daqui, na lista de
+      //  perícias ou no bloco de poderes.
+      if (window.GA_anunciar) window.GA_anunciar(fez);
+      return render();
     }
 
     // ── ESTADO DE COMBATE ──────────────────────────────────────────
