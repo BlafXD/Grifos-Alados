@@ -2902,6 +2902,91 @@
   font-weight: 600;
 }
 .fi-pod-chip--on em { color: var(--ink-faded); }
+
+/* ══════════════════════════════════════════════════════════════════
+   A VITRINE DE DISTINÇÕES (05/10/2026)
+   O chip 🎖 Distinção mostra um cartão por ORDEM, não os poderes
+   soltos: com os dois livros são 59 distinções e 365 poderes, e uma
+   lista achatada obriga a saber o nome do poder antes de procurá-lo.
+   Entrando numa distinção, a faixa de volta substitui os chips e a
+   lista vira a dela, com a marca na frente.
+   ══════════════════════════════════════════════════════════════════ */
+.fi-dist-vitrine {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.5rem;
+}
+.fi-dist-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--gold-deep);
+  border-radius: var(--raio);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.fi-dist-card:hover { background: var(--gold-pale); border-color: var(--rust); }
+.fi-dist-card--minha { border-left-color: var(--verde); background: var(--parchment2); }
+.fi-dist-card-cab { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem; }
+.fi-dist-card-nome {
+  font-family: var(--ga-fonte-titulo);
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+.fi-dist-card-fonte {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  color: var(--text-dim);
+}
+.fi-dist-card-marca { font-family: var(--ga-fonte-nota); font-size: 0.82rem; color: var(--rust-dark); }
+/*  O resumo é a primeira linha da marca, tirada do livro — serve para
+    escolher a distinção sem abri-la. Preso em DUAS linhas: o modal tem
+    teto de 460px (uma coluna), e são 59 cartões; cartão de altura livre
+    aqui vira rolagem de página inteira para achar o próximo. */
+.fi-dist-card-txt {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: var(--ink-faded);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.fi-dist-card-pe { font-family: var(--ga-fonte-nota); font-size: 0.8rem; color: var(--text-dim); }
+.fi-dist-card-tem { color: var(--verde); font-weight: 600; }
+
+/* a faixa de volta, quando uma distinção está aberta */
+.fi-dist-faixa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--parchment3);
+}
+.fi-dist-faixa-nome { font-family: var(--ga-fonte-titulo); font-size: 0.95rem; }
+.fi-dist-faixa-conta {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-left: auto;
+}
+.fi-dist-aviso { color: var(--gold-deep); }
+.fi-busca-marca {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  color: var(--rust-dark);
+  font-style: normal;
+}
+
 .fi-pod-ficha {
   font-family: var(--ga-fonte-nota);
   font-size: 0.88rem;

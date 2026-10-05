@@ -251,3 +251,59 @@ armeiro, os informantes do detetive, os efeitos da barganha planar) viraram
 **quadro** do card, que é como a ficha mostra lista longa — e não parágrafos
 soltos no meio do texto da regra. O texto é o do livro, palavra por palavra; só
 o marcador "•" sai, porque o quadro já lista.
+
+---
+
+## A vitrine: o cartão DA distinção, não os poderes soltos (05/10/2026)
+
+Pedido dele, logo depois da importação: *"na parte de adicionar poderes da
+distinção seria interessante ter o card DA distinção e não os poderes soltos"*.
+
+**Por que ele tem razão.** Com os dois livros são **59 distinções e 365 poderes**
+numa lista só. Para achar "Clone Sombrio" era preciso **saber o nome do poder
+antes de procurá-lo** — que é o contrário de como se escolhe na mesa: primeiro
+se escolhe a ORDEM, depois o que aprender dentro dela.
+
+**O que mudou.** O chip **🎖 Distinção** do "✨ Adicionar poder" deixa de listar
+poderes e passa a mostrar **um cartão por distinção**:
+
+```
+🎖 Sombra de Tenebra                                    [Tenebra]
+Deuses de Arton, p. 123
+Marca: Ameaça das Sombras
+Para o sombra de Tenebra, as trevas revelam as fraquezas dos inimigos.
+                                            ✓ você já é — 4 de 6 poderes
+```
+
+Clicando, entra-se nela: os chips dão lugar a uma **faixa de volta** (← todas as
+distinções · nome · deus · "marca + 4 de 6 poderes na ficha") e a lista vira só
+a dela, **com a marca primeiro**, etiquetada *marca da distinção*.
+
+### As decisões
+
+- **A busca procura a distinção INTEIRA** — nome, deus, livro e o texto de todos
+  os poderes dela. Digitar "clone sombrio" ou "Tenebra" acha o sombra de Tenebra
+  sem você saber o nome da ordem. Entrar numa distinção **limpa a busca**, porque
+  o que ela filtrava era a lista de ordens.
+- **O resumo do cartão é a primeira linha da MARCA**, tirada do livro — não um
+  resumo meu. Preso em duas linhas por CSS: o modal tem teto de 460px (uma
+  coluna só), e 59 cartões de altura livre viram rolagem sem fim.
+- **A marca NÃO é adicionada sozinha.** Entrando numa distinção que você ainda
+  não tem, uma faixa âmbar avisa: *"Você ainda não é Tibarita. Ao entrar na
+  distinção o personagem recebe a marca Poder Monetário — ela é automática, está
+  primeiro na lista, e não conta na soma que faz os outros poderes crescerem."*
+  O livro diz que a marca vem junto (Deuses p. 68, Heróis p. 104), mas quem põe
+  na ficha é o jogador — é a regra de casa de não mexer na ficha por ele.
+- **Trocar de chip zera a distinção aberta.** Sem isso, estar "dentro" do bufão
+  de Hyninn e clicar em ⚔ Classe deixaria o filtro ligado por baixo, e a lista
+  de classe sairia vazia sem dizer por quê.
+- **O cartão de uma distinção que a ficha já tem** fica com a tarja verde e o
+  "✓ você já é", com a conta de poderes que o "Agora:" vai usar.
+
+### Provado no navegador
+
+59 cartões; busca por poder e por deus achando a ordem dona; entrar, a faixa, a
+marca na frente, o "já está na ficha" em cada poder que a ficha tem; voltar
+devolvendo os 59; trocar de chip limpando o filtro; **zero erro de console**;
+nenhum cartão transbordando e nenhuma rolagem horizontal, nem no desktop nem no
+iframe de 390px.
