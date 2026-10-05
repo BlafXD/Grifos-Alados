@@ -2417,6 +2417,1030 @@
     'Você pode enfeitar um item mundano com motivos religiosos para que ele se pareça com um acessório mágico menor a sua escolha. Fazer isso gasta 1 hora de trabalho e 1/100 do preço do acessório. Para usar a “relíquia” primeiro você precisa empunhá-la (ou vesti-la) e gastar uma ação de movimento e 2 PM para professar seus poderes em voz alta. Se fizer isso, ela funciona como se fosse verdadeira até o fim da cena, ou até você ativar outra de suas relíquias. Você pode ter até uma relíquia sagrada por poder da distinção que possuir.',
   ] },
 
+
+  // ══════════════════════════════════════════════════════════════════
+  //  DISTINÇÕES · Deuses de Arton, cap. 2 (p. 66–141) — 23 distinções
+  //  O segundo livro com distinções, e a contraparte RELIGIOSA do
+  //  capítulo do Heróis: todas são de devoto. Mesmo formato e mesmo
+  //  motor de escalonamento (js/ficha-distincoes.js) — muda só o
+  //  `livro: 'deuses'` e o campo `deus`, que aqui finalmente é usado:
+  //  ele vira a etiqueta do deus no cartão e entra na busca.
+  //  Importadas em levas de três, a partir de 05/10/2026.
+  //  Progresso e decisões em docs/distincoes-progresso.md.
+  // ══════════════════════════════════════════════════════════════════
+
+  //  Bufão de Hyninn (p. 70–72) — 1 marca + 5 poderes.
+  { id: 'dist-bufao-chapeu-do-bobo', nome: 'Chapéu do Bobo', grupo: 'distincao', livro: 'deuses', pagina: 71,
+    tags: 'Bufão de Hyninn', distincao: 'bufao-de-hyninn', marca: true, deus: 'Hyninn', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Um bobo da corte precisa parecer berrante, chamativo e inerentemente engraçado.',
+    'Você recebe um gorro com guizos, um item de vestuário que não ocupa espaços nem conta em seu limite de itens vestidos. Ele permite usar Músicas de Bardo sem precisar empunhar um instrumento musical e fornece +2 em Atuação e Enganação, mas impõe –2 em Diplomacia e Intimidação e só funciona com você.',
+  ] },
+  { id: 'dist-bufao-cabriolas-de-bobo', nome: 'Cabriolas de Bobo', grupo: 'distincao', livro: 'deuses', pagina: 71,
+    tags: 'Bufão de Hyninn', distincao: 'bufao-de-hyninn', marca: false, deus: 'Hyninn', magica: true,
+    preReq: 'devoto de Hyninn, treinado em Acrobacia e Atuação', custo: null,
+    quadro: { titulo: 'Cabriolas de Bobo', texto: [
+      'Cambalhotas, brincadeiras e bobagens em geral que podem ser empregadas por um bufão de Hyninn para gerar vários efeitos mágicos. Cabriolas contam como Música de Bardo e seguem suas regras (Tormenta20, p. 45). ✦',
+      'Deboche Mágico. Escolha uma criatura no alcance e faça um teste de Atuação. Até o fim da cena, na próxima vez que usar uma habilidade mágica, a criatura deve passar em um teste de Vontade (CD igual ao resultado do seu teste de Atuação). Se ela falhar, a habilidade não funciona e quaisquer custos pagos são perdidos. Mental.',
+      'Humor Macabro. Escolha uma criatura no alcance. Até o fim da cena, na próxima vez que você ou um aliado causar dano a essa criatura, outra criatura pode fazer um ataque corpo a corpo contra ela como uma reação.',
+      'Humor Macabro em Massa. Como Humor Macabro, mas afeta cada criatura a sua escolha no alcance. Pré-requisito: Humor Macabro.',
+      'Imitação Irritante. Faça um teste de Atuação oposto ao teste de Vontade de uma criatura no alcance. Se você vencer, até o início do seu próximo turno o alvo sofre uma penalidade de –5 em quaisquer testes de perícia que já tenha usado nessa cena. Mental.',
+      'Passo Hilariante. Faça um teste de Atuação oposto ao teste de Vontade de uma criatura no alcance. Se você vencer, ela fica pasma por 1 rodada (apenas uma vez por cena) e vulnerável por 1d4+1 rodadas. Se você perder, ela fica vulnerável por 1 rodada.',
+      'Passo Hilariante em Massa. Como Passo Hilariante, mas afeta cada criatura a sua escolha no alcance. Pré-requisito: Passo Hilariante.',
+      'Pirueta Desajeitada. Faça um teste de Atuação oposto pelo teste de Vontade de cada criatura a sua escolha no alcance. Alvos que percam ficam enredados (nos próprios pés) por 1d4+1 rodadas e caídos. Alvos que passem ficam enredados por 1 rodada. Movimento.',
+      'Rir da Desgraça Alheia. Faça um teste de Atuação oposto ao teste de Vontade de uma criatura no alcance. Se você vencer, até o fim da cena, sempre que ela falhar em um teste de perícia, sofre uma penalidade cumulativa de –1 nessa perícia até o fim da cena (limitada por seu total de poderes da distinção). Mental.',
+    ] },
+    texto: [
+    'O bufão de Hyninn deve ser capaz de entreter os mais diversos públicos.',
+    'Escolha duas cabriolas (veja o quadro). Uma vez feita, essa escolha não pode ser mudada. A cada outro poder da distinção você pode escolher uma nova cabriola.',
+  ] },
+  { id: 'dist-bufao-arremedar', nome: 'Arremedar', grupo: 'distincao', livro: 'deuses', pagina: 72,
+    tags: 'Bufão de Hyninn', distincao: 'bufao-de-hyninn', marca: false, deus: 'Hyninn', magica: false,
+    preReq: 'Cabriolas de Bobo', custo: null, quadro: null, texto: [
+    'O bufão sabe ridicularizar seus inimigos a ponto de condená-los ao fracasso.',
+    'Uma vez por rodada, quando uma criatura em alcance curto que você possa ver faz um teste de perícia, você pode imitá-la da forma mais ridícula possível. Faça um teste de Atuação para ajudar, mas em vez de fornecer um bônus, você impõe uma penalidade ao teste da criatura.',
+  ] },
+  { id: 'dist-bufao-piada-mortal', nome: 'Piada Mortal', grupo: 'distincao', livro: 'deuses', pagina: 72,
+    tags: 'Bufão de Hyninn', distincao: 'bufao-de-hyninn', marca: false, deus: 'Hyninn', magica: false,
+    preReq: 'Cabriolas de Bobo, Canção Assustadora', custo: '6 PM', quadro: null, texto: [
+    '“Um deheoni, um ahleniense e um sambur entram numa taverna…”',
+    'Você pode gastar uma ação completa e 6 PM para contar uma piada tão hilária que o resto da vida parece perder o sentido. Faça um teste de Atuação oposto pela Vontade de uma criatura inteligente (Int –3 ou maior) em alcance curto. Se você vencer, a criatura deve gastar sua próxima ação padrão para atacar a si mesma da maneira mais eficiente possível. Uma criatura só pode ser alvo deste poder uma vez por cena. Mental.',
+  ] },
+  { id: 'dist-bufao-quem-ri-por-ultimo', nome: 'Quem Ri Por Último…', grupo: 'distincao', livro: 'deuses', pagina: 72,
+    tags: 'Bufão de Hyninn', distincao: 'bufao-de-hyninn', marca: false, deus: 'Hyninn', magica: false,
+    preReq: 'Cabriolas de Bobo', custo: null, quadro: null, texto: [
+    '…ri melhor.',
+    'Enquanto você for o último na ordem de iniciativa, você recebe +1 em testes de perícia e na CD de suas habilidades contra criaturas que já tenham agido na rodada. Esses bônus aumentam em +1 para cada dois outros poderes da distinção que você possui.',
+  ] },
+  { id: 'dist-bufao-rir-de-tudo', nome: 'Rir de Tudo', grupo: 'distincao', livro: 'deuses', pagina: 72,
+    tags: 'Bufão de Hyninn', distincao: 'bufao-de-hyninn', marca: false, deus: 'Hyninn', magica: false,
+    preReq: 'Arremedar', custo: '3 PM', quadro: null, texto: [
+    'Um bufão consegue achar graça de tudo, mesmo da própria desgraça.',
+    'Uma vez por cena, quando fizer um teste de resistência contra uma habilidade de um inimigo, você pode gastar 3 PM para usar Atuação no lugar da perícia apropriada. Se fizer isso e passar no teste, você reverte o efeito: qualquer dano ou perda de vida se torna pontos de vida temporários (que desaparecem ao fim da cena) e qualquer penalidade numérica se torna um bônus equivalente até o fim da cena.',
+  ] },
+
+  //  Cavaleiro da Luz (p. 73–75) — 1 marca + 5 poderes.
+  { id: 'dist-cav-luz-etiqueta', nome: 'Etiqueta da Ordem da Luz', grupo: 'distincao', livro: 'deuses', pagina: 75,
+    tags: 'Cavaleiro da Luz', distincao: 'cavaleiro-da-luz', marca: true, deus: 'Khalmyr', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Um cavaleiro da Luz é treinado tanto em enfrentar o mal quanto em lidar com a nobreza.',
+    'Você segue tanto o Código de Honra da classe cavaleiro quanto as Obrigações & Restrições de Khalmyr. Contudo, soma seu Carisma em Guerra e Nobreza, e consegue hospedagem confortável e informações em qualquer lugar afiliado à Ordem da Luz.',
+  ] },
+  { id: 'dist-cav-luz-ataque-subjugante', nome: 'Ataque Subjugante', grupo: 'distincao', livro: 'deuses', pagina: 75,
+    tags: 'Cavaleiro da Luz', distincao: 'cavaleiro-da-luz', marca: false, deus: 'Khalmyr', magica: false,
+    preReq: 'treinado em Luta, Car 1', custo: '2 PM', quadro: null, texto: [
+    'O golpe do cavaleiro da Luz faz seus inimigos se ajoelharem.',
+    'Quando faz um ataque com uma arma corpo a corpo, você pode gastar 2 PM para desferir um golpe subjugante. Você soma seu Carisma no teste de ataque e +1d8 na rolagem de dano (se já soma seu Carisma no ataque, em vez disso recebe +2 no teste). Se causar dano, deixa o alvo vulnerável.',
+  ] },
+  { id: 'dist-cav-luz-alazao-impressionante', nome: 'Alazão Impressionante', grupo: 'distincao', livro: 'deuses', pagina: 75,
+    tags: 'Cavaleiro da Luz', distincao: 'cavaleiro-da-luz', marca: false, deus: 'Khalmyr', magica: false,
+    preReq: 'treinado em Cavalgar, Ataque Subjugante', custo: null, quadro: null, texto: [
+    'A montaria de um cavaleiro é um sinal de seu compromisso com a justiça.',
+    'Você recebe um cavalo de guerra parceiro veterano. Caso já possua uma montaria fornecida por outra habilidade, em vez disso essa montaria se torna também um parceiro ajudante iniciante. Caso perca sua montaria, você pode receber outra visitando o Castelo da Luz.',
+  ] },
+  { id: 'dist-cav-luz-alcunha', nome: 'Alcunha', grupo: 'distincao', livro: 'deuses', pagina: 75,
+    tags: 'Cavaleiro da Luz', distincao: 'cavaleiro-da-luz', marca: false, deus: 'Khalmyr', magica: false,
+    preReq: 'Ataque Subjugante', custo: null, quadro: null, texto: [
+    'A alcunha de um cavaleiro abre portas e amedronta os corações dos inimigos.',
+    'Quando faz um teste de uma perícia baseada em Carisma, você pode gastar uma quantidade de PM limitada pelo total de poderes da distinção que possui. Para cada PM que gastar, recebe +2 no teste.',
+  ] },
+  { id: 'dist-cav-luz-armadura-integridade', nome: 'Armadura da Integridade', grupo: 'distincao', livro: 'deuses', pagina: 75,
+    tags: 'Cavaleiro da Luz', distincao: 'cavaleiro-da-luz', marca: false, deus: 'Khalmyr', magica: false,
+    preReq: 'treinado em Diplomacia, Alcunha', custo: '3 PM', quadro: null, texto: [
+    'As armas dos inimigos fraquejam diante da honra do cavaleiro da Luz.',
+    'Na primeira rodada de um combate, você pode gastar uma ação de movimento e 3 PM para fazer um teste de Diplomacia. Para cada 10 pontos no resultado desse teste, seus inimigos em alcance médio sofrem –1 em rolagens de dano até o fim da cena ou até você ficar inconsciente.',
+  ] },
+  { id: 'dist-cav-luz-chamado-as-armas', nome: 'Chamado às Armas', grupo: 'distincao', livro: 'deuses', pagina: 75,
+    tags: 'Cavaleiro da Luz', distincao: 'cavaleiro-da-luz', marca: false, deus: 'Khalmyr', magica: false,
+    preReq: 'Comandar, quatro outros poderes de cavaleiro da Luz', custo: '3 PM', quadro: null, texto: [
+    'A ordem de um cavaleiro da Luz é irrecusável, até para seus aliados.',
+    'Uma vez por rodada, você pode gastar uma ação de movimento e 3 PM para encorajar seus companheiros. Até o início do seu próximo turno, você e seus aliados em alcance curto que fizerem uma ação agredir podem fazer um ataque adicional.',
+  ] },
+
+  //  Cavaleiro de Khalmyr (p. 76–78) — 1 marca + 5 poderes.
+  //  "Quanto maior a humilde, maior a força." é o que o livro IMPRIME
+  //  (p. 78, conferido no -layout). Fica literal, como os outros
+  //  deslizes de impressão do projeto.
+  { id: 'dist-cav-khalmyr-seguir-a-norma', nome: 'Seguir a Norma', grupo: 'distincao', livro: 'deuses', pagina: 78,
+    tags: 'Cavaleiro de Khalmyr', distincao: 'cavaleiro-de-khalmyr', marca: true, deus: 'Khalmyr', magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'Código da Norma', texto: [
+      'Um cavaleiro de Khalmyr deve sempre manter sua palavra e nunca pode mentir, trapacear, roubar ou recusar o pedido de ajuda de um inocente. Também é proibido de possuir qualquer título (como a habilidade de cavaleiro e nobre), itens mágicos criados por não devotos de Khalmyr e qualquer objeto fora aquilo que for capaz de carregar consigo ou em sua montaria. Além disso, também não é permitido fixar residência por mais de 30 dias em uma comunidade (cidade, vila, aldeia...), não podendo receber benefícios de estruturas (como bases e domínios). Se violar o código, você perde todos os seus PM e só pode recuperá-los a partir do próximo dia.',
+    ] },
+    texto: [
+    'Marca da distinção. Seguir a Norma tira parte da liberdade do cavaleiro, mas fortalece seu espírito',
+    'Você segue o Código da Norma (veja o quadro) e recebe +2 em Fortitude e Vontade.',
+  ] },
+  { id: 'dist-cav-khalmyr-vitoria-da-ordem', nome: 'Vitória da Ordem', grupo: 'distincao', livro: 'deuses', pagina: 78,
+    tags: 'Cavaleiro de Khalmyr', distincao: 'cavaleiro-de-khalmyr', marca: false, deus: 'Khalmyr', magica: false,
+    preReq: 'devoto de Khalmyr, treinado em Luta', custo: '2 PM', quadro: null, texto: [
+    'O desejo de derrotar os ímpios se manifesta na arma do cavaleiro de Khalmyr.',
+    'Quando faz um ataque corpo a corpo, você pode gastar 2 PM para concentrar sua fé em seu golpe. Você soma sua Sabedoria no teste de ataque (se já faz isso, em vez disso recebe +2 no teste de ataque) e +1d8 na rolagem de dano.',
+  ] },
+  { id: 'dist-cav-khalmyr-campeao-abnegado', nome: 'Campeão Abnegado', grupo: 'distincao', livro: 'deuses', pagina: 78,
+    tags: 'Cavaleiro de Khalmyr', distincao: 'cavaleiro-de-khalmyr', marca: false, deus: 'Khalmyr', magica: false,
+    preReq: 'Ao Sabor do Destino, Vitória da Ordem', custo: null, quadro: null, texto: [
+    'Quanto maior a humilde, maior a força.',
+    'Os bônus concedidos por Ao Sabor do Destino são dobrados. Além disso, você pode usar itens litúrgicos fabricados por devotos de Khalmyr sem perder os benefícios do poder.',
+  ] },
+  { id: 'dist-cav-khalmyr-corcel-santificado', nome: 'Corcel Santificado', grupo: 'distincao', livro: 'deuses', pagina: 78,
+    tags: 'Cavaleiro de Khalmyr', distincao: 'cavaleiro-de-khalmyr', marca: false, deus: 'Khalmyr', magica: false,
+    preReq: 'treinado em Cavalgar, Vitória da Ordem', custo: null, quadro: null, texto: [
+    'Montaria e cavaleiro são os únicos capazes de dividir o fardo pesado da Justiça.',
+    'Você recebe um cavalo de guerra parceiro veterano. Caso já possua uma montaria fornecida por outra habilidade, em vez disso essa montaria se torna também um parceiro guardião iniciante. Caso perca sua montaria, você pode receber outra visitando o Mosteiro de Khalmyr.',
+  ] },
+  { id: 'dist-cav-khalmyr-graca-de-khalmyr', nome: 'Graça de Khalmyr', grupo: 'distincao', livro: 'deuses', pagina: 78,
+    tags: 'Cavaleiro de Khalmyr', distincao: 'cavaleiro-de-khalmyr', marca: false, deus: 'Khalmyr', magica: false,
+    preReq: 'Sab 2, Vitória da Ordem', custo: null, quadro: null, texto: [
+    'A fé mantém o cavaleiro de pé, mesmo quando o mundo ao seu redor o faz querer desistir.',
+    'Quando faz um teste de resistência ou sofre um ataque, você pode gastar uma quantidade de PM a sua escolha (limitada pela sua Sabedoria). Para cada PM que gastar, recebe +2 no teste ou na Defesa contra esse ataque.',
+  ] },
+  { id: 'dist-cav-khalmyr-manto-da-justica', nome: 'Manto da Justiça', grupo: 'distincao', livro: 'deuses', pagina: 78,
+    tags: 'Cavaleiro de Khalmyr', distincao: 'cavaleiro-de-khalmyr', marca: false, deus: 'Khalmyr', magica: true,
+    preReq: 'Vitória da Ordem e dois outros poderes da distinção', custo: '3 PM', quadro: null, texto: [
+    'O cavaleiro é cercado por uma aura de convicção.',
+    'Você pode gastar 3 PM para projetar uma aura de ordem com 9m de raio e duração sustentada. Dentro da aura, você se torna imune a efeitos de medo e mentais, você e seus aliados recebem redução de dano igual à sua Sabedoria e inimigos que comecem seus turnos dentro da aura ficam enjoados por 1d6 rodadas (Vontade CD Sab evita e a criatura fica imune a esta habilidade por 1 dia). ✦',
+  ] },
+
+  //  Colecionador Monstruoso (p. 79–81) — 1 marca + 5 poderes.
+  { id: 'dist-colecionador-atraves-da-selvageria', nome: 'Através da Selvageria', grupo: 'distincao', livro: 'deuses', pagina: 80,
+    tags: 'Colecionador Monstruoso', distincao: 'colecionador-monstruoso', marca: true, deus: 'Megalokk', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Você devorou as entranhas da selvageria.',
+    'Quando usa Forma Selvagem, seu tipo muda para monstro e você recebe +1 no multiplicador de crítico com armas naturais.',
+  ] },
+  { id: 'dist-colecionador-forma-monstruosa', nome: 'Forma Monstruosa', grupo: 'distincao', livro: 'deuses', pagina: 80,
+    tags: 'Colecionador Monstruoso', distincao: 'colecionador-monstruoso', marca: false, deus: 'Megalokk', magica: true,
+    preReq: 'Forma Selvagem, devoto de Megalokk', custo: null,
+    quadro: { titulo: 'Transformação Monstruosa', texto: [
+      'Quando usa Forma Monstruosa, você pode gastar PM extras (que são somados ao custo da Forma Selvagem) para ganhar novas habilidades entre aquelas a que tem acesso. Para ter acesso a uma habilidade, você deve derrotar um monstro que a possua em sua ficha e se alimentar de seu corpo. A critério do mestre, outras habilidades parecidas podem atender esse requisito.',
+      'Agarrar Aprimorado (+1 PM). Um de seus tipos de armas naturais (como “garras”) recebe +2 em testes para agarrar. Uma vez por rodada, quando acerta um ataque com essa arma, você pode gastar 1 PM para fazer a manobra agarrar com ela como ação livre contra a criatura atingida.',
+      'Arma Natural Extra (+1 PM). Você recebe uma arma natural (dano 1d6 de corte, impacto ou perfuração a sua escolha, crítico x2) adicional. Uma vez por rodada, quando usa a ação agredir para atacar com outra arma, pode gastar 1 PM para fazer um ataque corpo a corpo extra com essa arma.',
+      'Borrão de Tigre-de-Hyninn (+2 PM). Ataques contra você têm 25% de chance de falha. Você pode escolher esta habilidade uma segunda vez para aumentar a chance de falha para 50%.',
+      'Brutalidade Incontida de Razza’kham (+1 PM). Sempre que rolar o resultado máximo em um dado de dano de uma arma natural, role um dado extra, repetindo até um limite de dados extras igual ao valor máximo do dado.',
+      'Carapaça Espinhosa (+1 PM). Quando você sofre dano por um ataque corpo a corpo, o atacante sofre dano de perfuração igual a 1d6 + sua Constituição. Você pode escolher esta habilidade outras vezes para aumentar o dano em +1d6.',
+      'Dilacerar (+1 PM). Se acertar dois ataques de garra em uma criatura na mesma rodada, você causa +2d8 pontos de dano de corte a ela.',
+      'Meiose Glópica (+1 PM). Quando se transforma, você invoca 1d4+2 glops capangas em espaços desocupados em alcance curto. Você pode gastar uma ação de movimento para fazer os glops andarem (eles têm deslocamento normal e de escalada 6m) ou uma ação padrão para fazê-los causar dano a criaturas adjacentes (1d4 impacto mais 1d4 ácido cada). Os glops têm Defesa 10, 1 PV e falham automaticamente em qualquer teste de resistência ou oposto. Eles não contam em seu limite de parceiros e desaparecem quando morrem ou no fim da cena. Uma vez por rodada, quando sofre dano, você pode sacrificar um glop em alcance curto para reduzir o dano à metade.',
+      'Órgão Elemental (+1 PM). Uma de suas armas naturais causa +1d6 pontos de dano de um tipo escolhido ao se transformar, entre ácido, eletricidade, fogo e frio. Você pode escolher esta habilidade outras vezes para armas diferentes.',
+      'Regeneração (+1 PM). Uma vez por cena, você pode gastar 1 PM para receber Cura Acelerada 5. Esta habilidade termina quando tiver curado um total de 30 PV ou no fim da cena.',
+      'Tentáculos (+1 PM). Uma de suas armas naturais é um tentáculo (dano de impacto) com +3m de alcance. Você pode escolher esta habilidade outras vezes para armas naturais diferentes.',
+      'Veneno (+2 PM). Uma de suas armas naturais causa 1d12 de perda de vida por veneno. Você pode escolher esta habilidade outras vezes para armas naturais diferentes.',
+    ] },
+    texto: [
+    'Rejeitando totalmente Allihanna, o colecionador monstruoso se transforma em algo terrível.',
+    'Quando usa Forma Selvagem, você pode gastar PM adicionais (limitados pelo total de poderes da distinção que possui) para receber habilidades adicionais de criaturas que já devorou (veja o quadro) como parte de sua transformação. ✦',
+  ] },
+  { id: 'dist-colecionador-monstro-supremo', nome: 'Monstro Supremo', grupo: 'distincao', livro: 'deuses', pagina: 80,
+    tags: 'Colecionador Monstruoso', distincao: 'colecionador-monstruoso', marca: false, deus: 'Megalokk', magica: false,
+    preReq: 'Forma Selvagem Superior, ter usado Predação Monstruosa em um kaiju', custo: null, quadro: null, texto: [
+    'A fome do colecionador monstruoso não tem fim.',
+    'Quando usa Forma Selvagem Superior, você recebe o subtipo kaiju e ganha imunidade a efeitos de metabolismo e mentais, medo, metamorfose, paralisia e veneno, e seus ataques ignoram 20 pontos de RD.',
+  ] },
+  { id: 'dist-colecionador-predacao-monstruosa', nome: 'Predação Monstruosa', grupo: 'distincao', livro: 'deuses', pagina: 81,
+    tags: 'Colecionador Monstruoso', distincao: 'colecionador-monstruoso', marca: false, deus: 'Megalokk', magica: false,
+    preReq: 'Forma Monstruosa', custo: null, quadro: null, texto: [
+    'Sua voracidade não pode ser controlada.',
+    'Você pode gastar uma ação completa para devorar um monstro abatido. Se fizer isso, até o fim da aventura você recebe +10 PV e +1 em testes de ataque e rolagens de dano com armas naturais. Para cada outros dois poderes da distinção, você pode acumular esses efeitos uma vez.',
+  ] },
+  { id: 'dist-colecionador-selvageria-incontrolavel', nome: 'Selvageria Incontrolável', grupo: 'distincao', livro: 'deuses', pagina: 81,
+    tags: 'Colecionador Monstruoso', distincao: 'colecionador-monstruoso', marca: false, deus: 'Megalokk', magica: false,
+    preReq: 'Vigor Monstruoso', custo: null, quadro: null, texto: [
+    'A fera em seu interior não será derrotada facilmente.',
+    'Enquanto está em Forma Selvagem, você não fica inconsciente por estar com 0 PV ou menos (mas ainda morre se chegar em um valor negativo igual à metade de seus PV máximos).',
+  ] },
+  { id: 'dist-colecionador-vigor-monstruoso', nome: 'Vigor Monstruoso', grupo: 'distincao', livro: 'deuses', pagina: 81,
+    tags: 'Colecionador Monstruoso', distincao: 'colecionador-monstruoso', marca: false, deus: 'Megalokk', magica: false,
+    preReq: 'Forma Monstruosa', custo: null, quadro: null, texto: [
+    'Sua transformação é pura monstruosidade.',
+    'Quando usa Forma Selvagem, para cada 1 PM gasto nessa habilidade você recebe 3 PV temporários.',
+  ] },
+
+  //  Dançarina de Marah (p. 82–84) — 1 marca + 5 poderes.
+  { id: 'dist-dancarina-graca-de-marah', nome: 'Graça de Marah', grupo: 'distincao', livro: 'deuses', pagina: 84,
+    tags: 'Dançarina de Marah', distincao: 'dancarina-de-marah', marca: true, deus: 'Marah', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Para a dançarina de Marah, a arte é uma linguagem universal.',
+    'Você soma sua Sabedoria em Atuação. Além disso, pode substituir testes de Diplomacia por testes de Atuação.',
+  ] },
+  { id: 'dist-dancarina-transe-dancante', nome: 'Transe Dançante', grupo: 'distincao', livro: 'deuses', pagina: 84,
+    tags: 'Dançarina de Marah', distincao: 'dancarina-de-marah', marca: false, deus: 'Marah', magica: true,
+    preReq: 'Foco em Perícia (Atuação), dois poderes concedidos de Marah', custo: '3 PM', quadro: null, texto: [
+    'A beleza dos movimentos da dançarina de Marah transcende a realidade.',
+    'Você pode gastar 3 PM para entrar em um transe dançante que gera uma aura de 9m de raio. Para manter esse transe, em cada um dos seus turnos você precisa se deslocar pelo menos 6m, sem passar pelos mesmos quadrados. Você e seus aliados dentro da aura podem executar uma ação de movimento adicional por turno e recebem +2 em testes de resistência e na Defesa. Para cada dois outros poderes da distinção que você possui, esse bônus aumenta em +1. ✦',
+  ] },
+  { id: 'dist-dancarina-contrapasso-do-espirito', nome: 'Contrapasso do Espírito', grupo: 'distincao', livro: 'deuses', pagina: 84,
+    tags: 'Dançarina de Marah', distincao: 'dancarina-de-marah', marca: false, deus: 'Marah', magica: false,
+    preReq: 'Transe Dançante', custo: null, quadro: null, texto: [
+    'Mais do que entreter, a arte da dançarina de Marah guia os espíritos de seus aliados.',
+    'Enquanto estiver em Transe Dançante, no início de cada um dos seus turnos, você e seus aliados dentro da aura recebem uma quantidade de PV temporários igual a 5 + seu Carisma.',
+  ] },
+  { id: 'dist-dancarina-danca-hipnotica', nome: 'Dança Hipnótica', grupo: 'distincao', livro: 'deuses', pagina: 84,
+    tags: 'Dançarina de Marah', distincao: 'dancarina-de-marah', marca: false, deus: 'Marah', magica: false,
+    preReq: 'Êxtase da Dançarina, três poderes concedidos de Marah', custo: null, quadro: null, texto: [
+    'Os passos da dançarina induzem, incitam e movem de uma forma que não pode ser recusada.',
+    'Se estiver em Transe Dançante, no início de cada um dos seus turnos, a categoria de atitude de cada inimigo dentro da aura melhora em um passo (apenas uma vez por cena) e ele fica fascinado (Vontade CD Car evita os efeitos e a criatura fica imune a esta habilidade até o fim da cena).',
+  ] },
+  { id: 'dist-dancarina-extase-da-dancarina', nome: 'Êxtase da Dançarina', grupo: 'distincao', livro: 'deuses', pagina: 84,
+    tags: 'Dançarina de Marah', distincao: 'dancarina-de-marah', marca: false, deus: 'Marah', magica: false,
+    preReq: 'Transe Dançante', custo: null, quadro: null, texto: [
+    'Os passos da dançarina de Marah cativam até seus inimigos.',
+    'Enquanto estiver em Transe Dançante, você soma o bônus do seu Transe na CD dos testes de Vontade das suas habilidades contra criaturas dentro da aura.',
+  ] },
+  { id: 'dist-dancarina-no-ritmo-da-magia', nome: 'No Ritmo da Magia', grupo: 'distincao', livro: 'deuses', pagina: 84,
+    tags: 'Dançarina de Marah', distincao: 'dancarina-de-marah', marca: false, deus: 'Marah', magica: true,
+    preReq: 'Transe Dançante', custo: null, quadro: null, texto: [
+    'Os passos da dançarina de Marah são carregados de magia.',
+    'Enquanto está em Transe Dançante, você pode lançar a magia Salto Dimensional (Tormenta20, p. 205). Caso aprenda essa magia, durante o Transe o custo dela diminui em –1 PM.',
+  ] },
+
+  //  Detetive de Tanna-Toh (p. 85–87) — 1 marca + 5 poderes, e TODOS os
+  //  cinco escalam com o número de poderes da distinção.
+  { id: 'dist-detetive-nada-alem-de-fatos', nome: 'Nada Além de Fatos', grupo: 'distincao', livro: 'deuses', pagina: 86,
+    tags: 'Detetive de Tanna-Toh', distincao: 'detetive-de-tanna-toh', marca: true, deus: 'Tanna-Toh', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Ao se apoiar somente em fatos, o detetive de Tanna-Toh fortalece sua capacidade dedutiva.',
+    'Você recebe +5 em Intuição e Investigação.',
+  ] },
+  { id: 'dist-detetive-tracar-perfil', nome: 'Traçar Perfil', grupo: 'distincao', livro: 'deuses', pagina: 86,
+    tags: 'Detetive de Tanna-Toh', distincao: 'detetive-de-tanna-toh', marca: false, deus: 'Tanna-Toh', magica: false,
+    preReq: 'devoto de Tanna-Toh, Investigador, Mente Analítica', custo: '2 PM', quadro: null, texto: [
+    '“As botas do suspeito estavam sujas de lama, mas não havia chovido na noite anterior.”',
+    'Você pode usar Investigação para identificar criaturas (veja Misticismo, em Tormenta20, p. 121) em quaisquer criaturas inteligentes (Int –3 ou maior). Quando identifica uma criatura dessa forma, além das informações recebidas, você pode gastar 2 PM para traçar seu perfil: até o fim da cena, você recebe +1 em testes de perícia e na CD de suas habilidades contra ela para cada poder da distinção que você possui.',
+  ] },
+  { id: 'dist-detetive-classificar-como-suspeito', nome: 'Classificar como Suspeito', grupo: 'distincao', livro: 'deuses', pagina: 86,
+    tags: 'Detetive de Tanna-Toh', distincao: 'detetive-de-tanna-toh', marca: false, deus: 'Tanna-Toh', magica: false,
+    preReq: 'Traçar Perfil', custo: null, quadro: null, texto: [
+    'Para o detetive de Tanna-Toh são fatos, e não suposições, que tornam alguém suspeito.',
+    'Quando usa Traçar Perfil, você pode classificar o alvo como um suspeito. Se fizer isso, os bônus fornecidos por esse poder duram até o fim da aventura e, quando faz um teste de Investigação ou Intuição contra essa criatura, você rola dois dados e usa o melhor resultado. Você pode ter um máximo de suspeitos por aventura igual ao total de poderes da distinção que possui. Você pode remover um suspeito de sua lista (para abrir espaço para outros), mas apenas se reunir provas que o eliminem como tal.',
+  ] },
+  { id: 'dist-detetive-elementar', nome: 'Elementar', grupo: 'distincao', livro: 'deuses', pagina: 87,
+    tags: 'Detetive de Tanna-Toh', distincao: 'detetive-de-tanna-toh', marca: false, deus: 'Tanna-Toh', magica: false,
+    preReq: 'Traçar Perfil', custo: null, quadro: null, texto: [
+    'O detetive de Tanna-Toh aprende a ler cenas de crime como um livro.',
+    'Você pode gastar 10 minutos para analisar a cena de um evento ocorrido há no máximo dois dias por poder da distinção que possui. Se fizer isso, você pode fazer um teste de Investigação para identificar criatura contra o responsável pelo evento (CD Int da criatura) como se ele estivesse presente — e pode usar Traçar Perfil contra ele como o normal —, mas não descobre sua identidade automaticamente. Se o evento foi cometido por mais de uma criatura, considere apenas o líder delas. Você só pode usar este poder uma vez por cena de crime.',
+  ] },
+  { id: 'dist-detetive-informantes', nome: 'Informantes', grupo: 'distincao', livro: 'deuses', pagina: 87,
+    tags: 'Detetive de Tanna-Toh', distincao: 'detetive-de-tanna-toh', marca: false, deus: 'Tanna-Toh', magica: false,
+    preReq: 'Traçar Perfil', custo: null,
+    quadro: { titulo: 'Informantes', texto: [
+      'Um informante é um NPC que auxilia o detetive de Tanna-Toh com conhecimento especializado. Ao contrário de parceiros, informantes não são aventureiros; eles não possuem a inclinação para se envolver em missões arriscadas, preferindo oferecer sua ajuda do conforto (e segurança) de seus lares ou locais de trabalho.',
+      'O benefício de um informante só pode ser usado se o detetive puder visitá-lo ou tiver meios para contatá-lo. Uma vez por aventura, o detetive pode trocar a localização de seus informantes (isso significa que ele fez arranjos para realocar o informante, ou que simplesmente estabeleceu novos contatos no lugar de seus antigos).',
+      'Aristocrata. Alguém com laços nas camadas mais elevadas da sociedade. Você pode usar o poder Favor (Tormenta20, p. 79). Se já tiver esse poder, em vez disso recebe +5 no teste de Diplomacia para obter o favor.',
+      'Armeiro. Um artesão especialista em armas. Você pode usar Investigação no lugar de Ofício para identificar armas. Além disso, uma vez por aventura um de seus itens recebe uma melhoria a sua escolha que dura até o fim da aventura.',
+      'Boticário. Um alquimista e comerciante de preparados. Você pode usar Investigação no lugar de Ofício para identificar itens alquímicos e poções. Além disso, uma vez por aventura, recebe itens alquímicos e poções a sua escolha com preço total de até T$ 200 por poder da distinção que possui.',
+      'Curandeiro. Alguém versado em medicina. Você pode usar Investigação no lugar de Cura para necropsia e, uma vez por aventura, recebe três doses de um preparado alquímico experimental que duram até serem gastos ou até o fim da aventura. Usar esse preparado é uma ação de movimento e fornece cura acelerada 5 por um número de rodadas igual ao nível do usuário.',
+      'Erudito. Um acadêmico capaz de auxiliá-lo em pesquisas e estudos. Uma vez por aventura, para cada poder da distinção você recebe 4d4 dados de consulta que duram até serem gastos ou até o fim da aventura. Sempre que fizer um teste de perícia baseada em Inteligência ou Sabedoria, você pode gastar até 2d4 e adicionar o resultado como um bônus no teste. Você pode usar esses dados após ter rolado o dado, mas antes de o mestre dizer ser passou ou não.',
+      'Estalajadeiro. Uma estalagem pode ser um porto seguro e uma fonte de informações. Nela você tem descanso luxuoso e, quando faz um teste de Investigação para interrogar, rola dois dados e usa o melhor resultado.',
+    ] },
+    texto: [
+    'O detetive de Tanna-Toh conta com uma rede de contatos especializados.',
+    'Você possui um informante (veja o quadro) a sua escolha. A cada outro poder da distinção, você recebe um informante adicional.',
+  ] },
+  { id: 'dist-detetive-sequencia-dedutiva', nome: 'Sequência Dedutiva', grupo: 'distincao', livro: 'deuses', pagina: 87,
+    tags: 'Detetive de Tanna-Toh', distincao: 'detetive-de-tanna-toh', marca: false, deus: 'Tanna-Toh', magica: false,
+    preReq: 'Traçar Perfil', custo: null, quadro: null, texto: [
+    'O que diferencia o detetive de Tanna-Toh é sua capacidade de deduções lógicas.',
+    'Sempre que você passa em um teste de Investigação e sempre que você (o jogador) deduz uma informação relevante (a critério do mestre) sobre a aventura em questão, você recebe um bônus cumulativo de +1 em testes de perícias baseadas em Inteligência, Sabedoria e Carisma relacionados à aventura (limitado pelo total de poderes da distinção que você possui). Esses bônus diminuem em –1 se você falhar em um teste de Investigação e desaparecem no fim da aventura.',
+  ] },
+
+  //  Exegeta do Akzath (p. 88–91) — 1 marca + 2 poderes, e os dois são
+  //  listas de conceitos (o livro imprime em marcadores dentro do próprio
+  //  poder; aqui viram quadro, que é como a ficha mostra lista longa).
+  //  Dois deslizes do livro ficam literais, conferidos no -layout da
+  //  p. 90: "nesa mesma cena" (Morte) e "Azkath" (Conhecimento, que o
+  //  resto do capítulo grafa Akzath).
+  { id: 'dist-exegeta-compreender-o-akzath', nome: 'Compreender o Akzath', grupo: 'distincao', livro: 'deuses', pagina: 90,
+    tags: 'Exegeta do Akzath', distincao: 'exegeta-do-akzath', marca: true, deus: 'Thwor', magica: false,
+    preReq: null, custo: '1 PM', quadro: null, texto: [
+    'Marca da distinção. O exegeta compreende a verdade das escrituras e pode empregá-la em toda a sua vida.',
+    'No início de cada cena, escolha uma perícia. Até o fim da cena, sempre que fizer um teste da perícia escolhida, você pode gastar 1 PM para substituí-lo por um teste de Religião.',
+  ] },
+  { id: 'dist-exegeta-circulo-externo', nome: 'Círculo Externo', grupo: 'distincao', livro: 'deuses', pagina: 90,
+    tags: 'Exegeta do Akzath', distincao: 'exegeta-do-akzath', marca: false, deus: 'Thwor', magica: false,
+    preReq: 'treinado em Religião, devoto de Thwor', custo: null,
+    quadro: { titulo: 'Conceitos da roda externa', texto: [
+      'Vida. Quando você ou um aliado em alcance curto morre, você pode gastar 3 PM para que a criatura se mantenha viva por mais 1 rodada. Ela ainda sofre os demais efeitos do evento que a matou (como dano, condições etc.) e irá morrer na rodada seguinte, a menos que eles sejam revertidos ou dissipados. Você pode usar esta habilidade mesmo que esteja inconsciente. ✦',
+      'Ignorância. Quando uma criatura em alcance curto faz um teste de perícia ou usa uma habilidade com CD, você pode gastar 3 PM para impor uma penalidade de –5 nesse teste ou nessa CD (apenas para esse uso). ✦',
+      'Mudança. Você pode rezar uma Missa (Tormenta20, p. 58) especial. Cada participante pode escolher uma característica que possui um atributo-chave (como Defesa, uma habilidade, uma perícia ou o modificador de dano de um item) e substituir esse atributo por outro a sua escolha pela duração do efeito da Missa.',
+      'Fim. Você pode gastar uma ação completa e 5 PM para encerrar a cena atual e iniciar uma nova imediatamente. Isso encerra todos os efeitos com duração cena ou de até 10 minutos, mas permite que habilidades com usos limitados pela cena possam ser usadas novamente. Se os participantes da cena haviam rolado Iniciativa, ela deverá ser rolada novamente. Esta habilidade não afeta os eventos narrativos, apenas a duração da cena, e não pode ser usada em uma cena iniciada por ela mesma. ✦',
+      'Morte. Quando passa em um teste de Constituição para remover a condição sangrando, você recupera 1d8 PV para cada teste desses já feito nesa mesma cena. Além disso, sempre que faz um acerto crítico em combate ou reduz um inimigo a 0 PV, você recupera 1d8 PV. Se recuperar mais pontos de vida dessa forma que o seu máximo, o excedente se torna PV temporários (cumulativo até o dobro de seu nível de personagem). ✦',
+      'Conhecimento. Você pode gastar 3 PM para expandir o conhecimento do Azkath a outros. Escolha uma perícia que exija treinamento. Até o fim da cena, você e seus aliados em alcance curto recebem os benefícios de ser treinado nela.',
+      'Continuidade. Uma vez por rodada, quando uma habilidade ou item com duração instantânea é usada em um alvo em alcance curto, você pode gastar 3 PM para que esse efeito seja usado novamente na rodada seguinte sobre o mesmo alvo. Você não pode usar este poder em um efeito que já tenha sido repetido por ele. ✦',
+      'Início. Você pode gastar 3 PM para criar uma bolha temporal, dentro da qual o tempo passa mais devagar. Isso funciona como congelar o tempo da magia Controlar o Tempo (Tormenta20, p. 187), exceto que a bolha fornece apenas 1 turno extra. Este efeito só funciona na primeira rodada de cada cena.',
+    ] },
+    texto: [
+    'Há várias abordagens para o Akzath, todas igualmente libertadoras.',
+    'Escolha um dos conceitos abaixo presentes na roda externa do Akzath. Você recebe a habilidade relacionada. Você pode escolher este poder até três vezes para conceitos diferentes, mas a cada vez adicional deve escolher um conceito adjacente a outro que já possua de acordo com o diagrama do Akzath (veja a imagem). Uma vez por dia você pode alterar todos os poderes desta distinção que tiver.',
+  ] },
+  { id: 'dist-exegeta-circulo-interno', nome: 'Círculo Interno', grupo: 'distincao', livro: 'deuses', pagina: 91,
+    tags: 'Exegeta do Akzath', distincao: 'exegeta-do-akzath', marca: false, deus: 'Thwor', magica: false,
+    preReq: 'um conceito do Círculo Externo (cada conceito interno tem o seu)', custo: null,
+    quadro: { titulo: 'Conceitos da roda interna', texto: [
+      'Nós. No início de cada dia, escolha um número de aliados até o valor de sua Sabedoria. Até o final do dia, em vez de pontos de vida individuais, você e esses aliados compartilham de um total de PV igual à soma dos PV de cada um. Dano, recuperação e perda de vida são todos aplicados a esse total (após aplicar quaisquer habilidades, como RD, do alvo original do dano). Entretanto, se o total de PV acabar, todos os personagens sofrem os efeitos de serem reduzidos a 0 PV ou menos (e cada um ainda morre no seu limite individual de pontos de vida). Pré-requisito: Vida.',
+      'Dentro. Quando lança uma magia com alcance pessoal, você recebe +2 PM para gastar em aprimoramentos. Pré-requisito: Ignorância.',
+      'Estagnação. Você pode gastar uma ação padrão e 3 PM para gerar um pulso de estagnação em uma esfera de 6m em alcance médio. Cada criatura nessa área sob um efeito com duração maior que instantânea deve fazer um teste de Vontade (CD Sab). Se falhar, todos estes efeitos são dissipados. Pré-requisito: Mudança.',
+      'Trevas. Quando usa uma habilidade mágica que possui teste de resistência, você pode gastar 1 PM. Se fizer isso, alvos que falharem na resistência não podem recuperar pontos de vida por 1 rodada. Pré-requisito: Fim.',
+      'Fora. Quando usa uma habilidade mágica com efeito em área, você pode gastar 1 PM. Se fizer isso, você pode excluir da área afetada uma quantidade de alvos igual a sua Sabedoria. Pré-requisito: Morte.',
+      'Eles. Inimigos em alcance curto que você possa perceber sofrem uma penalidade de –2 em testes de ataque e rolagens de dano contra você. Essa penalidade aumenta para –5 se estiverem em alcance médio. Pré-requisito: Conhecimento.',
+      'Movimento. Uma vez por rodada, quando uma criatura em alcance curto vai fazer uma ação de movimento para se deslocar, você pode gastar 2 PM. Se fizer isso, a criatura deve fazer um teste de Fortitude (CD Sab). Se falhar, ela perde a ação de movimento e você recebe uma ação de movimento adicional em seu próximo turno. Pré-requisito: Continuidade.',
+      'Luz. Sempre que rolar o resultado máximo em um dado de cura ou dano de luz, role um dado extra e some ao resultado, repetindo até um limite de dados extras igual ao valor máximo do dado. Pré-requisito: Início.',
+    ] },
+    texto: [
+    'A proximidade com todos os aspectos do Akzath é uma consequência natural para o exegeta.',
+    'Escolha um dos conceitos abaixo presentes na roda interna do Akzath. Você recebe a habilidade relacionada. Você pode escolher este poder até duas vezes para conceitos diferentes. Cada conceito possui como pré-requisito um dos conceitos do Círculo Externo. Quando troca os poderes do Círculo Externo, você também pode trocar os do Círculo Interno.',
+  ] },
+
+  //  Forjador Litúrgico (p. 92–94) — 1 marca + 5 poderes.
+  { id: 'dist-forjador-ferreiro-sagrado', nome: 'Ferreiro Sagrado', grupo: 'distincao', livro: 'deuses', pagina: 94,
+    tags: 'Forjador Litúrgico', distincao: 'forjador-liturgico', marca: true, deus: 'Arsenal', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Nos primeiros passos de seu ofício divino, o forjador litúrgico aprimora suas habilidades com armas.',
+    'Você recebe +2 em Ofício (armeiro) e em rolagens de dano com armas que tenha fabricado.',
+  ] },
+  { id: 'dist-forjador-virtude-do-forjador', nome: 'Virtude do Forjador', grupo: 'distincao', livro: 'deuses', pagina: 94,
+    tags: 'Forjador Litúrgico', distincao: 'forjador-liturgico', marca: false, deus: 'Arsenal', magica: false,
+    preReq: 'treinado em Luta e Ofício (armeiro), um poder concedido de Arsenal', custo: null, quadro: null, texto: [
+    'Aço é meu corpo e fogo é meu sangue.',
+    'Você pode fabricar armas superiores com uma melhoria. Para cada outro poder da distinção que possuir, pode fabricar armas com uma melhoria adicional (até um máximo de 4 melhorias). Se aprender a fabricar armas superiores por outra habilidade, gasta metade do tempo para fabricá-las.',
+  ] },
+  { id: 'dist-forjador-armamento-sagrado', nome: 'Armamento Sagrado', grupo: 'distincao', livro: 'deuses', pagina: 94,
+    tags: 'Forjador Litúrgico', distincao: 'forjador-liturgico', marca: false, deus: 'Arsenal', magica: false,
+    preReq: 'Abençoar Arma, Virtude do Forjador', custo: null, quadro: null, texto: [
+    'Aos olhos de Arsenal, todas as armas que seus forjadores fabricam são preferidas.',
+    'O custo do seu poder Abençoar Arma diminui em –1 PM e você pode usá-lo com qualquer arma que tenha fabricado.',
+  ] },
+  { id: 'dist-forjador-armamento-trabalhado', nome: 'Armamento Trabalhado', grupo: 'distincao', livro: 'deuses', pagina: 94,
+    tags: 'Forjador Litúrgico', distincao: 'forjador-liturgico', marca: false, deus: 'Arsenal', magica: false,
+    preReq: 'Conjurar Arma, Forja Devocional', custo: null, quadro: null, texto: [
+    'Um forjador litúrgico consegue moldar até mesmo os presentes de seu deus.',
+    'Quando usa Conjurar Arma, você pode gastar uma quantidade de PM adicionais igual ao dobro do total de poderes da distinção que possui. Para cada 2 PM gastos dessa forma, a arma recebe uma melhoria a sua escolha (até o máximo de 4 melhorias). Se pagar um total de 10 PM adicionais, além das melhorias a arma recebe um encanto a sua escolha.',
+  ] },
+  { id: 'dist-forjador-desprezo-pelo-ordinario', nome: 'Desprezo pelo Ordinário', grupo: 'distincao', livro: 'deuses', pagina: 94,
+    tags: 'Forjador Litúrgico', distincao: 'forjador-liturgico', marca: false, deus: 'Arsenal', magica: false,
+    preReq: 'Forja Devocional', custo: '2 PM', quadro: null, texto: [
+    'Não será o simples artesanato dos plebeus, nem as mundanas garras de uma fera, que irá ferir o corpo de um forjador litúrgico.',
+    'Sempre que sofre dano não mágico, você pode gastar 2 PM para reduzir esse dano à metade.',
+  ] },
+  { id: 'dist-forjador-forja-devocional', nome: 'Forja Devocional', grupo: 'distincao', livro: 'deuses', pagina: 94,
+    tags: 'Forjador Litúrgico', distincao: 'forjador-liturgico', marca: false, deus: 'Arsenal', magica: false,
+    preReq: 'Virtude do Forjador', custo: null, quadro: null, texto: [
+    'Unindo forjaria e ritual, o forjador litúrgico consegue transferir magia para suas criações.',
+    'Você consegue transplantar encantos de outras armas para aquelas que você fabricou. Para isso, gaste metade do tempo necessário para fabricar a arma mágica e faça um teste de Ofício (armeiro) com a CD de fabricação dela. Se passar, a arma perde seus encantos e eles são transferidos para uma arma que você tenha fabricado (essa arma deve atender aos pré-requisitos dos encantos e respeitar o limite de encantos que pode ter).',
+  ] },
+
+  //  Guardião da Realidade (p. 95–97) — 1 marca + 5 poderes. Aqui quem
+  //  escala é a MARCA: "+1 por poder da distinção" contra a Tormenta.
+  { id: 'dist-guardiao-escudo-da-realidade', nome: 'Escudo da Realidade', grupo: 'distincao', livro: 'deuses', pagina: 97,
+    tags: 'Guardião da Realidade', distincao: 'guardiao-da-realidade', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Você encontra abrigo na força da realidade.',
+    'Você recebe +5 em testes de resistência. Contra efeitos da Tormenta, esse bônus aumenta em +1 por poder da distinção.',
+  ] },
+  { id: 'dist-guardiao-destruir-anticriacao', nome: 'Destruir Anticriação', grupo: 'distincao', livro: 'deuses', pagina: 97,
+    tags: 'Guardião da Realidade', distincao: 'guardiao-da-realidade', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Luta, Vontade de Ferro', custo: '2 PM', quadro: null, texto: [
+    'O poder da realidade pode ser canalizado para destruir tudo aquilo que é antinatural.',
+    'Quando faz um ataque corpo a corpo, você pode gastar 2 PM para canalizar a realidade em seu golpe. Você soma seu Carisma ao teste de ataque e +1d8 à rolagem de dano e, se o alvo for uma criatura da Tormenta, ignora sua imunidade a acertos críticos. Se possuir a habilidade Golpe Divino, em vez disso ela causa dois dados extras de dano e ignora a imunidade a acertos críticos de criaturas da Tormenta.',
+  ] },
+  { id: 'dist-guardiao-detectar-anticriacao', nome: 'Detectar Anticriação', grupo: 'distincao', livro: 'deuses', pagina: 97,
+    tags: 'Guardião da Realidade', distincao: 'guardiao-da-realidade', marca: false, deus: null, magica: true,
+    preReq: 'treinado em Percepção, Destruir Anticriação', custo: null, quadro: null, texto: [
+    'Você sabe instintivamente o que é ou não real.',
+    'Você soma seu Carisma em Intuição e Percepção. Além disso, está permanentemente sob o efeito da magia Detectar Ameaças, com todos os seus aprimoramentos, mas apenas para efeitos da Tormenta.',
+  ] },
+  { id: 'dist-guardiao-heroi-de-arton', nome: 'Herói de Arton', grupo: 'distincao', livro: 'deuses', pagina: 97,
+    tags: 'Guardião da Realidade', distincao: 'guardiao-da-realidade', marca: false, deus: null, magica: false,
+    preReq: 'Herói dos Reinos', custo: '2 PM', quadro: null, texto: [
+    'O guardião da realidade não luta por um povo, um reino ou mesmo uma causa. Ele luta por toda Arton.',
+    'Uma vez por rodada, você pode gastar 2 PM para transformar um acerto crítico que tenha recém sofrido em um acerto normal, para repetir um teste de resistência recém realizado, ou para reduzir à metade o dano causado por uma fonte da Tormenta.',
+  ] },
+  { id: 'dist-guardiao-heroi-dos-reinos', nome: 'Herói dos Reinos', grupo: 'distincao', livro: 'deuses', pagina: 97,
+    tags: 'Guardião da Realidade', distincao: 'guardiao-da-realidade', marca: false, deus: null, magica: false,
+    preReq: 'Detectar Anticriação', custo: null, quadro: null, texto: [
+    'Por saber que seu dever é o mais exigente de todos, o guardião da realidade desenvolve uma reserva de força de vontade que nenhum outro herói possui.',
+    'Na primeira rodada de cada combate, você recebe uma quantidade de PM temporários igual ao seu Carisma. Além disso, uma vez por rodada, quando você usa uma habilidade contra um efeito da Tormenta, o custo dessa habilidade é reduzido em –1 PM (cumulativo com outras reduções).',
+  ] },
+  { id: 'dist-guardiao-heroi-da-realidade', nome: 'Herói da Realidade', grupo: 'distincao', livro: 'deuses', pagina: 97,
+    tags: 'Guardião da Realidade', distincao: 'guardiao-da-realidade', marca: false, deus: null, magica: false,
+    preReq: 'Herói de Arton', custo: null, quadro: null, texto: [
+    'Após tantas lutas, o guardião da realidade enfim compreende que não defende apenas um mundo, mas toda a Criação.',
+    'Você projeta uma aura de realidade constante com 9m de raio. Criaturas a sua escolha nessa aura são protegidas dos seguintes efeitos de áreas de Tormenta e de templos de Aharadak (Ameaças de Arton, p. 60): ao entrar nesses locais elas não ficam frustradas e seus itens mágicos encantados não perdem encantos. O aumento de custo de suas habilidades por estar nesses locais diminui em 1 (+0 PM para templos e +1 PM para áreas). Por fim, dano contra criaturas da Tormenta a sua escolha dentro da aura ignora uma quantidade de RD igual ao seu Carisma e dentro da aura elas sofrem uma penalidade em rolagens de dano igual ao seu Carisma.',
+  ] },
+
+  //  Herói Henshin (p. 98–101) — 1 marca + 5 poderes, e dois quadros:
+  //  as poses de combate e o birrotor henshin.
+  { id: 'dist-henshin-armadura-especial', nome: 'Armadura Especial', grupo: 'distincao', livro: 'deuses', pagina: 100,
+    tags: 'Herói Henshin', distincao: 'heroi-henshin', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Sua armadura é seu símbolo, sua identidade transformada e seu verdadeiro eu.',
+    'Você transforma uma armadura ou um item de vestuário em seu traje de combate. Para você, esse item fornece +1 na Defesa (ou aumenta o bônus na Defesa fornecido em +1) e sua penalidade de armadura (se houver) é reduzida em –1. Se perder seu traje de combate, você pode transformar outra armadura ou item de vestuário com um dia de trabalho e T$ 100.',
+  ] },
+  { id: 'dist-henshin-sequencia-de-transformacao', nome: 'Sequência de Transformação', grupo: 'distincao', livro: 'deuses', pagina: 100,
+    tags: 'Herói Henshin', distincao: 'heroi-henshin', marca: false, deus: null, magica: true,
+    preReq: 'Vontade de Ferro', custo: null, quadro: null, texto: [
+    'Em um clarão de luz, o inocente livreiro é coberto por uma armadura mística.',
+    'Escolha uma arma, escudo ou esotérico. Esse item e seu traje de combate recebem, cada um, uma melhoria a sua escolha (exceto material especial) que não conta em seu limite de melhorias. Além disso, você pode gastar uma ação de movimento para executar uma sequência de transformação; quando faz isso, sua armadura surge vestida em você e o item escolhido aparece em sua mão. Esse efeito funciona independentemente de onde os itens estiverem. ✦',
+  ] },
+  { id: 'dist-henshin-forma-final', nome: 'Forma Final', grupo: 'distincao', livro: 'deuses', pagina: 101,
+    tags: 'Herói Henshin', distincao: 'heroi-henshin', marca: false, deus: null, magica: false,
+    preReq: 'quatro outros poderes da distinção', custo: '5 PM', quadro: null, texto: [
+    'O poder do herói henshin até agora era apenas uma faísca de seu verdadeiro potencial!',
+    'Quando usa sua Sequência de Transformação, você pode gastar 5 PM. Se fizer isso, os itens invocados pela sequência recebem um encanto cada, que não contam em seu limite de encantos e que duram até o fim da cena.',
+  ] },
+  { id: 'dist-henshin-pose-de-combate', nome: 'Pose de Combate', grupo: 'distincao', livro: 'deuses', pagina: 101,
+    tags: 'Herói Henshin', distincao: 'heroi-henshin', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Luta, Sequência de Transformação', custo: null,
+    quadro: { titulo: 'Pose de Combate', texto: [
+      'Poses de combate são técnicas especiais desenvolvidas pelo herói henshin. Para assumir uma destas técnicas, você deve estar vestindo seu traje de combate e gastar uma ação de movimento e 2 PM. Os efeitos de uma pose duram até o fim da cena ou até você assumir outra pose.',
+      'Acrobacia Espalhafatosa. Quando você assume esta pose, todos os inimigos em alcance curto ficam vulneráveis por 1 rodada (uma criatura só pode ser afetada por esta pose uma vez por cena). Seu deslocamento aumenta em 3m e você recebe +5 em Acrobacia.',
+      'Calor do Combate. Você recebe +2 em testes de ataque e rolagens de dano, mas sofre uma penalidade de –2 na Defesa. Para cada outros dois poderes da distinção, esses bônus aumentam em +1.',
+      'Coordenação de Coreografia. Quando assume esta pose, você se torna o último na iniciativa. Em seu turno, para cada aliado que fez pelo menos um ataque desde o seu turno anterior, você recebe +1 em suas rolagens de dano.',
+      'Defender o Sonho. Seus aliados recebem +2 em testes de perícia (exceto testes de ataque). Para cada outros dois poderes da distinção, esse bônus aumenta em +1.',
+      'Julgamento Heroico. Ao assumir esta pose, escolha um inimigo em alcance curto. Suas rolagens de dano contra esse inimigo recebem +1d8 de luz, mas você sofre –2 em testes de ataque contra outras criaturas. Para cada dois outros poderes da distinção, esse dado de dano de luz aumenta em um passo.',
+      'Poder da Amizade. Quando você assume esta pose, e no início de cada um dos seus turnos, seus aliados recebem uma quantidade de PV temporários igual a 5 + o total de poderes da distinção que você possui.',
+      'Terror dos Injustos. Qualquer criatura em alcance curto que faça uma ação hostil contra você ou um de seus aliados fica abalada (Von CD Car evita e a criatura não pode mais ser afetada por esta pose por 1 dia).',
+    ] },
+    texto: [
+    'O herói henshin assume uma postura que poderia ser cômica, mas afeta o coração de todos.',
+    'Escolha uma pose de combate (veja o quadro). Uma vez feita, essa escolha não pode ser alterada. A cada outro poder da distinção você recebe outra pose a sua escolha.',
+  ] },
+  { id: 'dist-henshin-montaria-especial', nome: 'Montaria Especial', grupo: 'distincao', livro: 'deuses', pagina: 101,
+    tags: 'Herói Henshin', distincao: 'heroi-henshin', marca: false, deus: null, magica: true,
+    preReq: 'treinado em Cavalgar ou Pilotagem, Sequência de Transformação', custo: '2 PM',
+    quadro: { titulo: 'Birrotor Henshin', texto: [
+      'Este veículo exclusivo de heróis henshin possui uma engenharia sagrada inexplicável que lhe permite se mover sem a necessidade de uma fonte de tração. Tem formato similar ao de um cavalo, mas com duas rodas colineares que exigem equilíbrio do piloto para se manter sobre ele. Se estiver conduzindo um birrotor henshin, você pode fazer investidas como se estivesse montado. Um birrotor henshin tem tamanho Grande, deslocamento 15m, Defesa 10 (+Des do Condutor), PV iguais à metade dos seus e pode carregar até 2 criaturas Médias ou 40 espaços. Veículo.',
+    ] },
+    texto: [
+    'O alazão do herói henshin é metálico e acompanha seu cavaleiro onde quer que a injustiça apareça.',
+    'Você pode gastar uma ação de movimento e 2 PM para invocar sua montaria especial. Ela aparece com um brilho de luz dourada ao seu lado e fica até o fim da cena, quando retorna magicamente para o lugar de onde veio. Ela é um parceiro montaria veterano de um tipo a sua escolha e aprovado pelo mestre, ou um birrotor henshin (veja o quadro). Caso já possua uma montaria fornecida por outra habilidade, em vez disso você pode invocá-la com este poder e ela se torna também uma montaria iniciante de outro tipo a sua escolha e aprovado pelo mestre. ✦',
+  ] },
+  { id: 'dist-henshin-pose-complexa', nome: 'Pose Complexa', grupo: 'distincao', livro: 'deuses', pagina: 101,
+    tags: 'Herói Henshin', distincao: 'heroi-henshin', marca: false, deus: null, magica: false,
+    preReq: 'duas poses de combate', custo: null, quadro: null, texto: [
+    'Se acham que uma pose é estapafúrdia, acerte-os com duas!',
+    'Você pode ativar duas poses de combate ao mesmo tempo.',
+  ] },
+
+  //  Improvisador de Lena (p. 102–104) — 1 marca + 5 poderes. Três dos
+  //  cinco medem o personagem pelo TOTAL de poderes da distinção.
+  { id: 'dist-improvisador-codigo-do-improvisador', nome: 'Código do Improvisador', grupo: 'distincao', livro: 'deuses', pagina: 104,
+    tags: 'Improvisador de Lena', distincao: 'improvisador-de-lena', marca: true, deus: 'Lena', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. O improvisador aprende como usar materiais ao seu redor para improvisar soluções.',
+    'Você segue o Código da Paz (p. 116). Além disso, uma vez por cena, pode gastar uma ação de movimento para, a partir de itens do ambiente, improvisar uma ferramenta especial que ocupa 1 espaço. Até o fim da cena, você pode gastar essa ferramenta para receber +2 em um teste de perícia ou para reduzir em –1 PM o custo de uma de suas habilidades.',
+  ] },
+  { id: 'dist-improvisador-gambiarra-mestra', nome: 'Gambiarra Mestra', grupo: 'distincao', livro: 'deuses', pagina: 104,
+    tags: 'Improvisador de Lena', distincao: 'improvisador-de-lena', marca: false, deus: 'Lena', magica: false,
+    preReq: 'treinado em Investigação e Ofício', custo: '3 PM', quadro: null, texto: [
+    'Uma pena, dois botões e o resto do jantar de ontem serão o suficiente…',
+    'Você pode gastar uma ação de movimento e 3 PM para improvisar algum tipo de gambiarra para uma tarefa específica. Escolha uma perícia. Até o fim da cena, você pode usar sua gambiarra para substituir testes da perícia escolhida por testes de Ofício.',
+  ] },
+  { id: 'dist-improvisador-efeito-cenografico', nome: 'Efeito Cenográfico', grupo: 'distincao', livro: 'deuses', pagina: 104,
+    tags: 'Improvisador de Lena', distincao: 'improvisador-de-lena', marca: false, deus: 'Lena', magica: false,
+    preReq: 'Poder Improvisado', custo: '2 PM', quadro: null, texto: [
+    'Um bom improvisador encontra formas de vencer sem violência.',
+    'Quando causa dano não letal a uma criatura viva, você pode gastar 2 PM para desferir um golpe cenográfico. A vítima deve fazer um teste de Fortitude (CD Int, +1 por poder da distinção que você possui). Se falhar, ela fica inconsciente (se for um capanga) ou atordoada por 1 rodada (apenas uma vez por cena) se for de outro tipo.',
+  ] },
+  { id: 'dist-improvisador-habilidade-improvisada', nome: 'Habilidade Improvisada', grupo: 'distincao', livro: 'deuses', pagina: 104,
+    tags: 'Improvisador de Lena', distincao: 'improvisador-de-lena', marca: false, deus: 'Lena', magica: false,
+    preReq: 'Poder Improvisado', custo: '3 PM', quadro: null, texto: [
+    'Intrometendo-se nos campos de outros aventureiros, o improvisador adquire uma versatilidade impressionante.',
+    'Você pode gastar uma ação padrão e 3 PM para improvisar uma forma de executar uma tarefa. Escolha uma habilidade de uma classe (exceto Magias) que não seja a sua. Até o fim da cena, ou até usar este poder novamente, você pode utilizar essa habilidade como um personagem de nível igual ao seu total de poderes da distinção.',
+  ] },
+  { id: 'dist-improvisador-magia-improvisada', nome: 'Magia Improvisada', grupo: 'distincao', livro: 'deuses', pagina: 104,
+    tags: 'Improvisador de Lena', distincao: 'improvisador-de-lena', marca: false, deus: 'Lena', magica: false,
+    preReq: 'treinado em Misticismo, Poder Improvisado', custo: null, quadro: null, texto: [
+    'Usando uma corda, uma luneta e um esquilo desatento, o improvisador cria um aparato mágico útil para a ocasião.',
+    'Você pode gastar uma ação completa para improvisar uma forma de simular um feito místico. Escolha uma magia de 1º círculo e faça um teste de Inteligência (CD 10, +2 para cada vez que usou este poder no mesmo dia). Se passar, até o fim da cena, você pode lançar a magia escolhida uma única vez, pagando seu custo normal (atributo-chave Inteligência). Esta não é uma habilidade mágica e provém de sua elevada capacidade de improvisação (veja “Magias Simuladas”, em Heróis de Arton, Capítulo 1: Campeões de Arton).',
+  ] },
+  { id: 'dist-improvisador-poder-improvisado', nome: 'Poder Improvisado', grupo: 'distincao', livro: 'deuses', pagina: 104,
+    tags: 'Improvisador de Lena', distincao: 'improvisador-de-lena', marca: false, deus: 'Lena', magica: false,
+    preReq: 'Gambiarra Mestra', custo: '3 PM', quadro: null, texto: [
+    'O improvisador é um indivíduo de muitos talentos, vários dos quais nem ele sabe que possui...',
+    'Você pode gastar uma ação padrão e 3 PM para pensar em uma solução criativa para um problema a sua frente. Escolha um poder de classe ou geral (exceto poderes concedidos e da Tormenta) cujos pré-requisitos você cumpra. Para efeitos desse poder, considere que seu nível em qualquer classe é igual ao seu total de poderes da distinção. Até o fim da cena, ou até usar este poder novamente, você pode utilizar o poder escolhido.',
+  ] },
+
+  //  Inquisidor de Wynna (p. 105–107) — 1 marca + 5 poderes. É de
+  //  paladino: a marca empresta a Centelha Mágica sem trocar de deus.
+  { id: 'dist-inquisidor-padroeira-adotiva', nome: 'Padroeira Adotiva', grupo: 'distincao', livro: 'deuses', pagina: 107,
+    tags: 'Inquisidor de Wynna', distincao: 'inquisidor-de-wynna', marca: true, deus: 'Wynna', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Wynna não é sua deusa, mas acha-o muito simpático.',
+    'Você recebe o poder Centelha Mágica, mas continua sendo um paladino e devoto de sua divindade original. Além disso, quando escolhe o poder Orar, você pode aprender também magias arcanas de 1º círculo como se fossem divinas.',
+  ] },
+  { id: 'dist-inquisidor-golpe-purificador', nome: 'Golpe Purificador', grupo: 'distincao', livro: 'deuses', pagina: 107,
+    tags: 'Inquisidor de Wynna', distincao: 'inquisidor-de-wynna', marca: false, deus: 'Wynna', magica: true,
+    preReq: 'Abençoado, Golpe Divino', custo: '2 PM', quadro: null, texto: [
+    'O poder divino do inquisidor pode encerrar o mau uso da magia.',
+    'Quando usa Golpe Divino, você pode gastar 2 PM para transformá-lo em um golpe purificador. Se acertar o ataque, além do dano, você causa um efeito semelhante à magia Dissipar Magia sobre o alvo, usando o resultado do teste de ataque no lugar do teste de Misticismo. ✦',
+  ] },
+  { id: 'dist-inquisidor-magia-sagrada', nome: 'Magia Sagrada', grupo: 'distincao', livro: 'deuses', pagina: 107,
+    tags: 'Inquisidor de Wynna', distincao: 'inquisidor-de-wynna', marca: false, deus: 'Wynna', magica: true,
+    preReq: 'Golpe Purificador, Orar', custo: '2 PM', quadro: null, texto: [
+    'O inquisidor de Wynna é capaz de emprestar poder destruidor a suas magias.',
+    'Quando lança uma magia que causa dano, você pode gastar 2 PM para receber +2 na CD e +1d8 na rolagem de dano da magia. Para cada outro poder da distinção que possuir, você pode gastar +1 PM para aumentar o dano em +1d8. ✦',
+  ] },
+  { id: 'dist-inquisidor-pira-da-inquisicao', nome: 'Pira da Inquisição', grupo: 'distincao', livro: 'deuses', pagina: 107,
+    tags: 'Inquisidor de Wynna', distincao: 'inquisidor-de-wynna', marca: false, deus: 'Wynna', magica: false,
+    preReq: 'Aura Sagrada, Golpe Purificador', custo: null, quadro: null, texto: [
+    'O inquisidor pode punir o mau uso da magia com a chama essencial de Wynna.',
+    'Enquanto sua Aura Sagrada estiver ativa, no início de seus turnos, você gera um efeito semelhante a Dissipar Magia (usando Vontade no lugar de Misticismo) em criaturas e objetos a sua escolha na área. Para cada círculo de magia dissipada dessa forma, seu conjurador sofre 1d8+1 pontos de dano de essência.',
+  ] },
+  { id: 'dist-inquisidor-refletir-magia', nome: 'Refletir Magia', grupo: 'distincao', livro: 'deuses', pagina: 107,
+    tags: 'Inquisidor de Wynna', distincao: 'inquisidor-de-wynna', marca: false, deus: 'Wynna', magica: true,
+    preReq: 'outros dois poderes da distinção', custo: '6 PM', quadro: null, texto: [
+    'Os inquisidores se esforçam para aproveitar ao máximo o dom de Wynna, redirecionando energia arcana mal utilizada de volta para quem a emitiu.',
+    'Quando passa em um teste de resistência contra uma habilidade mágica, você pode gastar 6 PM para refletir esse efeito de volta à sua fonte. Você não sofre nenhum efeito da habilidade (outros alvos são afetados normalmente) e a fonte é afetada por ela como se fosse um dos alvos originais (a fonte ainda tem direito a quaisquer testes de resistência contra a habilidade). ✦',
+  ] },
+  { id: 'dist-inquisidor-veredito-inquisitorial', nome: 'Veredito Inquisitorial', grupo: 'distincao', livro: 'deuses', pagina: 107,
+    tags: 'Inquisidor de Wynna', distincao: 'inquisidor-de-wynna', marca: false, deus: 'Wynna', magica: true,
+    preReq: 'quatro outros poderes da distinção', custo: '+6 PM', quadro: null, texto: [
+    'Os inquisidores de Wynna podem remover as bênçãos da Deusa daqueles que as empregam para o mal.',
+    'Quando usa Golpe Purificador, você pode gastar +6 PM. Se fizer isso e acertar o ataque, você atrapalha o fluxo de mana do alvo: até o fim da cena, a próxima vez que ele for executar uma ação com um custo em PM, deve fazer um teste de Vontade oposto ao resultado do seu teste de ataque. Se falhar, a ação não tem efeito (mas os PM são gastos mesmo assim). ✦',
+  ] },
+
+  //  Mestre de Armearia (p. 108–111) — 1 marca + 5 poderes, com o
+  //  quadro das inovações (as melhorias exclusivas de arma de fogo).
+  { id: 'dist-armearia-dominio-da-polvora', nome: 'Domínio da Pólvora', grupo: 'distincao', livro: 'deuses', pagina: 110,
+    tags: 'Mestre de Armearia', distincao: 'mestre-de-armearia', marca: true, deus: 'Tanna-Toh', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Insatisfeito com o que já existe, o mestre de armearia imagina novas maneiras de destruir.',
+    'Você recebe +2 em testes de perícia (exceto de ataque) relacionados a armas de fogo e suas munições, incluindo testes para esconder, fabricar, identificar e negociar.',
+  ] },
+  { id: 'dist-armearia-prata-da-casa', nome: 'Prata da Casa', grupo: 'distincao', livro: 'deuses', pagina: 110,
+    tags: 'Mestre de Armearia', distincao: 'mestre-de-armearia', marca: false, deus: 'Tanna-Toh', magica: false,
+    preReq: 'Balística', custo: null, quadro: null, texto: [
+    'O primeiro trabalho do mestre de armearia é se livrar das velharias e criar suas próprias armas.',
+    'Você pode fabricar armas de fogo não mágicas em uma semana, em vez de um mês, e recebe +1 em testes de ataque e rolagens de dano com armas de fogo que tenha fabricado. A cada dois outros poderes da distinção, esses bônus aumentam em +1.',
+  ] },
+  { id: 'dist-armearia-arma-de-estimacao', nome: 'Arma de Estimação', grupo: 'distincao', livro: 'deuses', pagina: 110,
+    tags: 'Mestre de Armearia', distincao: 'mestre-de-armearia', marca: false, deus: 'Tanna-Toh', magica: false,
+    preReq: 'Profissional Completo, ter feito três acertos críticos no mesmo combate com a arma escolhida', custo: null, quadro: null, texto: [
+    'Um mestre de armearia trata suas armas como bichos de estimação — ou filhos!',
+    'Escolha uma arma de fogo que tenha fabricado para receber uma habilidade de classe de 1º nível de uma classe que não seja a sua. Você só pode escolher uma habilidade que seja ativada ao se fazer um ataque ou usar a ação agredir (como Ataque Especial) ou que afete testes de ataque e/ou rolagens de dano e possa ser usada com a arma escolhida (como Duelo ou Marca da Presa). Você pode escolher a habilidade Magias, mas aprende uma única magia (que possa ser usada na arma ou com ela), com as mesmas limitações descritas, e não soma o atributo-chave da habilidade em seu total de PM. Você pode usar a habilidade como se tivesse 1 nível naquela classe, mas apenas com a arma escolhida.',
+  ] },
+  { id: 'dist-armearia-improvisar-o-progresso', nome: 'Improvisar o Progresso', grupo: 'distincao', livro: 'deuses', pagina: 111,
+    tags: 'Mestre de Armearia', distincao: 'mestre-de-armearia', marca: false, deus: 'Tanna-Toh', magica: false,
+    preReq: 'Inovação Tecnológica, ter construído pelo menos três armas com melhorias exclusivas', custo: '2 PM', quadro: null, texto: [
+    'Um mestre de armearia aprende a fazer modificações rápidas para qualquer situação.',
+    'Você pode gastar uma ação completa e 2 PM para aplicar uma melhoria (exceto material especial) em uma arma de fogo que esteja empunhando. Você não precisa pagar o custo nem fazer o teste de Ofício (armeiro), mas a melhoria só dura até o fim da cena. Você também pode gastar +2 PM para aplicar também uma inovação. A melhoria e a inovação não contam nos limites da arma.',
+  ] },
+  { id: 'dist-armearia-inovacao-tecnologica', nome: 'Inovação Tecnológica', grupo: 'distincao', livro: 'deuses', pagina: 111,
+    tags: 'Mestre de Armearia', distincao: 'mestre-de-armearia', marca: false, deus: 'Tanna-Toh', magica: false,
+    preReq: 'Prata da Casa', custo: null,
+    quadro: { titulo: 'Inovações', texto: [
+      'Inovações são técnicas experimentais, desenvolvidas de forma independente por mestres de armearia em todo mundo. Cada inovação é única; seu funcionamento e uso são conhecidos apenas por seu criador. Nas mãos de qualquer outra pessoa, a inovação simplesmente não funciona. Mestres de armearia generosos podem aplicar essas modificações às armas de seus aliados, mas elas sempre dependerão de seus cuidados e manutenção (em termos de regras, inovações não têm valor comercial).',
+      'Inovações funcionam de forma semelhante à melhorias; uma arma pode ter até quatro inovações, e a CD e o preço para aplicá-las seguem a Tabela 3-7 (Tormenta20, p. 164). Inovações só podem ser aplicadas a armas de fogo e armas híbridas (nesse caso, afetam apenas ataques em modo arma de fogo) e às suas munições.',
+      'Câmara de Bala (Arma). Esta inovação pode ser aplicada a qualquer arma. A arma recebe uma câmara e um mecanismo especial, que armazena uma bala. Quando faz um ataque corpo a corpo com a arma, você pode acionar esse mecanismo para disparar a bala; se acertar o ataque, causa +2d6 pontos de dano. Uma arma com esta inovação conta como uma arma de fogo para seus poderes de mestre de armearia. Recarregar a câmara é uma ação padrão.',
+      'Cano Duplo (Arma). A arma possui dois canos, cada um com seu carregador. Cada cano pode ser disparado e recarregado individualmente. Além disso, você pode disparar ambos os canos como se tivesse o poder Disparo Rápido. Caso tenha esse poder, em vez disso você não sofre a penalidade em testes de ataque ao usá-lo com a arma.',
+      'Cano Serrado (Arma). O cano da arma é mais curto, o que diminui sua precisão mas torna mais fácil manuseá-la em corpo a corpo. Quando faz um ataque à distância com a arma contra um oponente adjacente, você causa um dado de dano extra do mesmo tipo. Entretanto, você sofre –2 em testes de ataque contra alvos que não estejam adjacentes.',
+      'Empunhadura de Segurança (Arma). A arma possui um mecanismo na empunhadura que torna mais difícil removê-la de sua mão. Você recebe +5 nos testes para resistir às manobras desarmar e quebrar contra a arma (cumulativo com outros bônus da arma).',
+      'Explosiva (Munição). A munição é detonada com o impacto. Se você acertar um ataque, todas as criaturas adjacentes ao alvo sofrem o dano do ataque (Reflexos CD Int reduz à metade). Pré-requisito: Pólvora de Smokestone.',
+      'Fragmentável (Munição). Esta bala se estilhaça ao atingir o alvo, potencialmente causando ferimentos terríveis. Sempre que rolar o resultado máximo em um dado de dano da arma, role um dado extra.',
+      'Mira Calibrável (Arma). A arma possui um sistema de mira regulável que permite maior precisão. Quando usa a ação mirar, você recebe +2 em testes de ataque e na margem de ameaça com a arma até o fim do turno. Pré-requisito: Mira Telescópica.',
+      'Pólvora de Smokestone (Munição). Uma arma de fogo usando esta munição causa +1 ponto de dano por dado (exceto dados extras).',
+      'Tambor (Arma). A arma possui um tambor giratório que armazena 4 munições. Recarregar uma arma com tambor é uma ação completa. Pré-requisito: outra inovação qualquer.',
+      'Tanque Flamejante (Arma). A arma tem um compartimento com uma mistura de pedra-de-fumaça e fogo alquímico. Isso muda o tipo de dano para fogo e, quando a arma é disparada, espalha a munição em uma linha de 6m. Para atacar, faça um ataque à distância e compare com a Defesa de cada criatura na área. Recarregar a arma exige uma ação completa, 1 bala e 1 fogo alquímico.',
+    ] },
+    texto: [
+    'Insatisfeito com suas próprias armas e as de seus companheiros, o mestre de armearia desenvolve formas de aprimorá-las.',
+    'Você adiciona uma inovação a uma arma de fogo que possua e passa a poder fabricar armas de fogo superiores com inovações (veja o quadro).',
+  ] },
+  { id: 'dist-armearia-profissional-completo', nome: 'Profissional Completo', grupo: 'distincao', livro: 'deuses', pagina: 111,
+    tags: 'Mestre de Armearia', distincao: 'mestre-de-armearia', marca: false, deus: 'Tanna-Toh', magica: false,
+    preReq: 'Prata da Casa, Maestria em Perícia (Ofício [armeiro])', custo: null, quadro: null, texto: [
+    'O mestre de armearia não depende de treinamento para lutar, valendo-se de seu conhecimento e olhar de artesão.',
+    'Quando ataca com uma arma de fogo que tenha fabricado, você pode substituir testes de Pontaria por testes de Ofício (armeiro), e pode usar Maestria em Perícia nos ataques com ela.',
+  ] },
+
+  //  Numeromante (p. 112–114) — 1 marca + 5 poderes. A "Constante M" é
+  //  um dado rolado por cena: 1d4, e 1d6 depois da Função Metamágica.
+  { id: 'dist-numeromante-matemagica-para-iniciantes', nome: 'Matemágica para iniciantes', grupo: 'distincao', livro: 'deuses', pagina: 114,
+    tags: 'Numeromante', distincao: 'numeromante', marca: true, deus: 'Wynna', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Um numeromante enxerga a magia escondida nos números.',
+    'Sempre que você lançar uma magia com um custo em PM igual a um quadrado perfeito (1, 4, 9, 16, 25, 36 etc.), o custo de sua próxima magia lançada até o fim da cena diminui em –1 PM.',
+  ] },
+  { id: 'dist-numeromante-aplicar-constante-m', nome: 'Aplicar Constante M', grupo: 'distincao', livro: 'deuses', pagina: 114,
+    tags: 'Numeromante', distincao: 'numeromante', marca: false, deus: 'Wynna', magica: false,
+    preReq: 'treinado em Conhecimento e Misticismo, capacidade de lançar magias arcanas de 2º círculo', custo: null, quadro: null, texto: [
+    'A Criação foi feita a partir da matemática, que também rege toda magia.',
+    'No início de cada cena, role 1d4 e anote o resultado. Esse número passa a ser sua Constante M. Suas magias com um teste de resistência ganham o seguinte aprimoramento. +2PM: criaturas que falhem no teste de resistência sofrem uma penalidade na Defesa e em testes de resistência igual a sua Constante M.',
+  ] },
+  { id: 'dist-numeromante-correcao-do-desvio-padrao', nome: 'Correção do Desvio Padrão', grupo: 'distincao', livro: 'deuses', pagina: 114,
+    tags: 'Numeromante', distincao: 'numeromante', marca: false, deus: 'Wynna', magica: false,
+    preReq: 'Magicometria', custo: null, quadro: null, texto: [
+    'Na correção da dispersão natural está a força da concentração mágica.',
+    'Suas magias com efeitos baseados em dados recebem o seguinte aprimoramento. +3PM: para cada dado do efeito que rolar menos da metade de seu valor máximo, você pode considerar o resultado como a metade de seu valor máximo (por exemplo, um d6 que role 2 é considerado 3).',
+  ] },
+  { id: 'dist-numeromante-funcao-metamagica-de-m', nome: 'Função Metamágica de M', grupo: 'distincao', livro: 'deuses', pagina: 114,
+    tags: 'Numeromante', distincao: 'numeromante', marca: false, deus: 'Wynna', magica: false,
+    preReq: 'Magicometria', custo: null, quadro: null, texto: [
+    'A interseção da derivada de uma magia com sua constante é uma fonte infindável de poder.',
+    'Você passa a rolar 1d6 para determinar sua Constante M (em vez de 1d4). Além disso, uma vez por rodada, se um ou mais dados forem rolados para definir o efeito de uma habilidade mágica usada em alcance médio e o resultado de um desses dados for sua Constante M, você pode lançar uma magia como ação livre (mas ainda limitado a uma magia como ação livre na rodada) até o fim de seu próximo turno.',
+  ] },
+  { id: 'dist-numeromante-magicometria', nome: 'Magicometria', grupo: 'distincao', livro: 'deuses', pagina: 114,
+    tags: 'Numeromante', distincao: 'numeromante', marca: false, deus: 'Wynna', magica: false,
+    preReq: 'Aplicar Constante M', custo: null, quadro: null, texto: [
+    'Os números são o código com o qual o Nada e o Vazio fizeram a Criação.',
+    'Quando uma habilidade mágica com efeito baseado em dados é usada em alcance médio, você pode fazer um teste de Misticismo (CD 15 + o custo em PM da habilidade). Se passar, você pode rolar novamente uma quantidade de dados do efeito igual a sua Constante M.',
+  ] },
+  { id: 'dist-numeromante-matriz-da-equacao-final', nome: 'Matriz da Equação Final', grupo: 'distincao', livro: 'deuses', pagina: 114,
+    tags: 'Numeromante', distincao: 'numeromante', marca: false, deus: 'Wynna', magica: false,
+    preReq: 'Correção do Desvio Padrão, dois poderes de magia', custo: null, quadro: null, texto: [
+    'Na magias, Kallyadranoch está para os números naturais assim como Wynna está para os reais. A solução da Equação Final… está num conjunto ainda não imaginado…',
+    'Suas magias que causam dano baseado em dados ganham o seguinte aprimoramento. +2PM: em vez de rolar todos os dados de dano da magia, você pode rolar um único dado e multiplicar seu resultado pela quantidade de dados original do efeito.',
+  ] },
+
+  //  Pacificador (p. 115–117) — 1 marca + 5 poderes. O Código da Paz
+  //  (p. 116) é o mesmo quadro que o improvisador de Lena adota.
+  { id: 'dist-pacificador-armas-da-paz', nome: 'Armas da Paz', grupo: 'distincao', livro: 'deuses', pagina: 117,
+    tags: 'Pacificador', distincao: 'pacificador', marca: true, deus: 'Lena', magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'Código da Paz', texto: [
+      'Você não acredita na morte como solução de conflitos. Por isso, não aceita matar, nem empregar violência verdadeira (em termos de jogo, causar dano letal). Se violar o código, você perde todos os seus PM e só pode recuperá-los a partir do próximo dia.',
+    ] },
+    texto: [
+    'Marca da distinção. Qualquer um pode matar. Podemos ser melhores que isso.',
+    'Você adota o Código da Paz (veja o quadro) e se torna proficiente com qualquer arma que não cause dano ou que tenha a habilidade inata de causar dano não letal. Além disso, recebe +1 em testes de ataque e rolagens de dano com ataques que causam dano não letal.',
+  ] },
+  { id: 'dist-pacificador-combate-pacifico', nome: 'Combate Pacífico', grupo: 'distincao', livro: 'deuses', pagina: 117,
+    tags: 'Pacificador', distincao: 'pacificador', marca: false, deus: 'Lena', magica: false,
+    preReq: 'treinado em Luta', custo: '1 PM', quadro: null, texto: [
+    'O pacificador acredita que existem várias maneiras de se derrotar alguém sem matar.',
+    'Quando é atingido por um ataque corpo a corpo, você pode gastar 1 PM para fazer um teste de manobra. Se o resultado do seu teste for maior que o do atacante, você evita o ataque. Além disso, quando uma criatura atacá-lo e errar, você pode gastar 1 PM para fazer uma manobra contra essa criatura (desde que ela esteja em seu alcance). Você pode usar cada um desses efeitos uma vez por rodada.',
+  ] },
+  { id: 'dist-pacificador-dor-sem-morte', nome: 'Dor sem Morte', grupo: 'distincao', livro: 'deuses', pagina: 117,
+    tags: 'Pacificador', distincao: 'pacificador', marca: false, deus: 'Lena', magica: false,
+    preReq: 'Combate Pacífico', custo: '1 PM', quadro: null, texto: [
+    'Você domina técnicas complexas e elaboradas para não matar.',
+    'Quando faz um ataque que causa dano não letal, você pode gastar 1 PM. Se fizer isso e acertar o ataque, o oponente sofre uma condição a sua escolha entre fraco, frustrado ou lento (Fortitude CD For ou Des evita). Para cada poder da distinção que você possui, a CD para resistir a este efeito aumenta em +1.',
+  ] },
+  { id: 'dist-pacificador-golpe-paralisante', nome: 'Golpe Paralisante', grupo: 'distincao', livro: 'deuses', pagina: 117,
+    tags: 'Pacificador', distincao: 'pacificador', marca: false, deus: 'Lena', magica: false,
+    preReq: 'Dor sem Morte', custo: '3 PM', quadro: null, texto: [
+    'O melhor jeito de não matar em uma batalha é evitar que ela aconteça.',
+    'Você pode gastar uma ação padrão e 3 PM para interromper o fluxo de energia corporal de uma criatura adjacente. A vítima fica paralisada (Fortitude CD For ou Des reduz para lenta). A cada rodada, a criatura pode gastar uma ação completa para fazer um novo teste de Fortitude. Se passar, liberta-se do efeito. Para cada poder da distinção que você possui, a CD para resistir a este efeito aumenta em +1. Metabolismo.',
+  ] },
+  { id: 'dist-pacificador-pacificacao', nome: 'Pacificação', grupo: 'distincao', livro: 'deuses', pagina: 117,
+    tags: 'Pacificador', distincao: 'pacificador', marca: false, deus: 'Lena', magica: false,
+    preReq: 'Presença do Bem', custo: null, quadro: null, texto: [
+    '“Ninguém precisa morrer aqui hoje. Nem nós, nem vocês.”',
+    'Sempre que derrotar um inimigo sem matá-lo, você recebe +10 PV e +2 PM cumulativos até o fim da aventura. A cada aventura, você pode receber esse benefício um número de vezes igual ao total de poderes da distinção que possui.',
+  ] },
+  { id: 'dist-pacificador-presenca-do-bem', nome: 'Presença do Bem', grupo: 'distincao', livro: 'deuses', pagina: 117,
+    tags: 'Pacificador', distincao: 'pacificador', marca: false, deus: 'Lena', magica: false,
+    preReq: 'Combate Pacífico', custo: '1 PM', quadro: null, texto: [
+    'Tão importante quanto não matar seus inimigos é garantir que seus amigos não morram.',
+    'Você pode gastar uma ação de movimento e 1 PM para fornecer +2 na Defesa e em testes de resistência a você e todos os aliados adjacentes até o fim da cena. O bônus se encerra para uma criatura se ela causar dano letal.',
+  ] },
+
+  //  Pregador (p. 118–120) — 1 marca + 5 poderes. A distinção de quem
+  //  empresta o deus do vizinho quando convém.
+  { id: 'dist-pregador-vista-grossa', nome: 'Vista Grossa', grupo: 'distincao', livro: 'deuses', pagina: 119,
+    tags: 'Pregador', distincao: 'pregador', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Se nem os deuses são perfeitos, por que os mortais deveriam ser?',
+    'Sempre que violar as Obrigações & Restrições de uma divindade que precisa cumprir, você pode fazer um teste de Religião (CD 10, +5 para cada outra vez que usou este poder na mesma aventura). Se passar, não sofre nenhuma consequência por essa violação.',
+  ] },
+  { id: 'dist-pregador-sincretismo-oportuno', nome: 'Sincretismo Oportuno', grupo: 'distincao', livro: 'deuses', pagina: 120,
+    tags: 'Pregador', distincao: 'pregador', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Enganação e Religião, Devoto Fiel', custo: '3 PM', quadro: null, texto: [
+    'O pregador roga por Khalmyr, acende uma vela para Nimb, faz uma oferenda para Hyninn...',
+    'Você pode gastar uma ação padrão e 3 PM para orar a uma divindade que não seja a sua. Se fizer isso, recebe um poder concedido dela, mas passa a ser considerado seu devoto para efeitos de Obrigações & Restrições. Esse efeito dura até o fim da cena ou até você usá-lo novamente. Se violar as Obrigações & Restrições da divindade, você perde o poder obtido e não pode ganhar poderes dessa divindade até o fim da aventura.',
+  ] },
+  { id: 'dist-pregador-abusar-da-paciencia', nome: 'Abusar da Paciência', grupo: 'distincao', livro: 'deuses', pagina: 120,
+    tags: 'Pregador', distincao: 'pregador', marca: false, deus: null, magica: false,
+    preReq: 'Está nas Escrituras, capacidade de lançar magias divinas de 2º círculo', custo: null, quadro: null, texto: [
+    'O pregador consegue alcançar até mesmo os limites da paciência infinita dos deuses.',
+    'Você pode fazer um teste de Religião (CD 15, +5 para cada outra vez que usou este poder no mesmo dia) para incomodar um deus qualquer em troca de poder mágico. Se passar, até o fim da cena pode lançar uma magia divina que não conheça, de qualquer círculo a que tenha acesso, pagando seus custos normalmente. Se falhar, não pode mais usar este poder até o fim do dia.',
+  ] },
+  { id: 'dist-pregador-esta-nas-escrituras', nome: 'Está nas Escrituras', grupo: 'distincao', livro: 'deuses', pagina: 120,
+    tags: 'Pregador', distincao: 'pregador', marca: false, deus: null, magica: false,
+    preReq: 'Sincretismo Oportuno', custo: '1 PM', quadro: null, texto: [
+    'Para o pregador, a força dos textos sagrados está nas entrelinhas.',
+    'Quando falha em um teste de Enganação ou Religião, você pode gastar 1 PM para repetir esse teste usando a outra perícia (Enganação para um teste de Religião e vice-versa).',
+  ] },
+  { id: 'dist-pregador-nao-fui-eu', nome: 'Não Fui Eu', grupo: 'distincao', livro: 'deuses', pagina: 120,
+    tags: 'Pregador', distincao: 'pregador', marca: false, deus: null, magica: false,
+    preReq: 'Está nas Escrituras', custo: '2 PM', quadro: null, texto: [
+    'Um sorriso “sincero” e desculpas no momento certo já livraram mais de um pregador.',
+    'Quando é alvo de uma ação hostil de uma criatura inteligente (Int –3 ou maior), você pode gastar 2 PM e fazer um teste de Enganação oposto pelo teste de Vontade dessa criatura. Se o alvo for devoto de uma divindade da qual você é considerado devoto, você recebe +5 nesse teste. Se passar, a ação hostil falha e a criatura perde a ação. Você só pode usar este poder uma vez por criatura por cena.',
+  ] },
+  { id: 'dist-pregador-releitura-conveniente', nome: 'Releitura Conveniente', grupo: 'distincao', livro: 'deuses', pagina: 120,
+    tags: 'Pregador', distincao: 'pregador', marca: false, deus: null, magica: false,
+    preReq: 'Sincretismo Oportuno', custo: '1 PM', quadro: null, texto: [
+    'O pregador sabe que a palavra dos deuses está sujeita a “interpretações”.',
+    'Você pode gastar 1 PM para considerar uma característica de uma divindade como parte das características do seu deus. Você pode escolher entre Arma Preferida, Canalizar Energia ou ser considerado devoto desse deus para cumprir requisitos de usar habilidades e itens. Esse efeito dura até o fim da cena ou até você usá-lo novamente.',
+  ] },
+  { id: 'dist-pregador-vender-indulgencias', nome: 'Vender Indulgências', grupo: 'distincao', livro: 'deuses', pagina: 120,
+    tags: 'Pregador', distincao: 'pregador', marca: false, deus: null, magica: false,
+    preReq: 'Sincretismo Oportuno', custo: null, quadro: null, texto: [
+    'O perdão dos deuses tem um preço. E na mão do pregador é mais barato.',
+    'Quando um aliado em alcance curto faz um teste de perícia, ele pode gastar 3 PM para rolar novamente esse teste. Se ele fizer isso, você recebe 1 PM temporário cumulativo. Você pode ganhar um máximo de PM temporários por cena igual ao total de poderes da distinção que possui. Esses pontos temporários desaparecem no fim da cena.',
+  ] },
+
+  //  Sombra de Tenebra (p. 121–123) — 1 marca + 6 poderes.
+  //  O livro chama o poder de "Miragem de Sombras" no título e de
+  //  "Miragem das Sombras" no pré-requisito do Clone Sombrio; as duas
+  //  grafias ficam como estão.
+  { id: 'dist-sombra-ameaca-das-sombras', nome: 'Ameaça das Sombras', grupo: 'distincao', livro: 'deuses', pagina: 123,
+    tags: 'Sombra de Tenebra', distincao: 'sombra-de-tenebra', marca: true, deus: 'Tenebra', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Para o sombra de Tenebra, as trevas revelam as fraquezas dos inimigos.',
+    'Se estiver em uma área de escuridão, você pode usar a habilidade Ataque Furtivo +1d6. Se já possui a habilidade, o bônus é cumulativo.',
+  ] },
+  { id: 'dist-sombra-caminhar-nas-trevas', nome: 'Caminhar nas Trevas', grupo: 'distincao', livro: 'deuses', pagina: 123,
+    tags: 'Sombra de Tenebra', distincao: 'sombra-de-tenebra', marca: false, deus: 'Tenebra', magica: true,
+    preReq: 'treinado em Acrobacia e Furtividade, Passo Sombrio, deve ser capaz de enxergar no escuro', custo: null, quadro: null, texto: [
+    'As sombras que tudo cobrem não são mais que caminhos.',
+    'Você aprende e pode lançar Manto de Sombras. Caso aprenda novamente essa magia, seu custo diminui em –1 PM. Para cada dois outros poderes da distinção que você possui, a ação necessária para lançar essa magia diminui em um passo (de padrão para movimento e de movimento para livre). ✦',
+  ] },
+  { id: 'dist-sombra-clone-sombrio', nome: 'Clone Sombrio', grupo: 'distincao', livro: 'deuses', pagina: 123,
+    tags: 'Sombra de Tenebra', distincao: 'sombra-de-tenebra', marca: false, deus: 'Tenebra', magica: true,
+    preReq: 'treinado em Misticismo, Miragem das Sombras', custo: '3 PM', quadro: null, texto: [
+    'No gelado abraço da escuridão, encontramos aliados.',
+    'Você pode gastar uma ação padrão e 3 PM para criar um clone de sombras em um espaço desocupado em alcance curto. Ele é uma criatura com características iguais às suas, mas tem Evasão, é imune a efeitos mentais e tem 1 PV. No início dos seus turnos, ele pode usar a ação movimentar-se uma vez. Uma vez por rodada, você pode gastar uma ação de movimento para fazer o clone causar, em uma criatura adjacente, 1d6 pontos de dano de frio por poder da distinção que você possui, ou executar uma manobra de combate. Para cada dois outros poderes da distinção que possui, você pode pagar +3 PM para invocar um clone adicional. ✦',
+  ] },
+  { id: 'dist-sombra-forma-de-sombra', nome: 'Forma de Sombra', grupo: 'distincao', livro: 'deuses', pagina: 123,
+    tags: 'Sombra de Tenebra', distincao: 'sombra-de-tenebra', marca: false, deus: 'Tenebra', magica: false,
+    preReq: 'Ataque Furtivo, Sombra Espreitadora', custo: '1 PM', quadro: null, texto: [
+    'Um com a escuridão, sempre.',
+    'Enquanto estiver sob efeito de Manto de Sombras, você causa +1 ponto de dano por dado de dano de trevas. Além disso, quando faz um ataque, você pode gastar 1 PM para cobrir sua arma de sombras. Se fizer isso, esse ataque pode afetar uma criatura normal e, se for um ataque furtivo, o dano extra dessa habilidade se torna dano de trevas.',
+  ] },
+  { id: 'dist-sombra-miragem-de-sombras', nome: 'Miragem de Sombras', grupo: 'distincao', livro: 'deuses', pagina: 123,
+    tags: 'Sombra de Tenebra', distincao: 'sombra-de-tenebra', marca: false, deus: 'Tenebra', magica: true,
+    preReq: 'Caminhar nas Trevas', custo: null, quadro: null, texto: [
+    'Aqueles que não enxergam no escuro tentam preencher o vazio com imagens criadas por suas mentes.',
+    'Você aprende a magia Criar Ilusões (CD Int). Se possuir três outros poderes da distinção, a magia recebe o seguinte aprimoramento. +2PM: suas ilusões emanam uma aura de 3m que concede camuflagem leve por escuridão a criaturas adjacentes a elas.',
+  ] },
+  { id: 'dist-sombra-moldar-sombra', nome: 'Moldar Sombra', grupo: 'distincao', livro: 'deuses', pagina: 123,
+    tags: 'Sombra de Tenebra', distincao: 'sombra-de-tenebra', marca: false, deus: 'Tenebra', magica: true,
+    preReq: 'Miragem de Sombras', custo: '2 PM', quadro: null, texto: [
+    'Mais que aliadas, as trevas são armas.',
+    'Você pode gastar uma ação de movimento e 2 PM para criar uma arma corpo a corpo ou de arremesso com a qual seja proficiente, ou uma ferramenta. O item surge em sua mão e dura até o fim da cena ou até passar 1 rodada sem ser empunhado por você. Armas criadas dessa forma causam dano de trevas em vez do seu tipo normal e ferramentas fornecem +1 em testes das respectivas perícias (cumulativo com quaisquer bônus já fornecidos pela ferramenta). Para cada dois outros poderes da distinção que você possui, o bônus fornecido pela ferramenta aumenta em +1. ✦',
+  ] },
+  { id: 'dist-sombra-sombra-espreitadora', nome: 'Sombra Espreitadora', grupo: 'distincao', livro: 'deuses', pagina: 123,
+    tags: 'Sombra de Tenebra', distincao: 'sombra-de-tenebra', marca: false, deus: 'Tenebra', magica: false,
+    preReq: 'Caminhar nas Trevas, Passo Sombrio', custo: null, quadro: null, texto: [
+    'Seus inimigos irão aprender a temer a própria sombra.',
+    'Sempre que usar Passo Sombrio para alcançar um espaço adjacente a uma criatura, você pode fazer um teste de Acrobacia oposto ao teste de Percepção ou Reflexos dela. Se você passar, essa criatura fica desprevenida contra seu próximo ataque e esse ataque causa +1 ponto de dano de trevas por dado de dano.',
+  ] },
+
+  //  Sortudo de Nimb (p. 124–126) — 1 marca + 6 poderes, a maior lista
+  //  de poderes do capítulo junto com a do sombra de Tenebra.
+  { id: 'dist-sortudo-sorte-boba', nome: 'Sorte Boba', grupo: 'distincao', livro: 'deuses', pagina: 126,
+    tags: 'Sortudo de Nimb', distincao: 'sortudo-de-nimb', marca: true, deus: 'Nimb', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Até mesmo a sua sorte tem sorte.',
+    'Quando usa uma habilidade que permite rolar qualquer dado novamente, você rola dois dados desse tipo e usa o melhor resultado.',
+  ] },
+  { id: 'dist-sortudo-sorte-visitante', nome: 'Sorte Visitante', grupo: 'distincao', livro: 'deuses', pagina: 126,
+    tags: 'Sortudo de Nimb', distincao: 'sortudo-de-nimb', marca: false, deus: 'Nimb', magica: false,
+    preReq: 'Sortudo ou Sorte dos Loucos, devoto de Nimb', custo: null, quadro: null, texto: [
+    'Para o sortudo de Nimb, a sorte é uma visita frequente.',
+    'No início de cada cena, role 1d8. Em um resultado 1, até o fim da cena você pode rolar novamente qualquer teste recém-feito. A cada dois outros poderes da distinção, esse d8 diminui em um passo.',
+  ] },
+  { id: 'dist-sortudo-bencao-de-nimb', nome: 'Bênção de Nimb', grupo: 'distincao', livro: 'deuses', pagina: 126,
+    tags: 'Sortudo de Nimb', distincao: 'sortudo-de-nimb', marca: false, deus: 'Nimb', magica: false,
+    preReq: 'Sorte Visitante', custo: null, quadro: null, texto: [
+    'É melhor ser sortudo do que ser bom.',
+    'Sempre que faz um teste ou rola um dado em uma tabela ou para determinar a ocorrência de um evento (como o dado de confusão das Obrigações & Restrições de Nimb), você rola duas vezes e escolhe qual resultado usar. A critério do mestre, este poder pode se aplicar a outras rolagens de eventos aleatórios, como a chance de ocorrer um encontro.',
+  ] },
+  { id: 'dist-sortudo-caminhada-descuidada', nome: 'Caminhada Descuidada', grupo: 'distincao', livro: 'deuses', pagina: 126,
+    tags: 'Sortudo de Nimb', distincao: 'sortudo-de-nimb', marca: false, deus: 'Nimb', magica: true,
+    preReq: 'Bênção de Nimb', custo: '2 PM', quadro: null, texto: [
+    'Com sorte você atravessa o mundo, sem sorte você não atravessa a rua.',
+    'Quando um ataque ou habilidade causa dano a você, você pode gastar 2 PM para fazer um teste de Vontade com CD igual ao resultado do teste de ataque ou à CD para resistir à habilidade. Se passar nesse teste, você não sofre dano e, se passar por 10 ou mais, uma criatura a sua escolha dentro do alcance do ataque ou da habilidade sofre o dano que seria causado. ✦',
+  ] },
+  { id: 'dist-sortudo-50-50', nome: '50/50', grupo: 'distincao', livro: 'deuses', pagina: 126,
+    tags: 'Sortudo de Nimb', distincao: 'sortudo-de-nimb', marca: false, deus: 'Nimb', magica: true,
+    preReq: 'Sorte É o Que Se Faz', custo: '5 PM', quadro: null, texto: [
+    'Na vida tudo acontece. Ou não.',
+    'Você pode gastar 5 PM e uma ação de movimento para gerar uma aura com 9m de raio de sorte e azar absolutos, com duração sustentada. Dentro dessa aura, todos os testes são resolvidos com uma rolagem de 1d2; resultados 1 são falhas e 2 são sucessos. Sempre que um teste dentro da aura for um sucesso, você recupera 2 PM e, sempre que for uma falha, você perde 2 PM. ✦',
+  ] },
+  { id: 'dist-sortudo-olha-so-quem-diria', nome: 'Olha Só, Quem Diria?', grupo: 'distincao', livro: 'deuses', pagina: 126,
+    tags: 'Sortudo de Nimb', distincao: 'sortudo-de-nimb', marca: false, deus: 'Nimb', magica: true,
+    preReq: '50/50', custo: '6 PM', quadro: null, texto: [
+    'Não é todo dia que se encontra uma vingadora sagrada no chão...',
+    'Uma vez por cena, você pode gastar uma ação completa e 6 PM para fazer um item mágico menor, a sua escolha, surgir em um espaço desocupado em alcance curto. Você não pode escolher itens únicos ou artefatos. O item desaparece ao fim da cena, ou se passar ao controle de outra pessoa. Quando isso acontece, quaisquer benefícios concedidos pelo item desaparecem. ✦',
+  ] },
+  { id: 'dist-sortudo-sorte-e-o-que-se-faz', nome: 'Sorte é o Que Se Faz', grupo: 'distincao', livro: 'deuses', pagina: 126,
+    tags: 'Sortudo de Nimb', distincao: 'sortudo-de-nimb', marca: false, deus: 'Nimb', magica: true,
+    preReq: 'Bênção de Nimb', custo: '3 PM', quadro: null, texto: [
+    'Até a sorte pode receber um empurrãozinho.',
+    'Uma vez por rodada, quando uma criatura em alcance curto faz um teste de perícia, você pode gastar 3 PM para influenciar a sorte, ou o azar, dela. Se fizer isso, role 1d20. Você pode trocar os resultados das duas rolagens (a criatura usa o resultado do seu d20 e você fica com o resultado do d20 dela). Até o fim da cena, você pode usar o resultado trocado como a rolagem de um de seus testes de perícia. Você só pode usar este poder uma vez por teste de perícia na mesma cena para cada criatura. ✦',
+  ] },
+
+  //  Sumo-Sacerdote (p. 127–129) — 1 marca + 5 poderes. É a distinção
+  //  de quem comanda uma igreja: quatro dos cinco escalam.
+  { id: 'dist-sumo-autoridade-divina', nome: 'Autoridade Divina', grupo: 'distincao', livro: 'deuses', pagina: 129,
+    tags: 'Sumo-Sacerdote', distincao: 'sumo-sacerdote', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. “Eu falo em nome do seu deus. Desrespeitar-me é desrespeitar sua fé.”',
+    'Você é a autoridade máxima em uma igreja reconhecida pelos outros membros de sua fé. Você recebe o poder Autoridade Eclesiástica para sua divindade. Se já tiver esse poder, em vez disso recebe +2 em Religião e na CD de suas magias divinas.',
+  ] },
+  { id: 'dist-sumo-protecao-divina', nome: 'Proteção Divina', grupo: 'distincao', livro: 'deuses', pagina: 129,
+    tags: 'Sumo-Sacerdote', distincao: 'sumo-sacerdote', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Religião, devoto de um deus maior', custo: null, quadro: null, texto: [
+    'Ofensas de devotos menores não afetam o sumo; ele é o escolhido de seu deus.',
+    'Você passa automaticamente em testes de resistência contra magias divinas lançadas por devotos de sua divindade.',
+  ] },
+  { id: 'dist-sumo-bencao-do-patrono', nome: 'Bênção do Patrono', grupo: 'distincao', livro: 'deuses', pagina: 129,
+    tags: 'Sumo-Sacerdote', distincao: 'sumo-sacerdote', marca: false, deus: null, magica: false,
+    preReq: 'Proteção Divina', custo: null, quadro: null, texto: [
+    'Os deuses olham por seus principais mensageiros.',
+    'Você recebe um poder concedido de seu deus, desde que cumpra seus pré-requisitos. Além disso, pode gastar uma ação de movimento para trocar um de seus poderes concedidos por outro. Para cada outro poder da distinção, você recebe um novo poder concedido. Este poder afeta apenas poderes recebidos por sua devoção.',
+  ] },
+  { id: 'dist-sumo-evolucao-espiritual', nome: 'Evolução Espiritual', grupo: 'distincao', livro: 'deuses', pagina: 129,
+    tags: 'Sumo-Sacerdote', distincao: 'sumo-sacerdote', marca: false, deus: null, magica: false,
+    preReq: 'Proteção Divina', custo: null, quadro: null, texto: [
+    'Para melhor representar seu deus, o sumo-sacerdote é abençoado com seu poder divino.',
+    'Para cada poder da distinção, você recebe +5 PV e +2 PM, e a CD de suas magias divinas e de seus poderes concedidos por sua divindade aumenta em +1.',
+  ] },
+  { id: 'dist-sumo-presente-dos-deuses', nome: 'Presente dos Deuses', grupo: 'distincao', livro: 'deuses', pagina: 129,
+    tags: 'Sumo-Sacerdote', distincao: 'sumo-sacerdote', marca: false, deus: null, magica: false,
+    preReq: 'Bênção do Patrono', custo: null, quadro: null, texto: [
+    'Qualquer que seja sua origem, todo sumo-sacerdote é um canal para os milagres divinos.',
+    'Você recebe a habilidade Magias, como um clérigo de nível igual ao dobro dos poderes da distinção que você possui. Se já possui essa habilidade, em vez disso soma sua Sabedoria no limite de PM que pode gastar em magias divinas e em seu total de PM (cumulativo com efeitos que já o fazem).',
+  ] },
+  { id: 'dist-sumo-punicao-divina', nome: 'Punição Divina', grupo: 'distincao', livro: 'deuses', pagina: 129,
+    tags: 'Sumo-Sacerdote', distincao: 'sumo-sacerdote', marca: false, deus: null, magica: false,
+    preReq: 'Bênção do Patrono', custo: null, quadro: null, texto: [
+    'O sumo-sacerdote é um instrumento da ira de seu deus.',
+    'O sumo-sacerdote pode gastar uma ação padrão para cancelar as magias divinas e os poderes concedidos de um devoto de sua divindade em sua linha de visão (Von CD Sab, +1 por poder da distinção, evita e o devoto não pode mais ser punido por 1 dia). A punição pode ser revertida com uma ação padrão do sumo-sacerdote ou com uma missão sagrada realizada como parte de um rito (veja Religião em Tormenta20, p. 122).',
+  ] },
+
+  //  Taumaturgista (p. 130–132) — 1 marca + 5 poderes.
+  //  Dois deslizes de impressão ficam literais, conferidos no -layout da
+  //  p. 132: "pégaso e ou dragonete" e o título "titereiro Planar", que
+  //  é o único poder do capítulo impresso em caixa baixa.
+  { id: 'dist-taumaturgista-auxiliar-divino', nome: 'Auxiliar Divino', grupo: 'distincao', livro: 'deuses', pagina: 132,
+    tags: 'Taumaturgista', distincao: 'taumaturgista', marca: true, deus: null, magica: true,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. As primeiras conjurações do taumaturgista envolvem pequenos seres dos mundos divinos.',
+    'Você aprende e pode lançar uma das magias a seguir como uma de suas magias divinas: Conjurar Monstro, Montaria Arcana ou Servos Invisíveis. A cada dois poderes da distinção, você aprende e pode lançar outra dessas magias (caso aprenda novamente uma delas, seu custo diminui em –1 PM). ✦',
+  ] },
+  { id: 'dist-taumaturgista-amigo-de-outro-mundo', nome: 'Amigo de Outro Mundo', grupo: 'distincao', livro: 'deuses', pagina: 132,
+    tags: 'Taumaturgista', distincao: 'taumaturgista', marca: false, deus: null, magica: true,
+    preReq: 'treinado em Religião, capacidade de lançar magias divinas de 3° círculo, Servo Divino', custo: '2 PM', quadro: null, texto: [
+    'Ninguém nunca teve um amigo assim.',
+    'Você tem um amigo de outro mundo, uma criatura extraplanar que você pode invocar em momentos de necessidade. Escolha um parceiro entre os parceiros básicos (Tormenta20, p. 260) ou entre um pilly, luminar, pégaso e ou dragonete (veja o Capítulo 4). Uma vez feita, essa escolha não pode ser mudada. Você pode gastar uma ação de movimento e 2 PM para invocar seu amigo de outro mundo, que aparece com um brilho de luz mágica ao seu lado e permanece até o fim da cena ou até ser destruído (um amigo destruído não pode ser invocado novamente por 1 dia). Seu amigo é um parceiro iniciante mas, para cada dois outros poderes da distinção, sobe um nível (de iniciante para veterano, de veterano para mestre). ✦',
+  ] },
+  { id: 'dist-taumaturgista-barganha-planar', nome: 'Barganha Planar', grupo: 'distincao', livro: 'deuses', pagina: 132,
+    tags: 'Taumaturgista', distincao: 'taumaturgista', marca: false, deus: null, magica: true,
+    preReq: 'Amigo de Outro Mundo', custo: null,
+    quadro: { titulo: 'Efeitos da Barganha Planar', texto: [
+      'Abissal. Quando seu amigo é invocado, criaturas a sua escolha em um raio de 6m dele sofrem 2d8+2 pontos de dano de trevas e ficam abaladas por 1 rodada (Vontade CD Sab reduz à metade e evita a condição).',
+      'Celestial. Quando seu amigo é invocado, criaturas a sua escolha em um raio de 6m dele recebem 4d8+4 PV temporários.',
+      'Elemental. Escolha um elemento entre ácido, eletricidade, fogo ou frio. Quando seu amigo é invocado, criaturas a sua escolha em um raio de 6m dele sofrem 2d12+2 pontos de dano do tipo escolhido (Reflexos CD Sab reduz à metade).',
+      'Feérico. Quando seu amigo é invocado, criaturas a sua escolha em um raio de 6m dele sofrem –2 em testes de Vontade por 1 rodada.',
+    ] },
+    texto: [
+    'O pacto do taumaturgista infunde suas invocações com poder planar.',
+    'Escolha um dos efeitos a seguir (uma vez feita, essa escolha não pode ser alterada). Quando invoca seu amigo de outro mundo ele traz uma fração de poder extraplanar do tipo escolhido. ✦',
+  ] },
+  { id: 'dist-taumaturgista-contrato-planar', nome: 'Contrato Planar', grupo: 'distincao', livro: 'deuses', pagina: 132,
+    tags: 'Taumaturgista', distincao: 'taumaturgista', marca: false, deus: null, magica: false,
+    preReq: 'Barganha Planar', custo: null, quadro: null, texto: [
+    'Um taumaturgista habilidoso mantém mais de um contrato planar ativo, sempre.',
+    'Você tem um segundo amigo de outro mundo. Escolha um efeito de Barganha Planar para esse segundo amigo. Se escolher um igual, ele é cumulativo.',
+  ] },
+  { id: 'dist-taumaturgista-invocacao-corrompida', nome: 'Invocação Corrompida', grupo: 'distincao', livro: 'deuses', pagina: 132,
+    tags: 'Taumaturgista', distincao: 'taumaturgista', marca: false, deus: null, magica: false,
+    preReq: 'Amigo de Outro Mundo, dois poderes da Tormenta', custo: null, quadro: null, texto: [
+    'Em suas pesquisas, o taumaturgista pode encontrar coisas terríveis… que podem ser invocadas.',
+    'Um ou mais dos seus amigos de outro mundo se tornam corrompidos pela Tormenta. Quando esse amigo é invocado, criaturas a sua escolha em um raio de 6m dele perdem 2d4 PM (CD Sab reduz à metade). Se isso zerar seus PM, a criatura fica confusa. Além disso, enquanto esse amigo estiver presente, você recebe +5 em Percepção e não pode ser flanqueado.',
+  ] },
+  { id: 'dist-taumaturgista-titereiro-planar', nome: 'titereiro Planar', grupo: 'distincao', livro: 'deuses', pagina: 132,
+    tags: 'Taumaturgista', distincao: 'taumaturgista', marca: false, deus: null, magica: false,
+    preReq: 'Conjurar Monstro, Amigo de Outro Mundo', custo: null, quadro: null, texto: [
+    'Para o taumaturgista, controlar convocações menores se torna um ato banal.',
+    'Quando lança Conjurar Monstro, você pode dar ordens ao monstro como uma ação de movimento (em vez de uma ação padrão) e a magia não conta no limite de magias que você pode sustentar em um turno.',
+  ] },
+
+  //  Teurgista Hermético (p. 133–135) — 1 marca + 5 poderes. A marca
+  //  apaga a fronteira entre magia arcana e divina.
+  { id: 'dist-teurgista-principio-hermetico', nome: 'Princípio Hermético', grupo: 'distincao', livro: 'deuses', pagina: 135,
+    tags: 'Teurgista Hermético', distincao: 'teurgista-hermetico', marca: true, deus: null, magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. O teurgista hermético supera as divisões tradicionais da magia.',
+    'Você é considerado um conjurador tanto arcano quanto divino, e suas magias são consideradas tanto arcanas quanto divinas.',
+  ] },
+  { id: 'dist-teurgista-conjuracao-unificada', nome: 'Conjuração Unificada', grupo: 'distincao', livro: 'deuses', pagina: 135,
+    tags: 'Teurgista Hermético', distincao: 'teurgista-hermetico', marca: false, deus: null, magica: false,
+    preReq: 'treinado em Misticismo e Religião, habilidade Magias (arcanas), habilidade Magias (divinas)', custo: null, quadro: null, texto: [
+    'Nas mãos do teurgista, a magia é uma só.',
+    'Escolha um entre seus atributos-chave de magias. Você pode usar esse atributo como atributo-chave de todas as suas magias e habilidades relacionadas a elas, exceto cálculo de PM. Entretanto, restrições que afetem qualquer um de seus tipos de magias (como o uso de armaduras e magias arcanas) passam a afetar ambos os tipos.',
+  ] },
+  { id: 'dist-teurgista-conhecimento-adaptavel', nome: 'Conhecimento Adaptável', grupo: 'distincao', livro: 'deuses', pagina: 135,
+    tags: 'Teurgista Hermético', distincao: 'teurgista-hermetico', marca: false, deus: null, magica: false,
+    preReq: 'Conjuração Unificada', custo: '1 PM', quadro: null, texto: [
+    'Conhecimento é conhecimento. Um teurgista sabe ler o divino através do arcano e o arcano através do divino.',
+    'Quando falha em um teste de Misticismo ou Religião, você pode gastar 1 PM para repetir esse teste usando a outra perícia (Misticismo para um teste de Religião e vice-versa).',
+  ] },
+  { id: 'dist-teurgista-teurgia-aplicada', nome: 'Teurgia Aplicada', grupo: 'distincao', livro: 'deuses', pagina: 135,
+    tags: 'Teurgista Hermético', distincao: 'teurgista-hermetico', marca: false, deus: null, magica: false,
+    preReq: 'Conjuração Unificada', custo: null, quadro: null, texto: [
+    'Um teurgista nunca defere um estudo por outro, pois sabe que arcano e divino são um só.',
+    'Escolha duas de suas classes com a habilidade Magias, uma para magias arcanas e outra para magias divinas. Você soma seu total de poderes da distinção no seu nível de cada uma dessas classes (até o limite de seu nível de personagem) para determinar o total de PM que pode gastar nessas magias e os círculos máximos de magia a que tem acesso.',
+  ] },
+  { id: 'dist-teurgista-vontade-sobre-materia', nome: 'Vontade Sobre Matéria', grupo: 'distincao', livro: 'deuses', pagina: 135,
+    tags: 'Teurgista Hermético', distincao: 'teurgista-hermetico', marca: false, deus: null, magica: false,
+    preReq: 'Teurgia Aplicada', custo: '+1 PM', quadro: null, texto: [
+    'O teurgista aprende a lançar magias em sua forma mais pura.',
+    'Quando lança uma magia, você pode pagar +1 PM para que ela ignore imunidades e resistências baseadas em sua escola ou tipo (arcana ou divina).',
+  ] },
+  { id: 'dist-teurgista-zenite-teurgico', nome: 'Zênite Teúrgico', grupo: 'distincao', livro: 'deuses', pagina: 135,
+    tags: 'Teurgista Hermético', distincao: 'teurgista-hermetico', marca: false, deus: null, magica: false,
+    preReq: 'Conhecimento Adaptável, Teurgia Aplicada', custo: null, quadro: null, texto: [
+    'Fogo ou gelo? Em sua essência, magia é magia.',
+    'Quando lança uma magia que causa dano, você pode aplicar a ela efeitos específicos de um tipo de dano como se ela fosse de todos os tipos. Por exemplo, você pode usar um cetro elemental (fogo) com uma magia Adaga Mental.',
+  ] },
+
+  //  Tibarita (p. 136–138) — 1 marca + 5 poderes. A única distinção do
+  //  capítulo em que o recurso gasto é DINHEIRO, não PM.
+  { id: 'dist-tibarita-poder-monetario', nome: 'Poder Monetário', grupo: 'distincao', livro: 'deuses', pagina: 138,
+    tags: 'Tibarita', distincao: 'tibarita', marca: true, deus: 'Tibar', magica: false,
+    preReq: null, custo: null, quadro: null, texto: [
+    'Marca da distinção. Para o tibarita, gastar dinheiro é um ato de devoção e o motivo de sua existência.',
+    'Quando usa uma habilidade com um custo em PM, você pode consumir uma quantidade de tibares de ouro (limitada por seu Carisma). Cada TO consumido dessa forma paga 1 PM do custo da habilidade. Você pode consumir um número de TO por dia igual ao seu nível. Caso já possua essa habilidade, o limite de TO que você pode consumir por dia aumenta em +5.',
+  ] },
+  { id: 'dist-tibarita-o-preco-do-sucesso', nome: 'O Preço do Sucesso', grupo: 'distincao', livro: 'deuses', pagina: 138,
+    tags: 'Tibarita', distincao: 'tibarita', marca: false, deus: 'Tibar', magica: false,
+    preReq: 'devoto de Tibar, Car 3', custo: null, quadro: null, texto: [
+    'Quem tem dinheiro não tenta, consegue.',
+    'Quando vai fazer um teste de perícia, você pode comprar um resultado em vez de rolar um dado. Você deve gastar T$ 100 por número desejado no dado (um 18, por exemplo, custa T$ 1.800). Contudo, um resultado comprado dessa forma não é um sucesso automático (deve superar a CD etc.).',
+  ] },
+  { id: 'dist-tibarita-faro-para-tesouro', nome: 'Faro para Tesouro', grupo: 'distincao', livro: 'deuses', pagina: 138,
+    tags: 'Tibarita', distincao: 'tibarita', marca: false, deus: 'Tibar', magica: false,
+    preReq: 'O Preço do Sucesso', custo: null, quadro: null, texto: [
+    'Para ser capaz de gastar dinheiro, você deve ser capaz de ganhar.',
+    'Sempre que é feita uma rolagem para determinar a chance de você ganhar dinheiro e/ou a quantidade de dinheiro que será obtida (incluindo recompensas aleatórias e rolagens de tesouros), você rola duas vezes e você escolhe entre um dos resultados.',
+  ] },
+  { id: 'dist-tibarita-gostei-vou-comprar', nome: 'Gostei, Vou Comprar!', grupo: 'distincao', livro: 'deuses', pagina: 138,
+    tags: 'Tibarita', distincao: 'tibarita', marca: false, deus: 'Tibar', magica: false,
+    preReq: 'O Preço do Sucesso, deve ter gastado pelo menos T$ 100.000 ao longo de sua carreira de aventureiro', custo: '6 PM', quadro: null, texto: [
+    'Não há nada fora do alcance daqueles que podem pagar.',
+    'Quando uma criatura em alcance curto usa uma habilidade de classe que você possa ver, você pode gastar 6 PM para “comprar” essa habilidade. Até o fim da cena, você pode usá-la como uma habilidade de raça (se ela usar um atributo para algo, use seu Carisma). Se “comprar” outra habilidade, você perde a anterior. Habilidades de ameaças com o mesmo nome de habilidades de classe, bem como cada uma de suas magias, também podem ser “compradas” com este poder.',
+  ] },
+  { id: 'dist-tibarita-revirar-os-bolsos', nome: 'Revirar os Bolsos', grupo: 'distincao', livro: 'deuses', pagina: 138,
+    tags: 'Tibarita', distincao: 'tibarita', marca: false, deus: 'Tibar', magica: false,
+    preReq: 'O Preço do Sucesso', custo: null, quadro: null, texto: [
+    '“Então era aqui que estava essa algibeira!?”',
+    'A cada cena, o primeiro tibar de ouro que você consumir para pagar um custo em PM paga 1d4 PM desse custo.',
+  ] },
+  { id: 'dist-tibarita-saude-comprada', nome: 'Saúde Comprada', grupo: 'distincao', livro: 'deuses', pagina: 138,
+    tags: 'Tibarita', distincao: 'tibarita', marca: false, deus: 'Tibar', magica: false,
+    preReq: 'O Preço do Sucesso', custo: null, quadro: null, texto: [
+    'Tudo tem um preço, até mesmo a vida.',
+    'Você pode gastar uma ação completa e uma quantidade de tibares de ouro (limitada pelo seu Carisma) para “comprar” saúde para uma criatura adjacente. Para cada TO gasto, você recupera 3d8 PV da criatura ou remove uma de suas condições entre abalado, alquebrado, apavorado, atordoado, cego, confuso, enfeitiçado, esmorecido, exausto, fatigado, frustrado, pasmo e surdo.',
+  ] },
+
+  //  Tirano do Terceiro (p. 139–141) — 1 marca + 5 poderes, a última
+  //  do capítulo. O quadro do companheiro dragão é que diz como ele
+  //  cresce, e por isso a escala mora na MARCA.
+  { id: 'dist-tirano-companheiro-dragao', nome: 'Companheiro Dragão', grupo: 'distincao', livro: 'deuses', pagina: 141,
+    tags: 'Tirano do Terceiro', distincao: 'tirano-do-terceiro', marca: true, deus: 'Kallyadranoch', magica: false,
+    preReq: null, custo: null,
+    quadro: { titulo: 'Companheiro Dragão', texto: [
+      'O companheiro dragão de um tirano do Terceiro é um parceiro montaria especial. Use as estatísticas de um grifo (Tormenta20, p. 262) destruidor iniciante, com o subtipo de criatura dragão. Alternativamente, se tiver o suplemento Ameaças de Arton, use um dragão jovem (p. 67). Em ambos os casos, conforme o poder do tirano aumenta, o mesmo acontece com seu companheiro.',
+      'Se você tiver pelo menos três poderes da distinção, seu companheiro dragão se torna veterano e, se tiver todos os cinco poderes, ele se torna mestre. Além disso, ao se tornar mestre, seu companheiro dragão vira um dragão adulto; ele se torna uma criatura Enorme e, além de seus benefícios normais, fornece a habilidade Aura Aterradora (CD Car). Além disso, o companheiro dragão recebe a habilidade Metamorfose Dracônica. Assumir outras formas não altera as habilidades de parceiro do dragão e pode ser útil como disfarce mas, dependendo da forma adotada, pode impedi-lo de servir como montaria. Veja Tormenta20, p. 311, para essas habilidades dracônicas.',
+    ] },
+    texto: [
+    'Marca da distinção. Para o tirano, o primeiro passo é o elo com seu dragão.',
+    'Você recebe um companheiro dragão jovem (de um tipo a sua escolha) que serve a você como um parceiro montaria iniciante (veja o quadro). Se o seu companheiro dragão morrer, você fica atordoado por 1 rodada. Um companheiro dragão morto pode ser substituído com uma ação entre aventuras.',
+  ] },
+  { id: 'dist-tirano-aspecto-de-kallyadranoch', nome: 'Aspecto de Kallyadranoch', grupo: 'distincao', livro: 'deuses', pagina: 141,
+    tags: 'Tirano do Terceiro', distincao: 'tirano-do-terceiro', marca: false, deus: 'Kallyadranoch', magica: false,
+    preReq: 'devoto de Kallyadranoch, treinado em Cavalgar', custo: null, quadro: null, texto: [
+    'O corpo do tirano manifesta o elemento de seu companheiro dragão.',
+    'Você se torna imune à Aura Aterradora de dragões e recebe redução de dano 10 contra o tipo de dano do sopro do seu companheiro dragão. Além disso, se possuir o poder Escamas Dracônicas, os bônus fornecidos por ele aumentam para +5.',
+  ] },
+  { id: 'dist-tirano-apoteose-do-terceiro', nome: 'Apoteose do Terceiro', grupo: 'distincao', livro: 'deuses', pagina: 141,
+    tags: 'Tirano do Terceiro', distincao: 'tirano-do-terceiro', marca: false, deus: 'Kallyadranoch', magica: true,
+    preReq: 'Dádivas do Dragão, Sopro Compartilhado', custo: '10 PM', quadro: null, texto: [
+    'Graças à magia do Terceiro, o tirano e seu dragão podem se tornar verdadeiramente um.',
+    'Se estiver com seu companheiro dragão e sob efeito de Ira Dracônica, você pode gastar uma ação completa e 10 PM para se fundir a ele com duração sustentada. Você continua recebendo os benefícios de seu dragão, mas seu tipo muda para monstro e seu tamanho muda para Grande, e você recebe imunidade contra o tipo de dano do seu parceiro, deslocamento de voo 18m e +2 em Força, Constituição, Inteligência e Carisma (esse aumento não oferece PV, PM ou perícias adicionais). Além disso, recebe uma arma natural de mordida (1d8, crítico x2, perfuração); uma vez por rodada, quando usa a ação agredir para atacar com outra arma, você pode gastar 1 PM para fazer um ataque corpo a corpo de mordida (se já possuir uma mordida, em vez disso seu dano aumenta em dois passos). ✦',
+  ] },
+  { id: 'dist-tirano-dadivas-do-dragao', nome: 'Dádivas do Dragão', grupo: 'distincao', livro: 'deuses', pagina: 141,
+    tags: 'Tirano do Terceiro', distincao: 'tirano-do-terceiro', marca: false, deus: 'Kallyadranoch', magica: false,
+    preReq: 'treinado em Religião, Ira Dracônica', custo: null, quadro: null, texto: [
+    'Um combatente devotado, o tirano é recompensado com uma fração de poder divino.',
+    'Você aprende e pode lançar uma magia divina de 1º círculo a sua escolha (atributo-chave Sabedoria). A cada dois outros poderes da distinção, você aprende uma magia divina de 1º círculo adicional. Se for um conjurador divino, essas magias podem ser de qualquer círculo a que tenha acesso.',
+  ] },
+  { id: 'dist-tirano-ira-draconica', nome: 'Ira Dracônica', grupo: 'distincao', livro: 'deuses', pagina: 141,
+    tags: 'Tirano do Terceiro', distincao: 'tirano-do-terceiro', marca: false, deus: 'Kallyadranoch', magica: false,
+    preReq: 'treinado em Luta, Aspecto de Kallyadranoch', custo: '3 PM', quadro: null, texto: [
+    'Os músculos do tirano incham enquanto energia arcana corre em suas veias.',
+    'Você pode gastar 3 PM para invocar o aspecto combativo de Kallyadranoch até o fim da cena. Você recebe redução de dano 5 e +2 em testes de ataque, rolagens de dano e na CD de seu Sopro Compartilhado e de suas habilidades mágicas.',
+  ] },
+  { id: 'dist-tirano-sopro-compartilhado', nome: 'Sopro Compartilhado', grupo: 'distincao', livro: 'deuses', pagina: 141,
+    tags: 'Tirano do Terceiro', distincao: 'tirano-do-terceiro', marca: false, deus: 'Kallyadranoch', magica: false,
+    preReq: 'Ira Dracônica', custo: null, quadro: null, texto: [
+    'A respiração do tirano exala magia elemental.',
+    'Você recebe o poder concedido Baforada Dracônica (p. 42) para o elemento do sopro de seu companheiro dragão. Se você já possui esse poder, seu dano total aumenta em mais dois dados e, quando usa seu sopro, você pode escolher entre afetar uma criatura em alcance médio ou todas as criaturas em um cone de 6m.',
+  ] },
   ];
 
   //  Conta quantos de cada grupo, para o chip da busca não mentir.

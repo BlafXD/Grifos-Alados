@@ -612,6 +612,317 @@
                  calc: `1 por poder da distinção (${nTodos(n)})` };
       },
     },
+
+    // ══════════════════════════════════════════════════════════════
+    //  DISTINÇÕES DO DEUSES DE ARTON (cap. 2, p. 66–141)
+    //  Mesma regra do Heróis — o livro repete a explicação na p. 68.
+    // ══════════════════════════════════════════════════════════════
+
+    // ── Bufão de Hyninn (Deuses de Arton, p. 71–72) ─────────────────
+    'dist-bufao-cabriolas-de-bobo': {
+      // "Escolha duas cabriolas. A cada OUTRO poder da distinção você
+      // pode escolher uma nova" → 2 de base + 1 por outro poder.
+      escala(n) {
+        const q = 2 + outros(n);
+        return { txt: `${q} cabriolas escolhidas`,
+                 calc: `2 de base + ${outros(n)} (uma por cada um dos ${nOutros(n)})` };
+      },
+    },
+    'dist-bufao-quem-ri-por-ultimo': {
+      escala(n) {
+        const b = 1 + p2(n);
+        return { txt: `+${b} em testes de perícia e na CD das suas habilidades contra quem já agiu na rodada`,
+                 calc: calc2(n) };
+      },
+    },
+
+    // ── Cavaleiro da Luz (Deuses de Arton, p. 75) ──────────────────
+    'dist-cav-luz-alcunha': {
+      escala(n) {
+        return { txt: `até ${n} PM por teste de perícia de Carisma (+2 cada)`,
+                 calc: `limitado pelo total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Colecionador Monstruoso (Deuses de Arton, p. 80–81) ────────
+    'dist-colecionador-forma-monstruosa': {
+      escala(n) {
+        return { txt: `até ${n} PM extra${n !== 1 ? 's' : ''} na Forma Selvagem, em habilidades de monstros devorados`,
+                 calc: `limitado pelo total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-colecionador-predacao-monstruosa': {
+      escala(n) {
+        const v = 1 + p2(n);
+        return { txt: `acumula até ${v}× (+${10 * v} PV e +${v} em ataque e dano com armas naturais)`,
+                 calc: calc2(n) };
+      },
+    },
+
+    // ── Dançarina de Marah (Deuses de Arton, p. 84) ────────────────
+    'dist-dancarina-transe-dancante': {
+      escala(n) {
+        const b = 2 + p2(n);
+        return { txt: `+${b} em testes de resistência e na Defesa dentro da aura`,
+                 calc: `2 de base + ${p2(n)} (um a cada dois dos ${nOutros(n)})` };
+      },
+    },
+
+    // ── Detetive de Tanna-Toh (Deuses de Arton, p. 86–87) ──────────
+    //  A distinção inteira escala: os cinco poderes crescem com o total.
+    'dist-detetive-tracar-perfil': {
+      escala(n) {
+        return { txt: `+${n} em testes de perícia e na CD das suas habilidades contra o alvo perfilado`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-detetive-classificar-como-suspeito': {
+      escala(n) {
+        return { txt: `até ${n} suspeito${n !== 1 ? 's' : ''} por aventura`,
+                 calc: `limitado pelo total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-detetive-elementar': {
+      escala(n) {
+        return { txt: `lê cenas de até ${2 * n} dia${2 * n !== 1 ? 's' : ''} atrás`,
+                 calc: `2 dias por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-detetive-informantes': {
+      escala(n) {
+        const q = 1 + outros(n);
+        return { txt: `${q} informante${q !== 1 ? 's' : ''}`,
+                 calc: `1 de base + ${outros(n)} (um por cada um dos ${nOutros(n)})` };
+      },
+    },
+    'dist-detetive-sequencia-dedutiva': {
+      escala(n) {
+        return { txt: `bônus cumulativo de dedução até +${n}`,
+                 calc: `limitado pelo total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Forjador Litúrgico (Deuses de Arton, p. 94) ────────────────
+    'dist-forjador-virtude-do-forjador': {
+      escala(n) {
+        const m = Math.min(4, 1 + outros(n));
+        return { txt: `armas superiores com ${m} melhoria${m !== 1 ? 's' : ''}` + (m === 4 ? ' (no teto do livro)' : ''),
+                 calc: `1 de base + ${outros(n)} (uma por cada um dos ${nOutros(n)}), até 4` };
+      },
+    },
+    'dist-forjador-armamento-trabalhado': {
+      escala(n) {
+        const m = Math.min(4, n);
+        return { txt: `até ${2 * n} PM extras na Conjurar Arma → ${m} melhoria${m !== 1 ? 's' : ''}` +
+                      (n >= 5 ? ' (o teto de 4 chega antes)' : ''),
+                 calc: `o dobro do total de poderes da distinção (${nTodos(n)}), 2 PM por melhoria, até 4` };
+      },
+    },
+
+    // ── Guardião da Realidade (Deuses de Arton, p. 97) ─────────────
+    //  Quem escala aqui é a MARCA — e a conta é dos poderes, que é o
+    //  que `n` já traz (a marca nunca se conta).
+    'dist-guardiao-escudo-da-realidade': {
+      escala(n) {
+        return { txt: `+5 em testes de resistência · +${5 + n} contra efeitos da Tormenta`,
+                 calc: `5 de base + ${n} (um por poder da distinção)` };
+      },
+    },
+
+    // ── Herói Henshin (Deuses de Arton, p. 101) ────────────────────
+    'dist-henshin-pose-de-combate': {
+      escala(n) {
+        const q = 1 + outros(n);
+        return { txt: `${q} pose${q !== 1 ? 's' : ''} de combate escolhida${q !== 1 ? 's' : ''}`,
+                 calc: `1 de base + ${outros(n)} (uma por cada um dos ${nOutros(n)})` };
+      },
+    },
+
+    // ── Improvisador de Lena (Deuses de Arton, p. 104) ─────────────
+    'dist-improvisador-efeito-cenografico': {
+      escala(n) {
+        return { txt: `CD Int +${n} no teste de Fortitude do golpe cenográfico`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-improvisador-habilidade-improvisada': {
+      escala(n) {
+        return { txt: `usa a habilidade de classe emprestada como personagem de nível ${n}`,
+                 calc: `o total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-improvisador-poder-improvisado': {
+      escala(n) {
+        return { txt: `conta como nível ${n} em qualquer classe, para o poder emprestado`,
+                 calc: `o total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Inquisidor de Wynna (Deuses de Arton, p. 107) ──────────────
+    'dist-inquisidor-magia-sagrada': {
+      escala(n) {
+        const extra = outros(n);
+        return { txt: `+1d8 por 2 PM, e até +${extra}d8 a mais por +${extra} PM` +
+                      (extra ? '' : ' — ainda sem d8 adicional'),
+                 calc: `1d8 de base + 1d8 por cada um dos ${nOutros(n)}` };
+      },
+    },
+
+    // ── Mestre de Armearia (Deuses de Arton, p. 110) ───────────────
+    'dist-armearia-prata-da-casa': {
+      escala(n) {
+        const b = 1 + p2(n);
+        return { txt: `+${b} em ataque e dano com armas de fogo que você fabricou`, calc: calc2(n) };
+      },
+    },
+
+    // ── Pacificador (Deuses de Arton, p. 117) ──────────────────────
+    'dist-pacificador-dor-sem-morte': {
+      escala(n) {
+        return { txt: `CD do Fortitude +${n} (fraco, frustrado ou lento)`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-pacificador-golpe-paralisante': {
+      escala(n) {
+        return { txt: `CD do Fortitude +${n} contra a paralisia`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-pacificador-pacificacao': {
+      escala(n) {
+        return { txt: `até ${n}× por aventura (+${10 * n} PV e +${2 * n} PM, se usar todas)`,
+                 calc: `o total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Pregador (Deuses de Arton, p. 120) ─────────────────────────
+    'dist-pregador-vender-indulgencias': {
+      escala(n) {
+        return { txt: `até ${n} PM temporário${n !== 1 ? 's' : ''} por cena`,
+                 calc: `o total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Sombra de Tenebra (Deuses de Arton, p. 123) ────────────────
+    'dist-sombra-caminhar-nas-trevas': {
+      escala(n) {
+        const passos = p2(n);
+        const acao = passos >= 2 ? 'livre' : passos === 1 ? 'de movimento' : 'padrão';
+        return { txt: `lança Manto de Sombras com ação ${acao}`,
+                 calc: `padrão de base, desce um passo a cada dois dos ${nOutros(n)} (${passos} passo${passos !== 1 ? 's' : ''})` };
+      },
+    },
+    'dist-sombra-clone-sombrio': {
+      escala(n) {
+        const extras = p2(n);
+        return { txt: `o clone causa ${n}d6 de frio · até ${1 + extras} clone${1 + extras !== 1 ? 's' : ''} (+3 PM cada extra)`,
+                 calc: `1d6 por poder da distinção (${nTodos(n)}); +1 clone a cada dois dos ${nOutros(n)}` };
+      },
+    },
+    'dist-sombra-miragem-de-sombras': {
+      escala(n) {
+        const tem = outros(n) >= 3;
+        return { txt: tem ? 'com o aprimoramento +2PM da aura de camuflagem leve'
+                          : `sem o aprimoramento ainda (faltam ${3 - outros(n)} outro${3 - outros(n) !== 1 ? 's' : ''} poder${3 - outros(n) !== 1 ? 'es' : ''})`,
+                 calc: `o livro pede três outros poderes da distinção (você tem ${outros(n)})` };
+      },
+    },
+    'dist-sombra-moldar-sombra': {
+      escala(n) {
+        const b = 1 + p2(n);
+        return { txt: `ferramentas de sombra dão +${b} na perícia`, calc: calc2(n) };
+      },
+    },
+
+    // ── Sortudo de Nimb (Deuses de Arton, p. 126) ──────────────────
+    //  Aqui o dado DESCE: quanto menor, mais fácil tirar o 1 que acende
+    //  a sorte da cena. Mesma escada de passos do dano (Tabela 3-2).
+    'dist-sortudo-sorte-visitante': {
+      escala(n) {
+        const passos = p2(n);
+        const D = (window.GA_FichaData && window.GA_FichaData.passoDeDano)
+          ? window.GA_FichaData.passoDeDano('1d8', -passos).dado : '1d8';
+        return { txt: `role ${D} no início da cena (o 1 acende a sorte)`,
+                 calc: `1d8 de base, desce um passo a cada dois dos ${nOutros(n)} (${passos} passo${passos !== 1 ? 's' : ''})` };
+      },
+    },
+
+    // ── Sumo-Sacerdote (Deuses de Arton, p. 129) ───────────────────
+    'dist-sumo-bencao-do-patrono': {
+      escala(n) {
+        const q = 1 + outros(n);
+        return { txt: `${q} poder${q !== 1 ? 'es' : ''} concedido${q !== 1 ? 's' : ''} a mais`,
+                 calc: `1 de base + ${outros(n)} (um por cada um dos ${nOutros(n)})` };
+      },
+    },
+    'dist-sumo-evolucao-espiritual': {
+      escala(n) {
+        return { txt: `+${5 * n} PV, +${2 * n} PM e +${n} na CD das suas magias divinas e poderes concedidos`,
+                 calc: `5 PV, 2 PM e 1 de CD por poder da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-sumo-presente-dos-deuses': {
+      escala(n) {
+        return { txt: `Magias como clérigo de nível ${2 * n}`,
+                 calc: `o dobro dos poderes da distinção (${nTodos(n)})` };
+      },
+    },
+    'dist-sumo-punicao-divina': {
+      escala(n) {
+        return { txt: `Vontade CD Sab +${n} para escapar da punição`,
+                 calc: `1 por poder da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Taumaturgista (Deuses de Arton, p. 132) ────────────────────
+    //  A marca escala com "a cada DOIS poderes da distinção" — sem o
+    //  "outros", então conta todos: ⌊n/2⌋ magias a mais, teto de 3
+    //  (são só três magias na lista).
+    'dist-taumaturgista-auxiliar-divino': {
+      escala(n) {
+        const q = Math.min(3, 1 + t2(n));
+        return { txt: `${q} das três magias (Conjurar Monstro · Montaria Arcana · Servos Invisíveis)`,
+                 calc: `1 de base + ${t2(n)} (uma a cada dois dos ${nTodos(n)}), até as 3 da lista` };
+      },
+    },
+    'dist-taumaturgista-amigo-de-outro-mundo': {
+      escala(n) {
+        const subiu = p2(n);
+        const nivel = subiu >= 2 ? 'mestre' : subiu === 1 ? 'veterano' : 'iniciante';
+        return { txt: `o amigo de outro mundo é parceiro ${nivel}`,
+                 calc: `iniciante de base, sobe um nível a cada dois dos ${nOutros(n)} (${subiu} nível${subiu !== 1 ? 'is' : ''})` };
+      },
+    },
+
+    // ── Teurgista Hermético (Deuses de Arton, p. 135) ──────────────
+    'dist-teurgista-teurgia-aplicada': {
+      escala(n) {
+        return { txt: `+${n} no nível das duas classes conjuradoras (até o seu nível de personagem)`,
+                 calc: `o total de poderes da distinção (${nTodos(n)})` };
+      },
+    },
+
+    // ── Tirano do Terceiro (Deuses de Arton, p. 141) ───────────────
+    //  O quadro do companheiro dragão cresce por DEGRAUS, não por conta
+    //  contínua: três poderes o fazem veterano, os cinco o fazem mestre
+    //  (e aí ele vira dragão adulto).
+    'dist-tirano-companheiro-dragao': {
+      escala(n) {
+        const nivel = n >= 5 ? 'mestre — e vira dragão adulto, Enorme, com Aura Aterradora'
+                    : n >= 3 ? 'veterano' : 'iniciante';
+        const falta = n >= 5 ? '' : ` (faltam ${(n >= 3 ? 5 : 3) - n} para ${n >= 3 ? 'mestre' : 'veterano'})`;
+        return { txt: `companheiro dragão ${nivel}`,
+                 calc: `iniciante até 2 poderes, veterano com 3, mestre com 5 — você tem ${nTodos(n)}${falta}` };
+      },
+    },
+    'dist-tirano-dadivas-do-dragao': {
+      escala(n) {
+        const q = 1 + p2(n);
+        return { txt: `${q} magia${q !== 1 ? 's' : ''} divina${q !== 1 ? 's' : ''} de 1º círculo`,
+                 calc: calc2(n) };
+      },
+    },
   };
 
   window.GA_FICHA_DISTINCOES = {
