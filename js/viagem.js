@@ -857,4 +857,48 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 
+  // ── A GAVETA DA CONTA (05/10/2026) ──────────────────────────────
+  //  O par do que foi feito nas Bases, e pelo mesmo motivo: as Viagens
+  //  eram a outra área grande do mestre que não seguia a conta, e por
+  //  isso a única coisa que não voltava ao trocar de endereço ou de
+  //  aparelho. Ver o comentário longo em js/bases.js e
+  //  docs/gaveta-da-conta.md.
+  //
+  //  Só no index.html: no jogadores.html esta chave é o espelho podado
+  //  que o sync-jogador escreve, e ele não pode subir para gaveta nenhuma.
+  //
+  //  Fora da cópia guardada, só o `aberta` (cartão expandido ou recolhido):
+  //  é estado de tela, e sem podá-lo abrir um cartão num aparelho já
+  //  bastaria para a gaveta achar que o conteúdo divergiu. O `pvAtual` do
+  //  veículo FICA — a cópia que desce é a que vira o localStorage, e o
+  //  normalizarViagem lê a ausência dele como "PV cheio": podá-lo curaria
+  //  o veículo machucado no meio da viagem.
+  //  A inscrição espera o DOMContentLoaded pela mesma armadilha de ordem
+  //  descrita em js/bases.js: a trava de jogador acende depois deste
+  //  arquivo, e `defer` já roda com o readyState em 'interactive'.
+  (function () {
+    function semEstadoDeTela(texto) {
+      try {
+        const d = JSON.parse(texto);
+        (d.viagens || []).forEach(v => { delete v.aberta; });
+        return JSON.stringify(d);
+      } catch (e) { return texto; }
+    }
+    function inscrever() {
+      if (window.GA_ehJogador && window.GA_ehJogador()) return;
+      const inscricao = {
+        nome: 'viagens',
+        rotulo: 'Viagens',
+        chave: STORAGE_KEY,
+        politica: 'perguntar',
+        paraGuardar: semEstadoDeTela,
+        aoReceber: function () { carregar(); render(); },
+      };
+      if (window.GA_Gaveta) window.GA_Gaveta.registrar(inscricao);
+      else (window.GA_GavetaFila = window.GA_GavetaFila || []).push(inscricao);
+    }
+    if (document.readyState === 'complete') inscrever();
+    else document.addEventListener('DOMContentLoaded', inscrever);
+  })();
+
 })();

@@ -41,11 +41,10 @@
 .ga-ini-tit {
   flex: 1 1 auto;
   text-align: left;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--parchment);
   background: none;
   border: none;
@@ -53,7 +52,7 @@
   padding: 0.2rem 0;
 }
 .ga-ini-rodada {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.7rem;
   letter-spacing: 0;
   text-transform: none;
@@ -100,7 +99,7 @@
   align-items: center;
   gap: 0.35rem;
   text-align: left;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   color: var(--ink);
   background: none;
@@ -115,7 +114,7 @@
 .ga-ini-pos {
   flex: 0 0 auto;
   min-width: 1.2rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   text-align: center;
   color: var(--text-dim);
@@ -141,7 +140,7 @@
   align-items: baseline;
   gap: 0.05rem;
   padding: 0.12rem 0.3rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   line-height: 1.15;
   color: var(--ink);
   background: var(--parchment);
@@ -168,7 +167,7 @@
 .ga-ini-val {
   flex: 0 0 2.6rem;
   width: 2.6rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   text-align: center;
   padding: 0.1rem 0.15rem;
@@ -192,7 +191,7 @@
 .ga-ini-mini--x:hover { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
 
 .ga-ini-vazio {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.84rem;
   color: var(--text-dim);
@@ -209,11 +208,10 @@
   border-top: 1px solid var(--parchment3);
 }
 .ga-ini-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   padding: 0.3rem 0.55rem;
   cursor: pointer;
   color: var(--ink);
@@ -227,7 +225,7 @@
 .ga-ini-btn--x:hover { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
 .ga-ini-add input {
   min-width: 0;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   padding: 0.22rem 0.4rem;
   color: var(--ink);
@@ -240,7 +238,7 @@
 
 /* a nota de "esta lista está só nesta tela" (fora de mesa) */
 .ga-ini-nota {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.74rem;
   line-height: 1.3;

@@ -437,3 +437,59 @@ sempre.
   dentro, são ~560 KB por abertura de página logada. Para uma mesa, é pouco
   perto dos 10 GB/mês do plano gratuito; o que incomoda antes disso é a
   **escrita**, porque hoje cada edição de criatura reenvia o acervo inteiro.
+
+---
+
+## 14 · Bases e Viagens entram na gaveta (05/10/2026)
+
+**O sintoma.** *"Dê uma olhada como está as paradas de Bases e Viagem, porque está
+sumindo eles! Eu coloco mas eles somem… Porque?"*
+
+**O que NÃO era.** Testado no navegador, com o Firebase desligado: criar uma base
+com cômodo e mobília, criar uma viagem com parada e diário, escrever nos campos e
+dar F5 — **tudo volta**. Os dois arquivos já têm o `salvarAgora()` no
+`beforeunload` e no `visibilitychange`, o `normalizar*` não poda nada de legítimo,
+o `sync-mestre` nunca escreve por cima do localStorage do mestre, e a tarja de
+cota não apareceu. Não há defeito no caminho de salvar.
+
+**O que era.** As duas eram as **únicas áreas grandes do mestre fora da gaveta da
+conta**. O estado registrado era este:
+
+```
+GA_Gaveta.estado().areas → ['prefs', 'bestiario', 'anotacoes', 'mapa']
+```
+
+Bestiário, mapa, anotações e preferências seguiam a pessoa desde 18/09/2026.
+Bases e Viagens continuavam presas ao `localStorage`, que é **por endereço**.
+Então, em tudo o que muda o endereço — `github.io` → `vercel.app`, abrir o
+`index.html` do disco, outro computador, outro navegador, limpar os dados do site
+—, elas eram o que não voltava. E voltava tudo o mais, que é o que faz o sumiço
+parecer um bug de salvamento em vez do que é: mudança de casa.
+
+**A correção.** `js/bases.js` e `js/viagem.js` passam a registrar as áreas
+`bases` e `viagens`, política `'perguntar'` (é conteúdo; se mudou dos dois lados,
+quem escolhe é quem escreveu).
+
+| | |
+|---|---|
+| `paraGuardar` | tira o `aberta` de cada base/viagem — é estado de tela, e sem podá-lo abrir um cartão num aparelho já contaria como conteúdo divergente |
+| o que **fica** | o `transporte.pvAtual` da viagem. A cópia que desce vira o `localStorage`, e o `normalizarViagem` lê a ausência dele como *PV cheio*: podá-lo curaria o veículo machucado no meio da viagem |
+| `aoReceber` | `carregar(); render();` — a aba se redesenha sem F5 |
+
+**A armadilha de ordem.** No `jogadores.html` estas mesmas chaves são o
+**espelho** que o `sync-jogador` escreve, já podado pelo 🙈 do mestre. Subir esse
+espelho para gaveta nenhuma pode: um dia ele desceria por cima do arquivo
+inteiro. O guarda é o `GA_ehJogador()` — mas quem acende essa trava é o
+`js/modo-jogador.js`, que **carrega depois** do `bases.js` e do `viagem.js`.
+Perguntado na hora da leitura do arquivo, ele responde "não" nas duas páginas.
+Por isso a inscrição espera o `DOMContentLoaded`, que por definição só dispara
+depois de todos os `defer` terem rodado — e não serve o `readyState ===
+'loading'` de sempre, porque com `defer` ele já é `'interactive'` (ver
+[[defer-readystate-interactive]]).
+
+**Provado no navegador:**
+
+```
+index.html      → areas: ['prefs','bestiario','anotacoes','mapa','viagens','bases']
+jogadores.html  → areas: ['prefs']
+```

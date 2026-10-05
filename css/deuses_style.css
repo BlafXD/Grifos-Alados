@@ -23,7 +23,7 @@
   border: 1px solid var(--ink-faded);
   color: var(--ink);
   cursor: pointer;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.7rem;
   letter-spacing: 0.04em;
   transition: background 0.12s, color 0.12s;
@@ -60,7 +60,7 @@
 .dv-dado dt {
   display: inline;
   margin: 0;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -85,7 +85,7 @@
 .dv-abertura p:first-child::first-letter {
   float: left;
   margin: 0.08em 0.12em 0 0;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 2.9em;
   line-height: 0.82;
   color: var(--gold-deep, var(--rust));
@@ -95,11 +95,11 @@
   margin: 0 0 0.5rem;
   padding-bottom: 0.2rem;
   border-bottom: 1px solid var(--gold-dim);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
+
   color: var(--gold-deep, var(--rust));
 }
 

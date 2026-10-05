@@ -1,11 +1,56 @@
 /* ═══════════════════════════════════════════════════════════════════
-   FONTS.CSS — Fontes embutidas (funciona 100% offline)
-   Localização: /grifos-alados/css/fonts.css
-   Arquivos das fontes em: /grifos-alados/fonts/
-   Substitui o carregamento via Google Fonts.
+   FONTS.CSS — as fontes da gazeta, e os CINCO PAPÉIS que elas ocupam
+   Arquivos em /fonts (nada vem do Google: o site funciona 100% offline).
+
+   ── AS TRÊS VOZES ────────────────────────────────────────────────
+   Até 05/10/2026 cada arquivo de CSS escolhia a fonte à mão, e as
+   869 declarações tinham só quatro nomes soltos. Agora há uma camada
+   no meio: o CSS pede um PAPEL (--ga-fonte-rotulo), não uma fonte
+   ('Cinzel'). Trocar a fonte do site inteiro virou mexer aqui.
+
+   Os papéis dizem QUEM está falando, e essa é a regra inteira:
+
+     • a GAZETA  — o nome do jornal e os títulos. Blackletter no
+       nameplate, capitular romana nos títulos. É a identidade, e
+       identidade não carrega informação miúda.
+     • o LIVRO   — o texto de Tormenta 20: regras, descrições,
+       o que a página do livro diz. Serifada, de leitura longa.
+     • o SITE    — a ferramenta falando com você: rótulo, dica,
+       aviso, "nenhum item ainda". Sem serifa, humanista.
+
+   Olhando um trecho, dá para saber de quem é a frase antes de ler.
+
+   ── POR QUE MUDOU ────────────────────────────────────────────────
+   O pedido foi direto: "a fonte que estamos usando é beeem difícil
+   de ler". Medido, o problema tinha dois focos:
+
+     1. IM Fell English (141 blocos) é a digitalização de um tipo de
+        1670 — contorno comido, inclinação forte. Estava justamente
+        nas DICAS e nos avisos, em 0,68–0,92rem. O pior lugar
+        possível para uma letra desgastada.
+     2. Cinzel é uma capitular romana, e 355 dos seus 480 blocos
+        estavam ABAIXO de 0,80rem, quase sempre em caixa alta. A
+        haste fina do Cinzel some em 11px, e caixa alta apaga a
+        silhueta da palavra — as duas coisas que fazem ler rápido.
+
+   Cinzel continua inteiro nos títulos e nos números grandes, que é
+   onde ele é bonito e onde ninguém reclamou. O que saiu foi o uso
+   dele como letra de trabalho.
+
+   ── A ESCOLHA ────────────────────────────────────────────────────
+   Alegreya Sans e Alegreya Sans SC (Juan Pablo del Peral), desenhadas
+   para livro — caloroso, pouco contraste, haste firme que aguenta
+   11px, e o SC com versalete de verdade. Ao lado do Cinzel soam da
+   mesma casa; em corpo miúdo, leem-se de longe melhor.
+
+   ── A VOLTA ──────────────────────────────────────────────────────
+   Quem preferir como era liga "Fontes antigas" no painel ⚙: o
+   html[data-ga-letra="antiga"] lá embaixo devolve Cinzel e IM Fell
+   English aos dois papéis, e nada mais no site precisa saber disso.
+   Por isso os arquivos do IM Fell continuam aqui.
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── UnifrakturMaguntia (títulos góticos) ───────────────────────── */
+/* ── UnifrakturMaguntia (o nameplate da gazeta) ──────────────────── */
 @font-face {
   font-family: 'UnifrakturMaguntia';
   src: url('../fonts/UnifrakturMaguntia.woff2') format('woff2');
@@ -14,7 +59,71 @@
   font-display: swap;
 }
 
-/* ── IM Fell English (texto com ar antigo) ──────────────────────── */
+/* ── Cinzel (capitular romana — títulos e números grandes) ───────── */
+@font-face {
+  font-family: 'Cinzel';
+  src: url('../fonts/Cinzel.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Crimson Pro (a voz do LIVRO — leitura longa) ────────────────── */
+@font-face {
+  font-family: 'Crimson Pro';
+  src: url('../fonts/CrimsonPro.woff2') format('woff2');
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Crimson Pro';
+  src: url('../fonts/CrimsonPro-Italic.woff2') format('woff2');
+  font-weight: 200 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ── Alegreya Sans (a voz do SITE — dicas, avisos, vazios) ───────── */
+@font-face {
+  font-family: 'Alegreya Sans';
+  src: url('../fonts/AlegreyaSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alegreya Sans';
+  src: url('../fonts/AlegreyaSans-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alegreya Sans';
+  src: url('../fonts/AlegreyaSans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Alegreya Sans SC (versalete — os rótulos miúdos) ────────────── */
+@font-face {
+  font-family: 'Alegreya Sans SC';
+  src: url('../fonts/AlegreyaSansSC-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Alegreya Sans SC';
+  src: url('../fonts/AlegreyaSansSC-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── IM Fell English (só o modo "Fontes antigas") ────────────────── */
 @font-face {
   font-family: 'IM Fell English';
   src: url('../fonts/IMFellEnglish-Regular.woff2') format('woff2');
@@ -30,27 +139,43 @@
   font-display: swap;
 }
 
-/* ── Cinzel (fonte variável — cobre os pesos 400 a 900) ─────────── */
-@font-face {
-  font-family: 'Cinzel';
-  src: url('../fonts/Cinzel.woff2') format('woff2');
-  font-weight: 400 900;
-  font-style: normal;
-  font-display: swap;
+/* ═══════════════════════════════════════════════════════════════════
+   OS CINCO PAPÉIS — é só isto que o resto do site conhece
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  /* a GAZETA: o nome do jornal. Decoração, nunca informação. */
+  --ga-fonte-gazeta: 'UnifrakturMaguntia', cursive;
+
+  /* a GAZETA: títulos de seção, de cartão, e os números grandes
+     (Defesa, atributo, ND). Da capitular romana para cima. */
+  --ga-fonte-titulo: 'Cinzel', serif;
+
+  /* o SITE: rótulo, aba, chip, cabeçalho de tabela, botão. Tudo o que
+     é miúdo e quase sempre em caixa alta. */
+  --ga-fonte-rotulo: 'Alegreya Sans SC', 'Cinzel', serif;
+
+  /* o LIVRO: regra, descrição, o texto que se lê de verdade. */
+  --ga-fonte-corpo: 'Crimson Pro', Georgia, serif;
+
+  /* o SITE: dica, aviso, "nenhum ainda", subtítulo de aba. */
+  --ga-fonte-nota: 'Alegreya Sans', 'Crimson Pro', Georgia, serif;
+
+  /* número que precisa ficar alinhado em coluna (dado, log, código). */
+  --ga-fonte-mono: 'Courier New', monospace;
 }
 
-/* ── Crimson Pro (fonte variável — cobre os pesos 200 a 900) ────── */
-@font-face {
-  font-family: 'Crimson Pro';
-  src: url('../fonts/CrimsonPro.woff2') format('woff2');
-  font-weight: 200 900;
-  font-style: normal;
-  font-display: swap;
+/*  Números em tabela e em medidor: largura FIXA e altura de caixa alta.
+    Sem isto o "140" e o "999" de uma mesma coluna saem com larguras
+    diferentes, e a coluna deixa de ser uma coluna. Vale para as três
+    fontes de texto — todas trazem os dois recursos. */
+:root {
+  --ga-num-tabela: tabular-nums lining-nums;
 }
-@font-face {
-  font-family: 'Crimson Pro';
-  src: url('../fonts/CrimsonPro-Italic.woff2') format('woff2');
-  font-weight: 200 900;
-  font-style: italic;
-  font-display: swap;
+
+/* ── O MODO "FONTES ANTIGAS" (painel ⚙) ─────────────────────────────
+   Devolve os dois papéis que mudaram. Mais nada no site precisa saber
+   que existe uma escolha: quem lê o papel, lê a troca junto. */
+html[data-ga-letra="antiga"] {
+  --ga-fonte-rotulo: 'Cinzel', serif;
+  --ga-fonte-nota: 'IM Fell English', serif;
 }

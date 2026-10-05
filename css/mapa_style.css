@@ -21,7 +21,7 @@
   z-index: 90;
 }
 .an-subtab {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -48,7 +48,7 @@
   padding: 0.8rem 0 0.9rem;
 }
 .mp-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -73,7 +73,7 @@
 
 /* ── DICA DE LIGAÇÃO (aparece ao conectar nós) ─────────────────────── */
 .mp-dica {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.92rem;
   color: var(--parchment);
@@ -199,11 +199,10 @@
 
 .mp-no-cat {
   flex: 0 0 auto;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--cor, var(--neutra));
   background: var(--parchment);
   border: 1px solid var(--cor, var(--neutra));
@@ -248,7 +247,7 @@
   border: none;
   border-bottom: 1px solid transparent;
   padding: 0.4rem 0.5rem 0.2rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--ink);
@@ -262,7 +261,7 @@
   box-sizing: border-box;
   min-height: 2.4rem;
   padding: 0.2rem 0.5rem 0.5rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.9rem;
   line-height: 1.45;
   color: var(--ink-faded);
@@ -317,13 +316,13 @@
   gap: 0.4rem;
   text-align: center;
   pointer-events: none;
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--ink-faded);
   padding: 2rem;
 }
 .mp-vazio strong {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-style: normal;
   font-size: 1.1rem;
   letter-spacing: 0.05em;
@@ -333,7 +332,7 @@
 
 /* ── RODAPÉ (dica de uso) ──────────────────────────────────────────── */
 .mp-rodape {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.85rem;
   color: var(--ink-faded);
@@ -342,7 +341,7 @@
   line-height: 1.6;
 }
 .mp-rodape kbd {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-style: normal;
   font-size: 0.7rem;
   background: var(--parchment3);
@@ -434,7 +433,7 @@
 .mp-edge-rot {
   position: absolute;
   transform: translate(-50%, -165%);
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.72rem;
   line-height: 1.2;
   color: var(--ink);
@@ -456,7 +455,7 @@
 .mp-busca-inp {
   flex: 0 0 auto;
   width: 9.5rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.82rem;
   padding: 0.35rem 0.5rem;
   border: 1px solid var(--ink-faded);

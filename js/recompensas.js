@@ -964,17 +964,125 @@ function tabelaArmas() {
   return { rows, lados, dado: 'd' + lados };
 }
 
-// Rola o item base de um equipamento. Só a tabela de armas muda de
-// tamanho; armadura e esotérico seguem sempre no d%.
+/* ── ABSOLUTAMENTE TODOS OS ITENS MUNDANOS (05/10/2026) ──────────────
+   O PROBLEMA. As tabelas daqui são as oficiais (Tormenta20, Tabelas 8-3
+   e 8-4) já esticadas com os suplementos — mas continuam cabendo nos 100
+   números de um d%, e 100 nomes não são o mundo inteiro. Medido contra o
+   catálogo da Loja: dos 458 itens mundanos, 203 NUNCA podiam ser
+   sorteados. Toda a Alimentação, as Bebidas, os Venenos, os Aparatos,
+   33 de Equipamento de Aventura, 31 de Vestuário, 9 Ferramentas, 9
+   Instrumentos — e os Dardos (20), que são arma e ficaram de fora.
+
+   O QUE ESTA CHAVE FAZ. Ligada (só no Customizável), os quatro sorteios
+   de item MUNDANO — diverso, arma, armadura/escudo e esotérico — param
+   de rolar na tabela curta e passam a rolar no CATÁLOGO INTEIRO DA LOJA,
+   com peso igual para cada item. O dado deixa de ser d% e vira o
+   tamanho da lista (d321, d107…), que é o que o resultado mostra.
+
+   O QUE ELA NÃO FAZ. Nada de mágico muda: encanto, item específico,
+   acessório, poção e melhoria seguem nas tabelas do livro. Quem liga
+   isto quer mais variedade de bugiganga, não mais poder.
+
+   A FONTE. O item que também está numa tabela oficial mantém o livro e
+   a página dela; o que só existe no catálogo mostra a categoria da Loja
+   no lugar da referência — é o que se sabe dele, e dizer menos seria
+   inventar página. ─────────────────────────────────────────────────── */
+function catalogoCompletoLigado() {
+  return MODO_RECOMP === 'customizavel' && !!CUSTOM_FILTROS.catalogoCompleto;
+}
+
+// Monta uma vez e guarda: o catálogo da Loja repartido nos quatro
+// sorteios, já cruzado com as tabelas oficiais (para herdar livro/página).
+let _poolLoja = null;
+function poolLoja() {
+  if (_poolLoja) return _poolLoja;
+  //  O loja_completa.js declara `const LojaCompleta` no topo de um script
+  //  clássico: isso é ligação léxica, não propriedade de window. Procurar
+  //  só em `window.LojaCompleta` devolve undefined — é o mesmo cuidado que
+  //  o statsDaLoja() já tomava aqui.
+  const LC = (typeof LojaCompleta !== 'undefined') ? LojaCompleta : window.LojaCompleta;
+  if (!LC || typeof LC.catalogoNomes !== 'function') return null;
+
+  const norm = s => String(s == null ? '' : s)
+    .normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
+  //  índice nome → linha oficial, para não perder livro/página de quem já
+  //  tinha. Vai pelos DOIS nomes: as tabelas daqui guardam a armadura-base
+  //  como "Completa" e "Couro", e no catálogo ela é "Armadura completa" e
+  //  "Armadura de couro" — é a ponte que o NOME_NA_LOJA já fazia.
+  const oficiais = {};
+  const indexar = (chave, linha) => { if (chave && !oficiais[chave]) oficiais[chave] = linha; };
+  [ITEM_DIVERSO_TABLE, EQUIP_ARMA, EQUIP_ARMA_MUNICOES_EXTRA, EQUIP_ARMADURA, EQUIP_ESOTER]
+    .forEach(tab => tab.forEach(r => {
+      indexar(norm(r.item), r);
+      if (NOME_NA_LOJA[r.item]) indexar(norm(NOME_NA_LOJA[r.item]), r);
+    }));
+
+  const pools = { Diverso: [], Arma: [], Armadura: [], 'Esotérico': [] };
+  const vistos = new Set();
+  for (const it of LC.catalogoNomes()) {
+    const chave = norm(it.nome);
+    if (vistos.has(chave)) continue;        // o catálogo repete Virotes e Balas
+    vistos.add(chave);
+    const destino = it.kind === 'weapon' ? 'Arma'
+                  : it.kind === 'armor'  ? 'Armadura'
+                  : it.categoria === 'Esotéricos' ? 'Esotérico' : 'Diverso';
+    const of = oficiais[chave];
+    pools[destino].push({
+      item: it.nome,
+      livro: of ? of.livro : '',
+      pag:   of ? of.pag   : null,
+      obs:   of ? of.obs   : undefined,
+      deLoja: it.categoria,                 // a referência de quem não tem página
+    });
+  }
+  // ordem alfabética e um `max` sequencial: daí para baixo tudo funciona
+  // igual às tabelas oficiais (lookup por `dp <= row.max`).
+  for (const k of Object.keys(pools)) {
+    pools[k].sort((a, b) => a.item.localeCompare(b.item, 'pt-BR'));
+    pools[k].forEach((r, i) => { r.max = i + 1; });
+  }
+  _poolLoja = pools;
+  return _poolLoja;
+}
+
+// A tabela em uso para um tipo de equipamento, com o dado que a sorteia.
+// É o único lugar que sabe se estamos no catálogo completo ou na tabela
+// oficial — rolarEquip, lookupEquip e o Catálogo de Tesouros leem daqui.
+function tabelaDoTipo(tipo) {
+  if (catalogoCompletoLigado()) {
+    const p = poolLoja();
+    if (p && p[tipo] && p[tipo].length) {
+      const n = p[tipo].length;
+      return { rows: p[tipo], lados: n, dado: 'd' + n, daLoja: true };
+    }
+  }
+  if (tipo === 'Arma') return tabelaArmas();
+  const rows = (tipo === 'Armadura') ? EQUIP_ARMADURA : EQUIP_ESOTER;
+  return { rows, lados: 100, dado: 'd%' };
+}
+
+// A tabela de itens diversos em uso — a oficial, ou o catálogo inteiro.
+function tabelaDiversos() {
+  if (catalogoCompletoLigado()) {
+    const p = poolLoja();
+    if (p && p.Diverso.length) {
+      const n = p.Diverso.length;
+      return { rows: p.Diverso, lados: n, dado: 'd' + n, daLoja: true };
+    }
+  }
+  return { rows: ITEM_DIVERSO_TABLE, lados: 100, dado: 'd%' };
+}
+
+// Rola o item base de um equipamento.
 function rolarEquip(tipo) {
-  const t   = (tipo === 'Arma') ? tabelaArmas() : null;
-  const dp  = t ? rolarDado(t.lados) : rolarPercent();
-  return { dp, dado: t ? t.dado : 'd%', item: lookupEquip(tipo, dp) };
+  const t = tabelaDoTipo(tipo);
+  const dp = rolarDado(t.lados);
+  return { dp, dado: t.dado, item: lookupEquip(tipo, dp) };
 }
 
 function lookupEquip(tipo, dp) {
-  const tab = tipo === "Arma" ? tabelaArmas().rows
-            : tipo === "Armadura" ? EQUIP_ARMADURA : EQUIP_ESOTER;
+  const tab = tabelaDoTipo(tipo).rows;
   for (const row of tab) if (dp <= row.max) return row;
   return tab[tab.length - 1];
 }
@@ -1663,10 +1771,11 @@ const TABELAS = {
 
   // ─── Item Diverso ─────────────────────────────────────
   // Chamada: TABELAS.itemDiverso(dp)
-  // dp = resultado do d% já rolado
+  // dp = resultado já rolado na tabela em uso (ver tabelaDiversos)
   itemDiverso(dp) {
-    for (const row of ITEM_DIVERSO_TABLE) if (dp <= row.max) return row;
-    return ITEM_DIVERSO_TABLE[ITEM_DIVERSO_TABLE.length - 1];
+    const tab = tabelaDiversos().rows;
+    for (const row of tab) if (dp <= row.max) return row;
+    return tab[tab.length - 1];
   },
 
   // ─── Equipamento ──────────────────────────────────────
@@ -1853,8 +1962,9 @@ function resolverItem(r, modo) {
 
   switch (r.t) {
     case 'diverso': {
-      const dp = rolarPercent();
-      return { tipo: 'diverso', dp, res: TABELAS.itemDiverso(dp) };
+      const t  = tabelaDiversos();
+      const dp = rolarDado(t.lados);
+      return { tipo: 'diverso', dp, dado: t.dado, res: TABELAS.itemDiverso(dp) };
     }
     case 'equip': {
       if (r.twoD) {
@@ -1983,7 +2093,7 @@ function renderDinheiro(dpRoll, resolved) {
     const totalFmt = resolved.totalGeral.toLocaleString('pt-BR');
     const totalLine = n > 1
       ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);
-                    font-family:'Cinzel',serif;font-size:0.85rem;color:var(--gold-light)">
+                    font-family: var(--ga-fonte-rotulo);font-size:0.85rem;color:var(--gold-light)">
            ⊞ Total estimado: ${totalFmt} T$
          </div>`
       : '';
@@ -2062,7 +2172,8 @@ function linhasCopiaItem(it) {
   return [
     preco ? `Preço: ${preco} T$` : '',
     statsItemTexto(it.item),
-    it.livro ? `Fonte: ${it.livro}${it.pag ? `, p. ${it.pag}` : ''}` : '',
+    it.livro ? `Fonte: ${it.livro}${it.pag ? `, p. ${it.pag}` : ''}`
+             : (it.deLoja ? `Fonte: catálogo da Loja · ${it.deLoja}` : ''),
     it.so && RESTRICAO_ROTULO[it.so] ? `Aplica-se a: ${RESTRICAO_ROTULO[it.so]}` : '',
     it.obs ? `Obs.: ${it.obs}` : '',
   ];
@@ -2270,6 +2381,22 @@ function gaEscAttr(s) {
     .replace(/\r?\n/g, '&#10;');
 }
 
+/*  De onde veio este item, em uma linha. O que está numa tabela do livro
+    mostra livro e página; o que só existe no catálogo da Loja (modo
+    "todos os itens mundanos") mostra a categoria da Loja — é tudo o que
+    se sabe dele, e imprimir uma página que não existe seria pior. */
+function refItemHTML(item) {
+  if (!item) return '';
+  if (item.livro) {
+    return `<span class="livro-ref">📖 ${item.livro}` +
+           (item.pag ? `<span class="pag">p. ${item.pag}</span>` : '') + `</span>`;
+  }
+  if (item.deLoja) {
+    return `<span class="livro-ref">🏪 Catálogo da Loja<span class="pag">${item.deLoja}</span></span>`;
+  }
+  return '';
+}
+
 function blockEquip(equip, prefixo='') {
   const obsHtml = equip.item?.obs
     ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${equip.item.obs}</span>`
@@ -2285,8 +2412,8 @@ function blockEquip(equip, prefixo='') {
     ${obsHtml}
   </div>
   ${statsItemHTML(equip.item?.item)}
-  ${equip.item ? `<div class="sub-indent"><span class="bullet">◇</span>
-    <span class="livro-ref">📖 ${equip.item.livro}<span class="pag">p. ${equip.item.pag}</span></span>
+  ${equip.item && refItemHTML(equip.item) ? `<div class="sub-indent"><span class="bullet">◇</span>
+    ${refItemHTML(equip.item)}
   </div>` : ''}
   ${descBlocoItem(equip.item?.item, linhasCopiaItem(equip.item))}`;
 }
@@ -2501,7 +2628,7 @@ function blockMagico(mag, prefixo='') {
     ${statsItemHTML(mag.itemBase?.item)}
     ${mag.itemBase ? `<div class="sub-indent" style="padding-left:24px">
       <span class="bullet">◇</span>
-      <span class="livro-ref">📖 ${mag.itemBase.livro}<span class="pag">p. ${mag.itemBase.pag}</span></span>
+      ${refItemHTML(mag.itemBase)}
     </div>` : ''}
     ${descBlocoItem(mag.itemBase?.item, linhasCopiaItem(mag.itemBase))}`;
     // Encantos
@@ -2572,12 +2699,12 @@ function renderItens(dpRoll, resolved) {
       <div class="rc-body">
         <div class="sub-line">
           <span class="bullet">◆</span>
-          ${diceInline('d%')} = ${resolved.dp}
+          ${diceInline(resolved.dado || 'd%')} = ${resolved.dp}
         </div>
-        <div class="sub-indent" style="margin-top:6px">
+        ${refItemHTML(item) ? `<div class="sub-indent" style="margin-top:6px">
           <span class="bullet">◇</span>
-          <span class="livro-ref">📖 ${item.livro}<span class="pag">p. ${item.pag}</span></span>
-        </div>
+          ${refItemHTML(item)}
+        </div>` : ''}
         ${obsHtml}
         ${descBlocoItem(item.item, linhasCopiaItem(item))}
       </div>
@@ -2679,6 +2806,7 @@ const CUSTOM_FILTROS = {
   pergaminhoModo:  'substituir',  // 'substituir' (no slot de Poção) | 'adicional' (bônus)
   superiorEncantado: false,       // item mágico também ganha melhorias (superior + encantado)
   municoesExtras:  false,         // munições do suplemento que não cabem no d% (vira d104)
+  catalogoCompleto: false,        // os 4 sorteios mundanos rolam no catálogo INTEIRO da Loja
 };
 
 const MODO_DESC = {
@@ -2814,10 +2942,13 @@ function formatarDataLog(ts) {
    e sem os "Exemplos" de peso das riquezas.
    ═══════════════════════════════════════════════════════ */
 
-// Referência de livro/página de um item (quando houver).
+// Referência de um item para o .txt: livro e página, ou — para quem só
+// existe no catálogo da Loja — a categoria dele lá.
 function _recRef(item) {
-  if (!item || !item.livro) return '';
-  return ` [${item.livro}${item.pag ? ', p. ' + item.pag : ''}]`;
+  if (!item) return '';
+  if (item.livro) return ` [${item.livro}${item.pag ? ', p. ' + item.pag : ''}]`;
+  if (item.deLoja) return ` [catálogo da Loja · ${item.deLoja}]`;
+  return '';
 }
 
 function _recTxtDinheiro(res) {
@@ -3322,6 +3453,33 @@ function catSecaoHTML(titulo, icone, rows, opts) {
   </details>`;
 }
 
+/*  As quatro seções do catálogo completo — e elas mostram só o que a caixa
+    ACRESCENTA, não o pool inteiro. Repetir aqui os 100 nomes que já estão
+    nas seções de cima seria barulho: o que o Mestre precisa decidir é se
+    quer ver uma gaita de foles ou um saco de dormir caindo como tesouro. */
+function secoesCatalogoCompleto() {
+  const p = poolLoja();
+  if (!p) return [];
+  const norm = s => String(s == null ? '' : s)
+    .normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  const jaOficial = new Set();
+  [ITEM_DIVERSO_TABLE, EQUIP_ARMA, EQUIP_ARMA_MUNICOES_EXTRA, EQUIP_ARMADURA, EQUIP_ESOTER]
+    .forEach(t => t.forEach(r => {
+      jaOficial.add(norm(r.item));
+      if (NOME_NA_LOJA[r.item]) jaOficial.add(norm(NOME_NA_LOJA[r.item]));
+    }));
+  const novos = lista => lista
+    .filter(r => !jaOficial.has(norm(r.item)))
+    .map(r => ({ item: r.item, obs: r.deLoja, preco: precoDaLoja(r.item) }));
+  const opts = { filtroKey: 'catalogoCompleto', optIn: true };
+  return [
+    catSecaoHTML('Catálogo da Loja — itens diversos a mais', '🎒', novos(p.Diverso), opts),
+    catSecaoHTML('Catálogo da Loja — armas a mais', '⚔', novos(p.Arma), opts),
+    catSecaoHTML('Catálogo da Loja — armaduras e escudos a mais', '🛡', novos(p.Armadura), opts),
+    catSecaoHTML('Catálogo da Loja — esotéricos a mais', '🔮', novos(p['Esotérico']), opts),
+  ];
+}
+
 function renderCatalogo() {
   const cont = document.getElementById('catalogoTesouros');
   if (!cont || cont.dataset.pronto === '1') return;   // monta uma única vez
@@ -3337,6 +3495,7 @@ function renderCatalogo() {
                  { filtroKey: 'municoesExtras', optIn: true }),
     catSecaoHTML('Equipamentos — Armaduras & Escudos', '🛡', EQUIP_ARMADURA),
     catSecaoHTML('Equipamentos — Esotéricos', '🔮', EQUIP_ESOTER),
+    ...secoesCatalogoCompleto(),
     catSecaoHTML('Poções', '🧪', POCAO_TABLE),
     catSecaoHTML('Superiores — Melhorias de Arma', '✦', MELHORIA_ARMA),
     catSecaoHTML('Superiores — Melhorias de Armadura', '✦', MELHORIA_ARMADURA),
@@ -3381,6 +3540,27 @@ function _initRecompensas() {
       const preco = precoDaLoja(r.item);
       return `<li>${r.item}${preco ? ` <span class="custom-filtros-preco">T$ ${preco}</span>` : ''}</li>`;
     }).join('');
+  }
+
+  //  Quantos itens a caixa "todos os itens mundanos" acrescenta, de verdade.
+  //  Prometer "todos" e não dizer quantos seria propaganda; o número sai do
+  //  catálogo carregado, então também avisa quando a Loja não está pronta.
+  const conta = document.getElementById('catalogoCompletoConta');
+  if (conta && !conta.textContent) {
+    const p = poolLoja();
+    if (!p) {
+      conta.textContent = 'O catálogo da Loja não carregou neste navegador — a caixa fica sem efeito.';
+    } else {
+      const oficiais = ITEM_DIVERSO_TABLE.length + EQUIP_ARMA.length +
+                       EQUIP_ARMADURA.length + EQUIP_ESOTER.length;
+      const total = p.Diverso.length + p.Arma.length + p.Armadura.length + p['Esotérico'].length;
+      conta.innerHTML =
+        `<strong>${total} itens</strong> no lugar dos ${oficiais} das tabelas — ` +
+        `${p.Diverso.length} diversos (d${p.Diverso.length}), ` +
+        `${p.Arma.length} armas (d${p.Arma.length}), ` +
+        `${p.Armadura.length} armaduras e escudos (d${p.Armadura.length}) e ` +
+        `${p['Esotérico'].length} esotéricos (d${p['Esotérico'].length}).`;
+    }
   }
 
   // Caixas de filtro do modo Customizável

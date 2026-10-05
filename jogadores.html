@@ -25,8 +25,9 @@
 
   <!-- As preferências de acessibilidade precisam valer ANTES da primeira
        pintura: aplicadas pelo acessibilidade.js (que é `defer`) a página
-       piscaria no tamanho errado a cada F5. São as mesmas quatro chaves
-       que o painel ⚙ grava. -->
+       piscaria no tamanho errado a cada F5. São as mesmas chaves que o
+       painel ⚙ grava — inclusive a letra antiga, que no css/fonts.css
+       devolve o Cinzel aos rótulos e a IM Fell English às dicas. -->
   <script>
     try {
       var p = JSON.parse(localStorage.getItem('grifosAlados.acessibilidade') || '{}') || {};
@@ -35,6 +36,7 @@
       if (p.contraste)    r.classList.add('ga-contraste');
       if (p.semMovimento) r.classList.add('ga-sem-movimento');
       if (p.focoForte)    r.classList.add('ga-foco-forte');
+      if (p.letraAntiga)  r.setAttribute('data-ga-letra', 'antiga');
     } catch (e) {}
   </script>
 </head>

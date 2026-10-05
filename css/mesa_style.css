@@ -15,16 +15,15 @@
 .me-cab::before {
   content: '✦ A Mesa ✦';
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  text-transform: uppercase;
   color: var(--gold-dim);
   margin-bottom: 0.55rem;
 }
 .me-titulo {
-  font-family: 'UnifrakturMaguntia', cursive;
+  font-family: var(--ga-fonte-gazeta);
   font-size: clamp(1.9rem, 4.5vw, 2.9rem);
   font-weight: normal;
   color: var(--ink);
@@ -32,7 +31,7 @@
   margin: 0;
 }
 .me-sub {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 1rem;
   color: var(--rust-dark);
@@ -55,11 +54,10 @@
   box-shadow: 0 1px 3px var(--shadow);
 }
 .me-cartao-tit {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--ink);
   margin: 0 0 0.6rem;
   padding-bottom: 0.4rem;
@@ -76,16 +74,16 @@
   background: var(--gold-dim);
   border-radius: 999px;
 }
-.me-p    { font-family: 'Crimson Pro', serif; font-size: 0.94rem; margin: 0 0 0.6rem; }
-.me-mini { font-family: 'Crimson Pro', serif; font-size: 0.8rem; color: var(--text-dim); margin: 0.3rem 0 0; }
+.me-p    { font-family: var(--ga-fonte-corpo); font-size: 0.94rem; margin: 0 0 0.6rem; }
+.me-mini { font-family: var(--ga-fonte-corpo); font-size: 0.8rem; color: var(--text-dim); margin: 0.3rem 0 0; }
 .me-vazio {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--text-dim);
   margin: 0.2rem 0;
 }
 .me-erro {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   color: var(--carmim);
   background: rgba(139, 16, 32, 0.07);
@@ -94,7 +92,7 @@
   margin: 0.6rem 0 0;
 }
 .me-aviso {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.88rem;
   color: var(--verde-dark);
   background: rgba(47, 111, 63, 0.09);
@@ -107,11 +105,10 @@
 .me-selo {
   display: inline-block;
   padding: 0.05rem 0.45rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--parchment);
   background: var(--neutra);
   border-radius: 999px;
@@ -133,7 +130,7 @@
 }
 .me-linha:last-child { border-bottom: none; }
 .me-linha-nome {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.94rem;
   display: flex;
   flex-direction: column;
@@ -148,7 +145,7 @@
   gap: 0.35rem;
 }
 .me-linha-nome em {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.76rem;
   font-style: italic;
   color: var(--text-dim);
@@ -158,11 +155,10 @@
 
 /* ── BOTÕES ────────────────────────────────────────────────────── */
 .me-btn {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   padding: 0.42rem 0.9rem;
   cursor: pointer;
   color: var(--ink);
@@ -196,17 +192,16 @@
   gap: 0.2rem;
   flex: 1 1 11rem;
   min-width: 0;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--text-dim);
 }
 .me-campo--sel { flex: 0 1 10rem; }
 .me-campo input,
 .me-campo select {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   text-transform: none;
   letter-spacing: 0;
@@ -221,7 +216,7 @@
 /* ── CHIPS DE MESA (o seletor de qual sala está aberta) ────────── */
 .me-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 .me-chip {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.84rem;
   padding: 0.2rem 0.6rem;
   cursor: pointer;
@@ -251,11 +246,10 @@
   gap: 0.2rem;
 }
 .me-verjog a {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--ink);
   text-decoration: none;
   padding: 0.4rem 0.9rem;
@@ -313,7 +307,7 @@
 .me-selo--jogador    { background: var(--neutra); }
 .me-selo--espectador { background: transparent; color: var(--text-dim); border: 1px solid var(--text-dim); }
 .me-sel-papel {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.82rem;
   padding: 0.16rem 0.3rem;
   color: var(--ink);

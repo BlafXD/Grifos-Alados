@@ -16,23 +16,22 @@
 .fc-cabecalho::before {                    /* sobrancelha de "seção da gazeta" */
   content: '✦ Arquivo de Heróis ✦';
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  text-transform: uppercase;
   color: var(--gold-dim);
   margin-bottom: 0.6rem;
 }
 .fc-cabecalho h1 {
-  font-family: 'UnifrakturMaguntia', cursive;
+  font-family: var(--ga-fonte-gazeta);
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   font-weight: normal;
   color: var(--ink);
   line-height: 1;
 }
 .fc-subtitulo {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--rust-dark);
   font-size: 1rem;
@@ -45,7 +44,7 @@
   padding: 0.55rem 0.8rem;
   background: var(--gold-pale);
   border-left: 4px solid var(--gold-dim);
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 0.9rem;
   color: var(--rust-dark);
 }
@@ -60,7 +59,7 @@
 }
 
 .fc-aba {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -79,11 +78,10 @@
 }
 
 .fc-add {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--ink);
   background: var(--parchment3);
   border: 1px dashed var(--ink-faded);
@@ -102,17 +100,16 @@
   margin-bottom: 0.6rem;
 }
 .fc-info-rotulo {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--ink-faded);
 }
 .fc-nome {
   flex: 1 1 200px;
   min-width: 0;
   padding: 0.35rem 0.55rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--ink);
@@ -121,17 +118,16 @@
 }
 .fc-nome:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
 .fc-tamanho {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   letter-spacing: 0.08em;
   color: var(--ink-faded);
 }
 .fc-del {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--rust-dark);
   background: transparent;
   border: 1px solid var(--rust-dark);
@@ -152,7 +148,7 @@
 }
 
 .fc-vazio {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   color: var(--ink-faded);
   text-align: center;

@@ -11,7 +11,7 @@
 
 .ci-calc { margin-bottom: 1.3rem; }
 .ci-calc-cab {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.08rem;
   letter-spacing: 0.04em;
   color: var(--ink);
@@ -41,11 +41,10 @@
   display: flex;
   align-items: baseline;
   gap: 0.45rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--rust-dark);
   margin-bottom: 0.65rem;
   padding-bottom: 0.4rem;
@@ -73,11 +72,10 @@
 .ci-modo-btn {
   flex: 1 1 auto;
   padding: 0.4rem 0.6rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--ink-faded);
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
@@ -91,7 +89,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.45rem 0.55rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.98rem;
   color: var(--ink);
   background: var(--parchment);
@@ -122,7 +120,7 @@
 .ci-item-resultado:last-child { border-bottom: none; }
 .ci-item-resultado:hover { background: var(--parchment3); }
 .ci-item-resultado-nome { color: var(--ink); }
-.ci-item-resultado-preco { color: var(--gold-dim); font-family: 'Cinzel', serif; font-size: 0.78rem; white-space: nowrap; }
+.ci-item-resultado-preco { color: var(--gold-dim); font-family: var(--ga-fonte-rotulo); font-size: 0.78rem; white-space: nowrap; }
 .ci-item-resultado--vazio { color: var(--ink-faded); font-style: italic; cursor: default; }
 .ci-item-resultado--vazio:hover { background: none; }
 
@@ -137,11 +135,11 @@
   border: 1px solid var(--parchment3);
   border-left: 3px solid var(--gold);
   border-radius: var(--raio);
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   color: var(--ink);
 }
-.ci-item-escolhido b { font-family: 'Cinzel', serif; font-weight: 600; }
+.ci-item-escolhido b { font-family: var(--ga-fonte-rotulo); font-weight: 600; }
 
 /* ── grade de campos (dentro do bloco 2) ─────────────────────────────── */
 .ci-calc-linha { margin-bottom: 0.7rem; }
@@ -153,10 +151,9 @@
 }
 .ci-campo label, .ci-calc-linha > label {
   display: block;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.64rem;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--ink-faded);
   margin-bottom: 0.28rem;
 }
@@ -176,7 +173,7 @@
   box-shadow: 0 3px 14px -7px rgba(26,16,8,0.4);
 }
 .ci-res-nome {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-titulo);
   font-size: 1.08rem;
   color: var(--ink);
   margin-bottom: 0.55rem;
@@ -190,21 +187,20 @@
 }
 .ci-res-bloco { }
 .ci-res-rot {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--gold-dim);
 }
 .ci-res-val {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 1.34rem;
   font-weight: 600;
   color: var(--rust);
   line-height: 1.25;
 }
 .ci-res-detalhe {
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.8rem;
   color: var(--ink-faded);
   margin-top: 0.1rem;
@@ -215,7 +211,7 @@
   background: var(--gold-pale);
   border-left: 3px solid var(--gold-dim);
   border-radius: var(--raio);
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-size: 0.84rem;
   color: var(--rust-dark);
 }
@@ -226,10 +222,9 @@
   cursor: pointer;
   list-style: none;
   padding: 0.55rem 0.8rem;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--ink-faded);
   background: var(--parchment2);
   border: 1px solid var(--gold-dim);
@@ -249,7 +244,7 @@
   border-radius: 0 0 var(--raio) var(--raio);
 }
 .ci-ajustes-nota {
-  font-family: 'IM Fell English', serif;
+  font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.82rem;
   color: var(--ink-faded);
@@ -270,25 +265,23 @@
 .ci-ajustes-tabela {
   width: 100%;
   border-collapse: collapse;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
 }
 .ci-ajustes-tabela caption {
   caption-side: top;
   text-align: left;
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.18em;
-  text-transform: uppercase;
   color: var(--gold-dim);
   padding: 0.55rem 0.9rem 0.15rem;
 }
 .ci-ajustes-tabela th {
   background: var(--ink);
   color: var(--parchment);
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
   text-align: left;
   padding: 0.55rem 0.8rem;
   white-space: nowrap;
@@ -305,7 +298,7 @@
 .ci-ajustes-tabela input[type="number"] {
   width: 6.4rem;
   padding: 0.22rem 0.4rem;
-  font-family: 'Crimson Pro', serif;
+  font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
@@ -315,10 +308,9 @@
 .ci-ajustes-estimado { color: var(--rust); font-size: 0.72rem; }
 
 .ci-restaurar {
-  font-family: 'Cinzel', serif;
+  font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--ink);
   background: var(--parchment);
   border: 1px dashed var(--ink-faded);
