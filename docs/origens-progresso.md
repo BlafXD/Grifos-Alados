@@ -142,3 +142,68 @@ habilidade e também deve poder ser adicionado.
   flags)** saiu limpo — foi como as 66 regionais entraram.
 - Página do PDF ≠ impressa.
 - Conferir sempre contra o texto do livro (fidelidade é a prioridade dele).
+
+---
+
+## Frente 3 FECHADA — as três pontas soltas (05/10/2026)
+
+O recurso estava inteiro (131 origens, seletor, "escolha 2", ponte para a busca),
+mas três coisas ficaram escritas aqui como pendentes. As três fecharam.
+
+### 1. O benefício escolhido agora APLICA na ficha
+
+Era a maior: marcar um benefício era **só a escolha**, e a nota mandava o jogador
+treinar a perícia na lista e trazer o poder no ＋ Adicionar. Era o único lugar da
+ficha em que algo escolhido não virava nada.
+
+Cada benefício escolhido ganha um **"aplicar"** colado no chip, que escreve a
+coisa de verdade:
+
+| Benefício | O que o "aplicar" faz |
+|---|---|
+| perícia | marca `treinada` naquela perícia |
+| `Ofício (x)` | preenche uma linha de Ofício com a especialidade, já treinada |
+| poder | empurra o cartão do poder para o bloco de poderes |
+| vaga do mestre | nada — o botão fica `com o mestre`, desligado, explicando |
+
+**Nada é aplicado sozinho** e **nada fica sintético**: depois de aplicado é
+treino e poder como qualquer outro. Desmarcar o treino na lista de perícias faz
+o botão voltar a dizer "aplicar" — ele lê o estado da ficha, não guarda bandeira
+nenhuma. (Provado no navegador: destreinei Cura e o botão voltou.)
+
+O Ofício **reaproveita uma linha vazia** antes de criar outra — o normalizar já
+deixa duas à vista, e empilhar uma terceira em branco seria sujeira.
+
+### 2. As 66 regionais do Atlas, enfim testadas no navegador
+
+Era o "ainda NÃO testado no clique-a-clique". Agora foi: região 📍, fonte, o
+benefício, os itens, a citação da regra da p. 470 e **zero chips de "escolha 2"**
+(regional não escolhe). Amostra de quatro espalhadas pela lista — Agricultor
+Sambur (Sambúrdia, p. 470), Descendente Colleniano (Ahlen, 473), Nômade
+Sar-Allan (Halak-Tûr, 476) e Um com os Kami (Tamu-ra, 479). Zero erro de
+console.
+
+> **Armadilha de teste que custou uma rodada:** cada troca de origem **redesenha
+> a ficha**, e o `<select>` vira nó órfão. Guardar a referência e trocar o
+> `.value` no laço não faz nada — e o teste *parece* achar que as 66 têm todas a
+> mesma região. **Reconsulte o DOM entre um passo e outro.** Vale igual para os
+> chips de benefício.
+
+### 3. As páginas das regionais: estavam exatas, não ±1
+
+Esta doc dizia "nos limites de página pode haver ±1". **Não há.** Conferido por
+script: as p. 470–479 extraídas uma a uma e o nome de cada origem procurado na
+página que o dado declara.
+
+```
+66 origens regionais conferidas · página exata: 66 · errou por 1: 0 · não achei: 0
+```
+
+### Sanidade do dado, de novo
+
+131 origens (35 núcleo · 30 Heróis · 66 Atlas), **nenhum id repetido**, nenhuma
+regional sem região, nenhum benefício vazio, todas as páginas dentro da faixa do
+seu livro, e o grupo `origem` da busca com os 131. E, do lado da aplicação:
+**todo poder citado por uma origem do núcleo existe em `GA_PODERES`** (35/35), e
+as únicas "perícias" citadas que não estão na lista da ficha são as quatro
+variantes de `Ofício (…)` — que é justamente o caso que o aplicar trata à parte.
