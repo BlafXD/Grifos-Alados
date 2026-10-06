@@ -5,8 +5,8 @@ CERTOS TIPOS de itens… Consegue listar TODAS essas condições? Não precisa
 aplicar ainda, liste, entenda e mapeie todos os limites impostos de cada
 melhoria (e item, tem itens que podem ter essa limitação)."*
 
-**Nada foi mudado no código.** Isto é o mapa; a aplicação fica para quando ele
-pedir. Tudo conferido nos quatro PDFs: *Tormenta20* (p. 163–167), *Heróis de
+**APLICADO em 06/10/2026** — o que mudou no código está no §8, no fim. Até
+lá isto era só o mapa. Tudo conferido nos quatro PDFs: *Tormenta20* (p. 163–167), *Heróis de
 Arton* (p. 239–240), *Ameaças de Arton* (p. 399) e *Deuses de Arton* (p. 54).
 
 ---
@@ -251,17 +251,42 @@ e relança. Hoje são **8 testes**; o mapa acima pede:
 - **1 leva à parte**: os ~15 materiais especiais, cada um com o seu limite e as
   suas "peças" — isso é tamanho de leva própria, não de ajuste.
 
-### O resumo do que ficou pendente
+### O que foi aplicado em 06/10/2026
 
 ```
-TIRAR    so:"armadura" de Injetora, Prudente, Sob medida      (decidido)
-TROCAR   Deslumbrante: armadura → armadura ou vestuário       (erro de cobertura)
-SOMAR    Devotado também na lista de arma                     (erro de cobertura)
-SEPARAR  Espinhos em Espinhosa (armadura) × Espinhoso (escudo)
-CRIAR    o teste de ferramenta/vestuário com perícia          (depende de o
-         gerador passar a sortear essas categorias)
-LEVA     os ~15 materiais especiais e os limites de cada um
+FEITO    tirado o so:"armadura" de Injetora, Prudente e Sob medida
+FEITO    Deslumbrante: armadura → armaduraOuVestuario (teste e rótulo novos)
+FEITO    Espinhos virou Espinhosa (41–42, armadura) × Espinhoso (43–44, escudo)
+NÃO      Devotado na lista de arma — ver abaixo
+FICA     o teste de ferramenta/vestuário com perícia (depende de o gerador
+         passar a sortear essas categorias)
+FICA     os ~15 materiais especiais e os limites de cada um
 ```
+
+**Por que o Devotado NÃO entrou na tabela de arma.** A Tab. 1-4 do *Deuses* o
+põe em "todas as categorias acima", e isso inclui armas — mas o **pré-requisito
+dele é o Inscrito**, que a mesma tabela só dá a armaduras, escudos, ferramentas
+e vestuários. Numa arma o pré-requisito é impossível: o gerador descarta e
+relança (é assim que `rolarMelhorias` trata pré-requisito), então a linha nunca
+sairia — só gastaria rolagem e faria o Catálogo de Tesouros prometer uma
+melhoria que não existe ali. É contradição do livro, e a leitura que o site já
+tinha escolhido em 07/09/2026 continua valendo. **Se você quiser o contrário**
+(a tabela do livro acima do pré-requisito), é uma linha em `MELHORIA_ARMA` — e
+aí vale soltar o Inscrito para arma também, senão nada muda na prática.
+
+**Como ficou conferido** (no navegador, com o Firebase desligado):
+
+- as três tabelas fecham em 100 sem buraco, crescentes, sem nome repetido
+  (23 arma · **21** armadura · 11 esotérico);
+- todo `so` tem teste e rótulo, e nenhum teste ficou órfão;
+- **os 155 itens** que o gerador pode sortear estão no catálogo da Loja — ou
+  seja, nenhum escapa das restrições por falta de dado (`melhoriaCabe` libera
+  quem não está lá);
+- **20 000 itens superiores sorteados**: nenhuma melhoria caiu em item
+  proibido, nenhum pré-requisito quebrado, nenhuma repetida no mesmo item;
+- escudo agora recebe Injetora, Prudente, Sob medida e **Espinhoso**, e não
+  recebe Delicada, Selada, Deslumbrante nem **Espinhosa** — a armadura, o
+  contrário.
 
 E duas delas dependem de uma mudança maior: **o gerador precisaria sortear
 ferramenta e vestuário** como item superior, o que hoje não acontece — a Tabela

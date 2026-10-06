@@ -779,6 +779,20 @@ const EQUIP_ESOTER = [
 //     esotérico não está lá. DEVOTADO, da mesma linha da tabela, ficou só
 //     em armadura: ele exige Inscrito, que é de armadura, escudo,
 //     ferramenta e vestuário — numa arma o pré-requisito é impossível.
+//
+// O que a aplicação do mapa de limites mudou em 06/10/2026 (o mapa inteiro
+// está em docs/melhorias-limites.md):
+//   • ESPINHOS virou as DUAS linhas que a Tabela 3-8 imprime — Espinhosa
+//     (armadura, dano a quem agarra) e Espinhoso (escudo, +1 passo no dano
+//     do ataque com escudo). Era uma linha só, e quem rolasse num escudo
+//     lia o efeito da armadura. A faixa 41–44 foi partida ao meio (41–42 e
+//     43–44): nenhuma outra linha mudou de chance.
+//   • INJETORA, PRUDENTE e SOB MEDIDA perderam o `so` (valem em escudo).
+//   • DESLUMBRANTE trocou `armadura` por `armaduraOuVestuario`.
+//   • DEVOTADO continua fora da tabela de ARMA, embora a Tab. 1-4 do Deuses
+//     o ponha em "todas as categorias acima": ele exige Inscrito, que é de
+//     armadura, escudo, ferramenta e vestuário. Numa arma o pré-requisito é
+//     impossível — a linha só gastaria rolagem e mentiria no catálogo.
 //   • Sempre que uma linha entra ou sai, as faixas do d% são REESCALADAS
 //     proporcionalmente (maior resto): cada melhoria mantém a mesma
 //     chance relativa e a tabela volta a fechar em 100 sem buraco.
@@ -819,20 +833,21 @@ const MELHORIA_ARMADURA = [
   {max:21, item:"Canônico",           livro:"Deuses de Arton",  pag:54},
   {max:25, item:"Cravejada de gemas", livro:"Tormenta20",       pag:164},
   {max:30, item:"Delicada",           livro:"Tormenta20",       pag:164, so:"armaduraPesada"},
-  {max:32, item:"Deslumbrante",       livro:"Heróis de Arton",  pag:239, so:"armadura", obs:"* Ver regra especial"},
+  {max:32, item:"Deslumbrante",       livro:"Heróis de Arton",  pag:239, so:"armaduraOuVestuario", obs:"* Ver regra especial"},
   {max:34, item:"Devotado",           livro:"Deuses de Arton",  pag:54},
   {max:36, item:"Diligente",          livro:"Deuses de Arton",  pag:54},
   {max:40, item:"Discreta",           livro:"Tormenta20",       pag:164},
-  {max:44, item:"Espinhos",           livro:"Tormenta20",       pag:165},
-  {max:48, item:"Injetora",           livro:"Heróis de Arton",  pag:240, so:"armadura"},
+  {max:42, item:"Espinhosa",          livro:"Tormenta20",       pag:165, so:"armadura", obs:"Causa dano a quem agarra (a versão de ARMADURA)"},
+  {max:44, item:"Espinhoso",          livro:"Tormenta20",       pag:165, so:"escudo",   obs:"Aumenta em um passo o dano do ataque com escudo (a versão de ESCUDO)"},
+  {max:48, item:"Injetora",           livro:"Heróis de Arton",  pag:240},
   {max:52, item:"Inscrito",           livro:"Deuses de Arton",  pag:54},
   {max:54, item:"Macabra",            livro:"Tormenta20",       pag:165},
   {max:65, item:"Material especial",  livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
   {max:70, item:"Polida",             livro:"Tormenta20",       pag:166},
-  {max:72, item:"Prudente",           livro:"Heróis de Arton",  pag:240, so:"armadura"},
+  {max:72, item:"Prudente",           livro:"Heróis de Arton",  pag:240},
   {max:84, item:"Reforçada",          livro:"Tormenta20",       pag:166},
   {max:95, item:"Selada",             livro:"Tormenta20",       pag:166, so:"armaduraPesada"},
-  {max:100,item:"Sob medida",         livro:"Tormenta20",       pag:166, so:"armadura", obs:"* Ver regra especial"},
+  {max:100,item:"Sob medida",         livro:"Tormenta20",       pag:166, obs:"* Ver regra especial"},
 ];
 
 const MELHORIA_ESOTER = [
@@ -863,11 +878,15 @@ const MELHORIA_ESOTER = [
 
    Só entra aqui o que o livro RESTRINGE com todas as letras. Onde ele
    descreve sem proibir, o item continua elegível — é o caso da injeção
-   alquímica (qualquer arma) e da polida (armadura ou escudo). As quatro
-   leituras que fogem disso são Deslumbrante, Injetora, Prudente e Sob
-   medida: o verbete delas fala só de "armadura", e o livro é cuidadoso em
-   dizer "armadura ou escudo" quando quer as duas (Polida, Reforçada,
-   Ajustada). */
+   alquímica (qualquer arma) e da polida (armadura ou escudo).
+
+   O caso de INJETORA, PRUDENTE e SOB MEDIDA foi decidido em 05/10/2026 e
+   aplicado em 06/10: o verbete das três fala só de "armadura", mas a TABELA
+   do livro as põe em "armaduras e escudos" — e as três mexem em coisa que
+   escudo também tem (a penalidade de armadura, o corpo de quem veste). Vale
+   a tabela: elas ficaram sem `so`. Sobrou um só verbete estreito, o do
+   DESLUMBRANTE, e esse o livro restringe com todas as letras — "armaduras e
+   vestuários" — então virou `armaduraOuVestuario`. */
 
 // Munições: o catálogo as guarda como arma sem dano próprio, mas Rede e
 // Desmontador também são armas sem dano — por isso a lista é nominal.
@@ -908,6 +927,7 @@ const RESTRICAO_ROTULO = {
   disparo:           'Só armas de disparo (exceto fundas)',
   escudo:            'Só escudos',
   armadura:          'Só armaduras (não escudos)',
+  armaduraOuVestuario: 'Só armaduras e vestuários',
   armaduraPesada:    'Só armaduras pesadas',
 };
 
@@ -924,6 +944,12 @@ const RESTRICAO_MELHORIA = {
   disparo:           (nome)     => ARMAS_DISPARO.has(nome) && nome !== 'Funda',
   escudo:            (nome, st) => st.categoria === 'Escudos',
   armadura:          (nome, st) => /^Armaduras/.test(st.categoria || ''),
+  // Vestuário o gerador ainda não sorteia (a Tab. 8-4 só manda rolar
+  // arma, armadura/escudo e esotérico), mas o verbete do Deslumbrante
+  // diz 'armaduras e vestuários' — o teste já lê os dois, e o rótulo
+  // no catálogo deixa de mentir.
+  armaduraOuVestuario: (nome, st) => /^Armaduras/.test(st.categoria || '') ||
+                                     st.categoria === 'Vestuário',
   armaduraPesada:    (nome, st) => st.categoria === 'Armaduras Pesadas',
 };
 
