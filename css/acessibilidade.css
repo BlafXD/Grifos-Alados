@@ -411,11 +411,26 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
   /* os dois da 🏪 Loja que põem o item na ficha: no dedo é onde eles
      mais são usados, e o "sem pagar" existe justamente porque no
      celular não há Shift para segurar */
-  .item-levar {
+  .item-levar,
+  /* o ♦ da caixa de doações: nasce miúdo de propósito (não pode
+     atrapalhar), mas no dedo precisa de alvo como qualquer botão */
+  .ga-rodape-doar {
     min-height: 2.75rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* o "Preço: 3 Tibares" (que abre a caixa de doações) é texto de
+     cabeçalho, de 14px: no dedo ele ganha altura de verdade em vez do
+     .ga-alvo — um retângulo invisível ali em cima comeria o toque da
+     linha de data, que é vizinha e não tem para onde fugir. A linha
+     inteira passa a centralizar para os três não desencontrarem. */
+  .masthead-meta { align-items: center; }
+  .mh-preco {
+    min-height: 2rem;
+    display: inline-flex;
+    align-items: center;
   }
 
   /* caixas de marcar: o quadradinho de 13px do sistema é o menor
