@@ -2672,3 +2672,124 @@ body.ga-modal-aberto .ga-coluna-mesa { visibility: hidden; }
 }
 .ga-sync-chip:hover { background: var(--gold-pale); }
 .ga-sync-chip--atual { color: var(--parchment); background: var(--teal); border-color: var(--teal); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   CAIXA DE DOAÇÕES (js/doacao.js) — os dois gatilhos e o modal do Pix
+   Os dois gatilhos são de propósito os lugares mais baratos da página:
+   o preço de capa (que já estava escrito) e uma linha no rodapé. Nada
+   flutua, nada cobre conteúdo, nada aparece sozinho.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 1 · O "Preço: 3 Tibares" do cabeçalho ──────────────────────────
+   Vestido de texto: mesma fonte, mesma cor, mesmo tamanho do <span>
+   que era antes — só o tracejado embaixo conta que dá para clicar. */
+.mh-preco {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline dotted var(--gold-dim);
+  text-underline-offset: 0.2em;
+}
+.mh-preco:hover { color: var(--rust); text-decoration-color: var(--rust); }
+
+/* ── 2 · A linha do rodapé ──────────────────────────────────────────
+   O rodapé era uma linha só de texto; agora são duas em pilha, e a
+   segunda é o botão. Tinta escura: o --foco daqui já é dourado. */
+footer { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; }
+.ga-rodape-doar {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  padding: 0.3rem 0.9rem;
+  cursor: pointer;
+  color: var(--gold-light);
+  background: none;
+  border: 1px solid var(--gold-deep);
+  border-radius: var(--raio);
+  opacity: 0.75;
+  transition: opacity 0.16s, background 0.16s, color 0.16s, border-color 0.16s;
+}
+.ga-rodape-doar:hover {
+  opacity: 1;
+  color: var(--ink);
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+}
+
+/* ── 3 · Dentro do modal ────────────────────────────────────────────
+   O selo do QR: preto no branco (nenhum leitor de banco reclama de
+   contraste), emoldurado como um lambe colado na folha. */
+.ga-doar-selo {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 0.9rem;
+}
+.ga-doar-qr {
+  display: block;
+  width: 100%;
+  max-width: 13rem;
+  height: auto;
+  padding: 0.35rem;
+  background: #fff;
+  border: 1px solid var(--ink);
+  outline: 3px double var(--parchment3);
+  outline-offset: 2px;
+}
+.ga-doar-semqr {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.86rem;
+  font-style: italic;
+  text-align: center;
+  color: var(--ink-faded);
+}
+
+.ga-doar-para {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+  text-align: center;
+  margin: 0 0 0.7rem;
+}
+.ga-doar-para em {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.82rem;
+  letter-spacing: 0;
+  color: var(--ink-faded);
+}
+
+/* a carga EMV inteira, para quem prefere ver antes de colar */
+.ga-doar-codigo {
+  display: block;
+  font-family: var(--ga-fonte-mono);
+  font-size: 0.66rem;
+  line-height: 1.45;
+  word-break: break-all;
+  max-height: 5.4rem;
+  overflow-y: auto;
+  padding: 0.5rem 0.6rem;
+  color: var(--ink-faded);
+  background: var(--parchment2);
+  border: 1px dashed var(--parchment3);
+}
+
+/* o "Copiar" é o botão principal do modal; o verde/vermelho do aviso
+   vem do .ga-copia--ok / .ga-copia--erro, que o itens-descricoes.js põe —
+   e por isso o ⧉ mora no TEXTO do botão, não num ::before: o aviso troca
+   o textContent e devolve o rótulo inteiro depois. */
+.ga-modal-acoes:has(> .ga-doar-copiar) { justify-content: center; }
+
+.ga-doar-rodape {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.84rem;
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--ink-faded);
+  margin: 0.9rem 0 0;
+}
