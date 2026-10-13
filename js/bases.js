@@ -12,7 +12,7 @@
 (function () {
   'use strict';
 
-  const STORAGE_KEY = 'grifosAlados.bases';
+  const STORAGE_KEY = GA_Sala.chave('grifosAlados.bases');
 
   let dados = { bases: [] };
 

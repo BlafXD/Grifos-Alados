@@ -480,6 +480,54 @@
   color: var(--parchment3);
 }
 
+/* O aviso de "loja gerada antes deste bloco" fica fora de um card, e
+   então precisa do fundo e da borda que o card dava. */
+.especial-vazio--solta {
+  background: var(--parchment2);
+  border: 1px dashed var(--parchment3);
+  color: var(--ink-faded);
+  margin-bottom: 1rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ITENS ESPECÍFICOS (itens mágicos nomeados)
+   Reaproveita o card e a lista da Loja Especial; o que muda é a linha,
+   que aqui tem três campos (nome · preço · referência) em vez de dois.
+   O nome PODE quebrar — "Armadura das sombras profundas" não cabe numa
+   linha de 290px, e o .enc-nome do encantamento é nowrap.
+   ══════════════════════════════════════════════════════════════════ */
+.esp-item {
+  flex-wrap: wrap;
+  column-gap: 0.6rem;
+  row-gap: 0.15rem;
+}
+
+.esp-nome {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--rust-dark);
+  flex: 1 1 60%;
+  min-width: 0;
+}
+
+.esp-preco {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.esp-ref {
+  font-family: var(--ga-fonte-nota);
+  font-style: italic;
+  font-size: 0.76rem;
+  color: var(--ink-faded);
+  flex: 1 1 100%;
+}
+
 /* ── RESPONSIVO ─────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .loja-abas          { flex-direction: column; }

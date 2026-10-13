@@ -2403,6 +2403,15 @@ footer {
 .ga-sync-btn:hover { opacity: 1; }
 .ga-sync-btn--on   { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(31, 122, 107, 0.35); }
 .ga-sync-btn--erro { border-color: var(--carmim); box-shadow: 0 0 0 2px rgba(139, 16, 32, 0.35); }
+/* bancada (13/10/2026): nenhuma campanha aberta nesta aba, então não há
+   transmissão nenhuma — e isso tem de PARECER desligado, porque o erro
+   que esta mudança veio consertar era justo achar que estava ligado */
+.ga-sync-btn--bancada {
+  opacity: 0.4;
+  filter: grayscale(1);
+  border-style: dashed;
+}
+.ga-sync-btn--bancada:hover { opacity: 0.8; }
 /* pausado pela TRAVA (15/09/2026): o banco tem uma versão que não saiu
    deste navegador, e mandar a daqui apagaria a de lá — o mestre decide */
 .ga-sync-btn--conflito {

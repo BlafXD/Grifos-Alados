@@ -1667,6 +1667,33 @@ function lookupAcessorio(tier, dp) {
 }
 
 /* ═══════════════════════════════════════════════════════
+   1h-bis. AS SEIS TABELAS EMPRESTADAS À LOJA
+   ═══════════════════════════════════════════════════════
+   As seis tabelas acima (ESPEC_* e ACESSORIO_*) são a ÚNICA fonte dos 232
+   itens mágicos nomeados no projeto. A 🏪 Loja precisa delas para o bloco
+   "🌟 Itens Específicos" — e a segunda cópia que um dia divergiria é justo
+   o que este projeto já pagou para apagar (o `data/magias.json` morto).
+   Então elas saem por aqui, por valor de leitura.
+
+   Ordem de carregamento: o `recompensas.js` entra DEPOIS do
+   `loja_completa.js` nas tags do `index.html`, e por isso quem lê este
+   objeto tem de lê-lo na HORA DE GERAR, nunca ao carregar. O
+   `jogadores.html` não carrega este arquivo: a página do jogador só
+   mostra a loja que o mestre transmitiu, e nela cada item já vem com
+   nome, preço, livro e página — por isso ela não precisa da tabela.
+
+   A conferência contra os quatro livros está em
+   docs/itens-nomeados-conferencia.md (232/232). ────────────────────── */
+window.GA_ItensNomeados = {
+  arma:           ESPEC_ARMA,
+  armadura:       ESPEC_ARMADURA,   // armaduras E escudos, como o livro imprime
+  esoterico:      ESPEC_ESOTER,
+  acessorioMenor: ACESSORIO_MENOR,
+  acessorioMedio: ACESSORIO_MEDIO,
+  acessorioMaior: ACESSORIO_MAIOR,
+};
+
+/* ═══════════════════════════════════════════════════════
    1i. TABELA DE POÇÕES (d120)
    ═══════════════════════════════════════════════════════ */
 

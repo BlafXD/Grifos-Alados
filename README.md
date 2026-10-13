@@ -70,8 +70,14 @@ sem precisar mandar `.txt`. Quando o mestre mexe em algo, a página deles se atu
 
 | Página | Link |
 |--------|------|
-| 🎲 **Mestre** (edita tudo) | <https://blafxd.github.io/Grifos-Alados/> |
+| 🛠 **Bancada** (sua, local — não transmite) | <https://blafxd.github.io/Grifos-Alados/> |
+| 🎲 **Mestre de uma campanha** | <https://blafxd.github.io/Grifos-Alados/?mesa=mesa> |
 | 👥 **Jogadores** (só visualiza) | <https://blafxd.github.io/Grifos-Alados/jogadores.html?sala=mesa> |
+
+**A campanha está no endereço.** O site sem `?mesa=` é a sua bancada: tudo fica neste navegador
+e o 📡 não transmite para ninguém. Com `?mesa=<campanha>`, aquela aba **é** aquela campanha — a
+Loja, as Bases e as Viagens que você mexer ali são dela, e não se misturam com as das outras.
+Cinco campanhas são cinco abas, e a aba **🎲 Mesa** lista as suas e abre cada uma.
 
 O mestre liga a transmissão pelo botão **📡** (canto inferior direito) e entra com o usuário de
 mestre. A sincronização em tempo real usa o **Firebase** — a configuração (uma vez só) está

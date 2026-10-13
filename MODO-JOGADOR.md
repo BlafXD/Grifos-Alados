@@ -370,6 +370,12 @@ recusada pelo banco. Ler ela continua podendo, como qualquer um com o link.
 - **"o login com o Google ainda não foi ligado"** → falta ativar o provedor
   **Google** em Authentication → Método de login (parte 1.5).
 - **Página dos jogadores não atualiza** → confira se o selinho do rodapé mostra a
-  sala certa (o `?sala=…` do link deles precisa ser igual à sala do seu 📡).
+  sala certa (o `?sala=…` do link deles precisa ser igual à campanha aberta na sua
+  aba). Desde 13/10/2026 a campanha do mestre está no **endereço** dele também:
+  `index.html?mesa=<campanha>`. O `index.html` pelado é a **bancada** — o 📡 fica
+  cinza e tracejado e não transmite nada, de propósito.
+- **"🔗 Falta a sala no link"** no selinho deles → o link que circulou perdeu o
+  `?sala=…`. Antes disso, um link sem sala caía numa campanha chamada `mesa`, que é
+  a campanha de alguém — por isso agora ele reclama em vez de entrar.
 - **Sem internet** → tudo continua funcionando localmente; a transmissão volta
   sozinha quando a conexão voltar (clique em "📤 Enviar agora" para garantir).
