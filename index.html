@@ -152,6 +152,17 @@
           </div>
 
           <div class="custom-filtros-grupo">
+            <span class="custom-filtros-rot">🪨 Materiais especiais <em>(os 14 dos livros)</em></span>
+            <label class="custom-chk"><input type="checkbox" data-filtro="materiaisRaros" checked> Deixar sair também os <strong>5 raros</strong>, que o livro não vende</label>
+            <p class="custom-filtros-nota">Quando uma melhoria cai em <strong>“Material especial”</strong>, o gerador sorteia o material
+              também — entre os que caibam naquele item, com o dado do tamanho do pool. Nove têm preço de tabela (aço-rubi,
+              adamante, gelo eterno, madeira Tollon, matéria vermelha, mitral, casco de monstro, lanajuste e prata) e cinco não:
+              <strong>couraça de kaiju, couro de bulette, cristal de sol, pena de kraken e quitina razza</strong> só se obtêm
+              abatendo a criatura. Eles continuam cabendo num tesouro — achado não é comprado —, mas desmarque aqui se a sua
+              mesa só quer material que se possa pôr na nota.</p>
+          </div>
+
+          <div class="custom-filtros-grupo">
             <span class="custom-filtros-rot">🏹 Munições extras <em>(Heróis de Arton — fora da tabela oficial)</em></span>
             <label class="custom-chk"><input type="checkbox" data-filtro="municoesExtras"> Quer adicionar mais esses itens para a possível aparição nas rolagens customizáveis?</label>
             <ul id="municoesExtrasLista" class="custom-filtros-lista"></ul>
@@ -478,6 +489,10 @@
 <script src="js/loja_completa.js" defer></script>
 <script src="js/itens-descricoes-data.js" defer></script>
 <script src="js/itens-descricoes-extra-data.js" defer></script>
+<!-- os 14 materiais especiais: o "📖 Descrição" tira a ficha de cada um daqui,
+     a aba 🔨 Criação de Itens desenha as duas tabelas de preço e o Gerador de
+     Recompensas sorteia o material quando a melhoria cai em "Material especial" -->
+<script src="js/materiais-data.js" defer></script>
 <script src="js/itens-descricoes.js" defer></script>
 <script src="js/descricoes-custom.js" defer></script>
 <script src="js/magias-data.js" defer></script>

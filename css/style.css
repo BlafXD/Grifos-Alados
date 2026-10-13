@@ -1434,6 +1434,44 @@ footer {
   border-left: 3px solid var(--gold);
 }
 
+/* ── MATERIAL ESPECIAL (o que a melhoria "Material especial" trouxe) ─
+   Fica recuado debaixo da melhoria: o nome com o tipo de item e o preço
+   extra da tabela, o benefício numa linha só e, quando o material não é
+   vendido, a etiqueta no lugar do preço. */
+#recompensas .rc-mat-slot,
+#recompensas .rc-mat-preco,
+#recompensas .rc-mat-pecas {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.7rem;
+  margin-left: 6px;
+  padding: 1px 6px;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  white-space: nowrap;
+}
+#recompensas .rc-mat-slot  { color: var(--ink-faded); }
+#recompensas .rc-mat-preco { color: var(--rust-dark); }
+#recompensas .rc-mat-pecas { color: var(--rust-dark); border-style: dashed; }
+/* Os cinco do Ameaças que o livro não vende: sem preço, e isso é regra
+   do livro, não dado faltando — então a etiqueta diz, em vez de um traço. */
+#recompensas .rc-mat-preco--raro {
+  color: var(--ink-faded);
+  background: transparent;
+  border-style: dashed;
+  font-style: italic;
+}
+#recompensas .rc-mat-efeito {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.82rem;
+  color: var(--ink);
+}
+#recompensas .rc-mat-obs {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--gold-dim);
+}
+
 /* ── INLINE DICE ─────────────────────────────────────────────────── */
 #recompensas .dice-inline {
   font-family: var(--ga-fonte-rotulo);

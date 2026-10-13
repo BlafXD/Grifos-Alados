@@ -752,7 +752,8 @@ const EQUIP_ESOTER = [
    ═══════════════════════════════════════════════════════ */
 
 // * = Melhoria com asterisco (ver livro para regra especial)
-// ** = Material especial — Mestre decide o material
+// ** = Material especial — a melhoria abre a porta e o gerador sorteia
+//      o material atrás dela (ver sortearMaterial e js/materiais-data.js)
 // so: = a que TIPO de item aquela melhoria pode ser aplicada, quando o
 //   verbete restringe mais do que a categoria da tabela ("só munições",
 //   "só escudos", "só armaduras pesadas"…). Ver RESTRICAO_MELHORIA, logo
@@ -818,7 +819,7 @@ const MELHORIA_ARMA = [
   {max:59, item:"Injeção alquímica",  livro:"Tormenta20",       pag:165},
   {max:61, item:"Macabra",            livro:"Tormenta20",       pag:165},
   {max:70, item:"Maciça",             livro:"Tormenta20",       pag:165},
-  {max:79, item:"Material especial",  livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
+  {max:79, item:"Material especial",  livro:"Tormenta20",       pag:165, obs:"** O material sai sorteado junto (Tabelas 3-9 e 3-4)"},
   {max:82, item:"Mira telescópica",   livro:"Tormenta20",       pag:166, so:"disparo"},
   {max:86, item:"Penetrante",         livro:"Ameaças de Arton", pag:399},
   {max:94, item:"Precisa",            livro:"Tormenta20",       pag:166},
@@ -842,7 +843,7 @@ const MELHORIA_ARMADURA = [
   {max:48, item:"Injetora",           livro:"Heróis de Arton",  pag:240},
   {max:52, item:"Inscrito",           livro:"Deuses de Arton",  pag:54},
   {max:54, item:"Macabra",            livro:"Tormenta20",       pag:165},
-  {max:65, item:"Material especial",  livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
+  {max:65, item:"Material especial",  livro:"Tormenta20",       pag:165, obs:"** O material sai sorteado junto (Tabelas 3-9 e 3-4)"},
   {max:70, item:"Polida",             livro:"Tormenta20",       pag:166},
   {max:72, item:"Prudente",           livro:"Heróis de Arton",  pag:240},
   {max:84, item:"Reforçada",          livro:"Tormenta20",       pag:166},
@@ -858,7 +859,7 @@ const MELHORIA_ESOTER = [
   {max:44, item:"Energético",         livro:"Tormenta20",       pag:165},
   {max:61, item:"Harmonizado",        livro:"Tormenta20",       pag:165},
   {max:64, item:"Macabro",            livro:"Tormenta20",       pag:165},
-  {max:74, item:"Material especial",  livro:"Tormenta20",       pag:165, obs:"** Mestre define o material"},
+  {max:74, item:"Material especial",  livro:"Tormenta20",       pag:165, obs:"** O material sai sorteado junto (Tabelas 3-9 e 3-4)"},
   {max:85, item:"Poderoso",           livro:"Tormenta20",       pag:166},
   {max:96, item:"Potencializador",    livro:"Heróis de Arton",  pag:240, obs:"* Ver regra especial"},
   {max:100,item:"Vigilante",          livro:"Tormenta20",       pag:166},
@@ -952,6 +953,62 @@ const RESTRICAO_MELHORIA = {
                                      st.categoria === 'Vestuário',
   armaduraPesada:    (nome, st) => st.categoria === 'Armaduras Pesadas',
 };
+
+/* ── MATERIAL ESPECIAL: a melhoria que abre uma segunda porta ───────
+   "Material especial" não diz o que o item ganha — diz que ele é feito
+   de alguma coisa. Até 13/10/2026 o gerador parava aí e imprimia
+   "Mestre define o material", porque os 14 materiais não existiam no
+   sistema. Agora existem, em `js/materiais-data.js`, e quem rola a
+   melhoria também rola o material.
+
+   O sorteio é uniforme entre os materiais que CABEM naquele item — e
+   "caber" é mais estreito que a categoria da melhoria:
+     • couro de bulette não vai em arma nem em escudo (o verbete só traz
+       as linhas "Armadura" e "Esotérico");
+     • madeira Tollon só em arma de madeira, escudo leve e esotérico;
+     • cristal de sol, em arma, só de corte ou perfuração.
+   O dado mostrado é o do tamanho real do pool (d14, d13, d9…), como já
+   acontece no sorteio do catálogo inteiro da Loja.
+
+   Material NÃO repete no mesmo item, nem com a melhoria repetida (ela
+   já não repete) — a exceção que o livro abre é a prata, "que pode ser
+   combinada com um segundo material especial, cada um contando como uma
+   melhoria separada" (Ameaças, p. 400). Como a melhoria não sai duas
+   vezes do mesmo item, a combinação é coisa do Mestre, e a observação
+   da prata no card diz isso.
+
+   No modo Customizável, a caixa "materiaisRaros" desligada tira do pool
+   os cinco que o livro não vende — couraça de kaiju, couro de bulette,
+   cristal de sol, pena de kraken e quitina razza. Ligada (o padrão), o
+   pool é o dos 14: tesouro é achado, não comprado, e o card avisa quando
+   o material não tem preço de venda. */
+function sortearMaterial(nomeBase) {
+  const M = window.GA_MATERIAIS;
+  if (!M || !nomeBase) return null;
+  const st = statsDaLoja(nomeBase);
+  if (!st) return null;                 // item fora do catálogo: Mestre decide
+  const slot = M.slotDoItem(nomeBase, st);
+  if (!slot) return null;               // ferramenta, vestuário… não recebe material
+  const raros = !(MODO_RECOMP === 'customizavel' && !CUSTOM_FILTROS.materiaisRaros);
+  const pool  = M.queCabem(nomeBase, st, { raros });
+  if (!pool.length) return null;
+  const d = rolarDado(pool.length);
+  const mat = pool[d - 1];
+  const linha = mat.slots[slot];
+  return {
+    nome:   mat.nome,
+    livro:  mat.livro,
+    pag:    mat.pag,
+    slot,
+    rotulo: M.SLOT_ROTULO[slot],
+    preco:  linha.preco,                // null = não é encontrado à venda
+    pecas:  linha.pecas || 0,
+    efeito: linha.efeito,
+    obs:    mat.obs || '',
+    venda:  !!mat.venda,
+    d, lados: pool.length,
+  };
+}
 
 // A melhoria `row` cabe no item-base `nome`? Sem restrição, sempre cabe.
 function melhoriaCabe(row, nome) {
@@ -1815,7 +1872,10 @@ function rolarMelhorias(tipo, qtd, nomeBase) {
       )
     );
     usados.add(item.item);
-    melhorias.push({ dp, item });
+    // "Material especial" não é um efeito, é uma porta: rola também o
+    // material que está do outro lado dela (ver sortearMaterial).
+    const material = item.item === MELHORIA_MATERIAL ? sortearMaterial(nomeBase) : null;
+    melhorias.push(material ? { dp, item, material } : { dp, item });
   }
   return melhorias;
 }
@@ -2329,21 +2389,37 @@ const MELHORIA_MATERIAL = 'Material especial';
 //   custoTraco   → o item existe, mas o livro marca o custo como "—"
 //                  (Bordão, Clava, Funda, Tacape): entra como zero
 //   desconhecido → o item nem está no catálogo; aí não dá para somar
-function precoMontagem(nomeBase, qtdMelhorias, qtdEncantos) {
+//   mat          → o preço extra dos materiais especiais sorteados
+//   matSemPreco  → nomes dos materiais que o livro NÃO vende
+//
+// O preço do material é uma parcela À PARTE: o livro diz "você precisa
+// pagar o preço extra do material escolhido, ALÉM do preço da melhoria"
+// (T20, p. 166). Por isso ele não entra na metade que a munição paga —
+// essa regra fala do aumento de preço de melhorias e encantos, e o
+// material tem tabela própria (3-9 e 3-4).
+function precoMontagem(nomeBase, qtdMelhorias, qtdEncantos, materiais) {
   const tab  = tabelaPrecosMontagem();
   const meia = ehMunicao(nomeBase) ? 0.5 : 1;
   const st   = statsDaLoja(nomeBase);
   const base = precoNumDaLoja(nomeBase);
   const mel  = precoPorQuantidade(tab.melhorias, qtdMelhorias) * meia;
   const enc  = precoPorQuantidade(tab.encantos,  qtdEncantos)  * meia;
+  const mats = (materiais || []).filter(Boolean);
+  const mat  = mats.reduce((s, m) => s + (Number(m.preco) || 0), 0);
   return {
     base:         base || 0,
     custoTraco:   !!st && base == null,
     desconhecido: !st,
-    mel, enc,
+    mel, enc, mat,
+    matSemPreco:  mats.filter(m => m.preco == null).map(m => m.nome),
     municao: meia !== 1,
-    total: (base || 0) + mel + enc,
+    total: (base || 0) + mel + enc + mat,
   };
+}
+
+// Os materiais especiais que saíram nas melhorias deste item.
+function materiaisDe(melhorias) {
+  return (melhorias || []).map(m => m && m.material).filter(Boolean);
 }
 
 // "A", "A e B", "A, B e C"
@@ -2360,8 +2436,18 @@ function textoItemMontado(base, melhorias, encantos, subtitulo) {
   const nomeBase = base && base.item ? base.item : '—';
   const nomesMel = (melhorias || []).map(m => m.item && m.item.item).filter(Boolean);
   const nomesEnc = (encantos  || []).map(e => e.item && e.item.item).filter(Boolean);
-  const p        = precoMontagem(nomeBase, nomesMel.length, nomesEnc.length);
-  const partes   = nomesMel.concat(nomesEnc);
+  const mats     = materiaisDe(melhorias);
+  const p        = precoMontagem(nomeBase, nomesMel.length, nomesEnc.length, mats);
+  // "Espada longa (maciça, material especial: adamante)" — o material
+  // entra no nome junto da melhoria que o trouxe, porque é ele que o
+  // jogador vai dizer na mesa.
+  const partes   = (melhorias || []).map(m => {
+    const n = m.item && m.item.item;
+    if (!n) return '';
+    // O nome do material fica como o livro escreve (Madeira Tollon,
+    // Aço-rubi): minusculizar estragaria o nome próprio da floresta.
+    return m.material ? `${n}: ${m.material.nome}` : n;
+  }).filter(Boolean).concat(nomesEnc);
 
   const linhas = [
     nomeBase + (partes.length ? ` (${listaNatural(partes)})` : ''),
@@ -2374,11 +2460,23 @@ function textoItemMontado(base, melhorias, encantos, subtitulo) {
   if (p.custoTraco) det.push('item de custo "—"');
   if (p.mel)       det.push(`${fmtT$(p.mel)} por ${nomesMel.length} melhoria${nomesMel.length > 1 ? 's' : ''}`);
   if (p.enc)       det.push(`${fmtT$(p.enc)} por ${nomesEnc.length} encanto${nomesEnc.length > 1 ? 's' : ''}`);
-  if (p.municao)   det.push('munição: metade do acréscimo');
+  if (p.mat)       det.push(`${fmtT$(p.mat)} do material especial`);
+  if (p.municao)   det.push('munição: metade do acréscimo das melhorias e encantos');
   linhas.push(`Preço total: ${fmtT$(p.total)} T$` + (det.length ? ` (${det.join(' + ')})` : ''));
   if (p.desconhecido) linhas.push(`⚠ O item base não está no catálogo — some o preço dele ao total.`);
-  if (nomesMel.includes(MELHORIA_MATERIAL))
-    linhas.push(`⚠ Material especial: escolha o material (Tabela 3-9) e some o preço dele ao total.`);
+  for (const nome of p.matSemPreco)
+    linhas.push(`⚠ ${nome} não se encontra à venda: só se obtém abatendo a criatura. O item não tem preço de mercado — este total é do resto.`);
+  // Material especial sem material sorteado: item fora do catálogo da
+  // Loja (ou ferramenta/vestuário), aí não há como saber o slot.
+  if (nomesMel.includes(MELHORIA_MATERIAL) && !mats.length)
+    linhas.push(`⚠ Material especial: escolha o material (Tabela 3-9 ou 3-4) e some o preço dele ao total.`);
+  for (const m of mats) {
+    const linha = [`Material especial: ${m.nome} (${m.livro}, p. ${m.pag}) — ${m.rotulo}`];
+    if (m.pecas) linha.push(m.pecas === 1 ? 'exige 1 peça' : `exige ${m.pecas} peças`);
+    linhas.push(linha.join(' · '));
+    linhas.push(`  ${m.efeito}`);
+    if (m.obs) linhas.push(`  ${m.obs}`);
+  }
 
   // Ficha de cada parte: os mesmos dados do bloco 📜 individual.
   const secao = (rotulo, it) => {
@@ -2402,20 +2500,24 @@ function rodapeItemMontado(base, melhorias, encantos, subtitulo) {
   const nomesMel = (melhorias || []).map(m => m.item && m.item.item).filter(Boolean);
   const nomesEnc = (encantos  || []).map(e => e.item && e.item.item).filter(Boolean);
   if (!nomesMel.length && !nomesEnc.length) return '';   // item cru: nada a somar
-  const p = precoMontagem(base.item, nomesMel.length, nomesEnc.length);
+  const mats = materiaisDe(melhorias);
+  const p = precoMontagem(base.item, nomesMel.length, nomesEnc.length, mats);
 
   const det = [];
   if (p.base)       det.push(`${fmtT$(p.base)} do item`);
   if (p.custoTraco) det.push('item de custo "—"');
   if (p.mel)        det.push(`${fmtT$(p.mel)} de ${nomesMel.length} melhoria${nomesMel.length > 1 ? 's' : ''}`);
   if (p.enc)        det.push(`${fmtT$(p.enc)} de ${nomesEnc.length} encanto${nomesEnc.length > 1 ? 's' : ''}`);
-  if (p.municao)    det.push('munição paga metade');
+  if (p.mat)        det.push(`${fmtT$(p.mat)} do material`);
+  if (p.municao)    det.push('munição paga metade das melhorias e encantos');
 
   const avisos = [
     p.desconhecido ? 'Item base fora do catálogo — some o preço dele ao total.' : '',
-    nomesMel.includes(MELHORIA_MATERIAL)
-      ? 'Material especial: escolha o material (Tabela 3-9) e some o preço dele ao total.' : '',
-  ].filter(Boolean).map(a => `<div class="rc-alerta">⚠ ${a}</div>`).join('');
+    (nomesMel.includes(MELHORIA_MATERIAL) && !mats.length)
+      ? 'Material especial: escolha o material (Tabela 3-9 ou 3-4) e some o preço dele ao total.' : '',
+  ].concat(p.matSemPreco.map(n =>
+      `${n} não se encontra à venda — só se obtém abatendo a criatura. Este total é do resto do item.`))
+   .filter(Boolean).map(a => `<div class="rc-alerta">⚠ ${a}</div>`).join('');
 
   const texto = textoItemMontado(base, melhorias, encantos, subtitulo);
   return `${avisos}<div class="rc-total">
@@ -2555,6 +2657,37 @@ function blockPergaminho(perg, idx, total) {
   ${descBlocoPergaminho(perg, meta)}`;
 }
 
+/* O material sorteado, logo abaixo da melhoria que o trouxe. Mostra o
+   dado do pool (quantos materiais cabiam neste item), o nome, o preço
+   extra da linha certa da tabela e o benefício — e, nos cinco do
+   Ameaças que não se vendem, as peças que a fabricação exige no lugar
+   do preço. */
+function linhaMaterial(mat) {
+  if (!mat) return '';
+  const etiqueta = mat.preco != null
+    ? `<span class="rc-mat-preco">+T$ ${fmtT$(mat.preco)}</span>`
+    : `<span class="rc-mat-preco rc-mat-preco--raro">não é vendido</span>`;
+  const pecas = mat.pecas
+    ? `<span class="rc-mat-pecas">${mat.pecas === 1 ? '1 peça' : mat.pecas + ' peças'}</span>` : '';
+  return `<div class="sub-indent" style="padding-left:24px">
+    <span class="bullet">◇</span>
+    ${diceInline('d' + mat.lados)} = ${mat.d}
+    &nbsp;→&nbsp;<strong style="color:var(--text)">${mat.nome}</strong>
+    <span class="rc-mat-slot">${mat.rotulo}</span>${etiqueta}${pecas}
+  </div>
+  <div class="sub-indent" style="padding-left:40px">
+    <span class="bullet">◇</span>
+    <span class="rc-mat-efeito">${mat.efeito}</span>
+  </div>
+  ${mat.obs ? `<div class="sub-indent" style="padding-left:40px">
+    <span class="bullet">◇</span>
+    <span class="rc-mat-obs">⚠ ${mat.obs}</span>
+  </div>` : ''}
+  <div class="sub-indent" style="padding-left:40px"><span class="bullet">◇</span>
+    <span class="livro-ref">📖 ${mat.livro}<span class="pag">p. ${mat.pag}</span></span>
+  </div>`;
+}
+
 // ── Bloco de item superior ────────────────────────────
 function blockSuperior(sup, prefixo='') {
   let s = blockEquip(sup.equip, prefixo);
@@ -2576,6 +2709,7 @@ function blockSuperior(sup, prefixo='') {
     ${m.item ? `<div class="sub-indent" style="padding-left:24px"><span class="bullet">◇</span>
       <span class="livro-ref">📖 ${m.item.livro}<span class="pag">p. ${m.item.pag}</span></span>
     </div>` : ''}
+    ${linhaMaterial(m.material)}
     ${descBlocoItem(m.item?.item, linhasCopiaItem(m.item))}`;
   });
   const q = (sup.melhorias || []).length;
@@ -2720,6 +2854,7 @@ function blockMagico(mag, prefixo='') {
       ${m.item ? `<div class="sub-indent" style="padding-left:24px"><span class="bullet">◇</span>
         <span class="livro-ref">📖 ${m.item.livro}<span class="pag">p. ${m.item.pag}</span></span>
       </div>` : ''}
+      ${linhaMaterial(m.material)}
       ${descBlocoItem(m.item?.item, linhasCopiaItem(m.item))}`;
     });
     const nEnc = (mag.encantos || []).length;
@@ -2859,6 +2994,7 @@ const CUSTOM_FILTROS = {
   pergaminhoModo:  'substituir',  // 'substituir' (no slot de Poção) | 'adicional' (bônus)
   superiorEncantado: false,       // item mágico também ganha melhorias (superior + encantado)
   municoesExtras:  false,         // munições do suplemento que não cabem no d% (vira d104)
+  materiaisRaros:  true,          // os 5 materiais especiais que o livro NÃO vende podem sair
   catalogoCompleto: false,        // os 4 sorteios mundanos rolam no catálogo INTEIRO da Loja
 };
 
@@ -3028,10 +3164,27 @@ function _recTxtEquip(eq, prefixo = '') {
   return `  • ${prefixo}${eq.tipo}: ${eq.item?.item ?? '—'}${_recRef(eq.item)}`;
 }
 
+/* O material especial no .txt exportado — uma linha abaixo da melhoria
+   que o trouxe, com o preço da linha certa da tabela (ou as peças que a
+   fabricação exige, nos cinco que não se vendem). Sem isso o arquivo
+   diria "Melhoria 1: Material especial" e deixaria o mestre no mesmo
+   lugar de antes: sabendo que tem material, sem saber qual. */
+function _recTxtMaterial(m) {
+  const mat = m && m.material;
+  if (!mat) return '';
+  const extra = mat.preco != null
+    ? `+T$ ${Number(mat.preco).toLocaleString('pt-BR')}`
+    : (mat.pecas ? `não se vende · ${mat.pecas === 1 ? '1 peça' : mat.pecas + ' peças'}`
+                 : 'não se vende');
+  return `\n      · ${mat.nome} (${mat.rotulo}, ${extra})` +
+         ` [${mat.livro}, p. ${mat.pag}]` +
+         `\n        ${mat.efeito}`;
+}
+
 function _recTxtSuperior(sup, prefixo = '') {
   let s = _recTxtEquip(sup.equip, prefixo);
   (sup.melhorias || []).forEach((m, i) => {
-    s += `\n    – Melhoria ${i + 1}: ${m.item?.item ?? '—'}${_recRef(m.item)}`;
+    s += `\n    – Melhoria ${i + 1}: ${m.item?.item ?? '—'}${_recRef(m.item)}${_recTxtMaterial(m)}`;
   });
   return s;
 }
@@ -3059,7 +3212,7 @@ function _recTxtMagico(mag, prefixo = '') {
       s += `\n    – Encanto ${i + 1}: ${enc.item?.item ?? enc.encanto?.item ?? '—'}${_recRef(ref)}`;
     });
     (mag.melhorias || []).forEach((m, i) => {
-      s += `\n    – Melhoria ${i + 1}: ${m.item?.item ?? '—'}${_recRef(m.item)}`;
+      s += `\n    – Melhoria ${i + 1}: ${m.item?.item ?? '—'}${_recRef(m.item)}${_recTxtMaterial(m)}`;
     });
   }
   return s;
@@ -3533,6 +3686,36 @@ function secoesCatalogoCompleto() {
   ];
 }
 
+/* Os materiais especiais no catálogo. Uma linha por material, com o
+   preço de cada tipo de item do lado (ou as peças, nos que não se
+   vendem) — é a Tabela 3-9 e a Tabela 3-4 lidas de pé, do jeito que se
+   consulta no meio de uma rolagem.
+     `vendidos` = true  → os 9 que o livro põe numa tabela de preço
+     `vendidos` = false → os 5 raros, que só se obtêm abatendo a criatura */
+function materiaisCatalogoRows(vendidos) {
+  const M = window.GA_MATERIAIS;
+  if (!M) return [];
+  return M.MATERIAIS.filter(m => !!m.venda === !!vendidos).map(m => {
+    const linhas = M.SLOTS.filter(s => m.slots[s]).map(s => {
+      const d = m.slots[s];
+      const v = d.preco != null
+        ? '+T$ ' + Number(d.preco).toLocaleString('pt-BR')
+        : (d.pecas === 1 ? '1 peça' : d.pecas + ' peças');
+      return `${M.SLOT_ROTULO[s]} ${v}`;
+    });
+    const faltam = M.SLOTS.filter(s => !m.slots[s]).map(s => M.SLOT_ROTULO[s]);
+    const extras = M.SLOTS.map(s => m.slots[s] && m.slots[s].so)
+      .filter(Boolean).map(k => M.RESTRICAO_ROTULO[k] || k);
+    return {
+      item:  m.nome,
+      livro: m.livro, pag: m.pag,
+      obs: linhas.join(' · ')
+         + (faltam.length ? ` — não vai em ${faltam.join(', ').toLowerCase()}` : '')
+         + (extras.length ? ` — ${extras.join('; ')}` : ''),
+    };
+  });
+}
+
 function renderCatalogo() {
   const cont = document.getElementById('catalogoTesouros');
   if (!cont || cont.dataset.pronto === '1') return;   // monta uma única vez
@@ -3553,6 +3736,9 @@ function renderCatalogo() {
     catSecaoHTML('Superiores — Melhorias de Arma', '✦', MELHORIA_ARMA),
     catSecaoHTML('Superiores — Melhorias de Armadura', '✦', MELHORIA_ARMADURA),
     catSecaoHTML('Superiores — Melhorias de Esotérico', '✦', MELHORIA_ESOTER),
+    catSecaoHTML('Superiores — Materiais Especiais', '🪨', materiaisCatalogoRows(true)),
+    catSecaoHTML('Superiores — Materiais Especiais raros (não vendidos)', '🦴',
+                 materiaisCatalogoRows(false), { filtroKey: 'materiaisRaros' }),
     catSecaoHTML('Encantos Mágicos — Arma', '🪄', MAGICO_ARMA),
     catSecaoHTML('Encantos Mágicos — Armadura & Escudo', '🪄', MAGICO_ARMADURA),
     catSecaoHTML('Encantos Mágicos — Esotérico', '🪄', MAGICO_ESOTER),

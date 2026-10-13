@@ -22,6 +22,15 @@ window.ItensDescricoes = (function () {
   //    automático não captura. Mesma chave normalizada de DESC. ────────
   const EXTRA = window.GA_ITENS_DESC_EXTRA || {};
 
+  // ── Os 14 materiais especiais (js/materiais-data.js): uma ficha por
+  //    material, montada do mesmo dado que o Gerador de Recompensas usa
+  //    para sortear. Lido de forma preguiçosa porque materiais-data.js
+  //    pode carregar depois deste arquivo. ────────────────────────────
+  function materialDesc(n) {
+    const M = window.GA_MATERIAIS;
+    return (M && M.DESCRICOES && M.DESCRICOES[n]) || null;
+  }
+
   // ── Variações de nome → chave canônica. ───────────────────────────
   //   • Recompensas lista armaduras-base com nomes curtos ("Couro",
   //     "Completa"), mas a descrição está sob o nome completo.
@@ -161,7 +170,7 @@ window.ItensDescricoes = (function () {
   function get(nome) {
     let n = norm(nome);
     if (!DESC[n] && !EXTRA[n] && ALIASES[n]) n = ALIASES[n];
-    return DESC[n] || EXTRA[n] || magiaDesc(n) || null;
+    return DESC[n] || EXTRA[n] || materialDesc(n) || magiaDesc(n) || null;
   }
 
   function html(nome) {
