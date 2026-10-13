@@ -231,7 +231,9 @@ Nada precisou mudar nas regras do Firebase, e nada aqui toca o banco.
   Mestre: a melhoria não sai duas vezes no mesmo item, e forçar isso seria
   inventar uma regra de sorteio que o livro não tem. A observação da prata no
   card diz que pode.
-- **Os recursos naturais** do Ameaças (p. 401–402: carapaça, couro, fonte,
+- ~~**Os recursos naturais** do Ameaças (p. 401–402: carapaça, couro, fonte,
   ingrediente, mantimento, osso, sucata, com as Tabelas 3-5 e 3-6) são outra
   coisa — matéria-prima de fabricação, não material especial. Não entraram, e
-  valem uma leva própria se ele quiser.
+  valem uma leva própria se ele quiser.~~
+  ✅ **Feitos no mesmo dia (13/10/2026)**, e foram para a ficha de cada criatura
+  em vez do gerador: ver `docs/recursos-naturais.md`.
