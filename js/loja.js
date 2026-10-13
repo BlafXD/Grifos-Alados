@@ -41,20 +41,20 @@
   // Chave separada para os ajustes da aba de Magias (pergaminhos).
   const MAGIAS_CONFIG_KEY  = 'grifosAlados.magiasConfig';
   // Classificação da comunidade (Livre/Aldeia/Vila/Cidade/Metrópole).
-  const COMUN_STORAGE_KEY  = 'grifosAlados.lojaComunidade';
+  const COMUN_STORAGE_KEY  = GA_Sala.chave('grifosAlados.lojaComunidade');
 
   // Histórico das últimas lojas geradas — os DADOS completos ficam
   // salvos no navegador, então a loja exibida sobrevive a F5 e a
   // fechar a página. Máximo de 5 lojas; clicar numa entrada reabre-a.
-  const LOG_STORAGE_KEY = 'grifosAlados.lojaLog';
-  const LOG_SEL_KEY     = 'grifosAlados.lojaLogSel';
+  const LOG_STORAGE_KEY = GA_Sala.chave('grifosAlados.lojaLog');
+  const LOG_SEL_KEY     = GA_Sala.chave('grifosAlados.lojaLogSel');
   const LOG_MAX         = 5;
   let _log    = [];     // [{ id, quando, normal, especial }] — mais nova primeiro
   let _logSel = null;   // id da loja exibida no momento
 
   // Estado (aberto/fechado) dos painéis de ajuste — sobrevive às
   // re-renderizações da loja dentro da mesma sessão.
-  const _ajustesAbertos = { normal: false, especial: false, magias: false };
+  const _ajustesAbertos = { normal: false, especial: false, especificos: false, magias: false };
 
   // ── HISTÓRICO (localStorage) ─────────────────────────────────────
   function carregarLog() {
@@ -91,14 +91,15 @@
     const ent = {
       id: 'l_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
       quando: Date.now(),
-      normal:   LojaCompleta.gerarLojaNormal(),
-      especial: LojaCompleta.gerarLojaEspecial(),
-      magias:   (typeof Magias !== 'undefined') ? Magias.gerar() : null,
+      normal:      LojaCompleta.gerarLojaNormal(),
+      especial:    LojaCompleta.gerarLojaEspecial(),
+      especificos: LojaCompleta.gerarLojaEspecificos(),
+      magias:      (typeof Magias !== 'undefined') ? Magias.gerar() : null,
       comunidade: {
         classe:       com.classe,
         semArmasFogo: com.semArmasFogo,
         caixa: caixa ? { formula: caixa.formula, max: caixa.valor, atual: caixa.valor } : null,
-        permitir: { encantos: false, pergaminhos: false },
+        permitir: { encantos: false, pergaminhos: false, especificos: false },
       },
     };
     _log.unshift(ent);
@@ -217,6 +218,19 @@
     acessorio: { icone: '💍', nome: 'Acessórios' },
   };
 
+  // Itens mágicos NOMEADOS. Os rótulos são os das tabelas dos livros —
+  // "Armaduras & Escudos" é uma categoria só porque é assim que a Tabela
+  // 8-11 do T20 e a 3-10 do Heróis imprimem, e separar aqui inventaria
+  // uma divisão que o livro não faz.
+  const AJUSTE_ESPEC_LABELS = {
+    arma:           { icone: '⚔', nome: 'Armas específicas' },
+    armadura:       { icone: '🛡', nome: 'Armaduras & Escudos específicos' },
+    esoterico:      { icone: '🔮', nome: 'Esotéricos específicos' },
+    acessorioMenor: { icone: '💍', nome: 'Acessórios menores' },
+    acessorioMedio: { icone: '📿', nome: 'Acessórios médios' },
+    acessorioMaior: { icone: '👑', nome: 'Acessórios maiores' },
+  };
+
   // ── PERSISTÊNCIA (localStorage) ──────────────────────────────────
   function carregarConfigSalva() {
     try {
@@ -275,9 +289,9 @@
   // mágicos à venda são coisa de metrópole; o mestre pode liberar na mão.
   function magicosPermitidos(ent) {
     const cl = LojaCompleta.CLASSIFICACOES[_classifDe(ent)];
-    if (!cl || cl.magicos) return { encantos: true, pergaminhos: true };
+    if (!cl || cl.magicos) return { encantos: true, pergaminhos: true, especificos: true };
     const p = (ent.comunidade && ent.comunidade.permitir) || {};
-    return { encantos: !!p.encantos, pergaminhos: !!p.pergaminhos };
+    return { encantos: !!p.encantos, pergaminhos: !!p.pergaminhos, especificos: !!p.especificos };
   }
 
   // Pergaminhos que realmente ficam à venda: respeitam a permissão e o
@@ -595,6 +609,45 @@
       </div>`;
   }
 
+  // ── PAINEL: ITENS MÁGICOS ESPECÍFICOS ────────────────────────────
+  //  Itens NOMEADOS dos quatro livros — o pool vem do recompensas.js.
+  //  Sem ele carregado (jogadores.html) o painel nem aparece: não há o
+  //  que ajustar numa página que não gera loja.
+  function construirAjustesEspecificos() {
+    const totais = LojaCompleta.totaisEspecificos();
+    const soma   = Object.keys(totais).reduce((a, k) => a + (totais[k] || 0), 0);
+    if (!soma) return '';
+    const cfg    = LojaCompleta.obterConfig();
+    const aberto = _ajustesAbertos.especificos;
+    let linhas = '';
+
+    LojaCompleta.ORDEM_ESPECIFICOS.forEach(tipo => {
+      linhas += construirControladorLinha(
+        'especificos', tipo, AJUSTE_ESPEC_LABELS[tipo], totais[tipo] || 0,
+        cfg.especificos[tipo], false);
+    });
+
+    return `
+      <div class="aj-painel ${aberto ? 'aj-painel--aberto' : ''}">
+        <button type="button" class="aj-cabecalho" data-aj-toggle="especificos">
+          <span>⚙ Ajustar geração dos itens específicos</span>
+          <span class="aj-seta">${aberto ? '▲' : '▼'}</span>
+        </button>
+        <div class="aj-corpo">
+          ${linhas}
+          <p class="aj-dica">
+            <strong>Quantidade</strong>: vêm exatamente N itens nomeados. ·
+            <strong>Porcentagem</strong>: cada item da tabela tem a chance de aparecer. ·
+            <strong>Ambos</strong>: sorteia N candidatos e cada um ainda passa pela chance.
+            São os <strong>${soma} itens mágicos nomeados</strong> dos quatro livros, com o
+            <strong>preço de tabela</strong> — item específico não tem pechincha de mercado.
+            Os ajustes são salvos automaticamente. Clique em
+            <strong>🎲 Gerar Nova Loja</strong> para ver o resultado.
+          </p>
+        </div>
+      </div>`;
+  }
+
   // ── LÊ TODOS OS CONTROLES DO DOM E MONTA UM OBJETO DE CONFIG ──────
   function lerAjustesDoDOM() {
     const cfg = LojaCompleta.obterConfig();
@@ -602,7 +655,9 @@
       .querySelectorAll('#loja-content [data-grupo][data-campo]')
       .forEach(el => {
         const { grupo, tipo, campo } = el.dataset;
-        const dest = grupo === 'itens' ? cfg.itens : grupo === 'encantos' ? cfg.encantos : null;
+        const dest = grupo === 'itens' ? cfg.itens
+                   : grupo === 'encantos' ? cfg.encantos
+                   : grupo === 'especificos' ? cfg.especificos : null;
         if (!dest) return;
         const alvo = dest[tipo] || (dest[tipo] = {});
         if (campo === 'repetir')      alvo.repetir = el.checked;
@@ -700,7 +755,7 @@
     const toggle = e.target.closest('[data-aj-toggle]');
     if (!toggle) return;
 
-    const qual = toggle.dataset.ajToggle;          // 'normal' | 'especial'
+    const qual = toggle.dataset.ajToggle;          // 'normal' | 'especial' | 'especificos' | 'magias'
     _ajustesAbertos[qual] = !_ajustesAbertos[qual];
 
     const painel = toggle.closest('.aj-painel');
@@ -727,7 +782,9 @@
     if (!painel) return;
     const termo = _normBusca(inp.value.trim());
 
-    if (inp.dataset.buscaAlvo === 'especial') {
+    // Especial e Específicos compartilham o desenho (card por categoria,
+    // linhas dentro), então compartilham o filtro.
+    if (inp.dataset.buscaAlvo === 'especial' || inp.dataset.buscaAlvo === 'especificos') {
       painel.querySelectorAll('.especial-encantamento').forEach(el => {
         el.style.display = (!termo || _normBusca(el.textContent).indexOf(termo) >= 0) ? '' : 'none';
       });
@@ -770,6 +827,7 @@
     // As abas contam o que está À VENDA de fato (classificação aplicada).
     const perm        = magicosPermitidos(ent);
     const totalEncs   = perm.encantos ? contarEncantamentos(ent.especial) : 0;
+    const totalEspec  = perm.especificos ? contarEspecificos(ent.especificos) : 0;
     const totalMagias = pergaminhosEfetivos(ent).lista.length;
     // Serviços não são sorteados: a lista é a mesma dos livros, sempre.
     const totalServ   = totalServicos();
@@ -790,6 +848,10 @@
         <button class="loja-aba" data-painel="painel-especial">
           ✨ Loja Especial
           <span class="loja-aba-count">${totalEncs} encantamento${totalEncs !== 1 ? 's' : ''}</span>
+        </button>
+        <button class="loja-aba" data-painel="painel-especificos">
+          🌟 Específicos
+          <span class="loja-aba-count">${totalEspec} iten${totalEspec !== 1 ? 's' : ''}</span>
         </button>
         <button class="loja-aba" data-painel="painel-magias">
           📜 Magias
@@ -820,6 +882,10 @@
       <div id="painel-especial" class="loja-painel">
         ${construirAjustesEncantos()}
         ${construirLojaEspecial(ent)}
+      </div>
+      <div id="painel-especificos" class="loja-painel">
+        ${construirAjustesEspecificos()}
+        ${construirLojaEspecificos(ent)}
       </div>
       <div id="painel-magias" class="loja-painel">
         ${construirAjustesMagias()}
@@ -854,11 +920,12 @@
       const ativa  = ent.id === _logSel;
       const tItens = ent.normal.total_itens || 0;
       const tEncs  = contarEncantamentos(ent.especial);
+      const tEsp   = contarEspecificos(ent.especificos);
       linhas += `
         <button type="button" class="log-loja-item ${ativa ? 'log-loja-item--ativa' : ''}"
                 data-log-ver="${ent.id}" title="${ativa ? 'Loja exibida no momento' : 'Reabrir esta loja'}">
           <span class="log-loja-quando">${formatarDataLog(ent.quando)}</span>
-          <span class="log-loja-resumo">${tItens} iten${tItens !== 1 ? 's' : ''} · ${tEncs} encantamento${tEncs !== 1 ? 's' : ''}</span>
+          <span class="log-loja-resumo">${tItens} iten${tItens !== 1 ? 's' : ''} · ${tEncs} encantamento${tEncs !== 1 ? 's' : ''}${tEsp ? ' · ' + tEsp + ' específico' + (tEsp !== 1 ? 's' : '') : ''}</span>
           ${ativa ? '<span class="log-loja-atual">exibida</span>' : ''}
         </button>`;
     });
@@ -1246,6 +1313,73 @@
               <span class="enc-efeito">${e.effect}</span>
             </div>
             ${encDesc}`;
+        });
+      }
+
+      html += `</div></div>`;
+    });
+
+    html += `</div>`;
+    return html;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  //  LOJA — ITENS ESPECÍFICOS (itens mágicos nomeados)
+  // ══════════════════════════════════════════════════════════════════
+  //  Os 232 itens prontos dos quatro livros. Cada card traz nome, preço
+  //  de tabela e a referência (livro + página) — a referência é o que
+  //  permite ao mestre ler o verbete, porque o poder do item não cabe
+  //  numa linha de loja.
+  //
+  //  As lojas do histórico geradas ANTES deste bloco não têm o campo:
+  //  nesse caso diz-se isso, em vez de desenhar "0 itens" e deixar
+  //  parecer que o sorteio não trouxe nada.
+  function contarEspecificos(dados) {
+    return Object.values((dados && dados.categorias) || {})
+      .reduce((acc, cat) => acc + (cat.total || 0), 0);
+  }
+
+  function construirLojaEspecificos(ent) {
+    const aviso = avisoMagicosHTML(ent, 'especificos', 'itens mágicos específicos');
+    if (!magicosPermitidos(ent).especificos) return aviso;
+
+    if (!ent.especificos) {
+      return aviso + `
+        <div class="especial-vazio especial-vazio--solta">Esta loja foi gerada antes do bloco de
+          itens específicos existir. Clique em <strong>🎲 Gerar Nova Loja</strong> para que ela
+          passe a sortear itens nomeados também.</div>`;
+    }
+
+    const cats = ent.especificos.categorias || {};
+    let html = aviso + buscaHTML('especificos', '🔍 Buscar item específico — nome ou livro…');
+    html += `<div class="especial-grid">`;
+
+    LojaCompleta.ORDEM_ESPECIFICOS.forEach(cat => {
+      const info  = cats[cat] || { total: 0, itens: [] };
+      const itens = info.itens || [];
+      const lb    = AJUSTE_ESPEC_LABELS[cat] || { icone: '🌟', nome: cat };
+
+      html += `
+        <div class="especial-card">
+          <div class="especial-card-cabecalho">
+            <span class="especial-icone">${lb.icone}</span>
+            <span class="especial-label">${lb.nome}</span>
+            <span class="especial-contagem">${info.total} iten${info.total !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="especial-lista">`;
+
+      if (!itens.length) {
+        html += `<div class="especial-vazio">Nenhum item sorteado nesta geração.</div>`;
+      } else {
+        itens.forEach(it => {
+          const desc = window.ItensDescricoes ? ItensDescricoes.bloco(it.nome, null, {}) : '';
+          html += `
+            <div class="especial-encantamento esp-item">
+              <span class="esp-nome">${GA_esc(it.nome)}</span>
+              <span class="esp-preco">T$ ${GA_esc(it.preco)}</span>
+              <span class="esp-ref">${GA_esc(it.livro)}${it.pag ? ', p. ' + it.pag : ''}</span>
+            </div>
+            ${desc}`;
         });
       }
 
@@ -1824,6 +1958,31 @@
     return `\n✨ LOJA ESPECIAL — ${total} encantamento${total !== 1 ? 's' : ''}\n${'═'.repeat(46)}\n${linhas}`;
   }
 
+  function _expSecaoEspecificos(ent) {
+    if (!magicosPermitidos(ent).especificos) {
+      const cl = LojaCompleta.CLASSIFICACOES[_classifDe(ent)];
+      return `\n🌟 ITENS ESPECÍFICOS\n${'═'.repeat(46)}\n` +
+             `  Sem mercado de itens mágicos nesta comunidade (${cl.rotulo}) —\n` +
+             `  itens mágicos à venda são coisa de metrópoles.\n`;
+    }
+    if (!ent.especificos) return '';
+    const cats = ent.especificos.categorias || {};
+    let linhas = '';
+    LojaCompleta.ORDEM_ESPECIFICOS.forEach(cat => {
+      const itens = (cats[cat] || {}).itens || [];
+      if (!itens.length) return;
+      const lb = AJUSTE_ESPEC_LABELS[cat] || { nome: cat };
+      linhas += `\n${lb.nome}\n${'─'.repeat(30)}\n`;
+      itens.forEach(it => {
+        linhas += `    • ${it.nome} — T$ ${it.preco} (${it.livro}${it.pag ? ', p. ' + it.pag : ''})\n`;
+        linhas += _expDesc(it.nome);
+      });
+    });
+    if (!linhas) return '';
+    const total = contarEspecificos(ent.especificos);
+    return `\n🌟 ITENS ESPECÍFICOS — ${total} iten${total !== 1 ? 's' : ''}\n${'═'.repeat(46)}\n${linhas}`;
+  }
+
   function _expSecaoMagias(ent) {
     const pergEf = pergaminhosEfetivos(ent);
     if (pergEf.bloqueado) {
@@ -1892,10 +2051,11 @@
 
     txt += _expComunidade(ent);
 
-    if (secoes.normal)   txt += _expSecaoNormal(ent.normal);
-    if (secoes.especial) txt += _expSecaoEspecial(ent);
-    if (secoes.magias)   txt += _expSecaoMagias(ent);
-    if (secoes.servicos) txt += _expSecaoServicos();
+    if (secoes.normal)      txt += _expSecaoNormal(ent.normal);
+    if (secoes.especial)    txt += _expSecaoEspecial(ent);
+    if (secoes.especificos) txt += _expSecaoEspecificos(ent);
+    if (secoes.magias)      txt += _expSecaoMagias(ent);
+    if (secoes.servicos)    txt += _expSecaoServicos();
 
     baixarTxt(`loja_${carimboArquivo()}.txt`, txt + '\n');
   }
@@ -1912,6 +2072,8 @@
           <span><strong>⚔ Loja Normal</strong> — itens com preço e desconto</span></label>
         <label class="ga-check"><input type="checkbox" data-ga-sec="especial" checked>
           <span><strong>✨ Loja Especial</strong> — encantamentos</span></label>
+        <label class="ga-check"><input type="checkbox" data-ga-sec="especificos" checked>
+          <span><strong>🌟 Específicos</strong> — itens mágicos nomeados, com preço e livro</span></label>
         <label class="ga-check"><input type="checkbox" data-ga-sec="magias" checked>
           <span><strong>📜 Magias</strong> — pergaminhos</span></label>
         <label class="ga-check"><input type="checkbox" data-ga-sec="servicos" checked>
@@ -1925,7 +2087,7 @@
       if (e.target.closest('[data-ga-baixar]')) {
         const sec = {};
         overlay.querySelectorAll('input[data-ga-sec]').forEach(c => { sec[c.dataset.gaSec] = c.checked; });
-        if (!sec.normal && !sec.especial && !sec.magias && !sec.servicos) {
+        if (!Object.keys(sec).some(k => sec[k])) {
           alert('Selecione ao menos uma seção.'); return;
         }
         exportarLoja(sec);
@@ -1964,11 +2126,13 @@
         renderizarLoja(container, ent);
 
         const totalEnc    = contarEncantamentos(ent.especial);
+        const totalEsp    = contarEspecificos(ent.especificos);
         const totalMag    = (ent.magias && ent.magias.total) || 0;
         const statusNovo  = document.getElementById('lojaStatus');
         if (statusNovo) {
           statusNovo.textContent =
-            `✔ ${ent.normal.total_itens} itens · ${totalEnc} encantamentos · ${totalMag} pergaminhos`;
+            `✔ ${ent.normal.total_itens} itens · ${totalEnc} encantamentos · ` +
+            `${totalEsp} específicos · ${totalMag} pergaminhos`;
         }
 
         // Restaura a aba que estava aberta (renderizarLoja é síncrono)

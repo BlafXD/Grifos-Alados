@@ -28,17 +28,22 @@
   //  Nem tudo vai inteiro: o `valorParaEnviar()` poda o que é só do
   //  mestre (o 🙈 das bases e viagens) e, desde 18/09/2026, manda do
   //  `lojaLog` apenas a loja EXIBIDA — ver lojaExibida().
+  //
+  //  E a GAVETA É DA CAMPANHA (13/10/2026): a chave real sai do
+  //  GA_Sala, então dentro do Nuevo Sol o que se lê e se publica é o
+  //  `grifosAlados.bases@nuevosol`. Antes era uma gaveta só para todas,
+  //  e trocar de campanha publicava a mesma coisa na outra — foi assim
+  //  que a mesma "Viagem 1" foi parar em duas mesas de uma vez.
   const CHAVES = {
-    lojaLog:        'grifosAlados.lojaLog',
-    lojaLogSel:     'grifosAlados.lojaLogSel',
-    lojaComunidade: 'grifosAlados.lojaComunidade',
-    viagens:        'grifosAlados.viagens',
-    bases:          'grifosAlados.bases',
+    lojaLog:        GA_Sala.chave('grifosAlados.lojaLog'),
+    lojaLogSel:     GA_Sala.chave('grifosAlados.lojaLogSel'),
+    lojaComunidade: GA_Sala.chave('grifosAlados.lojaComunidade'),
+    viagens:        GA_Sala.chave('grifosAlados.viagens'),
+    bases:          GA_Sala.chave('grifosAlados.bases'),
   };
   const NOME_POR_CHAVE = {};
   Object.keys(CHAVES).forEach(n => { NOME_POR_CHAVE[CHAVES[n]] = n; });
 
-  const SALA_KEY = 'grifosAlados.syncSala';
   const esc = window.GA_esc;
 
   let inicializado = false;
@@ -80,11 +85,11 @@
   function temConfig() {
     return typeof firebase !== 'undefined' && window.GA_FIREBASE && window.GA_FIREBASE.apiKey;
   }
-  function sala() {
-    let s = '';
-    try { s = (localStorage.getItem(SALA_KEY) || '').trim(); } catch (e) {}
-    return s || 'mesa';
-  }
+  // A campanha é a do ENDEREÇO (ver js/mesa-endereco.js), e pode não
+  // haver nenhuma: `index.html` sem `?mesa=` é a bancada, e dali não sai
+  // uma linha para o banco. Antes isto caía numa sala chamada `mesa`,
+  // que é a campanha de outra pessoa.
+  function sala() { return (window.GA_Sala && window.GA_Sala.id) || ''; }
 
   // ── Firebase (só toca se houver config) ──────────────────────────
   function conectar() {
@@ -128,6 +133,7 @@
   let salaEscutada = '', refInv = null, cbInv = null;
   function ligarInventario() {
     const s = sala();
+    if (!s) return;                 // bancada: não há mesa para escutar
     if (!db || s === salaEscutada) return;
     if (refInv && cbInv) { try { refInv.off('value', cbInv); } catch (e) {} }
     salaEscutada = s;
@@ -351,11 +357,59 @@
     emVoo.clear();
   }
 
+  // ── A GAVETA VAZIA BAIXA, NÃO BRIGA (13/10/2026) ─────────────────
+  //  Com a gaveta por campanha, abrir uma mesa pela primeira vez neste
+  //  navegador significa gaveta VAZIA de um lado e a loja publicada do
+  //  outro. Pela trava isso é "conflito" — e era exatamente o que o
+  //  mestre via: gerava a loja, nada ia, e ninguém explicava.
+  //
+  //  Mas conflito é quando as DUAS têm coisa diferente. Não havendo nada
+  //  aqui, não há o que perder: o certo é trazer a da mesa para cá. Daí
+  //  este navegador passa a conhecer a versão do banco, e a próxima loja
+  //  que ele rolar sai como "minha mudança" e publica sozinha.
+  //
+  //  Só desce o que está VAZIO aqui. Chave com conteúdo diferente segue
+  //  sendo conflito, e continua decidida pelo "📤 Mandar a daqui".
+  const MODULO_DA_CHAVE = {
+    lojaLog: 'GA_Loja', lojaLogSel: 'GA_Loja', lojaComunidade: 'GA_Loja',
+    viagens: 'GA_Viagem', bases: 'GA_Bases',
+  };
+  let baixando = false;
+  function baixarOqueFalta() {
+    if (!banco || !podeTransmitir) return false;
+    const s = sala();
+    const mods = new Set();
+    Object.keys(CHAVES).forEach(nome => {
+      if (emVoo.has(nome)) return;
+      let cru = null;
+      try { cru = localStorage.getItem(CHAVES[nome]); } catch (e) {}
+      if (cru != null) return;                       // tem coisa aqui: não é este caso
+      const v = banco[nome];
+      if (typeof v !== 'string' || !v) return;
+      baixando = true;
+      try {
+        if (window.GA_guardar(CHAVES[nome], v)) {
+          marcarConhecido(s, nome, valorLocal(nome));
+          mods.add(MODULO_DA_CHAVE[nome]);
+        }
+      } finally { baixando = false; }
+    });
+    if (!mods.size) return false;
+    guardarConhecido();
+    mods.forEach(m => {
+      try { if (window[m] && window[m].recarregar) window[m].recarregar(); }
+      catch (e) { console.warn('[sync] redesenhar ' + m + ':', e && e.message); }
+    });
+    console.warn('[sync] gaveta de «' + s + '» estava vazia: ' + mods.size + ' partes trazidas da mesa');
+    return true;
+  }
+
   // A cada foto do banco: o que ficou igual vira conhecido, o que mudou
   // por outra mão pausa, e o que esperava a primeira foto sai agora.
   function conferirBanco() {
     if (!banco || !podeTransmitir) return;
     const s = sala();
+    baixarOqueFalta();
     let mudou = false;
     Object.keys(CHAVES).forEach(nome => {
       // o eco da minha própria escrita ainda não é a resposta do banco:
@@ -467,7 +521,11 @@
   Storage.prototype.setItem = function (k, v) {
     setItemOriginal.apply(this, arguments);
     try {
-      if (this === window.localStorage && NOME_POR_CHAVE[k] && podeTransmitir) {
+      // `baixando` = esta escrita É a cópia que acabou de vir do banco.
+      // Marcá-la como pendente faria o navegador devolver ao banco o que
+      // o banco acabou de mandar — ida e volta à toa, e um envio a mais
+      // no carimbo de `meta`.
+      if (this === window.localStorage && NOME_POR_CHAVE[k] && podeTransmitir && !baixando) {
         pendentes.add(NOME_POR_CHAVE[k]);
         // Trocar de loja no histórico muda só o `lojaLogSel` no
         // localStorage — mas, desde que só a loja EXIBIDA viaja, o que
@@ -484,6 +542,10 @@
   // ── Botão flutuante 📡 + modal de controle ───────────────────────
   function estado() {
     if (!temConfig()) return 'config';
+    // A bancada (index.html sem `?mesa=`) não transmite, e isso vem
+    // ANTES do login: estar logado não liga o 📡 se não há campanha
+    // aberta nesta aba.
+    if (!sala()) return 'bancada';
     if (!usuario) return 'off';
     if (!podeTransmitir) return 'sempapel';
     if (Object.keys(conflitos).length) return 'conflito';
@@ -498,6 +560,7 @@
     btn.className = 'ga-sync-btn ga-sync-btn--' + e;
     btn.title = {
       config:   'Mesa ao vivo — falta configurar o Firebase (clique para ver como)',
+      bancada:  'Mesa ao vivo — você está na bancada: nenhuma campanha aberta nesta aba, nada é transmitido (clique para abrir uma)',
       off:      'Mesa ao vivo — desconectado (clique para entrar com o Google)',
       sempapel: 'Mesa ao vivo — você não mestra esta campanha (clique para escolher a sua)',
       on:       'Mesa ao vivo — transmitindo para os jogadores' + (ultimoEnvio ? ' · último envio ' + ultimoEnvio.toLocaleTimeString('pt-BR') : ''),
@@ -534,6 +597,7 @@
         <div class="ga-modal-acoes"><button class="ga-btn-principal" data-sync-entrar>🔑 Entrar com o Google</button></div>`;
     }
 
+
     // as campanhas dele, para trocar sem sair do modal
     const minhas = window.GA_Mesa ? window.GA_Mesa.minhasMesas() : {};
     const chips = Object.keys(minhas).map(id =>
@@ -547,6 +611,28 @@
           jogadores.html?sala=<em>esse nome</em></span></label>
       ${chips ? `<div class="ga-sync-chips">${chips}</div>` : ''}
       <div class="ga-modal-acoes"><button class="ga-btn-principal" data-sync-criar>🎩 Criar e mestrar</button></div>`;
+
+    // ── A BANCADA ──────────────────────────────────────────────────
+    //  Esta aba não tem campanha aberta, então não há o que transmitir —
+    //  e dizer isso aqui é metade do conserto de 13/10/2026: antes, uma
+    //  aba sem campanha escolhida transmitia mesmo assim, para uma sala
+    //  chamada `mesa`, que é a campanha de outra pessoa.
+    if (!sala()) {
+      const minhasAqui = window.GA_Mesa ? window.GA_Mesa.minhasMesas() : {};
+      const links = Object.keys(minhasAqui).map(id =>
+        `<a class="ga-sync-chip" href="${esc(window.GA_Sala.link(id))}">${esc(minhasAqui[id] || id)}</a>`).join('');
+      return cab + `
+        <p class="ga-sync-p">Você está na <strong>bancada</strong>: nenhuma campanha aberta nesta
+          aba. O que você rolar e anotar aqui fica <strong>só neste navegador</strong> — nada vai
+          para mesa nenhuma, e é de propósito.</p>
+        <p class="ga-sync-p">Abra uma campanha para transmitir. Cada uma tem o <strong>seu</strong>
+          endereço, a <strong>sua</strong> Loja, as <strong>suas</strong> Bases e Viagens — e dá
+          para deixar duas abertas em abas diferentes sem uma pisar na outra.</p>
+        ${links ? `<div class="ga-sync-chips">${links}</div>`
+                : '<p class="ga-sync-p ga-sync-p--dica">Você ainda não tem campanha. Crie uma abaixo.</p>'}
+        ${criar}
+        <div class="ga-modal-acoes"><button class="ga-btn-sec" data-sync-sair>Sair da conta</button></div>`;
+    }
 
     if (!podeTransmitir) {
       return cab + `

@@ -17,7 +17,7 @@
 (function () {
   'use strict';
 
-  const STORAGE_KEY = 'grifosAlados.viagens';
+  const STORAGE_KEY = GA_Sala.chave('grifosAlados.viagens');
 
   // Tabela 6-4: deslocamento (m) → km por hora (×0,5). Por dia = ×8.
   const DESLOCS = [

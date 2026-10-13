@@ -166,10 +166,20 @@ window.GA_ehJogador = function () {
 // únicos no app inteiro, então as abas convivem no mesmo mapa sem colidir.
 // Quem consome: bases.js e viagem.js (gravar/limpar) e os dois syncs.
 window.GA_Inbox = (function () {
-  const CHAVE = 'grifosAlados.basesJogadoresInventario';
+  // A caixa é de UMA mesa, então a chave é a da gaveta daquela mesa (ver
+  // js/mesa-endereco.js). É função, e não constante, porque este arquivo
+  // carrega ANTES do mesa-endereco.js de propósito — é ele quem define o
+  // GA_esc e o GA_guardar que todos usam, inclusive aquele. Sem o GA_Sala
+  // (nenhuma mesa, ou uma página que não o carrega), cai na chave de
+  // sempre e nada muda.
+  function CHAVE() {
+    return window.GA_Sala
+      ? window.GA_Sala.chave('grifosAlados.basesJogadoresInventario')
+      : 'grifosAlados.basesJogadoresInventario';
+  }
 
   function mapa() {
-    try { return JSON.parse(localStorage.getItem(CHAVE) || '{}') || {}; }
+    try { return JSON.parse(localStorage.getItem(CHAVE()) || '{}') || {}; }
     catch (e) { return {}; }
   }
   // Uma entrada pode ser a string antiga (a caixa "Inventário dos
@@ -185,7 +195,7 @@ window.GA_Inbox = (function () {
     const entrada = de(id, m);
     entrada[campo] = html;
     m[id] = entrada;
-    window.GA_guardar(CHAVE, JSON.stringify(m));
+    window.GA_guardar(CHAVE(), JSON.stringify(m));
     try {
       if (window.GA_SyncJogador && window.GA_SyncJogador.escreverInbox) {
         window.GA_SyncJogador.escreverInbox(id, campo, html);
@@ -201,7 +211,7 @@ window.GA_Inbox = (function () {
     delete entrada[campo];
     if (Object.keys(entrada).length) m[id] = entrada;
     else delete m[id];
-    window.GA_guardar(CHAVE, JSON.stringify(m));
+    window.GA_guardar(CHAVE(), JSON.stringify(m));
     try { window.GA_SyncMestre && window.GA_SyncMestre.limparInbox &&
           window.GA_SyncMestre.limparInbox(id, campo); } catch (e) {}
     return true;

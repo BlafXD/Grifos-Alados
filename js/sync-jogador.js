@@ -14,12 +14,15 @@
 (function () {
   'use strict';
 
+  //  A gaveta é da MESA (13/10/2026, ver js/mesa-endereco.js): quem joga
+  //  em duas campanhas tem duas lojas e duas listas de bases guardadas,
+  //  cada uma na sua chave, e abrir um link não apaga o que veio do outro.
   const CHAVES = {
-    lojaLog:        'grifosAlados.lojaLog',
-    lojaLogSel:     'grifosAlados.lojaLogSel',
-    lojaComunidade: 'grifosAlados.lojaComunidade',
-    viagens:        'grifosAlados.viagens',
-    bases:          'grifosAlados.bases',
+    lojaLog:        GA_Sala.chave('grifosAlados.lojaLog'),
+    lojaLogSel:     GA_Sala.chave('grifosAlados.lojaLogSel'),
+    lojaComunidade: GA_Sala.chave('grifosAlados.lojaComunidade'),
+    viagens:        GA_Sala.chave('grifosAlados.viagens'),
+    bases:          GA_Sala.chave('grifosAlados.bases'),
   };
   // cada chave pertence a um módulo; cada módulo é redesenhado UMA vez.
   const MODULO = {
@@ -35,7 +38,13 @@
     return false;   // módulo não está nesta página
   }
 
-  const sala = (new URLSearchParams(location.search).get('sala') || 'mesa').trim() || 'mesa';
+  // A sala vem do endereço, pelo js/mesa-endereco.js (que normaliza
+  // "?sala=Purista" e "?sala=purista" para a mesma mesa). NÃO há mais
+  // sala padrão: um link sem `?sala=` caía em `mesa`, que é uma
+  // campanha de verdade — abrir o site errado entrava na mesa de outra
+  // pessoa sem ninguém notar. Sem sala, este arquivo fica quieto e o
+  // chip diz o que falta.
+  const sala = GA_Sala.id;
 
   // O chip do rodapé tem duas partes que mudam em horas diferentes: o
   // estado da sala (o sync escreve) e a linha de login (o bloco "QUEM PODE
@@ -137,7 +146,7 @@
   //  paradas VISÍVEIS de uma viagem. Um espelho à parte do arquivo do
   //  mestre — não mexe em nada que seja só dele. Qualquer jogador escreve
   //  (são caixas compartilhadas por todos que abrirem o link da sala).
-  const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
+  const CHAVE_INV_JOGADORES = GA_Sala.chave('grifosAlados.basesJogadoresInventario');
   let dbRef = null, timerInv = null, pendenteInv = {};
 
   function inboxLocal() { return window.GA_Inbox ? window.GA_Inbox.mapa() : {}; }
@@ -330,6 +339,14 @@
   }
 
   function init() {
+    // Link sem `?sala=`. Antes isto caía numa sala chamada `mesa` — e
+    // quem abrisse o endereço pelado entrava na campanha de outra gente.
+    // Agora diz o que falta, e não assina mesa nenhuma.
+    if (!sala) {
+      chip('🔗 Falta a sala no link. Peça ao mestre o endereço completo, com ' +
+           '<code>?sala=…</code> no fim.', 'ga-jog-chip--off');
+      return;
+    }
     if (typeof firebase === 'undefined' || !window.GA_FIREBASE || !window.GA_FIREBASE.apiKey) {
       chip('🕯 Mesa ao vivo não configurada — mostrando a última cópia guardada neste aparelho.', 'ga-jog-chip--off');
       return;

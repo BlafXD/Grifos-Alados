@@ -29,7 +29,10 @@
   'use strict';
 
   const esc = window.GA_esc;
-  const SALA_KEY = 'grifosAlados.syncSala';
+  // `grifosAlados.syncSala` NÃO é mais lida: a mesa vem do endereço (ver
+  // js/mesa-endereco.js). Ela sobrevive como o resto da mudança — é por
+  // ela que o mesa-endereco.js sabe de qual campanha era a gaveta velha
+  // deste navegador — e por isso não se apaga nem se escreve mais aqui.
 
   // Ordem é hierarquia: quem pode mais vem antes.
   const PAPEIS = [
@@ -75,32 +78,28 @@
   function agora() { return firebase.database.ServerValue.TIMESTAMP; }
 
   // ── QUAL É A MESA ────────────────────────────────────────────────
-  // Na página dos jogadores manda o link (?sala=); na do mestre, a que
-  // ele abriu por último.
+  //  Desde 13/10/2026 quem responde é o ENDEREÇO, nas duas páginas, e
+  //  quem o lê é o js/mesa-endereco.js. Aqui só se repassa.
+  //
+  //  E a resposta pode ser "nenhuma": `index.html` sem `?mesa=` é o HUB,
+  //  a bancada de quem abriu o site. Antes, nesse caso, o site caía numa
+  //  sala chamada `mesa` — que é uma campanha de verdade, de outra
+  //  pessoa, e era por aí que a loja de um ia parar na mesa do outro.
+  //  Nada mais tem sala padrão: fora de mesa é fora de mesa, e nenhuma
+  //  linha sai daqui para o banco.
   function ehJogador() { return !!(window.GA_ehJogador && window.GA_ehJogador()); }
-  function mesaId() {
-    if (ehJogador()) {
-      const s = (new URLSearchParams(location.search).get('sala') || '').trim();
-      return idDe(s || 'mesa');
-    }
-    let s = '';
-    try { s = (localStorage.getItem(SALA_KEY) || '').trim(); } catch (e) {}
-    return idDe(s || 'mesa');
-  }
+  function mesaId()    { return (window.GA_Sala && window.GA_Sala.id) || ''; }
+  function naMesa()    { return !!mesaId(); }
   function linkDosJogadores(id) {
-    try { return new URL('jogadores.html?sala=' + encodeURIComponent(id || mesaId()), location.href).href; }
-    catch (e) { return 'jogadores.html?sala=' + (id || mesaId()); }
+    return window.GA_Sala ? window.GA_Sala.linkJogador(id || mesaId())
+                          : 'jogadores.html?sala=' + (id || mesaId());
   }
 
-  // O nome da campanha vira o id da sala: "Purista" → "purista",
-  // "Nuevo Sol" → "nuevo-sol". Normalizar dos DOIS lados (na criação e
-  // na leitura do ?sala=) faz "Purista" e "purista" caírem na mesma mesa
-  // — senão o link com maiúscula abriria uma sala vazia.
-  function idDe(nome) {
-    return String(nome || '').normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')                    // tira acentos
-      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'mesa';
-  }
+  // A normalização do nome da campanha ("Nuevo Sol" vira "nuevo-sol")
+  // mora no js/mesa-endereco.js, que é quem lê o endereço — aqui se usa
+  // a dele, para não existirem duas regras capazes de divergir.
+  function idDe(nome) { return window.GA_Sala ? window.GA_Sala.idDe(nome) : String(nome || ''); }
+
 
   // ── ASSINATURAS ──────────────────────────────────────────────────
   let refs = [];
@@ -126,6 +125,17 @@
     est.membros = {}; est.pedidos = {}; est.meuPedido = null; est.papel = null;
     est.mesa = null; est.minhasMesas = {};
 
+    const u = est.usuario;
+
+    // No HUB não há mesa para assinar — e é o ponto da mudança: sem
+    // `?mesa=` no endereço, este navegador não toca em campanha nenhuma.
+    // A lista "Suas campanhas" continua vindo, porque é dela que se
+    // escolhe para onde ir.
+    if (!id) {
+      if (u) ligar('usuarios/' + u.uid + '/mesas', v => { est.minhasMesas = v || {}; });
+      return;
+    }
+
     // Estes são públicos de propósito: quem cai no link precisa saber
     // onde caiu e se a porta está aberta ANTES de entrar em conta
     // nenhuma. É a placa na porta, não o conteúdo do jogo.
@@ -133,7 +143,6 @@
     ligar('mesas/' + id + '/dono',         v => { est.mesa = Object.assign({}, est.mesa, { dono: v }); });
     ligar('mesas/' + id + '/entradaLivre', v => { est.mesa = Object.assign({}, est.mesa, { entradaLivre: v === true }); });
 
-    const u = est.usuario;
     if (!u) return;
 
     // "eu sou membro?" — cada um lê o próprio nó, sempre
@@ -211,19 +220,25 @@
         est.erro = 'a sala "' + id + '" já é de outra mesa — escolha outro nome';
         return avisar();
       }
-      const mesa = {
-        nome: nomeLimpo, dono: u.uid, entradaLivre: true, criadaEm: agora(), membros: {},
-      };
-      mesa.membros[u.uid] = { nome: nomeDe(u), papel: 'mestre', desde: agora() };
-      // mesa órfã (existe sem dono): não dá para reescrever o nó inteiro,
-      // porque isso apagaria os dados que já estão lá dentro
-      const escrita = snap.exists() || est.mesa
-        ? b.ref('mesas/' + id).update({
+      const souMestre = { nome: nomeDe(u), papel: 'mestre', desde: agora() };
+      // SEMPRE update, nunca set. Uma mesa órfã (existe, sem `dono`) pode
+      // ter `dados`, `fichas` e `membros` dentro, e um `set` no nó inteiro
+      // apagaria tudo isso. O `update` escreve os mesmos campos de uma
+      // mesa nova sem tocar em irmão nenhum — e aqui o perigo é real:
+      // desde que a campanha vem do endereço, dá para criar um nome sem
+      // nunca ter aberto aquela sala, então não há como confiar em "o que
+      // eu já tinha carregado" para saber se ela existe.
+      //
+      // E `criadaEm` fica FORA da escrita de propósito: nas regras do
+      // banco ele só tem `.read`, então escrevê-lo cai na regra do nó
+      // `$sala`, que exige `!data.exists()` — numa mesa órfã isso é
+      // falso e derrubaria o update INTEIRO, que é atômico. Assumir uma
+      // campanha sem dono pararia de funcionar por causa de um carimbo
+      // de data que o site não lê em lugar nenhum.
+      return b.ref('mesas/' + id).update({
             nome: nomeLimpo, dono: u.uid, entradaLivre: true,
-            ['membros/' + u.uid]: mesa.membros[u.uid],
+            ['membros/' + u.uid]: souMestre,
           })
-        : b.ref('mesas/' + id).set(mesa);
-      return escrita
         .then(() => b.ref('usuarios/' + u.uid + '/mesas/' + id).set(nomeLimpo))
         .then(() => abrirMesa(id, nomeLimpo));
     }).catch(e => {
@@ -249,17 +264,29 @@
       .catch(e => { est.erro = recado(e, 'não deu para entrar na mesa'); avisar(); });
   }
 
+  // ABRIR UMA MESA É TROCAR DE ENDEREÇO (13/10/2026). Antes isto
+  // escrevia uma chave do localStorage e mandava os módulos se
+  // re-apontarem no ar — e quem esquecesse de se re-apontar ficava
+  // falando com a campanha anterior. Agora a aba inteira nasce de novo
+  // em `index.html?mesa=<id>`: gaveta, 📡, iniciativa e rolagens já
+  // acordam na campanha certa, e o endereço diz em qual você está.
+  //
+  // O índice "Suas campanhas" é gravado ANTES de sair, senão a navegação
+  // corta a escrita no meio.
   function abrirMesa(id, nome) {
     if (!id) return;
-    window.GA_guardar(SALA_KEY, id);
-    if (nome && est.usuario) {
-      const b = db();
-      if (b) b.ref('usuarios/' + est.usuario.uid + '/mesas/' + id).set(nome).catch(() => {});
-    }
     est.erro = '';
-    assinar();
-    avisar();
+    const ir = () => { window.GA_Sala.abrir(id); };
+    const b = db();
+    if (nome && est.usuario && b) {
+      b.ref('usuarios/' + est.usuario.uid + '/mesas/' + id).set(nome).then(ir).catch(ir);
+      return;
+    }
+    ir();
   }
+
+  // Voltar para a bancada: o HUB é o endereço sem `?mesa=`.
+  function irParaOHub() { window.GA_Sala.abrir(''); }
 
   // ── PEDIR, APROVAR, MANDAR EMBORA ────────────────────────────────
   function pedir() {
@@ -488,23 +515,49 @@
 
   // O painel de criar campanha só existe no lado do mestre: a página dos
   // jogadores é para jogar, não para administrar mesa.
+  //
+  //  Cada campanha é um LINK de verdade (`index.html?mesa=…`), não um
+  //  botão que troca um estado escondido: dá para abrir em outra aba, dá
+  //  para favoritar, e duas campanhas ficam abertas lado a lado sem uma
+  //  pisar na outra.
   function blocoMinhasMesas() {
     if (!est.usuario || ehJogador()) return '';
     const minhas = est.minhasMesas || {};
     const ids = Object.keys(minhas);
     const atual = mesaId();
     const lista = ids.length
-      ? '<div class="me-chips">' + ids.map(id => '<button type="button" class="me-chip' +
-          (id === atual ? ' me-chip--atual' : '') + '" data-mesa="abrir" data-id="' + esc(id) + '">' +
-          esc(minhas[id] || id) + '</button>').join('') + '</div>'
+      ? '<div class="me-chips">' + ids.map(id => '<a class="me-chip' +
+          (id === atual ? ' me-chip--atual' : '') + '" href="' + esc(window.GA_Sala.link(id)) + '"' +
+          ' data-mesa="abrir" data-id="' + esc(id) + '">' +
+          esc(minhas[id] || id) + (id === atual ? ' ✓' : '') + '</a>').join('') + '</div>'
       : '<p class="me-vazio">Nenhuma campanha sua ainda.</p>';
     return cartao('🗺 Suas campanhas', lista +
+      (atual ? '<p class="me-mini">Você está em <strong>' + esc(minhas[atual] || atual) +
+        '</strong>. Clicar em outra abre a outra; o <strong>↩ Voltar à bancada</strong> ' +
+        'lá em cima sai de todas.</p>' : '') +
       '<div class="me-form">' +
         '<label class="me-campo">Nova campanha<input type="text" id="meNovaCamp" placeholder="Purista"></label>' +
         '<button type="button" class="me-btn me-btn--principal" data-mesa="criar">Criar e mestrar</button>' +
       '</div>' +
       '<p class="me-mini">Escreveu o nome, você é o mestre — ninguém precisa autorizar. ' +
-      'O nome vira o endereço da sala (<code>?sala=…</code>) e vale primeiro a chegar.</p>');
+      'O nome vira o endereço da campanha (<code>?mesa=…</code>) e vale primeiro a chegar.</p>');
+  }
+
+  // ── O HUB: nenhuma campanha aberta ───────────────────────────────
+  //  É aqui que se explica, de uma vez, a regra que mudou em 13/10/2026
+  //  — porque "por que a minha loja não foi para a mesa?" tem resposta
+  //  nesta tela.
+  function blocoHub() {
+    return cartao('🛠 Você está na sua bancada',
+      '<p class="me-p">Nenhuma campanha aberta nesta aba. Tudo o que você fizer aqui — a Loja que ' +
+      'rolar, as Bases, as Viagens — fica <strong>só neste navegador</strong>: o 📡 está desligado e ' +
+      'nada vai para mesa nenhuma.</p>' +
+      '<p class="me-p">Para jogar, <strong>abra uma campanha</strong> ali embaixo. A aba passa a ser ' +
+      'daquela campanha (o endereço mostra qual), e a Loja, as Bases e as Viagens que você mexer ' +
+      'ali são <strong>dela</strong> — não se misturam com as das outras.</p>' +
+      '<p class="me-mini">Antes disto, o site sem campanha escolhida caía numa sala chamada ' +
+      '<code>mesa</code>, que é uma campanha de verdade: era por aí que a loja de um ia parar na ' +
+      'mesa do outro.</p>');
   }
 
   //  A PORTA PARA O OUTRO LADO (18/09/2026). O link dos jogadores só
@@ -515,6 +568,12 @@
   //  Só no index: no jogadores.html já se está do outro lado.
   function cabecalho() {
     const id = mesaId();
+    if (!id) {
+      return '<div class="me-cab">' +
+        '<h2 class="me-titulo">🛠 Bancada</h2>' +
+        '<p class="me-mini">nenhuma campanha aberta nesta aba — o 📡 está desligado</p>' +
+      '</div>';
+    }
     const nome = (est.mesa && est.mesa.nome) || id;
     const l = linkDosJogadores();
     return '<div class="me-cab">' +
@@ -523,7 +582,9 @@
       (ehJogador() ? '' :
         '<p class="me-verjog"><a href="' + esc(l) + '" target="_blank" rel="noopener">' +
         '👥 Abrir a visão dos jogadores</a>' +
-        '<span class="me-mini">é o que eles veem desta sala — abre em outra aba</span></p>') +
+        '<span class="me-mini">é o que eles veem desta sala — abre em outra aba</span>' +
+        '<a class="me-btn me-btn--mini" href="' + esc(window.GA_Sala.link('')) + '" data-mesa="hub">↩ Voltar à bancada</a>' +
+        '</p>') +
     '</div>';
   }
 
@@ -537,6 +598,15 @@
       return;
     }
     if (!est.pronto) { alvo.innerHTML = '<p class="me-vazio">Falando com o Firebase…</p>'; return; }
+
+    // No HUB não há campanha: o que cabe é a conta, a explicação e a
+    // lista de para onde ir. Os blocos de membros, pedidos e "esta
+    // campanha" não têm do que falar.
+    if (!naMesa()) {
+      alvo.innerHTML = cabecalho() + '<div class="me-grade">' +
+        blocoHub() + blocoConta() + blocoMinhasMesas() + '</div>';
+      return;
+    }
     alvo.innerHTML = cabecalho() + '<div class="me-grade">' +
       blocoConta() + blocoEntrada() + blocoPedidos() + blocoMembros() +
       blocoEstaMesa() + blocoMinhasMesas() + '</div>';
@@ -550,8 +620,15 @@
   function aoClicar(e) {
     const btn = e.target.closest('[data-mesa]');
     if (!btn || btn.tagName === 'SELECT') return;
+    // Abrir campanha e voltar à bancada são LINKS de verdade: com Ctrl,
+    // Shift ou o botão do meio, deixa o navegador abrir noutra aba — é
+    // justo o que permite duas campanhas lado a lado.
+    const acaoBruta = btn.dataset.mesa;
+    if ((acaoBruta === 'abrir' || acaoBruta === 'hub') &&
+        (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1)) return;
     e.preventDefault();
-    const acao = btn.dataset.mesa, uid = btn.dataset.uid;
+    const acao = acaoBruta, uid = btn.dataset.uid;
+    if (acao === 'hub')         return irParaOHub();
     if (acao === 'entrar')      return entrar();
     if (acao === 'sair')        return sair();
     if (acao === 'pedir')       return pedir();

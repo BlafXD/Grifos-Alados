@@ -714,6 +714,23 @@ const LojaCompleta = (function () {
 
   const ORDEM_CATEGORIAS_ESPECIAL = ['arma', 'armadura', 'escudo', 'esoterico', 'acessorio'];
 
+  // ── ITENS MÁGICOS NOMEADOS ───────────────────────────────────────
+  //  As seis tabelas de itens prontos ("Vingadora sagrada", "Anel da
+  //  proteção") vivem no js/recompensas.js, que é quem as conferiu
+  //  contra os quatro livros. Aqui elas só são LIDAS, e na hora de
+  //  gerar: o recompensas.js carrega DEPOIS deste arquivo, então
+  //  guardar a referência agora traria `undefined` para sempre.
+  //  Sem ele carregado (é o caso do jogadores.html), o bloco nasce
+  //  vazio em vez de estourar.
+  const ORDEM_ESPECIFICOS = ['arma', 'armadura', 'esoterico', 'acessorioMenor', 'acessorioMedio', 'acessorioMaior'];
+  function _tabelasNomeadas() {
+    return (typeof window !== 'undefined' && window.GA_ItensNomeados) || {};
+  }
+  function _poolNomeados(cat) {
+    const t = _tabelasNomeadas()[cat];
+    return Array.isArray(t) ? t : [];
+  }
+
   // ╔══════════════════════════════════════════════════╗
   // ║  CONFIGURAÇÃO POR TIPO / CATEGORIA                                ║
   // ║  Cada controlador (item ou encantamento) tem um MODO:             ║
@@ -737,6 +754,17 @@ const LojaCompleta = (function () {
       escudo:    { modo: 'quantidade', qtd: 3, prob: 5, repetir: false },
       esoterico: { modo: 'quantidade', qtd: 3, prob: 5, repetir: false },
       acessorio: { modo: 'quantidade', qtd: 3, prob: 5, repetir: false },
+    },
+    // Itens mágicos NOMEADOS (as tabelas de Recompensas). Nasce em 1 de
+    // cada: um item específico é o prêmio de uma aventura inteira, não
+    // prateleira — quem quiser bazar de metrópole sobe o número.
+    especificos: {
+      arma:           { modo: 'quantidade', qtd: 1, prob: 3, repetir: false },
+      armadura:       { modo: 'quantidade', qtd: 1, prob: 3, repetir: false },
+      esoterico:      { modo: 'quantidade', qtd: 1, prob: 3, repetir: false },
+      acessorioMenor: { modo: 'quantidade', qtd: 1, prob: 3, repetir: false },
+      acessorioMedio: { modo: 'quantidade', qtd: 1, prob: 3, repetir: false },
+      acessorioMaior: { modo: 'quantidade', qtd: 1, prob: 3, repetir: false },
     },
   };
 
@@ -980,6 +1008,11 @@ const LojaCompleta = (function () {
         _config.encantos[cat] = _normComum(novo.encantos[cat], _config.encantos[cat]);
       }
     }
+    for (const cat of ORDEM_ESPECIFICOS) {
+      if (novo.especificos && novo.especificos[cat] != null) {
+        _config.especificos[cat] = _normComum(novo.especificos[cat], _config.especificos[cat]);
+      }
+    }
   }
 
   // ═══════════════════════════════════════════════════
@@ -1073,6 +1106,38 @@ const LojaCompleta = (function () {
     return { tipo: 'loja_especial', categorias: categorias };
   }
 
+  // ═══════════════════════════════════════════════════
+  //  LOJA DE ITENS ESPECÍFICOS (itens mágicos nomeados)
+  // ═══════════════════════════════════════════════════
+  //  Mesma mecânica dos outros dois blocos — quantidade, porcentagem ou
+  //  ambos, com "permitir repetidos" —, só que o pool são os 232 itens
+  //  nomeados dos quatro livros.
+  //
+  //  DUAS DECISÕES DE REGRA, para não haver dúvida depois:
+  //  • PREÇO É O DO LIVRO, sem desconto. O desconto da loja normal é a
+  //    pechincha de mercado; um item mágico nomeado não tem mercado, tem
+  //    preço de tabela (e é o preço que a Tabela 8-1 usa para calcular
+  //    tesouro). Quem quiser dar desconto dá na mesa.
+  //  • A LINHA É AUTOSSUFICIENTE: nome, preço, livro e página viajam
+  //    dentro dela. É o que deixa a página dos jogadores desenhar o
+  //    item sem carregar as tabelas do recompensas.js.
+  function gerarLojaEspecificos() {
+    const categorias = {};
+    for (const cat of ORDEM_ESPECIFICOS) {
+      const pool = _poolNomeados(cat);
+      const cfg  = _config.especificos[cat] || CONFIG_PADRAO.especificos[cat];
+      const escolhidos = _amostrar(pool, cfg);
+      const itens = escolhidos.map(it => ({
+        nome:  it.item,
+        preco: it.preco,
+        livro: it.livro,
+        pag:   it.pag,
+      }));
+      categorias[cat] = { total: itens.length, itens: itens };
+    }
+    return { tipo: 'loja_especificos', categorias: categorias };
+  }
+
   // ── TOTAIS DISPONÍVEIS NO CATÁLOGO (para os seletores 0..total) ──
   function totaisItens() {
     const t = { weapon: 0, armor: 0, misc: 0 };
@@ -1082,6 +1147,11 @@ const LojaCompleta = (function () {
   function totaisEncantos() {
     const t = {};
     for (const cat of ORDEM_CATEGORIAS_ESPECIAL) t[cat] = (ENCANTAMENTOS[cat] || []).length;
+    return t;
+  }
+  function totaisEspecificos() {
+    const t = {};
+    for (const cat of ORDEM_ESPECIFICOS) t[cat] = _poolNomeados(cat).length;
     return t;
   }
 
@@ -1120,10 +1190,13 @@ const LojaCompleta = (function () {
   return {
     gerarLojaNormal:   gerarLojaNormal,
     gerarLojaEspecial: gerarLojaEspecial,
+    gerarLojaEspecificos: gerarLojaEspecificos,
     obterConfig:       obterConfig,
     definirConfig:     definirConfig,
     totaisItens:       totaisItens,
     totaisEncantos:    totaisEncantos,
+    totaisEspecificos: totaisEspecificos,
+    ORDEM_ESPECIFICOS: ORDEM_ESPECIFICOS.slice(),
     statsDeItem:       statsDeItem,
     catalogoNomes:     catalogoNomes,
     CONFIG_PADRAO:     _clonar(CONFIG_PADRAO),

@@ -177,6 +177,10 @@
 
 <!-- script.js primeiro: define utilitários globais (GA_esc, GA_abrirModal…) usados pelos demais -->
 <script src="js/script.js" defer></script>
+<!-- qual mesa é esta aba (o ?mesa= / ?sala= do endereço) e qual gaveta do
+     localStorage ela abre: tem de vir ANTES da loja, das bases, da viagem,
+     do mesa.js e dos dois syncs, que é quem lê essa gaveta -->
+<script src="js/mesa-endereco.js" defer></script>
 <!-- logo depois: a gaveta e a semântica das abas precisam existir antes
      do estado-navegacao.js restaurar a aba clicando nos próprios links -->
 <script src="js/acessibilidade.js" defer></script>

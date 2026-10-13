@@ -169,14 +169,26 @@
     'syncConhecido':           'Digital do 📡 (a trava)',
     'basesJogadoresInventario':'Caixa de entrada dos jogadores'
   };
-  function bonito(chave) {
+  // Desde 13/10/2026 as coisas de uma campanha moram numa chave com o
+  // nome dela no fim: `grifosAlados.bases@nuevosol`. Sem separar esse
+  // sufixo, a loja e as bases de CADA campanha sumiriam desta tabela
+  // (viriam na mala do mesmo jeito, mas quem confere não as veria) —
+  // e conferir antes de mudar de endereço é todo o ponto desta página.
+  function partes(chave) {
     var curto = chave.indexOf(PREFIXO) === 0 ? chave.slice(PREFIXO.length) : chave;
-    return NOMES[curto] || curto;
+    var at = curto.indexOf('@');
+    return at > 0 ? { base: curto.slice(0, at), mesa: curto.slice(at + 1) }
+                  : { base: curto, mesa: '' };
+  }
+  function bonito(chave) {
+    var p = partes(chave);
+    var nome = NOMES[p.base] || p.base;
+    return p.mesa ? nome + ' — campanha «' + p.mesa + '»' : nome;
   }
   // O que é pequeno demais para merecer uma linha na tabela.
   function miudeza(chave) {
-    var curto = chave.indexOf(PREFIXO) === 0 ? chave.slice(PREFIXO.length) : chave;
-    return !NOMES[curto] || /Abert|Visivel|Subaba|Selecionada|Fechad|Sel$|Forma|Segredo|Ocultas|Recolhido/.test(curto);
+    var p = partes(chave);
+    return !NOMES[p.base] || /Abert|Visivel|Subaba|Selecionada|Fechad|Sel$|Forma|Segredo|Ocultas|Recolhido/.test(p.base);
   }
   function kb(n) {
     if (n < 1024) return n + ' B';
