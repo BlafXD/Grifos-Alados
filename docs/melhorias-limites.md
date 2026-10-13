@@ -177,9 +177,15 @@ parte dos itens.
 | **Cristal de sol** | **"Só pode ser aplicado a armas de corte ou perfuração"** (na linha Arma) |
 | Lanajuste · Espada de coral · Pena de kraken · Prata · Quitina razza | peças por tipo de item |
 
-> **No site, "Material especial" é uma entrada só, com o `obs` "Mestre define o
+> ~~**No site, "Material especial" é uma entrada só, com o `obs` "Mestre define o
 > material".** Nenhum dos 6 + ~9 materiais está modelado, nem as restrições
-> deles. É a maior lacuna do mapa, e a mais trabalhosa.
+> deles. É a maior lacuna do mapa, e a mais trabalhosa.~~
+>
+> ✅ **FECHADO em 13/10/2026.** Os materiais viraram `js/materiais-data.js` e o
+> gerador sorteia o material junto com a melhoria. **São 14, não 15:** a *espada
+> de coral* não é material, é uma cimitarra de lanajuste. O detalhe de cada
+> decisão está em **`docs/materiais-especiais.md`** — inclusive o preço da
+> Tabela 3-9, que **só se lê pelas coordenadas do PDF**.
 
 ---
 
@@ -248,8 +254,10 @@ e relança. Hoje são **8 testes**; o mapa acima pede:
   **Injetora, Prudente e Sob medida** — elas passam a valer para armaduras
   **e escudos**, que é o que a tabela do livro diz.
 - **1 correção de cobertura**: Devotado também na lista de arma.
-- **1 leva à parte**: os ~15 materiais especiais, cada um com o seu limite e as
-  suas "peças" — isso é tamanho de leva própria, não de ajuste.
+- ~~**1 leva à parte**: os ~15 materiais especiais, cada um com o seu limite e as
+  suas "peças" — isso é tamanho de leva própria, não de ajuste.~~
+  ✅ **feita em 13/10/2026** — são **14**, e estão em `js/materiais-data.js`.
+  Ver `docs/materiais-especiais.md`.
 
 ### O que foi aplicado em 06/10/2026
 
@@ -260,7 +268,7 @@ FEITO    Espinhos virou Espinhosa (41–42, armadura) × Espinhoso (43–44, esc
 NÃO      Devotado na lista de arma — ver abaixo
 FICA     o teste de ferramenta/vestuário com perícia (depende de o gerador
          passar a sortear essas categorias)
-FICA     os ~15 materiais especiais e os limites de cada um
+FEITO    (13/10/2026) os 14 materiais especiais e os limites de cada um
 ```
 
 **Por que o Devotado NÃO entrou na tabela de arma.** A Tab. 1-4 do *Deuses* o

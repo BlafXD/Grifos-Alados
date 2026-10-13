@@ -19,6 +19,16 @@
 // ════════════════════════════════════════════════════════════════════
 window.GA_CRIACAO_ITENS = (function () {
 
+  // ── AS DUAS TABELAS DE MATERIAL ESPECIAL ────────────────────────
+  //  Vêm montadas de js/materiais-data.js — o MESMO dado que o Gerador
+  //  de Recompensas sorteia. Digitar os 70 preços de novo aqui seria
+  //  criar uma segunda verdade para a mesma tabela.
+  function tabelaMaterial(livro) {
+    const M = window.GA_MATERIAIS;
+    if (!M) return { cab: [], linhas: [] };
+    return M.tabelaDePrecos(livro);
+  }
+
   // ── TABELA 3-7: PREÇO DE MELHORIAS (confirmada, completa) ────────
   const MELHORIAS_PADRAO = [
     { n: 1, preco: 300,   cd: 5  },
@@ -209,9 +219,24 @@ As tabelas do Heróis e do Deuses saem desalinhadas do PDF (o cabeçalho de cate
 Exemplo: o preço de uma couraça é T$ 500. Fabricá-la exige um gasto de T$ 166 (um terço do preço) e um teste de Ofício contra CD 15. Já uma couraça com duas melhorias custa T$ 3.500 (T$ 500 + T$ 3.000 das duas melhorias); fabricá-la exige T$ 1.166 (um terço) e CD 25 (15 base + 10 das duas melhorias).
 É possível adicionar melhorias a um item já pronto: paga-se a diferença de acordo com o novo número de melhorias (ex.: para ir de duas para três melhorias, paga-se mais T$ 2.000 — um terço da diferença). Além disso, faz-se um teste de Ofício contra a CD do novo número de melhorias; se falhar por 5 ou mais, o item estraga.` },
 
-    { grupo: '⚒ Itens Superiores', titulo: 'Materiais especiais', texto:
-`Armas, armaduras, escudos e esotéricos podem ser feitos ou banhados de um material especial. Para isso, o item precisa ter a melhoria "material especial" e você precisa pagar o preço extra do material escolhido (Tabela 3-9 — não incluída neste Regras.txt; consulte o livro ou a lista de melhorias via "📖 Descrição").
-O que cada material faz (Aço-Rubi, Adamante, Gelo Eterno, Madeira Tollon, Matéria Vermelha, Mitral e outros) já está disponível pela mesma busca "📖 Descrição".` },
+    { grupo: '⚒ Itens Superiores', titulo: 'Materiais especiais — quem pode e quanto custa', texto:
+`Armas, armaduras, escudos e esotéricos podem ser feitos ou banhados de um material especial. Para isso, o item precisa ter a melhoria "material especial" e você precisa pagar o preço extra do material escolhido. Fabricar um item de material especial é uma melhoria porque materiais especiais exigem um trabalho mais complexo do que materiais comuns.
+FERRAMENTA e VESTUÁRIO ficam de fora: recebem outras melhorias, mas não recebem material especial.
+São 14 materiais nos livros — seis no Tormenta 20 e oito no Ameaças de Arton. O Heróis de Arton e o Deuses de Arton não acrescentam nenhum. As duas tabelas de preço estão nos cards seguintes, e a ficha de cada material (o que faz em arma, em armadura, em escudo e em esotérico, com os limites próprios) sai pelo "📖 Descrição": digite o nome do material.
+Três materiais trazem limite próprio, além da categoria: a MADEIRA TOLLON só vai em arma de madeira (arcos, bordões, clavas, lanças, piques e tacapes), escudo leve e esotérico; o COURO DE BULETTE só em armadura e esotérico (o verbete não tem linha de arma nem de escudo); e o CRISTAL DE SOL, em arma, só nas de corte ou perfuração.
+A PRATA é revestimento, e por isso pode ser combinada com um segundo material especial — cada um contando como uma melhoria separada. E a ESPADA DE CORAL não é um material: é uma cimitarra de lanajuste feita pela Irmandade dos Pescadores, que também deixa a vítima sangrando no crítico; aplicado assim, o lanajuste custa +T$ 1.800 em vez de +T$ 600.` },
+
+    { grupo: '⚒ Itens Superiores', titulo: 'Tabela 3-9: preço dos materiais do Tormenta 20', texto:
+`O preço do material é pago ALÉM do preço da melhoria (Tabela 3-7). O traço nas duas linhas de armadura da madeira Tollon é do próprio livro: madeira não vira armadura.`,
+      tabela: Object.assign({ titulo: 'Tabela 3-9: Preço Adicional de Materiais Especiais (Tormenta20, p. 167)', destaque: 0,
+        nota: 'Esta tabela não se lê por texto: no pdftotext a coluna do Mitral é arrancada para a linha de Arma e as de baixo deslizam uma coluna, o que faria a armadura leve de mitral custar +T$ 3.000 (é 1.500) e a pesada +T$ 18.000 (é 12.000). Foi lida pelas coordenadas de cada célula na página.' },
+        tabelaMaterial('Tormenta20')) },
+
+    { grupo: '⚒ Itens Superiores', titulo: 'Tabela 3-4: preço dos materiais do Ameaças de Arton', texto:
+`Os cinco materiais sem preço não entram na tabela do livro, que avisa: "materiais não listados são raros e não são encontrados à venda". Eles só se obtêm abatendo a criatura, e o que a fabricação cobra deles são PEÇAS do material — é isso que aparece no lugar do preço.`,
+      tabela: Object.assign({ titulo: 'Tabela 3-4: Novos Materiais Especiais (Ameaças de Arton, p. 400)', destaque: 0,
+        nota: 'Casco de monstro, lanajuste e prata são os três que a tabela do livro põe à venda. Repare na prata em esotérico: +T$ 400, e não +T$ 4.000 — é o número impresso.' },
+        tabelaMaterial('Ameaças de Arton')) },
 
     // ── ITENS MÁGICOS ──────────────────────────────────────────────────
     { grupo: '✨ Itens Mágicos', titulo: 'Itens de uso único (poções e pergaminhos)', texto:
