@@ -69,4 +69,44 @@ Pode gerar recompensas um pouco maiores/menores conforme o grupo, mas a longo pr
 
   { grupo: '👹 Ameaças de Arton — Variantes & Regras Especiais', titulo: 'Ameaças desafiadoras (ajustar a dificuldade)', texto:
 `O ND e as fichas das criaturas são calculados para um grupo de quatro personagens otimizados para combate e com acesso a todos os recursos do nível (PV, PM, equipamento etc.). Ao usar ameaças, considere também a história, as condições do grupo, as habilidades disponíveis e a experiência dos jogadores. O ND é um indicador geral — esses fatores podem pedir criaturas de ND menor ou maior para um desafio adequado. Mestre iniciante: não se preocupe em "errar a mão" nos primeiros combates; com a prática, após algumas sessões, você pega a noção de calcular encontros.` },
+
+  // ── RECURSOS NATURAIS (Ameaças de Arton, p. 401–402) ────────────
+  //  A regra opcional que extrai matéria-prima do corpo da criatura.
+  //  As duas tabelas e os sete verbetes vêm de js/recursos-naturais-data.js,
+  //  o MESMO dado que desenha o bloco 🦴 em cada ficha da aba 📕 Fichas
+  //  Prontas — digitar a grade do d6 outra vez aqui seria criar uma
+  //  segunda verdade para a mesma tabela. Sem o módulo carregado, o
+  //  grupo simplesmente não aparece.
+  ...(function () {
+    const R = window.GA_RECURSOS_NATURAIS;
+    if (!R) return [];
+    const G = '👹 Ameaças de Arton — Recursos Naturais';
+    const cards = [
+      { grupo: G, titulo: 'O que são, e quando entram', texto:
+`Certas criaturas, como dragões, elementais e monstros peçonhentos, fornecem recursos específicos como parte de seus tesouros. Entretanto, existem outros materiais de grande utilidade que podem ser extraídos de ameaças. Esta é uma regra OPCIONAL, para mestres que queiram usar esse tipo de tesouro.
+Recursos naturais podem ser incluídos em qualquer criatura que já NÃO possua um recurso especial, e podem complementar o tesouro normal dela ou substituí-lo — a critério do mestre. Para usar um recurso, escolha um tipo apropriado à criatura; alternativamente, role 1d6 na linha do tipo dela (Tabela 3-5, no card seguinte).
+QUANTO SAI: criaturas Pequenas e Médias fornecem 1 unidade do recurso, Grandes e Enormes fornecem 2 unidades e Colossais fornecem 5. Criaturas Minúsculas são muito pequenas para produzir recursos.
+COMO SE EXTRAI: como qualquer recurso especial — uma hora de trabalho e um sucesso em um teste de Sobrevivência ou de um Ofício relacionado ao recurso, CD 15 + o ND da criatura. Em caso de falha, os recursos são estragados.
+Embora seja possível extrair recursos de criaturas inteligentes, isso pode ser considerado um tabu, um crime ou simplesmente um ato hediondo, dependendo de onde os aventureiros estiverem.
+Na prática você não precisa consultar nada disto: cada ficha da aba 📕 Fichas Prontas traz um bloco 🦴 Recursos naturais já resolvido com o tipo, o tamanho e o ND dela.` },
+
+      { grupo: G, titulo: 'Tabela 3-5: que recurso cada tipo de criatura dá', texto:
+`Role 1d6 na linha do tipo da criatura. O travessão marca o recurso que aquele tipo não fornece.
+ATENÇÃO À LINHA DO CONSTRUTO: o livro imprime carapaça 1-2, fonte 3 e sucata 6, e deixa o 4 e o 5 sem nada — as outras cinco linhas cobrem os seis números. O buraco é do livro (conferido no texto e nos próprios comandos de desenho do PDF), e não foi remendado aqui. Caindo no vão, escolha o recurso ou role de novo.`,
+        tabela: Object.assign({ titulo: 'Tabela 3-5: Recursos Naturais', destaque: 0,
+          nota: '* A linha do Espírito serve para criaturas incorpóreas de qualquer tipo.' },
+          R.tabela35()) },
+
+      { grupo: G, titulo: 'Tabela 3-6: quanto vale, pelo patamar da ameaça', texto:
+`Para os recursos que servem de matéria-prima, o valor e o grau de qualidade dos itens que se podem fabricar com eles dependem do patamar da ameaça de onde saíram.
+Dois dos sete recursos têm escala própria e não usam esta tabela: o INGREDIENTE serve "independente de seu patamar", e o MANTIMENTO se mede em refeições (veja os verbetes abaixo).`,
+        tabela: Object.assign({ titulo: 'Tabela 3-6: Tipos de Recursos Naturais', destaque: 0 },
+          R.tabela36()) },
+    ];
+    // um card por recurso, na ordem das colunas da Tabela 3-5
+    for (const rec of R.RECURSOS) {
+      cards.push({ grupo: G, titulo: rec.icone + ' ' + rec.nome, texto: rec.texto });
+    }
+    return cards;
+  })(),
 ];

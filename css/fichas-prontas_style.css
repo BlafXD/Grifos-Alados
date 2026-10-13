@@ -337,3 +337,117 @@ button.fp-ref:hover {
 }
 /* "Allihanna, Deusa da Natureza", no cabeçalho, na cor dela */
 .fp-card--deus .fp-sub { color: var(--deus-cor, var(--gold-deep)); }
+
+/* ══════════════════════════════════════════════════════════════════
+   🦴 RECURSOS NATURAIS (Ameaças de Arton, p. 401–402)
+   A regra OPCIONAL de tesouro, dentro do card de cada criatura. Fecha
+   por padrão: é regra que a mesa escolhe usar, e não parte do
+   statblock — então não pode competir com ele pelo olho.
+   ══════════════════════════════════════════════════════════════════ */
+.fp-rn {
+  container: fp-recursos / inline-size;
+  margin: 0.7rem 0 0;
+  border: 1px dashed var(--parchment3);
+  background: color-mix(in srgb, var(--parchment2) 55%, transparent);
+}
+.fp-rn-cab {
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.82rem;
+  color: var(--rust-dark);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.fp-rn-cab::-webkit-details-marker { display: none; }
+.fp-rn-cab::marker { content: none; }
+.fp-rn-cab::before { content: "▸"; color: var(--gold-dim); }
+.fp-rn[open] > .fp-rn-cab::before { content: "▾"; }
+.fp-rn-meta {
+  font-family: var(--ga-fonte-corpo, inherit);
+  font-size: 0.76rem;
+  font-style: italic;
+  color: var(--ink-faded);
+}
+.fp-rn-corpo { padding: 0 0.6rem 0.6rem; }
+.fp-rn-intro, .fp-rn-nao { font-size: 0.84rem; margin: 0.2rem 0 0.5rem; }
+
+/* as faixas do d6 — uma grade de três colunas que vira lista no celular */
+.fp-rn-lista { list-style: none; margin: 0 0 0.5rem; padding: 0; }
+.fp-rn-faixa {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr;
+  gap: 0.1rem 0.4rem;
+  align-items: baseline;
+  padding: 0.22rem 0.3rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--parchment3) 45%, transparent);
+}
+/* a matéria-prima desce para a segunda linha, alinhada ao nome */
+.fp-rn-vira { grid-column: 2; }
+.fp-rn-faixa:last-child { border-bottom: 0; }
+/* o que o 🎲 acabou de tirar */
+.fp-rn-faixa--saiu {
+  background: color-mix(in srgb, var(--gold-dim) 18%, transparent);
+  box-shadow: inset 3px 0 0 var(--gold-dim);
+}
+.fp-rn-d6 {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.74rem;
+  text-align: center;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+}
+.fp-rn-nome { font-size: 0.84rem; font-weight: 600; }
+.fp-rn-vira { font-size: 0.78rem; font-style: italic; color: var(--ink-faded); }
+
+/* as três contas: quantidade, extração e patamar */
+.fp-rn-contas {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.2rem 0.5rem;
+  margin: 0.5rem 0;
+  font-size: 0.82rem;
+}
+.fp-rn-contas dt {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.74rem;
+  color: var(--rust-dark);
+}
+.fp-rn-contas dd { margin: 0; }
+.fp-rn-conta { font-style: italic; color: var(--ink-faded); }
+
+/* os dois avisos: o vão da tabela e o recurso especial que a ficha já tem */
+.fp-rn-vao, .fp-rn-especial {
+  margin: 0.4rem 0;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.8rem;
+  background: var(--parchment2);
+  border-left: 3px solid var(--gold-dim);
+}
+
+.fp-rn-acoes { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.fp-rn-saida { font-size: 0.84rem; }
+.fp-rn-fonte {
+  margin: 0.5rem 0 0;
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--ink-faded);
+}
+
+/* ── QUEM MEDE É O CARD, NÃO A JANELA ──────────────────────────────
+   O card desta aba tem ~350px mesmo num monitor largo (a lista é uma
+   grade de várias colunas). Por isso o layout largo entra por consulta
+   de CONTÊINER: só quando o próprio bloco passa de 30rem é que a
+   matéria-prima volta para a mesma linha do nome. */
+@container fp-recursos (min-width: 30rem) {
+  .fp-rn-faixa { grid-template-columns: 3.2rem 10rem 1fr; }
+  .fp-rn-vira { grid-column: auto; }
+}
+/* No dedo as três contas também viram uma coluna só. */
+@media (max-width: 560px) {
+  .fp-rn-contas { grid-template-columns: 1fr; }
+  .fp-rn-contas dt { margin-top: 0.3rem; }
+}

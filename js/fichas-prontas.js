@@ -181,6 +181,119 @@ window.GA_FichasProntas = (function () {
     return d ? { d: d, estilo: V.estilo(d) } : null;
   }
 
+  /* ── 🦴 RECURSOS NATURAIS (Ameaças de Arton, p. 401–402) ──────────
+     A regra opcional de tesouro que extrai matéria-prima do corpo da
+     criatura. Ela não pede nada que a ficha já não tenha: a linha de
+     tipo dá a LINHA da Tabela 3-5 e o TAMANHO (que define a quantidade),
+     e o ND dá o patamar da Tabela 3-6 e a CD para extrair (15 + ND).
+     Por isso o bloco se desenha sozinho em cada card, sem ninguém
+     digitar nada — o dado e as contas vivem em js/recursos-naturais-data.js.
+
+     Fica FORA do Guia de NPCs de propósito. O livro permite extrair
+     recursos de criaturas inteligentes, e até diz o preço disso ("um
+     tabu, um crime ou simplesmente um ato hediondo"), mas aquela aba é
+     de gente comum — plebe, templo, lei, corte — e não um bestiário.
+     Pôr uma caixa de colheita na ficha do padeiro da vila seria uma
+     decisão de tom que o livro não pediu. */
+  const LIVROS_COM_RECURSO = new Set(['t20', 'ameacasArton', 'deusesArton']);
+
+  function blocoRecursos(ref) {
+    const RN = window.GA_RECURSOS_NATURAIS;
+    if (!RN || !LIVROS_COM_RECURSO.has(ref.livro.chave)) return '';
+    const r = RN.daFicha(ref.def);
+    if (!r) return '';                 // sem linha de tipo (o "Rival Espelho" é ???)
+
+    const cab = `🦴 Recursos naturais <span class="fp-rn-meta">${esc(r.tipoNome)} ${
+      esc(r.tamanhoNome)} · ND ${esc(r.nd)}</span>`;
+
+    // Minúscula: "muito pequenas para produzir recursos". O bloco aparece
+    // para dizer isso — some seria deixar a dúvida de pé.
+    if (r.minuscula) {
+      return `<details class="fp-rn"><summary class="fp-rn-cab">${cab}</summary>
+        <div class="fp-rn-corpo">
+          <p class="fp-rn-nao">Criatura <strong>Minúscula</strong>: muito pequena para produzir
+          recursos naturais (Ameaças de Arton, p. 401).</p>
+        </div></details>`;
+    }
+
+    const linhas = r.faixas.map(x => `<li class="fp-rn-faixa" data-rn-de="${x.de}" data-rn-ate="${x.ate}">
+      <span class="fp-rn-d6">${esc(x.rotulo)}</span>
+      <span class="fp-rn-nome">${x.recurso.icone} ${esc(x.recurso.nome)}</span>
+      <span class="fp-rn-vira">${esc(x.recurso.vira)}</span>
+    </li>`).join('');
+
+    // O vão do d6 — só a linha do construto tem, e é do livro.
+    const vaos = r.vaos.length ? `<p class="fp-rn-vao">⚠ A linha do ${esc(r.tipoNome)} deixa o
+      <strong>${r.vaos.join(' e o ')}</strong> sem recurso: é assim que o livro imprime a Tabela 3-5.
+      Caindo aí, escolha o recurso (o texto manda escolher; rolar é a alternativa) ou role de novo.</p>` : '';
+
+    const un = r.unidades === 1 ? '1 unidade' : r.unidades + ' unidades';
+    const cd = r.cd != null
+      ? `CD <strong>${r.cd}</strong> <span class="fp-rn-conta">(15 + ND ${esc(r.nd)})</span>`
+      : `CD <strong>15 + ND</strong> <span class="fp-rn-conta">(ND ${esc(r.nd)} não tem número — o mestre define)</span>`;
+    const pat = r.patamar
+      ? `<strong>${esc(r.patamar.nome)}</strong> → T$ ${r.patamar.valor.toLocaleString('pt-BR')} para ${esc(r.patamar.qualidade)}`
+      : '—';
+
+    const especial = r.especial ? `<p class="fp-rn-especial">Esta criatura <strong>já tem um recurso
+      especial</strong> no tesouro: ${esc(r.especial)} Pela regra, recurso natural é para quem
+      ainda não tem um — mas complementar ou substituir o tesouro é decisão sua.</p>` : '';
+
+    return `<details class="fp-rn"><summary class="fp-rn-cab">${cab}</summary>
+      <div class="fp-rn-corpo">
+        ${especial}
+        <p class="fp-rn-intro">Regra <strong>opcional</strong> de tesouro. Escolha o recurso
+        apropriado à criatura, ou role <strong>1d6</strong> na linha do
+        <strong>${esc(r.tipoNome)}</strong>:</p>
+        <ul class="fp-rn-lista">${linhas}</ul>
+        ${vaos}
+        <dl class="fp-rn-contas">
+          <dt>Quantidade</dt><dd><strong>${esc(un)}</strong> <span class="fp-rn-conta">(${esc(r.tamanhoNome)})</span></dd>
+          <dt>Extrair</dt><dd>1 hora · Sobrevivência ou um Ofício relacionado, ${cd}. Falhando, os recursos estragam.</dd>
+          <dt>Patamar</dt><dd>${pat}</dd>
+        </dl>
+        <div class="fp-rn-acoes">
+          <button type="button" class="fp-rn-rolar" data-rn-rolar="${esc(ref.def.chave)}"
+                  data-rn-livro="${esc(ref.livro.chave)}"
+                  title="Rola 1d6 na linha desta criatura e mostra o recurso, a quantidade e o valor">🎲 Rolar o recurso</button>
+          <span class="fp-rn-saida" data-rn-saida hidden></span>
+        </div>
+        <p class="fp-rn-fonte">📖 Ameaças de Arton, p. 401–402 · Tabelas 3-5 e 3-6</p>
+      </div></details>`;
+  }
+
+  /* Rola o d6 da linha e escreve o resultado ao lado do botão. O recurso
+     sorteado ganha destaque na própria lista de faixas, para a conta
+     ficar visível em vez de virar um texto solto. */
+  function rolarRecurso(btn) {
+    const RN = window.GA_RECURSOS_NATURAIS;
+    const card = btn.closest('.fp-rn');
+    const saida = card && card.querySelector('[data-rn-saida]');
+    if (!RN || !saida) return;
+    const alvo = ficha(btn.dataset.rnLivro, btn.dataset.rnRolar);
+    const r = alvo && RN.daFicha(alvo.def);
+    if (!r) return;
+
+    const { d6, recurso } = RN.sortear(r.tipo);
+    card.querySelectorAll('.fp-rn-faixa').forEach(li => li.classList.toggle(
+      'fp-rn-faixa--saiu', d6 >= +li.dataset.rnDe && d6 <= +li.dataset.rnAte));
+
+    if (!recurso) {
+      saida.innerHTML = `<strong>1d6 = ${d6}</strong> — o vão da tabela: escolha o recurso.`;
+    } else {
+      const un = r.unidades === 1 ? '1' : String(r.unidades);
+      // Ingrediente e mantimento não se medem em T$: o livro dá escala
+      // própria a eles (ver `valePatamar` no módulo de dados).
+      const vale = recurso.valePatamar && r.patamar
+        ? ` · T$ ${(r.patamar.valor * r.unidades).toLocaleString('pt-BR')} em matéria-prima para ${esc(r.patamar.qualidade)}`
+        : (recurso.chave === 'mantimento' ? ' · vale como alimento, não em T$ (veja o verbete)'
+                                          : ' · serve independente do patamar');
+      saida.innerHTML = `<strong>1d6 = ${d6}</strong> → ${recurso.icone} <strong>${esc(recurso.nome)}</strong>`
+        + ` × ${esc(un)}${vale}`;
+    }
+    saida.hidden = false;
+  }
+
   function cardFicha(ref) {
     const f = ref.def, cat = ref.cat, l = ref.livro;
     const vis = visualDoDeus(f);
@@ -206,6 +319,7 @@ window.GA_FichasProntas = (function () {
         <div class="vc-card-corpo">
           ${subIntroHtml(ref)}
           <div class="npc-block">${SB.bloco(f.texto)}</div>
+          ${blocoRecursos(ref)}
           <div class="npc-acoes fp-acoes">
             <button type="button" class="npc-enviar" data-fp-enviar="${esc(f.chave)}" data-fp-livro="${esc(l.chave)}"
                     title="Insere uma cópia editável desta ficha na cena narrada (ou numa sessão própria) da aba ⚔ Combates">⚔ Enviar para o combate</button>
@@ -536,6 +650,8 @@ window.GA_FichasProntas = (function () {
       if (env) { enviarParaCombate(env); return; }
       const cop = e.target.closest('[data-fp-copiar]');
       if (cop) { copiarTexto(cop); return; }
+      const rn = e.target.closest('[data-rn-rolar]');
+      if (rn) { rolarRecurso(rn); return; }
     });
 
     cont.addEventListener('input', e => {
