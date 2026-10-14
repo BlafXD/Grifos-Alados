@@ -22,9 +22,13 @@ Do texto de abertura de "Itens Superiores" (Tormenta20, p. 163–164):
 3. **Um item superior tem de 1 a 4 melhorias.** (O preço e a CD de fabricação
    sobem pela Tabela 3-7.)
 
-> ⚠ **O site modela só três das cinco categorias** (arma, armadura/escudo,
+> ⚠ ~~**O site modela só três das cinco categorias** (arma, armadura/escudo,
 > esotérico). **Ferramenta e vestuário não existem no gerador** — e é de lá que
-> vêm as 4 melhorias que faltam (§6).
+> vêm as 4 melhorias que faltam (§6).~~
+> ✅ **As cinco estão no gerador desde 14/10/2026.** A quarta categoria
+> (ferramenta, vestuário e instrumento) entrou como caixa do modo
+> Customizável, porque o livro lhe dá melhorias mas não lhe dá tesouro.
+> Ver `docs/ferramenta-vestuario-superior.md`.
 
 ---
 
@@ -96,7 +100,7 @@ a leitura estreita:
 > Era decisão de mesa, não erro de transcrição: as três mexem em coisa que
 > escudo também tem (a penalidade de armadura, o corpo de quem veste).
 
-**Como isso vira código (não feito ainda):** é *tirar*, não acrescentar. Basta
+**Como isso virou código (APLICADO em 06/10/2026):** era *tirar*, não acrescentar. Bastou
 **remover o `so: "armadura"`** das três entradas de `MELHORIA_ARMADURA` — a
 tabela de equipamento daquele sorteio já é a de "armaduras e escudos" (tem
 Escudo leve, Escudo pesado, Broquel, Escudo torre…), e o teste `armadura` do
@@ -104,8 +108,8 @@ Escudo leve, Escudo pesado, Broquel, Escudo torre…), e o teste `armadura` do
 (`/^Armaduras/` não casa com a categoria `Escudos` do catálogo da Loja). Sem o
 `so`, as três passam a caber em qualquer item daquele sorteio — que é o que ele
 quer. **O teste `armadura` continua existindo** para quem precisa dele de
-verdade: hoje, só o Deslumbrante (e esse ainda precisa virar
-"armadura ou vestuário").
+verdade: hoje, só o Deslumbrante — que no mesmo dia virou
+`armaduraOuVestuario`, o teste que lê as duas categorias.
 
 ### E uma que é permissiva de propósito
 
@@ -193,33 +197,42 @@ parte dos itens.
 
 ```
 46 melhorias nos quatro livros
-42 no gerador  (23 arma + 20 armadura + 11 esotérico = 54 entradas,
-                 42 melhorias distintas depois de juntar as formas
-                 masculina/feminina da mesma melhoria)
- 4 faltando
+46 no gerador  (23 arma + 21 armadura + 11 esotérico + 13 ferramenta
+                 e vestuário = 68 entradas, 46 melhorias distintas
+                 depois de juntar as formas masculina/feminina da
+                 mesma melhoria)
+ 0 faltando
 ```
 
-**As 4 que faltam — todas de ferramenta/vestuário**, categoria que o gerador não
-sorteia:
+**O placar fechou em 14/10/2026.** As quatro que faltavam eram todas de
+ferramenta e vestuário — a categoria que o gerador não sorteava porque o livro
+não lhe dá tabela de tesouro. Elas agora saem da quarta tabela, atrás da caixa
+"🧰 Ferramenta e vestuário superiores" do modo Customizável
+(`docs/ferramenta-vestuario-superior.md`). Eram estas:
 
 | Melhoria | Livro | Efeito |
 |---|---|---|
 | **Aprimorado** | T20 164 | +1 na perícia que o item já modifica |
-| **Brasonado** | Heróis 242 | usa a perícia do item para mudar atitude |
-| **Usado** | Heróis 242 | rola de novo um 1 natural, 1×/dia |
+| **Brasonado** | Heróis 239 | usa a perícia do item para mudar atitude |
+| **Usado** | Heróis 240 | rola de novo um 1 natural, 1×/dia |
 | **Multifuncional** | Ameaças 399 | o item passa a servir a uma segunda perícia do mesmo atributo |
 
-**Dois erros de cobertura nas que existem:**
+**Os dois erros de cobertura que havia aqui — resolvidos:**
 
-1. **Deslumbrante** está marcada como `armadura`, mas o livro diz "armaduras **e
-   vestuários**".
+1. ~~**Deslumbrante** está marcada como `armadura`~~ → virou
+   `armaduraOuVestuario` em 06/10/2026, e desde 14/10 ela também está na tabela
+   de ferramenta e vestuário (onde o `so` a deixa cair só no vestuário).
 2. **Devotado** (Deuses) é "para todas as categorias acima" = armas **+**
-   armaduras/escudos/ferramentas/vestuários. No site ela só está na lista de
-   **armadura** — **falta na de arma**.
+   armaduras/escudos/ferramentas/vestuários. Ela está em **armadura** e, desde
+   14/10, em **ferramenta e vestuário** — onde o pré-requisito dela, o Inscrito,
+   existe. Na de **arma** continua fora **de propósito**: ali o Inscrito não
+   existe, e o §8 explica por quê.
 
-E uma de forma: **Espinhos** é uma entrada só na lista de armadura, mas o livro
-imprime duas versões com efeitos diferentes (armadura × escudo). Quem rolar
-"Espinhos" num escudo lê o efeito da armadura.
+E uma de forma, também resolvida: ~~**Espinhos** é uma entrada só na lista de
+armadura, mas o livro imprime duas versões com efeitos diferentes (armadura ×
+escudo). Quem rolar "Espinhos" num escudo lê o efeito da armadura.~~
+✅ Em 06/10/2026 virou **Espinhosa** (armadura) × **Espinhoso** (escudo), e é
+por isso que a tabela de armadura tem 21 entradas e não 20.
 
 ---
 
@@ -266,8 +279,8 @@ FEITO    tirado o so:"armadura" de Injetora, Prudente e Sob medida
 FEITO    Deslumbrante: armadura → armaduraOuVestuario (teste e rótulo novos)
 FEITO    Espinhos virou Espinhosa (41–42, armadura) × Espinhoso (43–44, escudo)
 NÃO      Devotado na lista de arma — ver abaixo
-FICA     o teste de ferramenta/vestuário com perícia (depende de o gerador
-         passar a sortear essas categorias)
+FEITO    (14/10/2026) o teste `periciaDoItem` e a quarta tabela de melhorias;
+         o gerador passou a sortear a categoria no modo Customizável
 FEITO    (13/10/2026) os 14 materiais especiais e os limites de cada um
 ```
 

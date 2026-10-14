@@ -21,7 +21,41 @@
 | 4.3 · 2,36 MB síncronos | **RESOLVIDO em parte.** Os `defer` estão em todos os scripts das duas páginas. O peso, porém, **cresceu**: veja o achado novo abaixo. |
 | 4.4 · Falha silenciosa do `localStorage` | **RESOLVIDO.** Todo save passa por `GA_guardar` (`js/script.js`), que reconhece o erro de espaço e mostra uma tarja fixa. O único `setItem` cru que sobrou é o de dentro do próprio helper. |
 | 4.5 · 10 melhorias com `p. ??` | **RESOLVIDO** — nenhuma ocorrência restante. |
-| 4.6 · Campos sem rótulo | **RESOLVIDO.** Eram 34 no `index` e 23 no `jogadores`; hoje são **0 e 0**, medidos depois dos scripts rodarem. |
+| 4.6 · Campos sem rótulo | **RESOLVIDO duas vezes.** Em 1º/09 eram 34 no `index` e 23 no `jogadores`, e foram a 0 e 0. Em 14/10, uma varredura no **código-fonte** (e não no DOM) achou **26 controles novos** sem nome, nascidos nas abas que entraram depois — todos rotulados. Ver a seção logo abaixo. |
+
+### Medido de novo em 14 de outubro de 2026 — o 4.6 voltou (e fechou outra vez)
+
+A conta de 1º de setembro deu **0 e 0** porque foi medida no DOM, depois de os
+scripts rodarem — e, naquele dia, estava certa. Mas campo acessível não é
+estado: é hábito. Entre setembro e outubro entraram abas e blocos novos (🏠
+Bases, 🧭 Viagem, 🗓 Tempo, o painel de ajuste da Loja, as ferramentas do
+bestiário), e **26 controles nasceram mudos** dentro de `js/` — todos gerados
+por template, nenhum no HTML.
+
+Por isso a medição de hoje é feita **no código-fonte dos 53 arquivos de
+`js/`**, não no DOM: 345 campos gerados por template, dos quais 26 sem nome
+acessível nenhum. Todos receberam `aria-label` (incluídos os seis seletores de
+arquivo escondidos, que o leitor de tela não alcança mas que ficam prontos para
+o dia em que deixarem de ser `hidden`).
+
+| Onde | Quantos |
+|---|---|
+| 🏪 Loja — painel de ajuste (desconto, modo, quantidade, chance) | 6 |
+| 🐲 Bestiário — PV do veículo, arma natural, poder concedido, estatísticas | 6 |
+| 🏠 Bases — ajuste de segurança, adicionar cômodo, adicionar mobília | 3 |
+| 🧭 Viagem — dias e PV do veículo | 2 |
+| ⚗ Criar Ameaça — deslocamento extra, fonte da criatura-base | 2 |
+| 🎲 Mesa — papel do membro · 🗓 Tempo — tipo da ação | 2 |
+| Seletores de arquivo escondidos (anotações, bases, fichas, mapas, bestiário, viagens) | 6 |
+
+**A armadilha, para a próxima vez:** um varredor ingênuo acusa muito mais que
+isso. Em `js/criar-ameaca.js` o helper `campo(rótulo, html)` embrulha o
+controle num `<label>` de verdade, mas o `<label>` e o `<input>` nascem em
+linhas diferentes e só se encontram na concatenação — o mesmo vale para o
+`<input type="checkbox">` dos poderes em `js/ficha.js`. E há meia dúzia de
+`<select>` e `<input>` que estão dentro de **comentários**, explicando a regra.
+Dos 42 que o varredor acusou, **16 eram falso positivo**; cada um foi aberto à
+mão antes de mexer.
 
 ### Achados novos de 1º de setembro
 

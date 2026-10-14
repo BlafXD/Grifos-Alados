@@ -120,7 +120,7 @@
                   title="Exportar um .txt legível das anotações para ler ou imprimir">⬇ Exportar texto (.txt)</button>
           <button class="an-backup-btn an-backup-btn--imp" data-acao="importar-backup"
                   title="Carregar um backup .json — restaura os ramos e sub-ramos">⬆ Importar backup</button>
-          <input type="file" id="anImportFile" accept=".json,application/json" hidden>
+          <input type="file" id="anImportFile" accept=".json,application/json" aria-label="Arquivo .json de anotações para importar" hidden>
         </div>
       </div>`;
 

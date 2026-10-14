@@ -268,7 +268,7 @@
             return `
               <div class="tp-acao">
                 <input class="tp-input tp-input--mes" type="text" data-campo="acao-mes" data-j="${ji}" data-a="${ai}" value="${esc(a.mes)}" placeholder="quando (ex.: Mês 1)">
-                <select class="tp-select tp-select--tipo" data-campo="acao-tipo" data-j="${ji}" data-a="${ai}">${tipoOpts}</select>
+                <select class="tp-select tp-select--tipo" data-campo="acao-tipo" data-j="${ji}" data-a="${ai}" aria-label="Tipo da ação">${tipoOpts}</select>
                 <input class="tp-input tp-input--nota" type="text" data-campo="acao-nota" data-j="${ji}" data-a="${ai}" value="${esc(a.nota)}" placeholder="o que fez / resultado…">
                 <button class="tp-mini tp-mini--del" data-acao="del-acao" data-j="${ji}" data-a="${ai}" title="Remover ação">✕</button>
               </div>`;

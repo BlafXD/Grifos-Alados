@@ -161,7 +161,9 @@ cai fora do recorte se você ler só o começo da página do índice. O capítul
 não acaba onde parece: o rodapé corrido vai até **"Distinções 141"**. Confira sempre
 pelo rodapé, não pela última linha do índice que você conseguiu ler.
 
-**Nada foi importado.** Fica para quando ele pedir.
+~~**Nada foi importado.** Fica para quando ele pedir.~~
+✅ **Importado em 05/10/2026** — 138 cards, 23 distinções. A seção seguinte é o
+relato da leva; esta parte, daqui para cima, é o levantamento que a precedeu.
 
 ---
 

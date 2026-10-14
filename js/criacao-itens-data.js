@@ -212,7 +212,7 @@ Repare na linha de FERRAMENTAS E VESTUÁRIO: no Tormenta 20 ela tem uma única m
 As tabelas do Heróis e do Deuses saem desalinhadas do PDF (o cabeçalho de categoria cai na linha do primeiro nome), então estas foram lidas pela posição de cada texto na página. O Ameaças não tem tabela: os dois dele vêm com a categoria no próprio nome ("Multifuncional (ferramenta ou vestuário)", "Penetrante (arma)").`,
       tabela: { cab: ['Livro', 'Categoria', 'Melhoria', 'Efeito'], titulo: 'Novas melhorias (Heróis 3-5 · Deuses 1-4 · Ameaças p. 399)', destaque: 2,
         linhas: MELHORIAS_OUTROS_LIVROS,
-        nota: 'Quatro destas melhorias — Brasonado, Usado (Heróis), Multifuncional (Ameaças) e o Aprimorado do Tormenta 20 — são de ferramenta e vestuário, e por isso NÃO saem no Gerador de Recompensas: o livro não tem tabela de tesouro para ferramenta superior. Elas existem aqui e no "📖 Descrição".' } },
+        nota: 'Quatro destas melhorias — Brasonado, Usado (Heróis), Multifuncional (Ameaças) e o Aprimorado do Tormenta 20 — são de ferramenta e vestuário, categoria que o livro não põe na tabela de tesouro. No Gerador de Recompensas elas saem só no modo Customizável, com a caixa "🧰 Ferramenta e vestuário superiores" ligada — e, fora dali, aqui e no "📖 Descrição".' } },
 
     { grupo: '⚒ Itens Superiores', titulo: 'Fabricando itens superiores', texto:
 `Itens superiores só podem ser fabricados por personagens com a habilidade Fabricar Item Superior. A fabricação segue a mesma regra de itens normais, porém, de acordo com o número de melhorias, o preço e a CD do teste de Ofício aumentam (Tabela 3-7 acima).

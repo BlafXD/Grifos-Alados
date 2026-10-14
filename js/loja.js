@@ -501,10 +501,12 @@
             <div class="aj-desconto">
               <span>de</span>
               <input type="number" class="aj-num" min="0" max="99" value="${cfg.descMin}"
-                     data-grupo="${grupo}" data-tipo="${tipo}" data-campo="descMin">
+                     data-grupo="${grupo}" data-tipo="${tipo}" data-campo="descMin"
+                     aria-label="Desconto mínimo em ${lb.nome} (%)">
               <span>% até</span>
               <input type="number" class="aj-num" min="0" max="99" value="${cfg.descMax}"
-                     data-grupo="${grupo}" data-tipo="${tipo}" data-campo="descMax">
+                     data-grupo="${grupo}" data-tipo="${tipo}" data-campo="descMax"
+                     aria-label="Desconto máximo em ${lb.nome} (%)">
               <span>%</span>
             </div>
           </div>` : '';
@@ -516,7 +518,8 @@
           </div>
           <div class="aj-controle aj-c-modo">
             <label class="aj-label">Modo</label>
-            <select class="aj-sel" data-grupo="${grupo}" data-tipo="${tipo}" data-campo="modo">
+            <select class="aj-sel" data-grupo="${grupo}" data-tipo="${tipo}" data-campo="modo"
+                    aria-label="Modo de sorteio de ${lb.nome}">
               ${opt('quantidade', 'Quantidade')}
               ${opt('porcentagem', 'Porcentagem')}
               ${opt('ambos', 'Ambos')}
@@ -525,13 +528,15 @@
           <div class="aj-controle aj-c-qtd">
             <label class="aj-label">Quantidade (0–${total})</label>
             <input type="number" class="aj-num aj-num--qtd" min="0" max="999" value="${cfg.qtd}"
-                   data-grupo="${grupo}" data-tipo="${tipo}" data-campo="qtd">
+                   data-grupo="${grupo}" data-tipo="${tipo}" data-campo="qtd"
+                   aria-label="Quantidade de ${lb.nome} na loja">
           </div>
           <div class="aj-controle aj-c-prob">
             <label class="aj-label">Chance de cada item</label>
             <div class="aj-slider-wrap">
               <input type="range" class="aj-slider" min="0" max="100" value="${cfg.prob}"
-                     data-grupo="${grupo}" data-tipo="${tipo}" data-campo="prob">
+                     data-grupo="${grupo}" data-tipo="${tipo}" data-campo="prob"
+                     aria-label="Chance de cada item de ${lb.nome} aparecer (%)">
               <span class="aj-valor">${cfg.prob}%</span>
             </div>
           </div>
@@ -1449,7 +1454,7 @@
               <label class="aj-label">Chance de cada magia</label>
               <div class="aj-slider-wrap">
                 <input type="range" id="mag-prob" class="aj-slider mag-ctrl" min="0" max="100"
-                       value="${cfg.prob}">
+                       aria-label="Chance de cada magia aparecer (%)" value="${cfg.prob}">
                 <span class="aj-valor" id="mag-prob-val">${cfg.prob}%</span>
               </div>
             </div>

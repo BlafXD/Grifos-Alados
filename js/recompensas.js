@@ -769,11 +769,11 @@ const EQUIP_ESOTER = [
 //
 // O que a conferência de 07/09/2026 acertou aqui:
 //   • BRASONADO e USADO saíram das três tabelas: a Tab. 3-5 do Heróis os
-//     lista em "melhorias para ferramentas e vestuário", e o gerador não
-//     sorteia ferramenta superior (o livro não tem tabela de tesouro
-//     para isso). O mesmo vale para APRIMORADO (T20) e MULTIFUNCIONAL
-//     (Ameaças), que nunca estiveram aqui. Os quatro vivem na Tabela 3-8
-//     da aba "🔨 Criação de Itens" e no "📖 Descrição".
+//     lista em "melhorias para ferramentas e vestuário", que não é
+//     categoria destas três. O mesmo vale para APRIMORADO (T20) e
+//     MULTIFUNCIONAL (Ameaças), que nunca estiveram aqui. Desde
+//     14/10/2026 os quatro têm casa: a MELHORIA_FERRAM, logo abaixo,
+//     que só sai no modo Customizável — ver ferramentaSuperiorLigada.
 //   • CANÔNICO saiu do esotérico e entrou em arma e armadura: a Tab. 1-4
 //     do Deuses o põe em "todas as categorias acima", e as categorias
 //     dela são armas / armaduras, escudos, ferramentas e vestuários —
@@ -865,6 +865,60 @@ const MELHORIA_ESOTER = [
   {max:100,item:"Vigilante",          livro:"Tormenta20",       pag:166},
 ];
 
+/* ── A QUARTA CATEGORIA: FERRAMENTA E VESTUÁRIO ────────────────────
+   A Tabela 8-5 do Tormenta20 (p. 332) tem faixas de d% para TRÊS
+   categorias — armas, armaduras/escudos e esotéricos — e a instrução
+   do tesouro Superior diz, com todas as letras: "Role para determinar
+   se é uma arma, armadura/escudo ou esotérico". Ferramenta e vestuário
+   recebem melhoria (Tab. 3-8, p. 165), mas NÃO têm tabela de tesouro.
+
+   Por isso esta é a única tabela do arquivo sem faixas de d%: o livro
+   não imprime nenhuma. As treze entram com PESO IGUAL e o sorteio é um
+   d13 — o mesmo caminho que o gerador já usa quando a lista não vem do
+   livro (o catálogo da Loja e o pool de materiais rolam o dado do
+   próprio tamanho). Inventar faixas seria fingir uma fonte que não
+   existe.
+
+   Ela só sai no modo Customizável, com a caixa "Ferramenta e vestuário
+   superiores" ligada — ver CUSTOM_FILTROS.ferramentaSuperior.
+
+   DE ONDE VEM CADA LINHA:
+     • Tormenta20 Tab. 3-8 (p. 165), grupo "Ferramentas e vestuário":
+       Aprimorado — e o grupo "Qualquer das categorias acima":
+       Banhado a ouro, Cravejado de gemas, Discreto, Macabro.
+     • Heróis de Arton Tab. 3-5 (p. 240), "ferramentas e vestuário":
+       Brasonado (p. 239) e Usado (p. 240) — e "qualquer das acima":
+       Deslumbrante (p. 239), que o verbete estreita para "armaduras e
+       vestuários", então em ferramenta ela não cai (so).
+     • Ameaças de Arton (p. 399): Multifuncional.
+     • Deuses de Arton Tab. 1-4 (p. 54): Diligente e Inscrito, do grupo
+       "armaduras, escudos, ferramentas e vestuários" — e Canônico e
+       Devotado, de "todas as categorias acima". Aqui o DEVOTADO cabe:
+       o pré-requisito dele é o Inscrito, que nesta categoria existe
+       (foi por faltar o Inscrito que ele ficou fora da tabela de ARMA
+       — ver o comentário das três tabelas acima).
+
+   O QUE NÃO ESTÁ AQUI, e por quê:
+     • MATERIAL ESPECIAL. "Armas, armaduras, escudos e esotéricos podem
+       ser feitos ou banhados de um material especial" (T20, p. 166) —
+       a lista não tem ferramenta nem vestuário. É a única das quatro
+       tabelas sem a porta do material. */
+const MELHORIA_FERRAM = [
+  {max:1,  item:"Aprimorado",         livro:"Tormenta20",       pag:164, so:"periciaDoItem"},
+  {max:2,  item:"Banhado a ouro",     livro:"Tormenta20",       pag:164},
+  {max:3,  item:"Brasonado",          livro:"Heróis de Arton",  pag:239, obs:"Troca o teste de Diplomacia pelo de uma perícia em que o item dê bônus — só rende em item que dê bônus"},
+  {max:4,  item:"Canônico",           livro:"Deuses de Arton",  pag:54},
+  {max:5,  item:"Cravejado de gemas", livro:"Tormenta20",       pag:164},
+  {max:6,  item:"Deslumbrante",       livro:"Heróis de Arton",  pag:239, so:"armaduraOuVestuario", obs:"* Ver regra especial"},
+  {max:7,  item:"Devotado",           livro:"Deuses de Arton",  pag:54},
+  {max:8,  item:"Diligente",          livro:"Deuses de Arton",  pag:54},
+  {max:9,  item:"Discreto",           livro:"Tormenta20",       pag:164},
+  {max:10, item:"Inscrito",           livro:"Deuses de Arton",  pag:54},
+  {max:11, item:"Macabro",            livro:"Tormenta20",       pag:165},
+  {max:12, item:"Multifuncional",     livro:"Ameaças de Arton", pag:399, so:"periciaDoItem"},
+  {max:13, item:"Usado",              livro:"Heróis de Arton",  pag:240, obs:"Não é feita por artesão: só vem de item achado ou comprado de segunda mão"},
+];
+
 /* ── QUE ITEM CADA MELHORIA ACEITA ─────────────────────────────────
    A tabela do livro diz a CATEGORIA (é por isso que existem três
    tabelas aqui), mas o verbete de várias melhorias restringe mais:
@@ -918,6 +972,85 @@ const ARMAS_DISPARO = new Set([
   'Sifão cáustico',
 ]);
 
+/* ── OS ITENS QUE "MODIFICAM UMA PERÍCIA" ──────────────────────────
+   Duas melhorias da quarta categoria dependem disto, e as duas dizem
+   "só pode":
+
+     Aprimorado (T20, p. 164) — "só pode ser aplicada a uma ferramenta
+       ou vestuário que modifique uma perícia (reduza uma penalidade ou
+       forneça um bônus) e fornece um bônus de +1 nessa perícia (ou
+       aumenta o bônus fornecido em +1). Por exemplo, uma maleta de
+       medicamentos aprimorada fornece +1 em Cura e uma luva de pelica
+       aprimorada fornece +2 em Ladinagem."
+     Multifuncional (Ameaças, p. 399) — "só pode ser aplicada em um item
+       que modifica uma perícia (fornecendo bônus ou reduzindo
+       penalidade)."
+
+   O CRITÉRIO é o parêntese do livro, e só ele: o item DÁ um bônus num
+   teste de perícia, ou TIRA/reduz uma penalidade num teste de perícia
+   de quem o usa. O exemplo da maleta é o que fecha a segunda metade —
+   ela não dá bônus nenhum; o que ela faz é livrar do "–5 em Cura" de
+   quem não a tem. Gazua, sela, estojo de disfarces, equipamento de
+   viagem e instrumentos de ofício são da mesma família.
+
+   Fortitude, Reflexos e Vontade SÃO perícias em Tormenta20, e
+   "resistência a <efeito> +X" é bônus em teste de resistência — por
+   isso capa pesada, gorro de ervas, veste de seda, enfeite de elmo e
+   sombreiro entram.
+
+   INSTRUMENTO MUSICAL entra inteiro: o livro diz que ele "é
+   considerado um item ligado à perícia Atuação" justamente para efeito
+   de melhorias (T20, p. 158). Por isso as 11 entradas de Instrumentos
+   Musicais da Loja estão todas aqui, e também as ferramentas que dizem
+   "conta como um instrumento musical" (alaúde élfico, flauta mística,
+   tambor das profundezas, trombeta do cruzado).
+
+   O QUE FICOU DE FORA, e por quê — são decisões, não esquecimento:
+     • O que só IMPÕE penalidade (elmo leve e pesado, –2/–5 em
+       Iniciativa e Percepção; sandálias; tonsura; veste acolchoada;
+       sapatos de salto alto). O parêntese do livro lista duas formas de
+       modificar, e as duas são a favor de quem usa; um "+1 na perícia
+       que o item já modifica" num elmo seria um elmo mágico que conserta
+       o próprio defeito.
+     • O que muda o teste DOS OUTROS (luva magnética, –5 na Percepção da
+       vítima; máscara bucal).
+     • O que deixa REPETIR um teste em vez de modificá-lo (máscara de
+       baile) — repetir é o que a melhoria Usado faz, não o que o
+       Aprimorado mede.
+     • O que pula o teste (sapatos confortáveis, palmar) ou não mexe em
+       perícia nenhuma (estandarte, molde pré-fabricado, camisolão,
+       chapéu arcano, rondel, manopla…).
+
+   São 60 dos 91 itens das três categorias da Loja: 16 das 19
+   Ferramentas, as 11 de Instrumentos Musicais e 33 dos 61 Vestuários.
+   A lista é NOMINAL pelo mesmo motivo das munições e das armas de
+   disparo logo acima — nenhuma coluna do catálogo separa "dá bônus de
+   perícia" de "não dá": quem responde é o verbete de cada item. */
+const ITENS_PERICIA = new Set([
+  // Ferramentas (16 de 19) — fora: Estandarte, Estandarte portátil,
+  // Molde pré-fabricado (nenhum mexe em teste de perícia).
+  'Alaúde élfico', 'Apito de caça', 'Baralho marcado', 'Coleção de livros',
+  'Equipamento de viagem', 'Espelho cirúrgico', 'Estojo de disfarces',
+  'Flauta mística', 'Gazua', 'Instrumentos de <ofício>', 'Instrumento musical',
+  'Luneta', 'Maleta de medicamentos', 'Sela', 'Tambor das profundezas',
+  'Trombeta do cruzado',
+  // Instrumentos Musicais (11 de 11) — T20 p. 158: item ligado a Atuação.
+  'Cítara heptatônica', 'Clarim deheoni', 'Cornamusa de Doherimm',
+  'Flauta sar-allan', 'Gaita de foles', 'Lira de casco de tartaruga',
+  'Marionetes', 'Pandeiro das estradas', 'Tamborete marcial',
+  'Trombeta tapistana', 'Violino soprano',
+  // Vestuário (33 de 61).
+  'Andrajos de aldeão', 'Anel eclesiástico', 'Avental de forja', 'Bandana',
+  'Camisa bufante', 'Capa esvoaçante', 'Capa pesada', 'Casaco longo',
+  'Enfeite de elmo', 'Farrapos de ermitão', 'Gorro de ervas',
+  'Hábito monástico', 'Hábito sacerdotal', 'Jaqueta de couro',
+  'Luva de falcoaria', 'Luva de pelica', 'Manto camuflado',
+  'Manto eclesiástico', 'Máscara completa', 'Máscara de soldador',
+  'Monóculo', 'Óculos de aeronauta', 'Penas do predador primal', 'Peruca',
+  'Robe místico', 'Roupão elegante', 'Rufo', 'Sapatos de camurça',
+  'Sombreiro', 'Tabardo', 'Traje da corte', 'Traje selako', 'Veste de seda',
+]);
+
 // Rótulo de cada restrição — aparece no catálogo de tesouros e no texto
 // que o botão "⧉ Copiar" leva junto do item.
 const RESTRICAO_ROTULO = {
@@ -930,6 +1063,7 @@ const RESTRICAO_ROTULO = {
   armadura:          'Só armaduras (não escudos)',
   armaduraOuVestuario: 'Só armaduras e vestuários',
   armaduraPesada:    'Só armaduras pesadas',
+  periciaDoItem:     'Só ferramenta ou vestuário que modifique uma perícia',
 };
 
 // Cada teste recebe o NOME do item-base sorteado e os atributos dele no
@@ -952,6 +1086,10 @@ const RESTRICAO_MELHORIA = {
   armaduraOuVestuario: (nome, st) => /^Armaduras/.test(st.categoria || '') ||
                                      st.categoria === 'Vestuário',
   armaduraPesada:    (nome, st) => st.categoria === 'Armaduras Pesadas',
+  // Aprimorado e Multifuncional: ver ITENS_PERICIA, logo abaixo. A
+  // categoria sozinha não basta — 'estandarte' é ferramenta e não
+  // modifica perícia nenhuma.
+  periciaDoItem:     (nome)     => ITENS_PERICIA.has(nome),
 };
 
 /* ── MATERIAL ESPECIAL: a melhoria que abre uma segunda porta ───────
@@ -1070,6 +1208,20 @@ function tabelaArmas() {
    a página dela; o que só existe no catálogo mostra a categoria da Loja
    no lugar da referência — é o que se sabe dele, e dizer menos seria
    inventar página. ─────────────────────────────────────────────────── */
+/* ── FERRAMENTA E VESTUÁRIO SUPERIORES (Customizável) ───────────────
+   O livro dá melhorias a ferramenta e vestuário (Tab. 3-8) mas não dá
+   tesouro: a Tabela 8-5 só dá faixas de d% para arma, armadura/escudo e
+   esotérico, e a instrução do Superior repete as três. Ligando esta
+   caixa, a quarta categoria entra no sorteio — o d6 do tipo vira d7, a
+   lista de itens é o catálogo da Loja (Ferramentas + Vestuário +
+   Instrumentos Musicais) e as melhorias saem da MELHORIA_FERRAM.
+
+   Fora do Customizável nada disso existe, e é de propósito: é a única
+   parte do gerador que o livro não escreve. ───────────────────────── */
+function ferramentaSuperiorLigada() {
+  return MODO_RECOMP === 'customizavel' && !!CUSTOM_FILTROS.ferramentaSuperior;
+}
+
 function catalogoCompletoLigado() {
   return MODO_RECOMP === 'customizavel' && !!CUSTOM_FILTROS.catalogoCompleto;
 }
@@ -1129,10 +1281,49 @@ function poolLoja() {
   return _poolLoja;
 }
 
+/* ── A LISTA DE FERRAMENTA E VESTUÁRIO ──────────────────────────────
+   O livro não tem Tabela 8-4 para esta categoria (ela não existe no
+   tesouro), então aqui NÃO há tabela oficial para escolher: a lista é
+   sempre o catálogo da Loja, e por isso esta função não olha para o
+   `catalogoCompleto` — não há "tabela curta" para ele substituir.
+
+   Entram as três categorias que o Tormenta20 trata como ferramenta e
+   vestuário para efeito de melhoria: Ferramentas, Vestuário e
+   Instrumentos Musicais (p. 158: o instrumento "é considerado um item
+   ligado à perícia Atuação", e recebe melhorias de ferramenta).
+
+   Eles continuam no pool `Diverso` também, e é de propósito: o sorteio
+   de ITEM DIVERSO do catálogo completo não muda em nada por causa
+   desta leva. */
+let _poolFerram = null;
+function poolFerramenta() {
+  if (_poolFerram) return _poolFerram;
+  const LC = (typeof LojaCompleta !== 'undefined') ? LojaCompleta : window.LojaCompleta;
+  if (!LC || typeof LC.catalogoNomes !== 'function') return null;
+  const CATS = new Set(['Ferramentas', 'Vestuário', 'Instrumentos Musicais']);
+  const vistos = new Set();
+  const rows = [];
+  for (const it of LC.catalogoNomes()) {
+    if (!CATS.has(it.categoria) || vistos.has(it.nome)) continue;
+    vistos.add(it.nome);
+    rows.push({ item: it.nome, livro: '', pag: null, deLoja: it.categoria });
+  }
+  rows.sort((a, b) => a.item.localeCompare(b.item, 'pt-BR'));
+  rows.forEach((r, i) => { r.max = i + 1; });
+  _poolFerram = rows;
+  return _poolFerram;
+}
+
 // A tabela em uso para um tipo de equipamento, com o dado que a sorteia.
 // É o único lugar que sabe se estamos no catálogo completo ou na tabela
 // oficial — rolarEquip, lookupEquip e o Catálogo de Tesouros leem daqui.
 function tabelaDoTipo(tipo) {
+  // A quarta categoria não tem tabela no livro: a lista é o catálogo.
+  if (tipo === 'Ferramenta') {
+    const f = poolFerramenta();
+    if (f && f.length) return { rows: f, lados: f.length, dado: 'd' + f.length, daLoja: true };
+    return { rows: [], lados: 1, dado: 'd1', daLoja: true };
+  }
   if (catalogoCompletoLigado()) {
     const p = poolLoja();
     if (p && p[tipo] && p[tipo].length) {
@@ -1170,8 +1361,18 @@ function lookupEquip(tipo, dp) {
   return tab[tab.length - 1];
 }
 
+// A tabela de melhorias de um tipo, com o dado que a sorteia. As três do
+// livro rolam no d% das faixas da Tabela 8-5; a de ferramenta e vestuário,
+// que o livro não tabela, rola o dado do próprio tamanho (ver MELHORIA_FERRAM).
+function tabelaMelhoria(tipo) {
+  if (tipo === 'Ferramenta')
+    return { rows: MELHORIA_FERRAM, lados: MELHORIA_FERRAM.length, dado: 'd' + MELHORIA_FERRAM.length };
+  const rows = tipo === 'Arma' ? MELHORIA_ARMA : tipo === 'Armadura' ? MELHORIA_ARMADURA : MELHORIA_ESOTER;
+  return { rows, lados: 100, dado: 'd%' };
+}
+
 function lookupMelhoria(tipo, dp) {
-  const tab = tipo === "Arma" ? MELHORIA_ARMA : tipo === "Armadura" ? MELHORIA_ARMADURA : MELHORIA_ESOTER;
+  const tab = tabelaMelhoria(tipo).rows;
   for (const row of tab) if (dp <= row.max) return row;
   return tab[tab.length - 1];
 }
@@ -1190,7 +1391,11 @@ const MELHORIA_PREREQ = {
   'Harmonizada':     ['*'],
   'Sob medida':      ['Ajustada'],
   'Balístico':       ['Reforçada'],
-  'Deslumbrante':    ['Banhada a ouro', 'Cravejada de gemas'],
+  // Os quatro nomes porque a melhoria aparece em duas tabelas com gênero
+  // diferente: na de armadura o livro imprime banhada/cravejada; na de
+  // ferramenta e vestuário, banhado/cravejado.
+  'Deslumbrante':    ['Banhada a ouro', 'Cravejada de gemas',
+                      'Banhado a ouro', 'Cravejado de gemas'],
   'Potencializador': ['Canalizador'],
   'Devotado':        ['Inscrito'],
 };
@@ -1198,8 +1403,10 @@ const MELHORIA_PREREQ = {
 const MELHORIA_EXCLUI = [
   ['Precisa',   'Maciça'],
   ['Delicada',  'Reforçada'],
-  // O par Brasonado × Discreto saiu junto com o Brasonado: ele é melhoria
-  // de ferramenta e vestuário, categoria que o gerador não sorteia.
+  // O par é do verbete do Brasonado: "Um item não pode ser brasonado e
+  // discreto" (Heróis de Arton, p. 239). Os dois só coexistem na tabela de
+  // ferramenta e vestuário — é a única em que o Brasonado sai.
+  ['Brasonado', 'Discreto'],
 ];
 function melhoriaPrereqFalta(nome, usados) {
   const req = MELHORIA_PREREQ[nome];
@@ -1854,12 +2061,13 @@ function lookupPocao(d120) {
 // pesada. Sem o nome, só a categoria da tabela filtra — que é como esta
 // função se comportava antes.
 function rolarMelhorias(tipo, qtd, nomeBase) {
+  const tabMel = tabelaMelhoria(tipo);
   const melhorias = [];
   const usados = new Set();
   for (let i = 0; i < qtd; i++) {
     let dp, item, tentativas = 0;
     do {
-      dp   = rolarPercent();
+      dp   = rolarDado(tabMel.lados);
       item = lookupMelhoria(tipo, dp);
       tentativas++;
     } while (
@@ -1875,7 +2083,9 @@ function rolarMelhorias(tipo, qtd, nomeBase) {
     // "Material especial" não é um efeito, é uma porta: rola também o
     // material que está do outro lado dela (ver sortearMaterial).
     const material = item.item === MELHORIA_MATERIAL ? sortearMaterial(nomeBase) : null;
-    melhorias.push(material ? { dp, item, material } : { dp, item });
+    const linha = { dp, dado: tabMel.dado, item };
+    if (material) linha.material = material;
+    melhorias.push(linha);
   }
   return melhorias;
 }
@@ -1892,11 +2102,22 @@ const TABELAS = {
   },
 
   // ─── Equipamento ──────────────────────────────────────
-  equipamento() {
-    const d6   = rolarDado(6);
-    const tipo = d6 <= 3 ? "Arma" : d6 <= 5 ? "Armadura" : "Esotérico";
+  // O livro manda um d6: "1-3) arma; 4-5) armadura ou escudo; 6) esotérico"
+  // (T20, p. 331). Com a caixa "Ferramenta e vestuário superiores" ligada,
+  // o dado ganha UMA face — vira d7, e o 7 é a quarta categoria. É a conta
+  // mais honesta que existe para isto: as três do livro mantêm a proporção
+  // exata entre si (3:2:1), e a nova entra com o peso do esotérico, a menor
+  // delas. O livro não dá número nenhum, porque não prevê o caso.
+  // Ela só entra no tesouro SUPERIOR (é quem chama com `true`): o
+  // EQUIPAMENTO mundano segue no d6 do livro, porque ferramenta e
+  // vestuário já saem por lá pelo "catálogo inteiro da Loja".
+  equipamento(comFerramenta) {
+    const ferram = !!comFerramenta && ferramentaSuperiorLigada();
+    const lados  = ferram ? 7 : 6;
+    const d6     = rolarDado(lados);
+    const tipo   = d6 <= 3 ? "Arma" : d6 <= 5 ? "Armadura" : d6 === 6 ? "Esotérico" : "Ferramenta";
     const r    = rolarEquip(tipo);
-    return { tipo, d6, dp: r.dp, dado: r.dado, item: r.item };
+    return { tipo, d6, dadoTipo: 'd' + lados, dp: r.dp, dado: r.dado, item: r.item };
   },
 
   // ─── Poção ────────────────────────────────────────────
@@ -1908,7 +2129,7 @@ const TABELAS = {
 
   // ─── Superior ─────────────────────────────────────────
   superior(qtd) {
-    const equip = TABELAS.equipamento();
+    const equip = TABELAS.equipamento(true);
     return { equip, melhorias: rolarMelhorias(equip.tipo, qtd, equip.item && equip.item.item) };
   },
 
@@ -2559,7 +2780,7 @@ function blockEquip(equip, prefixo='') {
   return `<div class="sub-line">
     <span class="bullet">◆</span>
     ${prefixo ? `<strong>${prefixo}</strong>&nbsp;` : ''}
-    ${diceInline('d6')} = ${equip.d6} → <strong>${equip.tipo}</strong>
+    ${diceInline(equip.dadoTipo || 'd6')} = ${equip.d6} → <strong>${equip.tipo}</strong>
     &nbsp;·&nbsp;
     ${diceInline(equip.dado || 'd%')} = ${equip.dp}
     &nbsp;→&nbsp;
@@ -2701,7 +2922,7 @@ function blockSuperior(sup, prefixo='') {
       : '';
     s += `<div class="sub-indent">
       <span class="bullet">◇</span>
-      Melhoria ${i+1}: ${diceInline('d%')} = ${m.dp}
+      Melhoria ${i+1}: ${diceInline(m.dado || 'd%')} = ${m.dp}
       &nbsp;→&nbsp;
       <strong style="color:var(--text)">${m.item?.item ?? '—'}</strong>
       ${obsHtml}
@@ -2846,7 +3067,7 @@ function blockMagico(mag, prefixo='') {
         : '';
       s += `<div class="sub-indent" style="margin-top:3px">
         <span class="bullet">◇</span>
-        ✦ Melhoria ${i+1}: ${diceInline('d%')} = ${m.dp}
+        ✦ Melhoria ${i+1}: ${diceInline(m.dado || 'd%')} = ${m.dp}
         &nbsp;→&nbsp;
         <strong style="color:var(--text)">${m.item?.item ?? '—'}</strong>
         ${obsHtml}
@@ -2996,6 +3217,7 @@ const CUSTOM_FILTROS = {
   municoesExtras:  false,         // munições do suplemento que não cabem no d% (vira d104)
   materiaisRaros:  true,          // os 5 materiais especiais que o livro NÃO vende podem sair
   catalogoCompleto: false,        // os 4 sorteios mundanos rolam no catálogo INTEIRO da Loja
+  ferramentaSuperior: false,      // o Superior também pode cair em ferramenta/vestuário (d6 vira d7)
 };
 
 const MODO_DESC = {
@@ -3716,6 +3938,20 @@ function materiaisCatalogoRows(vendidos) {
   });
 }
 
+/*  A lista de ferramenta e vestuário no Catálogo de Tesouros. Marca quais
+    itens "modificam uma perícia" — é o que decide se o Aprimorado e o
+    Multifuncional podem cair neles (ver ITENS_PERICIA). */
+function linhasFerramentaCatalogo() {
+  const rows = poolFerramenta();
+  if (!rows) return [];
+  return rows.map(r => ({
+    item: r.item,
+    obs: (r.deLoja || '') + (ITENS_PERICIA.has(r.item)
+      ? ' · modifica uma perícia (aceita Aprimorado e Multifuncional)'
+      : ' · não modifica perícia'),
+  }));
+}
+
 function renderCatalogo() {
   const cont = document.getElementById('catalogoTesouros');
   if (!cont || cont.dataset.pronto === '1') return;   // monta uma única vez
@@ -3736,6 +3972,10 @@ function renderCatalogo() {
     catSecaoHTML('Superiores — Melhorias de Arma', '✦', MELHORIA_ARMA),
     catSecaoHTML('Superiores — Melhorias de Armadura', '✦', MELHORIA_ARMADURA),
     catSecaoHTML('Superiores — Melhorias de Esotérico', '✦', MELHORIA_ESOTER),
+    catSecaoHTML('Superiores — Melhorias de Ferramenta & Vestuário', '✦', MELHORIA_FERRAM,
+                 { filtroKey: 'ferramentaSuperior', optIn: true }),
+    catSecaoHTML('Superiores — Ferramentas, Vestuário & Instrumentos (catálogo da Loja)', '🧰',
+                 linhasFerramentaCatalogo(), { filtroKey: 'ferramentaSuperior', optIn: true }),
     catSecaoHTML('Superiores — Materiais Especiais', '🪨', materiaisCatalogoRows(true)),
     catSecaoHTML('Superiores — Materiais Especiais raros (não vendidos)', '🦴',
                  materiaisCatalogoRows(false), { filtroKey: 'materiaisRaros' }),

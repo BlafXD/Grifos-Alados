@@ -259,7 +259,7 @@
           <button class="bs-backup-btn" data-acao="exportar-json" title="Salvar um .json com todas as bases">⬇ Backup (.json)</button>
           <button class="bs-backup-btn" data-acao="exportar-txt" title="Exportar um .txt legível">⬇ Texto (.txt)</button>
           <button class="bs-backup-btn bs-backup-btn--imp" data-acao="importar-backup" title="Carregar um backup .json">⬆ Importar</button>
-          <input type="file" id="bsImportFile" accept=".json,application/json" hidden>
+          <input type="file" id="bsImportFile" accept=".json,application/json" aria-label="Arquivo .json de bases para importar" hidden>
         </div>
       </div>
       ${htmlCatalogo()}`;
@@ -368,7 +368,7 @@
             <span class="bs-stat-sub">
               ajuste
               <button class="bs-seg-btn" data-acao="seg-menos" ${ds}>−</button>
-              <input class="bs-seg-input" type="number" data-campo="segAjuste" ${ds} value="${esc(b.segAjuste)}">
+              <input class="bs-seg-input" type="number" data-campo="segAjuste" ${ds} aria-label="Ajuste manual da segurança da base" value="${esc(b.segAjuste)}">
               <button class="bs-seg-btn" data-acao="seg-mais" ${ds}>＋</button>
             </span>
           </div>
@@ -377,7 +377,7 @@
       </div>`;
 
     // ── Cômodos ──
-    const comodoAdd = `<select class="bs-select bs-add-sel" data-campo="add-comodo" ${ds}>
+    const comodoAdd = `<select class="bs-select bs-add-sel" data-campo="add-comodo" ${ds} aria-label="Adicionar cômodo à base">
         <option value="">＋ Adicionar cômodo…</option>
         ${COMODOS.map(cm => `<option value="${cm.chave}">${esc(cm.nome)}</option>`).join('')}
       </select>`;
@@ -409,7 +409,7 @@
       </div>`;
 
     // ── Mobílias ──
-    const mobAdd = `<select class="bs-select bs-add-sel" data-campo="add-mobilia" ${ds}>
+    const mobAdd = `<select class="bs-select bs-add-sel" data-campo="add-mobilia" ${ds} aria-label="Adicionar mobília à base">
         <option value="">＋ Adicionar mobília…</option>
         ${MOBILIAS.map(mb => `<option value="${mb.chave}">${esc(mb.nome)} — ${moeda(mb.preco)}</option>`).join('')}
       </select>`;

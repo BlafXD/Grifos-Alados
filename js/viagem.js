@@ -237,7 +237,7 @@
           <button class="vg-backup-btn" data-acao="exportar-json" title="Salvar um .json com todas as viagens">⬇ Backup (.json)</button>
           <button class="vg-backup-btn" data-acao="exportar-txt" title="Exportar um .txt legível">⬇ Texto (.txt)</button>
           <button class="vg-backup-btn vg-backup-btn--imp" data-acao="importar-backup" title="Carregar um backup .json">⬆ Importar</button>
-          <input type="file" id="vgImportFile" accept=".json,application/json" hidden>
+          <input type="file" id="vgImportFile" accept=".json,application/json" aria-label="Arquivo .json de viagens para importar" hidden>
         </div>
       </div>`;
 
@@ -356,7 +356,7 @@
         <div class="vg-linha vg-linha--dias">
           <span class="vg-dias-rot">Dias de viagem</span>
           <button class="vg-step" data-acao="dia-menos" data-v="${vi}" title="–1 dia">−</button>
-          <input class="vg-dias" type="text" inputmode="numeric" data-campo="dias" data-v="${vi}" value="${esc(v.dias)}">
+          <input class="vg-dias" type="text" inputmode="numeric" data-campo="dias" data-v="${vi}" aria-label="Dias de viagem já percorridos" value="${esc(v.dias)}">
           <button class="vg-step" data-acao="dia-mais" data-v="${vi}" title="+1 dia">＋</button>
           <span class="vg-dica">guia faz Sobrevivência/dia para não se perder</span>
         </div>
@@ -486,7 +486,7 @@
         <div class="vg-pv" data-vpv-box="${esc(v.id)}">
           <span class="vg-pv-rot">PV do veículo</span>
           <button class="vg-step" data-acao="veic-pv-menos" data-v="${vi}" title="−1 PV">−</button>
-          <input class="vg-pv-in" type="text" inputmode="numeric" data-campo="veic-pv" data-v="${vi}" data-vpv="${esc(v.id)}" value="${esc(info.pvAtual)}">
+          <input class="vg-pv-in" type="text" inputmode="numeric" data-campo="veic-pv" data-v="${vi}" data-vpv="${esc(v.id)}" aria-label="PV atual do veículo ${esc(veic.nome)}" value="${esc(info.pvAtual)}">
           <span class="vg-pv-max">/ ${esc(info.pvMax)}</span>
           <button class="vg-step" data-acao="veic-pv-mais" data-v="${vi}" title="+1 PV">＋</button>
           <button class="vg-pv-full" data-acao="veic-pv-full" data-v="${vi}" title="Restaurar PV cheio">↺ cheio</button>
