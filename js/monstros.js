@@ -754,7 +754,7 @@
                   title="Exportar um .txt legível do bestiário para ler ou imprimir">⬇ Exportar texto (.txt)</button>
           <button class="mz-backup-btn mz-backup-btn--imp" data-acao="importar-backup"
                   title="Carregar um backup .json — restaura sessões, cenas e criaturas nos devidos lugares">⬆ Importar backup</button>
-          <input type="file" id="mzImportFile" accept=".json,application/json" hidden>
+          <input type="file" id="mzImportFile" accept=".json,application/json" aria-label="Arquivo .json do bestiário para importar" hidden>
         </div>
       </div>`;
 
@@ -1422,7 +1422,8 @@
           <span class="mz-veic-pv-rot">PV (mesma vida da Viagem)</span>
           <button class="mz-step" data-acao="veic-pv-menos" title="−1 PV">−</button>
           <input class="mz-veic-pv-in" type="text" inputmode="numeric" data-campo="veic-pv"
-                 data-vpv="${esc(dados.combateViagemId)}" value="${esc(f.pvAtual)}">
+                 data-vpv="${esc(dados.combateViagemId)}" aria-label="PV atual do veículo ${esc(f.nome)}"
+                 value="${esc(f.pvAtual)}">
           <span class="mz-veic-pv-max">/ ${esc(f.pvMax)}</span>
           <button class="mz-step" data-acao="veic-pv-mais" title="+1 PV">＋</button>
           <span class="mz-veic-def">Defesa ${esc(f.defesa)} · ${esc(f.desloc)}</span>
@@ -1933,7 +1934,7 @@
               </div>
               <div class="mz-ferr-linha">
                 <span class="mz-ferr-lbl">Arma natural</span>
-                <select class="mz-ferr-arma">${optArma}</select>
+                <select class="mz-ferr-arma" aria-label="Arma natural a inserir">${optArma}</select>
                 <button type="button" class="mz-ferr-add" data-acao="inserir-arma-natural" ${ds}
                         title="Insere o ataque na caixa, com o dado conforme o tamanho">＋ inserir</button>
               </div>
@@ -2054,7 +2055,7 @@
               </div>
               <div class="mz-ferr-linha">
                 <span class="mz-ferr-lbl">Poder</span>
-                <select class="mz-dev-poder" ${cr.devoto ? '' : 'disabled'}>${_opcoesPoderHtml(cr.devoto)}</select>
+                <select class="mz-dev-poder" aria-label="Poder concedido a inserir" ${cr.devoto ? '' : 'disabled'}>${_opcoesPoderHtml(cr.devoto)}</select>
                 <button type="button" class="mz-ferr-add" data-acao="inserir-poder-concedido" ${ds}
                         title="Insere o texto completo do poder na caixa de Ataque e Habilidades">＋ inserir</button>
               </div>
@@ -2435,13 +2436,13 @@
           <div class="mz-stat-rotulo">${st.rotulo}</div>
           <div class="mz-stat-linha">
             <span>Padrão</span>
-            <input type="text" value="${esc(v.padrao)}"
+            <input type="text" value="${esc(v.padrao)}" aria-label="${st.rotulo} — valor padrão"
                    data-campo="stat" data-stat="${st.chave}" data-sub="padrao" ${ds}>
             ${dado('padrao')}
           </div>
           <div class="mz-stat-linha mz-stat-linha--atual">
             <span>Atual</span>
-            <input type="text" value="${esc(v.atual)}"
+            <input type="text" value="${esc(v.atual)}" aria-label="${st.rotulo} — valor atual"
                    data-campo="stat" data-stat="${st.chave}" data-sub="atual" ${ds}>
             ${dado('atual')}
           </div>

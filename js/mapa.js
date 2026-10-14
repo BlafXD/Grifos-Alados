@@ -186,7 +186,7 @@
         <button class="mp-btn" data-mp-acao="exportar-txt" title="Salvar um .txt legível da linha do tempo — ótimo p/ ler, imprimir ou entregar a uma IA">📄 Texto</button>
         <button class="mp-btn" data-mp-acao="importar" title="Carregar um backup .json do mapa">⬆ Importar</button>
         <button class="mp-btn mp-btn--perigo" data-mp-acao="limpar" title="Apagar todos os nós e ligações">🗑 Limpar</button>
-        <input type="file" id="mpImportFile" accept=".json,application/json" hidden>
+        <input type="file" id="mpImportFile" accept=".json,application/json" aria-label="Arquivo .json de mapas para importar" hidden>
       </div>
       <div class="mp-dica" hidden></div>
       <div class="mp-viewport">

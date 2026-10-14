@@ -1479,7 +1479,9 @@
         (marcado
           ? '<label class="ca-chk ca-chk--mini"><input type="checkbox" data-acao="desl-principal" data-desl="' + id + '"' +
               (ex.principal ? ' checked' : '') + '> principal</label>' +
-            '<input type="text" class="ca-input ca-input--mini" data-desl-valor="' + id + '" value="' +
+            '<input type="text" class="ca-input ca-input--mini" data-desl-valor="' + id +
+              '" aria-label="Valor do deslocamento de ' + esc(rot) +
+              '" value="' +
               esc(ex.valor || deslocamentoExtraAuto(c, ex)) + '">'
           : '') +
         '</div>';
@@ -2505,7 +2507,7 @@
           : 'Escolha a criatura-base. A aba anota a diferença de cada estatística dela para a linha do seu papel e ND na Tabela 2-3, e mantém essa diferença quando você mudar o ND.') +
       '</p>' +
       '<div class="ca-base-busca">' +
-        '<select class="ca-select" data-base-fonte>' + fontes.map(function (f) {
+        '<select class="ca-select" data-base-fonte aria-label="Livro ou lista de onde vem a criatura-base">' + fontes.map(function (f) {
           return '<option value="' + f.chave + '"' + (f.chave === inicial ? ' selected' : '') + '>' +
             esc(f.rotulo) + '</option>';
         }).join('') + '</select>' +

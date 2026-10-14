@@ -112,7 +112,7 @@
       <div class="fc-barra">
         ${abas}
         <button class="fc-add" data-acao="adicionar">＋ Adicionar ficha (PDF)</button>
-        <input type="file" id="fc-arquivo" accept=".pdf,application/pdf" multiple hidden>
+        <input type="file" id="fc-arquivo" accept=".pdf,application/pdf" multiple aria-label="Fichas em PDF para importar" hidden>
       </div>`;
 
     const f = fichaPorId(selecionada);

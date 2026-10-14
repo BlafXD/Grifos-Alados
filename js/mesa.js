@@ -465,7 +465,8 @@
       let acoes = '';
       if (souM && !eu) {
         acoes = '<span class="me-linha-acoes">' +
-          '<select class="me-sel-papel" data-mesa="papel" data-uid="' + esc(uid) + '">' +
+          '<select class="me-sel-papel" data-mesa="papel" data-uid="' + esc(uid) +
+            '" aria-label="Papel deste membro na mesa">' +
             PAPEIS.map(p => '<option value="' + p.chave + '"' + (p.chave === m.papel ? ' selected' : '') +
               '>' + p.rotulo + '</option>').join('') +
           '</select>' +
