@@ -313,6 +313,12 @@ white-space: nowrap;
   transition: background 0.15s, color 0.15s;
 }
 .vg-atalho:hover { background: var(--rust); color: var(--parchment); border-color: var(--rust); }
+.vg-atalho--sorte {
+  border-color: var(--gold-dim);
+  color: var(--rust-dark);
+  font-weight: 600;
+}
+.vg-atalho--sorte:hover { background: var(--rust-dark); border-color: var(--rust-dark); color: var(--parchment); }
 
 .vg-diario-item { display: flex; gap: 0.5rem; align-items: flex-start; margin-bottom: 0.5rem; }
 .vg-textarea {

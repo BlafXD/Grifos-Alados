@@ -13,6 +13,36 @@
 
   const STORAGE_KEY = 'grifosAlados.monstros';
 
+  // ── BALANCEADOR DE ENCONTRO ──────────────────────────────────────
+  // Regra de "Construindo Combates" (Tormenta20, p. 282): uma criatura
+  // de ND igual ao nível do grupo é desafio justo para 4 personagens.
+  // "Vários Inimigos" (mesma página): ND<1 → ND do combate = ND × qtd;
+  // ND≥1 → +2 cada vez que a quantidade DOBRA (2×ND1=ND3, 4×ND5=ND9).
+  // Estado não é salvo — é calculadora de mesa, como a de Culinária.
+  const ENC_ND_LISTA = ['1/4', '1/2', '1', '2', '3', '4', '5', '6', '7', '8',
+    '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'];
+  const enc = { nivel: 1, jogadores: 4, ajuste: 0, aberto: false,
+    linhas: [{ nd: '1', qtd: 1 }] };
+
+  function encNDNum(nd) {
+    if (nd === '1/4') return 0.25;
+    if (nd === '1/2') return 0.5;
+    return parseFloat(nd) || 0;
+  }
+  function encNDTexto(v) {
+    if (Math.abs(v - Math.round(v)) < 1e-9) return String(Math.round(v));
+    if (Math.abs(v - 0.25) < 1e-9) return '1/4';
+    if (Math.abs(v - 0.5)  < 1e-9) return '1/2';
+    return (Math.round(v * 100) / 100).toString().replace('.', ',');
+  }
+  // ND do combate para um grupo de criaturas IDÊNTICAS (mesma ND).
+  function encNDCombate(ndNum, qtd) {
+    qtd = Math.max(1, qtd | 0);
+    if (ndNum < 1) return ndNum * qtd;
+    if (qtd === 1) return ndNum;
+    return ndNum + 2 * Math.log2(qtd);
+  }
+
   // Atributos especiais — cada um tem um valor "Padrão" e um "Atual".
   //   rolavel:true → ganha botões de dado (rola 1d20 + valor).
   //   grande:true  → caixa de largura dobrada na grade.
@@ -732,6 +762,124 @@
     return cena.ambientes;
   }
 
+  // ── BALANCEADOR DE ENCONTRO — HTML e religação ───────────────────
+  function encontroHTML() {
+    const opcoesND = ENC_ND_LISTA.map(nd =>
+      `<option value="${nd}">ND ${nd}</option>`).join('');
+    return `
+      <details class="mz-enc" id="mzEnc" ${enc.aberto ? 'open' : ''}>
+        <summary class="mz-enc-cab">🎯 Balancear Encontro</summary>
+        <div class="mz-enc-corpo">
+          <p class="mz-enc-dica">Regra de "Construindo Combates" (Tormenta20, p. 282): uma
+            criatura de ND igual ao nível do grupo é um desafio justo para 4 personagens.
+            Isto aqui só aplica a conta do livro — o julgamento de cada mesa continua sendo seu.</p>
+
+          <div class="mz-enc-linha">
+            <label class="mz-enc-campo">Nível do grupo
+              <input type="number" id="mzEncNivel" min="1" max="20" value="${enc.nivel}">
+            </label>
+            <label class="mz-enc-campo">Jogadores
+              <input type="number" id="mzEncJog" min="1" max="8" value="${enc.jogadores}">
+            </label>
+            <label class="mz-enc-campo mz-enc-campo--larga">Ajuste pelo ritmo do dia
+              <select id="mzEncAjuste">
+                <option value="0"  ${enc.ajuste === 0  ? 'selected' : ''}>Padrão (1 ou 2 combates no dia)</option>
+                <option value="1"  ${enc.ajuste === 1  ? 'selected' : ''}>+1 ND — só este combate no dia</option>
+                <option value="2"  ${enc.ajuste === 2  ? 'selected' : ''}>+2 ND — só este combate, e difícil</option>
+                <option value="-1" ${enc.ajuste === -1 ? 'selected' : ''}>−1 ND — muitos combates no dia</option>
+                <option value="-2" ${enc.ajuste === -2 ? 'selected' : ''}>−2 ND — maratona de combates</option>
+              </select>
+            </label>
+          </div>
+          <p id="mzEncAlvo" class="mz-enc-alvo"></p>
+
+          <div class="mz-enc-linhas-cab">
+            <strong>Inimigos deste combate</strong>
+            <button type="button" id="mzEncAdd" class="mz-enc-add">＋ adicionar grupo</button>
+          </div>
+          <div id="mzEncLinhas"></div>
+          <div id="mzEncResultado" class="mz-enc-resultado"></div>
+        </div>
+      </details>`;
+  }
+
+  function encontroAtualizar() {
+    const cont = document.getElementById('monstros-content');
+    if (!cont) return;
+    const elLinhas = cont.querySelector('#mzEncLinhas');
+    const elAlvo   = cont.querySelector('#mzEncAlvo');
+    const elRes    = cont.querySelector('#mzEncResultado');
+    if (!elLinhas || !elAlvo || !elRes) return;
+
+    const alvoND = enc.nivel + enc.ajuste;
+    let notaJog = 'o alvo acima já é para o seu grupo.';
+    if (enc.jogadores < 4) notaJog = 'com menos de 4 jogadores, prefira um ND um pouco MENOR que o alvo (o livro não dá um número exato — é julgamento de mesa).';
+    if (enc.jogadores > 4) notaJog = 'com mais de 4 jogadores, prefira um ND um pouco MAIOR que o alvo (o livro não dá um número exato — é julgamento de mesa).';
+    elAlvo.innerHTML = `<strong>Alvo equilibrado: ND ${encNDTexto(alvoND)}.</strong> ${notaJog}`;
+
+    elLinhas.innerHTML = enc.linhas.map((l, i) => `
+      <div class="mz-enc-grupo" data-i="${i}">
+        <select class="mz-enc-nd" data-i="${i}">${ENC_ND_LISTA.map(nd =>
+          `<option value="${nd}" ${l.nd === nd ? 'selected' : ''}>ND ${nd}</option>`).join('')}</select>
+        <span class="mz-enc-x">×</span>
+        <input type="number" class="mz-enc-qtd" data-i="${i}" min="1" max="30" value="${l.qtd}">
+        ${enc.linhas.length > 1 ? `<button type="button" class="mz-enc-rm" data-i="${i}" title="Remover este grupo" aria-label="Remover este grupo">✕</button>` : ''}
+      </div>`).join('');
+
+    elRes.innerHTML = enc.linhas.map(l => {
+      const ndNum = encNDNum(l.nd);
+      const combND = encNDCombate(ndNum, l.qtd);
+      const delta = combND - alvoND;
+      let veredito;
+      if (Math.abs(delta) < 0.26) veredito = 'equilibrado — igual ao alvo';
+      else if (delta > 0) veredito = `+${encNDTexto(delta)} acima do alvo (mais difícil)`;
+      else veredito = `−${encNDTexto(-delta)} abaixo do alvo (mais fácil)`;
+      const avisoQtd = l.qtd > 10
+        ? ' ⚠ mais de dez nesta mesma rodada deixa o combate lento (p. 283) — considere dividir a cena.'
+        : '';
+      return `<p class="mz-enc-linha-res">${l.qtd}× ND ${l.nd} → <strong>ND ${encNDTexto(combND)}</strong> de combate — ${veredito}.${avisoQtd}</p>`;
+    }).join('') + (enc.linhas.length > 1
+      ? '<p class="mz-enc-nota">O livro não dá uma fórmula para somar grupos de NDs diferentes num único número — compare cada grupo com o alvo e use o olho de mestre para a cena completa.</p>'
+      : '');
+  }
+
+  function ligarEncontro() {
+    const cont = document.getElementById('monstros-content');
+    if (!cont) return;
+    const det = cont.querySelector('#mzEnc');
+    if (!det) return;
+    det.addEventListener('toggle', () => { enc.aberto = det.open; });
+
+    cont.querySelector('#mzEncNivel').addEventListener('input', e => {
+      enc.nivel = Math.max(1, +e.target.value || 1); encontroAtualizar();
+    });
+    cont.querySelector('#mzEncJog').addEventListener('input', e => {
+      enc.jogadores = Math.max(1, +e.target.value || 1); encontroAtualizar();
+    });
+    cont.querySelector('#mzEncAjuste').addEventListener('change', e => {
+      enc.ajuste = +e.target.value; encontroAtualizar();
+    });
+    cont.querySelector('#mzEncAdd').addEventListener('click', () => {
+      enc.linhas.push({ nd: '1', qtd: 1 }); encontroAtualizar();
+    });
+    cont.querySelector('#mzEncLinhas').addEventListener('change', e => {
+      const i = +e.target.dataset.i;
+      if (Number.isNaN(i) || !enc.linhas[i]) return;
+      if (e.target.classList.contains('mz-enc-nd'))  enc.linhas[i].nd  = e.target.value;
+      if (e.target.classList.contains('mz-enc-qtd')) enc.linhas[i].qtd = Math.max(1, +e.target.value || 1);
+      encontroAtualizar();
+    });
+    cont.querySelector('#mzEncLinhas').addEventListener('click', e => {
+      const btn = e.target.closest('.mz-enc-rm');
+      if (!btn) return;
+      const i = +btn.dataset.i;
+      enc.linhas.splice(i, 1);
+      encontroAtualizar();
+    });
+
+    encontroAtualizar();
+  }
+
   // ═══════════════════════════════════════════════════════════════
   //  RENDERIZAÇÃO
   // ═══════════════════════════════════════════════════════════════
@@ -757,6 +905,8 @@
           <input type="file" id="mzImportFile" accept=".json,application/json" aria-label="Arquivo .json do bestiário para importar" hidden>
         </div>
       </div>`;
+
+    html += encontroHTML();
 
     const qtdFixadas = dados.painel.filter(Boolean).length;
     html += `
@@ -791,6 +941,7 @@
     // ajusta a altura das caixas de texto simples ao conteúdo já salvo
     // (as notas de sessão/cena são contenteditable e já crescem sozinhas)
     cont.querySelectorAll('.mz-textarea').forEach(autoCrescer);
+    ligarEncontro();
   }
 
   // ── PAINEL DE COMBATE (fichas lado a lado, sem limite) ───────────

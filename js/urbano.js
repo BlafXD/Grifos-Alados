@@ -11,6 +11,18 @@
   const nl2br = window.GA_nl2br;
   const semAcento = window.GA_semAcento;
 
+  // ── PERSEGUIÇÃO — distância por rodada (p. 270–271) ───────────────
+  // "Cada participante faz um teste de Atletismo por rodada [...] soma a
+  // distância que cada participante percorreu com o número diretamente
+  // acima na sua coluna". O modificador aqui é o TOTAL já pronto (Atletismo
+  // do personagem com o ajuste de deslocamento do livro já somado — ver o
+  // exemplo de Sotnas/Vallefar, p. 271), em quadrados de 1,5m. Calculadora
+  // de mesa: não é salva, como a de Culinária.
+  const perseg = { rodada: 0, participantes: [
+    { nome: 'Perseguidor', papel: 'perseguidor', mod: 0, distancia: 0 },
+    { nome: 'Fugitivo',    papel: 'fugitivo',    mod: 0, distancia: 6 },
+  ] };
+
   // Tabela de regra (.prog-table) a partir de { cab, linhas, destaque, nota, titulo }.
   function tabelaHTML(t) {
     if (!t || !Array.isArray(t.cab) || !Array.isArray(t.linhas)) return '';
@@ -77,6 +89,22 @@
           Os limites de economia das comunidades também estão no seletor da aba 🏪 Loja.</p>
       </div>
 
+      <div class="cul-calc urb-rolador" id="urbPerseg">
+        <div class="cul-calc-cab">🏃 Perseguição — distância por rodada (p. 270–271)</div>
+        <p class="urb-dica">O modificador de cada participante é o total já pronto para a corrida
+          (Atletismo + o ajuste de +/−2 por 1,5m de deslocamento acima/abaixo de 9m, já somado).
+          "Rodar rodada" soma 1d20 + modificador aos quadrados de cada um.</p>
+        <div id="urbPergLinhas"></div>
+        <button type="button" id="urbPergAdd" class="urb-btn urb-btn--sec">＋ participante</button>
+        <div class="urb-perg-acoes">
+          <button type="button" id="urbPergRodar" class="urb-btn">🎲 Rodar rodada</button>
+          <button type="button" id="urbPergReset" class="urb-btn urb-btn--sec">↺ Reiniciar</button>
+          <span class="urb-dica">Rodada atual: <strong id="urbPergRodada">0</strong>. Um personagem corre
+            por 1 + Constituição rodadas antes de precisar de Fortitude (CD 15 +1 por teste anterior) para não ficar fatigado.</span>
+        </div>
+        <div id="urbPergResultado"></div>
+      </div>
+
       <div class="cul-calc urb-rolador">
         <div class="cul-calc-cab">🏃 Eventos de perseguição — Tabela 6-5</div>
         <div class="cul-calc-controles">
@@ -89,6 +117,80 @@
 
       <input class="cr-busca" type="text" placeholder="Buscar regra (aldeia, perseguição, multidão, telhado…)" autocomplete="off">
       ${blocos}`;
+
+    // ── rastreador de distância da perseguição ───────────────────────
+    function pergAtualizar() {
+      const linhas = cont.querySelector('#urbPergLinhas');
+      const rodadaEl = cont.querySelector('#urbPergRodada');
+      const out = cont.querySelector('#urbPergResultado');
+      if (!linhas) return;
+      rodadaEl.textContent = String(perseg.rodada);
+
+      linhas.innerHTML = perseg.participantes.map((p, i) => `
+        <div class="urb-perg-linha" data-i="${i}">
+          <input type="text" class="urb-perg-nome" data-campo="nome" data-i="${i}" value="${esc(p.nome)}" aria-label="Nome do participante">
+          <select class="urb-perg-papel" data-campo="papel" data-i="${i}" aria-label="Papel na perseguição">
+            <option value="perseguidor" ${p.papel === 'perseguidor' ? 'selected' : ''}>perseguidor</option>
+            <option value="fugitivo" ${p.papel === 'fugitivo' ? 'selected' : ''}>fugitivo</option>
+          </select>
+          <label class="urb-perg-campo">mod. <input type="number" class="urb-perg-mod" data-campo="mod" data-i="${i}" value="${p.mod}"></label>
+          <label class="urb-perg-campo">quadrados <input type="number" class="urb-perg-dist" data-campo="distancia" data-i="${i}" value="${p.distancia}"></label>
+          ${perseg.participantes.length > 1 ? `<button type="button" class="urb-perg-rm" data-i="${i}" title="Remover" aria-label="Remover participante">✕</button>` : ''}
+        </div>`).join('');
+
+      const perseguidores = perseg.participantes.filter(p => p.papel === 'perseguidor');
+      const fugitivos = perseg.participantes.filter(p => p.papel === 'fugitivo');
+      let alcance = '';
+      perseguidores.forEach(pr => fugitivos.forEach(fu => {
+        if (pr.distancia > fu.distancia) alcance += `<p class="urb-perg-alcance">🎯 ${esc(pr.nome)} alcançou ${esc(fu.nome)} — a perseguição termina aqui (ele se rende ou vira combate).</p>`;
+      }));
+      out.innerHTML = alcance;
+    }
+    const pergLinhas = cont.querySelector('#urbPergLinhas');
+    if (pergLinhas) {
+      pergLinhas.addEventListener('input', e => {
+        const i = +e.target.dataset.i;
+        const campo = e.target.dataset.campo;
+        if (Number.isNaN(i) || !perseg.participantes[i] || !campo) return;
+        if (campo === 'mod' || campo === 'distancia') perseg.participantes[i][campo] = +e.target.value || 0;
+        else perseg.participantes[i][campo] = e.target.value;
+      });
+      pergLinhas.addEventListener('change', e => {
+        const i = +e.target.dataset.i;
+        if (!Number.isNaN(i) && e.target.dataset.campo === 'papel') perseg.participantes[i].papel = e.target.value;
+      });
+      pergLinhas.addEventListener('click', e => {
+        const btn = e.target.closest('.urb-perg-rm');
+        if (!btn) return;
+        perseg.participantes.splice(+btn.dataset.i, 1);
+        pergAtualizar();
+      });
+    }
+    const btnAdd = cont.querySelector('#urbPergAdd');
+    if (btnAdd) btnAdd.addEventListener('click', () => {
+      perseg.participantes.push({ nome: 'Novo', papel: 'perseguidor', mod: 0, distancia: 0 });
+      pergAtualizar();
+    });
+    const btnRodar = cont.querySelector('#urbPergRodar');
+    if (btnRodar) btnRodar.addEventListener('click', () => {
+      perseg.rodada++;
+      const rolagens = perseg.participantes.map(p => {
+        const d20 = 1 + Math.floor(Math.random() * 20);
+        const avanco = Math.max(0, d20 + p.mod);
+        p.distancia += avanco;
+        return `${esc(p.nome)}: 🎲${d20} + ${p.mod} = ${avanco} quadrados (total ${p.distancia})`;
+      });
+      pergAtualizar();
+      const out = cont.querySelector('#urbPergResultado');
+      out.innerHTML = `<p class="urb-perg-rolagens">${rolagens.join('<br>')}</p>` + out.innerHTML;
+    });
+    const btnReset = cont.querySelector('#urbPergReset');
+    if (btnReset) btnReset.addEventListener('click', () => {
+      perseg.rodada = 0;
+      perseg.participantes.forEach(p => { p.distancia = 0; });
+      pergAtualizar();
+    });
+    pergAtualizar();
 
     // ── rolador de eventos de perseguição (Tabela 6-5) ──────────────
     const EFEITO_EVENTO = {
