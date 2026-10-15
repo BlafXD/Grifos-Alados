@@ -586,6 +586,98 @@
   border-top: 1px dashed var(--ink-faded);
 }
 
+/* ── VIDA URBANA — rastreador de distância da perseguição ─────────── */
+.urb-btn--sec {
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink-faded);
+}
+.urb-btn--sec:hover { background: var(--parchment3); }
+.urb-perg-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.urb-perg-nome {
+  flex: 1 1 10rem;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  padding: 0.3rem 0.5rem;
+}
+.urb-perg-papel {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  padding: 0.3rem 0.4rem;
+}
+.urb-perg-campo {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-faded);
+}
+.urb-perg-campo input {
+  width: 4.2rem;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  padding: 0.3rem 0.4rem;
+}
+.urb-perg-rm {
+  background: transparent;
+  border: 1px solid var(--ink-faded);
+  color: var(--rust-dark);
+  border-radius: var(--raio);
+  width: 1.7rem;
+  height: 1.7rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.urb-perg-rm:hover { background: var(--rust-dark); color: var(--parchment); }
+.urb-perg-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0.8rem 0 0.4rem;
+}
+.urb-perg-rolagens {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border-left: 4px solid var(--gold);
+  border-radius: var(--raio);
+  padding: 0.5rem 0.7rem;
+  margin: 0.5rem 0;
+}
+.urb-perg-alcance {
+  font-family: var(--ga-fonte-corpo);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--rust-dark);
+  background: var(--parchment2);
+  border-left: 4px solid var(--rust);
+  border-radius: var(--raio);
+  padding: 0.5rem 0.7rem;
+  margin: 0.5rem 0;
+}
+
 /* ── 👤 GUIA DE NPCS ─────────────────────────────────────────────── */
 .npc-intro {
   font-family: var(--ga-fonte-nota);

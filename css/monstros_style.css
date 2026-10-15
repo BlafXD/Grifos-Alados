@@ -62,6 +62,132 @@
 }
 .mz-backup-btn--imp:hover { background: var(--rust-dark); color: var(--parchment); }
 
+/* ── BALANCEADOR DE ENCONTRO ──────────────────────────────────────── */
+.mz-enc {
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  margin-bottom: 1.5rem;
+}
+.mz-enc-cab {
+  font-family: var(--ga-fonte-titulo);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 0.8rem 1rem;
+  list-style: none;
+}
+.mz-enc-cab::-webkit-details-marker { display: none; }
+.mz-enc-corpo { padding: 0 1rem 1.1rem; }
+.mz-enc-dica {
+  font-family: var(--ga-fonte-nota);
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--ink-faded);
+  margin-bottom: 0.9rem;
+}
+.mz-enc-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-bottom: 0.7rem;
+}
+.mz-enc-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+.mz-enc-campo--larga { flex: 1 1 15rem; }
+.mz-enc-campo input, .mz-enc-campo select {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  padding: 0.35rem 0.5rem;
+}
+.mz-enc-campo input { width: 5rem; }
+.mz-enc-alvo {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.97rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border-left: 4px solid var(--gold);
+  border-radius: var(--raio);
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 0.9rem;
+}
+.mz-enc-linhas-cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.mz-enc-add {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+  border-radius: var(--raio);
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.16s, color 0.16s;
+}
+.mz-enc-add:hover { background: var(--ink); color: var(--parchment); }
+.mz-enc-grupo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+.mz-enc-grupo select, .mz-enc-grupo input {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-radius: var(--raio);
+  padding: 0.35rem 0.5rem;
+}
+.mz-enc-grupo .mz-enc-qtd { width: 4.5rem; }
+.mz-enc-x { font-weight: 700; color: var(--ink-faded); }
+.mz-enc-rm {
+  background: transparent;
+  border: 1px solid var(--ink-faded);
+  color: var(--rust-dark);
+  border-radius: var(--raio);
+  width: 1.8rem;
+  height: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.mz-enc-rm:hover { background: var(--rust-dark); color: var(--parchment); }
+.mz-enc-resultado { margin-top: 0.7rem; }
+.mz-enc-linha-res {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.95rem;
+  color: var(--ink);
+  padding: 0.4rem 0;
+  border-top: 1px solid var(--gold-dim);
+}
+.mz-enc-nota {
+  font-family: var(--ga-fonte-nota);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--ink-faded);
+  margin-top: 0.4rem;
+}
+
 /* ── MENSAGENS DE ESTADO ──────────────────────────────────────────── */
 .mz-vazio {
   font-family: var(--ga-fonte-nota);

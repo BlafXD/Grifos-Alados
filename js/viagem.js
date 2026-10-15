@@ -38,6 +38,39 @@
     { rotulo: '✍ Outro',     prefixo: '' },
   ];
 
+  // "Outros Elementos dos Ermos" (Tormenta20, p. 269) — o único oráculo de
+  // viagem que o livro dá fora do combate. Cada trecho tem peso diferente
+  // porque Covil/Ruína/Santuário são achados especiais, não o normal do dia.
+  const EVENTOS_ERMOS = [
+    { peso: 5, gerar: () =>
+      '🌲 Nada de especial — a jornada segue sem incidentes.' },
+    { peso: 2, gerar: () => {
+      const dentro = Math.random() < 0.75;   // livro: 25% de chance de estar FORA
+      return '🕳 Covil (p. 269) — avistado com Percepção ou Sobrevivência (Sobrevivência também identifica ' +
+        'o morador, CD 15 + ND dele). ' + (dentro
+          ? 'O morador está lá dentro.'
+          : '25% de chance e desta vez deu: ele está fora — o covil, e qualquer tesouro nele, está desprotegido.');
+    } },
+    { peso: 2, gerar: () => {
+      const d6 = 1 + Math.floor(Math.random() * 6);
+      const efeito = { 1: 'possui apenas uma ameaça (armadilha ou monstro, a seu critério)',
+        2: 'possui apenas uma ameaça (armadilha ou monstro, a seu critério)',
+        3: 'está vazia', 4: 'está vazia',
+        5: 'possui uma ameaça E um tesouro', 6: 'possui apenas um tesouro' }[d6];
+      return '🏛 Ruína (p. 269) — 1d6 rolou ' + d6 + ': ' + efeito + '. Ameaças e tesouros no nível do grupo.';
+    } },
+    { peso: 1, gerar: () =>
+      '⛩ Santuário (p. 269) — Religião CD 20 identifica o deus a quem é consagrado. Tocá-lo dá o efeito de uma ' +
+      'magia (Bênção, Curar Ferimentos, Físico Divino ou Vestimenta da Fé) uma vez por dia, se for do deus patrono ' +
+      'de quem toca — ou amaldiçoa até o fim do dia, se for de um deus inimigo.' },
+  ];
+  function sortearEventoErmos() {
+    const total = EVENTOS_ERMOS.reduce((s, e) => s + e.peso, 0);
+    let r = Math.random() * total;
+    for (const e of EVENTOS_ERMOS) { if ((r -= e.peso) < 0) return e.gerar(); }
+    return EVENTOS_ERMOS[0].gerar();
+  }
+
   let dados = { viagens: [] };
 
   // ── PERSISTÊNCIA ─────────────────────────────────────────────────
@@ -373,6 +406,8 @@
     ATALHOS_DIARIO.forEach((a, ai) => {
       atalhos += `<button class="vg-atalho" data-acao="quick-diario" data-v="${vi}" data-prefixo="${esc(a.prefixo)}">${esc(a.rotulo)}</button>`;
     });
+    atalhos += `<button class="vg-atalho vg-atalho--sorte" data-acao="sortear-ermos" data-v="${vi}"
+                  title="Sorteia entre os Outros Elementos dos Ermos (Tormenta20, p. 269): nada, covil, ruína ou santuário">🎲 O que aparece no caminho</button>`;
     let diarioItens = '';
     if (v.diario.length === 0) {
       diarioItens = ehJogador()
@@ -628,6 +663,12 @@
       const v = pegarViagem(alvo);
       const prefixo = alvo.dataset.prefixo || '';
       v.diario.push({ id: uid('d'), texto: prefixo, textoHtml: esc(prefixo), visivelJogadores: true });
+      salvar(); render(); return;
+    }
+    if (acao === 'sortear-ermos') {
+      const v = pegarViagem(alvo);
+      const linha = sortearEventoErmos();
+      v.diario.push({ id: uid('d'), texto: linha, textoHtml: esc(linha), visivelJogadores: false });
       salvar(); render(); return;
     }
     if (acao === 'criar-combate') {
