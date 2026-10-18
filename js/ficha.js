@@ -2233,12 +2233,20 @@
     });
     return itens;
   }
-  function temEfeitosDeTurno(f) { return efeitosDeTurno(f).length > 0; }
+  //  Conta também os efeitos de área (🔆 Oração e afins) como razão de ter
+  //  algo "de turno" — sem isso, um personagem que só está sob um buff de
+  //  área (nenhum sangramento, nenhuma sustentada) nunca via aviso nenhum.
+  function temEfeitosDeTurno(f) { return efeitosDeTurno(f).length > 0 || efeitosDaFicha(f).length > 0; }
 
   function avisoDeTurno(f, rodada) {
     if (!f || !window.GA_abrirModal) return false;
     const itens = efeitosDeTurno(f);
-    if (!itens.length) return false;
+    const efArea = efeitosDaFicha(f);
+    //  Antes só abria com Sangrando/Em Chamas/sustentada/outro "por turno" —
+    //  um efeito de área (Oração etc.) sozinho não acendia o aviso, e o
+    //  jogador só via o bônus se abrisse a ficha e rolasse até o cartão
+    //  🔆. Agora o efeito de área TAMBÉM é motivo de abrir (17/10/2026).
+    if (!itens.length && !efArea.length) return false;
     const linha = (it, idx) => {
       if (it.k === 'sangrando') return `
         <div class="fi-turno-item" data-idx="${idx}">
@@ -2283,14 +2291,19 @@
           </div>
         </div>`;
     };
-    //  Lembrete dos efeitos em área sobre esta ficha — só aparece porque o
-    //  aviso já vai abrir por outro motivo (não nagueia por buff passivo).
-    const efArea = efeitosDaFicha(f);
+    //  Lembrete dos efeitos em área sobre esta ficha — agora é, ele
+    //  mesmo, um dos motivos de o aviso ter aberto (ver acima).
     const lembreteArea = efArea.length ? `
       <div class="fi-turno-area">
         <div class="fi-turno-area-tit">🔆 Você está sob:</div>
-        ${efArea.map(e => `<div class="fi-turno-area-item${e.rel === 'inimigo' ? ' fi-turno-area-item--in' : ''}">
-          <strong>${esc(e.nome)}</strong>${e.de ? ' <em>de ' + esc(e.de) + '</em>' : ''} — ${esc(e.texto || (e.rel === 'inimigo' ? '(efeito contrário)' : '(bônus)'))}</div>`).join('')}
+        ${efArea.map(e => `<div class="fi-turno-area-item${e.rel === 'inimigo' ? ' fi-turno-area-item--in' : ''}" data-ef-id="${esc(e.id)}">
+          <strong>${esc(e.nome)}</strong>${e.de ? ' <em>de ' + esc(e.de) + '</em>' : ''} — ${esc(e.texto || (e.rel === 'inimigo' ? '(efeito contrário)' : '(bônus)'))}
+          ${e.porTurno ? `
+            <div class="fi-turno-linha">
+              <button type="button" class="ga-btn-sec" data-acao="turno-area" data-ef-id="${esc(e.id)}">
+                🎲 ${e.porTurnoTipo === 'cura' ? 'Curar' : 'Sofrer'} ${esc(e.porTurno)}</button>
+              <span class="fi-turno-out" data-out></span>
+            </div>` : ''}</div>`).join('')}
       </div>` : '';
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
@@ -2314,6 +2327,27 @@
     overlay.addEventListener('click', e => {
       const btn = e.target.closest('[data-acao]');
       if (!btn) return;
+      //  O 🔆 de área não tem [data-idx] (não é um dos 4 "itens" de
+      //  sempre — vem de outra ficha/mesa) — resolve sozinho e sai antes
+      //  do lookup de baixo, que presume [data-idx] e quebraria aqui.
+      //  SÓ muda a PRÓPRIA ficha (f): nunca escreve em `efeitosArea`.
+      if (btn.dataset.acao === 'turno-area') {
+        const ef = efArea.find(x => x.id === btn.dataset.efId);
+        if (!ef || !ef.porTurno) return;
+        const rd = rolar(ef.porTurno, quem(f) + ' · ' + (ef.nome || 'efeito de área'), 'turno');
+        const v = rd ? rd.total : 0;
+        if (v) {
+          if (ef.porTurnoTipo === 'cura') aplicarCura(f, 'pv', v);
+          else aplicarDano(f, 'pv', v, ef.nome || 'efeito de área');
+        }
+        const item = btn.closest('[data-ef-id]');
+        const out = item && item.querySelector('[data-out]');
+        if (out) out.innerHTML = '<span class="fi-turno-feito">✓ ' +
+          esc((ef.porTurnoTipo === 'cura' ? 'curou ' : 'perdeu ') + v + ' PV') + '</span>';
+        btn.disabled = true;
+        salvar();
+        return;
+      }
       const row = btn.closest('[data-idx]');
       const it = itens[+row.dataset.idx];
       if (!it) return;
@@ -2448,6 +2482,8 @@
           </div>
           ${e.texto ? `<p class="fi-ea-txt">${esc(e.texto)}</p>`
             : `<p class="fi-ea-txt fi-ea-txt--vazio">${inimigo ? '(sem efeito contrário descrito)' : '(sem bônus descrito)'}</p>`}
+          ${e.porTurno ? `<p class="fi-ea-turno${e.porTurnoTipo === 'cura' ? ' fi-ea-turno--cura' : ' fi-ea-turno--dano'}">${e.porTurnoTipo === 'cura' ? '💚 cura' : '💥 dano'} ${esc(e.porTurno)} por turno
+                  <em>— role no aviso de início do seu turno</em></p>` : ''}
           ${e.duracao ? `<p class="fi-ea-dur">⏱ ${esc(e.duracao)}</p>` : ''}
         </li>`;
     }).join('');

@@ -159,6 +159,11 @@
       saida.push({
         id: id, nome: ef.nome || 'efeito', de: ef.de || '', rel: rel,
         texto: texto, duracao: ef.duracao || '',
+        // cura/dano por turno vale para qualquer um marcado (aliado ou
+        // inimigo) — é uma zona que afeta quem está nela, não um bônus
+        // de lado. Quem aplica é a PRÓPRIA ficha, no aviso do seu turno
+        // (nunca escreve na ficha de outro — ver avisoDeTurno em ficha.js).
+        porTurno: ef.porTurno || '', porTurnoTipo: ef.porTurnoTipo || '',
         souAutor: !!(ef.autorUid && ef.autorUid === meuUid()),
         criadoEm: ef.criadoEm || 0,
       });
@@ -208,8 +213,24 @@
           <input type="text" id="eaContra" placeholder="−1 em ataque, testes e resistência" autocomplete="off"></label>
         <label class="ea-campo ea-campo--curto"><span>Duração <em>(opcional)</em></span>
           <input type="text" id="eaDur" placeholder="cena, 5 rodadas, sustentada…" autocomplete="off"></label>
+        <div class="ea-campo">
+          <span>Cura ou dano por turno <em>(opcional — vira um 🎲 no aviso de início de turno de quem recebe)</em></span>
+          <div class="ea-turno-linha">
+            <input type="text" id="eaPorTurno" placeholder="1d6" inputmode="text" autocomplete="off">
+            <button type="button" class="ea-rel ea-rel--cura" data-turno-tipo="cura" title="Cura por turno">💚 cura</button>
+            <button type="button" class="ea-rel ea-rel--dano" data-turno-tipo="dano" title="Dano por turno">💥 dano</button>
+          </div>
+        </div>
         <p class="ea-de">De <strong>${esc(deInicial)}</strong></p>
-        <div class="ea-alvos-cab">Quem está na área</div>
+        <div class="ea-alvos-cab">
+          <span>Quem está na área</span>
+          ${lista.length ? `
+            <span class="ea-marcar-todos">
+              <button type="button" class="ea-rel-todos" data-marcar="aliado" title="Marca todo mundo da lista como aliado de uma vez">🛡 todos aliados</button>
+              <button type="button" class="ea-rel-todos" data-marcar="inimigo" title="Marca todo mundo da lista como inimigo de uma vez">⚔ todos inimigos</button>
+              <button type="button" class="ea-rel-todos" data-marcar="fora" title="Desmarca todo mundo">— todos fora</button>
+            </span>` : ''}
+        </div>
         <div class="ea-alvos" id="eaAlvos">${linhasAlvos}</div>
         <p class="ea-recado" id="eaRecado" hidden></p>
         <div class="ga-modal-acoes">
@@ -227,14 +248,55 @@
         });
       });
     });
+    // "marcar todos": o mesmo clique que ele daria em cada linha, só que
+    // em todas de uma vez — pensado pra Oração em 9 combatentes sem
+    // precisar clicar linha por linha. Não distingue jogador de criatura:
+    // as duas entram igual, porque um NPC também pode ser aliado.
+    overlay.querySelectorAll('.ea-rel-todos').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const rel = btn.dataset.marcar;
+        overlay.querySelectorAll('.ea-alvo').forEach(row => {
+          row.querySelectorAll('.ea-rel').forEach(b => {
+            b.classList.toggle('ea-on', b.dataset.rel === rel);
+          });
+        });
+      });
+    });
+    // cura OU dano por turno — nunca os dois; clicar no já aceso desliga
+    // (volta a ser "sem efeito por turno", o padrão)
+    const turnoBtns = overlay.querySelectorAll('[data-turno-tipo]');
+    turnoBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const jaOn = btn.classList.contains('ea-on');
+        turnoBtns.forEach(b => b.classList.remove('ea-on'));
+        if (!jaOn) btn.classList.add('ea-on');
+      });
+    });
 
     overlay.querySelector('#eaCriar').addEventListener('click', () => {
       const nome = (overlay.querySelector('#eaNome').value || '').trim();
       const bonus = (overlay.querySelector('#eaBonus').value || '').trim();
       const contra = (overlay.querySelector('#eaContra').value || '').trim();
       const dur = (overlay.querySelector('#eaDur').value || '').trim();
+      const turnoOn = overlay.querySelector('[data-turno-tipo].ea-on');
+      const porTurnoTxt = (overlay.querySelector('#eaPorTurno').value || '').trim();
       const recado = overlay.querySelector('#eaRecado');
       if (!nome) { recado.hidden = false; recado.textContent = 'Dê um nome ao efeito.'; return; }
+      // cura/dano por turno é tudo ou nada: dado sem tipo (ou tipo sem
+      // dado) não quer dizer nada — e um dado digitado errado ("1d") só
+      // seria descoberto no MEIO do combate, quando alguém tentasse rolar
+      if (porTurnoTxt && !turnoOn) {
+        recado.hidden = false; recado.textContent = 'Escolheu o dado de cura/dano por turno — falta marcar "💚 cura" ou "💥 dano".';
+        return;
+      }
+      if (turnoOn && !porTurnoTxt) {
+        recado.hidden = false; recado.textContent = 'Marcou cura/dano por turno — falta o dado (ex.: 1d6).';
+        return;
+      }
+      if (porTurnoTxt && window.GA_Dados) {
+        try { window.GA_Dados.avaliar(porTurnoTxt); }
+        catch (e) { recado.hidden = false; recado.textContent = 'Dado de cura/dano por turno inválido: ' + (e && e.message || porTurnoTxt); return; }
+      }
       const alvos = {};
       let algum = false;
       overlay.querySelectorAll('.ea-alvo').forEach(row => {
@@ -254,6 +316,7 @@
       const id = novoId();
       const efeito = {
         nome: nome, bonus: bonus, contrario: contra, duracao: dur,
+        porTurno: porTurnoTxt, porTurnoTipo: turnoOn ? turnoOn.dataset.turnoTipo : '',
         de: deInicial, autorUid: meuUid(), alvos: alvos, criadoEm: Date.now(),
       };
       gravar(id, efeito, err => {

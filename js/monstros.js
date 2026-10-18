@@ -909,14 +909,21 @@
     html += encontroHTML();
 
     const qtdFixadas = dados.painel.filter(Boolean).length;
+    const cenaInfo = idsDaCenaAtual();
+    const cenaToda = cenaInfo.ids.length && cenaInfo.ids.every(id => dados.painel.indexOf(id) >= 0);
     html += `
       <div class="mz-visao">
         <button class="mz-visao-btn ${dados.modoPainel ? 'mz-visao-btn--ativo' : ''}" data-acao="alternar-visao">
           ${dados.modoPainel ? '☰ Voltar à lista' : ('◫ Painel de combate' + (qtdFixadas ? ' (' + qtdFixadas + ')' : ''))}
         </button>
+        ${cenaInfo.ids.length ? `
+          <button class="mz-visao-btn" data-acao="fixar-cena-toda"
+                  title="${cenaToda ? 'Tira do painel só quem veio desta cena' : 'Fixa de uma vez todo mundo da cena «' + esc(cenaInfo.nome) + '» (criaturas e perigos)'}">
+            ${cenaToda ? '✕ Soltar' : '📌 Fixar'} a cena «${esc(cenaInfo.nome)}» (${cenaInfo.ids.length})
+          </button>` : ''}
         <span class="mz-visao-dica">${dados.modoPainel
           ? 'As fichas abaixo são as mesmas da lista — toda edição vale nos dois modos. Use ＋ para abrir mais quadrados.'
-          : 'Fixe quantas fichas quiser com o botão ◫ no cabeçalho da criatura e acompanhe-as lado a lado.'}</span>
+          : 'Fixe uma por uma com o ◫ no cabeçalho, ou todas de uma vez com "📌 Fixar a cena" aqui ao lado.'}</span>
       </div>`;
 
     if (dados.modoPainel) {
@@ -995,6 +1002,11 @@
                 title="Abre a lista de iniciativa no canto da tela. Vazia, ela se monta com as criaturas desta cena — 1d20 + a Iniciativa de cada uma — mais os jogadores">⚔ Iniciativa</button>
         <button class="mz-painel-cv-toggle ${dados.combateViagem ? 'mz-painel-cv-toggle--ativo' : ''}" data-acao="toggle-combate-viagem"
                 title="Mostra/esconde a faixa de regras de combate em viagem">⚔ Combate em viagem</button>
+        ${dados.painel.filter(Boolean).length ? `
+          <button class="mz-painel-ini" data-acao="painel-recolher-todas"
+                  title="Recolhe todas as fichas do painel para só nome, ND, PV e Defesa — útil com várias de uma vez">▾ Recolher todas</button>
+          <button class="mz-painel-ini" data-acao="painel-expandir-todas"
+                  title="Abre todas as fichas do painel por completo">▸ Expandir todas</button>` : ''}
       </div>`;
 
     // banner de ambientes EDITÁVEL + faixa da masmorra da cena narrada +
@@ -2048,6 +2060,112 @@
       </div>`;
   }
 
+  // ── ROLAR ATAQUE & DANO (17/10/2026) ─────────────────────────────
+  //  Lê a caixa "Ataque e Habilidades" e reconhece as linhas no formato
+  //  do livro ("Corpo a Corpo Maça +13 (1d8+13)."), pra desenhar um botão
+  //  de ataque e um de dano do lado de cada uma — sem tocar no texto, só
+  //  lendo (igual ao "Invocar", mais abaixo). Pensado pro Painel de
+  //  Combate com várias fichas: em vez de rolar no rolador solto e ficar
+  //  procurando qual bônus é de qual criatura, o botão já sai do nome
+  //  certo.
+  //
+  //  O QUE É "SEGURO" EXTRAIR: o livro escreve várias coisas na MESMA
+  //  frase além do dado — tipo de dano, margem de ameaça (ex. "19/x3"),
+  //  "mais 2d6 de veneno", "alcance médio". Extrair tudo isso certo pra
+  //  TODA criatura do livro não é confiável (o formato varia demais) —
+  //  então só o PRIMEIRO "NdM(+/-B)" dentro do parêntese vira botão de
+  //  dano, e o parêntese INTEIRO, por extenso, fica ao lado — o mestre
+  //  vê o que falta aplicar na mão (crítico, veneno etc.), em vez de um
+  //  número bonito e errado.
+  //
+  //  Testado com as ~550 sentenças de ataque reais dos livros importados
+  //  (script Node descartável, não guardado no repo): 739 de 761
+  //  sub-ataques reconhecidos, e as poucas exceções (sem bônus — "acerto
+  //  automático", ou sem dado nenhum) ficam sem botão, nunca com número
+  //  inventado.
+  function dividirForaDeParenteses(txt, seps) {
+    const partes = [];
+    let prof = 0, inicio = 0, i = 0;
+    while (i < txt.length) {
+      const ch = txt[i];
+      if (ch === '(') prof++;
+      else if (ch === ')') prof = Math.max(0, prof - 1);
+      if (prof === 0) {
+        let casou = null;
+        for (let k = 0; k < seps.length; k++) {
+          if (txt.startsWith(seps[k], i)) { casou = seps[k]; break; }
+        }
+        if (casou) { partes.push(txt.slice(inicio, i)); i += casou.length; inicio = i; continue; }
+      }
+      i++;
+    }
+    partes.push(txt.slice(inicio));
+    return partes.map(p => p.trim()).filter(Boolean);
+  }
+  function parsearAtaqueLinha(txt0) {
+    const txt = String(txt0 || '').replace(/–|−/g, '-');
+    // nome + bônus (com ou sem espaço depois do sinal — o livro às vezes
+    // escreve "+ 26" por erro de diagramação) + o que está no parêntese
+    const m = /^(.*?)([+-]\s*\d+)(?:\s*x\d+)?\s*\(([^)]*)\)/.exec(txt);
+    if (!m) return null;
+    const nome = m[1].replace(/\bx\d+\b/gi, '').trim().replace(/\s{2,}/g, ' ');
+    if (!nome) return null;
+    const bonus = m[2].replace(/\s+/g, '');
+    const dentro = m[3];
+    const dm = /(\d+d\d+(?:\s*[+-]\s*\d+)?)/.exec(dentro);
+    return {
+      nome: nome, bonus: bonus, dentro: dentro,
+      dado: dm ? dm[1].replace(/\s+/g, '') : '',
+    };
+  }
+  function ataquesDe(cr) {
+    const texto = (typeof htmlParaTexto === 'function') ? htmlParaTexto(cr.ataques || '') : '';
+    if (!texto) return [];
+    const achados = [];
+    const vistos = {};
+    const reBloco = /\b(Corpo a Corpo|À Dist[âa]ncia)\s+([^.]+?)\./g;
+    let mb;
+    while ((mb = reBloco.exec(texto))) {
+      dividirForaDeParenteses(mb[2], [' e ', ', ', ' ou ']).forEach(parte => {
+        const r = parsearAtaqueLinha(parte);
+        if (!r || !r.dado) return;             // sem bônus ou sem dado: sem botão
+        const chave = r.nome.toLowerCase() + '|' + r.bonus + '|' + r.dado;
+        if (vistos[chave]) return;
+        vistos[chave] = 1;
+        achados.push(r);
+      });
+    }
+    return achados;
+  }
+  function blocoAtaqueBotoes(cr, ds) {
+    const achados = ataquesDe(cr);
+    if (!achados.length) return '';
+    return `
+          <div class="mz-atk-roll">
+            ${achados.map(a => `
+              <span class="mz-atk-roll-linha">
+                <span class="mz-atk-roll-nome">${esc(a.nome)} ${esc(a.bonus)}</span>
+                <button type="button" class="mz-atk-roll-btn" data-acao="rolar-livre" ${ds}
+                        data-expr="1d20${a.bonus}" data-rotulo="${esc(a.nome)} (ataque)"
+                        title="Rola 1d20${esc(a.bonus)}">🎯 ataque</button>
+                <button type="button" class="mz-atk-roll-btn mz-atk-roll-btn--dano" data-acao="rolar-livre" ${ds}
+                        data-expr="${esc(a.dado)}" data-rotulo="${esc(a.nome)} (dano)"
+                        title="Rola ${esc(a.dado)}">💥 dano</button>
+                <span class="mz-atk-roll-ref" title="Como está escrito na ficha">(${esc(a.dentro)})</span>
+              </span>`).join('')}
+          </div>`;
+  }
+  // Clique num botão 🎯/💥 ou no 🐾 Invocar: rola e anuncia no log da
+  // mesa, como qualquer outra rolagem — sem aplicar nada automaticamente.
+  function rolarLivre(btn) {
+    const expr = btn.dataset.expr, rot = btn.dataset.rotulo;
+    if (!expr) return;
+    try {
+      if (window.GA_Rolagens) window.GA_Rolagens.rolarEPublicar(expr, rot);
+      else if (window.GA_Dados) window.GA_Dados.avaliar(expr);
+    } catch (e) { console.warn('[monstros] não deu para rolar "' + expr + '":', e && e.message); }
+  }
+
   // ── INVOCAR CAPANGAS (17/10/2026) ────────────────────────────────
   //  O livro tem umas 15 habilidades no mesmo molde de "Servos do Dragão"
   //  (Acólito de Kallyadranoch, Ameaças de Arton p. 387): "invoca NdM
@@ -2726,7 +2844,16 @@
                  title="Nível de Desafio (ND)" placeholder="ND">
           <input class="mz-init" type="text" value="${esc(cr.iniciativaCombate)}"
                  data-campo="iniciativaCombate" ${ds}
-                 title="Iniciativa rolada (anote o valor)" placeholder="Ini">${botoesLista}
+                 title="Iniciativa rolada (anote o valor)" placeholder="Ini">
+          ${(painel && !aberto) ? `
+            <span class="mz-compacto" title="PV atual / padrão e Defesa — a mesma caixa de dentro; edite aqui sem abrir">
+              <span class="mz-compacto-pv">❤
+                <input type="text" value="${esc((cr.stats.pv || {}).atual)}" aria-label="PV atual"
+                       data-campo="stat" data-stat="pv" data-sub="atual" ${ds}>
+                <span class="mz-compacto-max">/ ${esc((cr.stats.pv || {}).padrao) || '—'}</span>
+              </span>
+              <span class="mz-compacto-def">🛡 ${esc((cr.stats.defesa || {}).atual || (cr.stats.defesa || {}).padrao || '—')}</span>
+            </span>` : ''}${botoesLista}
         </div>
 
         <div class="mz-criatura-corpo">
@@ -2776,6 +2903,7 @@
             ${barraGrifo(ds, { magica: true })}
             <div class="mz-ataques" contenteditable="true" spellcheck="false"
                  data-campo="ataques" ${ds}>${cr.ataques || ''}</div>
+            ${blocoAtaqueBotoes(cr, ds)}
             ${blocoInvocar(cr, ds)}
           </div>
 
@@ -2872,6 +3000,9 @@
       dados.modoPainel = !dados.modoPainel;
       salvar(); render(); return;
     }
+    if (acao === 'fixar-cena-toda') { alternarFixarCena(); return; }
+    if (acao === 'painel-recolher-todas') { alternarAbertasPainel(false); return; }
+    if (acao === 'painel-expandir-todas') { alternarAbertasPainel(true);  return; }
 
     // ── navegação rápida ──
     if (acao === 'expandir-tudo' || acao === 'recolher-tudo') {
@@ -3232,6 +3363,7 @@
 
     if (acao === 'inserir-poder-concedido') { inserirPoderConcedido(alvo); return; }
     if (acao === 'invocar') { invocarCapangas(alvo); return; }
+    if (acao === 'rolar-livre') { rolarLivre(alvo); return; }
     if (acao === 'devoto-marcar') {
       const ferr = alvo.closest('.mz-ferr');
       const sel = ferr && ferr.querySelector('.mz-dev-deus');
@@ -6512,7 +6644,11 @@
   //  (`s.mesa === ''`, o legado); uma cena de OUTRA campanha é descartada
   //  e vira aviso, nunca silêncio. Fora de mesa (bancada local) não há o
   //  que travar, e vale a aba aberta aqui (`sessoesVisiveis`), como antes.
-  function cenaParaIniciativa() {
+  //  Extraído p/ `refCenaCompativel()` em 17/10/2026, porque o "📌 fixar
+  //  toda a cena no painel" (mais abaixo) precisa da MESMA trava — sem
+  //  compartilhar, bastaria um dos dois esquecer de travar pra o bug de
+  //  campanha cruzada voltar por uma porta diferente.
+  function refCenaCompativel() {
     const conectada = (window.GA_Mesa && window.GA_Mesa.mesaId()) || '';
     function compativel(s) { return !conectada || !s.mesa || s.mesa === conectada; }
 
@@ -6532,6 +6668,11 @@
         if (candidatas[i].s.cenas.length) { ref = { si: candidatas[i].si, ci: 0 }; break; }
       }
     }
+    return { ref: ref, foraDaCampanha: foraDaCampanha };
+  }
+  function cenaParaIniciativa() {
+    const r = refCenaCompativel();
+    const ref = r.ref, foraDaCampanha = r.foraDaCampanha;
     if (!ref) return foraDaCampanha ? { nome: null, criaturas: [], foraDaCampanha: true } : null;
     const c = dados.sessoes[ref.si].cenas[ref.ci];
     if (!c) return foraDaCampanha ? { nome: null, criaturas: [], foraDaCampanha: true } : null;
@@ -6547,6 +6688,60 @@
     };
   }
   window.GA_Combates = { cenaParaIniciativa: cenaParaIniciativa };
+
+  //  ── FIXAR TODA A CENA NO PAINEL (17/10/2026) ───────────────────
+  //  O "◫ fixar" de cada ficha, um por um, é rápido pra 2-3 criaturas e
+  //  cansativo pra 9. Usa a MESMA cena que a Iniciativa vai pegar
+  //  (`refCenaCompativel`, já travada por campanha) e fixa/solta todo
+  //  mundo dela — criaturas e perigos complexos — de uma vez.
+  function idsDaCenaAtual() {
+    const r = refCenaCompativel();
+    if (!r.ref) return { ids: [], nome: '' };
+    const c = dados.sessoes[r.ref.si].cenas[r.ref.ci];
+    if (!c) return { ids: [], nome: '' };
+    const ids = (c.criaturas || []).map(cr => cr.id).concat((c.perigos || []).map(pg => pg.id));
+    return { ids: ids, nome: c.nome || 'Cena' };
+  }
+  function alternarFixarCena() {
+    const info = idsDaCenaAtual();
+    if (!info.ids.length) return;
+    const todasFixadas = info.ids.every(id => dados.painel.indexOf(id) >= 0);
+    if (todasFixadas) {
+      // solta só as DESTA cena — o que foi fixado à mão, de outra cena
+      // ou outra sessão, continua no painel
+      dados.painel = dados.painel.map(id => (id && info.ids.indexOf(id) >= 0) ? null : id);
+    } else {
+      info.ids.forEach(id => { if (dados.painel.indexOf(id) < 0) _alternarFixado(id); });
+    }
+    salvar(); render();
+  }
+
+  //  Acha uma criatura/perigo pelo id em QUALQUER sessão — sem passar por
+  //  `catalogoFichas()`/`sessoesVisiveis()`, que são filtradas pela aba de
+  //  campanha aberta na tela. Quem está FIXADO no painel pode ser de uma
+  //  sessão que não é a da aba aberta agora — recolher/expandir "todas"
+  //  não pode depender de qual aba o mestre deixou selecionada.
+  function acharPorId(id) {
+    for (let si = 0; si < dados.sessoes.length; si++) {
+      const cenas = dados.sessoes[si].cenas;
+      for (let ci = 0; ci < cenas.length; ci++) {
+        const c = cenas[ci];
+        const cr = (c.criaturas || []).find(x => x.id === id);
+        if (cr) return cr;
+        const pg = (c.perigos || []).find(x => x.id === id);
+        if (pg) return pg;
+      }
+    }
+    return null;
+  }
+  function alternarAbertasPainel(v) {
+    dados.painel.forEach(id => {
+      if (!id) return;
+      const obj = acharPorId(id);
+      if (obj) obj.painelAberto = v;
+    });
+    salvar(); render();
+  }
 
   // ── INICIALIZAÇÃO ────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
