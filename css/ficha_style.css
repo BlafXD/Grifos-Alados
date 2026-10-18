@@ -833,6 +833,10 @@
   color: var(--carmim);
 }
 .fi-carga-estado:empty { display: none; }
+/* Sem isso o aviso espremia entre o número e o "Outros" e cortava na
+   borda do cartão (em vez de quebrar linha como já fazia no inventário). */
+.fi-linha--carga > span:last-child { flex-wrap: wrap; justify-content: flex-end; }
+.fi-linha--carga .fi-carga-estado { flex: 1 1 100%; text-align: right; }
 
 /* ══════════════════════════════════════════════════════════════════
    OFÍCIOS — "Ofício na verdade são várias perícias diferentes" (p. 121)
