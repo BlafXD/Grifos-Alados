@@ -236,6 +236,22 @@
 .ga-ini-add input[type="text"]   { flex: 1 1 6rem; }
 .ga-ini-add input[type="number"] { flex: 0 0 3.2rem; text-align: center; }
 
+/* a prévia de qual cena vai entrar, ANTES de montar */
+.ga-ini-prev {
+  font-family: var(--ga-fonte-nota);
+  font-style: italic;
+  font-size: 0.74rem;
+  line-height: 1.3;
+  color: var(--text-dim);
+  margin: 0;
+  padding: 0.35rem 0.5rem 0;
+}
+.ga-ini-prev--alerta {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--carmim);
+}
+
 /* a nota de "esta lista está só nesta tela" (fora de mesa) */
 .ga-ini-nota {
   font-family: var(--ga-fonte-nota);

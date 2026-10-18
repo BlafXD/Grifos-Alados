@@ -251,7 +251,7 @@
     const cena = window.GA_Combates ? window.GA_Combates.cenaParaIniciativa() : null;
     const novas = [];
 
-    const criaturas = cena ? cena.criaturas : [];
+    const criaturas = (cena && cena.criaturas) ? cena.criaturas : [];
     // três goblins numa cena viram "Goblin 1", "Goblin 2", "Goblin 3": a
     // lista serve para saber DE QUEM é a vez, e três linhas idênticas com
     // valores diferentes não dizem isso. Nome que aparece uma vez só fica
@@ -299,7 +299,9 @@
     grupo().forEach(n => jogador(n, '', fichaDaLinha({ tipo: 'jogador', nome: n }, fichas)));
 
     if (!novas.length) {
-      recado = cena
+      recado = (cena && cena.foraDaCampanha)
+        ? 'A cena que estava marcada como "narrando" é de outra campanha — por segurança, ela não entra aqui. Escolha, no Painel de combate, uma cena desta campanha, ou escreva os nomes aqui embaixo.'
+        : (cena && cena.nome)
         ? 'A cena "' + cena.nome + '" não tem criaturas. Escreva aqui embaixo quem entra no combate.'
         : 'Nenhuma cena para montar. Escolha a cena que você está narrando no Painel de combate — ou escreva os nomes aqui embaixo.';
       return render();
@@ -418,6 +420,33 @@
     nomes.forEach(lembrarNoGrupo);
     recado = '';
     gravarLista(listaAtual().concat(novas), true);
+  }
+
+  // Capangas invocados por uma habilidade (ex. Servos do Dragão) somados
+  // à lista JÁ em andamento — nunca cria uma lista do zero; quem chama
+  // (js/monstros.js, pelo botão que nasce do texto da própria habilidade)
+  // já confere isso antes. Cada um rola o próprio 1d20+mod — o "mod" é a
+  // Destreza simplificada que o livro dá a esses capangas — em vez de
+  // entrar sem valor como os jogadores "que faltaram".
+  function invocar(nomeBase, quantidade, mod) {
+    if (!mando() || !quantas()) return;
+    const n = Math.max(0, Math.min(30, parseInt(quantidade, 10) || 0));
+    if (!n) return;
+    const novas = [];
+    for (let i = 1; i <= n; i++) {
+      const d = window.GA_Dados ? window.GA_Dados.rolar(20) : 0;
+      novas.push({
+        nome: String(nomeBase || 'criatura').trim() + (n > 1 ? ' ' + i : ''),
+        tipo: 'criatura', valor: d + (mod || 0), mod: mod || 0,
+      });
+    }
+    recado = '';
+    gravarLista(listaAtual().concat(novas), true);
+    // traz o painel à vista e pisca — senão o mestre invoca e não vê onde
+    // os capangas entraram, se o painel estava fechado ou recolhido
+    visivel = true; guardar(VISIVEL_KEY, '1');
+    aberto  = true; guardar(ABERTO_KEY,  '1');
+    piscar();
   }
 
   function limpar() {
@@ -621,6 +650,22 @@
         : '<p class="ga-ini-vazio">' + esc(recado ||
             'Nenhuma iniciativa rolada. Monte com a cena que você está narrando.') + '</p>';
       if (mando()) {
+        // Prévia de qual cena vai entrar — ANTES de montar, não depois. É o
+        // que deixa ver, de cara, se o que vai subir para a mesa é a cena
+        // certa (inclusive avisar se a "narrada" é de outra campanha), em
+        // vez de descobrir só depois de montar e os jogadores já verem.
+        if (!temLista) {
+          const prev = window.GA_Combates ? window.GA_Combates.cenaParaIniciativa() : null;
+          if (prev && prev.foraDaCampanha) {
+            corpo += '<p class="ga-ini-prev ga-ini-prev--alerta">⚠ a cena "narrando" agora é de outra campanha — ' +
+              '"⚔ Montar" vai pedir os nomes na mão. Escolha a cena certa no Painel de combate.</p>';
+          } else if (prev && prev.nome) {
+            corpo += '<p class="ga-ini-prev">Pronta para montar: cena «' + esc(prev.nome) + '»' +
+              (prev.criaturas.length
+                ? ' · ' + prev.criaturas.length + ' criatura' + (prev.criaturas.length > 1 ? 's' : '')
+                : ' — ainda sem criaturas') + '</p>';
+          }
+        }
         corpo += '<div class="ga-ini-acoes">' +
           '<button type="button" class="ga-ini-btn ga-ini-btn--forte" data-ini="montar" ' +
             'title="Rola 1d20 para cada criatura da cena narrada e traz os jogadores">' +
@@ -675,6 +720,7 @@
   window.GA_Iniciativa = {
     abrir: abrir,
     quantas: quantas,
+    invocar: invocar,
     rodadaAtual: function () { return rodada; },
     //  A lista de combatentes de agora — para o seletor de alvos dos
     //  "efeitos em área" (js/efeitos-area.js). Só nome, tipo e os elos com

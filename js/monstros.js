@@ -2048,6 +2048,84 @@
       </div>`;
   }
 
+  // ── INVOCAR CAPANGAS (17/10/2026) ────────────────────────────────
+  //  O livro tem umas 15 habilidades no mesmo molde de "Servos do Dragão"
+  //  (Acólito de Kallyadranoch, Ameaças de Arton p. 387): "invoca NdM
+  //  <nome> em espaços desocupados... têm For X, Des Y, Defesa Z e 1 PV".
+  //  Em vez do mestre rolar o dado à parte e digitar cada capanga na
+  //  caixa de "quem faltou" da Iniciativa, o texto da própria habilidade
+  //  (a caixa "Ataque e Habilidades") ganha um botão que rola e já
+  //  acrescenta a quantidade certa na Iniciativa AO VIVO.
+  //
+  //  SÓ ENTRAM as habilidades que trazem o próprio "Des" no texto — é
+  //  dele que sai o modificador de Iniciativa de cada capanga. As que
+  //  mandam "veja a ficha X" (reforços com estatística própria, como
+  //  "Chamar Reforços") não têm esse número aqui, e inventar um valor
+  //  seria sair do livro — ficam de fora, de propósito; o mestre resolve
+  //  pela caixa de nomes de sempre.
+  function invocacoesDe(cr) {
+    const texto = (typeof htmlParaTexto === 'function') ? htmlParaTexto(cr.ataques || '') : '';
+    if (!texto) return [];
+    const achados = [];
+    const vistos = {};
+    // quantidade + nome, até "em espaços desocupados/vazios" (com ou sem
+    // o "que surgem" entre os dois) ou até o fim da frase. "invoca[r]"
+    // porque o poder concedido inserido pela ferramenta 🙏 Devoto fala na
+    // 2ª pessoa ("você pode... para invocar"); a criatura já pronta do
+    // livro fala na 3ª ("o acólito invoca") — os dois aparecem na mesma
+    // caixa de Ataque e Habilidades.
+    const re = /invoca[rm]?\s+(\d+d\d+(?:\s*[+\-–]\s*\d+)?)\s+([^.]+?)(?:\s+(?:que surgem\s+)?em espaços (?:desocupados|vazios)|\.)/gi;
+    let m;
+    while ((m = re.exec(texto))) {
+      const dado = m[1].replace(/–/g, '-').replace(/\s+/g, '');
+      const nome = m[2].replace(/\s+/g, ' ').trim();
+      if (!nome) continue;
+      // o "Des" simplificado do capanga mora na frase seguinte — procura
+      // numa janela depois do achado, nunca antes (senão pegaria o Des de
+      // OUTRA criatura, de uma habilidade anterior no mesmo texto)
+      const janela = texto.slice(m.index, m.index + 500);
+      const dm = /\bDes\s+(–|-)?\s*(\d+)/i.exec(janela);
+      if (!dm) continue;
+      const mod = (dm[1] ? -1 : 1) * parseInt(dm[2], 10);
+      const chave = dado + '|' + nome.toLowerCase();
+      if (vistos[chave]) continue;
+      vistos[chave] = 1;
+      achados.push({ dado: dado, nome: nome, mod: mod });
+    }
+    return achados;
+  }
+  function blocoInvocar(cr, ds) {
+    const achados = invocacoesDe(cr);
+    if (!achados.length) return '';
+    return `
+          <div class="mz-invocar">
+            ${achados.map(a => `
+              <button type="button" class="mz-invocar-btn" data-acao="invocar" ${ds}
+                      data-dado="${esc(a.dado)}" data-nome="${esc(a.nome)}" data-mod="${a.mod}"
+                      title="Rola ${esc(a.dado)} e acrescenta essa quantidade de «${esc(a.nome)}» na Iniciativa que já está em andamento (Des ${a.mod >= 0 ? '+' : ''}${a.mod})">
+                🐾 Invocar ${esc(a.nome)} (${esc(a.dado)})</button>`).join('')}
+          </div>`;
+  }
+  // Clique no botão acima: rola na hora, anuncia no log da mesa (a mesma
+  // honestidade das outras rolagens) e põe os capangas na Iniciativa AO
+  // VIVO — sem o mestre digitar nada. Exige uma iniciativa já em
+  // andamento: a habilidade é "ação completa" DENTRO de um combate, e
+  // criar uma lista do nada a partir de um texto seria silencioso demais.
+  function invocarCapangas(btn) {
+    const dado = btn.dataset.dado, nome = btn.dataset.nome;
+    const mod = parseInt(btn.dataset.mod, 10) || 0;
+    if (!dado || !nome) return;
+    const ini = window.GA_Iniciativa;
+    if (!ini || !ini.quantas || !ini.quantas()) {
+      alert('Abra a Iniciativa (⚔) e monte o combate antes de invocar — assim os capangas entram na lista certa, não numa lista nova.');
+      return;
+    }
+    const r = window.GA_Rolagens ? window.GA_Rolagens.rolarEPublicar(dado, nome)
+            : (window.GA_Dados ? window.GA_Dados.avaliar(dado) : null);
+    const qtd = r ? Math.max(0, Math.round(r.total)) : 0;
+    if (qtd > 0 && ini.invocar) ini.invocar(nome, qtd, mod);
+  }
+
   // ── FERRAMENTA "ARMAS NATURAIS & DESARMADO" (na ficha) ───────────
   // Detecta o tamanho a partir do texto livre de "Tipo e tamanho".
   function detectarTamanho(txt) {
@@ -2698,6 +2776,7 @@
             ${barraGrifo(ds, { magica: true })}
             <div class="mz-ataques" contenteditable="true" spellcheck="false"
                  data-campo="ataques" ${ds}>${cr.ataques || ''}</div>
+            ${blocoInvocar(cr, ds)}
           </div>
 
           ${construirBlocoMagias(cr, ds, painel)}
@@ -3152,6 +3231,7 @@
     }
 
     if (acao === 'inserir-poder-concedido') { inserirPoderConcedido(alvo); return; }
+    if (acao === 'invocar') { invocarCapangas(alvo); return; }
     if (acao === 'devoto-marcar') {
       const ferr = alvo.closest('.mz-ferr');
       const sel = ferr && ferr.querySelector('.mz-dev-deus');
@@ -6420,20 +6500,44 @@
   //  da cena que o mestre está narrando. Daqui sai o MÍNIMO: o nome e o
   //  modificador de Iniciativa de cada uma. PV, defesa, condições e o
   //  resto da ficha não passam por aqui — os jogadores veem essa lista.
+  //
+  //  A TRAVA DE CAMPANHA (14/10/2026): `cenaNarrada` é um ponteiro ÚNICO
+  //  e GLOBAL — vale para todas as sessões, de todas as campanhas, deste
+  //  navegador. Sem isto, a última cena narrada numa mesa (ex.: Penitência
+  //  de Azgher) ficava valendo mesmo depois de conectar em OUTRA (Nuevo
+  //  Sol) e montar o combate ali: a criatura errada entrava na iniciativa
+  //  AO VIVO, na tela dos jogadores, sem aviso nenhum — bug real, relatado
+  //  por ele em 17/10/2026. Agora só entram cenas de sessões desta mesma
+  //  campanha conectada (`s.mesa === conectada`) ou sem campanha marcada
+  //  (`s.mesa === ''`, o legado); uma cena de OUTRA campanha é descartada
+  //  e vira aviso, nunca silêncio. Fora de mesa (bancada local) não há o
+  //  que travar, e vale a aba aberta aqui (`sessoesVisiveis`), como antes.
   function cenaParaIniciativa() {
+    const conectada = (window.GA_Mesa && window.GA_Mesa.mesaId()) || '';
+    function compativel(s) { return !conectada || !s.mesa || s.mesa === conectada; }
+
     let ref = cenaNarradaRef();
+    let foraDaCampanha = false;
+    if (ref && !compativel(dados.sessoes[ref.si])) {
+      foraDaCampanha = true;   // a cena "narrada" é de outra campanha — ignora
+      ref = null;
+    }
     if (!ref) {
-      // ninguém narrando: a primeira cena da primeira sessão visível
-      const vis = sessoesVisiveis();
-      for (let i = 0; i < vis.length; i++) {
-        if (vis[i].s.cenas.length) { ref = { si: vis[i].si, ci: 0 }; break; }
+      // ninguém narrando (ou era de outra campanha): a primeira cena com
+      // conteúdo, só entre sessões compatíveis com a campanha conectada
+      const candidatas = conectada
+        ? dados.sessoes.map((s, si) => ({ s: s, si: si })).filter(v => compativel(v.s))
+        : sessoesVisiveis();
+      for (let i = 0; i < candidatas.length; i++) {
+        if (candidatas[i].s.cenas.length) { ref = { si: candidatas[i].si, ci: 0 }; break; }
       }
     }
-    if (!ref) return null;
+    if (!ref) return foraDaCampanha ? { nome: null, criaturas: [], foraDaCampanha: true } : null;
     const c = dados.sessoes[ref.si].cenas[ref.ci];
-    if (!c) return null;
+    if (!c) return foraDaCampanha ? { nome: null, criaturas: [], foraDaCampanha: true } : null;
     return {
       nome: c.nome || 'Cena',
+      foraDaCampanha: false,
       criaturas: (c.criaturas || []).map(cr => ({
         nome: cr.nome || '(criatura sem nome)',
         // o modificador de Iniciativa da ficha; em T20 ele é o valor de

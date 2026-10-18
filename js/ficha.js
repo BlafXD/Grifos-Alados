@@ -1467,6 +1467,7 @@
 
     return `
       <div class="fi-cartao fi-ident">
+        ${blocoCampanhaFicha(f)}
         <div class="fi-ident-nomes">
           <label class="fi-campo fi-campo--largo">
             <span class="fi-rot">Personagem</span>
@@ -1492,7 +1493,6 @@
             <input class="fi-num" type="number" min="0" step="1.5" value="${f.deslocamento}" data-campo="deslocamento"
                    title="O deslocamento que a raça lhe dá — 9 m para quase todas (p. 95). O que soma ou tira metros (armadura, poder, carga) vai em «O que mexe no deslocamento», no cartão Defesa & Carga."></label>
         </div>
-        ${blocoCampanhaFicha(f)}
         <div class="fi-ident-classes">
           <span class="fi-rot">Classe(s) e nível</span>
           <div class="fi-classes">

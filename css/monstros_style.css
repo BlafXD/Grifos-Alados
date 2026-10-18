@@ -552,6 +552,27 @@
   100% { box-shadow: inset 0 0 0 0 rgba(95, 160, 90, 0); }
 }
 
+/* ── INVOCAR CAPANGAS (habilidades "Servos do Dragão" e afins) ──── */
+.mz-invocar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+.mz-invocar-btn {
+  flex: 0 0 auto;
+  padding: 0.28rem 0.6rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--gold-deep);
+  border-radius: var(--raio);
+}
+.mz-invocar-btn:hover { background: var(--gold-pale); }
+
 /* ── VARIANTE DE MORTE (fim de combate) ──────────────────────────── */
 .mz-morte-papel {
   padding: 0.25rem 0.4rem;
