@@ -529,6 +529,27 @@
       aberto: (a && a.aberto) !== false,
     }));
 
+    // ── MÃOS OCUPADAS (22/10/2026) ───────────────────────────────────
+    //  Pedido dele: um personagem de vários braços precisa saber o que
+    //  está em CADA mão — muda o que ela pode fazer (segurar um escudo,
+    //  empunhar um foco arcano, ficar livre pra gesticular). Cada mão
+    //  aponta para um Ataque ou um item do Inventário (por `id` — se a
+    //  arma for removida, a mão só mostra "(removido)", não apaga nada
+    //  sozinha) ou fica com `nome` de texto livre, pra quando não é nem
+    //  um nem outro (uma tocha, uma corda). `notas` é o texto de baixo:
+    //  o bônus que aquilo dá — a mesma caixa rica do resto da ficha.
+    if (!Array.isArray(f.maos)) f.maos = [];
+    f.maos = f.maos.map(m => ({
+      id: (m && m.id) || novoId(),
+      modo: ['ataque', 'item'].includes(m && m.modo) ? m.modo : 'livre',
+      ataqueId: String((m && m.ataqueId) || ''),
+      itemId: String((m && m.itemId) || ''),
+      nome: String((m && m.nome) || ''),
+      tipo: String((m && m.tipo) || 'livre'),
+      notas: String((m && m.notas) || ''),
+      aberto: (m && m.aberto) === true,
+    }));
+
     // ── O MELHOR AMIGO DO TREINADOR (Heróis de Arton, p. 20) ───────
     //  Só aparece com o Treinador na ficha, mas o dado fica guardado sem
     //  ele: tirar a classe por engano não pode apagar um bicho inteiro.
@@ -2803,7 +2824,101 @@
         <p class="fi-nota">A coluna <strong>Passos</strong> anda o dado da arma na Tabela 3-2 (p. 143): com
           <code>1d8+3</code> e <code>+2</code>, o que se rola é <code>1d12+3</code> — e o crítico multiplica o
           dado já andado. Só o primeiro dado anda; o <code>+1d6</code> de um encanto e os números ficam como estão.</p>
+        ${blocoMaos(f)}
         ${tabelaDePassos(f)}
+      </div>`;
+  }
+
+  // ── MÃOS OCUPADAS (22/10/2026) ────────────────────────────────────
+  //  Pedido dele: um personagem de mais de duas mãos precisa saber o
+  //  que está em CADA uma — porque isso muda o que ela pode fazer. Cada
+  //  linha pode apontar pra um Ataque ou um item do Inventário (os dois
+  //  já existem na ficha — sem copiar o nome de novo) ou virar texto
+  //  livre, pra quando não é nenhum dos dois (uma tocha, uma corda, uma
+  //  mão vazia de propósito). O ✎ guarda o que aquilo DÁ — +1 na Defesa
+  //  com o escudo, a CD do foco arcano — a mesma caixa rica do resto.
+  const TIPOS_MAO = [
+    { v: 'livre',       r: 'Mão livre' },
+    { v: 'arma-cac',    r: 'Arma corpo a corpo' },
+    { v: 'arma-dist',   r: 'Arma à distância' },
+    { v: 'escudo',      r: 'Escudo' },
+    { v: 'foco',        r: 'Foco arcano' },
+    { v: 'instrumento', r: 'Instrumento musical' },
+    { v: 'outro',       r: 'Outro' },
+  ];
+  function opsTipoMao(sel) {
+    return TIPOS_MAO.map(t => `<option value="${t.v}" ${t.v === sel ? 'selected' : ''}>${t.r}</option>`).join('');
+  }
+  function opsAtaquesParaMao(f, sel) {
+    return '<option value="">— escolha o ataque —</option>' +
+      f.ataques.map(a => `<option value="${a.id}" ${a.id === sel ? 'selected' : ''}>${esc(a.nome || '(ataque sem nome)')}</option>`).join('') +
+      (sel && !f.ataques.some(a => a.id === sel) ? `<option value="${sel}" selected>(ataque removido)</option>` : '');
+  }
+  function opsItensParaMao(f, sel) {
+    return '<option value="">— escolha o item —</option>' +
+      f.inventario.map(it => `<option value="${it.id}" ${it.id === sel ? 'selected' : ''}>${esc(it.nome || '(item sem nome)')}</option>`).join('') +
+      (sel && !f.inventario.some(it => it.id === sel) ? `<option value="${sel}" selected>(item removido)</option>` : '');
+  }
+  // O nome que aparece nos títulos de confirmação e na dica das setas —
+  // puxa do ataque/item ligado quando é o caso, senão é o texto livre.
+  function nomeDaMao(f, m) {
+    if (m.modo === 'ataque') { const a = f.ataques.find(x => x.id === m.ataqueId); return a ? a.nome : ''; }
+    if (m.modo === 'item')   { const it = f.inventario.find(x => x.id === m.itemId); return it ? it.nome : ''; }
+    return m.nome;
+  }
+  function blocoMaos(f) {
+    const linhas = f.maos.map((m, i) => {
+      const nome = nomeDaMao(f, m);
+      const campoConteudo = m.modo === 'ataque'
+        ? `<select class="fi-sel fi-sel--mini" data-campo="maos.${i}.ataqueId" title="Qual ataque está empunhado nesta mão">
+             ${opsAtaquesParaMao(f, m.ataqueId)}</select>`
+        : m.modo === 'item'
+        ? `<select class="fi-sel fi-sel--mini" data-campo="maos.${i}.itemId" title="Qual item do inventário está nesta mão">
+             ${opsItensParaMao(f, m.itemId)}</select>`
+        : `<input class="fi-txt fi-txt--mini" type="text" value="${esc(m.nome)}" data-campo="maos.${i}.nome"
+                  placeholder="uma tocha, uma corda…" autocomplete="off">`;
+      return `
+      <li class="fi-mao">
+        <span class="fi-mao-num">Mão ${i + 1}</span>
+        <select class="fi-sel fi-sel--mini" data-campo="maos.${i}.modo" title="De onde vem o que está nesta mão">
+          <option value="livre"  ${m.modo === 'livre'  ? 'selected' : ''}>✎ Escrever</option>
+          <option value="ataque" ${m.modo === 'ataque' ? 'selected' : ''}>⚔ Um ataque</option>
+          <option value="item"   ${m.modo === 'item'   ? 'selected' : ''}>🎒 Um item</option>
+        </select>
+        ${campoConteudo}
+        <select class="fi-sel fi-sel--mini" data-campo="maos.${i}.tipo" title="O tipo, pra bater o olho rápido">
+          ${opsTipoMao(m.tipo)}
+        </select>
+        <button type="button" class="fi-mini fi-mao-nota ${m.aberto ? 'fi-mini--on' : ''}${m.notas && !m.aberto ? ' fi-mini--tem' : ''}"
+                data-acao="mao-texto" data-i="${i}" aria-pressed="${m.aberto}"
+                title="${m.aberto ? 'Dobrar o texto desta mão' : 'Abrir o texto desta mão — o bônus que ela dá, o que muda nela'}">✎</button>
+        <button type="button" class="fi-mini fi-mini--x" data-acao="tira-mao" data-i="${i}" title="Tirar esta mão">✕</button>
+        ${f.maos.length > 1 ? `<span class="fi-atq-ordem">
+          <button type="button" class="fi-mini" data-acao="mao-topo" data-i="${i}" ${i === 0 ? 'disabled' : ''}
+                  title="Levar para o topo" aria-label="Levar ${esc(nome || 'esta mão')} para o topo">⇈</button>
+          <button type="button" class="fi-mini" data-acao="mao-sobe" data-i="${i}" ${i === 0 ? 'disabled' : ''}
+                  title="Mover para cima" aria-label="Mover ${esc(nome || 'esta mão')} para cima">↑</button>
+          <button type="button" class="fi-mini" data-acao="mao-desce" data-i="${i}" ${i === f.maos.length - 1 ? 'disabled' : ''}
+                  title="Mover para baixo" aria-label="Mover ${esc(nome || 'esta mão')} para baixo">↓</button>
+        </span>` : ''}
+        ${m.aberto ? `
+        <div class="ga-rich-wrap ga-rich-wrap--barra fi-mao-texto" data-jog-edita>
+          ${window.GA_barraRica ? window.GA_barraRica() : ''}
+          <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
+               data-campo="maos.${i}.notas"
+               data-ph="O que esta mão dá: +1 na Defesa com o escudo, a CD do foco arcano, o bônus de Atuação do instrumento…"
+               >${m.notas}</div>
+        </div>` : ''}
+      </li>`;
+    }).join('');
+
+    return `
+      <div class="fi-maos">
+        <h3 class="fi-maos-tit">✋ Mãos ocupadas
+          <span class="fi-cartao-nota">pra quem tem mais (ou menos) de duas — o que está em cada uma</span>
+        </h3>
+        <ul class="fi-maos-lista">${linhas || '<li class="fi-atq-vazio">Nenhuma mão registrada ainda.</li>'}</ul>
+        <button type="button" class="fi-add fi-add--menor" data-acao="add-mao">＋ Acrescentar mão</button>
       </div>`;
   }
   // O multiplicador saiu do botão ("💥 ×2" virou "💥 Crítico", a pedido
@@ -4999,13 +5114,23 @@
       // entra o do novo, ANTES de gravar o nome do tipo
       const mt = /^amigos\.(\d+)\.tipo$/.exec(campo);
       if (mt && f.amigos[+mt[1]]) trocarTipo(f.amigos[+mt[1]], f.amigos[+mt[1]].tipo, el.value);
+      // trocar pra "ligado a um ataque/item" empurra a etiqueta pra um
+      // valor que faz mais sentido — só quando ainda está no padrão
+      // ("Mão livre"); se o jogador já escolheu outra, essa fica
+      const mm = /^maos\.(\d+)\.modo$/.exec(campo);
+      if (mm && f.maos[+mm[1]] && f.maos[+mm[1]].tipo === 'livre') {
+        if (el.value === 'ataque') f.maos[+mm[1]].tipo = 'arma-cac';
+        else if (el.value === 'item') f.maos[+mm[1]].tipo = 'outro';
+      }
       gravarCampo(f, campo, el.value);
       salvar();
       // trocar de classe muda PV, PM e todas as perícias — e o rótulo da
       // conta por extenso; redesenhar é mais honesto que remendar. O
-      // mesmo vale para o tipo, o parceiro e o treino do amigo.
+      // mesmo vale para o tipo, o parceiro e o treino do amigo. E pra
+      // mão: trocar o "modo" troca o campo de baixo (texto ↔ um dos
+      // dois menus ligados).
       if (campo.indexOf('classes.') === 0 || campo.indexOf('amigos.') === 0 ||
-          campo.indexOf('treinador.') === 0) return render();
+          campo.indexOf('treinador.') === 0 || campo.indexOf('maos.') === 0) return render();
       atualizarDerivados();
       return;
     }
@@ -5105,6 +5230,7 @@
     if (acao === 'add-classe')  { f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
     if (acao === 'tira-classe') { f.classes.splice(+btn.dataset.i, 1); if (!f.classes.length) f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
     if (acao === 'add-ataque')  { f.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0, dano: '', passos: 0, critico: '', tipo: '', alcance: '', notas: '', aberto: true }); salvar(); return render(); }
+    if (acao === 'add-mao') { f.maos.push({ id: novoId(), modo: 'livre', ataqueId: '', itemId: '', nome: '', tipo: 'livre', notas: '', aberto: false }); sujar(f.id, 'maos'); salvar(); return render(); }
 
     // ── O QUE APARA O DANO ─────────────────────────────────────────
     if (acao === 'add-apara') {
@@ -5231,6 +5357,31 @@
     if (acao === 'atq-texto') {
       const a = f.ataques[+btn.dataset.i];
       if (a) { a.aberto = !a.aberto; sujar(f.id, 'ataques'); salvar(); render(); }
+      return;
+    }
+
+    // o ✕ da mão mora colado no ✎, igual ao do ataque — e só pergunta
+    // se houver nome (de qualquer modo) ou texto escrito
+    if (acao === 'tira-mao') {
+      const m = f.maos[+btn.dataset.i];
+      if (!m) return;
+      if (temConteudo(nomeDaMao(f, m), m.notas) &&
+          !confirm('Tirar esta mão (' + (nomeDaMao(f, m) || 'sem nome') + ')?' +
+                   (temConteudo(m.notas) ? '\n\nO texto escrito nela vai junto.' : ''))) return;
+      f.maos.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'maos'); salvar(); return render();
+    }
+    if (acao === 'mao-sobe' || acao === 'mao-desce' || acao === 'mao-topo') {
+      const de = +btn.dataset.i;
+      const para = acao === 'mao-topo' ? 0 : de + (acao === 'mao-sobe' ? -1 : 1);
+      if (!f.maos[de] || para < 0 || para >= f.maos.length || para === de) return;
+      const [mm] = f.maos.splice(de, 1);
+      f.maos.splice(para, 0, mm);
+      sujar(f.id, 'maos'); salvar(); return render();
+    }
+    if (acao === 'mao-texto') {
+      const m = f.maos[+btn.dataset.i];
+      if (m) { m.aberto = !m.aberto; sujar(f.id, 'maos'); salvar(); render(); }
       return;
     }
 
