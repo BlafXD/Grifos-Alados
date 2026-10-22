@@ -705,6 +705,47 @@
 }
 .fi-atq-dano:hover { background: var(--gold-pale); }
 
+/* ── MÃOS OCUPADAS (22/10/2026) ───────────────────────────────────
+   Sub-bloco dentro do cartão de Ataques — pra quem tem mais (ou menos)
+   de duas mãos. Seis colunas: "Mão N", de onde vem (modo), o próprio
+   conteúdo (texto OU um dos dois menus ligados — o que troca conforme
+   o modo), o tipo, ✎ e ✕. A faixa de texto e as setas de ordem entram
+   embaixo, ocupando a linha inteira, como no resto da ficha. */
+.fi-maos { margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px dashed var(--parchment3); }
+.fi-maos-tit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin: 0 0 0.5rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+
+  color: var(--rust-dark);
+}
+.fi-maos-lista { list-style: none; margin: 0 0 0.5rem; padding: 0; }
+.fi-mao {
+  display: grid;
+  grid-template-columns: 4rem 7.5rem minmax(8rem, 1fr) minmax(8rem, 1fr) 2rem 2rem;
+  gap: 0.3rem;
+  align-items: center;
+  padding: 0.22rem 0.1rem;
+  border-bottom: 1px dotted var(--parchment3);
+}
+.fi-mao:hover { background: var(--linha-hover); }
+.fi-mao .fi-txt, .fi-mao .fi-sel { padding: 0.18rem 0.3rem; font-size: 0.88rem; }
+.fi-mao-num {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+}
+.fi-mao-texto { grid-column: 1 / -1; margin: 0.3rem 0 0.2rem; }
+.fi-mao-texto .fi-texto { min-height: 2.6rem; font-size: 0.95rem; }
+
 /* ── OS BLOCOS DE TEXTO ────────────────────────────────────────── */
 .fi-texto {
   min-height: 6rem;
@@ -1112,6 +1153,11 @@
   .fi-atq-cab { display: none; }
   .fi-atq {
     grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+    gap: 0.25rem;
+    padding: 0.4rem 0.1rem;
+  }
+  .fi-mao {
+    grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
     gap: 0.25rem;
     padding: 0.4rem 0.1rem;
   }
