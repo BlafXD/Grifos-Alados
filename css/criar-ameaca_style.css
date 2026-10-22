@@ -88,6 +88,7 @@
   border-color: var(--ink);
   color: var(--parchment);
 }
+.ca-chip--ativo:hover { background: var(--ink); border-color: var(--ink); }
 .ca-chip-icone { font-size: 0.7rem; color: var(--rust); }
 .ca-chip--ativo .ca-chip-icone { color: var(--gold-light); }
 .ca-chip-nome {

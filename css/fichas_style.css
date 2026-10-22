@@ -76,6 +76,9 @@
   color: var(--parchment);
   border-color: var(--ink);
 }
+/* senão o hover genérico acima (mais específico) troca o fundo e o texto
+   escuro (--parchment) some contra ele no modo noturno */
+.fc-aba--ativa:hover { background: var(--ink); }
 
 .fc-add {
   font-family: var(--ga-fonte-rotulo);

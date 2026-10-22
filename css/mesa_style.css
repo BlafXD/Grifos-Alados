@@ -302,6 +302,7 @@
   background: var(--teal);
   border-color: var(--teal);
 }
+.me-chip--ligado:hover { background: var(--teal); }
 .me-selo--mestre     { background: var(--gold-deep); }
 .me-selo--auxiliar   { background: var(--azul); }
 .me-selo--jogador    { background: var(--neutra); }

@@ -889,12 +889,13 @@ html.ga-noturno {
   --parchment2: #1f170e;
   --parchment3: #352817;
   --rust:       #e2793f;   /* mais claro que o original — precisa se ver no escuro */
-  --rust-dark:  #b85a26;
+  --rust-dark:  #c96a30;   /* clareado mais um tanto: contra --parchment (texto, agora escuro) o tom antigo dava só 4:1 — abas ativas (.fi-aba--ativa) ficavam borradas */
   --gold:       #d9b13f;
   --gold-light: #ecd27a;
   --shadow:     rgba(0,0,0,0.55);
 
   --verde:      #5cb06e;
+  --verde-dark: #55a362;   /* faltava nesta lista: ficava escuro nos dois modos — texto e selo (Amigos, Marca de Saúde) somem contra --parchment escuro */
   --azul:       #5ea0d8;
   --teal:       #3ecbb0;
   --carmim:     #e2566a;
