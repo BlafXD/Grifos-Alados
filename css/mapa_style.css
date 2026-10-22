@@ -38,6 +38,7 @@
   color: var(--parchment);
   border-color: var(--ink);
 }
+.an-subtab--ativa:hover { background: var(--ink); }
 
 /* ── BARRA DE FERRAMENTAS ──────────────────────────────────────────── */
 .mp-toolbar {

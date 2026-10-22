@@ -2535,6 +2535,9 @@ color: var(--ink-faded); margin-right: 0.2rem;
   border-color: var(--rust-dark);
   color: var(--parchment);
 }
+/* sem isso, passar o mouse no switch ligado troca o texto para --rust-dark
+   — a MESMA cor do fundo (que já é --rust-dark) — e o texto some */
+.mz-mas-switch--on:hover { color: var(--parchment); border-color: var(--rust-dark); }
 .mz-mas-recolher {
   margin-left: auto;
   background: transparent;
@@ -2601,6 +2604,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
   border-color: var(--rust-dark);
   color: var(--parchment);
 }
+.mz-mas-chip--on:hover { color: var(--parchment); border-color: var(--rust-dark); }
 .mz-mas-acao {
   display: flex;
   flex-wrap: wrap;

@@ -63,6 +63,10 @@
   background: var(--rust-dark);
   border-color: var(--rust-dark);
 }
+/* sem isso, passar o mouse na aba ativa cai no hover genérico acima (mais
+   específico por causa do :hover) e troca o fundo por --gold-pale — no modo
+   noturno isso e o texto (--parchment) ficam escuros os dois, e a aba some */
+.fi-aba--ativa:hover { background: var(--rust-dark); }
 .fi-add {
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.7rem;
@@ -760,6 +764,7 @@
   background: var(--rust-dark);
   border-color: var(--rust-dark);
 }
+.fi-subtab--ativa:hover { background: var(--rust-dark); }
 
 
 /* ══════════════════════════════════════════════════════════════════
