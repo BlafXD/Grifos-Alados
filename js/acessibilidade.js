@@ -27,8 +27,8 @@
 //     alvo do dedo cresce por baixo, e o `title` que já existia vira
 //     nome de verdade para o leitor de tela.
 //
-//  5. O PAINEL ⚙. Tamanho do texto, contraste, movimento, foco e a
-//     letra da gazeta.
+//  5. O PAINEL ⚙. Modo noturno, tamanho do texto, contraste, movimento,
+//     foco e a letra da gazeta.
 //     O tamanho é o que mais importa: as 896 declarações de fonte
 //     deste site são TODAS em rem (zero px), então mexer na raiz
 //     escala texto, respiro e botão juntos, sem quebrar layout.
@@ -53,6 +53,7 @@
   catch (e) { prefs = {}; }
 
   const CHAVES_CLASSE = {
+    modoNoturno:  'ga-noturno',
     contraste:    'ga-contraste',
     semMovimento: 'ga-sem-movimento',
     focoForte:    'ga-foco-forte'
@@ -666,7 +667,12 @@
     { n: 5, rot: 'Enorme', a: '1.7rem'  }
   ];
 
-  const CHAVES_PAINEL = [
+  const CHAVES_APARENCIA = [
+    { id: 'modoNoturno', tit: 'Modo noturno',
+      sub: 'Troca o pergaminho claro por um fundo escuro — mais leve para os olhos à noite.' }
+  ];
+
+  const CHAVES_PAINEL = CHAVES_APARENCIA.concat([
     { id: 'contraste', tit: 'Mais contraste',
       sub: 'Escurece os rótulos apagados e engrossa as bordas do pergaminho.' },
     { id: 'semMovimento', tit: 'Menos movimento',
@@ -679,7 +685,7 @@
     { id: 'letraAntiga', tit: 'Letra antiga da gazeta',
       sub: 'Devolve a capitular Cinzel aos rótulos e a IM Fell English às dicas. ' +
            'Mais bonitas de longe, mais difíceis de ler de perto.' }
-  ];
+  ]);
 
   function abrirPainel() {
     if (!window.GA_abrirModal) return;
@@ -692,13 +698,17 @@
              '<span class="ga-pref-passo-n">' + esc(p.rot) + '</span></button>';
     }).join('');
 
-    const chaves = CHAVES_PAINEL.map(function (c) {
+    function rotuloChave(c) {
       return '<button type="button" class="ga-pref-chave" data-ga-chave="' + c.id + '"' +
              ' aria-pressed="' + (prefs[c.id] ? 'true' : 'false') + '">' +
              '<span class="ga-pref-chave-txt">' + esc(c.tit) +
              '<small>' + esc(c.sub) + '</small></span>' +
              '<span class="ga-pref-chave-luz" aria-hidden="true"></span></button>';
-    }).join('');
+    }
+    const chavesAparencia = CHAVES_APARENCIA.map(rotuloChave).join('');
+    const chaves = CHAVES_PAINEL.filter(function (c) {
+      return CHAVES_APARENCIA.indexOf(c) === -1;
+    }).map(rotuloChave).join('');
 
     const overlay = window.GA_abrirModal(
       '<div class="ga-modal-cab" id="ga-pref-tit">' +
@@ -713,6 +723,10 @@
         '<div class="ga-pref-regua" role="radiogroup" aria-labelledby="ga-pref-texto-rot">' + regua + '</div>' +
         '<p class="ga-pref-nota">Escala a gazeta inteira — texto, botões e tabelas juntos. ' +
           'No celular ela já começa em <em>Maior</em>.</p>' +
+      '</div>' +
+
+      '<div class="ga-pref-grupo">' +
+        '<span class="ga-pref-rot">Aparência</span>' + chavesAparencia +
       '</div>' +
 
       '<div class="ga-pref-grupo">' +

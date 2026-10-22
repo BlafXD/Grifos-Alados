@@ -873,3 +873,39 @@ html.ga-foco-forte :where(a, button, summary, select, input, textarea,
   .ga-modal { max-height: 96vh; }
   .ga-coluna-mesa { max-height: 60vh; overflow-y: auto; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   16 · MODO NOTURNO (a chave do painel)
+   O mesmo truque do "Mais contraste": redefine só as variáveis da
+   PALETA (style.css :root), nunca cor nenhuma direto num seletor de
+   aba — porque nenhum dos outros 20 arquivos CSS do site escreve cor
+   própria, todos leem var(--parchment), var(--ink) etc. Então um
+   bloco só aqui vira a gazeta inteira, sem tocar em mais nada.
+   ══════════════════════════════════════════════════════════════════ */
+html.ga-noturno {
+  --ink:        #ead9ba;   /* era a tinta escura; aqui é o texto claro */
+  --ink-faded:  #b7a179;
+  --parchment:  #17110a;   /* era o pergaminho claro; aqui é o fundo escuro */
+  --parchment2: #1f170e;
+  --parchment3: #352817;
+  --rust:       #e2793f;   /* mais claro que o original — precisa se ver no escuro */
+  --rust-dark:  #b85a26;
+  --gold:       #d9b13f;
+  --gold-light: #ecd27a;
+  --shadow:     rgba(0,0,0,0.55);
+
+  --verde:      #5cb06e;
+  --azul:       #5ea0d8;
+  --teal:       #3ecbb0;
+  --carmim:     #e2566a;
+  --neutra:     #a89a7c;
+  --gold-deep:  #d9b13f;
+  --gold-pale:  #2c2314;
+  --linha-hover:#2c2314;
+
+  --text:       #ead9ba;
+  --text-mid:   #b7a179;
+  --text-dim:   #8a7858;
+  --gold-dim:   #c9ab52;
+  --border:     #352817;
+}
