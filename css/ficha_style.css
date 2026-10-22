@@ -3083,6 +3083,7 @@
 }
 .fi-desl-m { font-family: var(--ga-fonte-nota); font-size: 0.85rem; color: var(--text-dim); }
 .fi-desl-linha .fi-txt { min-width: 0; }
+.fi-defesa-fontes .fi-desl-linha { grid-template-columns: 4.2rem 1fr auto; }
 .fi-desl-vazio,
 .fi-desl-conta {
   margin: 0.35rem 0 0;
@@ -3262,6 +3263,7 @@
 
 @media (max-width: 560px) {
   .fi-desl-linha { grid-template-columns: 4rem 1rem 1fr auto; }
+  .fi-defesa-fontes .fi-desl-linha { grid-template-columns: 4rem 1fr auto; }
   .fi-cond-nuvem { left: auto; right: 0; }
 }
 
