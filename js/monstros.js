@@ -394,6 +394,7 @@
       critTipo: 'corte', critMult: 'x2', critLocal: '', ultimoCritico: null,
       condicoesAtivas: [],
       tipoCriatura: '', habilidades: [], sentidos: [], poderesTormenta: [],
+      distincoes: [], distincoesAtivos: [],
       devoto: '',
       stats: stats,
       montaria: { chave: '', nivel: 'iniciante' },
@@ -562,6 +563,11 @@
     if (!Array.isArray(cr.sentidos)) cr.sentidos = [];
     // poderes da Tormenta (chaves de GA_TORMENTA) — o bloco soma sozinho
     if (!Array.isArray(cr.poderesTormenta)) cr.poderesTormenta = [];
+    // poderes de distinção (ids de GA_PODERES) + quais dos condicionais
+    // (ataque/dano) estão ligados — ver construirBlocoDistincoes.
+    if (!Array.isArray(cr.distincoes)) cr.distincoes = [];
+    if (!Array.isArray(cr.distincoesAtivos)) cr.distincoesAtivos = [];
+    aplicarBloqueiosImunidade(cr);
     if (typeof cr.devoto !== 'string') cr.devoto = '';   // chave do deus (GA_DEVOTOS)
     // bloco de magias: interruptor + linha de cabeçalho do livro
     // ("Como um clérigo de 9º nível, CD 30"). O texto em si é caixa rica.
@@ -2005,6 +2011,267 @@
           </div>`;
   }
 
+  // ── BLOCO: DISTINÇÕES (23/10/2026) ───────────────────────────────
+  // Dá pra uma criatura/NPC os poderes de uma distinção do Heróis ou do
+  // Deuses de Arton (window.GA_PODERES, grupo 'distincao'). O que é um
+  // número fixo — sem depender de uma escolha feita a cada uso — entra
+  // sozinho: teste de ataque e dano JÁ somados nos botões 🎯/💥 acima,
+  // Fort/Ref/Von/Iniciativa JÁ somados ao clicar o 🎲 do stat, e
+  // imunidade JÁ bloqueia a condição correspondente no modal de
+  // Condições. O resto (Defesa, deslocamento, PV, PM, redução de dano,
+  // outras resistências) é mostrado pronto, mas não é escrito nos
+  // campos Padrão/Atual — o mestre soma na mão, do mesmo jeito que o
+  // bloco de Poderes da Tormenta já faz pela Defesa/perícias/Carisma.
+  // A tabela de quem dá o quê mora em js/distincoes-efeitos-data.js;
+  // poder sem entrada lá continua só como texto (a maioria: gasta PM
+  // por uso, exige escolha, ou é de fabricar/invocar — ver o arquivo).
+  function _fmtSinal(v) { return (v >= 0 ? '+' : '') + v; }
+  function _valorOuFn(x, n) { return typeof x === 'function' ? x(n) : x; }
+
+  function distincoesDaBase() {
+    const todas = Array.isArray(window.GA_PODERES) ? window.GA_PODERES : [];
+    const mapa = {};
+    todas.forEach(p => {
+      if (p.grupo !== 'distincao' || !p.distincao) return;
+      const d = mapa[p.distincao] || (mapa[p.distincao] = {
+        slug: p.distincao, nome: (p.tags || p.distincao).split(' · ')[0],
+        livro: p.livro, pagIni: p.pagina || 0, pagFim: p.pagina || 0, marca: null, poderes: [],
+      });
+      if (p.pagina) { d.pagIni = d.pagIni ? Math.min(d.pagIni, p.pagina) : p.pagina; d.pagFim = Math.max(d.pagFim, p.pagina); }
+      if (p.marca) d.marca = p; else d.poderes.push(p);
+    });
+    return Object.keys(mapa).map(k => mapa[k]).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  }
+  // Lista achatada pro modal "＋ Distinção" (365 poderes + marcas, uma
+  // linha por poder, agrupados por distinção e com a marca primeiro em
+  // cada grupo) — reaproveita o modal genérico de lista (como Tormenta).
+  function _itensDistincaoPicker() {
+    const base = window.GA_PODERES || [];
+    const nomeDist = {};
+    distincoesDaBase().forEach(d => { nomeDist[d.slug] = d.nome; });
+    return base.filter(p => p.grupo === 'distincao').map(p => ({
+      chave: p.id, nome: p.nome, marca: !!p.marca,
+      distincaoNome: nomeDist[p.distincao] || p.distincao,
+      fonte: (nomeDist[p.distincao] || p.distincao) + (p.marca ? ' · marca' : ''),
+      desc: (p.texto || []).join(' '),
+    })).sort((a, b) => a.distincaoNome.localeCompare(b.distincaoNome, 'pt-BR') ||
+                       (a.marca === b.marca ? 0 : (a.marca ? -1 : 1)));
+  }
+  // Poderes DAQUELA distinção que a criatura tem, sem contar a marca —
+  // a mesma conta de js/ficha-distincoes.js (nDistincao em js/ficha.js).
+  function nDistincaoCriatura(cr, slug) {
+    const base = window.GA_PODERES || [];
+    return (cr.distincoes || []).filter(id => {
+      const p = base.find(x => x.id === id);
+      return p && p.grupo === 'distincao' && p.distincao === slug && !p.marca;
+    }).length;
+  }
+  function temMarcaDistCriatura(cr, slug) {
+    const base = window.GA_PODERES || [];
+    return (cr.distincoes || []).some(id => {
+      const p = base.find(x => x.id === id);
+      return p && p.grupo === 'distincao' && p.distincao === slug && p.marca;
+    });
+  }
+  function efeitosDoPoder(id, n) {
+    const lista = (window.GA_DISTINCOES_EFEITOS || {})[id];
+    return Array.isArray(lista) ? lista : [];
+  }
+  // Todos os efeitos automáticos da criatura, já com `n` resolvido por
+  // distinção (um poder pode ter mais de um efeito).
+  function efeitosDaCriatura(cr) {
+    const base = window.GA_PODERES || [];
+    const out = [];
+    (cr.distincoes || []).forEach(id => {
+      const p = base.find(x => x.id === id);
+      if (!p) return;
+      const n = nDistincaoCriatura(cr, p.distincao);
+      efeitosDoPoder(id, n).forEach(ef => out.push({ id: id, poder: p, n: n, ef: ef }));
+    });
+    return out;
+  }
+  const STAT_TIPOS_DIST = ['defesa', 'fortitude', 'reflexos', 'vontade', 'iniciativa', 'percepcao', 'deslocamento', 'pv', 'pm'];
+  // Soma viva: ataque/dano (sempre entram nos botões de rolar; os
+  // condicionais só quando o interruptor da ficha estiver ligado) e o
+  // total "sempre" de cada stat (Defesa, Fort/Ref/Von/Iniciativa,
+  // deslocamento, PV, PM) — os condicionais desses ficam só na nota,
+  // nunca somados sozinhos aqui.
+  function bonusVivosDistincao(cr) {
+    const r = { ataque: 0, danoBonus: 0, danoDados: [], porStat: {} };
+    efeitosDaCriatura(cr).forEach(({ id, n, ef }) => {
+      if (ef.tipo === 'ataque' || ef.tipo === 'dano' || ef.tipo === 'ataqueDano') {
+        const ligado = ef.modo !== 'condicional' || (cr.distincoesAtivos || []).indexOf(id) >= 0;
+        if (!ligado) return;
+        if (ef.tipo === 'ataque' || ef.tipo === 'ataqueDano') r.ataque += _valorOuFn(ef.bonus, n) || 0;
+        if (ef.tipo === 'dano' || ef.tipo === 'ataqueDano') {
+          r.danoBonus += _valorOuFn(ef.bonus, n) || 0;
+          const d = _valorOuFn(ef.dado, n);
+          if (d) r.danoDados.push(d);
+        }
+        return;
+      }
+      if (STAT_TIPOS_DIST.indexOf(ef.tipo) >= 0 && ef.modo !== 'condicional') {
+        const v = ef.tipo === 'deslocamento' ? _valorOuFn(ef.metros, n) : _valorOuFn(ef.bonus, n);
+        if (v) r.porStat[ef.tipo] = (r.porStat[ef.tipo] || 0) + v;
+      }
+    });
+    return r;
+  }
+  // Quais chaves de CONDICOES ficam bloqueadas por imunidade de
+  // distinção, e por qual poder (pro aviso no modal de Condições).
+  function condicoesBloqueadasDistincao(cr) {
+    const bloqueadas = {};
+    efeitosDaCriatura(cr).forEach(({ poder, ef }) => {
+      if (ef.tipo !== 'imunidade') return;
+      (ef.condCategorias || []).forEach(catKey => {
+        CONDICOES.filter(c => c.cat === catKey).forEach(c => { bloqueadas[c.chave] = poder.nome; });
+      });
+      (ef.condChaves || []).forEach(ch => { bloqueadas[ch] = poder.nome; });
+    });
+    return bloqueadas;
+  }
+  // Tira da lista de condições ativas qualquer uma que a imunidade
+  // atual bloqueie — chamada ao marcar/desmarcar poder de distinção.
+  function aplicarBloqueiosImunidade(cr) {
+    const bloqueadas = condicoesBloqueadasDistincao(cr);
+    cr.condicoesAtivas = (cr.condicoesAtivas || []).filter(ch => !bloqueadas[ch]);
+  }
+  function _nomesImunidade(ef) {
+    const nomes = [];
+    (ef.condCategorias || []).forEach(c => nomes.push((COND_CATEGORIAS[c] || {}).rotulo || c));
+    (ef.condChaves || []).forEach(c => nomes.push((COND_POR_CHAVE[c] || {}).nome || c));
+    return nomes.join(', ');
+  }
+  // Descreve um efeito já com `n` resolvido — usado no cartão da
+  // distinção (não no resumo do topo, que soma tudo de uma vez).
+  function _descreverEfeitoDist(ef, n) {
+    const partes = [];
+    if (ef.tipo === 'ataque')      partes.push(`${_fmtSinal(_valorOuFn(ef.bonus, n))} no teste de ataque`);
+    if (ef.tipo === 'ataqueDano')  partes.push(`${_fmtSinal(_valorOuFn(ef.bonus, n))} no teste de ataque e no dano`);
+    if (ef.tipo === 'dano') {
+      const b = _valorOuFn(ef.bonus, n); if (b) partes.push(`${_fmtSinal(b)} no dano`);
+      const d = _valorOuFn(ef.dado, n); if (d) partes.push(`${d} no dano`);
+    }
+    if (ef.tipo === 'defesa')      partes.push(`${_fmtSinal(_valorOuFn(ef.bonus, n))} na Defesa`);
+    if (ef.tipo === 'iniciativa')  partes.push(`${_fmtSinal(_valorOuFn(ef.bonus, n))} em Iniciativa`);
+    if (ef.tipo === 'fortitude')   partes.push(`${_fmtSinal(_valorOuFn(ef.bonus, n))} em Fortitude`);
+    if (ef.tipo === 'reflexos')    partes.push(`${_fmtSinal(_valorOuFn(ef.bonus, n))} em Reflexos`);
+    if (ef.tipo === 'vontade')     partes.push(`${_fmtSinal(_valorOuFn(ef.bonus, n))} em Vontade`);
+    if (ef.tipo === 'pv')          partes.push(`${_fmtSinal(_valorOuFn(ef.bonus, n))} PV`);
+    if (ef.tipo === 'pm')          partes.push(`${_fmtSinal(_valorOuFn(ef.bonus, n))} PM`);
+    if (ef.tipo === 'deslocamento') partes.push(`${_fmtSinal(_valorOuFn(ef.metros, n))}m de deslocamento`);
+    if (ef.tipo === 'rd')          partes.push(`RD ${_valorOuFn(ef.valorRD, n)}${ef.tipoDano ? ' contra ' + ef.tipoDano : ''}`);
+    if (ef.tipo === 'resistencia') partes.push(`${_fmtSinal(_valorOuFn(ef.bonus, n))} em testes de resistência${ef.tipoDano ? ' contra ' + ef.tipoDano : ''}`);
+    if (ef.tipo === 'imunidade')   partes.push(`imunidade a ${_nomesImunidade(ef)}`);
+    let txt = partes.join(' · ');
+    if (ef.cond) txt += ` (${ef.cond})`;
+    if (ef.excecao) txt += ` — ressalva do livro: ${ef.excecao}`;
+    return txt;
+  }
+
+  function construirBlocoDistincoes(cr, ds) {
+    const base = window.GA_PODERES || [];
+    if (!base.length) return '';
+    const anexadas = {};
+    (cr.distincoes || []).forEach(id => {
+      const p = base.find(x => x.id === id);
+      if (!p) return;
+      (anexadas[p.distincao] || (anexadas[p.distincao] = [])).push(p);
+    });
+    const slugs = Object.keys(anexadas);
+    const btnAdd = `<button class="mz-amb-add mz-dist-add" data-acao="abrir-distincao" ${ds}
+                      title="Escolher poderes de uma distinção">＋ Distinção</button>`;
+
+    if (!slugs.length) {
+      return `
+          <div class="mz-ambientes mz-dist">
+            <span class="mz-amb-titulo mz-dist-cab">🎖 Distinções${btnAdd}</span>
+            <span class="mz-amb-nenhum">nenhuma — dá pra dar a um NPC os poderes de uma distinção (Heróis/Deuses de Arton); bônus de ataque, dano, Defesa, resistências e imunidades já entram sozinhos.</span>
+          </div>`;
+    }
+
+    const bd = bonusVivosDistincao(cr);
+    let resumo = '';
+    const partesAtkDano = [];
+    if (bd.ataque) partesAtkDano.push(`${_fmtSinal(bd.ataque)} no teste de ataque`);
+    if (bd.danoBonus) partesAtkDano.push(`${_fmtSinal(bd.danoBonus)} no dano`);
+    bd.danoDados.forEach(d => partesAtkDano.push(`${d} no dano`));
+    if (partesAtkDano.length) resumo += `<div class="mz-dist-resumo-item">🎯 Já somado nos botões 🎯/💥 acima: ${esc(partesAtkDano.join(' · '))}</div>`;
+    ['fortitude', 'reflexos', 'vontade', 'iniciativa', 'percepcao'].forEach(st => {
+      if (!bd.porStat[st]) return;
+      const info = STATS.find(s => s.chave === st);
+      resumo += `<div class="mz-dist-resumo-item">🎲 Já somado ao rolar ${esc(info ? info.rotulo : st)}: ${esc(_fmtSinal(bd.porStat[st]))}</div>`;
+    });
+    ['defesa', 'deslocamento', 'pv', 'pm'].forEach(st => {
+      if (!bd.porStat[st]) return;
+      const info = STATS.find(s => s.chave === st);
+      const unidade = st === 'deslocamento' ? 'm' : '';
+      resumo += `<div class="mz-dist-resumo-item">✎ Some na mão em ${esc(info ? info.rotulo : st)} (Padrão/Atual): ${esc(_fmtSinal(bd.porStat[st]))}${unidade}</div>`;
+    });
+    const bloqueadas = condicoesBloqueadasDistincao(cr);
+    const nomesBloqueadas = Object.keys(bloqueadas).map(ch => (COND_POR_CHAVE[ch] || {}).nome || ch);
+    if (nomesBloqueadas.length) resumo += `<div class="mz-dist-resumo-item">🚫 Bloqueadas no modal de Condições: ${esc(nomesBloqueadas.join(', '))}</div>`;
+
+    let cartoes = '';
+    slugs.forEach(slug => {
+      const dBase = distincoesDaBase().find(d => d.slug === slug);
+      const nome = dBase ? dBase.nome : slug;
+      const n = nDistincaoCriatura(cr, slug);
+      const temMarca = temMarcaDistCriatura(cr, slug);
+      const poderes = anexadas[slug].slice().sort((a, b) => (a.marca === b.marca) ? 0 : (a.marca ? -1 : 1));
+      let linhasPoder = '';
+      poderes.forEach(p => {
+        const efs = efeitosDoPoder(p.id, n);
+        const escala = window.GA_FICHA_DISTINCOES ? window.GA_FICHA_DISTINCOES.escala(p.id, n) : null;
+        let notas = '';
+        efs.forEach(ef => {
+          const txt = _descreverEfeitoDist(ef, n);
+          const ligavel = (ef.tipo === 'ataque' || ef.tipo === 'dano' || ef.tipo === 'ataqueDano') && ef.modo === 'condicional';
+          if (ligavel) {
+            const ativo = (cr.distincoesAtivos || []).indexOf(p.id) >= 0;
+            notas += `
+              <button type="button" class="mz-dist-toggle ${ativo ? 'mz-dist-toggle--on' : ''}"
+                      data-acao="dist-toggle-ativo" data-poder="${esc(p.id)}" ${ds}
+                      title="Ligar/desligar este bônus condicional nos botões de rolar">
+                ${ativo ? '☑' : '☐'} ${esc(txt)}
+              </button>`;
+          } else {
+            notas += `<div class="mz-torm-valor">✓ ${esc(txt)}</div>`;
+          }
+        });
+        linhasPoder += `
+          <div class="mz-torm-item">
+            <div class="mz-torm-item-cab">
+              <span class="mz-torm-nome">${p.marca ? '🏷 ' : ''}${esc(p.nome)}</span>
+              <button class="mz-cond-x" data-acao="rem-distincao" data-poder="${esc(p.id)}" ${ds} title="Remover ${esc(p.nome)}">✕</button>
+            </div>
+            ${escala ? `<div class="mz-torm-calc">${esc(escala.txt)} — ${esc(escala.calc)}</div>` : ''}
+            ${notas}
+            <details class="mz-torm-det"><summary>Texto da regra</summary><p>${esc((p.texto || []).join(' '))}</p></details>
+          </div>`;
+      });
+      const avisoMarca = (!temMarca && dBase && dBase.marca) ? `
+        <p class="mz-torm-falta">🎖 Ainda sem a marca <strong>${esc(dBase.marca.nome)}</strong> — ela é automática ao entrar na distinção (o livro diz isso), mas este sistema não a adiciona sozinha; marque-a na lista se fizer sentido.</p>` : '';
+      cartoes += `
+          <div class="mz-torm mz-torm--on mz-dist-card">
+            <span class="mz-amb-titulo mz-torm-cab">🎖 ${esc(nome)}
+              <span class="mz-torm-conta">${temMarca ? 'marca + ' : ''}${n} poder${n !== 1 ? 'es' : ''}</span>
+              <button class="mz-cond-x" data-acao="rem-distincao-toda" data-dist="${esc(slug)}" ${ds} title="Remover a distinção inteira">✕ toda</button>
+            </span>
+            ${avisoMarca}
+            <div class="mz-torm-lista">${linhasPoder}</div>
+          </div>`;
+    });
+
+    return `
+          <div class="mz-ambientes mz-dist mz-dist--on">
+            <span class="mz-amb-titulo mz-dist-cab">🎖 Distinções${btnAdd}</span>
+            ${resumo ? `<div class="mz-torm-aviso">${resumo}</div>` : ''}
+            ${cartoes}
+            <p class="mz-torm-nota">Número fixo (ataque, dano, Defesa, deslocamento, PV, PM, Fort/Ref/Von/Iniciativa, resistências, imunidades) entra sozinho, do jeito descrito acima. O resto do poder — PM por uso, escolhas, invocar aliado, fabricar item — continua só no texto da regra; aplique na mão.</p>
+          </div>`;
+  }
+
   // Bloco "🐎 Montaria" da criatura: escolhe uma montaria (de window.MONTARIAS,
   // agrupada por fonte) e o nível (iniciante/veterano/mestre), mostrando o
   // benefício correspondente. Ex.: um necromante num Cavalo Esqueleto.
@@ -2137,22 +2404,50 @@
     }
     return achados;
   }
+  // Soma o bônus de ataque/dano (número) a um bônus impresso "+26"/"-2".
+  function _somarBonusTexto(bonusTxt, extra) {
+    if (!extra) return bonusTxt;
+    const atual = parseInt(String(bonusTxt || '0').replace(/\s+/g, ''), 10) || 0;
+    const total = atual + extra;
+    return (total >= 0 ? '+' : '') + total;
+  }
+  // Soma bônus/dado extra a uma expressão de dano "2d6+13" (ou similar).
+  function _somarDadoDano(dadoTxt, extraBonus, extraDados) {
+    let txt = String(dadoTxt || '');
+    if (extraBonus) {
+      const m = /^(\d+d\d+)([+-]\d+)?$/.exec(txt);
+      if (m) {
+        const novo = (parseInt(m[2] || '0', 10)) + extraBonus;
+        txt = m[1] + (novo ? (novo >= 0 ? '+' + novo : String(novo)) : '');
+      } else {
+        txt += (extraBonus >= 0 ? '+' : '') + extraBonus;
+      }
+    }
+    (extraDados || []).forEach(d => { txt += d; });
+    return txt;
+  }
   function blocoAtaqueBotoes(cr, ds) {
     const achados = ataquesDe(cr);
     if (!achados.length) return '';
+    const bd = bonusVivosDistincao(cr);
+    const temExtra = !!(bd.ataque || bd.danoBonus || bd.danoDados.length);
     return `
           <div class="mz-atk-roll">
-            ${achados.map(a => `
+            ${achados.map(a => {
+              const bonusFinal = _somarBonusTexto(a.bonus, bd.ataque);
+              const dadoFinal  = _somarDadoDano(a.dado, bd.danoBonus, bd.danoDados);
+              return `
               <span class="mz-atk-roll-linha">
-                <span class="mz-atk-roll-nome">${esc(a.nome)} ${esc(a.bonus)}</span>
+                <span class="mz-atk-roll-nome">${esc(a.nome)} ${esc(bonusFinal)}</span>
                 <button type="button" class="mz-atk-roll-btn" data-acao="rolar-livre" ${ds}
-                        data-expr="1d20${a.bonus}" data-rotulo="${esc(a.nome)} (ataque)"
-                        title="Rola 1d20${esc(a.bonus)}">🎯 ataque</button>
+                        data-expr="1d20${bonusFinal}" data-rotulo="${esc(a.nome)} (ataque)"
+                        title="Rola 1d20${esc(bonusFinal)}${temExtra ? ' — já soma o bônus da distinção' : ''}">🎯 ataque</button>
                 <button type="button" class="mz-atk-roll-btn mz-atk-roll-btn--dano" data-acao="rolar-livre" ${ds}
-                        data-expr="${esc(a.dado)}" data-rotulo="${esc(a.nome)} (dano)"
-                        title="Rola ${esc(a.dado)}">💥 dano</button>
+                        data-expr="${esc(dadoFinal)}" data-rotulo="${esc(a.nome)} (dano)"
+                        title="Rola ${esc(dadoFinal)}${temExtra ? ' — já soma o bônus da distinção' : ''}">💥 dano</button>
                 <span class="mz-atk-roll-ref" title="Como está escrito na ficha">(${esc(a.dentro)})</span>
-              </span>`).join('')}
+              </span>`;
+            }).join('')}
           </div>`;
   }
   // Clique num botão 🎯/💥 ou no 🐾 Invocar: rola e anuncia no log da
@@ -2768,6 +3063,7 @@
 
     // grade de atributos Padrão / Atual
     let statsHtml = '';
+    const bdStats = bonusVivosDistincao(cr);   // bônus "sempre" de distinção, por stat
     STATS.forEach(st => {
       const v = cr.stats[st.chave] || { padrao: '', atual: '' };
       const largura = st.grande ? 'mz-stat--grande' : (st.medio ? 'mz-stat--medio' : '');
@@ -2777,10 +3073,16 @@
         ? `<button class="mz-dado" data-acao="rolar" data-stat="${st.chave}" data-sub="${sub}" ${ds}
                    title="Rolar 1d20 + ${st.rotulo} (${sub})">🎲</button>`
         : '';
+      // nota de distinção: pros stats roláveis já entra no 🎲 sozinho; pros
+      // outros (Defesa, deslocamento, PV, PM) é só o lembrete de somar à mão.
+      const extraDist = bdStats.porStat[st.chave];
+      const notaDist = extraDist
+        ? ` <span class="mz-stat-dist" title="${st.rolavel ? 'Já somado ao rolar 🎲' : 'Some você no Padrão/Atual'} — poder de distinção">(${_fmtSinal(extraDist)}${st.chave === 'deslocamento' ? 'm' : ''} dist.)</span>`
+        : '';
 
       statsHtml += `
         <div class="mz-stat ${largura}">
-          <div class="mz-stat-rotulo">${st.rotulo}</div>
+          <div class="mz-stat-rotulo">${st.rotulo}${notaDist}</div>
           <div class="mz-stat-linha">
             <span>Padrão</span>
             <input type="text" value="${esc(v.padrao)}" aria-label="${st.rotulo} — valor padrão"
@@ -2897,6 +3199,8 @@
           ${construirBarraHabilidades(cr, ds)}
 
           ${construirBlocoTormenta(cr, ds)}
+
+          ${construirBlocoDistincoes(cr, ds)}
 
           <div class="mz-campo">
             <label class="mz-rotulo">Ataque e Habilidades${legendaSe(cr.ataques)}</label>
@@ -3317,6 +3621,40 @@
       const i = cr.poderesTormenta.indexOf(alvo.dataset.chave);
       if (i >= 0) cr.poderesTormenta.splice(i, 1);
       salvar(); render(); return;   // os outros poderes recalculam no render
+    }
+    if (acao === 'abrir-distincao') {
+      abrirModalLista(+alvo.dataset.s, +alvo.dataset.c, +alvo.dataset.cr, 'distincao');
+      return;
+    }
+    if (acao === 'rem-distincao') {
+      const cr = pegarCriatura(alvo);
+      const id = alvo.dataset.poder;
+      const i = cr.distincoes.indexOf(id);
+      if (i >= 0) cr.distincoes.splice(i, 1);
+      const j = (cr.distincoesAtivos || []).indexOf(id);
+      if (j >= 0) cr.distincoesAtivos.splice(j, 1);
+      aplicarBloqueiosImunidade(cr);
+      salvar(); render(); return;
+    }
+    if (acao === 'rem-distincao-toda') {
+      const cr = pegarCriatura(alvo);
+      const slug = alvo.dataset.dist;
+      const base = window.GA_PODERES || [];
+      cr.distincoes = (cr.distincoes || []).filter(id => {
+        const p = base.find(x => x.id === id);
+        return !(p && p.distincao === slug);
+      });
+      cr.distincoesAtivos = (cr.distincoesAtivos || []).filter(id => cr.distincoes.indexOf(id) >= 0);
+      aplicarBloqueiosImunidade(cr);
+      salvar(); render(); return;
+    }
+    if (acao === 'dist-toggle-ativo') {
+      const cr = pegarCriatura(alvo);
+      if (!Array.isArray(cr.distincoesAtivos)) cr.distincoesAtivos = [];
+      const id = alvo.dataset.poder;
+      const i = cr.distincoesAtivos.indexOf(id);
+      if (i >= 0) cr.distincoesAtivos.splice(i, 1); else cr.distincoesAtivos.push(id);
+      salvar(); render(); return;
     }
     if (acao === 'rem-tipo') {
       pegarCriatura(alvo).tipoCriatura = '';
@@ -3927,9 +4265,14 @@
     const dado     = rolarDado(20);
     const modBruto = parseInt((cr.stats[stat] || {})[sub], 10);
     const mod      = isNaN(modBruto) ? 0 : modBruto;
-    const total    = dado + mod;
-    const sinal    = mod < 0 ? '−' : '+';
-    const formula  = `1d20 (${formatarD20(dado)}) ${sinal} ${Math.abs(mod)} = <strong>${total}</strong>`;
+    // Fort/Ref/Von/Iniciativa/Percepção: bônus "sempre" de distinção já
+    // entra aqui — os condicionais não (ver bonusVivosDistincao).
+    const extraDist = bonusVivosDistincao(cr).porStat[stat] || 0;
+    const modTotal = mod + extraDist;
+    const total    = dado + modTotal;
+    const sinal    = modTotal < 0 ? '−' : '+';
+    const nota     = extraDist ? ` (${mod} base ${extraDist >= 0 ? '+' : '−'} ${Math.abs(extraDist)} distinção)` : '';
+    const formula  = `1d20 (${formatarD20(dado)}) ${sinal} ${Math.abs(modTotal)}${nota} = <strong>${total}</strong>`;
 
     registrarLog({
       criatura: cr.nome || '(criatura sem nome)',
@@ -4184,6 +4527,7 @@
     _condAlvo = { s: si, c: ci, cr: cri };
     const cr = dados.sessoes[si].cenas[ci].criaturas[cri];
     const nomeCriatura = cr.nome || 'Criatura sem nome';
+    const bloqueadas = condicoesBloqueadasDistincao(cr);   // chave -> nome do poder que imuniza
 
     let grupos = '';
     Object.keys(COND_CATEGORIAS).forEach(catKey => {
@@ -4192,6 +4536,20 @@
       if (!itens.length) return;
       let linhas = '';
       itens.forEach(c => {
+        const bloqueio = bloqueadas[c.chave];
+        if (bloqueio) {
+          linhas += `
+            <button class="mz-cond-opcao mz-cond-opcao--bloqueada" disabled
+                    title="Bloqueada — imune por «${esc(bloqueio)}»" data-nome="${esc(c.nome).toLowerCase()}">
+              <span class="mz-cond-opcao-cab">
+                <span class="mz-cond-opcao-check">🚫</span>
+                <span class="mz-cond-opcao-nome">${esc(c.nome)}</span>
+                <span class="mz-cond-opcao-cat">${esc(cat.rotulo)}</span>
+              </span>
+              <span class="mz-cond-opcao-desc">Bloqueada — imune por «${esc(bloqueio)}».</span>
+            </button>`;
+          return;
+        }
         const ativo = cr.condicoesAtivas.indexOf(c.chave) >= 0;
         linhas += `
           <button class="mz-cond-opcao ${ativo ? 'ativo' : ''}" style="--cor:${cat.cor}"
@@ -4295,6 +4653,10 @@
       ? { campo:'poderesTormenta', multi:true, itens:(window.GA_TORMENTA || {}).PODERES || [], cor:'#8a1c4a',
           titulo:'Poderes da Tormenta', tormenta:true,
           dica:'Clique para marcar/desmarcar. Os valores se somam sozinhos conforme a quantidade de poderes — só a perda de Carisma é na mão.' }
+      : (tipo === 'distincao')
+      ? { campo:'distincoes', multi:true, itens:_itensDistincaoPicker(), cor:'#caa23e',
+          titulo:'Poderes de distinção',
+          dica:'Clique para marcar/desmarcar poderes de uma distinção (busque pelo nome da distinção ou do poder). O número final (já contando quantos poderes a criatura tem) aparece no cartão da distinção, embaixo.' }
       : { campo:'habilidades',  multi:true,  itens:HABILIDADES_GERAIS, cor:'#6e5a44',
           titulo:'Habilidades gerais', dica:'Clique para marcar/desmarcar as habilidades que a criatura tem.' };
     _listaAlvo = Object.assign({ s:si, c:ci, cr:cri }, cfg);
@@ -4353,13 +4715,14 @@
         extra = `<span class="mz-cond-opcao-cat mz-torm-opcao-valor">${
           ativo ? 'na ficha' : 'se marcar'}: ${esc(e.txt || '')}</span>`;
       }
+      const nomeBusca = item.distincaoNome ? `${item.nome} ${item.distincaoNome}` : item.nome;
       linhas += `
         <button class="mz-cond-opcao ${ativo ? 'ativo' : ''}" style="--cor:${a.cor}"
-                data-lista-toggle="${item.chave}" data-nome="${esc(item.nome).toLowerCase()}">
+                data-lista-toggle="${item.chave}" data-nome="${esc(nomeBusca).toLowerCase()}">
           <span class="mz-cond-opcao-cab">
             <span class="mz-cond-opcao-check">${ativo ? '✓' : '＋'}</span>
-            <span class="mz-cond-opcao-nome">${esc(item.nome)}</span>
-            ${a.tormenta ? `<span class="mz-cond-opcao-cat">${esc(item.fonte)}</span>` : ''}
+            <span class="mz-cond-opcao-nome">${item.marca ? '🏷 ' : ''}${esc(item.nome)}</span>
+            ${(a.tormenta || item.fonte) ? `<span class="mz-cond-opcao-cat">${esc(item.fonte)}</span>` : ''}
           </span>
           ${extra}
           <span class="mz-cond-opcao-desc">${esc(item.desc)}${
@@ -4388,6 +4751,12 @@
       if (i >= 0) arr.splice(i, 1); else arr.push(chave);
     } else {
       cr[a.campo] = (cr[a.campo] === chave) ? '' : chave;   // single-select (alterna)
+    }
+    if (a.campo === 'distincoes') {
+      // removeu o poder: tira também do interruptor de ativo/condicional
+      const j = (cr.distincoesAtivos || []).indexOf(chave);
+      if (cr.distincoes.indexOf(chave) < 0 && j >= 0) cr.distincoesAtivos.splice(j, 1);
+      aplicarBloqueiosImunidade(cr);   // pode ter ganhado (ou perdido) uma imunidade
     }
     salvar();
     render();   // atualiza os chips na ficha

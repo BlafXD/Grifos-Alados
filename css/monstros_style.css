@@ -3129,6 +3129,62 @@ color: var(--ink-faded); margin-right: 0.2rem;
   color: var(--ink);
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   BLOCO "🎖 Distinções" — espelha o da Tormenta acima (mesmas classes
+   .mz-torm-*), só troca a cor de destaque e acrescenta o interruptor
+   dos bônus condicionais de ataque/dano e a nota nos stats.
+   ══════════════════════════════════════════════════════════════════ */
+.mz-dist { margin-top: -0.35rem; }
+.mz-dist--on { border-left: 4px solid #8a6a1c; }
+.mz-dist-cab { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
+.mz-dist-add { margin-left: auto; }
+.mz-dist-card { border-left: 4px solid #8a6a1c; margin-bottom: 0.45rem; }
+.mz-dist-card .mz-torm-cab { margin-bottom: 0.3rem; }
+
+.mz-dist-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.3rem 0.5rem;
+  margin-top: 0.25rem;
+  background: var(--parchment2, var(--parchment));
+  border: 1px dashed #8a6a1c;
+  border-radius: var(--raio);
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.mz-dist-toggle:hover { background: var(--parchment3); }
+.mz-dist-toggle--on { background: var(--gold-pale); border-style: solid; font-weight: 600; }
+
+.mz-dist-resumo-item {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: var(--ink);
+  margin: 0.1rem 0;
+}
+
+/* nota de distinção ao lado do rótulo do stat (Defesa, Iniciativa…) */
+.mz-stat-dist {
+  font-family: var(--ga-fonte-nota);
+  font-style: italic;
+  font-size: 0.68rem;
+  color: #8a6a1c;
+}
+
+/* condição bloqueada por imunidade de distinção, no modal de Condições */
+.mz-cond-opcao--bloqueada {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--parchment3);
+}
+.mz-cond-opcao--bloqueada .mz-cond-opcao-check { color: #8a6a1c; }
+
 /* ── LEGENDA DO ✦ (habilidade mágica) ────────────────────────────── */
 /* Só aparece nas fichas que trazem habilidade mágica marcada. O ✦ em si
    é um caractere no texto da caixa (e não HTML), para sobreviver à
