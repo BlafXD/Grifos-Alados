@@ -1438,6 +1438,19 @@
 
     const daMesa = fichasDaMesa();
     let html = barraDaGaveta(e);
+    const minhaFaltando = soNaMesa();
+    if (minhaFaltando.length) {
+      html += `
+        <div class="fi-barra fi-barra--gaveta">
+          <span class="fi-barra-rot" title="Ficam guardadas nesta mesa, não neste aparelho">📡 Nesta mesa</span>
+          ${minhaFaltando.map(f => `
+            <button type="button" class="fi-aba fi-aba--gaveta" data-acao="trazer-mesa" data-id="${esc(f.id)}"
+                    title="Trazer esta ficha para este aparelho — ela continua na mesa">
+              ⬇ ${esc(f.nome || '(sem nome)')}
+              <em>${esc(resumoDaFicha(f))}</em>
+            </button>`).join('')}
+        </div>`;
+    }
     if (e.vejoTodas) {
       html += `
         <div class="fi-barra fi-barra--mesa">
@@ -5215,6 +5228,7 @@
       salvar(); return render();
     }
     if (acao === 'trazer') return trazerDaGaveta(btn.dataset.id);
+    if (acao === 'trazer-mesa') return trazerDaMesa(btn.dataset.id);
     // a Tabela 3-2 recolhida lembra se está aberta, para um render não a
     // fechar na cara de quem está lendo (o clique vem ANTES de abrir)
     if (acao === 'passos-tabela') { tabelaPassosAberta = !(btn.closest('details') || {}).open; return; }
@@ -6165,6 +6179,31 @@
     const copia = normalizar(JSON.parse(JSON.stringify(f)));
     dados.fichas.push(copia);
     if (marcarSinc(id, copia)) guardarSinc();     // veio da conta: é a versão combinada
+    abrirFicha(id);
+    salvar(); render();
+  }
+
+  //  O MESMO BURACO DA GAVETA, do lado da mesa (25/10/2026): uma ficha
+  //  MINHA que só existe em `mesas/<sala>/fichas/<meuUid>` (nunca chegou
+  //  à gaveta, e este navegador nunca teve ela local) ficava invisível —
+  //  `aplicarChegada()` só atualiza fichas que JÁ estão em `dados.fichas`
+  //  ("ficha que só existe na mesa: não puxo"), e só a gaveta tinha um
+  //  botão de trazer. É o caso de abrir o site num aparelho novo: a ficha
+  //  está na conta Google (então deveria aparecer), mas se um bug antigo
+  //  a deixou só na mesa, sem gaveta, ela "sumia" de vez.
+  function soNaMesa() {
+    const minhas = remotas[meuUid] || {};
+    return Object.keys(minhas)
+      .filter(id => !dados.fichas.some(f => f.id === id))
+      .map(id => minhas[id]);
+  }
+  function trazerDaMesa(id) {
+    const minhas = remotas[meuUid] || {};
+    const f = minhas[id];
+    if (!f || dados.fichas.some(x => x.id === id)) return;
+    const copia = normalizar(JSON.parse(JSON.stringify(f)));
+    dados.fichas.push(copia);
+    if (marcarSinc(id, copia)) guardarSinc();     // veio da mesa: é a versão combinada
     abrirFicha(id);
     salvar(); render();
   }
