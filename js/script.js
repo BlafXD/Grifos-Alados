@@ -514,7 +514,10 @@ window.GA_abrirModal = function (htmlInterno) {
   return overlay;
 };
 
-const links    = document.querySelectorAll('.nav-link');
+//  Só os links COM `data-section` trocam de aba aqui dentro — um
+//  `.nav-link` sem isso (o atalho entre index.html e jogadores.html,
+//  ver mesa-endereco.js) é link de verdade, e precisa navegar normal.
+const links    = document.querySelectorAll('.nav-link[data-section]');
 const sections = document.querySelectorAll('section');
 
 // ── MEMÓRIA DE ROLAGEM POR ABA ───────────────────────────────────────

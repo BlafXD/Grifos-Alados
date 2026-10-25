@@ -166,4 +166,10 @@
     abrir:    abrir,
     CHAVES_DA_MESA: CHAVES_DA_MESA.slice(),
   };
+
+  //  O atalho entre index.html e jogadores.html (pedido dele, 25/10/2026):
+  //  sem isto, o link estático levaria pro HUB, perdendo a campanha em que
+  //  se estava. Troca o destino para a MESMA campanha, no outro lado.
+  const irmao = document.getElementById('ga-nav-irmao');
+  if (irmao) irmao.href = ehJogador() ? link(ID, 'index.html') : linkJogador(ID);
 })();
