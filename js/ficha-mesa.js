@@ -271,6 +271,29 @@
     } catch (e) { console.warn('[ficha-mesa] conferir:', e && e.message); }
   }
 
+  //  A ABA ESQUECIDA EM SEGUNDO PLANO (25/10/2026). Uma aba parada minutos
+  //  (ou horas) continua com a assinatura ligada — o navegador não a
+  //  desliga sozinho — mas o que ela tem em `ultimoRecebido`/`ultimoDaGaveta`
+  //  pode já estar velho se a conexão caiu e voltou sem avisar. Foi assim
+  //  que uma ficha antiga "ressuscitou" sozinha: a aba confiava numa leitura
+  //  de muito tempo atrás. Ao voltar ao primeiro plano depois de um tempo
+  //  parada, força um reencontro FRESCO com o banco (desliga e religa as
+  //  duas assinaturas) e passa pela mesma conferência do login antes de
+  //  aceitar publicar de novo — ninguém escreve às cegas.
+  let ocultaDesde = 0;
+  const LIMITE_OCULTA = 60000;      // 1 minuto escondida já vale reconferir
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { if (!ocultaDesde) ocultaDesde = Date.now(); return; }
+    const parada = ocultaDesde ? Date.now() - ocultaDesde : 0;
+    ocultaDesde = 0;
+    if (parada < LIMITE_OCULTA) return;
+    mesaChegou = false;
+    gavetaChegou = false;
+    pedirConferencia();
+    desligar();       ligar();
+    desligarGaveta();  ligarGaveta();
+  });
+
   // Apagar de verdade: some da mesa e da conta junto.
   function apagar(id, dono) {
     const b = db();

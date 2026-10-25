@@ -2562,6 +2562,7 @@
   border-radius: var(--raio);
 }
 .fi-sinc p { margin: 0.2rem 0; }
+.fi-sinc--aba { border-style: solid; border-color: var(--azul); background: var(--parchment2); }
 .fi-sinc--guardada {
   font-size: 0.92rem;
   background: var(--parchment2);

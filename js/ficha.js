@@ -34,6 +34,42 @@
   let ultimoDano = '';          // "−7 PV: 5 dos temporários e 2 do PV"
   let secao = null;             // a <section> que hospeda a aba
 
+  //  ── AVISO DE OUTRA ABA (25/10/2026) ───────────────────────────────
+  //  Um canal só entre abas DESTE navegador — nada de banco, nada de
+  //  regra nova do Firebase. Cada aba avisa qual ficha está com ela
+  //  aberta; se outra aba aparece com a MESMA, mostra um aviso. Não
+  //  bloqueia nada (duas abas do MESMO dono podem ser de propósito —
+  //  celular e computador, por exemplo) e não enxerga outro aparelho:
+  //  é só o caso que já aconteceu aqui, uma ficha "ressuscitando"
+  //  porque uma aba esquecida continuava publicando sozinha.
+  let canalAbas = null;
+  try { if ('BroadcastChannel' in window) canalAbas = new BroadcastChannel('grifosAlados.fichaAbas'); }
+  catch (e) { canalAbas = null; }
+  const sessaoAba = Math.random().toString(36).slice(2) + '.' + Date.now().toString(36);
+  let outrasAbas = {};            // fichaId → quando (a última vez que outra aba avisou)
+  const ABA_TTL = 25000;          // 25s sem bater: considera que a outra fechou ou travou
+  function avisarAba(tipo, id) {
+    if (!canalAbas || !id) return;
+    try { canalAbas.postMessage({ tipo: tipo, id: id, sessao: sessaoAba }); } catch (e) {}
+  }
+  if (canalAbas) {
+    canalAbas.onmessage = function (e) {
+      const m = e.data || {};
+      if (!m.id || m.sessao === sessaoAba) return;
+      if (m.tipo === 'fechei') delete outrasAbas[m.id];
+      else outrasAbas[m.id] = Date.now();
+      if (m.id === dados.aberta) render();
+    };
+    setInterval(function () {
+      if (dados.aberta) avisarAba('aqui', dados.aberta);
+      let mudou = false;
+      Object.keys(outrasAbas).forEach(id => {
+        if (Date.now() - outrasAbas[id] > ABA_TTL) { delete outrasAbas[id]; mudou = true; }
+      });
+      if (mudou) render();
+    }, 10000);
+  }
+
   // ── AS FICHAS QUE VÊM DA MESA ────────────────────────────────────
   //  `remotas` é uid → { fichaId: ficha }. Para o jogador vem só a
   //  própria pasta (as fichas dele, de qualquer aparelho); para o
@@ -1176,6 +1212,7 @@
     resultados = {};
     direcionar = {};
     carregarHistorico(id);
+    avisarAba('aqui', id);
   }
   function d20(valor) { return valor === 0 ? '1d20' : '1d20' + sinal(valor); }
   function quem(f) { return f.nome || 'personagem sem nome'; }
@@ -1345,6 +1382,7 @@
       </div>
       ${barraDaMesa()}
       ${avisoDeSincronia(f)}
+      ${avisoAbaConcorrente(f)}
 `;
 
     // O rolador livre que ficava aqui saiu em 11/09/2026, a pedido dele:
@@ -6375,6 +6413,21 @@
     return '';
   }
 
+  //  O aviso de "aberta em outra aba" — ver o canalAbas, lá no topo do
+  //  arquivo. Puramente local a este navegador; não troca nada com o
+  //  aviso da conferência (esse é com o banco).
+  function avisoAbaConcorrente(f) {
+    if (!f) return '';
+    const quando = outrasAbas[f.id];
+    if (!quando || Date.now() - quando > ABA_TTL) return '';
+    return `
+      <div class="fi-sinc fi-sinc--aba" role="status">
+        <p>🪟 <strong>Esta ficha também está aberta em outra aba deste navegador agora.</strong>
+          O que for digitado aqui ou lá pode sobrescrever o outro lado — feche uma das duas, ou
+          espere uma delas ficar parada antes de mexer na outra.</p>
+      </div>`;
+  }
+
   function decidirSincronia(f, acao) {
     const i = dados.fichas.findIndex(x => x.id === f.id);
     if (i < 0) return;                                   // só as minhas passam por conferência
@@ -7251,12 +7304,13 @@
     carregar();
     carregarHistorico(dados.aberta);
     render();
+    avisarAba('aqui', dados.aberta);
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoEntrada);
     secao.addEventListener('change', aoMudar);
     secao.addEventListener('mousedown', window.GA_richDescMousedown);
     secao.addEventListener('paste', window.GA_richPaste);
-    window.addEventListener('beforeunload', salvarAgora);
+    window.addEventListener('beforeunload', () => { salvarAgora(); avisarAba('fechei', dados.aberta); });
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') salvarAgora();
     });
