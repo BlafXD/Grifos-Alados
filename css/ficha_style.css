@@ -1193,6 +1193,36 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════
+   PAINEL "TODAS AS SUAS FICHAS" (25/10/2026)
+   Uma lista enxuta — nome, resumo, campanha e um botão só — juntando
+   este aparelho, a conta e toda mesa em que você está. Não é cartão de
+   ficha, é só um apontador para abrir ou trazer.
+   ══════════════════════════════════════════════════════════════════ */
+.fi-painel-todas { margin-bottom: 0.6rem; }
+.fi-painel-todas-btn { width: 100%; text-align: left; font-family: var(--ga-fonte-rotulo); letter-spacing: 0.04em; }
+.fi-painel-todas-corpo {
+  margin-top: 0.4rem;
+  padding: 0.4rem 0.5rem;
+  background: var(--parchment2);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--raio);
+}
+.fi-painel-todas-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.2rem;
+  border-bottom: 1px solid rgba(184,151,46,0.15);
+}
+.fi-painel-todas-item:last-of-type { border-bottom: none; }
+.fi-painel-todas-nome { font-family: var(--ga-fonte-titulo); color: var(--gold-deep); min-width: 7rem; }
+.fi-painel-todas-resumo { font-size: 0.82rem; color: var(--text-dim); flex: 1 0 auto; }
+.fi-painel-todas-campanha { font-size: 0.78rem; font-style: italic; color: var(--text-mid); }
+.fi-painel-todas-item .fi-mini { margin-left: auto; }
+.fi-painel-todas-aqui { color: var(--verde-dark); font-weight: 600; }
+
+/* ══════════════════════════════════════════════════════════════════
    A FICHA NA MESA (ficha-mesa.js)
    A segunda fileira de abas só existe para o mestre e o auxiliar: são
    as fichas dos jogadores, ao vivo. Ela é visualmente OUTRA coisa da

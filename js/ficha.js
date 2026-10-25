@@ -1380,6 +1380,7 @@
           </button>`).join('')}
         <button type="button" class="fi-add" data-acao="nova">＋ Nova ficha</button>
       </div>
+      ${painelTodasFichas()}
       ${barraDaMesa()}
       ${avisoDeSincronia(f)}
       ${avisoAbaConcorrente(f)}
@@ -5267,6 +5268,13 @@
     }
     if (acao === 'trazer') return trazerDaGaveta(btn.dataset.id);
     if (acao === 'trazer-mesa') return trazerDaMesa(btn.dataset.id);
+    if (acao === 'trazer-outra') return trazerDeOutraMesa(btn.dataset.sala, btn.dataset.id);
+    if (acao === 'painel-todas-alterna') {
+      painelTodasAberto = !painelTodasAberto;
+      if (painelTodasAberto && outrasCampanhas === null) carregarOutrasCampanhas();
+      return render();
+    }
+    if (acao === 'painel-todas-atualizar') return carregarOutrasCampanhas();
     // a Tabela 3-2 recolhida lembra se está aberta, para um render não a
     // fechar na cara de quem está lendo (o clique vem ANTES de abrir)
     if (acao === 'passos-tabela') { tabelaPassosAberta = !(btn.closest('details') || {}).open; return; }
@@ -6244,6 +6252,99 @@
     if (marcarSinc(id, copia)) guardarSinc();     // veio da mesa: é a versão combinada
     abrirFicha(id);
     salvar(); render();
+  }
+
+  // ═══ PAINEL "TODAS AS SUAS FICHAS" (25/10/2026) ═══════════════════
+  //  Uma ficha pode morar em até 4 lugares (este aparelho, a conta, a
+  //  mesa conectada, outra mesa em que você está) — pedido dele: "ficar
+  //  em locais diferentes só gera resíduo, seria ótimo ter alguma parada
+  //  mais organizada". Isto é só uma LISTA — nada se edita aqui, cada
+  //  linha só abre ou traz; editar continua sendo nas abas de cima.
+  let painelTodasAberto = false;
+  let outrasCampanhas = null;     // salaId → {nome, fichas} | null = não pedido ainda
+  let carregandoOutras = false;
+  function carregarOutrasCampanhas() {
+    if (!window.GA_FichaMesa || !window.GA_FichaMesa.lerOutrasMesas || carregandoOutras) return;
+    carregandoOutras = true;
+    window.GA_FichaMesa.lerOutrasMesas().then(mapa => {
+      outrasCampanhas = mapa; carregandoOutras = false; render();
+    }).catch(() => { carregandoOutras = false; render(); });
+  }
+  //  Uma linha por ficha conhecida, juntando os 4 lugares — sem repetir
+  //  a mesma ficha quando ela mora em mais de um (o `id` é sempre o
+  //  mesmo, então a primeira fonte que achar ganha).
+  function todasAsFichas() {
+    const vistas = {};
+    const saida = [];
+    function add(f, origem, salaId) {
+      if (!f || !f.id || vistas[f.id]) return;
+      vistas[f.id] = true;
+      saida.push({ f: f, origem: origem, salaId: salaId || '' });
+    }
+    dados.fichas.forEach(f => add(f, 'local'));
+    Object.keys(gaveta).forEach(id => add(gaveta[id], 'conta'));
+    Object.keys(remotas[meuUid] || {}).forEach(id => add((remotas[meuUid] || {})[id], 'mesa'));
+    if (outrasCampanhas) {
+      Object.keys(outrasCampanhas).forEach(salaId => {
+        const c = outrasCampanhas[salaId] || {};
+        Object.keys(c.fichas || {}).forEach(id => add(c.fichas[id], 'outraMesa', salaId));
+      });
+    }
+    return saida;
+  }
+  function trazerDeOutraMesa(salaId, id) {
+    const c = (outrasCampanhas || {})[salaId];
+    const f = c && c.fichas && c.fichas[id];
+    if (!f || dados.fichas.some(x => x.id === id)) return;
+    const copia = normalizar(JSON.parse(JSON.stringify(f)));
+    dados.fichas.push(copia);
+    if (marcarSinc(id, copia)) guardarSinc();
+    abrirFicha(id);
+    salvar(); render();
+  }
+  function linhaPainelTodas(it) {
+    const f = it.f;
+    const aqui = dados.fichas.some(x => x.id === f.id);
+    const campanha = f.contaSo ? '🔒 só na conta' : (f.mesa ? esc(f.mesaNome || f.mesa) : 'sem campanha');
+    let acao;
+    if (aqui) {
+      acao = f.id === dados.aberta
+        ? `<span class="fi-mini fi-painel-todas-aqui">✓ aberta aqui</span>`
+        : `<button type="button" class="fi-mini" data-acao="abrir" data-id="${esc(f.id)}">abrir</button>`;
+    } else if (it.origem === 'conta') {
+      acao = `<button type="button" class="fi-mini" data-acao="trazer" data-id="${esc(f.id)}">⬇ trazer</button>`;
+    } else if (it.origem === 'mesa') {
+      acao = `<button type="button" class="fi-mini" data-acao="trazer-mesa" data-id="${esc(f.id)}">⬇ trazer</button>`;
+    } else {
+      acao = `<button type="button" class="fi-mini" data-acao="trazer-outra" data-id="${esc(f.id)}"
+                data-sala="${esc(it.salaId)}">⬇ trazer</button>`;
+    }
+    return `
+      <div class="fi-painel-todas-item">
+        <span class="fi-painel-todas-nome">${esc(f.nome || '(sem nome)')}</span>
+        <span class="fi-painel-todas-resumo">${esc(resumoDaFicha(f))}</span>
+        <span class="fi-painel-todas-campanha">${campanha}</span>
+        ${acao}
+      </div>`;
+  }
+  function painelTodasFichas() {
+    const e = window.GA_FichaMesa ? window.GA_FichaMesa.estado() : null;
+    if (!e || !e.logado) return '';
+    const itens = todasAsFichas();
+    return `
+      <div class="fi-painel-todas">
+        <button type="button" class="fi-mini fi-painel-todas-btn" data-acao="painel-todas-alterna">
+          ${painelTodasAberto ? '▾' : '▸'} 🗂 Todas as suas fichas${itens.length ? ' (' + itens.length + ')' : ''}
+        </button>
+        ${painelTodasAberto ? `
+          <div class="fi-painel-todas-corpo">
+            ${itens.length ? itens.map(linhaPainelTodas).join('')
+              : '<p class="fi-hist-vazio">Nenhuma ficha encontrada ainda.</p>'}
+            <button type="button" class="fi-mini" data-acao="painel-todas-atualizar" ${carregandoOutras ? 'disabled' : ''}>
+              ${carregandoOutras ? '⏳ procurando em outras campanhas…' : '🔄 procurar em outras campanhas'}
+            </button>
+          </div>` : ''}
+      </div>`;
   }
 
   function mesaMudou() {

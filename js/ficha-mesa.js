@@ -294,6 +294,29 @@
     desligarGaveta();  ligarGaveta();
   });
 
+  //  O PAINEL "TODAS AS FICHAS" (25/10/2026). A assinatura viva só cobre a
+  //  sala CONECTADA agora — outra campanha em que o jogador está (ver
+  //  `usuarios/<uid>/mesas`, o índice que o mesa.js já mantém) fica de
+  //  fora. Aqui é uma leitura AVULSA (não fica ouvindo) em cada uma
+  //  dessas outras mesas, só quando o painel pede — nada disto assina
+  //  nada, então não sobra escuta presa depois de fechar o painel.
+  function lerOutrasMesas() {
+    const b = db();
+    if (!b || !logado() || !window.GA_Mesa || !window.GA_Mesa.minhasMesas) return Promise.resolve({});
+    const minhas = window.GA_Mesa.minhasMesas() || {};
+    const idsFora = Object.keys(minhas).filter(id => id !== salaLigada);
+    if (!idsFora.length) return Promise.resolve({});
+    return Promise.all(idsFora.map(id =>
+      b.ref('mesas/' + id + '/fichas/' + meuUid()).once('value')
+        .then(snap => ({ id: id, nome: minhas[id], fichas: snap.val() || {} }))
+        .catch(() => ({ id: id, nome: minhas[id], fichas: {} }))
+    )).then(lista => {
+      const mapa = {};
+      lista.forEach(x => { mapa[x.id] = x; });
+      return mapa;
+    });
+  }
+
   // Apagar de verdade: some da mesa e da conta junto.
   function apagar(id, dono) {
     const b = db();
@@ -313,6 +336,7 @@
     publicar: publicar,
     guardarNaConta: guardarNaConta,
     apagar: apagar,
+    lerOutrasMesas: lerOutrasMesas,
     // o que a barra de fichas precisa saber para se desenhar
     estado: function () {
       return {
