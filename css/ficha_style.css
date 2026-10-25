@@ -231,6 +231,9 @@
 .fi-campanha-aviso { font-size: 0.82rem; color: var(--rust-dark); flex-basis: 100%; }
 .fi-campanha-btn { font-family: var(--ga-fonte-rotulo); font-size: 0.7rem; }
 .fi-campanha--alerta { border-color: var(--rust); background: rgba(150, 40, 20, 0.08); }
+.fi-campanha--travada { border-color: var(--verde-dark); }
+.fi-campanha--travada .fi-campanha-nome { color: var(--verde-dark); }
+.fi-campanha-aviso--travada { color: var(--verde-dark); }
 .fi-ident-classes {
   display: flex;
   flex-wrap: wrap;

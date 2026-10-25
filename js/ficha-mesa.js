@@ -172,7 +172,13 @@
     const p = pendentes[ficha.id] || (pendentes[ficha.id] = { dono: uid, grupos: new Set(), ficha: null });
     p.dono = uid;
     p.ficha = ficha;
-    if (!grupos || !grupos.size) p.grupos = null;             // null = tudo
+    //  `mesa`/`contaSo` mudando é o DESTINO mudando — um pedaço só (`update()`)
+    //  pode cair num caminho que nunca teve a ficha inteira e criar um
+    //  bagaço com só esses dois campos (viu nome, atributos... tudo some,
+    //  porque quem lê de volta passa pelo normalizar e preenche o vazio
+    //  com o padrão). Mudar de destino manda SEMPRE a ficha inteira.
+    const mudaDestino = grupos && (grupos.has('mesa') || grupos.has('contaSo'));
+    if (!grupos || !grupos.size || mudaDestino) p.grupos = null;   // null = tudo
     else if (p.grupos) grupos.forEach(g => p.grupos.add(g));
     clearTimeout(timer);
     timer = setTimeout(enviar, 700);                          // junta a digitação
@@ -197,7 +203,10 @@
       //  do jogador que criou a ficha da Mesa estando no Nuevo Sol). Sem
       //  campanha marcada (legado), cai na sala conectada, como era. O banco
       //  ainda barra quem não é membro — esta é a trava do cliente.
-      const salaDaFicha = (p.ficha && p.ficha.mesa) || salaLigada;
+      //  `contaSo` ("Salvar forçado") DESLIGA esse fallback: a ficha nunca
+      //  publica em mesa nenhuma, nem na que estiver aberta agora — só na
+      //  gaveta da conta, abaixo.
+      const salaDaFicha = (p.ficha && p.ficha.contaSo) ? '' : ((p.ficha && p.ficha.mesa) || salaLigada);
       if (ligado() && mesa.escreve && salaDaFicha) caminhos.push('mesas/' + salaDaFicha + '/fichas/' + p.dono + '/' + id);
       if (p.dono === meuUid())      caminhos.push('usuarios/' + meuUid() + '/fichas/' + id);
 

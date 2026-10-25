@@ -344,6 +344,12 @@
     //  deixa isso explícito. Vincular é ato deliberado, feito na mesa certa.
     f.mesa = String(f.mesa || '');
     f.mesaNome = String(f.mesaNome || '');
+    //  `contaSo` é o "Salvar forçado": a ficha não segue mais NENHUMA mesa,
+    //  nem a que estiver aberta na hora de salvar — só a conta do Google
+    //  (usuarios/<uid>/fichas). Sem isto, uma ficha "sem campanha" cai de
+    //  volta na sala conectada a cada salvamento (era o jeito de uma ficha
+    //  "pegar" a campanha errada sozinha).
+    f.contaSo = f.contaSo === true;
 
     //  `atr` é a MESMA ideia da Defesa, perícia por perícia: a Tabela
     //  2-1 (p. 115) diz o atributo-chave de cada uma, e é esse que vale
@@ -684,19 +690,23 @@
   //  lugar certo). Se a ficha é de outra campanha, avisa em destaque.
   function blocoCampanhaFicha(f) {
     const s = salaAtual();
+    const travada = !!f.contaSo;
     const tem = !!f.mesa;
-    const nome = tem ? esc(f.mesaNome || f.mesa) : 'sem campanha';
+    const nome = travada ? '🔒 só na conta (Google)' : (tem ? esc(f.mesaNome || f.mesa) : 'sem campanha');
     const diverge = tem && s.id && f.mesa !== s.id;
     return `
-      <div class="fi-campanha${diverge ? ' fi-campanha--alerta' : ''}${!tem ? ' fi-campanha--vazia' : ''}">
+      <div class="fi-campanha${diverge ? ' fi-campanha--alerta' : ''}${!tem && !travada ? ' fi-campanha--vazia' : ''}${travada ? ' fi-campanha--travada' : ''}">
         <span class="fi-campanha-rot">🎲 Campanha</span>
         <strong class="fi-campanha-nome">${nome}</strong>
         ${diverge ? `<span class="fi-campanha-aviso">⚠ você está em «${esc(s.nome)}» — esta ficha é de outra campanha e não entra na lista dela</span>` : ''}
+        ${travada ? `<span class="fi-campanha-aviso fi-campanha-aviso--travada">🔒 nunca publica em nenhuma mesa — só é salva nesta conta, em qualquer aparelho em que você entrar com ela</span>` : ''}
         ${s.souMembro && s.id && f.mesa !== s.id
           ? `<button type="button" class="fi-mini fi-campanha-btn" data-acao="ficha-vincular-mesa"
-                  title="Marcar que esta ficha pertence à campanha «${esc(s.nome)}»">↪ Vincular a «${esc(s.nome)}»</button>` : ''}
-        ${tem ? `<button type="button" class="fi-mini fi-campanha-btn" data-acao="ficha-desvincular-mesa"
-                  title="Tirar a campanha desta ficha (fica «sem campanha»)">tirar</button>` : ''}
+                  title="Marcar que esta ficha pertence à campanha «${esc(s.nome)}» — passa a publicar só ali">↪ Vincular a «${esc(s.nome)}»</button>` : ''}
+        ${!travada ? `<button type="button" class="fi-mini fi-campanha-btn" data-acao="ficha-desvincular-mesa"
+                  title="Salvar forçado: esta ficha fica independente de qualquer mesa, seguindo só a conta Google — nunca mais publica na sala em que você estiver">🔒 Só na conta</button>`
+                 : `<button type="button" class="fi-mini fi-campanha-btn" data-acao="ficha-destravar-mesa"
+                  title="Desfazer o «só na conta»: a ficha volta a poder ser vinculada a uma campanha">destravar</button>`}
       </div>`;
   }
 
@@ -711,6 +721,9 @@
         if (!fc || typeof fc !== 'object') return;
         //  Isolação: uma ficha marcada para OUTRA campanha não aparece na
         //  lista desta mesa (a órfã sem marca ainda aparece até ser tratada).
+        //  Travada ("só na conta") não deveria nem estar aqui — mas se
+        //  sobrou de antes desta trava existir, também não aparece.
+        if (fc.contaSo) return;
         if (fc.mesa && s.id && fc.mesa !== s.id) return;
         saida.push({ uid: uid, ficha: fc });
       });
@@ -5168,13 +5181,24 @@
       if (!est || !est.mesaId || !est.souMembro) return;
       f.mesa = est.mesaId;
       f.mesaNome = (est.mesa && est.mesa.nome) || est.mesaId;
-      sujar(f.id, 'mesa'); sujar(f.id, 'mesaNome');
+      f.contaSo = false;
+      sujar(f.id, 'mesa'); sujar(f.id, 'mesaNome'); sujar(f.id, 'contaSo');
       salvar(); return render();
     }
     if (acao === 'ficha-desvincular-mesa') {
       if (!f) return;
-      f.mesa = ''; f.mesaNome = '';
-      sujar(f.id, 'mesa'); sujar(f.id, 'mesaNome');
+      //  "Salvar forçado": trava a ficha na CONTA. Só tirar a campanha
+      //  (f.mesa = '') não bastava — uma ficha "sem campanha" ainda caía
+      //  na sala que estivesse aberta no próximo salvamento. `contaSo`
+      //  impede isso: ver o enviar() do ficha-mesa.js.
+      f.mesa = ''; f.mesaNome = ''; f.contaSo = true;
+      sujar(f.id, 'mesa'); sujar(f.id, 'mesaNome'); sujar(f.id, 'contaSo');
+      salvar(); return render();
+    }
+    if (acao === 'ficha-destravar-mesa') {
+      if (!f) return;
+      f.contaSo = false;
+      sujar(f.id, 'contaSo');
       salvar(); return render();
     }
     if (acao === 'tira-ficha-mesa') {
@@ -6061,6 +6085,8 @@
 
     // as minhas, mexidas pelo mestre → entram na cópia local
     const minhas = mapa[meuUid] || {};
+    const salaConectada = (window.GA_FichaMesa && window.GA_FichaMesa.estado().sala) || '';
+    const minhasValidas = {};
     let mudou = false;
     let mudouSinc = false;
     Object.keys(minhas).forEach(id => {
@@ -6068,6 +6094,12 @@
       if (!vinda || typeof vinda !== 'object') return;
       const i = dados.fichas.findIndex(x => x.id === id);
       if (i < 0) return;                       // ficha que só existe na mesa: não puxo
+      //  Travada na conta, ou presa a OUTRA mesa: o que estiver nesta sala
+      //  conectada para este id é sobra (de um bug velho, ou escrita feita
+      //  no lugar errado) — a conta é quem manda, não a sala em que se está.
+      const local = dados.fichas[i];
+      if (local.contaSo || (local.mesa && salaConectada && local.mesa !== salaConectada)) return;
+      minhasValidas[id] = true;
       // antes da conferência, e na ficha retida, o banco não entra por cima
       if (aguardando || retidas[id]) return;
       if (igual(dados.fichas[i], vinda)) {         // é o eco da minha própria escrita
@@ -6102,7 +6134,7 @@
     //  pode estar um segundo atrás. Fora da mesa, a gaveta é quem manda
     //  — é ela que sincroniza o celular com o computador.
     Object.keys(gaveta).forEach(id => {
-      if (minhas[id]) return;
+      if (minhasValidas[id]) return;
       const i = dados.fichas.findIndex(x => x.id === id);
       if (i < 0) return;                           // só na gaveta: espera o botão "trazer"
       if (aguardando || retidas[id]) return;
@@ -6203,13 +6235,17 @@
     const e = window.GA_FichaMesa ? window.GA_FichaMesa.estado() : {};
     const naMesa  = (ultimoRecebido && ultimoRecebido[meuUid]) || {};
     const naConta = ultimoDaGaveta || {};
+    const salaConectada = e.sala || '';
     let mudouDados = false;
     dados.fichas.forEach((local, i) => {
       const id = local.id;
-      const m = copiaNormalizada(naMesa[id], id);
+      //  Travada na conta, ou presa a OUTRA mesa: o que estiver na sala
+      //  conectada agora não conta como cópia dela — é sobra, não a dona.
+      const foraDaMesaAtual = local.contaSo || (local.mesa && salaConectada && local.mesa !== salaConectada);
+      const m = foraDaMesaAtual ? null : copiaNormalizada(naMesa[id], id);
       const g = copiaNormalizada(naConta[id], id);
       const copias = [m, g].filter(Boolean);
-      const faltaCopia = (e.ligado && e.escreve && !m) || !g;
+      const faltaCopia = (!foraDaMesaAtual && e.ligado && e.escreve && !m) || !g;
       if (!copias.length) { publicarInteira(local); return; }      // o banco ainda não a conhece
       const dL = digitalDa(local), dK = sinc[id];
       const novas = copias.filter(c => { const d = digitalDa(c); return d !== dL && d !== dK; });
