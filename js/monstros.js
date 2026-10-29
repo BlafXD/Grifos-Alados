@@ -2476,30 +2476,91 @@
   //  "Chamar Reforços") não têm esse número aqui, e inventar um valor
   //  seria sair do livro — ficam de fora, de propósito; o mestre resolve
   //  pela caixa de nomes de sempre.
+  //  ── OS TRÊS CONSERTOS DE 29/10/2026 ─────────────────────────────
+  //  Conferi à mão as 680 fichas dos quatro livros (Tormenta 20,
+  //  Ameaças de Arton, Deuses de Arton e o Guia de NPCs) procurando
+  //  toda frase com "invoca", "convoca" ou "materializa". Saíram 58
+  //  fichas, e três defeitos:
+  //
+  //   1. O VERBO TAMBÉM É "CONVOCA". A Convocação Marinha da nereida
+  //      ("a nereida convoca 2d6 redemoinhos em alcance curto... têm
+  //      For –1, Des 2, Defesa 26, 1 PV") é o molde do Servos do
+  //      Dragão, letra por letra — e ficava de fora só pelo verbo.
+  //   2. A FRASE NEM SEMPRE DIZ "EM ESPAÇOS DESOCUPADOS". A mesma
+  //      nereida termina em "em alcance curto", e só isso já a
+  //      derrubava.
+  //   3. O "Des" ERA O DE QUEM INVOCA. Este era o grave: quando o
+  //      capanga manda ver OUTRA ficha ("veja a ficha Patrulheiro de
+  //      Valkaria"), o texto não traz Des nenhum do capanga — e a
+  //      janela de 500 letras seguia até a LINHA DE ATRIBUTOS da
+  //      própria criatura e pegava o Des dela. O jhumariel, o alcaide
+  //      de Valkaria e o castelão invocavam gente com a Destreza do
+  //      invocador, calados. Agora um "Des" que venha dentro do
+  //      "For …, Des …, Con …" é recusado: aquela é a ficha de quem
+  //      invoca, não a do capanga — e sem Des do capanga não há botão,
+  //      que é a regra de sempre.
+  //
+  //  E o nome sai limpo: sem o "(veja a ficha X)" pendurado e sem o
+  //  resto da oração ("capangas da irmandade, que saem de becos,
+  //  bueiros ou do topo de telhados e surgem"), que iam inteiros para a
+  //  Iniciativa e enchiam a linha.
+  //
+  //  FICAM DE FORA, de propósito: alcaide de Valkaria, castelão e
+  //  jhumariel (o capanga tem ficha própria), Clérigo e Alto Clérigo de
+  //  Kally e Lamashtu ("veja a ficha X", sem número nenhum na frase), e
+  //  os avatares que invocam "ND total somado igual a 20" ou um número
+  //  fixo de criaturas de ficha cheia. Em todos esses o mestre usa a
+  //  caixa de nomes do próprio painel da Iniciativa.
+
+  //  O Des do CAPANGA, e nunca o da criatura que invoca. A linha de
+  //  atributos de uma ficha é "For …, Des …, Con …, Int …, Sab …,
+  //  Car …"; a do capanga é "têm For –1, Des 4, Defesa 12 e 1 PV" — o
+  //  que vem DEPOIS do Des separa as duas sem erro.
+  function desDoCapanga(janela) {
+    const re = /\bDes\s+(–|-)?\s*(\d+)/gi;
+    let m;
+    while ((m = re.exec(janela))) {
+      const antes  = janela.slice(Math.max(0, m.index - 24), m.index);
+      const depois = janela.slice(m.index, m.index + 48);
+      // "For N, Des N, Con" = linha de atributos da ficha: não é do capanga
+      if (/\bFor\s+[–-]?\s*\d+\s*,\s*$/i.test(antes) && /,\s*Con\b/i.test(depois)) continue;
+      return (m[1] ? -1 : 1) * parseInt(m[2], 10);
+    }
+    return null;
+  }
+  //  O nome do capanga como ele deve aparecer na linha da Iniciativa.
+  function nomeDoCapanga(bruto) {
+    let n = String(bruto || '').replace(/\s+/g, ' ').trim();
+    n = n.replace(/\s*\([^)]*\)\s*$/, '');      // "(veja a ficha Guarda Palaciano)"
+    n = n.replace(/\s*\([^)]*$/, '');           // parêntese que o ponto final cortou no meio
+    n = n.replace(/,[\s\S]*$/, '');             // "…, que saem de becos, bueiros…"
+    n = n.replace(/\s+(?:que\s+)?surgem$/i, ''); // sobra do "… e surgem em espaços…"
+    return n.trim();
+  }
+
   function invocacoesDe(cr) {
     const texto = (typeof htmlParaTexto === 'function') ? htmlParaTexto(cr.ataques || '') : '';
     if (!texto) return [];
     const achados = [];
     const vistos = {};
-    // quantidade + nome, até "em espaços desocupados/vazios" (com ou sem
-    // o "que surgem" entre os dois) ou até o fim da frase. "invoca[r]"
-    // porque o poder concedido inserido pela ferramenta 🙏 Devoto fala na
-    // 2ª pessoa ("você pode... para invocar"); a criatura já pronta do
-    // livro fala na 3ª ("o acólito invoca") — os dois aparecem na mesma
-    // caixa de Ataque e Habilidades.
-    const re = /invoca[rm]?\s+(\d+d\d+(?:\s*[+\-–]\s*\d+)?)\s+([^.]+?)(?:\s+(?:que surgem\s+)?em espaços (?:desocupados|vazios)|\.)/gi;
+    // quantidade + nome, até "em espaços desocupados/vazios", até "em
+    // alcance curto/médio/longo" (com ou sem o "que surgem" na frente)
+    // ou até o fim da frase. "[in|con]voca[r]" porque o poder concedido
+    // inserido pela ferramenta 🙏 Devoto fala na 2ª pessoa ("você
+    // pode... para invocar"); a criatura já pronta do livro fala na 3ª
+    // ("o acólito invoca", "a nereida convoca") — os três aparecem na
+    // mesma caixa de Ataque e Habilidades.
+    const re = /\b(?:in|con)voca[rm]?\s+(\d+d\d+(?:\s*[+\-–]\s*\d+)?)\s+([^.]+?)(?:\s+(?:que\s+surgem\s+)?em\s+(?:espaços\s+(?:desocupados|vazios)|alcance\s+(?:curto|médio|medio|longo))|\.)/gi;
     let m;
     while ((m = re.exec(texto))) {
       const dado = m[1].replace(/–/g, '-').replace(/\s+/g, '');
-      const nome = m[2].replace(/\s+/g, ' ').trim();
+      const nome = nomeDoCapanga(m[2]);
       if (!nome) continue;
       // o "Des" simplificado do capanga mora na frase seguinte — procura
       // numa janela depois do achado, nunca antes (senão pegaria o Des de
       // OUTRA criatura, de uma habilidade anterior no mesmo texto)
-      const janela = texto.slice(m.index, m.index + 500);
-      const dm = /\bDes\s+(–|-)?\s*(\d+)/i.exec(janela);
-      if (!dm) continue;
-      const mod = (dm[1] ? -1 : 1) * parseInt(dm[2], 10);
+      const mod = desDoCapanga(texto.slice(m.index, m.index + 500));
+      if (mod === null) continue;
       const chave = dado + '|' + nome.toLowerCase();
       if (vistos[chave]) continue;
       vistos[chave] = 1;
@@ -7056,7 +7117,45 @@
       })),
     };
   }
-  window.GA_Combates = { cenaParaIniciativa: cenaParaIniciativa };
+  //  ── QUANDO UMA CAMPANHA É ENCERRADA (29/10/2026) ───────────────
+  //  Encerrar uma campanha apaga a SALA no banco, e nada do que o
+  //  mestre preparou: as sessões, as cenas, as criaturas e as anotações
+  //  continuam inteiras na conta dele (gaveta `bestiario`). Mas cada
+  //  sessão guarda o id da campanha em `s.mesa`, e um id de sala que não
+  //  existe mais deixaria essas sessões numa sub-aba fantasma — presentes
+  //  no dado e invisíveis na tela. Então elas soltam a etiqueta e voltam
+  //  para "Sem campanha", que é onde o mestre as reencontra.
+  //  Devolve quantas sessões mudaram de dona, para o aviso poder dizer.
+  function soltarDaCampanha(mesaId) {
+    const alvo = String(mesaId || '');
+    if (!alvo) return 0;
+    let n = 0;
+    (dados.sessoes || []).forEach(s => {
+      if (s.mesa === alvo) { s.mesa = ''; n++; }
+    });
+    if (!n) return 0;
+    if (dados.campanhaAberta === alvo) dados.campanhaAberta = '';
+    salvarAgora();
+    render();
+    return n;
+  }
+  //  Quantas sessões e cenas são daquela campanha — o aviso de encerrar
+  //  precisa dizer ANTES, não depois.
+  function contarDaCampanha(mesaId) {
+    const alvo = String(mesaId || '');
+    let sessoes = 0, cenas = 0, criaturas = 0;
+    (dados.sessoes || []).forEach(s => {
+      if (s.mesa !== alvo) return;
+      sessoes++;
+      (s.cenas || []).forEach(c => { cenas++; criaturas += (c.criaturas || []).length; });
+    });
+    return { sessoes: sessoes, cenas: cenas, criaturas: criaturas };
+  }
+  window.GA_Combates = {
+    cenaParaIniciativa: cenaParaIniciativa,
+    soltarDaCampanha: soltarDaCampanha,
+    contarDaCampanha: contarDaCampanha,
+  };
 
   //  ── FIXAR TODA A CENA NO PAINEL (17/10/2026) ───────────────────
   //  O "◫ fixar" de cada ficha, um por um, é rápido pra 2-3 criaturas e

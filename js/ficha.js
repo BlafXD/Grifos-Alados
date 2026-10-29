@@ -550,6 +550,60 @@
     f.poderesOrdem = f.poderesOrdem.map(k => String(k || '')).filter(Boolean)
       .filter((k, i, todas) => todas.indexOf(k) === i);
 
+    // ── O CUSTO EM PM QUE O JOGADOR ESCREVE (29/10/2026) ───────────
+    //  Pedido dele: *"às vezes o padrão é 2 de uma certa habilidade,
+    //  mas a raça, poder diferente, equipamento… seja o que for pode
+    //  reduzir esse custo para 1 PM"*. O livro continua sendo o livro —
+    //  o custo impresso aparece sempre, ao lado —, mas quem paga é o
+    //  personagem, e é ele quem diz quanto saiu.
+    //
+    //  Um MAPA só, e não um campo em cada lugar: a magia é objeto na
+    //  ficha, o poder é outro objeto, e a habilidade de classe não é
+    //  objeto nenhum (nasce da tabela, por classe e nível — ver
+    //  fixasDaClasse). Três donos diferentes para a mesma ideia viram
+    //  três campos a normalizar, a sujar e a conferir. Aqui a chave diz
+    //  de quem é o custo:
+    //    'magia:<id da magia na ficha>'
+    //    'poder:<id do poder na ficha>'
+    //    'fixa:<classe>:<nome da habilidade>'
+    //  AUSENTE quer dizer "o do livro"; 0 é um custo de verdade (há
+    //  poder que zera o preço), e por isso o campo em branco APAGA a
+    //  chave em vez de gravar zero.
+    if (!f.pmCustos || typeof f.pmCustos !== 'object' || Array.isArray(f.pmCustos)) f.pmCustos = {};
+    {
+      //  Varre as chaves órfãs: magia tirada da ficha não deixa custo
+      //  para trás (voltaria sozinho se ela fosse readicionada com o
+      //  mesmo id, o que não acontece, mas suja a ficha à toa).
+      const vivos = {};
+      f.magias.forEach(m => { vivos['magia:' + m.id] = true; });
+      f.poderes.forEach(p => { vivos['poder:' + p.id] = true; });
+      const limpo = {};
+      Object.keys(f.pmCustos).forEach(k => {
+        if (k.indexOf('fixa:') !== 0 && !vivos[k]) return;
+        const n = parseInt(f.pmCustos[k], 10);
+        if (isFinite(n) && n >= 0) limpo[k] = n;
+      });
+      f.pmCustos = limpo;
+    }
+
+    // ── O MINI-LOG DE PM (29/10/2026) ──────────────────────────────
+    //  As PMLOG_MAX últimas coisas que custaram mana: a magia lançada, o
+    //  poder usado, a sustentada mantida, o gasto escrito à mão. É o
+    //  caderninho que responde "por que eu estou com 4 PM?" no meio do
+    //  combate — a mesma ideia do caderno do XP e do recibo da Loja, e
+    //  pelo mesmo motivo mora DENTRO da ficha: sobe para a mesa e
+    //  acompanha o jogador de aparelho.
+    //  `restou` é o que sobrou DEPOIS do gasto (atual + temporários), que
+    //  é o número que se confere contra a barra.
+    if (!Array.isArray(f.pmLog)) f.pmLog = [];
+    f.pmLog = f.pmLog.slice(0, PMLOG_MAX).map(x => ({
+      quando: (x && typeof x.quando === 'number') ? x.quando : 0,
+      quanto: Math.max(0, parseInt((x && x.quanto), 10) || 0),
+      de:     String((x && x.de) || ''),        // "Bola de Fogo", "Fúria", "poção"
+      tipo:   String((x && x.tipo) || 'outro'), // magia | poder | habilidade | sustentar | outro
+      restou: (x && typeof x.restou === 'number') ? x.restou : 0,
+    }));
+
     if (!Array.isArray(f.ataques)) f.ataques = [];
     f.ataques = f.ataques.map(a => ({
       id: (a && a.id) || novoId(),
@@ -781,6 +835,11 @@
   // alguém já tinha escrito continua onde estava.
   const COMPRAS_MAX = 30;      // o mesmo fôlego do histórico de rolagens
   const XPLOG_MAX = 40;        // o caderno do XP: uma campanha inteira cabe
+  //  O mini-log de PM (29/10/2026, pedido dele): "um MINI LOG de até 10
+  //  habilidades usadas dos gastos em PM". Dez é o pedido, e dez é o
+  //  tamanho certo: é o que cabe de olhada no meio de um combate sem
+  //  virar um segundo histórico de rolagens.
+  const PMLOG_MAX = 10;
 
   const BLOCOS = [
     { campo: 'racaOrigem',    titulo: '🌿 Habilidades de raça e origem',
@@ -1131,6 +1190,7 @@
   let truquesAbertos = {};    // id do amigo → true
   let tabelaPassosAberta = false;   // a Tabela 3-2 do cartão dos Ataques, aberta nesta tela
   let xpLogAberto = false;          // o caderno do XP, aberto nesta tela
+  let pmLogAberto = false;          // o mini-log de PM, aberto nesta tela
   const HIST_KEY = 'grifosAlados.fichaRolagens';
   const HIST_MAX = 30;
 
@@ -1222,10 +1282,15 @@
   //  eco que conta de onde saiu cada ponto. É o aviso que faltava — sem
   //  ele ninguém percebe que os temporários foram consumidos, e é aí
   //  que o PV atual cai sem precisar.
-  function aplicarDano(f, qual, n, porQue) {
+  //  `tipo` só vale para o PM, e é a etiqueta do mini-log (magia, poder,
+  //  habilidade, sustentar, outro). Quem não passa nada cai em 'outro'.
+  function aplicarDano(f, qual, n, porQue, tipo) {
     const rot = qual === 'pv' ? 'PV' : 'PM';
     const r = gastarPontos(f, qual, n);
     sujar(f.id, qual);
+    //  Todo gasto de mana passa por aqui, e é aqui que ele vira linha do
+    //  mini-log — nenhum caminho do site escapa (ver anotarPm).
+    if (qual === 'pm' && n > 0) anotarPm(f, n, porQue, tipo);
     const partes = [];
     if (r.temp)  partes.push('<strong>' + r.temp + '</strong> dos temporários');
     if (r.atual) partes.push('<strong>' + r.atual + '</strong> do ' + rot);
@@ -1893,6 +1958,14 @@
             máximo, e são <strong>sempre os primeiros a serem gastos</strong> — por isso o dano daqui desce
             deles antes de tocar no seu PV. No fim do dia, somem.</p>
           ${blocoManchas(f)}
+          ${blocoPmLog(f)}
+          <p class="fi-turno-chamar">
+            <button type="button" class="fi-add fi-add--menor" data-acao="abrir-turno"
+                    title="Abrir o painel do turno: ataques, magias, poderes com custo, condições a resolver e quem vem depois na ordem">🌀 Painel do turno</button>
+            <span class="fi-nota">${avisoLigado()
+              ? 'Ele abre sozinho quando a iniciativa chega em você.'
+              : 'Está marcado para <strong>não abrir sozinho</strong> neste navegador — abra pelo botão, ou ligue de novo lá dentro.'}</span>
+          </p>
           <p class="fi-conta" data-der="pvconta">${contaPv(f)}</p>
         </div>
 
@@ -2324,15 +2397,237 @@
   //  área (nenhum sangramento, nenhuma sustentada) nunca via aviso nenhum.
   function temEfeitosDeTurno(f) { return efeitosDeTurno(f).length > 0 || efeitosDaFicha(f).length > 0; }
 
-  function avisoDeTurno(f, rodada) {
+  // ═══ O AVISO DE TURNO, POR DENTRO (reformado em 29/10/2026) ══════
+  //  Pedido dele: *"melhorar e MUITO os pop-up de iniciativa dos
+  //  jogadores contra as criaturas e deixar tudo mais dinâmico"*.
+  //
+  //  O QUE ERA. Uma caixa que só abria quando havia algo "por turno" a
+  //  resolver (Sangrando, Em Chamas, sustentada, efeito de área). Na
+  //  maioria dos turnos ela não aparecia — e quando aparecia, resolvia
+  //  o efeito e pronto: para atacar, lançar magia ou ver quanto de PM
+  //  sobrava, o jogador fechava a caixa, rolava a página até a ficha e
+  //  procurava. No meio de um combate de nove fichas, isso é o turno
+  //  inteiro.
+  //
+  //  O QUE É AGORA. A caixa abre em TODO turno seu e traz o turno
+  //  inteiro para dentro dela, nesta ordem:
+  //    ① quem está jogando, em que posição, e quem vem depois;
+  //    ② PV e PM, com barra — o número que decide o que dá para fazer;
+  //    ③ o que RESOLVER antes de agir (os efeitos de sempre);
+  //    ④ 🔆 os efeitos de área sobre você;
+  //    ⑤ ⚔ os seus ataques, com 🎯 ataque, 💥 dano e crítico;
+  //    ⑥ ✦ as suas magias, com 🔥 gastar e 🎲 rolar;
+  //    ⑦ ◈ os poderes e habilidades que você marcou com custo em PM;
+  //    ⑧ ⚡ os últimos gastos de mana;
+  //    ⑨ ▶ passar o turno (só para quem manda na lista).
+  //
+  //  Toda rolagem feita aqui vai para o log da mesa, como qualquer
+  //  outra — a caixa é um atalho para a ficha, nunca um canal paralelo.
+  //  E quem não quiser a caixa abrindo sozinha tem o ✕ de "não abrir
+  //  sozinho" no rodapé: é escolha DESTE navegador, como o resto do que
+  //  dobra e desdobra.
+  const AVISO_KEY = 'grifosAlados.avisoDeTurno';   // '0' = não abrir sozinho
+  function avisoLigado() {
+    try { return localStorage.getItem(AVISO_KEY) !== '0'; } catch (e) { return true; }
+  }
+  function guardarAviso(liga) {
+    try { localStorage.setItem(AVISO_KEY, liga ? '1' : '0'); } catch (e) {}
+  }
+
+  //  ① A VIZINHANÇA. Sai da iniciativa, e só com o que o jogador pode
+  //  ver: nome e posição. Nenhum valor rolado atravessa esta porta.
+  function painelCenaTurno() {
+    const I = window.GA_Iniciativa;
+    const c = (I && I.cenaAgora) ? I.cenaAgora() : null;
+    if (!c || !c.agora) return '';
+    const fila = c.ordem.map(o =>
+      `<span class="fi-turno-fila-item${o.vez ? ' fi-turno-fila-item--vez' : ''}"
+             title="${esc(o.pos + 'º na ordem')}">${o.tipo === 'jogador' ? '🧑' : '👹'} ${esc(o.nome)}</span>`).join('');
+    return `
+      <div class="fi-turno-cena">
+        <p class="fi-turno-cena-lin">
+          <strong>${c.posicao}º</strong> de ${c.quantos} na ordem${c.proximo
+            ? ' · a seguir <strong>' + esc(c.proximo.nome) + '</strong>' +
+              (c.viraRodada ? ' <em>(e a rodada vira)</em>' : '')
+            : ''}</p>
+        <div class="fi-turno-fila">${fila}</div>
+      </div>`;
+  }
+
+  //  ② OS DOIS NÚMEROS QUE DECIDEM O TURNO.
+  function painelVitais(f) {
+    const barra = (qual, atual, max, temp) => `
+      <div class="fi-turno-vital fi-turno-vital--${qual}">
+        <span class="fi-turno-vital-rot">${qual === 'pv' ? 'PV' : 'PM'}</span>
+        <strong class="fi-turno-vital-num">${atual + temp}</strong>
+        <span class="fi-turno-vital-max">/ ${max}</span>
+        ${temp ? `<span class="fi-turno-vital-temp">${qual === 'pv' ? '⛨' : '✦'} ${temp} temp</span>` : ''}
+        <span class="fi-barra-pv fi-barra-pv--${qual}">
+          <span class="fi-barra-parte" style="width:${fatia(atual, max, temp)}%"></span>
+          <span class="fi-barra-temp" style="width:${fatia(temp, max, temp)}%"></span>
+        </span>
+      </div>`;
+    const conds = condicoesDa(f);
+    return `
+      <div class="fi-turno-vitais">
+        ${barra('pv', pvAtual(f), pvMax(f), f.pv.temp || 0)}
+        ${barra('pm', pmAtual(f), pmMax(f), f.pm.temp || 0)}
+      </div>
+      ${conds.length ? `<p class="fi-turno-conds">🌀 ${conds.map(x =>
+        '<span class="fi-turno-cond">' + esc(x.c.nome) + '</span>').join(' ')}</p>` : ''}`;
+  }
+
+  //  ⑤ OS ATAQUES. Os mesmos números e as mesmas contas do cartão ⚔ da
+  //  ficha (valorAtaque, danoDoAtaque e os passos da Tabela 3-2) — aqui
+  //  é só outro lugar de clicar neles.
+  function painelAtaquesTurno(f) {
+    if (!f.ataques.length) return '';
+    const linhas = f.ataques.map((a, i) => {
+      const mult = multiplicadorCritico(a.critico);
+      const temDano = !!String(a.dano || '').trim();
+      return `
+        <li class="fi-turno-atq">
+          <span class="fi-turno-atq-nome">${esc(a.nome || 'ataque sem nome')}</span>
+          <button type="button" class="ga-btn-sec fi-turno-b" data-acao="turno-atq" data-i="${i}"
+                  title="Rolar 1d20 ${sinal(valorAtaque(f, a))}">🎯 ${sinal(valorAtaque(f, a))}</button>
+          ${temDano ? `<button type="button" class="ga-btn-sec fi-turno-b" data-acao="turno-dano" data-i="${i}"
+                  title="${esc(tituloDano(a))}">💥 ${esc(danoDoAtaque(a).expr)}</button>
+          <button type="button" class="ga-btn-sec fi-turno-b fi-turno-b--crit" data-acao="turno-crit" data-i="${i}"
+                  title="Crítico ×${mult}">×${mult}</button>` : ''}
+        </li>`;
+    }).join('');
+    return `
+      <details class="fi-turno-bloco" open>
+        <summary>⚔ Seus ataques <em>${f.ataques.length}</em></summary>
+        <ul class="fi-turno-atqs">${linhas}</ul>
+      </details>`;
+  }
+
+  //  ⑥ AS MAGIAS. O 🔥 cobra o custo QUE VOCÊ ESCREVEU (ou o do livro,
+  //  se não escreveu nenhum) já com os aprimoramentos ligados — é o
+  //  mesmo número do cartão da ficha, pela mesma função.
+  //  As que não cabem na mana que resta aparecem apagadas: a caixa
+  //  AVISA e não impede, como o resto da ficha.
+  function painelMagiasTurno(f) {
+    if (!f.magias.length) return '';
+    const resta = pmAtual(f) + (f.pm.temp || 0);
+    const linhas = f.magias.map((m, i) => {
+      const p = pmDaMagia(f, m);
+      const dd = dadosDaMagia(m);
+      const cara = p.total > resta;
+      return `
+        <li class="fi-turno-mag${cara ? ' fi-turno-mag--cara' : ''}">
+          <span class="fi-turno-mag-nome">${esc(m.nome)}${m.circulo ? ' <em>' + m.circulo + 'º</em>' : ''}</span>
+          ${p.total ? `<button type="button" class="ga-btn-sec fi-turno-b${p.trocado ? ' fi-pm-selo--meu' : ''}"
+                  data-acao="turno-magia-pm" data-i="${i}" ${cara ? 'disabled' : ''}
+                  title="${cara ? 'Você só tem ' + resta + ' PM' : 'Gastar ' + p.total + ' PM'}${p.trocado ? ' — o SEU custo; no livro são ' + p.livro : ''}"
+            >🔥 ${p.total}</button>` : ''}
+          ${dd.bases.map((d, bi) => `<button type="button" class="ga-btn-sec fi-turno-b"
+                  data-acao="turno-magia-rolar" data-i="${i}" data-b="${bi}"
+                  title="Rolar ${esc(d.expr + dd.bonus)}">🎲 ${esc(d.rotulo || d.expr)}</button>`).join('')}
+        </li>`;
+    }).join('');
+    return `
+      <details class="fi-turno-bloco">
+        <summary>✦ Suas magias <em>${f.magias.length} · ${resta} PM na mão</em></summary>
+        <ul class="fi-turno-mags">${linhas}</ul>
+      </details>`;
+  }
+
+  //  ⑦ OS PODERES E HABILIDADES COM PREÇO. Só os que têm custo — o que
+  //  o livro deixou ler ou o que o jogador escreveu. Um poder sem preço
+  //  não tem o que fazer num aviso de turno: ele não gasta nada e o
+  //  texto dele está na ficha.
+  function poderesComPm(f) {
+    const saida = [];
+    f.poderes.forEach(p => {
+      const k = chavePmPoder(p);
+      const s = pmSugerido(p.custo, (p.texto || []).join(' '));
+      const c = custoPm(f, k, s.pm);
+      if (c.total) saida.push({ chave: k, nome: p.nome, livro: s.pm, c: c, tipo: 'poder' });
+    });
+    const MAPA = window.GA_HABILIDADES_CLASSE || {};
+    (f.classes || []).forEach(cl => {
+      const lista = MAPA[cl.classe] || [];
+      lista.forEach(a => {
+        if ((cl.nivel || 0) < a.nivel) return;
+        const k = chaveFixa(cl.classe, a.nome);
+        if (fixaRemovida(f, k)) return;
+        const s = pmSugerido('', a.texto || '');
+        const c = custoPm(f, k, s.pm);
+        if (c.total && !saida.some(x => x.chave === k)) {
+          saida.push({ chave: k, nome: a.nome, livro: s.pm, c: c, tipo: 'habilidade' });
+        }
+      });
+    });
+    (f.fixasExtras || []).forEach(x => {
+      const a = fixaData(x.classe, x.nome);
+      if (!a) return;
+      const k = chaveFixa(x.classe, x.nome);
+      const s = pmSugerido('', a.texto || '');
+      const c = custoPm(f, k, s.pm);
+      if (c.total && !saida.some(z => z.chave === k)) {
+        saida.push({ chave: k, nome: a.nome, livro: s.pm, c: c, tipo: 'habilidade' });
+      }
+    });
+    return saida;
+  }
+  function painelPoderesTurno(f) {
+    const lista = poderesComPm(f);
+    if (!lista.length) return '';
+    const resta = pmAtual(f) + (f.pm.temp || 0);
+    const linhas = lista.map(x => {
+      const cara = x.c.total > resta;
+      return `
+        <li class="fi-turno-pod${cara ? ' fi-turno-mag--cara' : ''}">
+          <span class="fi-turno-mag-nome">${x.tipo === 'habilidade' ? '🎓' : '◈'} ${esc(x.nome)}</span>
+          <button type="button" class="ga-btn-sec fi-turno-b${x.c.trocado ? ' fi-pm-selo--meu' : ''}"
+                  data-acao="turno-pm" data-pmchave="${esc(x.chave)}" data-pmlivro="${x.livro}"
+                  data-pmtipo="${esc(x.tipo)}" data-pmnome="${esc(x.nome)}" ${cara ? 'disabled' : ''}
+                  title="${cara ? 'Você só tem ' + resta + ' PM' : 'Gastar ' + x.c.total + ' PM'}${x.c.trocado ? ' — o SEU custo; no livro são ' + x.livro : ''}"
+            >🔥 ${x.c.total}</button>
+        </li>`;
+    }).join('');
+    return `
+      <details class="fi-turno-bloco">
+        <summary>◈ Poderes e habilidades com custo <em>${lista.length}</em></summary>
+        <ul class="fi-turno-pods">${linhas}</ul>
+        <p class="fi-nota">Só aparece aqui o que tem preço. Para pôr (ou baixar) o custo de um poder,
+          abra o cartão dele na ficha e escreva em <strong>⚡ Custo em PM</strong>.</p>
+      </details>`;
+  }
+
+  //  ⑧ OS ÚLTIMOS GASTOS. Três linhas bastam: é a resposta de "por que
+  //  eu estou com 4 PM?" sem sair do turno. O mini-log inteiro está no
+  //  cartão Vida & Mana.
+  function painelPmTurno(f) {
+    const ult = (f.pmLog || []).slice(0, 3);
+    if (!ult.length) return '';
+    return `
+      <p class="fi-turno-pm">⚡ ${ult.map(x =>
+        '<span class="fi-turno-pm-item"><strong>−' + x.quanto + '</strong> ' +
+        (x.de ? esc(x.de) : 'sem nome') + '</span>').join('')}</p>`;
+  }
+
+  //  `forcado` é o botão 🌀 do cartão Vida & Mana: abre o painel na mão,
+  //  fora de combate e mesmo com o "não abrir sozinho" ligado.
+  function avisoDeTurno(f, rodada, forcado) {
     if (!f || !window.GA_abrirModal) return false;
+    //  O 🔕 "não abrir sozinho" do rodapé. Fica no localStorage, como o
+    //  resto do que recolhe e abre: é escolha deste navegador, e não um
+    //  campo da ficha (que viajaria para a mesa e para os outros
+    //  aparelhos sem ninguém pedir).
+    if (!forcado && !avisoLigado()) return false;
     const itens = efeitosDeTurno(f);
     const efArea = efeitosDaFicha(f);
-    //  Antes só abria com Sangrando/Em Chamas/sustentada/outro "por turno" —
-    //  um efeito de área (Oração etc.) sozinho não acendia o aviso, e o
-    //  jogador só via o bônus se abrisse a ficha e rolasse até o cartão
-    //  🔆. Agora o efeito de área TAMBÉM é motivo de abrir (17/10/2026).
-    if (!itens.length && !efArea.length) return false;
+    //  ABRE SEMPRE (29/10/2026). Antes só abria com Sangrando/Em Chamas/
+    //  sustentada/outro "por turno"; em 17/10 o efeito de área virou
+    //  motivo também. Mas na maioria dos turnos não havia nenhum dos
+    //  dois, e aí o aviso simplesmente não existia — justo nos turnos
+    //  comuns, que são quase todos, e em que o jogador mais precisa dos
+    //  ataques e das magias à mão.
+    //  Agora o aviso é o PAINEL DO TURNO: abre em todo turno seu, e os
+    //  efeitos a resolver são uma das seções dele, não a razão de ser.
     const linha = (it, idx) => {
       if (it.k === 'sangrando') return `
         <div class="fi-turno-item" data-idx="${idx}">
@@ -2391,16 +2686,62 @@
               <span class="fi-turno-out" data-out></span>
             </div>` : ''}</div>`).join('')}
       </div>` : '';
+    const podePassar = !!(window.GA_Iniciativa && window.GA_Iniciativa.podePassar &&
+                          window.GA_Iniciativa.podePassar());
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
-        <span>🌀 Início do turno — ${esc(f.nome || 'personagem')}${rodada ? ' · rodada ' + rodada : ''}</span>
+        <span>🌀 Seu turno — ${esc(f.nome || 'personagem')}${rodada ? ' · rodada ' + rodada : ''}</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
-      <p class="ga-modal-dica">Role cada efeito e aceite para aplicar na ficha. O que não quiser resolver agora, deixe para depois.</p>
-      ${lembreteArea}
-      <div class="fi-turno-lista">${itens.map(linha).join('')}</div>
-      <div class="ga-modal-acoes"><button type="button" class="ga-btn-principal" data-ga-fechar>Fechar</button></div>`);
+      ${painelCenaTurno()}
+      ${painelVitais(f)}
+      ${(itens.length || efArea.length) ? `
+        <p class="ga-modal-dica">Resolva o que está pegando antes de agir. Role e aceite: cai na ficha
+          na hora. O que não quiser resolver agora, deixe para depois.</p>
+        ${lembreteArea}
+        <div class="fi-turno-lista">${itens.map(linha).join('')}</div>`
+        : '<p class="ga-modal-dica">Nada a resolver no começo deste turno. A sua vez está aberta.</p>'}
+      <div class="fi-turno-saida" data-saida hidden></div>
+      ${painelAtaquesTurno(f)}
+      ${painelMagiasTurno(f)}
+      ${painelPoderesTurno(f)}
+      ${painelPmTurno(f)}
+      <div class="ga-modal-acoes fi-turno-pe">
+        <button type="button" class="fi-mini fi-turno-calar" data-acao="turno-calar"
+                aria-pressed="${!avisoLigado()}"
+                title="${avisoLigado()
+                  ? 'Parar de abrir esta caixa sozinha neste navegador. O painel continua existindo — só não pula na tela, e o botão 🌀 da ficha abre quando você quiser.'
+                  : 'Voltar a abrir sozinha quando a iniciativa chegar em você'}"
+          >${avisoLigado() ? '🔕 não abrir sozinho' : '🔔 voltar a abrir sozinho'}</button>
+        ${podePassar ? `<button type="button" class="ga-btn-sec" data-acao="turno-passar"
+                title="Passar a vez para quem vem depois">▶ Passar o turno</button>` : ''}
+        <button type="button" class="ga-btn-principal" data-ga-fechar>Fechar</button>
+      </div>`);
     if (!overlay) return false;
+    //  Onde o resultado de toda rolagem feita AQUI aparece. A rolagem em
+    //  si vai pelo rolar() de sempre — ou seja, para o log da mesa e para
+    //  o histórico da ficha, como qualquer outra. Esta tira é só o eco,
+    //  para não ter de procurar o número no canto da tela.
+    const saida = overlay.querySelector('[data-saida]');
+    const dizer = (rot, r) => {
+      if (!saida) return;
+      saida.hidden = false;
+      saida.innerHTML = r
+        ? '<span class="fi-turno-saida-rot">' + esc(rot) + '</span>' +
+          '<strong class="fi-turno-saida-num">' + r.total + '</strong>' +
+          '<span class="fi-turno-saida-det">' + r.detalhe + '</span>'
+        : '<span class="fi-turno-saida-rot">' + esc(rot) + '</span>';
+    };
+    //  O PV e o PM mudaram dentro da caixa (gastou mana, sofreu fogo):
+    //  as duas barras do topo se refazem no lugar, sem fechar nada.
+    const repintarVitais = () => {
+      const cx = overlay.querySelector('.fi-turno-vitais');
+      if (!cx) return;
+      const molde = document.createElement('div');
+      molde.innerHTML = painelVitais(f);
+      const novo = molde.querySelector('.fi-turno-vitais');
+      if (novo) cx.innerHTML = novo.innerHTML;
+    };
     const dadoDe = row => {
       const inp = row.querySelector('[data-dado]');
       return (inp && inp.value.trim()) || '1d6';
@@ -2434,6 +2775,89 @@
         salvar();
         return;
       }
+      //  ── OS BOTÕES NOVOS DO PAINEL DO TURNO (29/10/2026) ─────────
+      //  Todos saem ANTES do `[data-idx]` de baixo, que é dos quatro
+      //  "itens a resolver" e presume a linha deles — um botão de
+      //  ataque, que não tem [data-idx], quebraria ali (foi o mesmo
+      //  cuidado que o 🔆 de área já precisou ter, logo acima).
+      const ac = btn.dataset.acao;
+      if (ac === 'turno-calar') {
+        const liga = !avisoLigado();          // estava calado → volta a abrir
+        guardarAviso(liga);
+        btn.textContent = liga ? '🔕 não abrir sozinho' : '🔔 voltar a abrir sozinho';
+        btn.setAttribute('aria-pressed', String(!liga));
+        dizer(liga
+          ? 'Volta a abrir sozinho quando a iniciativa chegar em você.'
+          : 'Não abre mais sozinho neste navegador — use o 🌀 Painel do turno, no cartão Vida & Mana da ficha.', null);
+        return;
+      }
+      if (ac === 'turno-passar') {
+        //  FECHA ANTES de passar. Na lista local o passarTurno() resolve
+        //  na hora e já pode abrir o aviso da PRÓXIMA ficha deste mesmo
+        //  aparelho — e aí teríamos dois modais empilhados, com o de
+        //  baixo fechando por cima do novo. Fechar primeiro, passar
+        //  depois, com o setTimeout deixando o DOM assentar.
+        const fechar = overlay.querySelector('[data-ga-fechar]');
+        if (fechar) fechar.click();
+        setTimeout(() => {
+          const I = window.GA_Iniciativa;
+          if (I && I.passar) I.passar();
+        }, 0);
+        return;
+      }
+      if (ac === 'turno-atq') {
+        const a = f.ataques[+btn.dataset.i];
+        if (!a) return;
+        dizer('🎯 ' + (a.nome || 'ataque'),
+              rolar(d20(valorAtaque(f, a)), quem(f) + ' · ' + (a.nome || 'ataque'), 'turno'));
+        return;
+      }
+      if (ac === 'turno-dano' || ac === 'turno-crit') {
+        const a = f.ataques[+btn.dataset.i];
+        if (!a || !String(a.dano || '').trim()) return;
+        const r = danoDoAtaque(a);
+        const mult = multiplicadorCritico(a.critico);
+        const crit = ac === 'turno-crit';
+        dizer((crit ? '💥 crítico ×' + mult + ' de ' : '💥 dano de ') + (a.nome || 'ataque'),
+              rolar(crit ? expressaoCritica(r.expr, mult) : r.expr,
+                    quem(f) + ' · ' + (crit ? '💥 CRÍTICO ×' + mult + ' de ' : 'dano de ') + (a.nome || 'ataque'),
+                    'turno'));
+        return;
+      }
+      if (ac === 'turno-magia-pm') {
+        const m = f.magias[+btn.dataset.i];
+        if (!m) return;
+        const p = pmDaMagia(f, m);
+        if (!p.total) return;
+        aplicarDano(f, 'pm', p.total, m.nome + (p.extra ? ' (aprimorada)' : ''), 'magia');
+        dizer('🔥 ' + m.nome + ' — ' + p.total + ' PM, sobraram ' +
+              (pmAtual(f) + (f.pm.temp || 0)), null);
+        repintarVitais(); pintarPmLog();
+        return;
+      }
+      if (ac === 'turno-magia-rolar') {
+        const m = f.magias[+btn.dataset.i];
+        if (!m) return;
+        const dd = dadosDaMagia(m);
+        const d = dd.bases[+btn.dataset.b || 0];
+        if (!d) return;
+        dizer('🎲 ' + m.nome + (d.rotulo ? ' — ' + d.rotulo : ''),
+              rolar(d.expr + dd.bonus,
+                    quem(f) + ' · ' + m.nome + (d.rotulo ? ' — ' + d.rotulo : '') +
+                    (dd.bonus ? ' (aprimorada)' : ''), 'turno'));
+        return;
+      }
+      if (ac === 'turno-pm') {
+        const chave = btn.dataset.pmchave || '';
+        const c = custoPm(f, chave, parseInt(btn.dataset.pmlivro, 10) || 0);
+        if (!c.total) return;
+        aplicarDano(f, 'pm', c.total, btn.dataset.pmnome || 'habilidade',
+                    btn.dataset.pmtipo || 'outro');
+        dizer('🔥 ' + (btn.dataset.pmnome || 'habilidade') + ' — ' + c.total + ' PM, sobraram ' +
+              (pmAtual(f) + (f.pm.temp || 0)), null);
+        repintarVitais(); pintarPmLog();
+        return;
+      }
       const row = btn.closest('[data-idx]');
       const it = itens[+row.dataset.idx];
       if (!it) return;
@@ -2464,7 +2888,7 @@
         if (perda) aplicarDano(f, 'pv', perda, 'Em Chamas');
         feito(row, 'perdeu ' + perda + ' PV de fogo'); salvar();
       } else if (btn.dataset.acao === 'turno-manter') {
-        aplicarDano(f, 'pm', 1, 'Sustentar' + (c && c.texto ? ' ' + c.texto : ''));
+        aplicarDano(f, 'pm', 1, 'Sustentar' + (c && c.texto ? ' ' + c.texto : ''), 'sustentar');
         feito(row, 'mantido — −1 PM'); salvar();
       } else if (btn.dataset.acao === 'turno-largar') {
         if (c) { const arr = f.condicoesLivres; const k = arr.indexOf(c); if (k >= 0) arr.splice(k, 1); sujar(f.id, 'condicoesLivres'); }
@@ -3835,6 +4259,10 @@
     const fonte = fontePoder(p);
     const base = daBasePoder(p.pid);
     const magica = (base && base.magica) || p.magica;
+    //  O custo em PM deste poder: o que o texto do livro deixa ler, e o
+    //  que o jogador escreveu por cima (29/10/2026).
+    const kPm = chavePmPoder(p);
+    const cPm = custoPmDe(f, kPm, p.custo, (p.texto || []).join(' '), p.nome, 'poder');
     return `
       <li class="fi-pod${fechado ? ' fi-pod--fechado' : ''}${p.contaTormenta ? ' fi-pod--conta' : ''}">
         <button type="button" class="fi-pod-abrir" data-acao="dobra-poder" data-i="${i}"
@@ -3849,6 +4277,7 @@
         </button>
         <span class="fi-pod-ordem">${setasDeOrdem('pod', i, pos, quantos, p.nome, '')}</span>
         <span class="fi-pod-acoes">
+          ${seloPm(f, kPm, cPm.s.pm, p.nome, 'poder')}
           ${p.pid ? '' : `<button type="button" class="fi-mini" data-acao="editar-poder" data-i="${i}"
                   title="Editar este poder escrito à mão">✍</button>`}
           ${p.grupo === 'tormenta' ? '' : `<button type="button" class="fi-mini fi-pod-conta-btn${p.contaTormenta ? ' fi-mini--on' : ''}"
@@ -3866,6 +4295,7 @@
           ${p.custo ? `<p class="fi-pod-req"><strong>Custo:</strong> ${esc(p.custo)}</p>` : ''}
           ${escala ? `<p class="fi-pod-agora"><strong>Agora:</strong> ${esc(escala.txt)}
             ${escala.calc ? `<em>${esc(escala.calc)}</em>` : ''}</p>` : ''}
+          ${cPm.caixa}
           <input class="fi-txt fi-pod-obs" type="text" value="${esc(p.obs)}" data-campo="poderes.${i}.obs"
                  placeholder="sua anotação (quando usou, com o que combina…)" autocomplete="off">
         </div>`}
@@ -4294,6 +4724,10 @@
       const cards = itens.map(({ a, origem }) => {
         const key = chaveFixa(chave, a.nome);
         const fechado = !!poderesFechados[key];
+        //  A chave do custo é a MESMA do cartão ('fixa:<classe>:<nome>'):
+        //  a habilidade de classe não é objeto na ficha, nasce da tabela
+        //  por classe e nível — e a chave é o que lhe dá identidade.
+        const cPm = custoPmDe(f, key, '', a.texto || '', a.nome, 'habilidade');
         return `
         <li class="fi-pod fi-pod--fixa${origem === 'extra' ? ' fi-pod--fixaextra' : ''}${fechado ? ' fi-pod--fechado' : ''}">
           <button type="button" class="fi-pod-abrir" data-acao="dobra-fixa" data-k="${esc(key)}"
@@ -4304,11 +4738,13 @@
             <span class="fi-pod-tag">${origem === 'extra' ? 'acrescentada' : a.nivel + 'º nível'}</span>
           </button>
           <span class="fi-pod-acoes">
+            ${seloPm(f, key, cPm.s.pm, a.nome, 'habilidade')}
             <button type="button" class="fi-mini fi-mini--x" data-acao="tira-fixa" data-k="${esc(key)}"
                     title="${origem === 'extra' ? 'Tirar esta habilidade acrescentada'
                       : 'Tirar esta habilidade de classe (há poderes que a removem)'}">✕</button>
           </span>
-          ${fechado ? '' : `<div class="fi-pod-corpo"><div class="fi-pod-desc">${esc(a.texto)}</div></div>`}
+          ${fechado ? '' : `<div class="fi-pod-corpo"><div class="fi-pod-desc">${esc(a.texto)}</div>
+            ${cPm.caixa}</div>`}
         </li>`;
       }).join('');
       const rodape = removidas.length ? `
@@ -4496,10 +4932,246 @@
   function quantos(m, k) {
     return (m.apr || []).filter(x => x === k).length;
   }
-  function pmDaMagia(m) {
+  // ═══ O CUSTO EM PM, E QUEM O ESCREVE (29/10/2026) ════════════════
+  //  O livro imprime um preço; a mesa quase sempre tem um motivo para
+  //  cobrar outro. Um poder que reduz o custo da classe, um item que
+  //  paga parte, uma herança de raça, um acordo do mestre. Até aqui o
+  //  jogador tinha de fazer a conta de cabeça e mexer no PM na mão —
+  //  e aí nada ficava registrado em lugar nenhum.
+  //
+  //  Agora cada magia, cada poder e cada habilidade de classe tem um
+  //  campo de custo. Em branco = o do livro (que continua escrito ao
+  //  lado, sempre, para a conferência não depender de memória). Com
+  //  número = é esse que o 🔥 cobra, e o botão se marca para ninguém
+  //  achar que o livro mudou.
+  function custoEscrito(f, chave) {
+    const v = f.pmCustos ? f.pmCustos[chave] : undefined;
+    return (typeof v === 'number' && isFinite(v) && v >= 0) ? v : null;
+  }
+  //  O que o 🔥 vai cobrar, e por quê. `livro` é o preço impresso (nas
+  //  magias, já com os aprimoramentos ligados — eles são do livro
+  //  também, p. 171); `meu` é o que o jogador escreveu.
+  function custoPm(f, chave, doLivro) {
+    const meu = custoEscrito(f, chave);
+    return {
+      livro: doLivro, meu: meu,
+      total: meu == null ? doLivro : meu,
+      trocado: meu != null && meu !== doLivro,
+    };
+  }
+  //  O selo 🔥 do cabeçalho do cartão — o que se clica sem abrir nada.
+  function seloPm(f, chave, doLivro, nome, tipo) {
+    const c = custoPm(f, chave, doLivro);
+    if (!c.total && c.meu == null) return '';
+    return `<button type="button" class="fi-pm-selo${c.trocado ? ' fi-pm-selo--meu' : ''}"
+            data-acao="gastar-pm" data-pmchave="${esc(chave)}" data-pmlivro="${doLivro}"
+            data-pmtipo="${esc(tipo)}" data-pmnome="${esc(nome)}" data-pmselo="${esc(chave)}"
+            title="Gastar ${c.total} PM${c.trocado ? ' (o seu custo; no livro são ' + doLivro + ')' : ''} — os temporários saem primeiro"
+      >🔥 ${c.total} PM</button>`;
+  }
+  //  A caixinha "⚡ Custo em PM" que vai no CORPO de todo cartão que
+  //  custa mana. `rotLivro` é a frase do livro quando ela não é um
+  //  número redondo ("2 PM", "1 PM por aliado") — o texto fica, e o
+  //  número ao lado é o que o botão usa.
+  //  `semBotao` é para a magia: lá o 🔥 mora no cabeçalho do cartão (é o
+  //  que deixa lançar sem abrir), e ele já soma os aprimoramentos
+  //  ligados. Dois botões com totais diferentes no mesmo cartão seriam
+  //  uma armadilha.
+  //  `rotHtml` é para o poder e a habilidade de classe, onde o preço do
+  //  livro é LIDO do texto e o rótulo precisa dizer de onde saiu.
+  function caixaCustoPm(f, chave, doLivro, rotLivro, nome, tipo, semBotao, rotHtml) {
+    const c = custoPm(f, chave, doLivro);
+    return `
+      <div class="fi-pmc">
+        <span class="fi-pmc-rot">⚡ Custo em PM</span>
+        <span class="fi-pmc-livro">${rotHtml || (rotLivro ? esc(rotLivro) : (doLivro ? doLivro + ' PM' : '—')) +
+          ' <em>no livro</em>'}</span>
+        <input class="fi-num fi-num--mini fi-pmc-val${c.meu == null ? '' : ' fi-pmc-val--meu'}" type="number" min="0"
+               value="${c.meu == null ? '' : c.meu}" data-pmcusto="${esc(chave)}"
+               placeholder="${doLivro || '—'}" aria-label="O seu custo em PM"
+               title="Quanto ISTO custa a VOCÊ — o poder, a raça, o item ou o acordo que baratearam. Em branco vale o do livro${doLivro ? ' (' + doLivro + ' PM)' : ''}. Pode ser 0: há poder que zera o preço.">
+        ${semBotao ? '' : `<button type="button" class="fi-pmc-gastar${c.trocado ? ' fi-pmc-gastar--meu' : ''}"
+                data-acao="gastar-pm" data-pmchave="${esc(chave)}"
+                data-pmlivro="${doLivro}" data-pmtipo="${esc(tipo)}" data-pmnome="${esc(nome)}"
+                ${c.total ? '' : 'disabled'}
+                title="Gastar os PM agora — os temporários saem primeiro">
+          🔥 Gastar <strong data-pmbtn="${esc(chave)}">${c.total}</strong> PM</button>`}
+        <span class="fi-pmc-nota">${c.trocado
+          ? 'o 🔥 cobra <strong>' + c.meu + '</strong>, não os ' + doLivro + ' do livro'
+          : (!c.total && c.meu == null)
+            ? 'escreva quanto custa a você e o 🔥 acende'
+            : 'em branco = o do livro'}${semBotao
+          ? ' · os aprimoramentos ligados somam por cima' : ''}</span>
+      </div>`;
+  }
+  //  O campo mudou: o 🔥 do corpo e o selo do cabeçalho se atualizam NO
+  //  LUGAR. Redesenhar a ficha inteira arrancaria o cursor de dentro do
+  //  número que a pessoa está digitando.
+  function pintarCustoPm(f, chave) {
+    if (!secao) return;
+    secao.querySelectorAll('[data-pmbtn="' + cssEsc(chave) + '"]').forEach(el => {
+      const btn = el.closest('[data-pmchave]');
+      const doLivro = btn ? (parseInt(btn.dataset.pmlivro, 10) || 0) : 0;
+      const c = custoPm(f, chave, doLivro);
+      el.textContent = c.total;
+      if (btn) {
+        btn.classList.toggle('fi-pmc-gastar--meu', c.trocado);
+        btn.disabled = !c.total;      // 0 PM não é botão, é informação
+      }
+    });
+    //  A frase de baixo muda junto: ela é quem explica por que o número
+    //  do 🔥 não é o do livro.
+    secao.querySelectorAll('[data-pmcusto="' + cssEsc(chave) + '"]').forEach(inp => {
+      inp.classList.toggle('fi-pmc-val--meu', custoEscrito(f, chave) != null);
+      const cx = inp.closest('.fi-pmc');
+      const nota = cx && cx.querySelector('.fi-pmc-nota');
+      const btn = cx && cx.querySelector('[data-pmchave]');
+      if (!nota) return;
+      const doLivro = btn ? (parseInt(btn.dataset.pmlivro, 10) || 0) : 0;
+      const c = custoPm(f, chave, doLivro);
+      nota.innerHTML = c.trocado
+        ? 'o 🔥 cobra <strong>' + c.meu + '</strong>, não os ' + doLivro + ' do livro'
+        : (!c.total && c.meu == null) ? 'escreva quanto custa a você e o 🔥 acende'
+        : 'em branco = o do livro';
+    });
+    secao.querySelectorAll('[data-pmselo="' + cssEsc(chave) + '"]').forEach(el => {
+      const doLivro = parseInt(el.dataset.pmlivro, 10) || 0;
+      //  O selo da MAGIA mostra o total COM os aprimoramentos ligados —
+      //  é esse o número que o 🔥 do cabeçalho cobra.
+      const m = chave.indexOf('magia:') === 0
+        ? f.magias.find(x => chavePmMagia(x) === chave) : null;
+      const c = m ? pmDaMagia(f, m) : custoPm(f, chave, doLivro);
+      el.innerHTML = '🔥 ' + c.total + ' PM';
+      el.classList.toggle('fi-pm-selo--meu', !!c.trocado);
+    });
+  }
+
+  // ── O MINI-LOG DE PM ─────────────────────────────────────────────
+  //  Uma linha por gasto, escrita no único lugar por onde TODO gasto de
+  //  mana passa (aplicarDano com qual = 'pm'). Não há porta de serviço:
+  //  a magia, o poder, a habilidade de classe, a sustentada do aviso de
+  //  turno e o gasto escrito à mão caem todos aqui.
+  //  Mexer no campo de PM à mão NÃO passa por aqui, e é de propósito —
+  //  é a mesma porta de escape que o caderno do XP deixa aberta.
+  function anotarPm(f, quanto, de, tipo) {
+    if (!Array.isArray(f.pmLog)) f.pmLog = [];
+    f.pmLog.unshift({
+      quando: Date.now(),
+      quanto: Math.max(0, Math.round(quanto) || 0),
+      de: String(de || '').trim(),
+      tipo: String(tipo || 'outro'),
+      restou: pmAtual(f) + (f.pm.temp || 0),
+    });
+    f.pmLog = f.pmLog.slice(0, PMLOG_MAX);
+    sujar(f.id, 'pmLog');
+  }
+  const PM_ICONE = { magia: '✦', poder: '◈', habilidade: '🎓', sustentar: '✋', outro: '⚡' };
+  function linhasPmLog(f) {
+    return (f.pmLog || []).map((x, i) => `
+      <li class="fi-pml-linha">
+        <span class="fi-pml-hora">${esc(hora(x.quando))}</span>
+        <span class="fi-pml-ico" aria-hidden="true">${PM_ICONE[x.tipo] || PM_ICONE.outro}</span>
+        <strong class="fi-pml-quanto">−${x.quanto}</strong>
+        <span class="fi-pml-de">${x.de ? esc(x.de) : '<em>sem nome</em>'}</span>
+        <span class="fi-pml-restou">ficou em ${x.restou}</span>
+        <button type="button" class="fi-mini" data-acao="pm-desfaz" data-i="${i}"
+                title="Desfazer: devolve ${x.quanto} PM e apaga esta linha">↩</button>
+      </li>`).join('');
+  }
+  function blocoPmLog(f) {
+    const n = (f.pmLog || []).length;
+    const gasto = (f.pmLog || []).reduce((s, x) => s + x.quanto, 0);
+    const u = n ? f.pmLog[0] : null;
+    return `
+      <details class="fi-pml"${pmLogAberto ? ' open' : ''}>
+        <summary data-acao="pm-log">⚡ Gastos de PM
+          ${n ? `<em>último: ${u.quanto} PM em ${u.de ? esc(u.de) : 'algo sem nome'} · ${esc(hora(u.quando))}</em>`
+              : '<em>nada gasto ainda nesta ficha</em>'}</summary>
+        ${n ? `<ul class="fi-pml-lista">${linhasPmLog(f)}</ul>
+        <p class="fi-nota">As <strong>${PMLOG_MAX}</strong> últimas habilidades que custaram mana —
+          magia, poder, habilidade de classe, sustentada, ou o que você escrever no
+          <strong>⚡ Gastar à mão</strong>. O ↩ devolve os PM e apaga a linha.
+          Mexer no campo <strong>PM</strong> direto não passa por aqui: é a porta de escape de sempre.</p>`
+          : `<p class="fi-pml-vazio">O 🔥 de uma magia, de um poder ou de uma habilidade de classe anota
+             aqui sozinho. Para o resto — uma poção, um ritual, um acordo com o mestre — use o
+             <strong>⚡ Gastar à mão</strong>.</p>`}
+        <div class="fi-pml-mao">
+          <input class="fi-num fi-num--mini" type="number" min="1" id="fiPmMao" value="1"
+                 aria-label="Quantos PM" title="Quantos PM saíram">
+          <input class="fi-txt" type="text" id="fiPmMaoNota" autocomplete="off"
+                 aria-label="Em quê" placeholder="em quê (a poção, o ritual, o acordo…)">
+          <button type="button" class="fi-add fi-add--menor" data-acao="pm-mao"
+                  title="Tirar esses PM e anotar a linha">⚡ Gastar à mão</button>
+          ${n ? `<button type="button" class="fi-mini fi-pml-limpar" data-acao="pm-limpa"
+                  title="Esvaziar o mini-log (não devolve PM nenhum)">🗑</button>` : ''}
+        </div>
+        ${n ? `<p class="fi-conta">${gasto} PM nestas ${n} linha${n > 1 ? 's' : ''}.</p>` : ''}
+      </details>`;
+  }
+  //  Redesenha SÓ o mini-log, no lugar. Um render() inteiro fecharia o
+  //  <details> aberto e arrancaria o foco de quem estivesse escrevendo a
+  //  nota do "⚡ Gastar à mão" — e o gasto de PM acontece no meio do
+  //  combate, quando menos se quer a tela pulando.
+  function pintarPmLog() {
+    if (!secao) return;
+    const f = fichaAberta();
+    if (!f) return;
+    const velho = secao.querySelector('.fi-pml');
+    if (!velho) return;
+    const aberto = velho.open;
+    const molde = document.createElement('div');
+    molde.innerHTML = blocoPmLog(f);
+    const novo = molde.firstElementChild;
+    if (!novo) return;
+    novo.open = aberto || pmLogAberto;
+    velho.replaceWith(novo);
+    atualizarDerivados();
+  }
+
+  //  O custo da magia: o do livro, ou o que o JOGADADOR escreveu no lugar
+  //  dele. O que ele escreve troca a BASE, e não o total — os
+  //  aprimoramentos continuam somando por cima, porque eles também são
+  //  do livro (p. 171) e o poder que barateia a magia não barateia o
+  //  aprimoramento junto.
+  function pmDaMagia(f, m) {
     const lista = aprimoramentosDe(m);
     const extra = (m.apr || []).reduce((s, k) => s + ((lista[k] && lista[k].pm) || 0), 0);
-    return { base: m.pm || 0, extra: extra, total: (m.pm || 0) + extra };
+    const livro = m.pm || 0;
+    const meu = f ? custoEscrito(f, chavePmMagia(m)) : null;
+    const base = meu == null ? livro : meu;
+    return {
+      livro: livro, meu: meu, base: base, extra: extra, total: base + extra,
+      trocado: meu != null && meu !== livro,
+    };
+  }
+  function chavePmMagia(m) { return 'magia:' + m.id; }
+
+  //  ── O CUSTO DO PODER E DA HABILIDADE DE CLASSE ─────────────────
+  //  A magia tem campo de PM no livro; o poder e a habilidade de classe
+  //  NÃO têm. O preço deles mora no meio da frase, e em três feitios:
+  //    "(Padrão, 2 PM)"   — o cabeçalho de ação que o livro usa
+  //    "Você pode gastar 2 PM para…"  — a Fúria do bárbaro
+  //    "Custo: +1 PM"     — os aprimoramentos de magia
+  //  Então aqui é LEITURA, não dado: o número que sai é uma SUGESTÃO, o
+  //  rótulo diz de onde veio, e quem decide continua sendo o jogador —
+  //  que é exatamente o que ele pediu. Sem achar nada, o campo nasce
+  //  vazio e o botão só aparece depois que ele escrever.
+  function pmSugerido(custoTxt, texto) {
+    const t = String(texto || '');
+    let m = /(\d+)\s*PM/.exec(String(custoTxt || ''));
+    if (m) return { pm: parseInt(m[1], 10), de: 'do "Custo:" do livro' };
+    m = /\((?:[^)]*?,\s*)?(\d+)\s*PM[^)]*\)/.exec(t);
+    if (m) return { pm: parseInt(m[1], 10), de: 'lido do cabeçalho de ação' };
+    m = /\b(?:gastar|pagar|custa)\s+(\d+)\s*PM/i.exec(t);
+    if (m) return { pm: parseInt(m[1], 10), de: 'lido do texto' };
+    return { pm: 0, de: '' };
+  }
+  function chavePmPoder(p) { return 'poder:' + p.id; }
+  //  A caixa de custo de um poder/habilidade, já com a leitura feita.
+  function custoPmDe(f, chave, custoTxt, texto, nome, tipo) {
+    const s = pmSugerido(custoTxt, texto);
+    const rot = s.pm ? s.pm + ' PM <em>' + esc(s.de) + '</em>' : 'o livro não diz um número';
+    return { s: s, caixa: caixaCustoPm(f, chave, s.pm, null, nome, tipo, false, rot) };
   }
   //  ── ROLAR A MAGIA (dano/cura) ──────────────────────────────────
   //  Acha os dados "NdM" no texto da magia e soma os aprimoramentos
@@ -4570,7 +5242,7 @@
   function blocoAprimoramentos(f, m, i) {
     const lista = aprimoramentosDe(m);
     if (!lista.length) return '';
-    const p = pmDaMagia(m);
+    const p = pmDaMagia(f, m);
     const limite = limitePm(f);
     const linhas = lista.map((a, k) => {
       const n = quantos(m, k);
@@ -4631,7 +5303,7 @@
   // recolhe e abre: recolhida, sobra a linha do nome, com o 🔥 à mão
   // para lançar sem precisar abrir.
   function cartaoMagia(f, m, i) {
-    const p = pmDaMagia(m);
+    const p = pmDaMagia(f, m);
     const dd = dadosDaMagia(m);
     //  🎲: um só dado → rola direto; vários → um botão por dado (o jogador
     //  escolhe qual). Sempre soma os aprimoramentos de dado ligados (dd.bonus).
@@ -4653,9 +5325,10 @@
           ${m.tipo ? `<span class="fi-mag-tag fi-mag-tag--tipo">${esc(m.tipo)}</span>` : ''}
         </button>
         <span class="fi-mag-acoes">
-          ${p.total ? `<button type="button" class="fi-mag-pm-btn${p.extra ? ' fi-mag-pm-btn--apr' : ''}"
+          ${(p.total || p.meu != null) ? `<button type="button" class="fi-mag-pm-btn${p.extra ? ' fi-mag-pm-btn--apr' : ''}${p.trocado ? ' fi-pm-selo--meu' : ''}"
                   data-acao="gastar-magia" data-i="${i}"
-                  title="Gastar ${p.total} PM${p.extra ? ' (' + p.base + ' da magia + ' + p.extra + ' de aprimoramento)' : ''} — os temporários saem primeiro"
+                  data-pmselo="${esc(chavePmMagia(m))}" data-pmlivro="${p.livro}"
+                  title="Gastar ${p.total} PM${p.trocado ? ' — o SEU custo é ' + p.base + ', no livro são ' + p.livro : ''}${p.extra ? ' (' + p.base + ' da magia + ' + p.extra + ' de aprimoramento)' : ''} — os temporários saem primeiro"
             >🔥 ${p.total} PM</button>` : ''}
           ${rollHtml}
           <button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
@@ -4671,6 +5344,8 @@
           </div>
           <div class="fi-mag-desc">${descricaoDaMagia(m)}</div>
           ${blocoAprimoramentos(f, m, i)}
+          ${caixaCustoPm(f, chavePmMagia(m), p.livro,
+             p.livro ? p.livro + ' PM' : 'sem custo', m.nome, 'magia', true)}
           <input class="fi-txt fi-mag-obs" type="text" value="${esc(m.obs)}" data-campo="magias.${i}.obs"
                  placeholder="sua anotação (alvo preferido, quem costuma acompanhar…)" autocomplete="off">
         </div>`}
@@ -5097,6 +5772,23 @@
       filtroMagias = el.value;
       return aplicarFiltroMagias();
     }
+    //  ⚡ O CUSTO EM PM ESCRITO PELO JOGADOR (29/10/2026). Não passa
+    //  pelo caminho de sempre de propósito: lá o campo numérico em
+    //  branco vira 0, e aqui 0 é um custo DE VERDADE (há poder que zera
+    //  o preço). Em branco quer dizer "o do livro", e isso se guarda
+    //  APAGANDO a chave, não gravando zero.
+    if (el.dataset.pmcusto) {
+      const fc = fichaAberta();
+      if (!fc) return;
+      const k = el.dataset.pmcusto;
+      const bruto = String(el.value).trim();
+      if (!fc.pmCustos || typeof fc.pmCustos !== 'object') fc.pmCustos = {};
+      if (bruto === '') delete fc.pmCustos[k];
+      else fc.pmCustos[k] = Math.max(0, parseInt(bruto, 10) || 0);
+      sujar(fc.id, 'pmCustos');
+      pintarCustoPm(fc, k);
+      return salvar();
+    }
     const campo = el.dataset.campo;
     if (!campo) return;
     const f = fichaAberta();
@@ -5521,6 +6213,62 @@
     //  "eu coloco 400 e o sistema já calcula com a soma" — e a linha
     //  fica anotada, para no fim da sessão seguinte dar para saber se o
     //  XP daquela noite já entrou.
+    // ── ⚡ O CUSTO EM PM E O MINI-LOG (29/10/2026) ──────────────────
+    //  Nenhum destes redesenha a ficha inteira: o gasto de PM acontece
+    //  no meio do combate, e a tela pulando no meio de um turno é pior
+    //  do que o número desatualizado. O que muda é repintado no lugar
+    //  (atualizarDerivados cuida do PV/PM e das barras).
+    if (acao === 'pm-log') { pmLogAberto = !(btn.closest('details') || {}).open; return; }
+    //  O 🌀 da ficha: abre o painel do turno na mão. Fora de combate
+    //  também — ele é útil como "mesa de trabalho" do personagem, e o
+    //  jogador que desligou o abrir-sozinho precisa de uma porta.
+    if (acao === 'abrir-turno') {
+      const I = window.GA_Iniciativa;
+      avisoDeTurno(f, (I && I.rodadaAtual) ? I.rodadaAtual() : 0, true);
+      return;
+    }
+    if (acao === 'gastar-pm') {
+      const chave = btn.dataset.pmchave || '';
+      const livro = parseInt(btn.dataset.pmlivro, 10) || 0;
+      const c = custoPm(f, chave, livro);
+      if (!c.total) return;
+      aplicarDano(f, 'pm', c.total, btn.dataset.pmnome || 'habilidade',
+                  btn.dataset.pmtipo || 'outro');
+      pintarPmLog();
+      return;
+    }
+    if (acao === 'pm-mao') {
+      const campo = secao.querySelector('#fiPmMao');
+      const nota  = secao.querySelector('#fiPmMaoNota');
+      const quanto = Math.max(0, parseInt((campo && campo.value) || '', 10) || 0);
+      if (!quanto) { if (campo) campo.focus(); return; }
+      aplicarDano(f, 'pm', quanto, ((nota && nota.value) || '').trim(), 'outro');
+      pmLogAberto = true;
+      pintarPmLog();
+      const n2 = secao.querySelector('#fiPmMaoNota');
+      if (n2) n2.value = '';
+      return;
+    }
+    //  O ↩ devolve os PM pela porta da CURA — e por isso respeita o
+    //  máximo, como qualquer recuperação. Devolver "no braço" faria um
+    //  desfazer repetido inflar o PM acima do teto.
+    if (acao === 'pm-desfaz') {
+      const i = +btn.dataset.i, x = (f.pmLog || [])[i];
+      if (!x) return;
+      curarPontos(f, 'pm', x.quanto);
+      f.pmLog.splice(i, 1);
+      sujar(f.id, 'pm'); sujar(f.id, 'pmLog');
+      salvar(); pintarPmLog();
+      return;
+    }
+    if (acao === 'pm-limpa') {
+      if (!confirm('Esvaziar o mini-log de PM?\n\nSó apaga as linhas — os PM gastos continuam gastos.')) return;
+      f.pmLog = [];
+      sujar(f.id, 'pmLog');
+      salvar(); pintarPmLog();
+      return;
+    }
+
     if (acao === 'xp-log') { xpLogAberto = !(btn.closest('details') || {}).open; return; }
     if (acao === 'xp-somar') {
       const campo = secao.querySelector('#fiXpQuanto');
@@ -5848,9 +6596,10 @@
     if (acao === 'gastar-magia') {
       const m = magiaDoBotao(f, btn);
       if (!m) return;
-      const p = pmDaMagia(m);
+      const p = pmDaMagia(f, m);
       // o rótulo diz o que saiu: "Bola de Fogo · com +2 aprimorado"
-      if (p.total) aplicarDano(f, 'pm', p.total, m.nome + (p.extra ? ' (aprimorada)' : ''));
+      if (p.total) aplicarDano(f, 'pm', p.total, m.nome + (p.extra ? ' (aprimorada)' : ''), 'magia');
+      pintarPmLog();
       return;
     }
     if (acao === 'rolar-magia') {
@@ -6053,7 +6802,7 @@
     return {
       bonus: car,
       rotulo: ' (direcionado, Car ' + sinal(car) + ')',
-      depois: () => { aplicarDano(f, 'pm', 2, 'Direcionar'); render(); },
+      depois: () => { aplicarDano(f, 'pm', 2, 'Direcionar', 'habilidade'); render(); },
     };
   }
 
@@ -6460,6 +7209,7 @@
     classes: 'classes e níveis', atributos: 'atributos', atributosTemp: 'atributos temporários',
     pv: 'PV', pm: 'PM', defesa: 'Defesa', carga: 'carga', cdAtributo: 'atributo da CD', xp: 'XP',
     xpLog: 'caderno do XP',
+    pmCustos: 'custos em PM escritos por você', pmLog: 'mini-log de PM',
     resistencias: 'resistências', reducoes: 'RD', imunidades: 'imunidades', proficiencias: 'proficiências',
     condicoes: 'condições', condicoesLivres: 'sustentadas e outras condições',
     pericias: 'perícias', oficios: 'ofícios', inventario: 'inventário', tibares: 'T$',

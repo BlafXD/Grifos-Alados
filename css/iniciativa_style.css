@@ -77,7 +77,12 @@
 }
 .ga-ini-passar:hover { background: rgba(242, 232, 213, 0.18); }
 
-/* ── A LISTA ───────────────────────────────────────────────────── */
+/* ── A LISTA, EM COLUNAS FIXAS (29/10/2026) ────────────────────────
+   Uma grade, e não um flex solto: assim o PV de todas as linhas
+   começa na mesma coluna, o campo do valor também, e as setas ↑ ↓ ✕
+   formam uma pilha reta em vez de dançar conforme o tamanho do nome.
+   A quarta e a quinta colunas só existem para quem manda — é o que a
+   classe `--mando` no <ol> liga. */
 .ga-ini-lista {
   list-style: none;
   margin: 0;
@@ -86,18 +91,21 @@
   overflow-y: auto;
 }
 .ga-ini-linha {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1.3rem minmax(0, 1fr) 3.4rem;
   align-items: center;
   gap: 0.2rem;
   padding: 0.1rem 0.15rem;
   border-radius: var(--raio);
 }
+.ga-ini-lista--mando .ga-ini-linha {
+  grid-template-columns: 1.3rem minmax(0, 1fr) 3.4rem 2.6rem auto;
+}
 .ga-ini-nome {
-  flex: 1 1 auto;
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   text-align: left;
   font-family: var(--ga-fonte-corpo);
   font-size: 0.92rem;
@@ -107,17 +115,34 @@
   padding: 0.18rem 0.1rem;
   cursor: pointer;
   overflow: hidden;
+}
+.ga-ini-ico { flex: 0 0 auto; }
+/* é o NOME que corta, não a linha: o ícone fica inteiro e o "…" cai
+   no fim do nome comprido ("capangas da irmandade 11") */
+.ga-ini-txt {
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .ga-ini-nome[disabled] { cursor: default; }
 .ga-ini-pos {
-  flex: 0 0 auto;
-  min-width: 1.2rem;
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   text-align: center;
   color: var(--text-dim);
+}
+/* a célula do PV existe sempre, mesmo vazia: é ela que segura o
+   alinhamento das criaturas, que nunca têm ficha */
+.ga-ini-pvcel {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+.ga-ini-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
 }
 
 /* a vez de quem: a linha inteira acende */
@@ -127,7 +152,16 @@
 }
 .ga-ini-linha--vez .ga-ini-nome { font-weight: 700; }
 .ga-ini-linha--vez .ga-ini-pos { color: var(--gold-deep); }
-
+/* quem joga logo depois: um traço discreto, para ir pegando os dados */
+.ga-ini-linha--proximo { box-shadow: inset 3px 0 0 var(--parchment3); }
+.ga-ini-seguir {
+  margin: 0;
+  padding: 0 0.6rem 0.4rem;
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.76rem;
+  color: var(--text-dim);
+}
+.ga-ini-seguir strong { color: var(--ink); }
 /* ── O PV DA FICHA, AO LADO DO NOME ───────────────────────────────
    Só aparece na linha de quem tem ficha à vista (a sua, se você é
    jogador; as da mesa, se você é o mestre). O número forte é o que a
@@ -136,8 +170,10 @@
    sublinhado dourado diz que há PV temporário em pé. */
 .ga-ini-pv {
   flex: 0 0 auto;
+  max-width: 100%;
   display: inline-flex;
   align-items: baseline;
+  justify-content: flex-end;
   gap: 0.05rem;
   padding: 0.12rem 0.3rem;
   font-family: var(--ga-fonte-corpo);
@@ -165,8 +201,11 @@
 .ga-ini-pv--temp { box-shadow: inset 0 -0.15rem 0 var(--gold-deep); }
 
 .ga-ini-val {
-  flex: 0 0 2.6rem;
-  width: 2.6rem;
+  /* na grade quem manda na largura é a coluna; o box-sizing é que
+     impede o padding de estourar os 2,6rem dela */
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   font-family: var(--ga-fonte-corpo);
   font-size: 0.85rem;
   text-align: center;

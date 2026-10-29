@@ -316,3 +316,49 @@
   border: 1px solid var(--ink-faded);
   border-radius: var(--raio);
 }
+
+/* ═══ 🗑 ENCERRAR A CAMPANHA (29/10/2026) ══════════════════════════
+   As duas listas lado a lado — o que sai e o que fica. Lado a lado é
+   o ponto: a comparação é a informação, e empilhadas uma depois da
+   outra o leitor só vê a primeira. No celular empilham, porque não há
+   largura, e aí a cor da borda é que separa as duas. */
+.me-enc {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.7rem;
+  margin: 0.4rem 0 0.6rem;
+}
+.me-enc-col {
+  padding: 0.5rem 0.7rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.me-enc-col--sai  { border-left: 3px solid var(--carmim); }
+.me-enc-col--fica { border-left: 3px solid var(--verde); }
+.me-enc-col h3 {
+  margin: 0 0 0.3rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.me-enc-col--sai h3  { color: var(--carmim); }
+.me-enc-col--fica h3 { color: var(--verde); }
+.me-enc-col ul { margin: 0; padding-left: 1.1rem; }
+.me-enc-col li { font-size: 0.86rem; line-height: 1.45; color: var(--text-mid); margin: 0.2rem 0; }
+.me-enc-check {
+  display: block;
+  margin: 0 0 0.6rem;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px dashed var(--carmim);
+  border-radius: var(--raio);
+}
+.me-enc-check em { font-style: italic; font-size: 0.8rem; color: var(--text-dim); }
+.me-enc-confirma { align-items: flex-end; }
+.me-enc-estado { margin: 0.3rem 0 0; font-size: 0.88rem; color: var(--text-mid); }
+.me-enc-falhas { color: var(--carmim); font-size: 0.84rem; }

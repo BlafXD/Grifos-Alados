@@ -226,7 +226,12 @@
   // não precisa saber em que casa a lista está.
   function aplicarLocal(caminho, valor) {
     const p = String(caminho).split('/');
-    if (p[0] === 'atual')  { atual  = valor; return; }
+    //  Na lista LOCAL (mestre fora de mesa) o aviso de turno nunca
+    //  abria: quem o chamava era só o ouvinte do Firebase, e aqui não
+    //  há banco nenhum. Com o painel do turno de 29/10 isso passou a
+    //  importar — ele é útil para o próprio mestre, que também tem
+    //  ficha. Mesma função, mesma guarda contra repetir (turnoVisto).
+    if (p[0] === 'atual')  { atual  = valor; aoMudarAtual(); return; }
     if (p[0] === 'rodada') { rodada = valor; return; }
     if (p[0] === 'linhas' && p[1] && p[2] && linhas[p[1]]) linhas[p[1]][p[2]] = valor;
   }
@@ -572,22 +577,42 @@
       '<b>' + total + '</b><i>/' + max + '</i></button>';
   }
 
-  function linhaHtml(l, i, fichas) {
+  //  ── UMA LINHA DA LISTA, EM COLUNAS FIXAS (29/10/2026) ───────────
+  //  Antes a linha era um flex solto: o nome crescia, e o que vinha
+  //  depois dele — o PV, o número da iniciativa, as setas — começava
+  //  onde o anterior acabasse. Como o PV só existe em quem tem ficha à
+  //  vista, e "8/40" é mais estreito que "120/120", cada linha punha os
+  //  seus botões num lugar diferente: a lista inteira ficava em
+  //  escadinha, e o ✕ de uma linha caía em cima do ↓ da outra.
+  //
+  //  Agora é uma GRADE com as mesmas colunas em todas as linhas:
+  //    nº │ ícone + nome │ PV │ valor │ ↑ ↓ ✕
+  //  A célula do PV existe mesmo vazia (é o que mantém o alinhamento
+  //  da criatura, que nunca tem ficha), e as duas últimas colunas só
+  //  nascem para quem manda — por isso o <ol> leva a classe
+  //  `ga-ini-lista--mando`, que é quem escolhe o desenho da grade.
+  function linhaHtml(l, i, fichas, proximo) {
     const eu = l.id === atual;
     const v = valores[l.id] || {};
     const icone = l.tipo === 'jogador' ? '🧑' : '👹';
     const controles = mando() ? '' +
       '<input class="ga-ini-val" type="number" inputmode="numeric" value="' +
         (v.valor == null ? '' : esc(v.valor)) + '" data-ini-valor="' + esc(l.id) + '" title="Valor da iniciativa">' +
-      '<button type="button" class="ga-ini-mini" data-ini="sobe" data-id="' + esc(l.id) + '" title="Subir">↑</button>' +
-      '<button type="button" class="ga-ini-mini" data-ini="desce" data-id="' + esc(l.id) + '" title="Descer">↓</button>' +
-      '<button type="button" class="ga-ini-mini ga-ini-mini--x" data-ini="tira" data-id="' + esc(l.id) + '" title="Tirar da lista">✕</button>'
+      '<span class="ga-ini-ctrl">' +
+        '<button type="button" class="ga-ini-mini" data-ini="sobe" data-id="' + esc(l.id) + '" title="Subir">↑</button>' +
+        '<button type="button" class="ga-ini-mini" data-ini="desce" data-id="' + esc(l.id) + '" title="Descer">↓</button>' +
+        '<button type="button" class="ga-ini-mini ga-ini-mini--x" data-ini="tira" data-id="' + esc(l.id) + '" title="Tirar da lista">✕</button>' +
+      '</span>'
       : '';
-    return '<li class="ga-ini-linha' + (eu ? ' ga-ini-linha--vez' : '') + '">' +
+    return '<li class="ga-ini-linha' + (eu ? ' ga-ini-linha--vez' : '') +
+        (proximo ? ' ga-ini-linha--proximo' : '') + '">' +
+      '<span class="ga-ini-pos">' + (i + 1) + '</span>' +
       '<button type="button" class="ga-ini-nome" data-ini="' + (mando() ? 'vez' : '') + '" data-id="' + esc(l.id) + '"' +
         (mando() ? ' title="Dar a vez a esta linha"' : ' disabled') + '>' +
-        '<span class="ga-ini-pos">' + (i + 1) + '</span>' + icone + ' ' + esc(l.nome) +
-      '</button>' + pvHtml(l, fichas) + controles +
+        '<span class="ga-ini-ico" aria-hidden="true">' + icone + '</span>' +
+        '<span class="ga-ini-txt">' + esc(l.nome) + '</span>' +
+      '</button>' +
+      '<span class="ga-ini-pvcel">' + pvHtml(l, fichas) + '</span>' + controles +
     '</li>';
   }
 
@@ -645,8 +670,19 @@
     let corpo = '';
     if (aberto) {
       const fichas = fichasVisiveis();
+      //  Quem joga depois de quem está jogando: a linha dele ganha um
+      //  traço no lado, e o rodapé diz o nome. Numa mesa de nove fichas,
+      //  é o que faz a pessoa já ir pegando os dados.
+      const seg = temLista ? idSeguinte() : null;
+      const prox = (seg && atual) ? seg.proximo : null;
       corpo = temLista
-        ? '<ol class="ga-ini-lista">' + lista.map((l, i) => linhaHtml(l, i, fichas)).join('') + '</ol>'
+        ? '<ol class="ga-ini-lista' + (mando() ? ' ga-ini-lista--mando' : '') + '">' +
+            lista.map((l, i) => linhaHtml(l, i, fichas, l.id === prox && l.id !== atual)).join('') +
+          '</ol>' +
+          (prox && linhas[prox] && prox !== atual
+            ? '<p class="ga-ini-seguir">a seguir: <strong>' + esc(linhas[prox].nome) + '</strong>' +
+              (seg.virou ? ' <em>— e a rodada vira</em>' : '') + '</p>'
+            : '')
         : '<p class="ga-ini-vazio">' + esc(recado ||
             'Nenhuma iniciativa rolada. Monte com a cena que você está narrando.') + '</p>';
       if (mando()) {
@@ -722,6 +758,34 @@
     quantas: quantas,
     invocar: invocar,
     rodadaAtual: function () { return rodada; },
+    //  ── O QUE O AVISO DE TURNO PRECISA SABER (29/10/2026) ─────────
+    //  O pop-up de início de turno da ficha mostra a vizinhança do
+    //  combate: quem está jogando, quem vem depois, em que posição da
+    //  ordem você está. Só NOME e POSIÇÃO saem daqui — nunca o valor
+    //  rolado, que continua sendo segredo do mestre (ver o cabeçalho
+    //  deste arquivo, "QUEM VÊ O QUÊ na mesa").
+    cenaAgora: function () {
+      const lista = emOrdem();
+      if (!lista.length) return null;
+      const i = lista.findIndex(function (l) { return l.id === atual; });
+      const seg = i >= 0 ? lista[(i + 1) % lista.length] : null;
+      return {
+        rodada: rodada,
+        quantos: lista.length,
+        posicao: i >= 0 ? i + 1 : 0,
+        agora: i >= 0 ? { nome: lista[i].nome, tipo: lista[i].tipo || 'criatura' } : null,
+        proximo: seg ? { nome: seg.nome, tipo: seg.tipo || 'criatura' } : null,
+        viraRodada: i >= 0 && i === lista.length - 1,
+        ordem: lista.map(function (l, k) {
+          return { nome: l.nome, tipo: l.tipo || 'criatura', vez: k === i, pos: k + 1 };
+        }),
+      };
+    },
+    //  Passar o turno DE DENTRO do aviso. Só funciona para quem já
+    //  manda na lista (mestre e auxiliar): a função sai pela mesma
+    //  porta de sempre, e o `mando()` lá dentro é o porteiro.
+    podePassar: mando,
+    passar: passarTurno,
     //  A lista de combatentes de agora — para o seletor de alvos dos
     //  "efeitos em área" (js/efeitos-area.js). Só nome, tipo e os elos com
     //  a ficha; nada de valor rolado (que é secreto do mestre).

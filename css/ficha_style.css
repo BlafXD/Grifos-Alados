@@ -3702,3 +3702,233 @@
 .fi-turno-area-tit { font-family: var(--ga-fonte-rotulo); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em;color: var(--azul); margin-bottom: 0.2rem; }
 .fi-turno-area-item { font-size: 0.95rem; line-height: 1.4; color: var(--text-mid); border-left: 2px solid var(--azul); padding-left: 0.5rem; margin: 0.15rem 0; }
 .fi-turno-area-item--in { border-left-color: var(--carmim); }
+
+/* ═══ ⚡ O CUSTO EM PM ESCRITO PELO JOGADOR (29/10/2026) ═══════════
+   A caixinha que vai no corpo de cada cartão de magia, poder e
+   habilidade de classe. Em linha, e não em grade: num celular ela
+   quebra sozinha e continua legível. */
+.fi-pmc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.4rem 0 0.2rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--gold-deep);
+  border-radius: var(--raio);
+}
+.fi-pmc-rot {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--gold-deep);
+}
+.fi-pmc-livro { font-size: 0.84rem; color: var(--text-mid); }
+.fi-pmc-livro em { font-style: italic; font-size: 0.74rem; color: var(--text-dim); }
+.fi-pmc-val { width: 3.4rem; }
+/* o número que o jogador escreveu, destacado do placeholder do livro */
+.fi-pmc-val--meu {
+  font-weight: 700;
+  color: var(--gold-deep);
+  border-color: var(--gold-deep);
+  background: var(--gold-pale);
+}
+.fi-pmc-gastar {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.82rem;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  color: var(--parchment);
+  background: var(--rust);
+  border: 1px solid var(--rust);
+  border-radius: var(--raio);
+}
+.fi-pmc-gastar:hover:not([disabled]) { background: var(--rust-dark); border-color: var(--rust-dark); }
+.fi-pmc-gastar[disabled] {
+  cursor: default;
+  opacity: 0.45;
+  color: var(--text-dim);
+  background: var(--parchment);
+  border-color: var(--parchment3);
+}
+.fi-pmc-gastar--meu { box-shadow: inset 0 -0.15rem 0 var(--gold-deep); }
+.fi-pmc-nota {
+  flex: 1 1 100%;
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+/* o 🔥 do cabeçalho do cartão (poder e habilidade de classe) */
+.fi-pm-selo {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.76rem;
+  line-height: 1;
+  padding: 0.22rem 0.4rem;
+  cursor: pointer;
+  color: var(--rust);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  white-space: nowrap;
+}
+.fi-pm-selo:hover { color: var(--parchment); background: var(--rust); border-color: var(--rust); }
+/* vale para o 🔥 da magia também: o custo não é o do livro */
+.fi-pm-selo--meu { box-shadow: inset 0 -0.15rem 0 var(--gold-deep); }
+
+/* ═══ ⚡ O MINI-LOG DE PM ══════════════════════════════════════════ */
+.fi-pml { margin: 0.5rem 0 0.2rem; }
+.fi-pml > summary {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--gold-deep);
+  cursor: pointer;
+}
+.fi-pml > summary em {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.76rem;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0;
+  color: var(--text-dim);
+}
+.fi-pml-lista { list-style: none; margin: 0.3rem 0; padding: 0; }
+.fi-pml-linha {
+  display: grid;
+  grid-template-columns: 2.7rem 1.1rem 2.1rem minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.12rem 0;
+  border-bottom: 1px dotted var(--parchment3);
+}
+.fi-pml-hora { font-family: var(--ga-fonte-rotulo); font-size: 0.6rem; color: var(--text-dim); }
+.fi-pml-ico { text-align: center; font-size: 0.8rem; }
+.fi-pml-quanto { font-size: 0.86rem; color: var(--rust); text-align: right; }
+.fi-pml-de {
+  font-size: 0.85rem;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fi-pml-de em { font-style: italic; color: var(--text-dim); }
+.fi-pml-restou { font-family: var(--ga-fonte-nota); font-size: 0.72rem; color: var(--text-dim); }
+.fi-pml-vazio { font-family: var(--ga-fonte-nota); font-style: italic; font-size: 0.84rem; color: var(--text-dim); margin: 0.3rem 0; }
+.fi-pml-mao { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; margin-top: 0.35rem; }
+.fi-pml-mao .fi-txt { flex: 1 1 10rem; min-width: 0; }
+.fi-turno-chamar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0.4rem 0 0; }
+.fi-turno-chamar .fi-nota { margin: 0; }
+
+/* ═══ 🌀 O PAINEL DO TURNO (reformado em 29/10/2026) ═══════════════
+   A caixa que abre quando a iniciativa chega em você. Deixou de ser
+   só "resolva o sangramento" e passou a ser o turno inteiro: quem vem
+   depois, PV e PM, ataques, magias e poderes com custo. */
+.fi-turno-cena {
+  margin: 0 0 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-turno-cena-lin { margin: 0 0 0.3rem; font-size: 0.88rem; color: var(--text-mid); }
+.fi-turno-cena-lin em { font-style: italic; color: var(--gold-deep); }
+.fi-turno-fila { display: flex; flex-wrap: wrap; gap: 0.2rem; }
+.fi-turno-fila-item {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.64rem;
+  padding: 0.12rem 0.35rem;
+  color: var(--text-dim);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: 999px;
+}
+.fi-turno-fila-item--vez {
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--gold-pale);
+  border-color: var(--gold-deep);
+}
+.fi-turno-vitais { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 0.5rem; }
+.fi-turno-vital { flex: 1 1 10rem; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem; }
+.fi-turno-vital-rot { font-family: var(--ga-fonte-rotulo); font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; color: var(--text-dim); }
+.fi-turno-vital-num { font-size: 1.25rem; color: var(--ink); }
+.fi-turno-vital-max { font-size: 0.8rem; color: var(--text-dim); }
+.fi-turno-vital-temp { font-family: var(--ga-fonte-rotulo); font-size: 0.62rem; color: var(--gold-deep); }
+.fi-turno-vital .fi-barra-pv { flex: 1 1 100%; }
+.fi-turno-conds { margin: 0 0 0.5rem; font-size: 0.82rem; }
+.fi-turno-cond {
+  display: inline-block;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.64rem;
+  padding: 0.1rem 0.35rem;
+  margin-right: 0.2rem;
+  color: var(--parchment);
+  background: var(--rust-dark);
+  border-radius: 999px;
+}
+/* o eco da última rolagem feita DENTRO da caixa */
+.fi-turno-saida {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  padding: 0.35rem 0.6rem;
+  background: var(--gold-pale);
+  border: 1px solid var(--gold-deep);
+  border-radius: var(--raio);
+}
+.fi-turno-saida-rot { font-family: var(--ga-fonte-rotulo); font-size: 0.68rem; color: var(--text-mid); }
+.fi-turno-saida-num { font-size: 1.2rem; color: var(--ink); }
+.fi-turno-saida-det { font-family: var(--ga-fonte-nota); font-size: 0.76rem; color: var(--text-dim); }
+.fi-turno-bloco { margin: 0 0 0.4rem; }
+.fi-turno-bloco > summary {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--rust);
+  cursor: pointer;
+}
+.fi-turno-bloco > summary em {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.76rem;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0;
+  color: var(--text-dim);
+}
+.fi-turno-atqs, .fi-turno-mags, .fi-turno-pods { list-style: none; margin: 0.25rem 0 0; padding: 0; }
+.fi-turno-atq, .fi-turno-mag, .fi-turno-pod {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem 0;
+  border-bottom: 1px dotted var(--parchment3);
+}
+.fi-turno-atq-nome, .fi-turno-mag-nome {
+  flex: 1 1 8rem;
+  min-width: 0;
+  font-size: 0.9rem;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fi-turno-mag-nome em { font-style: italic; font-size: 0.74rem; color: var(--text-dim); }
+.fi-turno-b { font-size: 0.8rem; padding: 0.18rem 0.42rem; white-space: nowrap; }
+.fi-turno-b--crit { color: var(--carmim); }
+/* a magia que não cabe no PM que resta: avisa, não impede */
+.fi-turno-mag--cara .fi-turno-mag-nome { color: var(--text-dim); }
+.fi-turno-pm { margin: 0.2rem 0 0.4rem; font-family: var(--ga-fonte-nota); font-size: 0.78rem; color: var(--text-dim); }
+.fi-turno-pm-item { margin-right: 0.6rem; }
+.fi-turno-pm-item strong { color: var(--rust); }
+.fi-turno-pe { flex-wrap: wrap; gap: 0.35rem; }
+.fi-turno-calar { font-size: 0.72rem; }
+.fi-pml-limpar { margin-left: auto; }

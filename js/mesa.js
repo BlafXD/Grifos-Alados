@@ -514,6 +514,269 @@
         : 'Quem abrir o link precisa pedir, e você aprova aqui.') + '</p>');
   }
 
+  // ═══ 🗑 ENCERRAR A CAMPANHA (29/10/2026) ═════════════════════════
+  //  Pedido dele: *"uma opção para o mestre apagar campanha, mas não
+  //  apagar as notícias da campanha — a não ser que ele queira"*. Uma
+  //  campanha termina; a mesa deixa de existir; a gazeta dela fica,
+  //  porque a gazeta é memória do mundo e não mural do grupo (é o que
+  //  o noticias-mesa.js diz desde que nasceu: qualquer pessoa lê as
+  //  notícias de TODAS as campanhas, "porque ficam nas memórias").
+  //
+  //  O QUE SAI (tudo dentro de `mesas/<id>`):
+  //    • os membros e os pedidos de entrada — a sala fecha para todos;
+  //    • as fichas que os jogadores publicaram NESTA mesa;
+  //    • o log de rolagens, a iniciativa e os efeitos em área;
+  //    • os dados da mesa (Loja, Bases, Viagens) e o inventário comum;
+  //    • o nome e a porta (entradaLivre).
+  //  O QUE FICA:
+  //    • a GAZETA (`campanhas/<id>`), a menos que ele marque a caixa;
+  //    • a ficha de cada jogador na conta DELE (`usuarios/<uid>/fichas`)
+  //      e no navegador dele — ninguém perde personagem;
+  //    • tudo o que o MESTRE preparou: sessões, cenas, criaturas,
+  //      narração e anotações, que moram na conta dele e só perdem a
+  //      etiqueta da campanha (voltam para "Sem campanha").
+  //
+  //  DUAS COISAS QUE O BANCO NÃO DEIXA APAGAR, e é bom que não deixe:
+  //  `dono` e `criadaEm`. A regra de `mesas/$sala` só autoriza escrita
+  //  quando o nó AINDA NÃO EXISTE (é o que impede um estranho de criar
+  //  mesa por cima da sua), e `dono` só aceita gravação quando está
+  //  vazio. Então a sala não some do banco: fica a lápide — o uid do
+  //  dono, a data e a marca `meta.encerrada`. Sem membros, sem nome e
+  //  sem conteúdo, ela não aparece para ninguém e não dá para entrar.
+  //  E o id continua sendo seu: ninguém reabre uma campanha sua com o
+  //  mesmo endereço. Apagar o nó inteiro exigiria mudar as regras no
+  //  console (o desenho inteiro está em docs/turno-pm-e-encerrar.md §6,
+  //  e as regras no ar, em docs/regras-firebase.md).
+  //
+  //  A ORDEM DAS REMOÇÕES IMPORTA: `membros` sai POR ÚLTIMO. Toda regra
+  //  de escrita desta sala pergunta "quem está pedindo é o mestre?", e
+  //  a resposta está em `membros/<uid>/papel`. Tirar os membros primeiro
+  //  seria serrar o galho — as remoções seguintes cairiam em
+  //  "permission denied" com a sala meio apagada.
+  function nomeDaCampanha() {
+    return (est.mesa && est.mesa.nome) || mesaId();
+  }
+  function blocoEncerrar() {
+    if (est.papel !== 'mestre') return '';
+    const id = mesaId();
+    const quantos = Object.keys(est.membros || {}).length;
+    return cartao('🗑 Encerrar a campanha',
+      '<p class="me-p">Quando a mesa deixar de existir, isto fecha a sala no banco: membros, fichas ' +
+      'publicadas aqui, rolagens, iniciativa, efeitos em área, Loja, Bases e Viagens da campanha. ' +
+      '<strong>A gazeta de notícias não é apagada</strong> — a menos que você marque a caixa no aviso.</p>' +
+      '<p class="me-mini">A sua preparação (sessões, cenas, criaturas, narração e anotações) fica ' +
+      'inteira na sua conta, e cada jogador continua com a ficha dele. ' +
+      (quantos ? '<strong>' + quantos + '</strong> pessoa' + (quantos > 1 ? 's estão' : ' está') +
+        ' na mesa agora.' : 'Não há ninguém na mesa agora.') + '</p>' +
+      '<div class="me-form">' +
+        '<button type="button" class="me-btn me-btn--perigo" data-mesa="encerrar">' +
+          '🗑 Encerrar «' + esc(nomeDaCampanha()) + '»</button>' +
+      '</div>' +
+      '<p class="me-mini">O botão abre um aviso com a lista inteira do que sai e do que fica, e pede ' +
+      'que você escreva o nome da campanha antes de confirmar. <strong>Nada é apagado até lá.</strong> ' +
+      'O id da sala é <code>' + esc(id) + '</code>.</p>');
+  }
+
+  //  O aviso. É deliberadamente longo: apagar uma mesa é a única coisa
+  //  irreversível do site, e a conta do que sai tem de caber na tela
+  //  ANTES de o dedo chegar no botão.
+  function abrirEncerrar() {
+    if (est.papel !== 'mestre' || !window.GA_abrirModal) return;
+    const id = mesaId();
+    const nome = nomeDaCampanha();
+    const membros = est.membros || {};
+    const quemFica = Object.keys(membros)
+      .map(u => (membros[u] && membros[u].nome) || u)
+      .slice(0, 12);
+    const C = window.GA_Combates;
+    const prep = (C && C.contarDaCampanha) ? C.contarDaCampanha(id) : null;
+    const gaz = (window.GA_Noticias && window.GA_Noticias.gazetaDe)
+      ? window.GA_Noticias.gazetaDe(id) : null;
+    const temGazeta = !!gaz;
+    const quantasNot = gaz ? gaz.noticias : 0;
+    const overlay = window.GA_abrirModal(
+      '<div class="ga-modal-cab">' +
+        '<span>🗑 Encerrar «' + esc(nome) + '»</span>' +
+        '<button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>' +
+      '</div>' +
+      '<p class="ga-modal-dica">Leia as duas listas. <strong>Nada acontece até você escrever o nome ' +
+        'da campanha e clicar em encerrar</strong> — e depois disso não há volta.</p>' +
+      '<div class="me-enc">' +
+        '<div class="me-enc-col me-enc-col--sai">' +
+          '<h3>Será apagado</h3>' +
+          '<ul>' +
+            '<li><strong>A sala</strong> <code>' + esc(id) + '</code>: ninguém mais entra pelo link.</li>' +
+            '<li><strong>Os membros</strong>' + (quemFica.length
+              ? ' — ' + esc(quemFica.join(', ')) + (Object.keys(membros).length > 12 ? ' e outros' : '')
+              : ' (não há ninguém agora)') + ', e os pedidos de entrada pendentes.</li>' +
+            '<li><strong>As fichas publicadas nesta mesa</strong> — a cópia que mora na sala. ' +
+              'Cada jogador continua com a dele.</li>' +
+            '<li><strong>O log de rolagens</strong> da mesa e a <strong>iniciativa</strong> em andamento.</li>' +
+            '<li><strong>Os efeitos em área</strong> ativos.</li>' +
+            '<li><strong>A Loja, as Bases e as Viagens</strong> desta campanha, e o inventário comum.</li>' +
+            '<li><strong>O nome</strong> e o ajuste de porta aberta / com aprovação.</li>' +
+          '</ul>' +
+        '</div>' +
+        '<div class="me-enc-col me-enc-col--fica">' +
+          '<h3>NÃO será apagado</h3>' +
+          '<ul>' +
+            '<li><strong>A gazeta de notícias</strong>' + (temGazeta
+              ? ' — <strong>' + quantasNot + '</strong> manchete' + (quantasNot === 1 ? '' : 's')
+              : ' (esta campanha ainda não tem nenhuma)') +
+              '. Fica pública, como a de todas as campanhas. Marque a caixa abaixo se quiser apagá-la junto.</li>' +
+            '<li><strong>A ficha de cada jogador</strong>, na conta dele e no navegador dele.</li>' +
+            '<li><strong>A sua preparação</strong>: ' + (prep && prep.sessoes
+              ? '<strong>' + prep.sessoes + '</strong> sessão' + (prep.sessoes > 1 ? 'ões' : '') +
+                ', <strong>' + prep.cenas + '</strong> cena' + (prep.cenas === 1 ? '' : 's') +
+                ' e <strong>' + prep.criaturas + '</strong> criatura' + (prep.criaturas === 1 ? '' : 's')
+              : 'as sessões, cenas e criaturas') +
+              ', com a narração e as anotações. Fica tudo na sua conta e volta para ' +
+              '<strong>Sem campanha</strong> na aba ⚔ Combates.</li>' +
+            '<li><strong>As suas Anotações</strong> (aba ▤) e o seu bestiário inteiro.</li>' +
+            '<li><strong>O id da sala</strong> continua carimbado com o seu nome: ninguém abre outra ' +
+              'campanha neste mesmo endereço.</li>' +
+          '</ul>' +
+        '</div>' +
+      '</div>' +
+      (temGazeta
+        ? '<label class="me-enc-check"><input type="checkbox" id="meEncGazeta">' +
+          ' Apagar <strong>também</strong> a gazeta desta campanha ' +
+          '<em>(as ' + quantasNot + ' manchete' + (quantasNot === 1 ? '' : 's') +
+          ' somem para todo mundo, e não há como voltar)</em></label>'
+        : '<p class="me-enc-check me-mini">Esta campanha não tem gazeta nenhuma — não há notícia a preservar nem a apagar.</p>') +
+      '<div class="me-form me-enc-confirma">' +
+        '<label class="me-campo">Escreva <code>' + esc(nome) + '</code>' +
+          '<input type="text" id="meEncNome" autocomplete="off" placeholder="' + esc(nome) + '"></label>' +
+        '<button type="button" class="me-btn me-btn--perigo" id="meEncFazer" disabled>🗑 Encerrar para sempre</button>' +
+      '</div>' +
+      '<p class="me-enc-estado" id="meEncEstado"></p>' +
+      '<div class="ga-modal-acoes"><button type="button" class="me-btn" data-ga-fechar>Cancelar</button></div>');
+    if (!overlay) return;
+    const campo  = overlay.querySelector('#meEncNome');
+    const fazer  = overlay.querySelector('#meEncFazer');
+    const estado = overlay.querySelector('#meEncEstado');
+    const caixa  = overlay.querySelector('#meEncGazeta');
+    //  O botão só acende com o nome escrito igualzinho (sem olhar
+    //  maiúscula nem espaço nas pontas). É a trava de digitar o nome,
+    //  a mesma que o GitHub usa para apagar repositório — e aqui ela
+    //  vale pelo mesmo motivo.
+    const conferir = () => {
+      const ok = campo.value.trim().toLowerCase() === String(nome).trim().toLowerCase();
+      fazer.disabled = !ok;
+    };
+    campo.addEventListener('input', conferir);
+    campo.focus();
+    fazer.addEventListener('click', () => {
+      fazer.disabled = true;
+      estado.textContent = 'encerrando…';
+      encerrarCampanha(id, !!(caixa && caixa.checked))
+        .then(r => {
+          estado.innerHTML = '✓ campanha encerrada' +
+            (r.gazeta ? ', com a gazeta' : ', e a gazeta ficou') +
+            (r.soltas ? ' · ' + r.soltas + ' sessão' + (r.soltas > 1 ? 'ões voltaram' : ' voltou') +
+              ' para "Sem campanha"' : '') + '.' +
+            //  Um pedaço que o banco recusou não some em silêncio: o
+            //  mestre tem de saber o que FICOU para trás, para poder
+            //  apagar à mão no console se quiser.
+            (r.falhas.length
+              ? '<br><span class="me-enc-falhas">⚠ o banco recusou apagar: ' +
+                esc(r.falhas.join('; ')) + '. O resto saiu.</span>'
+              : '');
+          //  Sem falha, sai da sala sozinho; com falha, fica na tela
+          //  para o recado poder ser lido.
+          if (!r.falhas.length) setTimeout(irParaOHub, 1400);
+        })
+        .catch(e => {
+          estado.textContent = '⚠ ' + recado(e, 'encerrar');
+          fazer.disabled = false;
+        });
+    });
+  }
+
+  //  A remoção em si. Caminho a caminho, e `membros` por último (ver
+  //  acima). Um `update()` só com vários caminhos seria mais curto, mas
+  //  o Firebase valida caminho a caminho e recusa o LOTE INTEIRO se um
+  //  só for negado — e aí a sala ficaria exatamente como estava, sem
+  //  dizer qual pedaço travou. Em série, cada falha é identificável e o
+  //  que já saiu, saiu.
+  //  ONDE AS REGRAS DO BANCO MANDAM NA FORMA DISTO (conferido contra
+  //  docs/regras-firebase.md, caminho a caminho):
+  //    • `pedidos` e `fichas` só dão escrita em `pedidos/$uid` e
+  //      `fichas/$uid` — apagar o nó PAI é recusado, então os dois são
+  //      varridos filho a filho;
+  //    • de `jogadores`, só `jogadores/inventario` tem regra;
+  //    • `dono` e `criadaEm` não têm escrita nenhuma: ficam (é a lápide,
+  //      e é ela que impede alguém de reabrir a sala no seu endereço);
+  //    • a gazeta (`campanhas/<id>`) só o DONO dela apaga. Uma gazeta
+  //      órfã — publicada antes de o campo `dono` existir — recusa, e
+  //      isso vira recado, não exceção: o resto do encerramento segue.
+  //
+  //  Nenhum passo derruba os outros. Um `update()` de vários caminhos
+  //  seria mais curto, mas o Firebase recusa o LOTE INTEIRO quando um só
+  //  caminho é negado — e aí a sala ficaria exatamente como estava, sem
+  //  dizer qual pedaço travou. Em série, e cada falha anotada pelo nome,
+  //  o mestre vê o que saiu e o que não saiu.
+  function encerrarCampanha(id, comGazeta) {
+    const b = db(), u = est.usuario;
+    if (!b || !u || !id) return Promise.reject(new Error('sem banco ou sem conta'));
+    const base = 'mesas/' + id + '/';
+    const falhas = [];
+    const passos = [];
+    const simples = (rot, caminho) => passos.push({
+      rot: rot, faz: () => b.ref(caminho).remove(),
+    });
+    //  Filho a filho, onde a regra só autoriza o filho.
+    const filhoAFilho = (rot, caminho) => passos.push({
+      rot: rot,
+      faz: () => b.ref(caminho).once('value').then(s => {
+        const ps = [];
+        s.forEach(c => { ps.push(b.ref(caminho + '/' + c.key).remove()); });
+        return Promise.all(ps);
+      }),
+    });
+
+    simples('rolagens',        base + 'rolagens');
+    simples('iniciativa',      base + 'iniciativa');
+    simples('valores da iniciativa', base + 'iniciativaValores');
+    simples('efeitos em área', base + 'efeitosArea');
+    simples('Loja, Bases e Viagens', base + 'dados');
+    simples('inventário comum', base + 'jogadores/inventario');
+    filhoAFilho('pedidos de entrada', base + 'pedidos');
+    filhoAFilho('fichas publicadas na mesa', base + 'fichas');
+    simples('nome da campanha', base + 'nome');
+    simples('porta de entrada', base + 'entradaLivre');
+    //  A lápide, ANTES de perder o papel de mestre. Substitui o `meta`
+    //  inteiro — o que havia nele era o carimbo de hora do 📡, e não há
+    //  mais nada para sincronizar.
+    passos.push({ rot: 'marca de encerrada', faz: () => b.ref(base + 'meta').set({
+      encerrada: true,
+      encerradaEm: firebase.database.ServerValue.TIMESTAMP,
+      encerradaPor: u.uid,
+    }) });
+    if (comGazeta) simples('gazeta de notícias', 'campanhas/' + id);
+    simples('a campanha na sua lista', 'usuarios/' + u.uid + '/mesas/' + id);
+    //  Os membros POR ÚLTIMO: toda regra desta sala pergunta
+    //  "membros/<uid>/papel === mestre?", e tirar os membros antes seria
+    //  serrar o galho — tudo acima cairia em "permission denied".
+    simples('membros', base + 'membros');
+
+    let p = Promise.resolve();
+    passos.forEach(passo => {
+      p = p.then(() => passo.faz().catch(e => {
+        falhas.push(passo.rot + ' (' + ((e && e.message) || 'recusado') + ')');
+      }));
+    });
+    return p.then(() => {
+      const C = window.GA_Combates;
+      const soltas = (C && C.soltarDaCampanha) ? C.soltarDaCampanha(id) : 0;
+      return {
+        gazeta: !!comGazeta && falhas.every(x => x.indexOf('gazeta') < 0),
+        soltas: soltas,
+        falhas: falhas,
+      };
+    });
+  }
+
   // O painel de criar campanha só existe no lado do mestre: a página dos
   // jogadores é para jogar, não para administrar mesa.
   //
@@ -610,7 +873,7 @@
     }
     alvo.innerHTML = cabecalho() + '<div class="me-grade">' +
       blocoConta() + blocoEntrada() + blocoPedidos() + blocoMembros() +
-      blocoEstaMesa() + blocoMinhasMesas() + '</div>';
+      blocoEstaMesa() + blocoMinhasMesas() + blocoEncerrar() + '</div>';
   }
 
   function valorDe(id) {
@@ -642,6 +905,7 @@
     if (acao === 'abrir')       return abrirMesa(btn.dataset.id);
     if (acao === 'salvar-nome') return salvarNome(valorDe('meNomeMesa'));
     if (acao === 'criar')       return criarCampanha(valorDe('meNovaCamp'));
+    if (acao === 'encerrar')    return abrirEncerrar();
     if (acao === 'copiar') {
       const txt = btn.dataset.link || '';
       if (navigator.clipboard) navigator.clipboard.writeText(txt).catch(() => {});

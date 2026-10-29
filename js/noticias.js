@@ -365,9 +365,21 @@
     pintarLinhaMesa();
   }
 
+  //  Esta campanha tem gazeta? É o que o aviso de "🗑 Encerrar a
+  //  campanha" (js/mesa.js) pergunta antes de oferecer apagá-la junto:
+  //  propor apagar o que não existe só assusta à toa.
+  //  Conta as notícias para o aviso poder dizer quantas somem.
+  function gazetaDe(id) {
+    const c = dados.campanhas.find(x => x.id === id);
+    if (!c) return null;
+    const quantas = (c.anos || []).reduce((s, a) => s + ((a && a.noticias) || []).length, 0);
+    return { id: c.id, nome: c.nome || c.id, noticias: quantas };
+  }
   window.GA_Noticias = {
     receberDaMesa: receberDaMesa,
     mesaMudou: mesaMudou,
+    gazetaDe: gazetaDe,
+    temCampanha: function (id) { return !!gazetaDe(id); },
   };
 
   // ══════════════════════════════════════════════════════════════════
