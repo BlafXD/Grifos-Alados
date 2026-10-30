@@ -38,13 +38,13 @@ página, com a fonte anotada em cada tela.
 
 | Livro | O que entrou |
 |---|---|
-| **Tormenta 20 — Jogo do Ano** | 80 criaturas, as 29 perícias, condições, ações de combate, itens, magias, a tabela de recompensas |
-| **Ameaças de Arton** | **430 criaturas** nas 30 seções do Capítulo 1, o manual de criação de ameaças (Cap. 2), 26 raças, materiais especiais, recursos naturais |
-| **Deuses de Arton** | 76 criaturas (avatares, abissais, celestiais, fadas, gênios, gigantes), 20 deuses com poderes concedidos, 23 distinções |
-| **Heróis de Arton** | 36 distinções, poderes de classe novos, raças, origens, complicações, itens nomeados |
-| **Atlas de Arton** | 66 origens regionais |
-| **Guia de NPCs** | 94 fichas de gente comum, regras de raça, truques mercenários, o quadro d'O Templo |
-| **Guia de Deuses Menores** | deuses menores e poderes concedidos |
+| **Tormenta 20 — Jogo do Ano** | 80 criaturas, 214 poderes, 35 origens, as 29 perícias, condições, ações de combate, itens, magias e a tabela de recompensas |
+| **Ameaças de Arton** | **430 criaturas** nas 30 seções do Capítulo 1, o manual de criação de ameaças (Cap. 2 inteiro), 26 raças, materiais especiais, recursos naturais |
+| **Deuses de Arton** | 76 criaturas (avatares, abissais, celestiais, fadas, gênios, gigantes), 214 poderes, 20 deuses com seus concedidos, 23 distinções |
+| **Heróis de Arton** | 417 poderes, 36 distinções, 30 origens, 54 complicações, poderes de classe novos, raças e itens nomeados |
+| **Atlas de Arton** | 66 origens regionais e 67 poderes |
+| **Guia de NPCs** | 94 fichas de gente comum, regras de raça, truques mercenários e o quadro d'O Templo |
+| **Guia de Deuses Menores** | 60 poderes concedidos dos deuses menores |
 
 Em números: **680 fichas de criatura**, **1.005 poderes** (365 deles de **59 distinções**),
 **636 poderes de classe** em 16 listas, **218 habilidades fixas** das 30 classes,
