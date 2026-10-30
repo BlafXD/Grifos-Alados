@@ -123,8 +123,8 @@
   }
   function traduzErro(msg) {
     if (/permission|denied/i.test(msg || '')) {
-      return 'O banco recusou: como jogador, criar efeito em área precisa da regra nova no ' +
-             'Firebase (peça ao mestre — está em docs/efeitos-em-area.md). O mestre já consegue criar.';
+      return 'O banco recusou: como jogador, criar efeito em área precisa de uma regra ' +
+             'nova no Firebase — peça ao mestre. O mestre já consegue criar.';
     }
     return 'Não deu para salvar o efeito: ' + (msg || 'erro desconhecido') + '.';
   }

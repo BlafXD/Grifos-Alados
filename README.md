@@ -3,130 +3,158 @@
 
   # 🦅 Grifos Alados
 
-  **Ferramenta de mesa para mestres de _Tormenta 20_** — uma "gazeta de Arton" com geradores,
-  bestiário, consultas de regras e organização de campanha, tudo em um site só.
+  **A bancada do mestre de _Tormenta 20_**, no formato de um jornal de Arton.
+  Bestiário, oficina de ameaças, loja, recompensas, fichas de jogador, viagens, bases,
+  calendário e uma mesa ao vivo — num site só.
 
-  ### 👉 [**Abrir o site (mestre)**](https://blafxd.github.io/Grifos-Alados/) · 📡 [**Edição dos jogadores**](https://blafxd.github.io/Grifos-Alados/jogadores.html?sala=mesa)
+  ### 👉 [**Abrir o site**](https://grifos-alados.vercel.app/) · 📡 [**Edição dos jogadores**](https://grifos-alados.vercel.app/jogadores.html?sala=mesa)
 
-  _Não precisa instalar nem fazer login — é só abrir o link e usar._
+  _Sem instalar, sem cadastro, sem mensalidade. Abre e usa._
 </div>
 
 <div align="center">
-  <img src="docs/mesa-ao-vivo.gif" width="900"
+  <img src="img/mesa-ao-vivo.gif" width="900"
        alt="Tela dividida: o mestre gera uma nova loja à esquerda e a edição dos jogadores, à direita, se atualiza sozinha">
   <br>
-  <sub><strong>Mesa ao vivo</strong> — o mestre gera uma nova loja (à esquerda) e a tela dos
-  jogadores (à direita) se atualiza após eu dar o F5.</sub>
+  <sub><strong>Mesa ao vivo</strong> — o mestre rola uma loja nova (à esquerda) e a tela dos
+  jogadores (à direita) acompanha.</sub>
 </div>
 
 ---
 
-## ✨ O que é
+## O que é
 
-O **Grifos Alados** reúne, numa interface única no estilo de um jornal de Arton, as ferramentas
-que um mestre de _Tormenta 20_ usa durante e entre as sessões. Roda inteiramente no navegador:
-**sem servidor, sem cadastro e sem custo**. Os dados de cada pessoa ficam salvos no próprio
-navegador, e cada aba tem botão de **backup `.json`** para você não perder nada.
+Tudo o que eu precisava ter aberto numa sessão de Tormenta 20 estava espalhado em PDF,
+planilha e aba do navegador. O Grifos Alados juntou isso numa gazeta só.
 
-## 🧰 Ferramentas (abas)
+Roda inteiro no navegador: **sem servidor, sem cadastro e sem custo**. O que você cria
+fica guardado no seu navegador, e cada aba tem botão de **backup `.json`**. A mesa ao vivo
+(opcional) usa Firebase, e mesmo ela não exige login para quem só quer assistir.
+
+## 📚 Os livros que estão aqui
+
+As regras não foram resumidas: foram transcritas e conferidas contra o PDF, página por
+página, com a fonte anotada em cada tela.
+
+| Livro | O que entrou |
+|---|---|
+| **Tormenta 20 — Jogo do Ano** | 80 criaturas, as 29 perícias, condições, ações de combate, itens, magias, a tabela de recompensas |
+| **Ameaças de Arton** | **430 criaturas** nas 30 seções do Capítulo 1, o manual de criação de ameaças (Cap. 2), 26 raças, materiais especiais, recursos naturais |
+| **Deuses de Arton** | 76 criaturas (avatares, abissais, celestiais, fadas, gênios, gigantes), 20 deuses com poderes concedidos, 23 distinções |
+| **Heróis de Arton** | 36 distinções, poderes de classe novos, raças, origens, complicações, itens nomeados |
+| **Atlas de Arton** | 66 origens regionais |
+| **Guia de NPCs** | 94 fichas de gente comum, regras de raça, truques mercenários, o quadro d'O Templo |
+| **Guia de Deuses Menores** | deuses menores e poderes concedidos |
+
+Em números: **680 fichas de criatura**, **1.005 poderes** (365 deles de **59 distinções**),
+**636 poderes de classe** em 16 listas, **218 habilidades fixas** das 30 classes,
+**254 magias**, **867 itens descritos**, **232 itens mágicos nomeados**, **131 origens**,
+**49 raças**, **147 poderes concedidos**, **103 perigos** + 17 complexos, **73 montarias**,
+**54 complicações**, **35 condições**.
+
+## 🧰 As abas
 
 | Aba | O que faz |
 |-----|-----------|
-| 🎁 **Recompensas** | Sorteia dinheiro e itens por ND. Modo **Padrão (tabela oficial T20)** ou **Customizável** (filtros por categoria, pergaminhos como recompensa, itens superiores encantados, calculadora de ND de encontro). |
-| 🏪 **Loja** | Gera o inventário de uma loja (itens normais, especiais e mágicos) e uma aba de **pergaminhos** com a regra do Escriba Arcano. Descrições e encantos com tooltip. |
-| ⚔ **Combates** | Bestiário com iniciativa, fichas de criatura editáveis, rolador de dados, **importador de fichas do livro** (cola o statblock e ele preenche os campos), variantes de morte, condições e rolador de **acertos críticos**. Os atributos têm **uma caixa cada**, com 🎲 de teste e a perícia fora da lista já calculada; o **📖** abre a ficha inteira em modo leitura, fonte grande, para a mesa. |
-| 📚 **Consultas** | Referência rápida: perigos, veículos, animais & montarias, arsenal & regras, regras de ameaças, regras de magia, ações & combate e culinária. |
-| 🐎 **Viagem** | Monta viagens com meio de transporte e resolve **combates de viagem** (integrado ao bestiário). |
-| 📜 **Anotações** | Ramos e sub-ramos de anotações + um **mapa/linha do tempo** visual (arrastar nós, setas por categoria, pan/zoom). |
-| 📖 **Fichas** | Cada jogador **importa a própria ficha em PDF**, guardada no navegador (IndexedDB), para consultar durante a sessão. Inclui um modelo de ficha T20 em branco. |
-| 🏰 **Bases** | Refúgios e bases dos heróis: cômodos, mobílias, custos (com opção de Sítio Sagrado a ½ custo) e inventário. |
-| ⏳ **Tempo** | Atividades de tempo livre entre aventuras (busca, treinamento) com registro por jogador. |
+| 📰 **Notícias** | A gazeta de cada campanha, com o **calendário artoniano** (data, estação e o dia da semana). |
+| 🎁 **Recompensas** | Dinheiro e itens por ND. Modo **Padrão** (Tabela 8-1 oficial, 180/180 conferidos) ou **Customizável**, com filtros, pergaminhos e itens superiores encantados. |
+| 🏪 **Loja** | Monta o estoque de uma loja — mundanos, superiores, **232 itens mágicos nomeados**, pergaminhos pela regra do Escriba Arcano, serviços. |
+| ⚔ **Combates** | Bestiário vivo: iniciativa por campanha, PV/PM atuais, condições com imunidade, críticos, efeitos em área, cura e dano por turno. Cada atributo tem a **sua caixa**, com 🎲 de teste e a perícia fora da lista já calculada; o **📖** abre a ficha em modo leitura, fonte grande, para a mesa. Dá para colar o statblock do livro e ele **preenche os campos sozinho**. |
+| 📕 **Fichas Prontas** | Os quatro bestiários inteiros, com busca, e um botão que manda a criatura para a cena. |
+| ⚗ **Criar Ameaça** | O manual de criação de ameaças (p. 377–389) funcionando: escolha papel e ND e a Tabela 2-3 preenche Defesa, PV, ataque, dano médio, CD e resistências. Tem **🔧 Modificar** e **👥 Bando**, que guardam a diferença da criatura original ao mudar o ND. Dá **poderes da Tormenta** e **distinções** à criatura, com os valores já somados. |
+| 👤 **Fichas (jogador)** | Ficha de personagem completa: 30 classes, magias que rolam o dado certo, poderes, distinções, inventário, XP, passos de dano, atributos temporários, aviso de início de turno. |
+| 📚 **Consultas** | Referência rápida: perigos, veículos, animais e montarias, arsenal, regras de ameaças, de magia, ações e combate, culinária. |
+| 🐎 **Viagem** | Viagens com meio de transporte, eventos e **combates de viagem** ligados ao bestiário. |
+| 📜 **Anotações** | Ramos de anotação e um **mapa/linha do tempo** com nós arrastáveis. |
+| 🏰 **Bases** | Refúgios: cômodos, mobília, custos (Sítio Sagrado a ½) e inventário. |
+| ⏳ **Tempo** | Atividades de tempo livre entre aventuras, com registro por jogador. |
+| 🎲 **Mesa** | Suas campanhas: quem entra, o que é público e o que é só seu. |
 
-## 🚀 Como usar
+## 📡 Mesa ao vivo
 
-Basta abrir **[o site](https://blafxd.github.io/Grifos-Alados/)** no navegador. Funciona em
-computador e celular. Mande o link para a sua mesa — qualquer pessoa abre e usa, sem login.
-
-### ♿ No celular, no teclado e no leitor de tela
-
-No **celular**, o menu das 13 seções vira uma **gaveta** (o ☰ da barra fixa, que também
-mostra em que seção você está) — antes cabiam três seções na tela, e as outras dez não
-existiam. O texto já começa um degrau maior, e as tabelas largas rolam sozinhas, com aviso.
-
-O **⚙ Acessibilidade** (no canto do cabeçalho, ou na barra ☰ do celular) ajusta **tamanho do
-texto** em cinco degraus, **mais contraste**, **menos movimento** e **foco sempre visível** —
-fica salvo no navegador e vale nas duas edições.
-
-Pelo **teclado**: `Tab` entra no menu uma vez só e as **setas** andam entre as seções;
-há um "Pular para o conteúdo" no topo, `Esc` fecha gaveta e janelas, e as tabelas que não
-cabem na tela podem ser roladas com as setas. Detalhes em
-**[`docs/acessibilidade.md`](docs/acessibilidade.md)**.
-
-## 📡 Mesa ao vivo (os jogadores acompanham)
-
-Há uma **edição dos jogadores** que mostra, **só para ver**, a **Loja** que o mestre rolou (com
-encantamentos e pergaminhos), as **Bases**, as **Viagens**, as **Notícias** e todas as **Consultas** —
-sem precisar mandar `.txt`. Quando o mestre mexe em algo, a página deles se atualiza sozinha.
+Existe uma **edição dos jogadores** que mostra, só para ver, a **Loja** que o mestre
+rolou, as **Bases**, as **Viagens**, as **Notícias** e as **Consultas**. Quando o mestre
+mexe, a tela deles acompanha.
 
 | Página | Link |
 |--------|------|
-| 🛠 **Bancada** (sua, local — não transmite) | <https://blafxd.github.io/Grifos-Alados/> |
-| 🎲 **Mestre de uma campanha** | <https://blafxd.github.io/Grifos-Alados/?mesa=mesa> |
-| 👥 **Jogadores** (só visualiza) | <https://blafxd.github.io/Grifos-Alados/jogadores.html?sala=mesa> |
+| 🛠 **Bancada** (sua, local — não transmite) | <https://grifos-alados.vercel.app/> |
+| 🎲 **Mestre de uma campanha** | <https://grifos-alados.vercel.app/?mesa=mesa> |
+| 👥 **Jogadores** (só visualiza) | <https://grifos-alados.vercel.app/jogadores.html?sala=mesa> |
 
-**A campanha está no endereço.** O site sem `?mesa=` é a sua bancada: tudo fica neste navegador
-e o 📡 não transmite para ninguém. Com `?mesa=<campanha>`, aquela aba **é** aquela campanha — a
-Loja, as Bases e as Viagens que você mexer ali são dela, e não se misturam com as das outras.
-Cinco campanhas são cinco abas, e a aba **🎲 Mesa** lista as suas e abre cada uma.
+**A campanha está no endereço.** O site sem `?mesa=` é a sua bancada: tudo fica neste
+navegador e o 📡 não transmite para ninguém. Com `?mesa=<campanha>`, aquela aba **é**
+aquela campanha — a Loja, as Bases e as Viagens que você mexer ali são dela. Cinco
+campanhas são cinco abas.
 
-O mestre liga a transmissão pelo botão **📡** (canto inferior direito) e entra com o usuário de
-mestre. A sincronização em tempo real usa o **Firebase** — a configuração (uma vez só) está
-detalhada em **[`MODO-JOGADOR.md`](MODO-JOGADOR.md)**.
+O mestre liga a transmissão pelo **📡** (canto inferior direito). A sincronização usa o
+**Firebase**, e a configuração (uma vez só) está em **[`MODO-JOGADOR.md`](MODO-JOGADOR.md)**.
 
-> 🔑 **Ver a mesa não pede login** — é só abrir o link. Já para **escrever** nas poucas caixas que
-> são dos jogadores (o inventário do grupo, os residentes de uma base, o diário da viagem), eles
-> entram com o **Google** pelo selinho do rodapé: só as contas que o mestre listou nas regras do
-> banco passam. Quem não entrou vê as caixas com um "🔒 entre para escrever".
+> 🔑 **Ver a mesa não pede login.** Para **escrever** nas poucas caixas que são dos
+> jogadores — o inventário do grupo, os residentes de uma base, o diário da viagem — eles
+> entram com o Google pelo selinho do rodapé, e só as contas que o mestre listou passam.
+> Quem não entrou vê um "🔒 entre para escrever".
 
-> 💾 **Seus dados** (bestiário, anotações, bases, fichas em PDF…) ficam guardados no **seu**
-> navegador (`localStorage` e `IndexedDB`): sobrevivem a fechar a aba e reiniciar, mas são
-> individuais por dispositivo. Use os botões **Backup (.json)** de cada aba para guardar/transferir.
+> 💾 **Seus dados** ficam no **seu** navegador (`localStorage` e `IndexedDB`): sobrevivem
+> a fechar a aba, mas são por dispositivo. Use o **Backup (.json)** de cada aba para
+> guardar ou levar para outro computador.
 
-## 💻 Rodar localmente (opcional)
+## ♿ Acessibilidade
 
-O site é estático, então para usar offline basta abrir o `index.html` com duplo-clique.
+No **celular**, as seções viram uma gaveta (o ☰ da barra fixa, que diz onde você está), o
+texto começa um degrau maior e as tabelas largas rolam sozinhas.
 
-Para **editar as Notícias** (o jornal de Arton) é preciso rodar o servidor local, que regrava o
-arquivo `js/noticias-data.js` lido pelo site:
+O **⚙ Acessibilidade**, no canto do cabeçalho, ajusta **tamanho do texto** em cinco
+degraus, **mais contraste**, **menos movimento** e **foco sempre visível** — fica salvo e
+vale nas duas edições. Tem **modo noturno**.
+
+Pelo **teclado**: `Tab` entra no menu uma vez e as **setas** andam entre as seções; há um
+"Pular para o conteúdo" no topo, `Esc` fecha gaveta e janelas, e as tabelas largas rolam
+com as setas.
+
+## 💻 Rodar local
+
+O site é estático: para usar offline, abra o `index.html` com duplo-clique. Para servir
+numa porta (útil para testar em celular na mesma rede):
 
 ```bash
-pip install flask          # só na primeira vez
-cd backend
-python server.py           # abre em http://localhost:8000
+npx http-server -p 8080 -c-1 .
 ```
 
-Depois de salvar as notícias, faça commit/push do `js/noticias-data.js` para publicá-las online.
+As **Notícias** se publicam pelo botão **⬇ Baixar arquivo** da própria aba, que gera o
+`js/noticias-data.js` pelo navegador — depois é só commit e push. (Existe um
+`backend/server.py` em Flask que faz o mesmo automaticamente, mas ele é opcional.)
 
 ## 🗂️ Estrutura
 
 ```
 Grifos-Alados/
-├── index.html          ← página principal (carrega todas as abas)
-├── css/                ← estilos (um arquivo por aba)
-├── js/                 ← lógica e dados de cada ferramenta (Vanilla JS, sem framework)
-├── fonts/              ← fontes embutidas (uso offline)
-├── data/               ← noticias.json (backup das notícias)
+├── index.html          ← a bancada do mestre
+├── jogadores.html      ← a edição dos jogadores (só leitura)
+├── css/                ← um arquivo por aba
+├── js/                 ← lógica e dados (Vanilla JS, sem framework nem build)
+├── fonts/              ← fontes embutidas, para funcionar offline
+├── data/               ← noticias.json
+├── img/                ← imagens do README
 ├── Fichas/             ← modelo de ficha T20 em branco (PDF)
-└── backend/            ← server.py (servidor local só para editar Notícias)
+└── backend/            ← server.py, opcional, só para as Notícias
 ```
 
 ## 🛠️ Tecnologia
 
-HTML, CSS e **JavaScript puro** (sem framework nem build). Persistência via `localStorage`.
-Hospedado no **GitHub Pages**. O backend em Flask é opcional e usado apenas localmente.
+HTML, CSS e **JavaScript puro**. Sem framework, sem build, sem `node_modules`: o que está
+no repositório é o que roda. Persistência em `localStorage` e `IndexedDB`; a mesa ao vivo
+usa Firebase Realtime Database. Hospedado na **Vercel** (e espelhado no GitHub Pages).
+
+## 🤝 Achou um erro de regra?
+
+Abra uma [issue](https://github.com/BlafXD/Grifos-Alados/issues) dizendo o livro e a
+página. Erro de regra é o tipo de bug que mais importa aqui.
 
 ---
 
 <div align="center">
-  <sub>Projeto de fã, sem fins lucrativos. <em>Tormenta 20</em> é propriedade da Jambô Editora.</sub>
+  <sub>Projeto de fã, sem fins lucrativos e sem vínculo com a editora.<br>
+  <em>Tormenta 20</em> é propriedade da <a href="https://jamboeditora.com.br/">Jambô Editora</a>.
+  Este site não substitui os livros — compre os livros.</sub>
 </div>

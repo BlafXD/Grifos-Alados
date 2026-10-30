@@ -10,10 +10,18 @@ T20 - Tabela de geração de tesouros.xlsx
 *.xlsx
 Regras.txt
 
-# ── Pasta-rascunho pessoal (jogar coisas aqui sem risco de commit) ─
-# A pasta é mantida no repo pelo .gitkeep; todo o resto é ignorado.
-Inútil/*
-!Inútil/.gitkeep
+# ── Pasta-rascunho pessoal ───────────────────────────────────────
+# Geradores, extrações dos PDFs e roteiros de conferência. Fica só no
+# disco — nem a pasta aparece no GitHub.
+Inútil/
+
+# ── Caderno de bordo (privado) ───────────────────────────────────
+# As anotações de projeto: conferências contra os PDFs, dúvidas de
+# regra, decisões, progresso. Moram aqui no disco, não no GitHub.
+docs/
+
+# Trabalho de faculdade que por acaso usou o site como alvo
+nmap-estudo-de-caso.md
 
 # ── Lixo do sistema operacional ──────────────────────────────────
 Thumbs.db
