@@ -65,9 +65,10 @@
   function aplicarPrefs() {
     if (prefs.texto) RAIZ.setAttribute('data-ga-texto', prefs.texto);
     else RAIZ.removeAttribute('data-ga-texto');
-    //  A letra da gazeta: 'antiga' devolve a capitular Cinzel aos rótulos e
-    //  a IM Fell English às dicas. Quem lê isso é o css/fonts.css, que tem
-    //  os cinco papéis de fonte — o resto do site não sabe que há escolha.
+    //  A letra da gazeta: 'antiga' devolve a capitular Cinzel aos rótulos,
+    //  a IM Fell English às dicas e o Crimson Pro ao texto, no lugar da
+    //  letra do livro. Quem lê isso é o css/fonts.css, que tem os cinco
+    //  papéis de fonte — o resto do site não sabe que há escolha.
     if (prefs.letraAntiga) RAIZ.setAttribute('data-ga-letra', 'antiga');
     else RAIZ.removeAttribute('data-ga-letra');
     Object.keys(CHAVES_CLASSE).forEach(function (k) {
@@ -689,8 +690,8 @@
     //  isso: a troca de tipo de 05/10/2026 foi grande, e ninguém deve
     //  ficar preso a ela. Ligado, o site volta a ser como era.
     { id: 'letraAntiga', tit: 'Letra antiga da gazeta',
-      sub: 'Devolve a capitular Cinzel aos rótulos e a IM Fell English às dicas. ' +
-           'Mais bonitas de longe, mais difíceis de ler de perto.' }
+      sub: 'Devolve a capitular Cinzel aos rótulos, a IM Fell English às dicas ' +
+           'e o Crimson Pro ao texto, no lugar da letra do livro.' }
   ]);
 
   function abrirPainel() {

@@ -43,6 +43,31 @@
    11px, e o SC com versalete de verdade. Ao lado do Cinzel soam da
    mesma casa; em corpo miúdo, leem-se de longe melhor.
 
+   ── A LETRA DO LIVRO (30/10/2026) ────────────────────────────────
+   Em vez de escolher "uma serifada que lembra o livro", fui ler o
+   PDF: os descritores de fonte dos livros dizem, no texto corrido,
+   IowanOldStyle (Roman, Italic, Bold, BoldItalic e Black). Nos
+   rótulos e nos blocos de ficha, ScalaSans e ScalaSansCaps — com
+   SourceSansPro no lugar da Scala em parte das páginas. Nos títulos,
+   um tipo próprio chamado Tormenta20-Regular. E Deuses de Arton usa
+   ALEGREYA, que já morava meia aqui: o Alegreya Sans e o SC são dele.
+
+   Medido, em milésimos de em (os do Iowan saíram do próprio PDF):
+
+       Iowan — o livro    x 479   Cap 697   x/Cap 0,687
+       Alegreya           x 452   Cap 637   x/Cap 0,710
+       Crimson Pro        x 420   Cap 573   x/Cap 0,733
+
+   O Crimson Pro era 12% mais baixo no x e 18% no caixa-alta: era daí
+   que vinha a sensação de letra miúda ao lado da página impressa.
+
+   Iowan Old Style é de licença fechada e NÃO entra no repositório —
+   mas vem instalada no macOS e no iOS, então ela é a primeira da
+   pilha, e só isso. Quem não tem, lê em Alegreya.
+
+   Os títulos continuam em Cinzel. O tipo dos títulos do livro é
+   fechado e desenhado só para a Jambô; não há substituto honesto.
+
    ── A VOLTA ──────────────────────────────────────────────────────
    Quem preferir como era liga "Fontes antigas" no painel ⚙: o
    html[data-ga-letra="antiga"] lá embaixo devolve Cinzel e IM Fell
@@ -82,6 +107,51 @@
   font-weight: 200 900;
   font-style: italic;
   font-display: swap;
+}
+
+/* ── Alegreya (a voz do LIVRO — a letra que a própria Jambô usou) ──
+   Variável de 400 a 900: um arquivo serve o texto e o negrito. Dois
+   arquivos por estilo, como o Google os corta — 'latin' cobre o
+   português inteiro, e 'latin-ext' só desce se aparecer letra de fora. */
+@font-face {
+  font-family: 'Alegreya';
+  src: url('../fonts/Alegreya.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Alegreya';
+  src: url('../fonts/Alegreya-ext.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Alegreya';
+  src: url('../fonts/Alegreya-Italic.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Alegreya';
+  src: url('../fonts/Alegreya-Italic-ext.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 /* ── Alegreya Sans (a voz do SITE — dicas, avisos, vazios) ───────── */
@@ -154,11 +224,23 @@
      é miúdo e quase sempre em caixa alta. */
   --ga-fonte-rotulo: 'Alegreya Sans SC', 'Cinzel', serif;
 
-  /* o LIVRO: regra, descrição, o texto que se lê de verdade. */
-  --ga-fonte-corpo: 'Crimson Pro', Georgia, serif;
+  /* o LIVRO: regra, descrição, o texto que se lê de verdade.
+     Iowan Old Style é a letra impressa de Tormenta 20 e vem instalada
+     no macOS e no iOS — quem abre num Mac ou num iPhone lê na letra
+     do livro mesmo. Nos outros entra o Alegreya, que é a segunda
+     letra dos livros (Deuses de Arton) e irmã do Alegreya Sans. */
+  --ga-fonte-corpo: 'Iowan Old Style', 'Alegreya', Georgia, serif;
 
   /* o SITE: dica, aviso, "nenhum ainda", subtítulo de aba. */
-  --ga-fonte-nota: 'Alegreya Sans', 'Crimson Pro', Georgia, serif;
+  --ga-fonte-nota: 'Alegreya Sans', Georgia, serif;
+
+  /*  O Crimson Pro saiu das duas pilhas de reserva em 30/10/2026. Varri a
+      página inteira caractere a caractere: dos 141 que aparecem, só o →
+      (U+2192) e o ♦ (U+2666) faltam no Alegreya — e o Crimson Pro TAMBÉM
+      não tem os dois. Ficar na pilha só fazia o navegador baixar 173 kB
+      para tentar dois símbolos e desistir. Agora esses dois caem direto
+      na Georgia, que já está na máquina, e o Crimson Pro só desce para
+      quem liga a letra antiga no ⚙.  */
 
   /* número que precisa ficar alinhado em coluna (dado, log, código). */
   --ga-fonte-mono: 'Courier New', monospace;
@@ -172,10 +254,21 @@
   --ga-num-tabela: tabular-nums lining-nums;
 }
 
+/*  O Alegreya vem com ALGARISMO ANTIGO de fábrica. Medido no arquivo,
+    em milésimos de em: o 3, o 4, o 5, o 7 e o 9 descem a −105; o 0, o 1
+    e o 2 param na altura do x; só o 6 e o 8 sobem. Bonito num romance,
+    um estrago num "PV 47/52". Ele traz o lnum, então basta pedir o
+    alinhado UMA vez, aqui no topo — a propriedade é herdada, e quem
+    precisa de coluna já pede o --ga-num-tabela por cima. */
+html {
+  font-variant-numeric: lining-nums;
+}
+
 /* ── O MODO "FONTES ANTIGAS" (painel ⚙) ─────────────────────────────
    Devolve os dois papéis que mudaram. Mais nada no site precisa saber
    que existe uma escolha: quem lê o papel, lê a troca junto. */
 html[data-ga-letra="antiga"] {
   --ga-fonte-rotulo: 'Cinzel', serif;
   --ga-fonte-nota: 'IM Fell English', serif;
+  --ga-fonte-corpo: 'Crimson Pro', Georgia, serif;
 }
