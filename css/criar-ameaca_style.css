@@ -981,3 +981,248 @@ button.ca-base-item:hover { background: var(--gold-pale); border-color: var(--go
   .ca-base-busca { flex-wrap: wrap; }
   .ca-base-busca .ca-select { max-width: none; }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   PODERES DA TORMENTA E DISTINÇÕES (30/10/2026)
+   Dois blocos no fim do Passo 5. A mesma cara dos cartões da oficina,
+   com uma faixa de cor no topo para diferenciar: rubro para a Tormenta,
+   ouro velho para as distinções.
+   ══════════════════════════════════════════════════════════════════ */
+.ca-extra {
+  margin-top: 0.9rem;
+  padding: 0.55rem 0.65rem 0.7rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-top: 3px solid var(--gold-dim);
+  border-radius: var(--raio);
+}
+.ca-extra--torm { border-top-color: #8a1c4a; }
+.ca-extra--dist { border-top-color: var(--gold-deep); }
+.ca-extra-cab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+  margin-bottom: 0.4rem;
+}
+.ca-extra-tit {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--rust-dark);
+}
+.ca-extra-conta {
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+.ca-extra-cab .ca-btn { margin-left: auto; }
+.ca-btn--torm { background: #8a1c4a; border-color: #5e1233; color: #fff6ea; }
+.ca-btn--torm:hover { background: #a82458; }
+.ca-btn--dist { background: var(--gold-deep); border-color: var(--gold-dim); color: #fff6ea; }
+.ca-btn--dist:hover { filter: brightness(1.12); }
+
+.ca-extra-aviso {
+  margin: 0 0 0.5rem;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  background: var(--parchment);
+  border-left: 3px solid #8a1c4a;
+  border-radius: var(--raio);
+}
+.ca-extra-resumo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.35rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+.ca-extra-pil {
+  padding: 0.05rem 0.45rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  color: var(--ink);
+  background: var(--gold-pale);
+  border: 1px solid var(--gold-dim);
+  border-radius: 999px;
+}
+.ca-extra-pil--txt { white-space: normal; background: var(--parchment); }
+
+.ca-extra-lista { display: flex; flex-direction: column; gap: 0.4rem; }
+.ca-extra-grupo {
+  margin-top: 0.45rem;
+  padding: 0.4rem 0.45rem 0.45rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.ca-extra-grupo-cab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.5rem;
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px dashed var(--parchment3);
+}
+.ca-extra-grupo-nome {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--gold-deep);
+}
+.ca-extra-grupo-meta { font-size: 0.72rem; font-style: italic; color: var(--text-dim); }
+.ca-extra-grupo-cab .ca-mini { margin-left: auto; }
+
+.ca-extra-item {
+  padding: 0.35rem 0.45rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.ca-extra-grupo .ca-extra-item + .ca-extra-item { margin-top: 0.3rem; }
+.ca-extra-item-cab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.5rem;
+}
+.ca-extra-nome {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.ca-extra-fonte { font-size: 0.7rem; font-style: italic; color: var(--text-dim); }
+.ca-extra-item-cab .ca-mini { margin-left: auto; }
+.ca-extra-valor {
+  margin-top: 0.15rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--rust-dark);
+}
+.ca-extra-calc, .ca-extra-prereq {
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+.ca-extra-falta {
+  margin-top: 0.15rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--rust);
+}
+.ca-extra-ef {
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.ca-extra-ef--texto { font-style: italic; color: var(--text-dim); }
+.ca-extra-onde {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  color: var(--gold-deep);
+}
+.ca-extra-excecao {
+  display: block;
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+.ca-extra-liga {
+  display: block;
+  width: 100%;
+  margin-top: 0.2rem;
+  padding: 0.25rem 0.4rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment);
+  border: 1px dashed var(--parchment3);
+  border-radius: var(--raio);
+}
+.ca-extra-liga:hover { background: var(--gold-pale); }
+.ca-extra-liga--on {
+  background: var(--gold-pale);
+  border-style: solid;
+  border-color: var(--gold-dim);
+  font-weight: 600;
+}
+.ca-extra-liga em { font-size: 0.72rem; color: var(--text-dim); }
+.ca-extra-det summary {
+  font-size: 0.74rem;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+.ca-extra-det p { margin: 0.2rem 0 0; font-size: 0.8rem; line-height: 1.45; }
+
+/* o selo do Carisma que a Tormenta desconta, na caixa do Passo 6 */
+.ca-atrib-torm {
+  grid-column: 1 / -1;
+  margin-top: 0.15rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.66rem;
+  cursor: help;
+  color: #8a1c4a;
+}
+
+/* ── O MODAL DOS DOIS PICKERS ────────────────────────────────────── */
+.ca-pod-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 55vh;
+  margin-top: 0.5rem;
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+.ca-pod-grupo {
+  position: sticky;
+  top: 0;
+  padding: 0.2rem 0.3rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--gold-deep);
+  background: var(--parchment);
+  border-bottom: 1px solid var(--parchment3);
+}
+.ca-pod-item {
+  display: grid;
+  grid-template-columns: 1.3rem 1fr;
+  gap: 0.1rem 0.4rem;
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.ca-pod-item:hover { background: var(--gold-pale); border-color: var(--gold-dim); }
+.ca-pod-item--on { background: var(--gold-pale); border-color: var(--rust); }
+.ca-pod-check {
+  grid-row: 1 / -1;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.9rem;
+  color: var(--rust-dark);
+}
+.ca-pod-nome { font-family: var(--ga-fonte-rotulo); font-size: 0.85rem; font-weight: 600; }
+.ca-pod-valor { grid-column: 2; font-size: 0.78rem; font-weight: 600; color: var(--rust-dark); }
+.ca-pod-prereq { grid-column: 2; font-size: 0.72rem; font-style: italic; color: var(--rust); }
+.ca-pod-desc {
+  grid-column: 2;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--text-dim);
+}

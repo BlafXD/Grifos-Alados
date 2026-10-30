@@ -485,6 +485,17 @@
   color: var(--ink-faded);
 }
 .mz-per-pil--off { opacity: 0.5; }
+/* a pílula que TEM número é botão: rola 1d20 + metade do ND + atributo
+   (a perícia que não está na ficha, p. 384) */
+.mz-per-pil--rola {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.08s;
+}
+.mz-per-pil--rola:hover  { background: var(--gold-pale); border-color: var(--rust); }
+.mz-per-pil--rola:active { transform: scale(0.94); }
+.mz-per-pil--rola:focus-visible { outline: 2px solid var(--foco); outline-offset: 1px; }
 .mz-per-nota-fim { flex: 1 1 100%; font-style: italic; }
 .mz-per-nota-fim abbr {
   cursor: help;
@@ -813,6 +824,97 @@
   border-color: var(--rust-dark);
   font-weight: 700;
   color: var(--rust-dark);
+}
+
+/* ── AS SEIS CAIXAS DE ATRIBUTO (30/10/2026) ───────────────────────
+   Antes a ficha trazia os atributos numa linha de texto só ("For 11,
+   Des 1, …"). Agora cada um tem a sua caixa, com o 🎲 do teste ao lado
+   já somado. A grade acompanha a largura: seis colunas no desktop, três
+   no celular — e nunca quebra uma caixa no meio. */
+.mz-atrs-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(5.2rem, 1fr));
+  gap: 0.4rem;
+}
+.mz-atr {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.2rem;
+  padding: 0.35rem 0.4rem 0.4rem;
+  background: var(--parchment);
+  border: 1px solid var(--ink-faded);
+  border-top: 2px solid var(--gold-dim);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
+}
+.mz-atr-rot {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: var(--rust-dark);
+  cursor: help;
+}
+.mz-atr-cx {
+  width: 100%;
+  min-width: 0;
+  padding: 0.22rem 0.3rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 1rem;
+  text-align: center;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+.mz-atr-cx:focus { outline: 2px solid var(--foco); outline-offset: 1px; border-color: var(--rust); }
+.mz-atr-dado {
+  padding: 0.15rem 0.2rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment3);
+  border: 1px solid var(--ink-faded);
+  transition: background 0.12s, transform 0.08s;
+}
+.mz-atr-dado:hover  { background: var(--gold); }
+.mz-atr-dado:active { transform: scale(0.92); }
+.mz-atr-dado--off {
+  cursor: help;
+  opacity: 0.45;
+  background: transparent;
+  border-style: dashed;
+}
+/* o selo do Carisma que os poderes da Tormenta descontam */
+.mz-atr-nota {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.55rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  cursor: help;
+  color: #8a1c4a;
+}
+.mz-atrs-obs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--ink-faded);
+}
+.mz-atrs-obs-cx {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.2rem 0.35rem;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
 }
 
 /* ── ATAQUE E HABILIDADES (texto rico) ────────────────────────────── */
@@ -3272,3 +3374,65 @@ color: var(--ink-faded); margin-right: 0.2rem;
   border-radius: var(--raio);
 }
 .mz-camp-sel:hover { border-color: var(--ink-faded); color: var(--ink); }
+
+/* ── A FICHA INTEIRA EM MODO LEITURA (📖, 30/10/2026) ──────────────
+   O mesmo overlay do "📖 Ler" dos campos, só que com a criatura toda no
+   formato do statblock do livro: uma linha por bloco, rótulo em
+   versalete, sem nenhuma caixa. É a ficha para LER no meio do turno —
+   editar continua sendo na ficha de sempre. */
+.mz-lerf {
+  line-height: 1.55;
+  /* a caixa de leitura dos CAMPOS preserva os espaços do texto colado;
+     aqui o conteúdo é HTML montado por nós, então volta ao normal */
+  white-space: normal;
+}
+.mz-lerf-tipo {
+  margin-bottom: 0.5rem;
+  font-family: var(--ga-fonte-nota);
+  font-style: italic;
+  color: var(--ink-faded);
+}
+.mz-lerf-linha {
+  padding: 0.18em 0;
+  border-bottom: 1px solid var(--parchment3);
+}
+.mz-lerf-rot {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.74em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rust-dark);
+}
+.mz-lerf-atual { color: var(--rust); }
+.mz-lerf-cond {
+  padding: 0.25em 0.4em;
+  margin-bottom: 0.4em;
+  background: var(--parchment2);
+  border-left: 3px solid var(--parchment3);
+}
+.mz-lerf-cond--on {
+  background: var(--gold-pale);
+  border-left-color: var(--rust);
+  font-weight: 600;
+}
+.mz-lerf-atrs { display: flex; flex-wrap: wrap; gap: 0.2em 0.9em; }
+.mz-lerf-atr b {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.78em;
+  letter-spacing: 0.05em;
+  color: var(--ink-faded);
+}
+.mz-lerf-nota {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.82em;
+  font-style: italic;
+  color: var(--ink-faded);
+}
+.mz-lerf-bloco {
+  margin: 0.5em 0;
+  padding: 0.4em 0.5em;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+}
+.mz-lerf-desc { font-style: italic; }

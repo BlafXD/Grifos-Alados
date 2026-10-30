@@ -34,7 +34,7 @@ navegador, e cada aba tem botão de **backup `.json`** para você não perder na
 |-----|-----------|
 | 🎁 **Recompensas** | Sorteia dinheiro e itens por ND. Modo **Padrão (tabela oficial T20)** ou **Customizável** (filtros por categoria, pergaminhos como recompensa, itens superiores encantados, calculadora de ND de encontro). |
 | 🏪 **Loja** | Gera o inventário de uma loja (itens normais, especiais e mágicos) e uma aba de **pergaminhos** com a regra do Escriba Arcano. Descrições e encantos com tooltip. |
-| ⚔ **Combates** | Bestiário com iniciativa, fichas de criatura editáveis, rolador de dados, **importador de fichas do livro** (cola o statblock e ele preenche os campos), variantes de morte, condições e rolador de **acertos críticos**. |
+| ⚔ **Combates** | Bestiário com iniciativa, fichas de criatura editáveis, rolador de dados, **importador de fichas do livro** (cola o statblock e ele preenche os campos), variantes de morte, condições e rolador de **acertos críticos**. Os atributos têm **uma caixa cada**, com 🎲 de teste e a perícia fora da lista já calculada; o **📖** abre a ficha inteira em modo leitura, fonte grande, para a mesa. |
 | 📚 **Consultas** | Referência rápida: perigos, veículos, animais & montarias, arsenal & regras, regras de ameaças, regras de magia, ações & combate e culinária. |
 | 🐎 **Viagem** | Monta viagens com meio de transporte e resolve **combates de viagem** (integrado ao bestiário). |
 | 📜 **Anotações** | Ramos e sub-ramos de anotações + um **mapa/linha do tempo** visual (arrastar nós, setas por categoria, pan/zoom). |

@@ -17,8 +17,12 @@
 //  Cada poder abaixo traz escala(n) → { txt, calc } com o valor JÁ somado
 //  (txt) e a conta que levou até ele (calc).
 //
-//  O QUE NÃO É AUTOMÁTICO: a perda de Carisma. O sistema só avisa e
-//  mostra a conta — quem ajusta o Car na caixa "Atributos" é o mestre.
+//  A PERDA DE CARISMA é automática desde 30/10/2026, quando cada
+//  atributo da criatura ganhou caixa própria na ficha: a caixa guarda o
+//  valor BASE e o desconto entra em tudo que usa Carisma (o 🎲 do
+//  atributo, a perícia fora da lista, o pré-requisito do Repulsivo).
+//  O resto dos valores continua só no bloco 🩸 — nada é somado na
+//  Defesa, nas resistências ou nas perícias da ficha.
 // ════════════════════════════════════════════════════════════════════
 (function () {
   'use strict';
@@ -248,7 +252,7 @@
     },
     {
       chave: 'repulsivo', nome: 'Repulsivo', fonte: 'Suplemento',
-      preReq: 'Car –1 ou menor (confira na caixa Atributos — o sistema não checa)',
+      preReq: 'Car –1 ou menor', req: { carMax: -1 },
       desc: 'A presença da Tempestade Rubra em você é tão forte que é difícil olhar em sua direção. O primeiro ataque de cada inimigo contra você em cada cena sofre uma penalidade igual ao total de poderes da Tormenta que você possui (incluindo este). Após o primeiro ataque, os inimigos já se acostumaram com sua aparência atroz e não sofrem mais essa penalidade.',
       escala(n) {
         return { txt: `–${n} no primeiro ataque de cada inimigo contra você em cada cena`,
@@ -300,11 +304,13 @@
     // NÃO é aplicado em lugar nenhum — só mostrado como aviso ao mestre.
     carismaPerdido(n) { return n > 0 ? 1 + p2(n) : 0; },
 
-    // Pré-requisitos que dá para conferir sozinho (quantidade de outros
-    // poderes e poderes nomeados). "Car –1 ou menor" fica de fora: o
-    // Carisma mora numa caixa de texto livre da ficha.
+    // Pré-requisitos que dá para conferir sozinho: quantidade de outros
+    // poderes, poderes nomeados e — desde que o Carisma ganhou caixa
+    // própria na ficha da criatura — o "Car –1 ou menor" do Repulsivo.
+    // `car` é o Carisma JÁ com o desconto da Tormenta; quem não souber
+    // o Carisma pode não passar nada, e aí essa checagem não roda.
     // Devolve [] quando está tudo certo, ou a lista do que falta.
-    faltando(chave, escolhidos) {
+    faltando(chave, escolhidos, car) {
       const p = porChave[chave];
       if (!p || !p.req) return [];
       const lista = Array.isArray(escolhidos) ? escolhidos : [];
@@ -315,6 +321,10 @@
       (p.req.poderes || []).forEach(ch => {
         if (lista.indexOf(ch) < 0) falta.push((porChave[ch] || {}).nome || ch);
       });
+      if (p.req.carMax != null && typeof car === 'number' && car > p.req.carMax) {
+        falta.push(`Car ${p.req.carMax < 0 ? '–' + Math.abs(p.req.carMax) : p.req.carMax} ou menor ` +
+                   `(a ficha está com ${car < 0 ? '–' + Math.abs(car) : '+' + car})`);
+      }
       return falta;
     },
   };

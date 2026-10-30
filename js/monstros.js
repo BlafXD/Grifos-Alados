@@ -62,13 +62,32 @@
     { chave: 'pm',           rotulo: 'Pontos de Mana', grande: true },
   ];
 
+  // ── ATRIBUTOS DA CRIATURA (For … Car) ───────────────────────────
+  // Cada atributo tem a SUA caixa, e não mais uma linha de texto só.
+  // A caixa é de TEXTO, não de número, porque o livro escreve o valor de
+  // três jeitos: número ("For 11", "Sab –5"), travessão ("Int —", nas 61
+  // fichas de criatura sem mente) e até dado ("Sab 1d20", o Avatar de
+  // Nimb). Quem quiser a linha inteira continua tendo: `cr.atributos` é
+  // refeito a cada tecla a partir das caixas, e é dele que saem a cópia,
+  // o .txt e a prévia da importação.
+  const ATRS_CRIATURA = [
+    { k: 'For', nome: 'Força' },
+    { k: 'Des', nome: 'Destreza' },
+    { k: 'Con', nome: 'Constituição' },
+    { k: 'Int', nome: 'Inteligência' },
+    { k: 'Sab', nome: 'Sabedoria' },
+    { k: 'Car', nome: 'Carisma' },
+  ];
+
   // Caixas de texto livre (uma caixa só, para CTRL+C / CTRL+V).
   // `rico: true` → vira caixa de texto rico (grifos, ▣ caixa, ※ descrição,
   // Ctrl+B / Ctrl+I) em vez de textarea. As demais continuam texto simples.
+  // `grade: true` → não é caixa de texto nenhuma: o lugar dela na ordem
+  // recebe um bloco próprio (é o caso dos Atributos, em seis caixinhas).
   const CAIXAS = [
     { chave: 'condicoes',   rotulo: 'Condições especiais', rico: true,
       dica: 'Ex: imunidade a dano de luz, redução de dano 10, resistência a magia +3…', linhas: 3 },
-    { chave: 'atributos',   rotulo: 'Atributos',
+    { chave: 'atributos',   rotulo: 'Atributos', grade: true,
       dica: 'Ex: For 11, Des 1, Con 8, Int 4, Sab 4, Car 4', linhas: 2 },
     { chave: 'pericias',    rotulo: 'Perícias',
       dica: 'Ex: Atletismo +32, Intimidação +15, Misticismo +15', linhas: 2 },
@@ -399,6 +418,11 @@
       stats: stats,
       montaria: { chave: '', nivel: 'iniciante' },
       condicoes: '', ataques: '', atributos: '', pericias: '', equipamento: '', recompensas: '',
+      // uma caixa por atributo (ver ATRS_CRIATURA); `atributos` acima é o
+      // espelho em texto, refeito a partir delas. `atrsObs` é o que o
+      // mestre escreveu na linha além dos seis pares — some da grade,
+      // mas volta no espelho (nada que ele digitou se perde).
+      atrs: atrsVazios(), atrsObs: '',
       // bloco de magias (só aparece quando o mestre liga)
       magiasAtivo: false, magiasCab: '', magias: '',
       // espelhos em HTML das caixas ricas (ver RICOS_CRIATURA)
@@ -557,6 +581,30 @@
     if (typeof cr.nd !== 'string') cr.nd = '';
     if (typeof cr.descricao !== 'string') cr.descricao = '';
     if (typeof cr.equipamento !== 'string') cr.equipamento = '';
+    // ── atributos: da linha de texto para as seis caixas ──────────
+    // Idempotente, e é por aqui que passam as fichas dos livros (679 das
+    // 680 trazem a linha completa; o Rival Espelho não tem atributos no
+    // livro e fica com as caixas em branco). Migra uma vez e, dali em
+    // diante, quem manda são as caixas — `cr.atributos` é só o espelho.
+    if (typeof cr.atributos !== 'string') cr.atributos = '';
+    if (!cr.atrs || typeof cr.atrs !== 'object') cr.atrs = atrsVazios();
+    const _vazia = ATRS_CRIATURA.every(a => String(cr.atrs[a.k] || '').trim() === '');
+    if (_vazia && cr.atributos.trim()) {
+      const lidos = lerLinhaAtributos(cr.atributos);
+      ATRS_CRIATURA.forEach(a => { cr.atrs[a.k] = lidos[a.k] != null ? lidos[a.k] : ''; });
+      if (typeof cr.atrsObs !== 'string') cr.atrsObs = restoLinhaAtributos(cr.atributos);
+    }
+    ATRS_CRIATURA.forEach(a => {
+      if (typeof cr.atrs[a.k] !== 'string') cr.atrs[a.k] = String(cr.atrs[a.k] == null ? '' : cr.atrs[a.k]);
+    });
+    if (typeof cr.atrsObs !== 'string') cr.atrsObs = '';
+    cr.atributos = linhaAtributos(cr);
+    // uma habilidade por linha, uma linha de distância — ver
+    // umaLinhaPorHabilidade. Só a caixa de Ataque e Habilidades: as
+    // caixas ricas de prosa (descrição, recompensas, magias) guardam
+    // parágrafo, e lá o vão em branco é de propósito.
+    if (typeof cr.ataques !== 'string') cr.ataques = '';
+    cr.ataques = umaLinhaPorHabilidade(cr.ataques);
     if (!Array.isArray(cr.condicoesAtivas)) cr.condicoesAtivas = [];
     if (typeof cr.tipoCriatura !== 'string') cr.tipoCriatura = '';
     if (!Array.isArray(cr.habilidades)) cr.habilidades = [];
@@ -1972,7 +2020,7 @@
       const p = G.porChave[chave];
       if (!p) return;
       const e = p.escala(n) || {};
-      const falta = G.faltando(chave, arr);
+      const falta = G.faltando(chave, arr, _atributosDaCriatura(cr).Car);
       linhas += `
               <div class="mz-torm-item">
                 <div class="mz-torm-item-cab">
@@ -1995,19 +2043,27 @@
     });
 
     const car = G.carismaPerdido(n);
+    const carBase = numeroAtr((cr.atrs || {}).Car);
+    const carEf = (carBase == null) ? null : carBase - car;
     return `
           <div class="mz-ambientes mz-torm mz-torm--on">
             <span class="mz-amb-titulo mz-torm-cab">🩸 Poderes da Tormenta
               <span class="mz-torm-conta">${n} poder${n !== 1 ? 'es' : ''} · valores já somados</span>${btnAdd}
             </span>
             <div class="mz-torm-aviso">
-              <strong>⚠ Carisma é na mão.</strong> Pela regra, ${n} poder${n !== 1 ? 'es' : ''} da Tormenta
+              <strong>Carisma já descontado.</strong> Pela regra, ${n} poder${n !== 1 ? 'es' : ''} da Tormenta
               custa${n !== 1 ? 'm' : ''} <strong>–${car} de Carisma</strong> (1 pelo primeiro poder, mais 1 a cada dois outros).
-              O sistema <strong>não</strong> aplica isso: ajuste o Car na caixa <em>Atributos</em> desta ficha.
-              Abaixo de Car –5, a criatura vira NPC sob controle do mestre.
+              ${carEf == null
+                ? 'A caixa <em>Car</em> desta ficha está vazia (ou não é um número): preencha e o desconto entra sozinho.'
+                : `A caixa <em>Car</em> guarda o valor base <strong>${_maisMenos(carBase)}</strong>; vale
+                   <strong>${_maisMenos(carEf)}</strong> em tudo que usa Carisma — o 🎲 do atributo, a pílula Car
+                   da nota de perícias e os pré-requisitos daqui.`}
+              ${carEf != null && carEf < -5
+                ? '<strong>Abaixo de Car –5: pela regra, a criatura vira NPC sob controle do mestre.</strong>'
+                : 'Abaixo de Car –5, a criatura vira NPC sob controle do mestre.'}
             </div>
             <div class="mz-torm-lista">${linhas}</div>
-            <p class="mz-torm-nota">Os valores acima já contam todos os ${n} poderes da ficha — marcar ou remover um poder recalcula todos os outros. Eles ficam só neste bloco: nada é somado na Defesa, nos testes de resistência ou nas perícias da ficha.</p>
+            <p class="mz-torm-nota">Os valores acima já contam todos os ${n} poderes da ficha — marcar ou remover um poder recalcula todos os outros. Eles ficam só neste bloco: nada é somado na Defesa, nos testes de resistência ou nas perícias da ficha. A única exceção é o <strong>Carisma</strong>, que tem caixa própria e por isso se desconta sozinho.</p>
           </div>`;
   }
 
@@ -2679,8 +2735,7 @@
     }
     const caixa = card.querySelector('.mz-ataques[data-campo="ataques"]');
     if (!caixa) return;
-    const atual = caixa.innerHTML.trim();
-    caixa.innerHTML = (atual ? atual : '') + `<div>${esc(linha)}</div>`;
+    caixa.innerHTML = anexarLinhaRica(caixa.innerHTML, esc(linha));
     const cr = pegarCriatura(btn);
     if (cr) { cr.ataques = caixa.innerHTML; salvar(); }
     caixa.classList.remove('mz-ferr-flash');
@@ -2733,7 +2788,7 @@
   // Linha HTML de um poder concedido (para a caixa de Ataque e Habilidades)
   function _linhaPoderHtml(p, d) {
     const origem = 'poder concedido de ' + d.nome + (p.magica ? ' · habilidade mágica' : '');
-    return `<div><strong>${esc(p.nome)} (${esc(origem)})</strong> ${_txtParaHtml(p.texto)}</div>`;
+    return `<strong>${esc(p.nome)} (${esc(origem)})</strong> ${_txtParaHtml(p.texto)}`;
   }
 
   // Ferramenta "Devoto & poder concedido" — só na lista, junto das
@@ -2788,7 +2843,7 @@
     if (!p) { if (selPoder) selPoder.focus(); return; }
     const caixa = card.querySelector('.mz-ataques[data-campo="ataques"]');
     if (!caixa) return;
-    caixa.innerHTML = caixa.innerHTML.trim() + _linhaPoderHtml(p, d);
+    caixa.innerHTML = anexarLinhaRica(caixa.innerHTML, _linhaPoderHtml(p, d));
     const cr = pegarCriatura(btn);
     if (cr) { cr.ataques = caixa.innerHTML; salvar(); }
     caixa.classList.remove('mz-ferr-flash');
@@ -3025,14 +3080,9 @@
   //    treinada (Capítulo 1, "Luta e Pontaria": o ogro caçador de ND 7
   //    atira com +3 = metade do ND 7 + Destreza 0 — e é esse +3 que
   //    mostra que a metade do ND se arredonda PARA BAIXO).
-  const PER_ATRS = [
-    { k: 'For', nome: 'Força' },
-    { k: 'Des', nome: 'Destreza' },
-    { k: 'Con', nome: 'Constituição' },
-    { k: 'Int', nome: 'Inteligência' },
-    { k: 'Sab', nome: 'Sabedoria' },
-    { k: 'Car', nome: 'Carisma' },
-  ];
+  // os mesmos seis atributos das caixas da ficha (ATRS_CRIATURA, no alto
+  // do arquivo) — uma lista só, para a grade e a nota não divergirem
+  const PER_ATRS = ATRS_CRIATURA;
   const PER_NOTA_FONTE =
     'Ameaças de Arton, p. 384 (Passo 6, Estatísticas Secundárias): "as perícias não ' +
     'listadas em sua ficha (que, quando aplicáveis, possuem modificador igual à metade ' +
@@ -3043,19 +3093,75 @@
     'listados, e uma criatura com um ataque é sempre treinada na perícia correspondente. ' +
     'Sem ataque daquele tipo e sem a perícia na lista, ela não é treinada — o ogro caçador ' +
     'de ND 7 atira com +3 (metade do ND 7 + Destreza 0).';
-  //  "For 11, Des 1, Con 8…" → { For: 11, Des: 1, Con: 8 }. Aceita o
-  //  travessão "–" dos negativos (o que as fichas do livro imprimem) e
-  //  o nome inteiro do atributo ("Força 11").
+  // ── AS SEIS CAIXAS DE ATRIBUTO ───────────────────────────────────
+  //  `cr.atrs` = { For: '11', Des: '1', …, Int: '—' } — TEXTO, para que
+  //  o travessão e o "1d20" do Avatar de Nimb cheguem inteiros à mesa.
+  //  `cr.atributos` continua existindo como a linha do livro, refeita a
+  //  partir das caixas: é dela que vivem a cópia, o .txt e a prévia.
+  function atrsVazios() {
+    const o = {};
+    ATRS_CRIATURA.forEach(a => { o[a.k] = ''; });
+    return o;
+  }
+  //  "For 11, Des 1, Con 8, Int —, Sab –5, Car 1d20" → as seis caixas.
+  //  Aceita o travessão "–" dos negativos (o que as fichas do livro
+  //  imprimem), o nome inteiro do atributo ("Força 11") e o dado.
+  const _VALOR_ATR = /(?:[+\-–—−]?\s*\d*d\d+(?:\s*[+\-–—−]\s*\d+)?|[+\-–—−]?\s*\d+|[—–−])/.source;
+  function lerLinhaAtributos(txt) {
+    const out = {};
+    const re = new RegExp('\\b(for|des|con|int|sab|car)[a-zà-ÿ]*\\s*(' + _VALOR_ATR + ')', 'gi');
+    let m;
+    while ((m = re.exec(String(txt || '')))) {
+      const k = m[1][0].toUpperCase() + m[1].slice(1).toLowerCase();
+      if (out[k] == null) out[k] = m[2].replace(/\s+/g, '');
+    }
+    return out;
+  }
+  //  O que sobra da linha depois de tirar os seis pares. Nas 679 fichas
+  //  dos livros não sobra nada — mas o mestre pode ter escrito à mão, e
+  //  o que ele escreveu não pode se perder na migração.
+  function restoLinhaAtributos(txt) {
+    const re = new RegExp('\\b(?:for|des|con|int|sab|car)[a-zà-ÿ]*\\s*' + _VALOR_ATR, 'gi');
+    return String(txt || '').replace(re, '').replace(/[,;\s]+/g, ' ').trim();
+  }
+  //  A linha do livro, remontada das caixas (+ o resto que o mestre
+  //  escreveu, se houver). Tudo vazio → linha vazia, nunca "For , Des ,".
+  function linhaAtributos(cr) {
+    const partes = ATRS_CRIATURA
+      .filter(a => String((cr.atrs || {})[a.k] || '').trim() !== '')
+      .map(a => a.k + ' ' + String(cr.atrs[a.k]).trim());
+    const resto = String(cr.atrsObs || '').trim();
+    if (!partes.length) return resto;
+    return partes.join(', ') + (resto ? ', ' + resto : '');
+  }
+  //  O valor da caixa como NÚMERO, para as contas. "—", "1d20" e caixa
+  //  vazia devolvem null — quem chama decide o que fazer sem valor.
+  function numeroAtr(v) {
+    const t = String(v == null ? '' : v).replace(/\s+/g, '').replace(/[–—−]/g, '-');
+    if (!/^[+-]?\d+$/.test(t)) return null;
+    return parseInt(t, 10);
+  }
+  //  O Carisma que os poderes da Tormenta descontam (1 pelo primeiro,
+  //  mais 1 a cada dois outros). Antes era um aviso para o mestre fazer
+  //  na mão; agora que o Car tem caixa, a conta é nossa.
+  function carismaPerdidoDaTormenta(cr) {
+    const G = window.GA_TORMENTA;
+    if (!G) return 0;
+    const n = (cr.poderesTormenta || []).filter(k => G.porChave[k]).length;
+    return G.carismaPerdido(n);
+  }
+  //  Os seis atributos JÁ com o desconto da Tormenta no Carisma — é o
+  //  que vale em toda conta (perícia fora da lista, teste de atributo).
+  //  { For: 11, …, Car: 1 }; atributo sem número não entra.
   function _atributosDaCriatura(cr) {
     const out = {};
-    const re = /\b(for|des|con|int|sab|car)[a-zà-ÿ]*\s*([+\-–—−]?\s*\d+)/gi;
-    let m;
-    while ((m = re.exec(String(cr.atributos || '')))) {
-      const k = m[1][0].toUpperCase() + m[1].slice(1).toLowerCase();
-      if (out[k] == null) {
-        out[k] = parseInt(m[2].replace(/[–—−]/g, '-').replace(/\s+/g, ''), 10);
-      }
-    }
+    const caixas = (cr.atrs && typeof cr.atrs === 'object') ? cr.atrs : lerLinhaAtributos(cr.atributos);
+    const perdaCar = carismaPerdidoDaTormenta(cr);
+    ATRS_CRIATURA.forEach(a => {
+      const v = numeroAtr(caixas[a.k]);
+      if (v == null) return;
+      out[a.k] = (a.k === 'Car') ? v - perdaCar : v;
+    });
     return out;
   }
   //  O ND que vale para o que NÃO está na ficha (S e S+ = 20, p. 12).
@@ -3084,18 +3190,28 @@
     if (!D || !D.PERICIAS) return '';
     return D.PERICIAS.filter(p => p.soTreinada).map(p => p.nome).join(', ');
   }
-  function notaPericiasHtml(cr) {
+  function notaPericiasHtml(cr, ds) {
     const nd = _ndDeNaoListadas(cr);
     const meio = nd == null ? null : Math.floor(nd / 2);
     const atrs = _atributosDaCriatura(cr);
+    const perdaCar = carismaPerdidoDaTormenta(cr);
     const pilulas = PER_ATRS.map(a => {
       const tem = atrs[a.k] != null;
       const v = (tem && meio != null) ? meio + atrs[a.k] : null;
       const quais = _periciasDoAtributo(a.k);
-      const dica = a.nome + (tem ? ' ' + _maisMenos(atrs[a.k]) : ' — não está na linha de Atributos') +
-        (meio == null ? ' · falta o ND' : '') + (quais ? '\n' + quais : '');
-      return `<span class="mz-per-pil${v == null ? ' mz-per-pil--off' : ''}" title="${esc(dica)}"
-            ><b>${a.k}</b> ${v == null ? '?' : _maisMenos(v)}</span>`;
+      const dica = a.nome + (tem ? ' ' + _maisMenos(atrs[a.k]) : ' — a caixa está vazia ou não é um número') +
+        (a.k === 'Car' && perdaCar ? ' (já com –' + perdaCar + ' dos poderes da Tormenta)' : '') +
+        (meio == null ? ' · falta o ND' : '') +
+        (v == null ? '' : '\nClique para rolar 1d20 ' + _maisMenos(v)) +
+        (quais ? '\n' + quais : '');
+      // a pílula é o botão de rolar a perícia NÃO listada: 1d20 + metade
+      // do ND + o atributo-chave (p. 384). Sem valor, ela não é botão.
+      if (v == null) {
+        return `<span class="mz-per-pil mz-per-pil--off" title="${esc(dica)}"><b>${a.k}</b> ?</span>`;
+      }
+      return `<button type="button" class="mz-per-pil mz-per-pil--rola" data-acao="rolar-atr-per"
+                      data-atr="${a.k}" ${ds || ''} title="${esc(dica)}"
+            ><b>${a.k}</b> ${_maisMenos(v)} 🎲</button>`;
     }).join('');
     const treino = _periciasDeTreino();
     return `
@@ -3114,7 +3230,75 @@
   function atualizarNotaPericias(el, cr) {
     const ficha = el.closest && el.closest('.mz-criatura');
     const nota = ficha && ficha.querySelector('.mz-per-nota');
-    if (nota) nota.outerHTML = notaPericiasHtml(cr);
+    if (nota) nota.outerHTML = notaPericiasHtml(cr, _dsDe(el));
+  }
+  //  Os data-s / data-c / data-cr de um elemento, para remontar um
+  //  pedaço do HTML sem redesenhar a ficha inteira.
+  function _dsDe(el) {
+    if (!el || !el.dataset) return '';
+    return `data-s="${el.dataset.s}" data-c="${el.dataset.c}" data-cr="${el.dataset.cr}"`;
+  }
+
+  // ── A GRADE DAS SEIS CAIXAS DE ATRIBUTO ──────────────────────────
+  //  Uma caixa por atributo, com o 🎲 do teste de atributo ao lado
+  //  (1d20 + o valor da caixa). O valor de perícia não listada
+  //  (metade do ND + atributo) continua na nota ℹ embaixo de Perícias,
+  //  onde cada pílula agora também rola.
+  function blocoAtributos(cr, ds) {
+    const perdaCar = carismaPerdidoDaTormenta(cr);
+    const caixas = ATRS_CRIATURA.map(a => {
+      const bruto = String((cr.atrs || {})[a.k] || '');
+      const n = numeroAtr(bruto);
+      const efetivo = (a.k === 'Car' && n != null) ? n - perdaCar : n;
+      const dica = a.nome + (n == null
+        ? (bruto ? ' — “' + bruto + '” não é um número: o 🎲 não rola' : ' — caixa vazia')
+        : ' ' + _maisMenos(efetivo));
+      const dado = (efetivo == null)
+        ? `<span class="mz-atr-dado mz-atr-dado--off" title="${esc(dica)}">—</span>`
+        : `<button type="button" class="mz-atr-dado" data-acao="rolar-atr" data-atr="${a.k}" ${ds}
+                   title="Rolar 1d20 ${_maisMenos(efetivo)} — teste de ${esc(a.nome)}">🎲 ${_maisMenos(efetivo)}</button>`;
+      const nota = (a.k === 'Car' && perdaCar)
+        ? `<span class="mz-atr-nota" title="${esc('Pela regra, ' + (cr.poderesTormenta || []).length +
+             ' poder(es) da Tormenta custam –' + perdaCar + ' de Carisma (1 pelo primeiro, mais 1 a cada dois outros). ' +
+             'A caixa guarda o valor BASE; o desconto já entra no 🎲, na nota de perícias e em tudo que usa Carisma.')}">–${perdaCar} Torm.</span>`
+        : '';
+      return `
+            <div class="mz-atr">
+              <label class="mz-atr-rot" title="${esc(a.nome)}">${a.k}</label>
+              <input type="text" class="mz-atr-cx" value="${esc(bruto)}" inputmode="text"
+                     aria-label="${esc(a.nome)}" placeholder="—"
+                     data-campo="atr" data-atr="${a.k}" ${ds}>
+              ${dado}${nota}
+            </div>`;
+    }).join('');
+    const obs = String(cr.atrsObs || '').trim();
+    return `
+          <div class="mz-atrs-grade">${caixas}</div>
+          ${obs ? `<p class="mz-atrs-obs">Também na linha de Atributos desta ficha:
+              <input type="text" class="mz-atrs-obs-cx" value="${esc(obs)}"
+                     aria-label="Resto da linha de Atributos" data-campo="atrsObs" ${ds}></p>` : ''}`;
+  }
+
+  //  Refaz só os 🎲 da grade (e o selo –N Torm. do Carisma) depois de
+  //  uma tecla numa caixa de atributo ou no ND. A caixa que está sendo
+  //  digitada não é tocada — redesenhar a grade roubaria o foco.
+  function atualizarAtributosVivos(el, cr) {
+    const ficha = el.closest && el.closest('.mz-criatura');
+    const grade = ficha && ficha.querySelector('.mz-atrs-grade');
+    if (!grade) return;
+    const novo = document.createElement('div');
+    novo.innerHTML = blocoAtributos(cr, _dsDe(el));
+    const fonte = novo.querySelector('.mz-atrs-grade');
+    if (!fonte) return;
+    const antigos = grade.querySelectorAll('.mz-atr');
+    const novos = fonte.querySelectorAll('.mz-atr');
+    for (let i = 0; i < antigos.length && i < novos.length; i++) {
+      // A caixa de texto NÃO se mexe: tirar do documento um campo com o
+      // cursor dentro é perder o foco no meio da digitação. Só o 🎲 e o
+      // selo –N Torm. são trocados, e eles ficam depois da caixa.
+      antigos[i].querySelectorAll('.mz-atr-dado, .mz-atr-nota').forEach(n => n.remove());
+      novos[i].querySelectorAll('.mz-atr-dado, .mz-atr-nota').forEach(n => antigos[i].appendChild(n));
+    }
   }
 
   function construirCriatura(cr, si, ci, cri, total, painel) {
@@ -3163,13 +3347,15 @@
     let caixasHtml = '';
     CAIXAS.forEach(cx => {
       if (cx.chave === 'condicoes') return; // condições vai antes (ver abaixo)
-      const corpo = cx.rico
-        ? caixaTextoRica(cx.chave, cr[cx.chave + 'Html'], ds, cx.dica)
-        : caixaTextoSimples(cx.chave, cr[cx.chave], ds, cx.linhas, cx.dica);
+      const corpo = cx.grade
+        ? blocoAtributos(cr, ds)
+        : (cx.rico
+            ? caixaTextoRica(cx.chave, cr[cx.chave + 'Html'], ds, cx.dica)
+            : caixaTextoSimples(cx.chave, cr[cx.chave], ds, cx.linhas, cx.dica));
       caixasHtml += `
         <div class="mz-campo">
           <label class="mz-rotulo">${cx.rotulo}</label>
-          ${corpo}${cx.chave === 'pericias' ? notaPericiasHtml(cr) : ''}
+          ${corpo}${cx.chave === 'pericias' ? notaPericiasHtml(cr, ds) : ''}
         </div>`;
     });
     const condicoes = CAIXAS.find(c => c.chave === 'condicoes');
@@ -3180,6 +3366,11 @@
 
     // botões do cabeçalho — no painel, a ficha não recolhe nem se move
     const fixada = dados.painel.indexOf(cr.id) >= 0;
+    // 📖 vale nos dois modos: a ficha de combate é de EDITAR, e no meio
+    // do turno o que o mestre precisa é LER
+    const botaoLer = `
+          <button class="mz-mover mz-ler-ficha" data-acao="ler-criatura" ${ds}
+                  title="Ler a ficha inteira em fonte grande, sem caixas (para a mesa)">📖</button>`;
     const botoesLista = painel ? '' : `
           <button class="mz-fixar ${fixada ? 'mz-fixar--ativo' : ''}" data-acao="fixar-criatura" ${ds}
                   title="${fixada ? 'Tirar do painel de combate' : 'Fixar no painel de combate'}">◫</button>
@@ -3216,7 +3407,7 @@
                 <span class="mz-compacto-max">/ ${esc((cr.stats.pv || {}).padrao) || '—'}</span>
               </span>
               <span class="mz-compacto-def">🛡 ${esc((cr.stats.defesa || {}).atual || (cr.stats.defesa || {}).padrao || '—')}</span>
-            </span>` : ''}${botoesLista}
+            </span>` : ''}${botaoLer}${botoesLista}
         </div>
 
         <div class="mz-criatura-corpo">
@@ -3635,6 +3826,10 @@
       rolarPericia(alvo);
       return;
     }
+    if (acao === 'rolar-atr' || acao === 'rolar-atr-per') {
+      rolarAtributo(alvo, acao === 'rolar-atr-per');
+      return;
+    }
     if (acao === 'limpar-log') {
       if (dados.log.length && !confirm('Limpar todas as rolagens do log?')) return;
       dados.log = [];
@@ -3802,6 +3997,11 @@
       if (campoEl) abrirModoLeitura(campoEl);
       return;
     }
+    if (acao === 'ler-criatura') {
+      const cr = pegarCriatura(alvo);
+      if (cr) abrirLeituraCriatura(cr);
+      return;
+    }
 
     if (acao === 'toggle-sessao') {
       const s = pegarSessao(alvo); s.aberto = !s.aberto;
@@ -3940,14 +4140,32 @@
       salvarRich(el); return;
     }
 
+    // uma das seis caixas de atributo: guarda o texto na caixa, refaz o
+    // espelho `cr.atributos` e acerta na hora tudo o que se calcula com
+    // ela (o 🎲 do teste, as pílulas de perícia não listada) — sem
+    // redesenhar, senão a caixa perderia o foco a cada tecla.
+    if (el.dataset.cr != null && campo === 'atr') {
+      const cr = pegarCriatura(el);
+      cr.atrs[el.dataset.atr] = el.value;
+      cr.atributos = linhaAtributos(cr);
+      salvar();
+      atualizarAtributosVivos(el, cr);
+      atualizarNotaPericias(el, cr);
+      return;
+    }
+
     // demais campos da criatura (nome, tipoTamanho, nd,
-    // atributos, pericias, equipamento)
+    // pericias, equipamento)
     if (el.dataset.cr != null) {
       const cr = pegarCriatura(el);
       cr[campo] = el.value;
+      if (campo === 'atrsObs') cr.atributos = linhaAtributos(cr);
       salvar();
       // o ND e os Atributos alimentam a nota "perícia fora da lista"
-      if (campo === 'nd' || campo === 'atributos') atualizarNotaPericias(el, cr);
+      if (campo === 'nd' || campo === 'atributos' || campo === 'atrsObs') {
+        atualizarNotaPericias(el, cr);
+        if (campo === 'nd') atualizarAtributosVivos(el, cr);
+      }
       return;
     }
   }
@@ -4050,8 +4268,15 @@
         sel.collapseToEnd();
         sincronizar();
       });
-      // negrito / itálico (Ctrl+B / Ctrl+I)
-      ed.addEventListener('keydown', e => { if (atalhoFormatacao(e)) sincronizar(); });
+      // negrito / itálico (Ctrl+B / Ctrl+I) e o Enter de UMA linha só —
+      // a caixa em tela cheia é a mesma caixa, e tem de quebrar igual
+      ed.addEventListener('keydown', e => {
+        if (atalhoFormatacao(e)) { sincronizar(); return; }
+        if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          e.preventDefault();
+          if (quebraDeLinhaUnica(ed)) sincronizar();
+        }
+      });
     }
 
     // foco no fim do texto
@@ -4096,6 +4321,139 @@
     const aplicarFonte = () => { texto.style.fontSize = _lerFonte.toFixed(2) + 'rem'; };
     aplicarFonte();
 
+    overlay.addEventListener('click', e => {
+      if (e.target.closest('[data-ler-mais]'))       _lerFonte = Math.min(_lerFonte + 0.15, 3.2);
+      else if (e.target.closest('[data-ler-menos]')) _lerFonte = Math.max(_lerFonte - 0.15, 0.9);
+      else return;
+      window.GA_guardar('grifosAlados.lerFonte', String(_lerFonte));
+      aplicarFonte();
+    });
+  }
+
+  // ── A FICHA INTEIRA EM MODO LEITURA (📖 no cabeçalho) ────────────
+  // A ficha de combate é toda feita de caixas: ótimo para EDITAR, ruim
+  // para LER no meio do turno. Este botão mostra a mesma criatura no
+  // formato do statblock do livro — uma linha por bloco, fonte grande,
+  // sem nenhum campo — com o valor ATUAL ao lado do padrão onde os dois
+  // diferem (é o que muda no combate). Nada aqui edita nada.
+  function _linhaLeitura(rot, valor) {
+    if (valor == null || String(valor).trim() === '') return '';
+    return `<div class="mz-lerf-linha"><span class="mz-lerf-rot">${esc(rot)}</span> ${valor}</div>`;
+  }
+  //  "18" ou "18 (atual 12)" — o padrão manda, o atual entra só quando
+  //  é diferente, que é justamente a informação do combate.
+  function _valorLeitura(st) {
+    const p = String((st || {}).padrao || '').trim();
+    const a = String((st || {}).atual || '').trim();
+    if (!p && !a) return '';
+    if (!p) return esc(a);
+    if (!a || a === p) return esc(p);
+    return `${esc(p)} <strong class="mz-lerf-atual">(agora ${esc(a)})</strong>`;
+  }
+  function htmlLeituraCriatura(cr) {
+    const st = cr.stats || {};
+    const L = [];
+    const tipo = [cr.tipoTamanho,
+                  (TIPO_POR_CHAVE[cr.tipoCriatura] || {}).nome,
+                  (cr.papel ? cr.papel.charAt(0).toUpperCase() + cr.papel.slice(1) : '')]
+                 .filter(Boolean).join(' · ');
+    if (tipo) L.push(`<div class="mz-lerf-tipo">${esc(tipo)}</div>`);
+
+    // sem quebra de linha dentro das tags: a caixa de leitura preserva
+    // os espaços do código (white-space), e a indentação viraria recuo
+    const conds = (cr.condicoesAtivas || []).map(ch => (COND_POR_CHAVE[ch] || {}).nome || ch);
+    L.push(`<div class="mz-lerf-cond ${conds.length ? 'mz-lerf-cond--on' : ''}">` +
+           `<span class="mz-lerf-rot">Condições</span> ` +
+           `${conds.length ? esc(conds.join(', ')) : 'nenhuma'}</div>`);
+
+    const sentidos = (cr.sentidos || []).map(k => (SENTIDO_POR_CHAVE[k] || {}).nome || k).join(', ');
+    // "Iniciativa +1, Percepção +0, visão no escuro" — a linha do livro
+    L.push(_linhaLeitura('Iniciativa',
+                         [_valorLeitura(st.iniciativa),
+                          _valorLeitura(st.percepcao) && 'Percepção ' + _valorLeitura(st.percepcao),
+                          sentidos && esc(sentidos)].filter(Boolean).join(', ')));
+    L.push(_linhaLeitura('Defesa', [_valorLeitura(st.defesa),
+                                    _valorLeitura(st.fortitude) && 'Fort ' + _valorLeitura(st.fortitude),
+                                    _valorLeitura(st.reflexos) && 'Ref ' + _valorLeitura(st.reflexos),
+                                    _valorLeitura(st.vontade) && 'Von ' + _valorLeitura(st.vontade),
+                                    cr.condicoes && esc(cr.condicoes)].filter(Boolean).join(', ')));
+    L.push(_linhaLeitura('Pontos de Vida', _valorLeitura(st.pv)));
+    L.push(_linhaLeitura('Pontos de Mana', _valorLeitura(st.pm)));
+    const desl = [_valorLeitura(st.deslocamento),
+                  _valorLeitura(st.desVoo) && 'voo ' + _valorLeitura(st.desVoo),
+                  _valorLeitura(st.desNatacao) && 'natação ' + _valorLeitura(st.desNatacao),
+                  _valorLeitura(st.desEscalada) && 'escalada ' + _valorLeitura(st.desEscalada),
+                  _valorLeitura(st.desEscavacao) && 'escavação ' + _valorLeitura(st.desEscavacao)]
+                 .filter(Boolean).join(', ');
+    L.push(_linhaLeitura('Deslocamento', desl));
+
+    if ((cr.ataques || '').trim()) L.push(`<div class="mz-lerf-bloco">${cr.ataques}</div>`);
+    if (cr.magiasAtivo && (cr.magiasHtml || '').trim()) {
+      L.push(`<div class="mz-lerf-bloco">${cr.magiasCab ? '<strong>' + esc(cr.magiasCab) + '</strong><br>' : ''}${cr.magiasHtml}</div>`);
+    }
+
+    // os seis atributos, já com o Carisma que a Tormenta desconta
+    const atrs = _atributosDaCriatura(cr);
+    const perdaCar = carismaPerdidoDaTormenta(cr);
+    const linhaAtr = ATRS_CRIATURA.map(a => {
+      const bruto = String((cr.atrs || {})[a.k] || '').trim();
+      const v = atrs[a.k];
+      return `<span class="mz-lerf-atr"><b>${a.k}</b> ${v == null ? esc(bruto || '—') : _maisMenos(v)}</span>`;
+    }).join(' ');
+    L.push(`<div class="mz-lerf-linha mz-lerf-atrs">${linhaAtr}${perdaCar
+      ? ` <em class="mz-lerf-nota">(Car já com –${perdaCar} dos poderes da Tormenta)</em>` : ''}</div>`);
+
+    const nd = _ndDeNaoListadas(cr);
+    if (nd != null) {
+      L.push(`<div class="mz-lerf-nota">Perícia que não está na lista: metade do ND ` +
+             `<b>${_maisMenos(Math.floor(nd / 2))}</b> + o atributo-chave.</div>`);
+    }
+    L.push(_linhaLeitura('Perícias', esc(cr.pericias || '')));
+    L.push(_linhaLeitura('Equipamento', esc(cr.equipamento || '')));
+    L.push(_linhaLeitura('Tesouro', (cr.recompensasHtml || esc(cr.recompensas || ''))));
+
+    // poderes da Tormenta e distinções: o valor JÁ somado, que é o que
+    // serve na mesa (a conta fica na ficha de edição)
+    const G = window.GA_TORMENTA;
+    const pods = (cr.poderesTormenta || []).filter(k => G && G.porChave[k]);
+    if (pods.length) {
+      L.push(`<div class="mz-lerf-bloco"><strong>🩸 Poderes da Tormenta</strong><br>` +
+        pods.map(k => {
+          const p = G.porChave[k];
+          return `<b>${esc(p.nome)}</b> ${esc((p.escala(pods.length) || {}).txt || '')}`;
+        }).join('<br>') + '</div>');
+    }
+    const base = window.GA_PODERES || [];
+    const dists = (cr.distincoes || []).map(id => base.find(p => p.id === id)).filter(Boolean);
+    if (dists.length) {
+      L.push(`<div class="mz-lerf-bloco"><strong>🎖 Distinções</strong><br>` +
+        dists.map(p => {
+          const n = nDistincaoCriatura(cr, p.distincao);
+          const e = window.GA_FICHA_DISTINCOES ? window.GA_FICHA_DISTINCOES.escala(p.id, n) : null;
+          return `<b>${p.marca ? '🏷 ' : ''}${esc(p.nome)}</b>${e ? ' ' + esc(e.txt) : ''}`;
+        }).join('<br>') + '</div>');
+    }
+    if ((cr.descricaoHtml || '').trim()) L.push(`<div class="mz-lerf-bloco mz-lerf-desc">${cr.descricaoHtml}</div>`);
+
+    return L.filter(Boolean).join('');
+  }
+
+  function abrirLeituraCriatura(cr) {
+    const overlay = GA_abrirModal(`
+      <div class="mz-ed-cab mz-ler-cab">
+        <span class="mz-ed-tit">📖 ${esc(cr.nome || 'Criatura')}${cr.nd ? ' — ND ' + esc(cr.nd) : ''}</span>
+        <span class="mz-ler-ferramentas">
+          <button type="button" class="mz-ler-az" data-ler-menos title="Letra menor">A−</button>
+          <button type="button" class="mz-ler-az" data-ler-mais title="Letra maior">A+</button>
+          <button class="mz-cond-modal-x" data-ga-fechar title="Fechar (Esc)">✕</button>
+        </span>
+      </div>
+      <div class="mz-ler-texto mz-lerf">${htmlLeituraCriatura(cr)}</div>`);
+    overlay.classList.add('mz-ed-overlay', 'mz-ler-overlay');
+
+    const texto = overlay.querySelector('.mz-ler-texto');
+    const aplicarFonte = () => { texto.style.fontSize = _lerFonte.toFixed(2) + 'rem'; };
+    aplicarFonte();
     overlay.addEventListener('click', e => {
       if (e.target.closest('[data-ler-mais]'))       _lerFonte = Math.min(_lerFonte + 0.15, 3.2);
       else if (e.target.closest('[data-ler-menos]')) _lerFonte = Math.max(_lerFonte - 0.15, 0.9);
@@ -4346,6 +4704,46 @@
     renderLog();
   }
 
+  // ── ROLAGEM DE ATRIBUTO (os 🎲 das seis caixas) ──────────────────
+  //  `comMeioND` = false → teste de atributo puro (1d20 + o atributo);
+  //  true → perícia que NÃO está na ficha (1d20 + metade do ND + o
+  //  atributo-chave, Ameaças de Arton p. 384). O Carisma já chega aqui
+  //  com o desconto dos poderes da Tormenta (_atributosDaCriatura).
+  function rolarAtributo(botao, comMeioND) {
+    const cr = pegarCriatura(botao);
+    if (!cr) return;
+    const k = botao.dataset.atr;
+    const info = ATRS_CRIATURA.find(a => a.k === k) || { k: k, nome: k };
+    const atrs = _atributosDaCriatura(cr);
+    const atr = atrs[k];
+    if (atr == null) return;                      // caixa vazia ou "—"/"1d20"
+    const nd = _ndDeNaoListadas(cr);
+    const meio = (nd == null) ? 0 : Math.floor(nd / 2);
+    if (comMeioND && nd == null) return;          // sem ND não há metade
+
+    const dado = rolarDado(20);
+    const mod = comMeioND ? meio + atr : atr;
+    const total = dado + mod;
+    const conta = comMeioND
+      ? ` (${_maisMenos(meio)} metade do ND ${_maisMenos(atr)} ${info.k})`
+      : '';
+    const perda = (k === 'Car') ? carismaPerdidoDaTormenta(cr) : 0;
+    const formula = `1d20 (${formatarD20(dado)}) ${mod < 0 ? '−' : '+'} ${Math.abs(mod)}${conta}` +
+      (perda ? ` (Car já com –${perda} da Tormenta)` : '') +
+      ` = <strong>${total}</strong>`;
+
+    registrarLog({
+      criatura: cr.nome || '(criatura sem nome)',
+      pericia: comMeioND
+        ? `Perícia fora da lista · ${info.nome}`
+        : `Teste de ${info.nome}`,
+      formula: formula,
+      tipo: 'pericia',
+    });
+    salvar();
+    renderLog();
+  }
+
   // ── VARIANTE "AMEAÇAS E MORTE" (resolver a sorte da criatura caída) ─
   // Lacaio morre; solo/especial sobrevivem com 50%. Registra no log e
   // marca a ficha (statusMorte) — re-renderiza para refletir o resultado.
@@ -4567,10 +4965,94 @@
     return true;
   }
 
+  // ── ENTER = UMA LINHA, NUNCA DUAS (30/10/2026) ───────────────────
+  // A caixa guarda as habilidades separadas por <br> — é essa a conta do
+  // ✦ Mágica (alternarMagica) e do que o livro imprime. Mas a caixa tem
+  // `white-space: pre-wrap`, e aí o Enter do navegador não insere <br>:
+  // insere "\n" — e DOIS deles quando o cursor está no fim do texto, para
+  // a linha nova aparecer. Resultado: cada habilidade terminada abria um
+  // vão de duas linhas, e o ✦ Mágica não reconhecia mais a linha.
+  //
+  // Aqui o Enter insere UM <br>. Se ele ficou no fim do conteúdo, entra um
+  // segundo <br> logo depois — esse não ocupa linha nenhuma (<br> no fim
+  // de um bloco não conta para a altura), ele só dá lugar ao cursor. O
+  // cursor fica ENTRE os dois.
+  function quebraDeLinhaUnica(editor) {
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) return false;
+    const range = sel.getRangeAt(0);
+    if (!editor.contains(range.commonAncestorContainer)) return false;
+    range.deleteContents();
+    const br = document.createElement('br');
+    range.insertNode(br);
+    // insertNode PARTE o nó de texto em dois, e com o cursor no fim da
+    // linha a segunda metade nasce vazia. Esse nó invisível fazia o <br>
+    // parecer que tinha vizinho: a caixa não ganhava o <br> de lugar do
+    // cursor e a linha seguinte colava na anterior.
+    const vazio = n => n && n.nodeType === 3 && n.textContent === '';
+    while (vazio(br.nextSibling)) br.parentNode.removeChild(br.nextSibling);
+    // o <br> é o último nó da caixa? então o cursor não teria onde ficar
+    let ultimo = !br.nextSibling;
+    let pai = br.parentNode;
+    while (ultimo && pai && pai !== editor) {
+      let prox = pai.nextSibling;
+      while (vazio(prox)) prox = prox.nextSibling;
+      ultimo = !prox;
+      pai = pai.parentNode;
+    }
+    const depois = document.createRange();
+    if (ultimo) {
+      const vago = document.createElement('br');
+      br.parentNode.insertBefore(vago, br.nextSibling);
+      depois.setStartBefore(vago);
+    } else {
+      depois.setStartAfter(br);
+    }
+    depois.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(depois);
+    return true;
+  }
+
+  // Cola uma linha no fim de uma caixa rica de habilidades, com UM <br>
+  // de distância — e sem empilhar os <br> que já estavam lá no fim.
+  function anexarLinhaRica(htmlAtual, htmlLinha) {
+    const base = String(htmlAtual || '').replace(/(?:\s|&nbsp;|<br\s*\/?>)+$/i, '');
+    return base ? base + '<br>' + htmlLinha : htmlLinha;
+  }
+
+  // Uma habilidade por linha, UMA linha de distância. Conserta o que o
+  // Enter do navegador deixou para trás nas fichas antigas: <div>/<p> de
+  // bloco (que o ✦ Mágica nem reconhecia como linha) e vãos de duas,
+  // três linhas. É idempotente: rodar de novo não muda mais nada.
+  //   · bloco (<div>, <p>, </div>) → uma quebra <br>
+  //   · "\n" solto (a caixa é white-space: pre-wrap) → <br>
+  //   · dois ou mais <br> seguidos → um só
+  //   · quebras no começo e no fim → fora
+  // O texto e o grifo não se mexem: só as quebras.
+  function umaLinhaPorHabilidade(html) {
+    let h = String(html == null ? '' : html);
+    if (!h) return '';
+    h = h.replace(/<\/(?:div|p)>\s*<(?:div|p)\b[^>]*>/gi, '<br>')   // fim de um bloco, começo do outro
+         .replace(/<(?:div|p)\b[^>]*>/gi, '<br>')                   // bloco que abre sem fechar antes
+         .replace(/<\/(?:div|p)>/gi, '')                            // o fechamento já virou quebra
+         .replace(/\r\n?|\n/g, '<br>')                              // "\n" do pre-wrap
+         .replace(/(?:\s*(?:<br\s*\/?>|&nbsp;)\s*){2,}/gi, '<br>')  // vão de duas ou mais → uma
+         .replace(/^(?:\s|&nbsp;|<br\s*\/?>)+/i, '')                // quebra no começo
+         .replace(/(?:\s|&nbsp;|<br\s*\/?>)+$/i, '');               // quebra no fim
+    return h;
+  }
+
   function aoTeclar(e) {
     // Ctrl+B / Ctrl+I dentro das caixas de texto rico
     if (e.target.classList && e.target.classList.contains('mz-ataques')) {
       if (atalhoFormatacao(e)) { salvarRich(e.target); return; }
+      // Enter = UMA linha só (ver quebraDeLinhaUnica)
+      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        if (quebraDeLinhaUnica(e.target)) salvarRich(e.target);
+        return;
+      }
     }
     if (e.key !== 'Enter') return;
     if (!e.target.classList || !e.target.classList.contains('mz-chat-input')) return;
@@ -5619,19 +6101,20 @@
     return v >= 900 ? 1 : Math.max(v, 0.25);
   }
 
-  // "For 2, Des 0, … Car 1" + {Con:+1, Des:-1} → linha ajustada.
-  // Mantém o travessão "–" dos negativos (padrão das fichas do livro).
+  // {Con:+1, Des:-1} aplicado nas caixas de atributo (e, por elas, na
+  // linha de texto da ficha). Mantém o travessão "–" dos negativos,
+  // padrão das fichas do livro. Caixa sem número ("Int —") fica como
+  // está: somar 1 a "sem mente" não quer dizer nada.
   function _ajustarAtributos(cr, deltas) {
-    if (!cr.atributos) return;
-    let txt = cr.atributos;
+    if (!cr.atrs) return;
     Object.keys(deltas).forEach(atr => {
-      const re = new RegExp('\\b(' + atr + ')\\s+([+\\-–—−]?\\d+)', 'i');
-      const m = txt.match(re);
-      if (!m) return;
-      const v = parseInt(m[2].replace(/[–—−]/g, '-'), 10) + deltas[atr];
-      txt = txt.replace(re, '$1 ' + (v < 0 ? '–' + Math.abs(v) : v));
+      const k = atr[0].toUpperCase() + atr.slice(1, 3).toLowerCase();
+      const n = numeroAtr(cr.atrs[k]);
+      if (n == null) return;
+      const v = n + deltas[atr];
+      cr.atrs[k] = (v < 0 ? '–' + Math.abs(v) : String(v));
     });
-    cr.atributos = txt;
+    cr.atributos = linhaAtributos(cr);
   }
 
   // Deslocamento base: valor fixo ("6m (4q)") ou delta em metros.
@@ -5691,9 +6174,9 @@
       if (raca.natacao) { cr.stats.desNatacao.padrao = raca.natacao; cr.stats.desNatacao.atual = raca.natacao; }
       (raca.sentidos || []).forEach(sk => { if (cr.sentidos.indexOf(sk) < 0) cr.sentidos.push(sk); });
       _ajustarTipoLinha(cr, raca);
-      cr.ataques = (cr.ataques || '') +
-        `<div><strong>Raça — ${esc(raca.nome)} (Guia de NPCs):</strong> ajustes já aplicados na ficha: ${esc(raca.auto)}.` +
-        (raca.linha ? ' ' + _txtParaHtml(raca.linha) : '') + '</div>';
+      cr.ataques = anexarLinhaRica(cr.ataques,
+        `<strong>Raça — ${esc(raca.nome)} (Guia de NPCs):</strong> ajustes já aplicados na ficha: ${esc(raca.auto)}.` +
+        (raca.linha ? ' ' + _txtParaHtml(raca.linha) : ''));
       cr.nome = ((cr.nome || '') + ' (' + raca.racaTexto + ')').trim();
       aplicado.push('raça ' + raca.nome);
     }
@@ -5707,8 +6190,8 @@
         const i = ordem.indexOf(cr.critMult);
         cr.critMult = ordem[Math.min(ordem.length - 1, (i < 0 ? 0 : i) + truque.critMult)];
       }
-      cr.ataques = (cr.ataques || '') +
-        `<div><strong>Truque mercenário — ${esc(truque.nome)}:</strong> ${_txtParaHtml(truque.linha)}</div>`;
+      cr.ataques = anexarLinhaRica(cr.ataques,
+        `<strong>Truque mercenário — ${esc(truque.nome)}:</strong> ${_txtParaHtml(truque.linha)}`);
       aplicado.push('truque ' + truque.nome);
     }
 
@@ -5723,7 +6206,7 @@
       }
       const p = G.poderPorChave[pChave];
       if (p && p.deuses.indexOf(d.chave) >= 0) {
-        cr.ataques = (cr.ataques || '') + _linhaPoderHtml(p, d);
+        cr.ataques = anexarLinhaRica(cr.ataques, _linhaPoderHtml(p, d));
         aplicado.push('devoto de ' + d.nome + ' — poder: ' + p.nome);
       } else {
         aplicado.push('devoto de ' + d.nome);
@@ -5808,9 +6291,9 @@
     if (opcoes.comuns !== false) {
       const com = B.comunsDe(ref);
       if (com) {
-        cr.ataques = (cr.ataques || '') +
-          `<div><strong>${esc(com.titulo)} — vale para todo o grupo ${esc(ref.cat.nome)}:</strong> ` +
-          _txtParaHtml(com.texto) + '</div>';
+        cr.ataques = anexarLinhaRica(cr.ataques,
+          `<strong>${esc(com.titulo)} — vale para todo o grupo ${esc(ref.cat.nome)}:</strong> ` +
+          _txtParaHtml(com.texto));
         aplicado.push(com.titulo);
       }
     }
@@ -6707,8 +7190,11 @@
         const p = _GT.porChave[k];
         return `${p.nome}: ${(p.escala(_pods.length) || {}).txt || ''}`;
       });
-      linhas.push(`(Carisma NÃO é automático — pela regra, ${_pods.length} poderes custam ` +
-                  `–${_GT.carismaPerdido(_pods.length)} de Car; ajuste em Atributos.)`);
+      const _carB = numeroAtr((cr.atrs || {}).Car);
+      const _carP = _GT.carismaPerdido(_pods.length);
+      linhas.push(`(Carisma: ${_pods.length} poder(es) custam –${_carP} de Car` +
+                  (_carB == null ? '; a caixa Car está vazia.'
+                                 : `, então o Car ${_maisMenos(_carB)} da ficha vale ${_maisMenos(_carB - _carP)}.`) + ')');
       bloco(`Poderes da Tormenta (${_pods.length}, valores já somados)`, linhas.join('\n'));
     }
     // a caixa de ataques guarda HTML — converte para texto plano

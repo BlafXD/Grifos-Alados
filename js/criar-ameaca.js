@@ -95,6 +95,11 @@
       percepcaoTreinada: false, percepcaoExtra: 0,
       ataques: [], habilidades: [], pericias: [],
       atributos: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
+      // poderes de fora dos oito passos (ver o bloco "PODERES DA
+      // TORMENTA E DISTINÇÕES"): chaves de GA_TORMENTA e ids de
+      // GA_PODERES (grupo 'distincao'). `distincoesAtivos` são os
+      // bônus CONDICIONAIS de ataque/dano que o mestre deixou ligados.
+      poderesTormenta: [], distincoes: [], distincoesAtivos: [],
       equipamento: '', tesouro: 'padrao', tesouroObs: '', parceiro: '', notas: '',
 
       // ── Criatura derivada (p. 387–389) ───────────────────────────
@@ -127,8 +132,13 @@
     ['ajustes', 'resDistrib', 'atributos'].forEach(function (k) {
       c[k] = Object.assign({}, base[k], c[k] || {});
     });
-    ['deslExtras', 'ataques', 'habilidades', 'pericias'].forEach(function (k) {
+    ['deslExtras', 'ataques', 'habilidades', 'pericias',
+     'poderesTormenta', 'distincoes', 'distincoesAtivos'].forEach(function (k) {
       if (!Array.isArray(c[k])) c[k] = [];
+    });
+    // poder de distinção removido da base não pode ficar ligado sozinho
+    c.distincoesAtivos = c.distincoesAtivos.filter(function (id) {
+      return c.distincoes.indexOf(id) >= 0;
     });
     c.ataques.forEach(function (a) { if (!a.id) a.id = uid('at'); });
     c.habilidades.forEach(function (h) { if (!h.id) h.id = uid('hb'); });
@@ -171,20 +181,30 @@
     return c.deltas ? (parseInt(c.deltas[chave], 10) || 0) : 0;
   }
 
-  // Estatísticas finais da criatura. Três camadas, nesta ordem:
+  // Estatísticas finais da criatura. QUATRO camadas, nesta ordem:
   //   1. a linha da Tabela 2-3 do papel e do ND;
   //   2. o ajuste de ±1/±2 ND do Passo 3 (anda na tabela, sem sair dela);
   //   3. o delta em PONTOS herdado da criatura-base (p. 387: "modifique
   //      as estatísticas de sua criatura para as do novo ND e mantenha as
-  //      diferenças").
+  //      diferenças");
+  //   4. os bônus fixos das DISTINÇÕES da ficha (30/10/2026).
+  // Cada camada fica guardada à parte (…Pts, …Dist): o Passo 3 mostra a
+  // conta aberta, e a conferência contra a tabela continua sendo feita
+  // sem a camada 4 — uma distinção não "desregula" o ND da criatura.
   function stats(c) {
     const out = {};
+    const bd = bonusDistincao(c);
     D.PARAM_COLUNAS.forEach(function (col) {
       const nd = ndComDelta(c.nd, c.ajustes[col.chave] || 0);
       const pts = pontos(c, col.chave);
-      out[col.chave] = parametros(c.papel, nd)[col.chave] + pts;
+      const dist = bd.porColuna[col.chave] || 0;
+      out[col.chave] = parametros(c.papel, nd)[col.chave] + pts + dist;
       out[col.chave + 'Nd'] = nd;
       out[col.chave + 'Pts'] = pts;
+      out[col.chave + 'Dist'] = dist;
+      // o valor SEM distinção — é ele que a conferência do dano e as
+      // comparações com a Tabela 2-3 usam
+      out[col.chave + 'Tab'] = parametros(c.papel, nd)[col.chave] + pts;
     });
     return out;
   }
@@ -281,7 +301,9 @@
   function danoPorGolpe(c) {
     const n = golpesPorRodada(c);
     if (!n) return 0;
-    return Math.ceil(stats(c).dano / n);   // o livro arredonda para cima
+    // a conta do livro é contra a LINHA da tabela (camadas 1-3): o
+    // dano extra de uma distinção não deve baixar o bônus da arma
+    return Math.ceil(stats(c).danoTab / n);   // o livro arredonda para cima
   }
   function danoTotalAtual(c) {
     return ataquesPrincipais(c).reduce(function (s, a) {
@@ -298,15 +320,200 @@
   function danoConfere(c) {
     const golpes = golpesPorRodada(c);
     if (!golpes) return true;
-    const dif = danoTotalAtual(c) - stats(c).dano;
+    const dif = danoTotalAtual(c) - stats(c).danoTab;
     return dif >= 0 && dif < golpes;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  PODERES DA TORMENTA E DISTINÇÕES (30/10/2026)
+  // ═══════════════════════════════════════════════════════════════
+  //  As duas listas de poderes que uma ameaça pode receber de fora dos
+  //  oito passos:
+  //    🩸 Tormenta  — window.GA_TORMENTA (o mesmo do Painel de Combate);
+  //    🎖 Distinção — window.GA_PODERES (grupo 'distincao') + os efeitos
+  //                   automáticos de window.GA_DISTINCOES_EFEITOS.
+  //
+  //  POR QUE A CONTA SE REPETE AQUI. A mesma soma existe em
+  //  js/monstros.js, para a ficha do Painel de Combate. É a regra do
+  //  projeto — "dado de regra se duplica, ferramenta se compartilha":
+  //  os DADOS (as duas tabelas acima) são compartilhados, a conta é
+  //  duplicada, e assim mexer na oficina nunca quebra o Painel.
+  //
+  //  A DIFERENÇA é o que cada aba pode aplicar sozinha. Lá a ficha é a
+  //  do livro, já pronta, e o bloco só MOSTRA o valor; aqui a oficina é
+  //  quem ESCREVE a ficha, então o que é número fixo entra direto na
+  //  estatística (é a quarta camada de stats()) e o que é texto entra na
+  //  linha de Defesa. O mestre vê, em cada poder, onde ele caiu.
+
+  function tormentaDaCriatura(c) {
+    const G = window.GA_TORMENTA;
+    if (!G) return [];
+    return (c.poderesTormenta || []).filter(function (k) { return G.porChave[k]; });
+  }
+  // Carisma perdido: 1 pelo primeiro poder, mais 1 a cada dois outros.
+  function carismaPerdido(c) {
+    const G = window.GA_TORMENTA;
+    if (!G) return 0;
+    return G.carismaPerdido(tormentaDaCriatura(c).length);
+  }
+  // O atributo que VALE nas contas — o Car já com o desconto da
+  // Tormenta. A caixa do Passo 6 continua guardando o valor base.
+  function atributo(c, atrId) {
+    const v = parseInt(c.atributos[atrId], 10) || 0;
+    return atrId === 'car' ? v - carismaPerdido(c) : v;
+  }
+
+  // ── Distinções ────────────────────────────────────────────────────
+  //  As 59 distinções agrupadas (uma entrada por distinção, com a marca
+  //  separada dos poderes) a partir de window.GA_PODERES.
+  let _distCache = null;
+  function distincoesDaBase() {
+    if (_distCache) return _distCache;
+    const todas = Array.isArray(window.GA_PODERES) ? window.GA_PODERES : [];
+    const mapa = {};
+    todas.forEach(function (p) {
+      if (p.grupo !== 'distincao' || !p.distincao) return;
+      const d = mapa[p.distincao] || (mapa[p.distincao] = {
+        slug: p.distincao, nome: (p.tags || p.distincao).split(' · ')[0],
+        livro: p.livro, marca: null, poderes: [],
+      });
+      if (p.marca) d.marca = p; else d.poderes.push(p);
+    });
+    _distCache = Object.keys(mapa).map(function (k) { return mapa[k]; })
+      .sort(function (a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+    return _distCache;
+  }
+  function poderDistPorId(id) {
+    const base = Array.isArray(window.GA_PODERES) ? window.GA_PODERES : [];
+    return base.find(function (p) { return p.id === id; }) || null;
+  }
+  //  n = poderes DAQUELA distinção na ficha, sem contar a marca (a mesma
+  //  conta de js/ficha-distincoes.js e do Painel de Combate).
+  function nDistincao(c, slug) {
+    return (c.distincoes || []).filter(function (id) {
+      const p = poderDistPorId(id);
+      return p && p.distincao === slug && !p.marca;
+    }).length;
+  }
+  function temMarcaDistincao(c, slug) {
+    return (c.distincoes || []).some(function (id) {
+      const p = poderDistPorId(id);
+      return p && p.distincao === slug && p.marca;
+    });
+  }
+  function _valorOuFn(x, n) { return typeof x === 'function' ? x(n) : x; }
+  //  Todos os efeitos automáticos da ficha, já com o `n` da distinção
+  //  de cada poder resolvido. Um poder pode ter mais de um efeito.
+  function efeitosDistincao(c) {
+    const T = window.GA_DISTINCOES_EFEITOS || {};
+    const out = [];
+    (c.distincoes || []).forEach(function (id) {
+      const p = poderDistPorId(id);
+      if (!p) return;
+      const n = nDistincao(c, p.distincao);
+      const lista = Array.isArray(T[id]) ? T[id] : [];
+      lista.forEach(function (ef) { out.push({ id: id, poder: p, n: n, ef: ef }); });
+    });
+    return out;
+  }
+  //  Para onde cada tipo de efeito vai nesta aba. 'fortitude'/'reflexos'
+  //  /'vontade' caem na COLUNA de resistência que o Passo 3 escolheu —
+  //  é lá que a Tabela 2-3 guarda o valor.
+  function _colunaDoEfeito(c, tipo) {
+    if (tipo === 'fortitude') return c.resDistrib.fort;
+    if (tipo === 'reflexos')  return c.resDistrib.ref;
+    if (tipo === 'vontade')   return c.resDistrib.von;
+    if (['defesa', 'pv', 'ataque', 'dano'].indexOf(tipo) >= 0) return tipo;
+    return null;
+  }
+  //  A soma viva das distinções. `porColuna` entra na quarta camada de
+  //  stats(); `ini`, `per`, `pm` e `desloc` entram nas linhas próprias
+  //  do statblock; `textos` vai para a linha de Defesa.
+  //  Bônus CONDICIONAL de ataque/dano só entra quando o mestre liga o
+  //  interruptor do poder (c.distincoesAtivos) — fora disso ele fica
+  //  como nota, igual ao Painel de Combate.
+  function bonusDistincao(c) {
+    const r = { porColuna: {}, ini: 0, per: 0, pm: 0, desloc: 0,
+                danoDados: [], textos: [], condicionais: [] };
+    if (!c.distincoes || !c.distincoes.length) return r;
+    efeitosDistincao(c).forEach(function (x) {
+      const ef = x.ef, n = x.n;
+      const bonus = parseInt(_valorOuFn(ef.bonus, n), 10) || 0;
+      const ligado = ef.modo !== 'condicional' ||
+                     (c.distincoesAtivos || []).indexOf(x.id) >= 0;
+      if (ef.tipo === 'ataque' || ef.tipo === 'dano' || ef.tipo === 'ataqueDano') {
+        if (ef.modo === 'condicional') r.condicionais.push(x);
+        if (!ligado) return;
+        if (ef.tipo !== 'dano')  r.porColuna.ataque = (r.porColuna.ataque || 0) + bonus;
+        if (ef.tipo !== 'ataque') {
+          r.porColuna.dano = (r.porColuna.dano || 0) + bonus;
+          const d = _valorOuFn(ef.dado, n);
+          if (d) r.danoDados.push(d);
+        }
+        return;
+      }
+      if (!ligado) return;
+      if (ef.tipo === 'iniciativa')   { r.ini += bonus; return; }
+      if (ef.tipo === 'percepcao')    { r.per += bonus; return; }
+      if (ef.tipo === 'pm')           { r.pm += bonus; return; }
+      if (ef.tipo === 'deslocamento') { r.desloc += parseFloat(_valorOuFn(ef.metros, n)) || 0; return; }
+      if (ef.tipo === 'rd') {
+        r.textos.push('redução de dano ' + _valorOuFn(ef.valorRD, n) +
+                       (ef.tipoDano ? ' contra ' + ef.tipoDano : ''));
+        return;
+      }
+      if (ef.tipo === 'resistencia') {
+        r.textos.push('resistência' + (ef.tipoDano ? ' a ' + ef.tipoDano : '') + ' ' + sinalZero(bonus));
+        return;
+      }
+      if (ef.tipo === 'imunidade') {
+        const nomes = (ef.condChaves || []).concat(ef.condCategorias || []);
+        r.textos.push('imunidade a ' + (nomes.length ? nomes.join(', ') : 'efeitos listados no poder'));
+        return;
+      }
+      const col = _colunaDoEfeito(c, ef.tipo);
+      if (col) r.porColuna[col] = (r.porColuna[col] || 0) + bonus;
+    });
+    return r;
+  }
+  //  O que um efeito faz, em português, já com o `n` resolvido — e onde
+  //  ele cai nesta ficha (é esse "onde" que o Painel não tem).
+  function descreverEfeito(c, ef, n) {
+    const b = sinalZero(parseInt(_valorOuFn(ef.bonus, n), 10) || 0);
+    const col = _colunaDoEfeito(c, ef.tipo);
+    const nomeCol = col ? (D.PARAM_COLUNAS.find(function (x) { return x.chave === col; }) || {}).curto : '';
+    switch (ef.tipo) {
+      case 'ataque':      return { txt: b + ' no teste de ataque', onde: 'Passo 3 · Valor de ataque' };
+      case 'dano':        return { txt: (parseInt(_valorOuFn(ef.bonus, n), 10) ? b + ' no dano' : '') +
+                                        (_valorOuFn(ef.dado, n) ? (parseInt(_valorOuFn(ef.bonus, n), 10) ? ' e ' : '') + _valorOuFn(ef.dado, n) + ' no dano' : ''),
+                                   onde: 'Passo 3 · Dano médio' };
+      case 'ataqueDano':  return { txt: b + ' no teste de ataque e no dano', onde: 'Passo 3 · Ataque e dano' };
+      case 'defesa':      return { txt: b + ' na Defesa', onde: 'Passo 3 · Defesa' };
+      case 'fortitude':   return { txt: b + ' em Fortitude', onde: 'Passo 3 · ' + nomeCol };
+      case 'reflexos':    return { txt: b + ' em Reflexos',  onde: 'Passo 3 · ' + nomeCol };
+      case 'vontade':     return { txt: b + ' em Vontade',   onde: 'Passo 3 · ' + nomeCol };
+      case 'pv':          return { txt: b + ' PV',  onde: 'Passo 3 · PV' };
+      case 'pm':          return { txt: b + ' PM',  onde: 'Passo 3 · Pontos de Mana' };
+      case 'iniciativa':  return { txt: b + ' em Iniciativa', onde: 'Passo 6 · Iniciativa' };
+      case 'percepcao':   return { txt: b + ' em Percepção',  onde: 'Passo 6 · Percepção' };
+      case 'deslocamento':return { txt: sinalMetros(parseFloat(_valorOuFn(ef.metros, n)) || 0) + ' de deslocamento',
+                                   onde: 'Passo 2 · Deslocamento' };
+      case 'rd':          return { txt: 'redução de dano ' + _valorOuFn(ef.valorRD, n) +
+                                        (ef.tipoDano ? ' contra ' + ef.tipoDano : ''),
+                                   onde: 'linha de Defesa' };
+      case 'resistencia': return { txt: 'resistência' + (ef.tipoDano ? ' a ' + ef.tipoDano : '') + ' ' + b,
+                                   onde: 'linha de Defesa' };
+      case 'imunidade':   return { txt: 'imunidade a ' + ((ef.condChaves || []).concat(ef.condCategorias || []).join(', ') || 'efeitos do poder'),
+                                   onde: 'linha de Defesa' };
+      default:            return { txt: '', onde: '' };
+    }
   }
 
   // ── Perícias: ½ ND + atributo + treinamento + extra ──────────────
   function valorPericia(c, atrId, treinada, extra) {
     const n = ndNum(c.nd);
     return Math.floor(n / 2) +
-           (parseInt(c.atributos[atrId], 10) || 0) +
+           atributo(c, atrId) +
            (treinada ? D.bonusTreinamento(n) : 0) +
            (parseInt(extra, 10) || 0);
   }
@@ -335,6 +542,12 @@
   // Modificador de tamanho: o livro imprime "0" no Médio, não "+0".
   function sinalZero(v) {
     return (parseInt(v, 10) || 0) === 0 ? '0' : sinal(v);
+  }
+  // "+4,5m" / "–3m" — metros com sinal, sem perder a meia casa (uma
+  // distinção dá "3 + 1,5m a cada dois outros poderes").
+  function sinalMetros(v) {
+    const n = parseFloat(v) || 0;
+    return (n >= 0 ? '+' : '–') + fmtMetros(Math.abs(n));
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -950,8 +1163,12 @@
     const sub = c.subtipo ? ' (' + c.subtipo.replace(/^\(|\)$/g, '') + ')' : '';
     L.push(tipo.nome + sub + ' ' + tam.nome);
 
-    const ini = valorPericia(c, 'des', c.iniciativaTreinada, c.iniciativaExtra);
-    const per = valorPericia(c, 'sab', c.percepcaoTreinada, c.percepcaoExtra);
+    // as distinções da ficha somam em Iniciativa, Percepção, PM, no
+    // deslocamento e nas linhas de texto da Defesa (ver bonusDistincao)
+    const bd = bonusDistincao(c);
+
+    const ini = valorPericia(c, 'des', c.iniciativaTreinada, c.iniciativaExtra) + bd.ini;
+    const per = valorPericia(c, 'sab', c.percepcaoTreinada, c.percepcaoExtra) + bd.per;
     L.push('Iniciativa ' + sinal(ini) + ', Percepção ' + sinal(per) +
            (c.sentidos ? ', ' + c.sentidos : ''));
 
@@ -959,14 +1176,22 @@
            ', Fort ' + sinal(s[c.resDistrib.fort]) +
            ', Ref ' + sinal(s[c.resDistrib.ref]) +
            ', Von ' + sinal(s[c.resDistrib.von]) +
-           (c.defesasExtra ? ', ' + c.defesasExtra : ''));
+           (c.defesasExtra ? ', ' + c.defesasExtra : '') +
+           (bd.textos.length ? ', ' + bd.textos.join(', ') : ''));
 
     L.push('Pontos de Vida ' + milhar(s.pv));
-    if (c.usaPM) L.push('Pontos de Mana ' + (c.pmManual || pmSugerido(c)));
+    if (c.usaPM) {
+      const pmBase = parseInt(c.pmManual, 10) || pmSugerido(c);
+      L.push('Pontos de Mana ' + (bd.pm ? (pmBase + bd.pm) : (c.pmManual || pmSugerido(c))));
+    }
 
-    // Deslocamento
+    // Deslocamento (o bônus de distinção soma nos metros da linha base)
     const partes = [];
-    if (!c.semTerrestre) partes.push(comQuadrados(c.deslTerrestre || deslocamentoAuto(c)));
+    if (!c.semTerrestre) {
+      const base = c.deslTerrestre || deslocamentoAuto(c);
+      const m = metros(base);
+      partes.push(comQuadrados(bd.desloc && m != null ? fmtMetros(Math.max(0, m + bd.desloc)) : base));
+    }
     c.deslExtras.forEach(function (ex) {
       const v = ex.valor || deslocamentoExtraAuto(c, ex);
       if (v) partes.push((D.DESL_ROTULOS[ex.id] || ex.id) + ' ' + comQuadrados(v));
@@ -991,8 +1216,32 @@
       L.push((h.magica ? '✦ ' : '') + (h.nome || 'Habilidade') + exec + ' ' + (h.texto || ''));
     });
 
+    // Poderes da Tormenta: uma linha cada, com o valor JÁ somado pela
+    // quantidade de poderes da ficha.
+    const GT = window.GA_TORMENTA;
+    const pods = tormentaDaCriatura(c);
+    if (GT && pods.length) {
+      pods.forEach(function (chave) {
+        const p = GT.porChave[chave];
+        const e = p.escala(pods.length) || {};
+        L.push(p.nome + ' (poder da Tormenta) ' + (e.txt || p.desc));
+      });
+    }
+    // Poderes de distinção: uma linha cada, com o valor da escala quando
+    // o poder tem conta própria.
+    (c.distincoes || []).forEach(function (id) {
+      const p = poderDistPorId(id);
+      if (!p) return;
+      const dist = distincoesDaBase().find(function (d) { return d.slug === p.distincao; });
+      const n = nDistincao(c, p.distincao);
+      const esc2 = window.GA_FICHA_DISTINCOES ? window.GA_FICHA_DISTINCOES.escala(p.id, n) : null;
+      L.push(p.nome + ' (' + (dist ? dist.nome : p.distincao) + (p.marca ? ', marca' : '') + ') ' +
+             (esc2 ? esc2.txt + '. ' : '') + (p.texto || []).join(' '));
+    });
+
     L.push(D.ATRIBUTOS.map(function (a) {
-      const v = parseInt(c.atributos[a.id], 10) || 0;
+      // o Car sai com o desconto dos poderes da Tormenta já aplicado
+      const v = atributo(c, a.id);
       return a.curto + ' ' + (v < 0 ? '–' + Math.abs(v) : v);
     }).join(', '));
 
@@ -1702,20 +1951,188 @@
       '</div>' +
       '<details class="ca-bib" id="ca-bib"><summary>📚 Biblioteca de habilidades gerais <em>(Capítulo 1, p. 15–17)</em></summary>' +
         '<p class="ca-nota">Um clique põe o texto na ficha, já com o ND e a CD desta criatura no lugar.</p>' +
-        '<div class="ca-bib-lista">' + biblioteca + '</div></details>');
+        '<div class="ca-bib-lista">' + biblioteca + '</div></details>' +
+      // poderes de listas fechadas, com conta própria — fora da cota
+      blocoTormenta(c) + blocoDistincoes(c));
+  }
+
+  // ── PODERES DE FORA DOS OITO PASSOS (30/10/2026) ──────────────────
+  //  Dois blocos no fim do Passo 5, porque poder da Tormenta e poder de
+  //  distinção são habilidades especiais da criatura — só que vindos de
+  //  uma lista fechada, com conta própria. Eles NÃO entram na cota de
+  //  habilidades do papel/patamar: a cota é do Passo 5 do livro, e
+  //  estas duas listas são de outros capítulos.
+  function blocoTormenta(c) {
+    const G = window.GA_TORMENTA;
+    if (!G) return '';
+    const arr = tormentaDaCriatura(c);
+    const n = arr.length;
+    const botao = '<button type="button" class="ca-btn ca-btn--torm" data-acao="abrir-tormenta" ' +
+      'title="Escolher poderes da tempestade rubra — o valor de cada um cresce com a quantidade">＋ Poder da Tormenta</button>';
+
+    if (!n) {
+      return '<div class="ca-extra ca-extra--torm">' +
+        '<div class="ca-extra-cab"><span class="ca-extra-tit">🩸 Poderes da Tormenta</span>' + botao + '</div>' +
+        '<p class="ca-nota">Nenhum. Ao marcar poderes, o valor de todos eles é somado sozinho conforme a quantidade — e o <strong>Carisma</strong> desce na mesma hora (Passo 6).</p>' +
+      '</div>';
+    }
+
+    const car = carismaPerdido(c);
+    const carBase = parseInt(c.atributos.car, 10) || 0;
+    const linhas = arr.map(function (chave) {
+      const p = G.porChave[chave];
+      const e = p.escala(n) || {};
+      const falta = G.faltando(chave, arr, atributo(c, 'car'));
+      return '<div class="ca-extra-item">' +
+        '<div class="ca-extra-item-cab">' +
+          '<span class="ca-extra-nome">' + esc(p.nome) + '</span>' +
+          '<span class="ca-extra-fonte">' + esc(p.fonte) + '</span>' +
+          '<button type="button" class="ca-mini ca-mini--perigo" data-acao="rem-tormenta" data-chave="' +
+            esc(p.chave) + '" title="Remover ' + esc(p.nome) + '">✕</button>' +
+        '</div>' +
+        '<div class="ca-extra-valor">' + esc(e.txt || '') + '</div>' +
+        '<div class="ca-extra-calc">' + (e.fixo
+          ? 'valor fixo — este poder não cresce com a quantidade'
+          : '= ' + esc(e.calc || '')) + '</div>' +
+        (falta.length ? '<div class="ca-extra-falta">⚠ pré-requisito em falta: ' + esc(falta.join(', ')) + '</div>' : '') +
+        (p.preReq ? '<div class="ca-extra-prereq">Pré-requisito: ' + esc(p.preReq) + '</div>' : '') +
+        '<details class="ca-extra-det"><summary>Texto da regra</summary><p>' + esc(p.desc) + '</p></details>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="ca-extra ca-extra--torm">' +
+      '<div class="ca-extra-cab"><span class="ca-extra-tit">🩸 Poderes da Tormenta</span>' +
+        '<span class="ca-extra-conta">' + n + ' poder' + (n !== 1 ? 'es' : '') + ' · valores já somados</span>' + botao + '</div>' +
+      '<p class="ca-extra-aviso">Pela regra, ' + n + ' poder' + (n !== 1 ? 'es' : '') + ' da Tormenta ' +
+        'custa' + (n !== 1 ? 'm' : '') + ' <strong>–' + car + ' de Carisma</strong> (1 pelo primeiro, mais 1 a cada dois outros). ' +
+        'A oficina já aplicou: a caixa <strong>Car</strong> do Passo 6 guarda o valor base ' + esc(sinal(carBase)) +
+        ', e a ficha sai com <strong>Car ' + esc(sinal(carBase - car)) + '</strong>' +
+        ((carBase - car) < -5 ? ' — <strong>abaixo de –5: pela regra, vira um NPC sob controle do mestre</strong>' : '') + '.</p>' +
+      '<div class="ca-extra-lista">' + linhas + '</div>' +
+      '<p class="ca-nota">Cada poder sai na ficha como uma linha de habilidade, com o valor já somado. Fora o Carisma, nada é somado na Defesa, nas resistências ou nas perícias — é assim que o livro trata estes poderes.</p>' +
+    '</div>';
+  }
+
+  function blocoDistincoes(c) {
+    if (!Array.isArray(window.GA_PODERES) || !window.GA_PODERES.length) return '';
+    const botao = '<button type="button" class="ca-btn ca-btn--dist" data-acao="abrir-distincao" ' +
+      'title="Dar a esta ameaça os poderes de uma distinção (Heróis de Arton / Deuses de Arton)">＋ Distinção</button>';
+
+    const porSlug = {};
+    (c.distincoes || []).forEach(function (id) {
+      const p = poderDistPorId(id);
+      if (!p) return;
+      (porSlug[p.distincao] || (porSlug[p.distincao] = [])).push(p);
+    });
+    const slugs = Object.keys(porSlug);
+
+    if (!slugs.length) {
+      return '<div class="ca-extra ca-extra--dist">' +
+        '<div class="ca-extra-cab"><span class="ca-extra-tit">🎖 Distinções</span>' + botao + '</div>' +
+        '<p class="ca-nota">Nenhuma. As 59 distinções do <em>Heróis de Arton</em> e do <em>Deuses de Arton</em> — as mesmas da ficha do jogador. O que é número fixo entra sozinho na estatística (Defesa, resistências, PV, PM, ataque, dano, Iniciativa, Percepção, deslocamento); o que é RD, resistência ou imunidade entra na linha de Defesa; o resto fica como texto da habilidade.</p>' +
+      '</div>';
+    }
+
+    const bd = bonusDistincao(c);
+    const resumo = [];
+    D.PARAM_COLUNAS.forEach(function (col) {
+      if (bd.porColuna[col.chave]) {
+        resumo.push('<span class="ca-extra-pil">' + esc(col.curto) + ' ' + esc(sinalZero(bd.porColuna[col.chave])) + '</span>');
+      }
+    });
+    if (bd.ini)    resumo.push('<span class="ca-extra-pil">Iniciativa ' + esc(sinalZero(bd.ini)) + '</span>');
+    if (bd.per)    resumo.push('<span class="ca-extra-pil">Percepção ' + esc(sinalZero(bd.per)) + '</span>');
+    if (bd.pm)     resumo.push('<span class="ca-extra-pil">PM ' + esc(sinalZero(bd.pm)) + '</span>');
+    if (bd.desloc) resumo.push('<span class="ca-extra-pil">Deslocamento ' + esc(sinalMetros(bd.desloc)) + '</span>');
+    bd.danoDados.forEach(function (d) { resumo.push('<span class="ca-extra-pil">' + esc(d) + ' no dano</span>'); });
+    bd.textos.forEach(function (t) { resumo.push('<span class="ca-extra-pil ca-extra-pil--txt">' + esc(t) + '</span>'); });
+
+    const cartoes = slugs.sort().map(function (slug) {
+      const dBase = distincoesDaBase().find(function (d) { return d.slug === slug; });
+      const nome = dBase ? dBase.nome : slug;
+      const n = nDistincao(c, slug);
+      const temMarca = temMarcaDistincao(c, slug);
+      const poderes = porSlug[slug].slice().sort(function (a, b) {
+        return (a.marca === b.marca) ? 0 : (a.marca ? -1 : 1);
+      });
+      const linhas = poderes.map(function (p) {
+        const T = window.GA_DISTINCOES_EFEITOS || {};
+        const efs = Array.isArray(T[p.id]) ? T[p.id] : [];
+        const escala = window.GA_FICHA_DISTINCOES ? window.GA_FICHA_DISTINCOES.escala(p.id, n) : null;
+        const notas = efs.map(function (ef) {
+          const d = descreverEfeito(c, ef, n);
+          if (!d.txt) return '';
+          const ligavel = ef.modo === 'condicional' &&
+            ['ataque', 'dano', 'ataqueDano'].indexOf(ef.tipo) >= 0;
+          if (ligavel) {
+            const ativo = (c.distincoesAtivos || []).indexOf(p.id) >= 0;
+            return '<button type="button" class="ca-extra-liga' + (ativo ? ' ca-extra-liga--on' : '') +
+              '" data-acao="dist-ativo" data-id="' + esc(p.id) + '" ' +
+              'title="Ligar/desligar este bônus condicional na ficha">' +
+              (ativo ? '☑' : '☐') + ' ' + esc(d.txt) + (ef.cond ? ' (' + esc(ef.cond) + ')' : '') +
+              ' <em>' + esc(ativo ? '→ ' + d.onde : 'desligado: fica só como nota') + '</em></button>';
+          }
+          return '<div class="ca-extra-ef">✓ ' + esc(d.txt) +
+            (ef.cond ? ' <em>(' + esc(ef.cond) + ')</em>' : '') +
+            ' <span class="ca-extra-onde">→ ' + esc(d.onde) + '</span>' +
+            (ef.excecao ? '<span class="ca-extra-excecao">ressalva do livro: ' + esc(ef.excecao) + '</span>' : '') +
+          '</div>';
+        }).join('');
+        return '<div class="ca-extra-item">' +
+          '<div class="ca-extra-item-cab">' +
+            '<span class="ca-extra-nome">' + (p.marca ? '🏷 ' : '') + esc(p.nome) + '</span>' +
+            '<button type="button" class="ca-mini ca-mini--perigo" data-acao="rem-distincao" data-id="' +
+              esc(p.id) + '" title="Remover ' + esc(p.nome) + '">✕</button>' +
+          '</div>' +
+          (escala ? '<div class="ca-extra-valor">' + esc(escala.txt) + '</div>' +
+                    '<div class="ca-extra-calc">= ' + esc(escala.calc) + '</div>' : '') +
+          (notas || '<div class="ca-extra-ef ca-extra-ef--texto">só texto: o efeito depende de uma escolha a cada uso — sai na ficha como habilidade</div>') +
+          '<details class="ca-extra-det"><summary>Texto da regra</summary><p>' +
+            esc((p.texto || []).join(' ')) + '</p></details>' +
+        '</div>';
+      }).join('');
+
+      return '<div class="ca-extra-grupo">' +
+        '<div class="ca-extra-grupo-cab">' +
+          '<span class="ca-extra-grupo-nome">' + esc(nome) + '</span>' +
+          '<span class="ca-extra-grupo-meta">' + n + ' poder' + (n !== 1 ? 'es' : '') +
+            (temMarca ? ' + marca' : ' · sem a marca') + ' · ' + esc(dBase ? dBase.livro : '') + '</span>' +
+          '<button type="button" class="ca-mini ca-mini--perigo" data-acao="rem-distincao-toda" data-slug="' +
+            esc(slug) + '" title="Tirar esta distinção inteira">✕ tudo</button>' +
+        '</div>' + linhas +
+      '</div>';
+    }).join('');
+
+    return '<div class="ca-extra ca-extra--dist">' +
+      '<div class="ca-extra-cab"><span class="ca-extra-tit">🎖 Distinções</span>' +
+        '<span class="ca-extra-conta">' + slugs.length + ' distinção' + (slugs.length !== 1 ? ' / distinções' : '') + '</span>' + botao + '</div>' +
+      (resumo.length
+        ? '<p class="ca-extra-resumo">Já na ficha: ' + resumo.join(' ') + '</p>'
+        : '<p class="ca-nota">Nenhum destes poderes tem número fixo: todos saem na ficha como texto de habilidade.</p>') +
+      cartoes +
+    '</div>';
   }
 
   // ── PASSO 6 ───────────────────────────────────────────────────────
   function passo6(c) {
+    const perdaCar = carismaPerdido(c);
     const atribs = D.ATRIBUTOS.map(function (a) {
       // o rótulo está no <span> ao lado, que o leitor de tela não associa
       // sozinho: sem o aria-label ele anuncia seis "campo numérico" iguais
+      const base = parseInt(c.atributos[a.id], 10) || 0;
+      // o Carisma que os poderes da Tormenta descontam: a caixa guarda o
+      // valor BASE e o selo mostra com quanto a ficha sai
+      const selo = (a.id === 'car' && perdaCar)
+        ? '<span class="ca-atrib-torm" title="' + esc('Os ' + tormentaDaCriatura(c).length +
+            ' poderes da Tormenta desta ficha custam –' + perdaCar + ' de Carisma (1 pelo primeiro, mais 1 a cada dois outros). ' +
+            'A caixa guarda o valor base; a ficha, as perícias de Carisma e os pré-requisitos usam o valor já descontado.') +
+          '">–' + perdaCar + ' Torm. ➜ ' + esc(sinal(base - perdaCar)) + '</span>'
+        : '';
       return '<div class="ca-atrib">' +
         '<span class="ca-atrib-rot">' + esc(a.nome) + '</span>' +
         '<input type="number" class="ca-input ca-input--num" data-atrib="' + a.id + '"' +
-          ' aria-label="' + esc(a.nome) + '" value="' +
-          (parseInt(c.atributos[a.id], 10) || 0) + '">' +
-        '<span class="ca-atrib-cat" data-calc="atrib-' + a.id + '"></span>' +
+          ' aria-label="' + esc(a.nome) + '" value="' + base + '">' +
+        '<span class="ca-atrib-cat" data-calc="atrib-' + a.id + '"></span>' + selo +
       '</div>';
     }).join('');
 
@@ -1881,8 +2298,10 @@
       mostrar('stat-' + k, fmt(s[k]));
       const ndAj = s[k + 'Nd'];
       const pts = s[k + 'Pts'];
+      const dist = s[k + 'Dist'];
       mostrar('statnd-' + k,
-        (ndAj === c.nd ? 'ND ' + c.nd : 'como ND ' + ndAj) + (pts ? ' ' + sinal(pts) : ''));
+        (ndAj === c.nd ? 'ND ' + c.nd : 'como ND ' + ndAj) + (pts ? ' ' + sinal(pts) : '') +
+        (dist ? ' ' + sinal(dist) + ' dist.' : ''));
       if (derivada) {
         // o valor que a criatura-base tinha de fato; sem ele (ficha lida
         // pela metade), a reconstrução pela linha dela mais o delta
@@ -1907,14 +2326,17 @@
       const bate = danoConfere(c);
       const nAtk = ataquesPrincipais(c).length;
       el.className = 'ca-conta-dano' + (golpes ? (bate ? ' ca-conta-dano--ok' : ' ca-conta-dano--dif') : '');
+      // a conta é contra a LINHA da tabela (danoTab): o dano extra de
+      // uma distinção é um a mais, e não entra na divisão por golpe
       el.innerHTML = golpes
-        ? '<span><strong>Dano médio do ND:</strong> ' + s.dano + '</span>' +
+        ? '<span><strong>Dano médio do ND:</strong> ' + s.danoTab + '</span>' +
           '<span><strong>Golpes por rodada:</strong> ' + golpes + '</span>' +
           '<span><strong>Por golpe:</strong> ' + porGolpe +
-            (porGolpe * golpes !== s.dano ? ' <em>(arredondado para cima)</em>' : '') + '</span>' +
+            (porGolpe * golpes !== s.danoTab ? ' <em>(arredondado para cima)</em>' : '') + '</span>' +
           '<span><strong>Somando os ataques:</strong> ' + atual + (bate ? ' ✓' : ' ⚠') + '</span>' +
+          (s.danoDist ? '<span><strong>Distinção:</strong> ' + sinalZero(s.danoDist) + ' a mais no dano</span>' : '') +
           (nAtk > 3 ? '<span class="ca-alerta">Mais de três ataques — o livro só recomenda isso para chefões.</span>' : '')
-        : '<span>Dano médio deste ND: <strong>' + s.dano + '</strong>. Adicione um ataque para dividi-lo.</span>';
+        : '<span>Dano médio deste ND: <strong>' + s.danoTab + '</strong>. Adicione um ataque para dividi-lo.</span>';
     }
     c.ataques.forEach(function (a) {
       const m = mediaAtaque(a);
@@ -1952,7 +2374,9 @@
 
     // Passo 6 — atributos e perícias
     D.ATRIBUTOS.forEach(function (a) {
-      const v = parseInt(c.atributos[a.id], 10) || 0;
+      // a categoria é a do valor que VALE: o Car já com o desconto dos
+      // poderes da Tormenta (Tabela 2-4)
+      const v = atributo(c, a.id);
       const cat = D.ATRIBUTO_CATEGORIAS.find(function (x) {
         return x.valores.indexOf(v) >= 0 || (x.nome === 'Excepcional' && v >= 8) || (x.nome === 'Incapaz' && v <= -5);
       });
@@ -2049,11 +2473,11 @@
   function avisos(c, s) {
     const out = [];
     if (!c.nome) out.push({ tipo: 'info', txt: 'A ameaça ainda não tem nome (Passo 0).' });
-    if (!c.ataques.length) out.push({ tipo: 'info', txt: 'Nenhum ataque no Passo 4 — o dano médio deste ND é <strong>' + s.dano + '</strong>.' });
-    const dif = danoTotalAtual(c) - s.dano;
+    if (!c.ataques.length) out.push({ tipo: 'info', txt: 'Nenhum ataque no Passo 4 — o dano médio deste ND é <strong>' + s.danoTab + '</strong>.' });
+    const dif = danoTotalAtual(c) - s.danoTab;
     if (c.ataques.length && !danoConfere(c)) {
       out.push({ tipo: 'aviso', txt: 'A soma dos ataques dá <strong>' + danoTotalAtual(c) + '</strong>, ' +
-        (dif > 0 ? dif + ' acima' : Math.abs(dif) + ' abaixo') + ' do dano médio do ND (' + s.dano + '). ' +
+        (dif > 0 ? dif + ' acima' : Math.abs(dif) + ' abaixo') + ' do dano médio do ND (' + s.danoTab + '). ' +
         'Use “🎯 Fechar o dano” em cada ataque.' });
     }
     const cota = cotaHabilidades(c);
@@ -2393,6 +2817,43 @@
       return;
     }
 
+    // ── poderes da Tormenta e distinções ───────────────────────────
+    if (acao === 'abrir-tormenta')  { if (c) abrirModalPoderes('tormenta');  return; }
+    if (acao === 'abrir-distincao') { if (c) abrirModalPoderes('distincao'); return; }
+    if (acao === 'rem-tormenta') {
+      if (!c) return;
+      c.poderesTormenta = c.poderesTormenta.filter(function (k) { return k !== el.dataset.chave; });
+      salvar(); render();   // os outros poderes recalculam no render
+      return;
+    }
+    if (acao === 'rem-distincao') {
+      if (!c) return;
+      const id = el.dataset.id;
+      c.distincoes = c.distincoes.filter(function (x) { return x !== id; });
+      c.distincoesAtivos = c.distincoesAtivos.filter(function (x) { return x !== id; });
+      salvar(); render();
+      return;
+    }
+    if (acao === 'rem-distincao-toda') {
+      if (!c) return;
+      const slug = el.dataset.slug;
+      c.distincoes = c.distincoes.filter(function (id) {
+        const p = poderDistPorId(id);
+        return !(p && p.distincao === slug);
+      });
+      c.distincoesAtivos = c.distincoesAtivos.filter(function (id) { return c.distincoes.indexOf(id) >= 0; });
+      salvar(); render();
+      return;
+    }
+    if (acao === 'dist-ativo') {
+      if (!c) return;
+      const id = el.dataset.id;
+      const i = c.distincoesAtivos.indexOf(id);
+      if (i >= 0) c.distincoesAtivos.splice(i, 1); else c.distincoesAtivos.push(id);
+      salvar(); render();
+      return;
+    }
+
     if (acao === 'tab-param') {
       const cont = document.getElementById('caTabelaParam');
       if (!cont) return;
@@ -2542,6 +3003,111 @@
       }
     });
     setTimeout(function () { inpTermo.focus(); }, 30);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  MODAL "＋ Poder da Tormenta" / "＋ Distinção"
+  // ═══════════════════════════════════════════════════════════════
+  //  Uma lista só, com busca, marcando e desmarcando no lugar — o mesmo
+  //  jeito do modal de listas do Painel de Combate. Fecha quando o
+  //  mestre quiser: dá para marcar vários de uma vez.
+  function itensDoModal(tipo, c) {
+    if (tipo === 'tormenta') {
+      const G = window.GA_TORMENTA;
+      if (!G) return [];
+      return G.PODERES.map(function (p) {
+        return { chave: p.chave, nome: p.nome, grupo: p.fonte,
+                 valor: (p.escala(Math.max(1, tormentaDaCriatura(c).length + 1)) || {}).txt || '',
+                 preReq: p.preReq || '', desc: p.desc };
+      });
+    }
+    const nomes = {};
+    distincoesDaBase().forEach(function (d) { nomes[d.slug] = d.nome; });
+    const base = Array.isArray(window.GA_PODERES) ? window.GA_PODERES : [];
+    return base.filter(function (p) { return p.grupo === 'distincao'; }).map(function (p) {
+      return { chave: p.id, nome: (p.marca ? '🏷 ' : '') + p.nome,
+               grupo: nomes[p.distincao] || p.distincao, marca: !!p.marca,
+               valor: '', preReq: p.preReq || '', desc: (p.texto || []).join(' ') };
+    }).sort(function (a, b) {
+      return a.grupo.localeCompare(b.grupo, 'pt-BR') ||
+             (a.marca === b.marca ? a.nome.localeCompare(b.nome, 'pt-BR') : (a.marca ? -1 : 1));
+    });
+  }
+
+  function listaPoderesHTML(tipo, c, termo) {
+    const sem = window.GA_semAcento || function (x) { return String(x); };
+    const t = sem(termo || '').toLowerCase();
+    const escolhidos = tipo === 'tormenta' ? (c.poderesTormenta || []) : (c.distincoes || []);
+    const itens = itensDoModal(tipo, c).filter(function (i) {
+      if (!t) return true;
+      return sem(i.nome + ' ' + i.grupo + ' ' + i.desc).toLowerCase().indexOf(t) >= 0;
+    });
+    if (!itens.length) return '<p class="ca-vazio">Nada com esse nome.</p>';
+
+    let grupoAtual = null, html = '';
+    itens.forEach(function (i) {
+      if (i.grupo !== grupoAtual) {
+        grupoAtual = i.grupo;
+        html += '<div class="ca-pod-grupo">' + esc(grupoAtual || '—') + '</div>';
+      }
+      const ativo = escolhidos.indexOf(i.chave) >= 0;
+      html += '<button type="button" class="ca-pod-item' + (ativo ? ' ca-pod-item--on' : '') +
+        '" data-pod-pick="' + esc(i.chave) + '">' +
+        '<span class="ca-pod-check">' + (ativo ? '✓' : '＋') + '</span>' +
+        '<span class="ca-pod-nome">' + esc(i.nome) + '</span>' +
+        (i.valor ? '<span class="ca-pod-valor">' + esc(i.valor) + '</span>' : '') +
+        (i.preReq ? '<span class="ca-pod-prereq">pré-requisito: ' + esc(i.preReq) + '</span>' : '') +
+        // no modal vai só o começo do texto: são 365 poderes de distinção,
+        // e a regra inteira aparece no cartão depois de escolhido
+        '<span class="ca-pod-desc">' + esc(i.desc.length > 200 ? i.desc.slice(0, 200).trim() + '…' : i.desc) + '</span>' +
+      '</button>';
+    });
+    return html;
+  }
+
+  function abrirModalPoderes(tipo) {
+    const c = criaturaAtual();
+    if (!c) return;
+    const torm = tipo === 'tormenta';
+    const ov = window.GA_abrirModal(
+      '<div class="ga-modal-cab"><span>' +
+        (torm ? '🩸 Poderes da Tormenta' : '🎖 Poderes de distinção') + '</span>' +
+      '<button type="button" class="ga-modal-x" data-ga-fechar>✕</button></div>' +
+      '<p class="ga-modal-dica">' + (torm
+        ? 'Clique para marcar ou desmarcar. O valor de cada poder cresce com a QUANTIDADE de poderes da ficha — o que aparece aqui é o valor que ele teria depois de entrar. O Carisma desce sozinho (1 pelo primeiro poder, mais 1 a cada dois outros).'
+        : 'Clique para marcar ou desmarcar. Os poderes vêm das 59 distinções do <em>Heróis de Arton</em> e do <em>Deuses de Arton</em>, as mesmas da ficha do jogador; a 🏷 é a marca da distinção. O que é número fixo entra sozinho na estatística, e o cartão diz onde cada bônus caiu.') +
+      '</p>' +
+      '<input type="search" class="ca-input" data-pod-termo placeholder="Buscar por nome, distinção ou texto…">' +
+      '<div class="ca-pod-lista" data-pod-lista>' + listaPoderesHTML(tipo, c, '') + '</div>');
+
+    const inp = ov.querySelector('[data-pod-termo]');
+    const lista = ov.querySelector('[data-pod-lista]');
+    const redesenhar = function (manterLugar) {
+      // marcar um poder muda o valor de todos os outros, então a lista
+      // inteira se refaz — mas sem voltar para o topo, senão escolher o
+      // segundo poder de uma distinção lá embaixo seria uma caçada
+      const topo = lista.scrollTop;
+      lista.innerHTML = listaPoderesHTML(tipo, criaturaAtual(), inp.value);
+      if (manterLugar) lista.scrollTop = topo;
+    };
+    inp.addEventListener('input', redesenhar);
+    lista.addEventListener('click', function (e) {
+      const bt = e.target.closest('[data-pod-pick]');
+      if (!bt) return;
+      const cc = criaturaAtual();
+      if (!cc) return;
+      const chave = bt.dataset.podPick;
+      const arr = torm ? cc.poderesTormenta : cc.distincoes;
+      const i = arr.indexOf(chave);
+      if (i >= 0) {
+        arr.splice(i, 1);
+        if (!torm) cc.distincoesAtivos = cc.distincoesAtivos.filter(function (x) { return x !== chave; });
+      } else arr.push(chave);
+      salvar();
+      redesenhar(true);
+      render();
+    });
+    setTimeout(function () { inp.focus(); }, 30);
   }
 
   // Monta a criatura derivada a partir de uma das duas fontes.
