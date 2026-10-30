@@ -910,3 +910,55 @@ html.ga-noturno {
   --gold-dim:   #c9ab52;
   --border:     #352817;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   17 · A PELE NOVA (30/10/2026) — "tinta fresca"
+   Primeira leva da nova cara dos Grifos Alados. Pelo mesmo truque do
+   modo noturno: redefine SÓ as variáveis da paleta (style.css :root),
+   e com isso as 20 folhas de aba mudam juntas, sem uma linha a mais.
+
+   O QUE MUDA, E POR QUÊ
+   · O papel clareia (#f2e8d5 → #f7f1e4) e perde um pouco do amarelo.
+     O pergaminho antigo já era quase da cor dos realces, então realce
+     nenhum realçava. Com o papel mais claro, o --gold-pale volta a
+     saltar e a tinta ganha contraste.
+   · A tinta escurece um fio e esfria: o texto fica mais nítido sem
+     virar preto de tela.
+   · A ferrugem fica mais viva e passa a ser O acento — um só.
+   · O ouro se divide de vez em DOIS papéis: --gold e --gold-light são
+     METAL (fio, moldura, nunca texto); --gold-deep é TEXTO e continua
+     escuro o bastante para se ler.
+   · Os acentos semânticos (verde, azul, carmim) ganham um tom mais
+     fechado, porque sobre papel claro os antigos lavavam.
+
+   Conferido com o medidor de contraste: nenhum par de texto cai abaixo
+   de 4.5:1, e os pares de corpo passam de 7:1 (AAA).
+   ══════════════════════════════════════════════════════════════════ */
+html.ga-pele-nova {
+  --ink:        #15100b;   /* tinta: um fio mais escura e menos avermelhada */
+  --ink-faded:  #4a3a2b;   /* rótulo apagado — 8:1 no papel novo */
+  --parchment:  #f7f1e4;   /* o papel, mais claro e menos amarelo */
+  --parchment2: #ece2cd;   /* a caixa, o campo, a linha par da tabela */
+  --parchment3: #d8caae;   /* a borda */
+  --rust:       #9a2f12;   /* o acento, mais vivo */
+  --rust-dark:  #6b1d06;
+  --gold:       #c2a03a;   /* METAL: fio e moldura */
+  --gold-light: #e0c158;
+  --shadow:     rgba(21,16,11,0.12);   /* sombra de papel impresso, não de app */
+
+  --verde:      #245c31;
+  --verde-dark: #23492a;
+  --azul:       #22527a;
+  --teal:       #15584e;
+  --carmim:     #8d0f1f;
+  --neutra:     #5b5046;
+  --gold-deep:  #5c4a13;   /* TEXTO dourado: escuro de propósito */
+  --gold-pale:  #f6ead0;   /* agora realça mesmo, porque o papel clareou */
+  --linha-hover:#efe4cb;
+
+  --text:       #15100b;
+  --text-mid:   #4a3a2b;
+  --text-dim:   #5c4c3a;
+  --gold-dim:   #9a8328;
+  --border:     #d8caae;
+}

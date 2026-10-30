@@ -54,6 +54,7 @@
 
   const CHAVES_CLASSE = {
     modoNoturno:  'ga-noturno',
+    peleNova:     'ga-pele-nova',
     contraste:    'ga-contraste',
     semMovimento: 'ga-sem-movimento',
     focoForte:    'ga-foco-forte'
@@ -669,7 +670,12 @@
 
   const CHAVES_APARENCIA = [
     { id: 'modoNoturno', tit: 'Modo noturno',
-      sub: 'Troca o pergaminho claro por um fundo escuro — mais leve para os olhos à noite.' }
+      sub: 'Troca o pergaminho claro por um fundo escuro — mais leve para os olhos à noite.' },
+    //  A nova cara, em teste (30/10/2026): primeira leva, só a paleta.
+    //  Fica no painel para dar para comparar A/B com a gazeta de sempre
+    //  antes de virar o padrão.
+    { id: 'peleNova', tit: 'Pele nova (em teste)',
+      sub: 'A cara nova da gazeta: papel mais claro, tinta mais nítida e a ferrugem como acento único. Desligue para voltar ao de sempre.' }
   ];
 
   const CHAVES_PAINEL = CHAVES_APARENCIA.concat([
