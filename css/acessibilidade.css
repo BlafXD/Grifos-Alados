@@ -43,6 +43,82 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
 
 /* Com a fonte grande, a margem do papel vira desperdício: no celular
    cada 0,1rem a mais de padding é uma palavra a menos por linha. */
+
+/* ── A FAIXA DA MESA DE HOJE (01/11/2026) ──────────────────────────
+   Um convite, não um aviso: por isso ela usa o papel da gazeta e um
+   fio de ouro, e não a cara de alerta. Só aparece quando há para onde
+   ir (ver js/mesa-de-hoje.js), então não precisa saber se esconder. */
+.ga-hoje {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  max-width: 1120px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--gold-dim);
+  background: linear-gradient(90deg, rgba(184,151,46,0.12), rgba(184,151,46,0.03));
+}
+
+.ga-hoje-ir {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+
+  padding: 0.5rem 1.1rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.ga-hoje-ir:hover { background: rgba(184,151,46,0.14); }
+
+.ga-hoje-seta { color: var(--gold-deep); font-size: 0.95rem; line-height: 1; }
+.ga-hoje-rot  { font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+                color: var(--gold-deep); }
+.ga-hoje-txt  { flex: 1 1 12rem; min-width: 0; font-family: var(--ga-fonte-corpo);
+                font-size: 0.86rem; letter-spacing: 0; color: var(--ink); }
+
+/* o alvo real do clique é a faixa inteira; este é o rótulo dele */
+.ga-hoje-btn {
+  flex: none;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--gold-deep);
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--raio);
+}
+.ga-hoje-ir:hover .ga-hoje-btn { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+.ga-hoje-x {
+  flex: none;
+  min-width: 2.4rem;
+  font-size: 0.8rem;
+  line-height: 1;
+  color: var(--parchment3);
+  background: none;
+  border: none;
+  border-left: 1px solid var(--gold-dim);
+  cursor: pointer;
+}
+.ga-hoje-x:hover { background: rgba(184,151,46,0.14); color: var(--ink); }
+
+/* No celular a frase manda, o rótulo e o botão descem para a 2ª linha:
+   numa tela de 390px uma linha só deixava o nome da cena em três
+   letras e reticências, que é o pedaço que importa. */
+@media (max-width: 560px) {
+  .ga-hoje-ir { padding: 0.55rem 0.9rem; }
+  .ga-hoje-txt { flex: 1 1 100%; order: 1; }
+  .ga-hoje-btn { order: 2; }
+}
+
 @media (max-width: 820px) {
   .wrapper { padding-left: 0.9rem; padding-right: 0.9rem; }
 }
@@ -286,6 +362,56 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
     border-left-color: var(--gold);
   }
 
+  /* ── OS MENUS DENTRO DA GAVETA (leva 2) ──
+     Aqui não há dropdown: a gaveta já é uma coluna, então o grupo abre
+     para baixo e EMPURRA o resto — um acordeão. Treze linhas de gaveta
+     viraram cinco, e o grupo da seção aberta nasce aberto. */
+  .nav-grupo { display: block; }
+
+  .nav-grupo-btn {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.1rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.09em;
+    border-bottom: 1px solid rgba(184, 151, 46, 0.12);
+    border-left: 4px solid transparent;
+  }
+  .nav-link + .nav-grupo .nav-grupo-btn,
+  .nav-grupo + .nav-grupo .nav-grupo-btn { border-left: 4px solid transparent; }
+  .nav-grupo-btn--ativa { border-bottom-color: rgba(184,151,46,0.12); }
+  .nav-grupo--aberto .nav-grupo-btn { background: rgba(184, 151, 46, 0.07); }
+
+  .nav-grupo-rot { flex: 1 1 auto; text-align: left; }
+
+  /* o painel deixa de flutuar: vira parte da coluna */
+  .nav-grupo-menu {
+    position: static;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.18);
+  }
+  .nav-grupo--a-esquerda .nav-grupo-menu { right: auto; }
+
+  /* os itens do grupo ficam recuados: a hierarquia aparece sem linha guia */
+  .nav-grupo-menu .nav-link {
+    min-height: 2.9rem;
+    padding: 0.7rem 1.1rem 0.7rem 2.2rem;
+    font-size: 0.78rem;
+    border-bottom: 1px solid rgba(184, 151, 46, 0.08);
+    border-left: 4px solid transparent;
+  }
+  .nav-grupo-menu .nav-link.active {
+    border-bottom-color: rgba(184, 151, 46, 0.08);
+    border-left-color: var(--gold);
+  }
+
   /* o véu que escurece a página e fecha a gaveta ao toque */
   .ga-veu {
     position: fixed;
@@ -317,6 +443,12 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
     flex-wrap: wrap;
     min-width: 0;                    /* era max-content, que forçava a rolagem */
   }
+
+  /* O painel do menu é absoluto e sai da faixa — e a faixa nascia com
+     `overflow-x: auto; overflow-y: hidden`, que o cortava rente à borda
+     de baixo. Acima de 821px nada mais precisa rolar (o wrap resolve),
+     então aqui o corte sai de cena. */
+  nav#main-nav { overflow: visible; }
 }
 
 

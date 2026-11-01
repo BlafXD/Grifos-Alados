@@ -322,13 +322,8 @@ button.fp-ref:hover {
 /* o símbolo sagrado, em marca de água no ALTO do card aberto — atrás do
    quadro de dados da divindade, como iluminura. No pé do card não serve:
    a ficha de um avatar passa de dois mil pixels de altura, e ninguém
-   rolaria até lá para ver o desenho. */
-.fp-card--deus .vc-card-corpo {
-  background-image: var(--deus-motivo, none);
-  background-repeat: no-repeat;
-  background-position: right -0.7rem top -0.7rem;
-  background-size: 7.5rem auto;
-}
+   rolaria até lá para ver o desenho. (O fundo deste bloco foi ampliado
+   em 01/11/2026 — ver O SELO DA DIVINDADE, no fim deste arquivo.) */
 /* o quadro de dados da divindade (que já está no card) ganha a cor dela */
 .fp-card--deus .fp-sub-intro {
   padding: 0.45rem 0.6rem;
@@ -450,4 +445,65 @@ button.fp-ref:hover {
 @media (max-width: 560px) {
   .fp-rn-contas { grid-template-columns: 1fr; }
   .fp-rn-contas dt { margin-top: 0.3rem; }
+}
+
+/* ── ⛩ O SELO DA DIVINDADE (01/11/2026) ───────────────────────────
+   O que faltava: com o card FECHADO, um avatar era indistinguível do
+   outro — a faixa de 4px do topo é a única cor que se vê, e vinte
+   fichas numa lista viravam vinte linhas iguais. Agora o símbolo
+   sagrado vira um selo no cabeçalho, que é o pedaço do card que está
+   sempre à vista.
+
+   O desenho é O MESMO motivo de marca de água, em tinta cheia (ver o
+   motivoSeloUrl em js/deuses-visual-data.js): um símbolo por deus, num
+   lugar só. Ele entra como `background-image` — e não como <img> —
+   porque a variável --deus-selo já chega no style do card. */
+.fp-deus-selo {
+  flex: none;
+  width: 2.1rem;
+  height: 2.1rem;
+  margin-right: 0.1rem;
+
+  background-image: var(--deus-selo, none);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1.55rem auto;
+
+  border: 1px solid color-mix(in srgb, var(--deus-cor, #8a6a1f) 55%, transparent);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+  /* o disco pega um fio da cor da divindade: o símbolo de Marah é
+     branco, e sobre pergaminho branco não existiria sem este fundo */
+  background-color: color-mix(in srgb, var(--deus-cor, #8a6a1f) 12%, transparent);
+}
+/* aberto, o selo acompanha: vira a inicial da iluminura */
+.fp-card--deus[open] > .vc-card-cab .fp-deus-selo {
+  border-color: color-mix(in srgb, var(--deus-cor, #8a6a1f) 75%, transparent);
+  background-color: color-mix(in srgb, var(--deus-cor, #8a6a1f) 18%, transparent);
+}
+
+/* O FUNDO DO CORPO, melhorado no mesmo passo. Antes era só a marca de
+   água no canto; agora a cor da divindade entra também como uma
+   claridade no alto da página, que é o que dá a sensação de "a ficha
+   da Allihanna é mais verde" sem escurecer uma linha de statblock.
+   Os dois gradientes vêm ANTES do motivo na pilha, senão cobririam o
+   desenho. */
+.fp-card--deus .vc-card-corpo {
+  background-image:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--deus-cor, #8a6a1f) 9%, transparent) 0,
+      transparent 11rem),
+    radial-gradient(120% 60% at 82% -6%,
+      color-mix(in srgb, var(--deus-cor, #8a6a1f) 13%, transparent) 0,
+      transparent 70%),
+    var(--deus-motivo, none);
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-position: left top, right top, right -0.7rem top -0.7rem;
+  background-size: 100% 11rem, 100% 9rem, 7.5rem auto;
+}
+
+/* No celular o selo encolhe junto com o cabeçalho: a linha do nome e do
+   ND é a que não pode quebrar. */
+@media (max-width: 560px) {
+  .fp-deus-selo { width: 1.7rem; height: 1.7rem; background-size: 1.25rem auto; }
 }

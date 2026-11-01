@@ -70,22 +70,77 @@
   </div>
 </header>
 
-<!-- NAVIGATION — linha de seções da gazeta (faixa fina, fixa ao rolar) -->
+<!-- NAVIGATION — o índice da gazeta: a porta de entrada, quatro menus e a
+     passagem para a edição dos jogadores (faixa fina, fixa ao rolar).
+
+     POR QUE MENUS (01/11/2026). Treze seções em fileira somavam ~1600px:
+     no desktop quebravam em duas linhas e no celular eram treze linhas de
+     gaveta. Agora são cinco paradas, e nenhuma seção fica escondida atrás
+     de um corte. O caminho ficou um clique mais longo para as abas de
+     dentro — por isso 📰 Notícias (a entrada) fica SOLTA, e o grupo que
+     contém a aba aberta nasce marcado.
+
+     ⚠ OS <a data-section> SÃO OS MESMOS ELEMENTOS de antes, só mudaram de
+     lugar. Oito arquivos de js/ acham a aba por
+     `.nav-link[data-section="x"]` e a abrem com .click() — mover, renomear
+     ou duplicar um deles quebra o estado-navegacao, a ficha, o mapa, a
+     viagem, o sync e o modo jogador. Para trocar de grupo, mova a LINHA. -->
 <nav id="main-nav" aria-label="Seções da gazeta">
   <div class="nav-inner">
     <a href="#" class="nav-link active" data-section="noticias">📰 Notícias</a>
-    <a href="#" class="nav-link" data-section="recompensas">🎁 Recompensas</a>
-    <a href="#" class="nav-link" data-section="loja">🏪 Loja</a>
-    <a href="#" class="nav-link" data-section="monstros">⚔ Combates</a>
-    <a href="#" class="nav-link" data-section="fichas-prontas">📕 Fichas Prontas</a>
-    <a href="#" class="nav-link" data-section="criar-ameaca">⚗ Criar Ameaça</a>
-    <a href="#" class="nav-link" data-section="perigos">📚 Consultas</a>
-    <a href="#" class="nav-link" data-section="viagem">🐎 Viagem</a>
-    <a href="#" class="nav-link" data-section="anotacoes">📜 Anotações</a>
-    <a href="#" class="nav-link" data-section="fichas">📖 Fichas</a>
-    <a href="#" class="nav-link" data-section="bases">🏰 Bases</a>
-    <a href="#" class="nav-link" data-section="tempo">⏳ Tempo</a>
-    <a href="#" class="nav-link" data-section="mesa">🎲 Mesa</a>
+
+    <div class="nav-grupo" data-nav-grupo="mesa">
+      <button type="button" class="nav-grupo-btn" aria-expanded="false"
+              aria-controls="nav-menu-mesa" title="A mesa de hoje: a sala, o combate e as fichas">
+        <span class="nav-grupo-rot">🎲 Mesa</span>
+        <span class="nav-grupo-seta" aria-hidden="true">▾</span>
+      </button>
+      <div class="nav-grupo-menu" id="nav-menu-mesa">
+        <a href="#" class="nav-link" data-section="mesa">🎲 Mesa</a>
+        <a href="#" class="nav-link" data-section="monstros">⚔ Combates</a>
+        <a href="#" class="nav-link" data-section="fichas">📖 Fichas</a>
+      </div>
+    </div>
+
+    <div class="nav-grupo" data-nav-grupo="mestre">
+      <button type="button" class="nav-grupo-btn" aria-expanded="false"
+              aria-controls="nav-menu-mestre" title="A sua bancada: criar, guardar e premiar">
+        <span class="nav-grupo-rot">🖋 Mestre</span>
+        <span class="nav-grupo-seta" aria-hidden="true">▾</span>
+      </button>
+      <div class="nav-grupo-menu" id="nav-menu-mestre">
+        <a href="#" class="nav-link" data-section="criar-ameaca">⚗ Criar Ameaça</a>
+        <a href="#" class="nav-link" data-section="fichas-prontas">📕 Fichas Prontas</a>
+        <a href="#" class="nav-link" data-section="anotacoes">📜 Anotações</a>
+        <a href="#" class="nav-link" data-section="recompensas">🎁 Recompensas</a>
+      </div>
+    </div>
+
+    <div class="nav-grupo" data-nav-grupo="mundo">
+      <button type="button" class="nav-grupo-btn" aria-expanded="false"
+              aria-controls="nav-menu-mundo" title="Arton por fora da mesa: o calendário, a estrada e o lar">
+        <span class="nav-grupo-rot">🌍 Mundo</span>
+        <span class="nav-grupo-seta" aria-hidden="true">▾</span>
+      </button>
+      <div class="nav-grupo-menu" id="nav-menu-mundo">
+        <a href="#" class="nav-link" data-section="tempo">⏳ Tempo</a>
+        <a href="#" class="nav-link" data-section="viagem">🐎 Viagem</a>
+        <a href="#" class="nav-link" data-section="bases">🏰 Bases</a>
+      </div>
+    </div>
+
+    <div class="nav-grupo" data-nav-grupo="consulta">
+      <button type="button" class="nav-grupo-btn" aria-expanded="false"
+              aria-controls="nav-menu-consulta" title="O manual aberto: regras e catálogo">
+        <span class="nav-grupo-rot">📚 Consulta</span>
+        <span class="nav-grupo-seta" aria-hidden="true">▾</span>
+      </button>
+      <div class="nav-grupo-menu" id="nav-menu-consulta">
+        <a href="#" class="nav-link" data-section="perigos">📚 Consultas</a>
+        <a href="#" class="nav-link" data-section="loja">🏪 Loja</a>
+      </div>
+    </div>
+
     <a href="jogadores.html" id="ga-nav-irmao" class="nav-link nav-link--externo"
        title="Abrir a edição dos jogadores, na mesma campanha">🎭 Jogadores</a>
   </div>
@@ -487,6 +542,9 @@
 <!-- logo depois: a gaveta e a semântica das abas precisam existir antes
      do estado-navegacao.js restaurar a aba clicando nos próprios links -->
 <script src="js/acessibilidade.js" defer></script>
+<!-- depois do acessibilidade.js: a faixa do atalho nasce ao lado da barra ☰,
+     que é ele quem cria (ver o gatilho comentado no topo do arquivo) -->
+<script src="js/mesa-de-hoje.js" defer></script>
 <!-- caixa de doações (o ♦ do rodapé e o "Preço: 3 Tibares" do cabeçalho):
      precisa só do GA_abrirModal, e traz o gerador de QR dentro -->
 <script src="js/doacao.js" defer></script>

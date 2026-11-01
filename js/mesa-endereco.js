@@ -60,6 +60,14 @@
     'grifosAlados.basesJogadoresInventario',
   ];
 
+  //  ARMADILHA DE ORDEM, consertada em 01/11/2026. Esta pergunta é
+  //  respondida na CARGA (no `GA_Sala.ehJogador` e no href do botão do
+  //  fim do arquivo), e quem acendia a classe era o modo-jogador.js — o
+  //  ÚLTIMO dos scripts `defer` do jogadores.html. Resultado: o botão
+  //  "🧭 Mestre" nascia apontando para jogadores.html, a própria página, e
+  //  não havia volta da visão dos jogadores. Por isso a classe passou a
+  //  vir na tag <html> do jogadores.html, e o add do modo-jogador.js
+  //  ficou só de rede. Mesma armadilha que a inscrição do bases.js.
   function ehJogador() {
     return document.documentElement.classList.contains('ga-jogador');
   }

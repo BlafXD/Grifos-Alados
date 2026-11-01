@@ -198,23 +198,57 @@
   const navInner = nav && nav.querySelector('.nav-inner');
   const links    = nav ? Array.prototype.slice.call(nav.querySelectorAll('.nav-link')) : [];
 
+  //  OS QUATRO MENUS (leva 2, 01/11/2026) — só no index.html. O
+  //  jogadores.html tem sete seções e segue sendo a fileira de sempre,
+  //  então TUDO aqui pergunta primeiro se há grupos: as duas páginas
+  //  usam este mesmo arquivo, e cada uma merece a semântica certa.
+  const grupos   = nav ? Array.prototype.slice.call(nav.querySelectorAll('.nav-grupo')) : [];
+  const temMenus = grupos.length > 0;
+
+  //  O atalho para a outra página é um .nav-link, mas NÃO é aba: não
+  //  troca de seção, navega. Antes ele recebia role="tab" e um
+  //  id "ga-aba-undefined" — dito a quem ouve como uma aba que não abre
+  //  painel nenhum.
+  const abas = links.filter(function (a) { return !!a.dataset.section; });
+
+  function btnDoGrupo(g) { return g.querySelector('.nav-grupo-btn'); }
+  function grupoDe(el)   { return el && el.closest ? el.closest('.nav-grupo') : null; }
+  function grupoAberto() {
+    return grupos.filter(function (g) { return g.classList.contains('nav-grupo--aberto'); })[0] || null;
+  }
+
+  //  DUAS SEMÂNTICAS, E O MOTIVO DE SEREM DUAS.
+  //
+  //  Sem menus (jogadores.html) o menu É um tablist: sete rótulos, todos
+  //  na tela, cada um abrindo o seu painel. É o que ele sempre foi.
+  //
+  //  Com menus (index.html) um tablist estaria MENTINDO: `role="tablist"`
+  //  exige que os seus filhos sejam `role="tab"`, e aqui os filhos são
+  //  quatro botões que abrem gaveta — e nove das abas nem estão na tela.
+  //  Então vale o padrão de menu de navegação do W3C (botão com
+  //  `aria-expanded` + lista de links), e o "você está aqui" passa a ser
+  //  o `aria-current="page"` do link, que é como um menu diz isso.
+  //  As seções deixam de ser `tabpanel` (não há tablist) e viram
+  //  `region`, que é o marco certo para um trecho nomeado de página.
   function semanticaDoMenu() {
     if (!navInner || !links.length) return;
 
-    navInner.setAttribute('role', 'tablist');
-    navInner.setAttribute('aria-label', 'Seções da gazeta');
+    if (!temMenus) {
+      navInner.setAttribute('role', 'tablist');
+      navInner.setAttribute('aria-label', 'Seções da gazeta');
+    }
 
-    links.forEach(function (a) {
+    abas.forEach(function (a) {
       const id = a.dataset.section;
       const sec = document.getElementById(id);
-      a.setAttribute('role', 'tab');
       a.id = a.id || 'ga-aba-' + id;
+      if (!temMenus) a.setAttribute('role', 'tab');
       if (sec) {
         a.setAttribute('aria-controls', sec.id);
-        sec.setAttribute('role', 'tabpanel');
+        sec.setAttribute('role', temMenus ? 'region' : 'tabpanel');
         sec.setAttribute('aria-labelledby', a.id);
-        // um tabpanel precisa poder receber o foco: é para onde o
-        // leitor de tela vai depois de escolher a seção
+        // a seção precisa poder receber o foco: é para onde o leitor de
+        // tela vai depois de escolher a seção
         if (!sec.hasAttribute('tabindex')) sec.tabIndex = -1;
       }
       // o emoji é enfeite: sem isto o leitor anuncia
@@ -222,8 +256,162 @@
       envolverEmoji(a);
     });
 
-    rodizio(links);
+    // o atalho para a outra página: enfeite fora, aba nenhuma
+    links.filter(function (a) { return abas.indexOf(a) < 0; }).forEach(envolverEmoji);
+
+    if (temMenus) {
+      grupos.forEach(function (g) {
+        const btn = btnDoGrupo(g);
+        if (btn) envolverEmoji(btn.querySelector('.nav-grupo-rot') || btn);
+      });
+      ligarMenus();
+      rodizioDasParadas();
+    } else {
+      rodizio(links);
+    }
     sincronizarMenu();
+  }
+
+
+  // ══════════════════════════════════════════════════════════════
+  //  1b · ABRIR E FECHAR OS QUATRO MENUS
+  //  Uma gaveta só aberta por vez, nas duas caras: no desktop é um
+  //  painel que flutua sob o rótulo, no celular é um acordeão que
+  //  empurra a coluna. Quem decide qual é o CSS; aqui é só o estado.
+  // ══════════════════════════════════════════════════════════════
+  function fecharGrupos(exceto) {
+    grupos.forEach(function (g) {
+      if (g === exceto) return;
+      g.classList.remove('nav-grupo--aberto', 'nav-grupo--a-esquerda');
+      const b = btnDoGrupo(g);
+      if (b) b.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function abrirGrupo(g) {
+    if (!g) return;
+    fecharGrupos(g);
+    g.classList.add('nav-grupo--aberto');
+    const b = btnDoGrupo(g);
+    if (b) b.setAttribute('aria-expanded', 'true');
+
+    // O painel do último menu encostava na borda direita e vazava para
+    // fora da tela (no celular ele é estático, então a conta não vale).
+    if (!noCelular()) {
+      const m = g.querySelector('.nav-grupo-menu');
+      if (m) {
+        g.classList.remove('nav-grupo--a-esquerda');
+        if (m.getBoundingClientRect().right > window.innerWidth - 4) {
+          g.classList.add('nav-grupo--a-esquerda');
+        }
+      }
+    }
+  }
+
+  function fecharGrupo(g, comFoco) {
+    if (!g || !g.classList.contains('nav-grupo--aberto')) return false;
+    g.classList.remove('nav-grupo--aberto', 'nav-grupo--a-esquerda');
+    const b = btnDoGrupo(g);
+    if (b) {
+      b.setAttribute('aria-expanded', 'false');
+      if (comFoco) b.focus();
+    }
+    return true;
+  }
+
+  function ligarMenus() {
+    // Um listener no <nav> inteiro, não um por botão: os links de dentro
+    // são os MESMOS elementos que o script.js já escuta, e empilhar
+    // handlers em cada um era a receita para um clique contar duas vezes.
+    nav.addEventListener('click', function (e) {
+      const btn = e.target.closest('.nav-grupo-btn');
+      if (btn) {
+        e.preventDefault();
+        const g = grupoDe(btn);
+        if (g.classList.contains('nav-grupo--aberto')) fecharGrupo(g);
+        else abrirGrupo(g);
+        return;
+      }
+      // escolheu uma seção: no desktop o painel se recolhe atrás dela.
+      // No celular quem fecha é a gaveta, e o grupo da seção aberta fica
+      // aberto de propósito — é o "você está aqui" de quando ela voltar.
+      if (e.target.closest('.nav-grupo-menu .nav-link') && !noCelular()) fecharGrupos(null);
+    });
+
+    // clicar fora recolhe o painel (no celular existe o véu da gaveta)
+    document.addEventListener('click', function (e) {
+      if (noCelular()) return;
+      if (nav.contains(e.target)) return;
+      fecharGrupos(null);
+    });
+
+    // o foco saiu do menu pelo Tab: não deixa painel aberto para trás
+    nav.addEventListener('focusout', function (e) {
+      if (noCelular()) return;
+      if (e.relatedTarget && nav.contains(e.relatedTarget)) return;
+      fecharGrupos(null);
+    });
+  }
+
+  //  AS PARADAS. No lugar do rodízio de 14 links de antes, as setas
+  //  andam pelo que está REALMENTE na tela: os links soltos, os quatro
+  //  rótulos e — só quando o painel está aberto — os itens dele. A
+  //  lista é recalculada a cada tecla porque ela muda ao abrir o menu.
+  function paradas() {
+    if (!navInner) return [];
+    return Array.prototype.slice.call(
+      navInner.querySelectorAll('.nav-link, .nav-grupo-btn')
+    ).filter(function (el) {
+      const g = grupoDe(el);
+      if (el.classList.contains('nav-link') && g && !g.classList.contains('nav-grupo--aberto')) return false;
+      return true;
+    });
+  }
+
+  function rodizioDasParadas() {
+    navInner.addEventListener('keydown', function (e) {
+      const itens = paradas();
+      const i = itens.indexOf(e.target.closest('.nav-link, .nav-grupo-btn'));
+      if (i < 0) return;
+      const k = e.key;
+
+      if (k === 'Escape') {
+        const g = grupoAberto();
+        if (g) { e.preventDefault(); e.stopPropagation(); fecharGrupo(g, true); }
+        return;
+      }
+      // num rótulo fechado, ↓ abre e entra — é o que todo menu faz
+      if ((k === 'ArrowDown' || k === 'ArrowUp') && e.target.closest('.nav-grupo-btn')) {
+        const g = grupoDe(e.target);
+        if (!g.classList.contains('nav-grupo--aberto')) {
+          e.preventDefault();
+          abrirGrupo(g);
+          const dentro = paradas().filter(function (el) { return grupoDe(el) === g; });
+          const alvo = k === 'ArrowDown' ? dentro[0] : dentro[dentro.length - 1];
+          if (alvo) andarPara(itens, alvo);
+          return;
+        }
+      }
+
+      let d = 0;
+      if (k === 'ArrowRight' || k === 'ArrowDown') d = 1;
+      else if (k === 'ArrowLeft' || k === 'ArrowUp') d = -1;
+      else if (k === 'Home') { e.preventDefault(); return andarPara(itens, itens[0]); }
+      else if (k === 'End')  { e.preventDefault(); return andarPara(itens, itens[itens.length - 1]); }
+      else if ((k === ' ' || k === 'Spacebar') && e.target.tagName === 'A') {
+        e.preventDefault();          // <a> responde a Enter sozinho, à barra não
+        e.target.click();
+        return;
+      }
+      if (!d) return;
+      e.preventDefault();
+      andarPara(itens, itens[(i + d + itens.length) % itens.length]);
+    });
+  }
+
+  function andarPara(itens, alvo) {
+    if (!alvo) return;
+    alvo.focus();      // só o foco: o tabIndex de todos fica como nasceu
   }
 
   // Separa o emoji do começo do rótulo e o esconde do leitor de tela.
@@ -252,10 +440,34 @@
 
   function sincronizarMenu() {
     const ativo = linkAtivo();
-    links.forEach(function (a) {
-      a.setAttribute('aria-selected', a === ativo ? 'true' : 'false');
-    });
-    fixarRodizio(links, ativo);
+
+    if (temMenus) {
+      // num menu, "você está aqui" é aria-current, não aria-selected
+      abas.forEach(function (a) {
+        if (a === ativo) a.setAttribute('aria-current', 'page');
+        else a.removeAttribute('aria-current');
+      });
+
+      // a faixa fechada tem de dizer em qual dos quatro você está —
+      // senão, fora de 📰 Notícias, nada na tela fica marcado
+      const gAtivo = grupoDe(ativo);
+      grupos.forEach(function (g) {
+        const b = btnDoGrupo(g);
+        if (b) b.classList.toggle('nav-grupo-btn--ativa', g === gAtivo);
+      });
+      // no celular o acordeão abre no grupo da seção aberta: a gaveta
+      // nasce mostrando onde você está, sem ninguém procurar
+      if (gAtivo && noCelular()) abrirGrupo(gAtivo);
+
+      // nenhuma parada sai do Tab: seis é pouco, e com rodízio uma seção
+      // guardada num painel fechado tirava o menu todo da ordem do Tab
+      paradas().forEach(function (el) { el.removeAttribute('tabindex'); });
+    } else {
+      links.forEach(function (a) {
+        a.setAttribute('aria-selected', a === ativo ? 'true' : 'false');
+      });
+      fixarRodizio(links, ativo);
+    }
 
     const rot = document.querySelector('.ga-menu-atual');
     if (rot && ativo) rot.textContent = rotuloDe(ativo);
@@ -315,8 +527,10 @@
     nav.insertBefore(cab, navInner);
     cab.querySelector('.ga-gaveta-x').addEventListener('click', fecharGaveta);
 
-    // escolher uma seção fecha a gaveta
+    // escolher uma seção fecha a gaveta — menos o rótulo de um grupo,
+    // que só abre o acordeão e tem de deixar a gaveta de pé
     nav.addEventListener('click', function (e) {
+      if (e.target.closest('.nav-grupo-btn')) return;
       if (e.target.closest('.nav-link') && noCelular()) fecharGaveta({ paraOConteudo: true });
     });
   }
@@ -406,9 +620,20 @@
   }
 
   function aoTeclarNaGaveta(e) {
-    if (e.key === 'Escape') { e.preventDefault(); fecharGaveta(); return; }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      // um Escape por camada: primeiro o acordeão, depois a gaveta —
+      // fechar as duas de uma vez tira a pessoa de onde ela estava
+      if (fecharGrupo(grupoAberto(), true)) return;
+      fecharGaveta();
+      return;
+    }
     if (e.key !== 'Tab' || temInert) return;   // com inert o fundo já não recebe Tab
-    const focaveis = nav.querySelectorAll('a[href], button:not([disabled])');
+    // só o que está VISÍVEL entra no ciclo do Tab: os itens de um
+    // acordeão fechado existem no HTML e não podem receber o foco
+    const focaveis = Array.prototype.slice.call(
+      nav.querySelectorAll('a[href], button:not([disabled])')
+    ).filter(function (el) { return el.offsetParent !== null; });
     if (!focaveis.length) return;
     const primeiro = focaveis[0], ultimo = focaveis[focaveis.length - 1];
     if (e.shiftKey && document.activeElement === primeiro) { e.preventDefault(); ultimo.focus(); }

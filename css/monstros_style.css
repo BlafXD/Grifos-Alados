@@ -3436,3 +3436,60 @@ color: var(--ink-faded); margin-right: 0.2rem;
   border: 1px solid var(--parchment3);
 }
 .mz-lerf-desc { font-style: italic; }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   CHIPS E RETRATO NO CABEÇALHO DA CRIATURA (01/11/2026)
+   Com a ficha fechada, o que o livro imprime embaixo do nome (tipo,
+   tamanho, papel de combate) fica à vista: numa cena de dez bichos é
+   o que responde "qual era o Enorme?" sem abrir um por um.
+   ══════════════════════════════════════════════════════════════════ */
+.mz-chips {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  min-width: 0;
+  overflow: hidden;
+}
+.mz-chip {
+  flex: none;
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  padding: 0.1rem 0.45rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--parchment);
+  background: rgba(184, 151, 46, 0.14);
+  border: 1px solid rgba(184, 151, 46, 0.3);
+  border-radius: 999px;
+}
+
+/* A MINIATURA. Quadrada e pequena de propósito: ela identifica, não
+   ilustra — quem quer ver o bicho abre o 📖. Endereço quebrado se
+   apaga sozinho (a classe vem do onerror, em js/monstros.js), porque
+   foto partida no meio da ficha é pior do que foto nenhuma. */
+.mz-retrato {
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  object-fit: cover;
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--raio);
+  background: rgba(0, 0, 0, 0.2);
+}
+.mz-retrato--ruim { display: none; }
+
+/* No 📖 Ler ela vira a imagem que se mostra na mesa. */
+.mz-lerf-foto { margin: 0 0 0.8rem; text-align: center; }
+.mz-lerf-retrato {
+  max-width: min(22rem, 100%);
+  max-height: 16rem;
+  object-fit: contain;
+  border: 1px solid var(--gold-dim);
+  border-radius: var(--raio);
+}

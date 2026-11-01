@@ -425,6 +425,10 @@
       atrs: atrsVazios(), atrsObs: '',
       // bloco de magias (só aparece quando o mestre liga)
       magiasAtivo: false, magiasCab: '', magias: '',
+      // o endereço de uma imagem do bicho: miniatura no cabeçalho e
+      // imagem grande no 📖 Ler. Só o endereço — nada é baixado nem
+      // guardado aqui, e sem endereço nada disso aparece.
+      retrato: '',
       // espelhos em HTML das caixas ricas (ver RICOS_CRIATURA)
       tagsHtml: '', condicoesHtml: '', recompensasHtml: '', descricaoHtml: '', magiasHtml: '',
     };
@@ -568,6 +572,7 @@
       if (!v || typeof v !== 'object') cr.stats[s.chave] = { padrao: '', atual: '' };
     });
     if (cr.iniciativaCombate == null) cr.iniciativaCombate = '';
+    if (typeof cr.retrato !== 'string') cr.retrato = '';
     if (['lacaio', 'solo', 'especial'].indexOf(cr.papel) < 0) cr.papel = 'lacaio';
     cr.statusMorte = (cr.statusMorte && typeof cr.statusMorte === 'object')
       ? { vivo: !!cr.statusMorte.vivo, detalhe: String(cr.statusMorte.detalhe || '') } : null;
@@ -3391,8 +3396,10 @@
       <div class="mz-criatura ${aberto ? 'mz-aberto' : ''} ${painel ? 'mz-criatura--painel' : ''} ${cr.statusMorte && !cr.statusMorte.vivo ? 'mz-criatura--morta' : ''}">
         <div class="mz-criatura-cabecalho">
           ${toggleHtml}
+          ${retratoHtml(cr, 'mz-retrato')}
           <input class="mz-nome mz-nome--criatura" type="text" value="${esc(cr.nome)}"
                  data-campo="nome" ${ds} placeholder="Nome da criatura">
+          ${aberto ? '' : chipsDoCabecalho(cr)}
           <input class="mz-nd" type="text" value="${esc(cr.nd)}"
                  data-campo="nd" ${ds}
                  title="Nível de Desafio (ND)" placeholder="ND">
@@ -3425,6 +3432,14 @@
             <input class="mz-input" type="text" value="${esc(cr.tipoTamanho)}"
                    placeholder="Ex: Monstro (dragão) Enorme"
                    data-campo="tipoTamanho" ${ds}>
+          </div>
+
+          <div class="mz-campo">
+            <label class="mz-rotulo">Retrato — endereço da imagem</label>
+            <input class="mz-input" type="url" value="${esc(cr.retrato)}"
+                   placeholder="https://… (cole o endereço de uma imagem)"
+                   title="Vira miniatura aqui no cabeçalho e imagem grande no 📖 Ler. Nada é baixado: fica só o endereço."
+                   data-campo="retrato" ${ds}>
           </div>
 
           ${construirBarraTipo(cr, ds)}
@@ -4161,6 +4176,7 @@
       cr[campo] = el.value;
       if (campo === 'atrsObs') cr.atributos = linhaAtributos(cr);
       salvar();
+      if (campo === 'retrato') { atualizarRetrato(el, cr); return; }
       // o ND e os Atributos alimentam a nota "perícia fora da lista"
       if (campo === 'nd' || campo === 'atributos' || campo === 'atrsObs') {
         atualizarNotaPericias(el, cr);
@@ -4330,6 +4346,64 @@
     });
   }
 
+  // ── O CABEÇALHO DA CRIATURA FECHADA: CHIPS E RETRATO ─────────────
+  //  Uma cena com dez bichos fechados era dez linhas de "nome, ND, Ini"
+  //  — e "qual deles era o Enorme?" só se descobria abrindo um por um.
+  //  Agora o que o livro imprime na linha de baixo do nome (tipo,
+  //  tamanho, papel de combate) fica à vista com a ficha fechada.
+  //
+  //  É a MESMA composição da linha do modo leitura (ver o `tipo` do
+  //  htmlLeituraCriatura): um lugar só decide o que essa linha diz.
+  function linhaDoTipo(cr) {
+    return [cr.tipoTamanho,
+            (TIPO_POR_CHAVE[cr.tipoCriatura] || {}).nome,
+            (cr.papel ? cr.papel.charAt(0).toUpperCase() + cr.papel.slice(1) : '')]
+           .filter(Boolean);
+  }
+
+  function chipsDoCabecalho(cr) {
+    const partes = linhaDoTipo(cr);
+    if (!partes.length) return '';
+    return '<span class="mz-chips">' +
+      partes.map(p => '<span class="mz-chip">' + esc(p) + '</span>').join('') +
+      '</span>';
+  }
+
+  //  O RETRATO. `referrerpolicy` para o site de onde a imagem vem não
+  //  receber o endereço da campanha, e o `onerror` porque endereço
+  //  quebrado é o caso comum (a imagem saiu do ar, o link era de uma
+  //  página e não de um arquivo): aí a moldura desaparece em vez de
+  //  virar um ícone de foto partida no meio da ficha.
+  function retratoHtml(cr, classe) {
+    const url = String(cr.retrato || '').trim();
+    if (!url) return '';
+    return '<img class="' + classe + '" src="' + esc(url) + '" alt=""' +
+           ' loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
+           ' onerror="this.classList.add(\'mz-retrato--ruim\')">';
+  }
+
+  //  Trocar o endereço atualiza a miniatura NA HORA, sem redesenhar: um
+  //  render a cada tecla tiraria o foco do campo no meio do endereço.
+  function atualizarRetrato(el, cr) {
+    const ficha = el.closest('.mz-criatura');
+    if (!ficha) return;
+    const cab = ficha.querySelector('.mz-criatura-cabecalho');
+    if (!cab) return;
+    const atual = cab.querySelector('.mz-retrato');
+    const url = String(cr.retrato || '').trim();
+    if (!url) { if (atual) atual.remove(); return; }
+    if (atual) {
+      atual.classList.remove('mz-retrato--ruim');
+      if (atual.getAttribute('src') !== url) atual.setAttribute('src', url);
+      return;
+    }
+    const molde = document.createElement('div');
+    molde.innerHTML = retratoHtml(cr, 'mz-retrato');
+    const img = molde.firstElementChild;
+    const toggle = cab.querySelector('.mz-toggle');
+    if (img) cab.insertBefore(img, toggle ? toggle.nextSibling : cab.firstChild);
+  }
+
   // ── A FICHA INTEIRA EM MODO LEITURA (📖 no cabeçalho) ────────────
   // A ficha de combate é toda feita de caixas: ótimo para EDITAR, ruim
   // para LER no meio do turno. Este botão mostra a mesma criatura no
@@ -4358,6 +4432,9 @@
                   (cr.papel ? cr.papel.charAt(0).toUpperCase() + cr.papel.slice(1) : '')]
                  .filter(Boolean).join(' · ');
     if (tipo) L.push(`<div class="mz-lerf-tipo">${esc(tipo)}</div>`);
+    // o retrato acima de tudo: é a ficha que o mestre mostra na mesa
+    const foto = retratoHtml(cr, 'mz-lerf-retrato');
+    if (foto) L.push(`<div class="mz-lerf-foto">${foto}</div>`);
 
     // sem quebra de linha dentro das tags: a caixa de leitura preserva
     // os espaços do código (white-space), e a indentação viraria recuo

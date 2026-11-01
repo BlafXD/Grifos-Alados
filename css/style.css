@@ -186,6 +186,99 @@ nav#main-nav::-webkit-scrollbar { display: none; }   /* Chromium / Safari */
   border-bottom-color: var(--gold);
 }
 
+/* ── OS MENUS DA FAIXA (leva 2, 01/11/2026) ────────────────────────
+   As treze seções em fileira somavam ~1600px. Agora 📰 Notícias fica
+   solta e as outras doze moram em quatro menus; os <a> são os MESMOS
+   elementos de antes (ver o comentário do <nav> no index.html).
+
+   O botão do grupo é um .nav-link em tudo menos no nome: mesma fonte,
+   mesmo padding, mesmo trilho de sublinhado. Assim a faixa continua
+   sendo uma linha de rótulos, não uma barra de botões. */
+.nav-grupo { position: relative; display: flex; }
+
+.nav-grupo-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  white-space: nowrap;
+  color: var(--parchment);
+
+  padding: 0.58rem 0.9rem 0.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;   /* o mesmo trilho do .nav-link */
+  cursor: pointer;
+  transition: color 0.18s, background 0.18s, border-color 0.18s;
+}
+.nav-link + .nav-grupo .nav-grupo-btn,
+.nav-grupo + .nav-grupo .nav-grupo-btn { border-left: 1px solid rgba(184,151,46,0.20); }
+
+.nav-grupo-btn:hover { color: var(--gold-light); background: rgba(184,151,46,0.10); }
+
+.nav-grupo-seta {
+  font-size: 0.6em;
+  line-height: 1;
+  opacity: 0.7;
+  transition: transform 0.18s;
+}
+.nav-grupo--aberto .nav-grupo-seta { transform: rotate(180deg); }
+
+/* o grupo que CONTÉM a seção aberta usa o mesmo realce do .nav-link.active:
+   sem isto, a faixa fechada não diria onde você está */
+.nav-grupo-btn--ativa {
+  color: var(--gold-light);
+  background: linear-gradient(180deg, rgba(184,151,46,0.18), rgba(184,151,46,0.03));
+  border-bottom-color: var(--gold);
+}
+/* aberto, o botão se cola ao painel: o trilho dourado vira a emenda */
+.nav-grupo--aberto .nav-grupo-btn {
+  color: var(--gold-light);
+  background: var(--ink);
+  border-bottom-color: var(--gold);
+}
+
+/* ── o painel ── */
+.nav-grupo-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 120;
+  min-width: 100%;
+  flex-direction: column;
+  padding: 0.25rem 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.28)),
+    var(--ink);
+  border: 1px solid var(--gold-dim);
+  border-top: none;
+  border-radius: 0 0 var(--raio) var(--raio);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+}
+.nav-grupo--aberto .nav-grupo-menu { display: flex; }
+
+/* o painel encostado na borda direita da tela abre para dentro */
+.nav-grupo--a-esquerda .nav-grupo-menu { left: auto; right: 0; }
+
+/* dentro do painel o rótulo é uma linha de lista, não uma aba da faixa */
+.nav-grupo-menu .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1.1rem 0.6rem 0.9rem;
+  border-bottom: none;
+  border-left: 3px solid transparent;    /* o trilho ativo vira barra lateral */
+}
+.nav-grupo-menu .nav-link + .nav-link { border-left: 3px solid transparent; }
+.nav-grupo-menu .nav-link.active {
+  border-bottom-color: transparent;
+  border-left-color: var(--gold);
+}
+
 /* ── WRAPPER ── */
 .wrapper {
   max-width: 1120px;

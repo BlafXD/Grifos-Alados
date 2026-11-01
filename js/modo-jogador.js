@@ -17,6 +17,9 @@
 (function () {
   'use strict';
 
+  //  Rede de segurança: a classe já vem na tag <html> do jogadores.html,
+  //  porque este arquivo é o último `defer` da página e quem pergunta na
+  //  carga (mesa-endereco.js) e o CSS não podem esperar por ele.
   document.documentElement.classList.add('ga-jogador');
 
   // As caixas [data-jog-edita] são deles — mas só depois de entrar com o

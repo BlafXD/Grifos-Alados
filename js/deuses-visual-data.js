@@ -452,11 +452,27 @@ window.GA_DEUSES_VISUAL = (function () {
     const svg = encodeURIComponent(d.motivo(d.cores)).replace(/'/g, '%27');
     return "url('data:image/svg+xml," + svg + "')";
   }
+
+  //  O MESMO desenho, em TINTA CHEIA — para o selo do cabeçalho
+  //  (01/11/2026). Os motivos nasceram para marca de água: as opacidades
+  //  deles estão entre .2 e .4, e num selo de 2rem o símbolo sumiria.
+  //  Em vez de um segundo desenho por divindade (vinte desenhos a manter
+  //  em dobro, e duas verdades sobre o mesmo símbolo), sobem-se as
+  //  opacidades do SVG na saída. Fica em .94, não em 1: o selo é
+  //  iluminura numa página de pergaminho, não um ícone de aplicativo.
+  function motivoSeloUrl(d) {
+    if (typeof d.motivo !== 'function') return 'none';
+    const cheio = d.motivo(d.cores)
+      .replace(/(stroke-opacity|fill-opacity|opacity)='[\d.]+'/g, "$1='.94'");
+    const svg = encodeURIComponent(cheio).replace(/'/g, '%27');
+    return "url('data:image/svg+xml," + svg + "')";
+  }
   //  As três variáveis que o CSS lê, prontas para o atributo style.
   function estilo(d) {
     return '--deus-cor:' + corEstrutural(d) +
            ';--deus-faixa:' + faixa(d) +
-           ';--deus-motivo:' + motivoUrl(d);
+           ';--deus-motivo:' + motivoUrl(d) +
+           ';--deus-selo:' + motivoSeloUrl(d);
   }
 
   return {
@@ -468,5 +484,6 @@ window.GA_DEUSES_VISUAL = (function () {
     faixa: faixa,
     corEstrutural: corEstrutural,
     motivoUrl: motivoUrl,
+    motivoSeloUrl: motivoSeloUrl,
   };
 })();

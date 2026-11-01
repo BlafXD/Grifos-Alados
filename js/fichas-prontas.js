@@ -313,6 +313,8 @@ window.GA_FichasProntas = (function () {
                ${vis ? 'data-deus="' + esc(vis.d.chave) + '"' : ''}
                data-fp-cat="${esc(cat.chave)}" style="--cor:${cat.cor || l.cor}${vis ? ';' + vis.estilo : ''}">
         <summary class="vc-card-cab">
+          ${vis ? `<span class="fp-deus-selo" aria-hidden="true"
+                         title="${esc(vis.d.nome)} — símbolo sagrado: ${esc(vis.d.simbolo)}"></span>` : ''}
           <span class="vc-card-nome">${esc(f.nome)} <span class="npc-nd">ND ${esc(f.nd)}</span></span>
           <span class="vc-card-meta">${sub}${esc(f.tipo || '')}${papel ? ` · <span class="fp-papel" title="${esc(papel.dica)}">${esc(papel.rot)}</span>` : ''}</span>
         </summary>

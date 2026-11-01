@@ -1,5 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<!-- A trava de jogador NASCE AQUI, e não no modo-jogador.js: ele é o último
+     dos scripts `defer`, e até lá o mesa-endereco.js mandava o botão "🧭 Mestre"
+     de volta para esta mesma página, e as ~20 regras `.ga-jogador` do CSS que
+     escondem controle de mestre ainda não valiam. Ver mesa-endereco.js. -->
+<html lang="pt-BR" class="ga-jogador">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
