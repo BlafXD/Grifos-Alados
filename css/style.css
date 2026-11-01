@@ -1,3 +1,36 @@
+/* ══════════════════════════════════════════════════════════════════
+   A LÓGICA DAS CORES (01/11/2026)
+   Três paletas — esta, html.ga-noturno e html.ga-pele-nova — e nenhuma
+   das 20 folhas de aba escreve cor própria: todas leem estas variáveis.
+   Para isso continuar funcionando, cada token tem UM papel e UM piso:
+
+   1. TINTA — tudo que aparece em `color:`.
+      Piso: 4,5:1 sobre o PIOR fundo em que pode cair (o --parchment3 e
+      o --gold-pale, não só o --parchment). É o piso de texto pequeno da
+      WCAG, e vale nas três paletas.
+
+   2. METAL — --gold, --gold-light e --gold-dim: fio, moldura, sombra
+      interna, separador. NUNCA texto. Quem precisa de ouro escrito usa
+      --gold-deep, que é o ouro de TINTA.
+      (Era aqui que mais doía: --gold-dim fazia os dois trabalhos, com
+      151 usos de fio e 19 de texto, e como texto dava 2,30:1 na pele
+      nova. Os 19 passaram para --gold-deep.)
+
+   3. PREENCHIMENTO — cor que vira FUNDO com letra por cima
+      (--rust-dark, --verde-dark, --carmim, --azul, --teal, --neutra,
+      --gold-deep). Piso: 4,5:1 contra a letra que vai em cima.
+
+   E a regra que resolve o modo noturno de uma vez:
+   QUANDO O FUNDO NÃO INVERTE, O TEXTO TAMBÉM NÃO PODE INVERTER.
+   Fundo que não inverte é o ouro, a --faixa, uma cor fixa escrita no
+   CSS e uma cor que vem do dado (o --cor de cada livro, de cada deus).
+   Nesses casos a letra é --faixa (sempre escura) ou --faixa-tinta
+   (sempre clara) — nunca --ink nem --parchment, que trocam de lado.
+
+   COMO CONFERIR: o medidor cruza texto × fundo nas três paletas, e a
+   varredura ao vivo mede cada nó de texto do DOM nas 13 abas. Está em
+   docs/logica-das-cores.md, com o roteiro.
+   ══════════════════════════════════════════════════════════════════ */
 :root {
   /* ── PALETA DA GAZETA ─────────────────────────────────────────── */
   --ink:        #1a1008;
@@ -15,14 +48,28 @@
      Cores que já circulavam soltas pelos arquivos (o mesmo verde escrito
      de seis jeitos, o mesmo dourado de quatro). Agora cada intenção tem
      um nome só — use o nome, não recole o hexadecimal. */
-  --verde:      #2f6f3f;   /* confirmado, ativo, ganho */
+  --verde:      #296137;   /* confirmado, ativo, ganho */
   --verde-dark: #2f5d33;   /* o mesmo verde preenchendo um fundo */
-  --azul:       #2f6f9e;   /* informação, referência de livro */
-  --teal:       #1f7a6b;   /* mesa ao vivo (📡) conectada */
+  --azul:       #265a80;   /* informação, referência de livro */
+  --teal:       #186054;   /* mesa ao vivo (📡) conectada */
   --carmim:     #8b1020;   /* remover, erro, perda */
-  --neutra:     #6e6256;   /* item que não escolheu cor — var(--cor, …) */
-  --gold-deep:  #6e5a1a;   /* dourado escuro: legível como texto no pergaminho */
+  --neutra:     #5e544a;   /* item que não escolheu cor — var(--cor, …) */
+  --gold-deep:  #675418;   /* dourado escuro: legível como texto no pergaminho */
   --gold-pale:  #f0e3c2;   /* realce quente: linha marcada, painel em foco */
+
+  /* ── A FAIXA ESCURA ───────────────────────────────────────────
+     O masthead, a barra de seções, a aba ativa, o chip ativo: a cara
+     da gazeta é faixa escura com letra clara e ouro por cima. Isso é
+     MARCA, não superfície — e por isso NÃO inverte no modo noturno.
+     Antes a faixa era `background: var(--faixa)`, e como --ink é a
+     TINTA (que clareia à noite) a faixa clareava junto: a barra de
+     navegação inteira virava uma tira creme no meio da página
+     escura, e o ouro em cima dela ficava em 1,08:1.
+     Use --faixa para o fundo, --faixa-tinta para a letra e
+     --faixa-ouro para o ouro escrito nela. NUNCA --ink como fundo. */
+  --faixa:       #1a1008;
+  --faixa-tinta: #f2e8d5;
+  --faixa-ouro:  #d4af37;
   --linha-hover:#e6d6b4;   /* zebra de tabela sob o ponteiro */
 
   /* ── SISTEMA ──────────────────────────────────────────────────── */
@@ -32,7 +79,7 @@
   /* aliases herdados do gerador-recompensas.html original */
   --text:      #1a1008;
   --text-mid:  #3d2b1f;
-  --text-dim:  #6e5a44;
+  --text-dim:  #65523e;
   --gold-dim:  #8a7320;
   --border:    #d9c9a8;
 }
@@ -42,7 +89,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--ink);
+  background: var(--faixa);
   font-family: var(--ga-fonte-corpo);
   color: var(--ink);
   min-height: 100vh;
@@ -139,7 +186,7 @@ footer,
 nav#main-nav {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.28)),
-    var(--ink);
+    var(--faixa);
   border-top: 1px solid var(--gold-dim);
   border-bottom: 3px double var(--gold);
   position: sticky;
@@ -168,7 +215,7 @@ nav#main-nav::-webkit-scrollbar { display: none; }   /* Chromium / Safari */
   letter-spacing: 0.11em;
 
   white-space: nowrap;
-  color: var(--parchment);
+  color: var(--faixa-tinta);
   text-decoration: none;
   padding: 0.58rem 0.9rem 0.5rem;
   border-bottom: 3px solid transparent;  /* trilho do sublinhado dourado ativo */
@@ -177,11 +224,11 @@ nav#main-nav::-webkit-scrollbar { display: none; }   /* Chromium / Safari */
 .nav-link + .nav-link { border-left: 1px solid rgba(184,151,46,0.20); }
 
 .nav-link:hover {
-  color: var(--gold-light);
+  color: var(--faixa-ouro);
   background: rgba(184,151,46,0.10);
 }
 .nav-link.active {
-  color: var(--gold-light);
+  color: var(--faixa-ouro);
   background: linear-gradient(180deg, rgba(184,151,46,0.18), rgba(184,151,46,0.03));
   border-bottom-color: var(--gold);
 }
@@ -206,7 +253,7 @@ nav#main-nav::-webkit-scrollbar { display: none; }   /* Chromium / Safari */
   font-weight: 600;
   letter-spacing: 0.11em;
   white-space: nowrap;
-  color: var(--parchment);
+  color: var(--faixa-tinta);
 
   padding: 0.58rem 0.9rem 0.5rem;
   background: none;
@@ -218,7 +265,7 @@ nav#main-nav::-webkit-scrollbar { display: none; }   /* Chromium / Safari */
 .nav-link + .nav-grupo .nav-grupo-btn,
 .nav-grupo + .nav-grupo .nav-grupo-btn { border-left: 1px solid rgba(184,151,46,0.20); }
 
-.nav-grupo-btn:hover { color: var(--gold-light); background: rgba(184,151,46,0.10); }
+.nav-grupo-btn:hover { color: var(--faixa-ouro); background: rgba(184,151,46,0.10); }
 
 .nav-grupo-seta {
   font-size: 0.6em;
@@ -231,14 +278,14 @@ nav#main-nav::-webkit-scrollbar { display: none; }   /* Chromium / Safari */
 /* o grupo que CONTÉM a seção aberta usa o mesmo realce do .nav-link.active:
    sem isto, a faixa fechada não diria onde você está */
 .nav-grupo-btn--ativa {
-  color: var(--gold-light);
+  color: var(--faixa-ouro);
   background: linear-gradient(180deg, rgba(184,151,46,0.18), rgba(184,151,46,0.03));
   border-bottom-color: var(--gold);
 }
 /* aberto, o botão se cola ao painel: o trilho dourado vira a emenda */
 .nav-grupo--aberto .nav-grupo-btn {
-  color: var(--gold-light);
-  background: var(--ink);
+  color: var(--faixa-ouro);
+  background: var(--faixa);
   border-bottom-color: var(--gold);
 }
 
@@ -254,7 +301,7 @@ nav#main-nav::-webkit-scrollbar { display: none; }   /* Chromium / Safari */
   padding: 0.25rem 0;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.28)),
-    var(--ink);
+    var(--faixa);
   border: 1px solid var(--gold-dim);
   border-top: none;
   border-radius: 0 0 var(--raio) var(--raio);
@@ -337,7 +384,7 @@ header::after  { bottom: 0; background: repeating-linear-gradient(90deg, var(--g
   gap: 0.8rem;
   margin: 1rem 0 0.6rem;
 }
-.masthead-rule span { flex: 1; height: 1px; background: var(--ink); }
+.masthead-rule span { flex: 1; height: 1px; background: var(--faixa); }
 .masthead-rule em {
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.7rem;
@@ -519,13 +566,13 @@ section.active { display: flow-root; }
   font-size: 0.64rem;
   letter-spacing: 0.22em;
 
-  color: var(--gold-dim);
+  color: var(--gold-deep);
   padding: 0.55rem 1.1rem 0;
 }
 
 .prog-table thead tr {
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
 }
 
 .prog-table th {
@@ -657,8 +704,8 @@ section.active { display: flow-root; }
 
 /* ── FOOTER ── */
 footer {
-  background: var(--ink);
-  color: var(--parchment2);
+  background: var(--faixa);
+  color: color-mix(in srgb, var(--faixa-tinta) 80%, transparent);
   text-align: center;
   padding: 1.2rem;
   font-family: var(--ga-fonte-rotulo);
@@ -725,7 +772,7 @@ footer {
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--ink);
+  background: var(--faixa);
 }
 #recompensas .header-rule .icon {
   color: var(--rust);
@@ -781,9 +828,9 @@ footer {
 }
 
 #recompensas .modo-btn.active {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  border-color: var(--faixa);
+  color: var(--faixa-tinta);
 }
 
 #recompensas .modo-desc {
@@ -870,8 +917,8 @@ footer {
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.58rem;
   font-weight: 700;
-  color: var(--parchment);
-  background: var(--ink);
+  color: var(--faixa-tinta);
+  background: var(--faixa);
   padding: 0.05rem 0.4rem;
   border-radius: var(--raio);
 }
@@ -902,7 +949,7 @@ footer {
 #recompensas .cat-item-nome { color: var(--ink); }
 #recompensas .cat-preco { font-family: var(--ga-fonte-rotulo); font-size: 0.66rem; color: var(--rust-dark); margin-left: 0.3rem; white-space: nowrap; }
 #recompensas .cat-ref   { font-style: italic; font-size: 0.74rem; color: var(--ink-faded); margin-left: 0.3rem; }
-#recompensas .cat-obs   { font-size: 0.74rem; color: var(--gold-dim); margin-left: 0.3rem; }
+#recompensas .cat-obs   { font-size: 0.74rem; color: var(--gold-deep); margin-left: 0.3rem; }
 /* a que TIPO de item a melhoria pode ser aplicada (só munições, só escudos…) */
 #recompensas .cat-obs--so { color: var(--rust-dark); font-style: italic; }
 
@@ -1042,9 +1089,9 @@ footer {
 }
 
 #recompensas .nd-btn.active {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  border-color: var(--faixa);
+  color: var(--faixa-tinta);
 }
 
 /* ── CALCULADORA DE ND DE ENCONTRO (vários inimigos) ─────────────── */
@@ -1145,8 +1192,8 @@ footer {
   width: 100%;
   margin-top: 0.4rem;
   padding: 0.6rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
 }
 #recompensas .enc-btn--usar:hover { background: var(--rust-dark); }
 #recompensas .enc-nota {
@@ -1185,7 +1232,7 @@ footer {
   cursor: pointer;
 }
 #recompensas .cat-btn:hover { background: var(--parchment3); border-color: var(--ink-faded); color: var(--ink); }
-#recompensas .cat-btn.active { background: var(--ink); border-color: var(--ink); color: var(--parchment); }
+#recompensas .cat-btn.active { background: var(--faixa); border-color: var(--faixa); color: var(--faixa-tinta); }
 #recompensas .cat-selo {
   display: inline-block;
   font-family: var(--ga-fonte-rotulo);
@@ -1223,9 +1270,9 @@ footer {
   display: block;
   width: 100%;
   padding: 1rem 1.5rem;
-  background: var(--ink);
-  border: 2px solid var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  border: 2px solid var(--faixa);
+  color: var(--faixa-tinta);
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.85rem;
   font-weight: 700;
@@ -1562,7 +1609,7 @@ footer {
   font-family: var(--ga-fonte-corpo);
   font-size: 0.78rem;
   font-style: italic;
-  color: var(--gold-dim);
+  color: var(--gold-deep);
 }
 
 /* ── INLINE DICE ─────────────────────────────────────────────────── */
@@ -1836,7 +1883,7 @@ footer {
 .ga-check:hover { border-color: var(--ink-faded); }
 .ga-check input { margin-top: 0.15rem; flex: none; }
 .ga-check strong { font-family: var(--ga-fonte-rotulo); }
-.ga-check em { color: var(--gold-dim); font-style: italic; }
+.ga-check em { color: var(--gold-deep); font-style: italic; }
 
 .ga-modal-acoes {
   display: flex;
@@ -1861,8 +1908,8 @@ footer {
 }
 
 .ga-btn-principal {
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
 }
 .ga-btn-principal:hover { background: var(--ink-faded); }
 
@@ -1982,7 +2029,7 @@ footer {
   font-weight: 700;
   letter-spacing: 0.1em;
 
-  color: var(--gold-dim);
+  color: var(--gold-deep);
   border: 1px solid var(--gold-dim);
   padding: 0.1rem 0.45rem;
 }
@@ -2016,8 +2063,8 @@ footer {
   position: fixed;
   width: max-content;
   max-width: 280px;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
   font-family: var(--ga-fonte-corpo);
   font-weight: 400;
   font-size: 0.8rem;
@@ -2523,6 +2570,7 @@ footer {
   align-items: center;
   justify-content: center;
   font-size: 1.05rem;
+  color: var(--ink);        /* o <button> não herda cor: sem isto fica o preto do navegador */
   background: var(--parchment2);
   border: 1px solid var(--ink-faded);
   border-radius: 50%;
@@ -2696,9 +2744,9 @@ body.ga-modal-aberto .ga-coluna-mesa { visibility: hidden; }
 
   padding: 0.24rem 0.6rem;
   cursor: pointer;
-  color: var(--parchment);
-  background: var(--ink);
-  border: 1px solid var(--ink);
+  color: var(--faixa-tinta);
+  background: var(--faixa);
+  border: 1px solid var(--faixa);
   border-radius: 999px;
   transition: background 0.15s, color 0.15s;
 }

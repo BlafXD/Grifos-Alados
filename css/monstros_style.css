@@ -316,8 +316,8 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.6rem 0.8rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
 }
 .mz-sessao-corpo { padding: 0.9rem; }
 .mz-sessao:not(.mz-aberto) .mz-sessao-corpo { display: none; }
@@ -1122,8 +1122,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0.7rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 600;
@@ -1203,8 +1203,8 @@
 }
 .mz-chat-cabecalho {
   padding: 0.5rem 0.7rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.74rem;
   font-weight: 600;
@@ -1389,8 +1389,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.7rem 0.9rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.85rem;
   font-weight: 600;
@@ -1588,7 +1588,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.06em;
 
-  color: var(--gold-dim);
+  color: var(--gold-deep);
   padding-top: 0.15rem;
 }
 .mz-imp-campo > b { font-family: var(--ga-fonte-corpo); font-weight: 600; color: var(--ink); }
@@ -1653,7 +1653,7 @@
   transition: background 0.15s, color 0.15s;
 }
 .mz-visao-btn:hover { background: var(--ink); color: var(--parchment); }
-.mz-visao-btn--ativo { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
+.mz-visao-btn--ativo { background: var(--faixa); color: var(--faixa-tinta); border-color: var(--faixa); }
 .mz-visao-dica {
   font-family: var(--ga-fonte-nota);
   font-style: italic;
@@ -1886,8 +1886,8 @@ color: var(--ink-faded); margin-right: 0.2rem;
   font-weight: 700;
   letter-spacing: 0.08em;
 
-  color: var(--parchment);
-  background: var(--ink);
+  color: var(--faixa-tinta);
+  background: var(--faixa);
   border-radius: var(--raio);
 }
 .mz-painel-slot-cab {
@@ -1905,8 +1905,8 @@ color: var(--ink-faded); margin-right: 0.2rem;
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.8rem;
   font-weight: 700;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
 }
 .mz-painel-select {
   flex: 1 1 auto;
@@ -3349,9 +3349,9 @@ color: var(--ink-faded); margin-right: 0.2rem;
 }
 .mz-camp-aba:hover { background: var(--parchment3); color: var(--ink); }
 .mz-camp-aba--ativa {
-  color: var(--parchment);
-  background: var(--ink);
-  border-color: var(--ink);
+  color: var(--faixa-tinta);
+  background: var(--faixa);
+  border-color: var(--faixa);
 }
 .mz-camp-cont {
   font-size: 0.62rem;

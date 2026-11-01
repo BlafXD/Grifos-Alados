@@ -19,7 +19,7 @@
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  color: var(--gold-dim);
+  color: var(--gold-deep);
   margin-bottom: 0.55rem;
 }
 .me-titulo {
@@ -168,7 +168,7 @@
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .me-btn:hover { background: var(--gold-pale); }
-.me-btn--principal { color: var(--parchment); background: var(--ink); border-color: var(--ink); }
+.me-btn--principal { color: var(--faixa-tinta); background: var(--faixa); border-color: var(--faixa); }
 .me-btn--principal:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
 .me-btn--mini { font-size: 0.58rem; padding: 0.26rem 0.55rem; }
 .me-btn--perigo { color: var(--carmim); border-color: var(--carmim); background: transparent; }

@@ -15,7 +15,7 @@
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  color: var(--gold-dim);
+  color: var(--gold-deep);
   margin-bottom: 0.55rem;
 }
 .vg-cabecalho h1 {
@@ -93,8 +93,8 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.6rem 0.8rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
 }
 .vg-viagem-corpo { padding: 1rem; }
 .vg-viagem:not(.vg-aberta) .vg-viagem-corpo { display: none; }

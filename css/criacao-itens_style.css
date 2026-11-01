@@ -83,7 +83,7 @@
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-.ci-modo-btn--ativo { color: var(--parchment); background: var(--ink); border-color: var(--ink); }
+.ci-modo-btn--ativo { color: var(--faixa-tinta); background: var(--faixa); border-color: var(--faixa); }
 
 .ci-busca-item, .ci-custom-nome, .ci-custom-preco, .ci-select, .ci-input {
   width: 100%;
@@ -120,7 +120,7 @@
 .ci-item-resultado:last-child { border-bottom: none; }
 .ci-item-resultado:hover { background: var(--parchment3); }
 .ci-item-resultado-nome { color: var(--ink); }
-.ci-item-resultado-preco { color: var(--gold-dim); font-family: var(--ga-fonte-rotulo); font-size: 0.78rem; white-space: nowrap; }
+.ci-item-resultado-preco { color: var(--gold-deep); font-family: var(--ga-fonte-rotulo); font-size: 0.78rem; white-space: nowrap; }
 .ci-item-resultado--vazio { color: var(--ink-faded); font-style: italic; cursor: default; }
 .ci-item-resultado--vazio:hover { background: none; }
 
@@ -190,7 +190,7 @@
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   letter-spacing: 0.06em;
-  color: var(--gold-dim);
+  color: var(--gold-deep);
 }
 .ci-res-val {
   font-family: var(--ga-fonte-corpo);
@@ -273,12 +273,12 @@
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.18em;
-  color: var(--gold-dim);
+  color: var(--gold-deep);
   padding: 0.55rem 0.9rem 0.15rem;
 }
 .ci-ajustes-tabela th {
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.08em;

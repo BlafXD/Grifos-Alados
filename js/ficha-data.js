@@ -155,6 +155,70 @@
   const BASICA_POR_CHAVE = {}; BASICAS.forEach(c => { BASICA_POR_CHAVE[c.chave] = c; });
   const CLASSES = BASICAS.concat(VARIANTES.map(v => Object.assign({}, BASICA_POR_CHAVE[v.de], v)));
 
+  // ── O QUE A CLASSE INICIAL DÁ (p. 35 e a ficha de cada classe) ───
+  //  Pedido dele em 01/11/2026: "poder escolher a classe inicial, para
+  //  receber as perícias iniciais, proficiência, vida inicial…".
+  //  PV e PM já estavam aqui desde sempre (pvBase/pvNivel/pmNivel) e a
+  //  ficha já os calculava. O que faltava eram as duas linhas que todo
+  //  livro imprime em "Características de Classe":
+  //    fixas    as perícias treinadas que vêm de graça
+  //    ou       quando o livro dá a escolha entre duas ("Luta ou
+  //             Pontaria", no bucaneiro, caçador, guerreiro, duelista,
+  //             inovador; "Diplomacia ou Intimidação", no nobre)
+  //    escolhe  quantas a mais o jogador escolhe
+  //    entre    de onde escolher (a lista do livro, na ordem dele)
+  //    prof     a linha de proficiências, como o livro escreve
+  //  Lidas do -raw dos três livros em 01/11/2026: Tormenta20 JdA (as 14),
+  //  Deuses de Arton p. 39 (frade) e Heróis de Arton (treinador + as 14
+  //  variantes).
+  //  QUEM NÃO ESTÁ AQUI HERDA DA BÁSICA, que é como o livro resolve:
+  //  "Perícias. Como o cavaleiro básico" (vassalo), "Como o inventor
+  //  básico, mas seu Ofício inicial é alquimista". O mesmo vale para a
+  //  proficiência: sem `prof`, vem a da básica — e por isso o VASSALO
+  //  tem `prof` próprio, já que ele PERDE a armadura pesada do cavaleiro.
+  //  SÓ A PRIMEIRA CLASSE DÁ ISSO: "Quando você ganha o primeiro nível
+  //  em uma nova classe, não ganha as perícias treinadas ou proficiências
+  //  da nova classe" (p. 35). A ficha diz isso na tela.
+  const TREINO_INICIAL = {
+    arcanista: { fixas: ['misticismo', 'vontade'], escolhe: 2, entre: ['conhecimento', 'diplomacia', 'enganacao', 'guerra', 'iniciativa', 'intimidacao', 'intuicao', 'investigacao', 'nobreza', 'oficio', 'percepcao'], prof: 'Nenhuma.' },
+    barbaro: { fixas: ['fortitude', 'luta'], escolhe: 4, entre: ['adestramento', 'atletismo', 'cavalgar', 'iniciativa', 'intimidacao', 'oficio', 'percepcao', 'pontaria', 'sobrevivencia', 'vontade'], prof: 'Armas marciais e escudos.' },
+    bardo: { fixas: ['atuacao', 'reflexos'], escolhe: 6, entre: ['acrobacia', 'cavalgar', 'conhecimento', 'diplomacia', 'enganacao', 'furtividade', 'iniciativa', 'intuicao', 'investigacao', 'jogatina', 'ladinagem', 'luta', 'misticismo', 'nobreza', 'percepcao', 'pontaria', 'vontade'], prof: 'Armas marciais.' },
+    bucaneiro: { fixas: ['reflexos'], ou: ['luta', 'pontaria'], escolhe: 4, entre: ['acrobacia', 'atletismo', 'atuacao', 'enganacao', 'fortitude', 'furtividade', 'iniciativa', 'intimidacao', 'jogatina', 'luta', 'oficio', 'percepcao', 'pilotagem', 'pontaria'], prof: 'Armas marciais.' },
+    cacador: { fixas: ['sobrevivencia'], ou: ['luta', 'pontaria'], escolhe: 6, entre: ['adestramento', 'atletismo', 'cavalgar', 'cura', 'fortitude', 'furtividade', 'iniciativa', 'investigacao', 'luta', 'oficio', 'percepcao', 'pontaria', 'reflexos'], prof: 'Armas marciais e escudos.' },
+    cavaleiro: { fixas: ['fortitude', 'luta'], escolhe: 2, entre: ['adestramento', 'atletismo', 'cavalgar', 'diplomacia', 'guerra', 'iniciativa', 'intimidacao', 'nobreza', 'percepcao', 'vontade'], prof: 'Armas marciais, armaduras pesadas e escudos.' },
+    clerigo: { fixas: ['religiao', 'vontade'], escolhe: 2, entre: ['conhecimento', 'cura', 'diplomacia', 'fortitude', 'iniciativa', 'intuicao', 'luta', 'misticismo', 'nobreza', 'oficio', 'percepcao'], prof: 'Armaduras pesadas e escudos.' },
+    druida: { fixas: ['sobrevivencia', 'vontade'], escolhe: 4, entre: ['adestramento', 'atletismo', 'cavalgar', 'conhecimento', 'cura', 'fortitude', 'iniciativa', 'intuicao', 'luta', 'misticismo', 'oficio', 'percepcao', 'religiao'], prof: 'Escudos.' },
+    frade: { fixas: ['religiao', 'vontade'], escolhe: 4, entre: ['adestramento', 'atuacao', 'conhecimento', 'cura', 'diplomacia', 'fortitude', 'guerra', 'iniciativa', 'intimidacao', 'intuicao', 'investigacao', 'misticismo', 'oficio', 'percepcao', 'nobreza'], prof: 'Nenhuma.' },
+    guerreiro: { fixas: ['fortitude'], ou: ['luta', 'pontaria'], escolhe: 2, entre: ['adestramento', 'atletismo', 'cavalgar', 'guerra', 'iniciativa', 'intimidacao', 'luta', 'oficio', 'percepcao', 'pontaria', 'reflexos'], prof: 'Armas marciais, armaduras pesadas e escudos.' },
+    inventor: { fixas: ['oficio', 'vontade'], escolhe: 4, entre: ['conhecimento', 'cura', 'diplomacia', 'fortitude', 'iniciativa', 'investigacao', 'luta', 'misticismo', 'oficio', 'pilotagem', 'percepcao', 'pontaria'], prof: 'Nenhuma.' },
+    ladino: { fixas: ['ladinagem', 'reflexos'], escolhe: 8, entre: ['acrobacia', 'atletismo', 'atuacao', 'cavalgar', 'conhecimento', 'diplomacia', 'enganacao', 'furtividade', 'iniciativa', 'intimidacao', 'intuicao', 'investigacao', 'jogatina', 'luta', 'oficio', 'percepcao', 'pilotagem', 'pontaria'], prof: 'Nenhuma.' },
+    lutador: { fixas: ['fortitude', 'luta'], escolhe: 4, entre: ['acrobacia', 'adestramento', 'atletismo', 'enganacao', 'furtividade', 'iniciativa', 'intimidacao', 'oficio', 'percepcao', 'pontaria', 'reflexos'], prof: 'Nenhuma.' },
+    nobre: { fixas: ['vontade'], ou: ['diplomacia', 'intimidacao'], escolhe: 4, entre: ['adestramento', 'atuacao', 'cavalgar', 'conhecimento', 'diplomacia', 'enganacao', 'fortitude', 'guerra', 'iniciativa', 'intimidacao', 'intuicao', 'investigacao', 'jogatina', 'luta', 'nobreza', 'oficio', 'percepcao', 'pontaria'], prof: 'Armas marciais, armaduras pesadas e escudos.' },
+    paladino: { fixas: ['luta', 'vontade'], escolhe: 2, entre: ['adestramento', 'atletismo', 'cavalgar', 'cura', 'diplomacia', 'fortitude', 'guerra', 'iniciativa', 'intuicao', 'nobreza', 'percepcao', 'religiao'], prof: 'Armas marciais, armaduras pesadas e escudos.' },
+    treinador: { fixas: ['adestramento', 'vontade'], escolhe: 4, entre: ['atletismo', 'cavalgar', 'diplomacia', 'guerra', 'iniciativa', 'intimidacao', 'intuicao', 'luta', 'oficio', 'percepcao', 'pontaria', 'reflexos', 'religiao', 'sobrevivencia'], prof: 'Nenhuma.' },
+    atleta: { fixas: ['atletismo', 'luta'], escolhe: 4, entre: ['acrobacia', 'adestramento', 'cavalgar', 'cura', 'fortitude', 'iniciativa', 'intimidacao', 'oficio', 'percepcao', 'pilotagem', 'pontaria', 'reflexos'], prof: 'Nenhuma.' },
+    burgues: { fixas: ['diplomacia', 'vontade'], escolhe: 6, entre: ['adestramento', 'atuacao', 'cavalgar', 'conhecimento', 'diplomacia', 'enganacao', 'fortitude', 'guerra', 'iniciativa', 'intimidacao', 'intuicao', 'investigacao', 'jogatina', 'luta', 'nobreza', 'oficio', 'percepcao', 'pontaria'], prof: 'Nenhuma.' },
+    duelista: { fixas: ['reflexos'], ou: ['luta', 'pontaria'], escolhe: 2, entre: ['acrobacia', 'atletismo', 'atuacao', 'diplomacia', 'fortitude', 'iniciativa', 'intimidacao', 'luta', 'oficio', 'percepcao', 'pilotagem', 'pontaria'] },
+    ermitao: { fixas: ['sobrevivencia', 'vontade'], escolhe: 2, entre: ['adestramento', 'atletismo', 'cavalgar', 'conhecimento', 'cura', 'fortitude', 'iniciativa', 'intuicao', 'luta', 'misticismo', 'oficio', 'percepcao', 'religiao'], prof: 'Nenhuma.' },
+    inovador: { fixas: ['acrobacia'], ou: ['luta', 'pontaria'], escolhe: 2, entre: ['adestramento', 'atletismo', 'conhecimento', 'fortitude', 'guerra', 'iniciativa', 'intimidacao', 'investigacao', 'luta', 'oficio', 'pontaria', 'reflexos'] },
+    'machado-de-pedra': { fixas: ['fortitude', 'luta'], escolhe: 2, entre: ['adestramento', 'atletismo', 'cavalgar', 'iniciativa', 'intimidacao', 'oficio', 'percepcao', 'pontaria', 'sobrevivencia', 'vontade'], prof: 'Escudos.' },
+    magimarcialista: { fixas: ['atuacao', 'luta'], escolhe: 6, entre: ['acrobacia', 'atletismo', 'cavalgar', 'conhecimento', 'diplomacia', 'enganacao', 'fortitude', 'guerra', 'iniciativa', 'jogatina', 'misticismo', 'reflexos'] },
+    necromante: { fixas: ['misticismo', 'vontade'], escolhe: 2, entre: ['conhecimento', 'cura', 'diplomacia', 'enganacao', 'fortitude', 'iniciativa', 'intimidacao', 'intuicao', 'investigacao', 'nobreza', 'oficio', 'percepcao'] },
+    santo: { fixas: ['religiao', 'vontade'], escolhe: 2, entre: ['adestramento', 'atletismo', 'conhecimento', 'cura', 'diplomacia', 'fortitude', 'guerra', 'iniciativa', 'intuicao', 'luta', 'oficio', 'percepcao'] },
+    seteiro: { fixas: ['pontaria', 'sobrevivencia'], escolhe: 6, entre: ['adestramento', 'atletismo', 'cavalgar', 'cura', 'fortitude', 'furtividade', 'iniciativa', 'investigacao', 'luta', 'oficio', 'percepcao', 'reflexos'], prof: 'Armas marciais.' },
+    usurpador: { fixas: ['enganacao', 'vontade'], escolhe: 2, entre: ['atuacao', 'conhecimento', 'cura', 'diplomacia', 'furtividade', 'iniciativa', 'intimidacao', 'intuicao', 'misticismo', 'nobreza', 'oficio', 'percepcao', 'reflexos', 'religiao'], prof: 'Nenhuma.' },
+    ventanista: { fixas: ['ladinagem', 'reflexos'], escolhe: 8, entre: ['acrobacia', 'atletismo', 'atuacao', 'cavalgar', 'conhecimento', 'diplomacia', 'enganacao', 'furtividade', 'iniciativa', 'intimidacao', 'intuicao', 'investigacao', 'jogatina', 'nobreza', 'oficio', 'percepcao', 'pilotagem'] },
+    alquimista: { nota: 'o Ofício inicial é alquimista' },   // herda o resto da básica
+    vassalo: { prof: 'Armas marciais e escudos.' },   // herda o resto da básica
+  };
+  //  Costura o treino em cada classe: a variante leva o da básica e
+  //  escreve por cima só o que o livro dela muda.
+  CLASSES.forEach(function (c) {
+    const base = TREINO_INICIAL[c.de] || null;
+    const meu  = TREINO_INICIAL[c.chave] || null;
+    if (base || meu) c.treino = Object.assign({}, base, meu);
+  });
+
   // ── O CAMINHO DO ARCANISTA (p. 37) ──────────────────────────────
   //  "A magia é um poder incrível… Esse poder tem fontes distintas e cada
   //  uma opera conforme suas próprias regras. Escolha uma das opções a
@@ -669,6 +733,7 @@
     //  O modificador da Tabela 1-21 para este tamanho; o que não está na
     //  tabela cai em Médio, que é o padrão do livro e não mexe em nada.
     tamanhoMod: function (nome) { return TAMANHO_MOD[nome] || TAMANHO_MOD['Médio']; },
+    TREINO_INICIAL: TREINO_INICIAL,
     circulosDoArcanista: circulosDoArcanista,
     magiasDoArcanista: magiasDoArcanista,
     OFICIOS: OFICIOS,

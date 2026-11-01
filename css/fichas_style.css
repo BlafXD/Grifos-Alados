@@ -20,7 +20,7 @@
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  color: var(--gold-dim);
+  color: var(--gold-deep);
   margin-bottom: 0.6rem;
 }
 .fc-cabecalho h1 {
@@ -72,9 +72,9 @@
 }
 .fc-aba:hover { background: var(--parchment3); }
 .fc-aba--ativa {
-  background: var(--ink);
-  color: var(--parchment);
-  border-color: var(--ink);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
+  border-color: var(--faixa);
 }
 /* senão o hover genérico acima (mais específico) troca o fundo e o texto
    escuro (--parchment) some contra ele no modo noturno */

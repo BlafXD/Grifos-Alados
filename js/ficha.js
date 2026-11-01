@@ -1726,6 +1726,7 @@
             <em data-der="patamar">${patamar(nivel(f))}</em></span>
           ${avisoMesmaClasse(f)}
           ${blocoCaminho(f)}
+          ${blocoClasseInicial(f)}
         </div>
         <div class="fi-ident-xp">
           <label class="fi-campo fi-campo--curto"><span class="fi-rot">XP</span>
@@ -3203,6 +3204,119 @@
   }
 
   // ── PERÍCIAS ─────────────────────────────────────────────────────
+  // ══ A CLASSE INICIAL (p. 35) ═════════════════════════════════════
+  //  Pedido dele em 01/11/2026: "poder escolher a classe inicial, para
+  //  receber as perícias iniciais, proficiência, vida inicial…".
+  //  PV e PM a ficha já dava sozinha desde sempre (pvMax/pmMax usam o
+  //  pvBase da PRIMEIRA classe, que é a regra do 1º nível). O que
+  //  faltava eram as perícias treinadas e as proficiências — as duas
+  //  linhas que todo livro imprime em "Características de Classe" e que
+  //  aqui ficavam a cargo da memória do jogador.
+  //  Este painel OFERECE, não aplica: cada perícia é um botão que liga e
+  //  desliga o treino de verdade na ficha, e a conta é feita em cima do
+  //  que está marcado. Nada de estado paralelo — é a regra de
+  //  "nada sintético na ficha": se o jogador vai mexer naquilo, aquilo
+  //  mora na ficha.
+  //  SÓ A PRIMEIRA CLASSE conta: "Quando você ganha o primeiro nível em
+  //  uma nova classe, não ganha as perícias treinadas ou proficiências
+  //  da nova classe" (p. 35). O painel só olha para f.classes[0] e diz
+  //  isso com todas as letras quando há mais de uma.
+  function treinada(f, k) { return !!(f.pericias[k] && f.pericias[k].treinada); }
+  //  Um botão-pastilha que LIGA E DESLIGA o treino de verdade. Reusa a
+  //  ação 'treinar' do cartão de Perícias — a mesma, com o mesmo
+  //  redesenho —, para não haver dois caminhos de gravar a mesma coisa.
+  function pastilhaPericia(f, k, marca) {
+    const P = D.pericia(k);
+    if (!P) return '';
+    const on = treinada(f, k);
+    return '<button type="button" class="fi-ci-pastilha' + (on ? ' fi-ci-pastilha--on' : '') +
+      '" data-acao="treinar" data-p="' + k + '"' +
+      ' aria-pressed="' + on + '"' +
+      ' title="' + esc((on ? 'Treinada — clique para destreinar ' : 'Marcar ') + P.nome +
+        ' como treinada. É o mesmo ✓ do cartão de Perícias.') + '">' +
+      (on ? '✓ ' : '') + esc(P.nome) + (marca ? '<em>' + esc(marca) + '</em>' : '') + '</button>';
+  }
+
+  function blocoClasseInicial(f) {
+    const c0 = (f.classes || [])[0];
+    const C = D.classe(c0 && c0.classe);
+    if (!C || !C.treino) return '';
+    const t = C.treino;
+    const fixas = t.fixas || [];
+    const ou = t.ou || null;
+    const entre = t.entre || [];
+
+    //  O que já está marcado, de cada grupo
+    const faltamFixas = fixas.filter(k => !treinada(f, k));
+    const ouFeito = !ou || ou.some(k => treinada(f, k));
+    //  as escolhidas: as da lista que estão treinadas e NÃO são de graça
+    const degraca = fixas.concat(ou || []);
+    const escolhidas = entre.filter(k => treinada(f, k) && degraca.indexOf(k) < 0);
+    const faltamEscolhas = Math.max(0, (t.escolhe || 0) - escolhidas.length);
+    const profPosta = String(f.proficiencias || '').trim() !== '';
+    const completo = !faltamFixas.length && ouFeito && !faltamEscolhas && (profPosta || !t.prof);
+
+    const chipsFixas = fixas.map(k => pastilhaPericia(f, k)).join('');
+    const chipsOu = ou ? ou.map(k => pastilhaPericia(f, k)).join('<span class="fi-ci-ou">ou</span>') : '';
+    //  A lista de escolha sem repetir o que já é de graça: o livro repete
+    //  Luta e Pontaria lá dentro justamente porque quem pegou uma pode
+    //  escolher a outra — então só some com a que JÁ foi pega.
+    const chipsEntre = entre
+      .filter(k => fixas.indexOf(k) < 0 && !(ou && treinada(f, k) && ou.indexOf(k) >= 0))
+      .map(k => pastilhaPericia(f, k)).join('');
+
+    return `
+      <details class="fi-ci"${completo ? '' : ' open'}>
+        <summary class="fi-ci-tit">🎓 Classe inicial <strong>${esc(C.nome)}</strong>
+          <em>${completo ? 'tudo marcado' : (
+            (faltamFixas.length ? faltamFixas.length + ' de graça por marcar · ' : '') +
+            (ouFeito ? '' : 'falta escolher uma das duas · ') +
+            (faltamEscolhas ? 'faltam ' + faltamEscolhas + ' de ' + t.escolhe : '') ||
+            'falta pôr a proficiência')}</em></summary>
+        <div class="fi-ci-corpo">
+          ${fixas.length ? `
+          <div class="fi-ci-grupo">
+            <span class="fi-ci-rot">Treinadas de graça</span>
+            <div class="fi-ci-chips">${chipsFixas}</div>
+            ${faltamFixas.length
+              ? `<button type="button" class="fi-add fi-add--menor" data-acao="treino-de-graca"
+                   title="Marcar como treinadas as perícias que a classe dá sem escolha">✓ Marcar as ${faltamFixas.length}</button>`
+              : ''}
+          </div>` : ''}
+          ${ou ? `
+          <div class="fi-ci-grupo">
+            <span class="fi-ci-rot">Uma destas duas</span>
+            <div class="fi-ci-chips">${chipsOu}</div>
+          </div>` : ''}
+          ${t.escolhe ? `
+          <div class="fi-ci-grupo">
+            <span class="fi-ci-rot">Escolha ${t.escolhe}
+              <em>${escolhidas.length} marcada${escolhidas.length === 1 ? '' : 's'}${
+                faltamEscolhas ? ' · faltam ' + faltamEscolhas : ''}</em></span>
+            <div class="fi-ci-chips fi-ci-chips--escolha">${chipsEntre}</div>
+          </div>` : ''}
+          ${t.prof ? `
+          <div class="fi-ci-grupo fi-ci-grupo--prof">
+            <span class="fi-ci-rot">Proficiências</span>
+            <strong class="fi-ci-prof">${esc(t.prof)}</strong>
+            <button type="button" class="fi-add fi-add--menor" data-acao="treino-proficiencia"
+                    title="Escrever esta linha no campo 🎓 Proficiências, no cartão de Perícias">
+              ${profPosta ? '↻ Reescrever no campo' : '＋ Pôr no campo'}</button>
+          </div>` : ''}
+          ${t.nota ? `<p class="fi-nota">O livro acrescenta: <strong>${esc(t.nota)}</strong>.</p>` : ''}
+          <p class="fi-nota">${f.classes.length > 1
+            ? 'Você tem mais de uma classe, e só a <strong>primeira</strong> dá perícias e proficiências: ' +
+              '<em>"quando você ganha o primeiro nível em uma nova classe, não ganha as perícias treinadas ou ' +
+              'proficiências da nova classe"</em> (p. 35). Por isso este painel só olha para ' +
+              '<strong>' + esc(C.nome) + '</strong>.'
+            : 'Todo personagem já sabe usar <strong>armas simples e armaduras leves</strong> — a linha acima é o ' +
+              'que a classe acrescenta (p. 142 e 152). A conta do PV e do PM iniciais a ficha já faz sozinha, ' +
+              'pelo nível e pela Constituição.'}
+            Raça, origem e poderes também treinam perícias, e essas entram por fora desta conta.</p>
+        </div>
+      </details>`;
+  }
+
   // ══ O CAMINHO DO ARCANISTA (p. 37) ═══════════════════════════════
   //  Pedido dele em 01/11/2026: "poder escolher os caminhos do Arcanista
   //  e fazer as coisas automáticas". O seletor fica na LINHA da classe,
@@ -6306,6 +6420,27 @@
     }
     if (acao === 'add-classe')  { f.classes.push({ classe: '', nivel: 1, caminho: '', linhagem: '' }); salvar(); return render(); }
     if (acao === 'tira-classe') { f.classes.splice(+btn.dataset.i, 1); if (!f.classes.length) f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
+    //  "Marcar as N": as perícias que a classe inicial dá SEM escolha.
+    //  Só liga; nunca desliga nada que já estivesse marcado.
+    if (acao === 'treino-de-graca') {
+      if (!f) return;
+      const C0 = D.classe((f.classes[0] || {}).classe);
+      if (!C0 || !C0.treino) return;
+      (C0.treino.fixas || []).forEach(k => { if (f.pericias[k]) f.pericias[k].treinada = true; });
+      sujar(f.id, 'pericias');
+      salvar(); return render();
+    }
+    //  A linha de proficiências da classe, escrita no campo que já
+    //  existia. Substitui o que estiver lá: é a linha do livro, e quem
+    //  acrescentou coisa à mão pode reescrever depois — o campo é dele.
+    if (acao === 'treino-proficiencia') {
+      if (!f) return;
+      const C0 = D.classe((f.classes[0] || {}).classe);
+      if (!C0 || !C0.treino || !C0.treino.prof) return;
+      f.proficiencias = C0.treino.prof;
+      sujar(f.id, 'proficiencias');
+      salvar(); return render();
+    }
     //  O teste de MANOBRA (p. 234): Luta + o modificador de tamanho. Cai
     //  no mesmo lugar do resultado da linha de Luta, porque é a mesma
     //  perícia — o que muda é o nome que vai para a mesa.

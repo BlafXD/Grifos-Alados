@@ -34,9 +34,9 @@
 }
 .an-subtab:hover { background: var(--parchment3); }
 .an-subtab--ativa {
-  background: var(--ink);
-  color: var(--parchment);
-  border-color: var(--ink);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
+  border-color: var(--faixa);
 }
 .an-subtab--ativa:hover { background: var(--ink); }
 
@@ -62,8 +62,8 @@
 }
 .mp-btn:hover { background: var(--ink); color: var(--parchment); }
 .mp-btn--destaque {
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
 }
 .mp-btn--destaque:hover { background: var(--rust-dark); border-color: var(--rust-dark); }
 .mp-btn--perigo { border-color: var(--rust-dark); color: var(--rust-dark); }
@@ -385,7 +385,7 @@
   border-radius: var(--raio);
 }
 .mp-fmt-btn:hover { background: var(--ink); color: var(--parchment); }
-.mp-fmt-on { background: var(--ink); color: var(--parchment); }
+.mp-fmt-on { background: var(--faixa); color: var(--faixa-tinta); }
 .mp-fmt-sep { width: 1px; height: 0.85rem; background: var(--gold-dim); margin: 0 1px; flex: 0 0 auto; }
 .mp-fmt-cor {
   display: inline-flex;

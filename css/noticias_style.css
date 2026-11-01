@@ -24,7 +24,7 @@
   box-shadow: 2px 3px 10px rgba(30,20,8,.22);
 }
 .nc-btn-edicao:hover              { background: var(--ink); color: var(--parchment); }
-.nc-btn-edicao--ativa             { background: var(--ink); color: var(--parchment); }
+.nc-btn-edicao--ativa             { background: var(--faixa); color: var(--faixa-tinta); }
 .nc-btn-edicao--ativa:hover       { opacity: 0.82; }
 
 /* ── BOTÕES BASE ────────────────────────────────────────────────── */
@@ -44,7 +44,7 @@
 .nc-btn:hover     { background: var(--parchment3); border-color: var(--ink); }
 .nc-btn-sm        { padding: 0.18rem 0.5rem; font-size: 0.58rem; }
 .nc-btn-lg        { padding: 0.5rem 1.5rem; font-size: 0.74rem; }
-.nc-btn-primary   { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
+.nc-btn-primary   { background: var(--faixa); color: var(--faixa-tinta); border-color: var(--faixa); }
 .nc-btn-primary:hover { opacity: 0.84; }
 .nc-btn-add       { border-color: var(--rust-dark); color: var(--rust-dark); }
 .nc-btn-add:hover { background: var(--rust-dark); color: var(--parchment); border-color: var(--rust-dark); }
@@ -103,8 +103,8 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   padding: 0.45rem 1rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
   border: 1px solid var(--parchment3);
   opacity: 0;
   transform: translateY(6px);
@@ -295,7 +295,7 @@
 }
 .nc-quando-modo + .nc-quando-modo { border-left: 1px solid var(--ink-faded); }
 .nc-quando-modo:hover { background: var(--parchment3); color: var(--ink); }
-.nc-quando-modo[aria-pressed="true"] { background: var(--ink); color: var(--parchment); }
+.nc-quando-modo[aria-pressed="true"] { background: var(--faixa); color: var(--faixa-tinta); }
 
 .nc-quando-painel { display: flex; flex-direction: column; gap: 0.65rem; }
 .nc-quando-painel[hidden] { display: none; }

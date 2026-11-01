@@ -215,11 +215,11 @@
   font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.28em;
-  color: var(--parchment);
+  color: var(--faixa-tinta);
   white-space: nowrap;
   padding: 0.34rem 1.2rem;
-  border: 2px solid var(--ink);
-  background: var(--ink);
+  border: 2px solid var(--faixa);
+  background: var(--faixa);
   box-shadow: inset 0 0 0 1px var(--gold-dim);   /* fio de ouro interno, como anúncio de gazeta */
 }
 
@@ -319,7 +319,7 @@
 
 .item-seta {
   font-size: 0.7rem;
-  color: var(--parchment3);
+  color: var(--text-dim);   /* era --parchment3: 1,31:1 nos dois modos, uma seta que ninguém via */
 }
 
 /* preço final como uma "etiqueta" de loja (plaquinha com furo) */
@@ -401,8 +401,8 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
   padding: 0.65rem 1rem;
 }
 
@@ -777,8 +777,8 @@
   justify-content: space-between;
   gap: 0.8rem;
   padding: 0.5rem 0.8rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.7rem;
   font-weight: 600;
@@ -835,7 +835,7 @@
   font-size: 0.56rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--gold-dim);
+  color: var(--gold-deep);
   border: 1px solid var(--gold-dim);
   padding: 0.1rem 0.45rem;
 }
@@ -864,8 +864,8 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   padding: 0.12rem 0.45rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
   white-space: nowrap;
   flex-shrink: 0;
   align-self: flex-start;

@@ -259,7 +259,7 @@
   border-radius: var(--raio);
 }
 .ga-ini-btn:hover { background: var(--gold-pale); }
-.ga-ini-btn--forte { color: var(--parchment); background: var(--ink); border-color: var(--ink); }
+.ga-ini-btn--forte { color: var(--faixa-tinta); background: var(--faixa); border-color: var(--faixa); }
 .ga-ini-btn--forte:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
 .ga-ini-btn--x:hover { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
 .ga-ini-add input {

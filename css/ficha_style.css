@@ -75,9 +75,9 @@
 
   padding: 0.38rem 0.8rem;
   cursor: pointer;
-  color: var(--parchment);
-  background: var(--ink);
-  border: 1px solid var(--ink);
+  color: var(--faixa-tinta);
+  background: var(--faixa);
+  border: 1px solid var(--faixa);
   border-radius: var(--raio);
 }
 .fi-add:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
@@ -2151,12 +2151,12 @@
   padding: 0.5rem var(--fi-px) 0.45rem;
   font-size: 0.8rem;
   letter-spacing: 0.16em;
-  color: var(--parchment);
-  background: var(--ink);
+  color: var(--faixa-tinta);
+  background: var(--faixa);
   border-bottom: 2px solid var(--gold);
 }
-.fi-cartao-tit .fi-cartao-nota { color: rgba(242, 232, 213, 0.72); }
-.fi-cartao-tit .fi-cartao-nota strong { color: var(--parchment); }
+.fi-cartao-tit .fi-cartao-nota { color: color-mix(in srgb, var(--faixa-tinta) 72%, transparent); }
+.fi-cartao-tit .fi-cartao-nota strong { color: var(--faixa-tinta); }
 /* os botões que moram no título: 🗑 Limpar e ＋ Adicionar magia */
 .fi-cartao-tit .fi-mini,
 .fi-cartao-tit .fi-add {
@@ -2200,8 +2200,8 @@
   text-align: center;
   font-size: 0.64rem;
   letter-spacing: 0.16em;
-  color: var(--parchment);
-  background: var(--ink);
+  color: var(--faixa-tinta);
+  background: var(--faixa);
 }
 .fi-atr-val { font-size: 1.7rem; }
 
@@ -2558,14 +2558,14 @@
   font-size: 0.56rem;
   letter-spacing: 0.06em;
 
-  color: var(--parchment);
-  background: var(--ink);
+  color: var(--faixa-tinta);
+  background: var(--faixa);
 }
 .fi-passos-tab td { padding: 0.22rem 0.25rem; border-bottom: 1px solid var(--parchment3); }
 .fi-passos-tab .fi-passos-normal { font-weight: 700; background: var(--gold-pale); }
-.fi-passos-tab th.fi-passos-normal { color: var(--ink); background: var(--gold-light); }
+.fi-passos-tab th.fi-passos-normal { color: var(--faixa); background: var(--gold-light); }
 .fi-passos-tab tr.fi-passos-usada td { background: rgba(212, 175, 55, 0.28); }
-.fi-passos-tab tr.fi-passos-usada td.fi-passos-normal { background: var(--gold-light); }
+.fi-passos-tab tr.fi-passos-usada td.fi-passos-normal { background: var(--gold-light); color: var(--faixa); }
 .fi-passos-nota {
   margin: 0.4rem 0 0;
   font-family: var(--ga-fonte-corpo);
@@ -4055,4 +4055,92 @@
 @media (max-width: 560px) {
   .fi-classe { flex-wrap: wrap; }
   .fi-classe .fi-sel--caminho { flex: 1 1 100%; }
+}
+
+/* ══ A CLASSE INICIAL (01/11/2026) ════════════════════════════════
+   Um <details> que nasce ABERTO enquanto falta marcar alguma coisa e
+   se fecha sozinho quando está tudo no lugar: na mesa, depois do
+   primeiro dia, ele sai da frente. */
+.fi-ci {
+  margin: 0.5rem 0 0;
+  padding: 0.4rem 0.6rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--verde);
+  border-radius: var(--raio);
+}
+.fi-ci-tit {
+  cursor: pointer;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.fi-ci-tit strong { color: var(--verde); }
+.fi-ci-tit em {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.74rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+}
+.fi-ci-corpo { margin-top: 0.45rem; }
+.fi-ci-grupo { margin-bottom: 0.5rem; }
+.fi-ci-grupo--prof { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem; }
+.fi-ci-rot {
+  display: block;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 0.2rem;
+}
+.fi-ci-grupo--prof .fi-ci-rot { display: inline; margin: 0; }
+.fi-ci-rot em {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+  margin-left: 0.3rem;
+}
+.fi-ci-prof { font-family: var(--ga-fonte-corpo); font-size: 0.86rem; color: var(--ink); }
+.fi-ci-chips { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+
+/* a pastilha é o mesmo ✓ do cartão de Perícias, em outra roupa */
+.fi-ci-pastilha {
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.78rem;
+  line-height: 1.2;
+  padding: 0.18rem 0.45rem;
+  cursor: pointer;
+  color: var(--text-dim);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.fi-ci-pastilha:hover { border-color: var(--verde); color: var(--ink); }
+.fi-ci-pastilha--on {
+  color: var(--parchment);
+  background: var(--verde-dark);
+  border-color: var(--verde-dark);
+  font-weight: 600;
+}
+.fi-ci-pastilha--on:hover { background: var(--verde-dark); color: var(--parchment); }
+.fi-ci-ou {
+  align-self: center;
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--text-dim);
+  margin: 0 0.25rem;
+}
+/* no dedo, a pastilha precisa de alvo */
+@media (pointer: coarse) {
+  #ficha-content .fi-ci-pastilha { padding: 0.34rem 0.55rem; font-size: 0.84rem; }
 }

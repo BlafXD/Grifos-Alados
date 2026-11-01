@@ -35,7 +35,7 @@
 .fp-livro--ativo:hover {
   background: var(--cor, var(--rust));
   border-color: var(--cor, var(--rust));
-  color: var(--parchment);
+  color: var(--faixa-tinta);           /* a cor do livro vem do dado e não inverte */
 }
 .fp-livro--vazio { opacity: 0.62; font-style: italic; }
 .fp-livro-ico  { font-size: 1rem; line-height: 1; }
@@ -55,8 +55,8 @@
   display: inline-block;
   margin-left: 0.4rem;
   padding: 0.1rem 0.45rem;
-  background: var(--ink);
-  color: var(--gold-light);
+  background: var(--faixa);
+  color: var(--faixa-ouro);
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.56rem;
   font-weight: 700;
@@ -358,7 +358,7 @@ button.fp-ref:hover {
 }
 .fp-rn-cab::-webkit-details-marker { display: none; }
 .fp-rn-cab::marker { content: none; }
-.fp-rn-cab::before { content: "▸"; color: var(--gold-dim); }
+.fp-rn-cab::before { content: "▸"; color: var(--gold-deep); }
 .fp-rn[open] > .fp-rn-cab::before { content: "▾"; }
 .fp-rn-meta {
   font-family: var(--ga-fonte-corpo, inherit);

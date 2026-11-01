@@ -84,9 +84,9 @@
 }
 .ca-chip:hover { background: var(--gold-pale); border-color: var(--gold-dim); }
 .ca-chip--ativo {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  border-color: var(--faixa);
+  color: var(--faixa-tinta);
 }
 .ca-chip--ativo:hover { background: var(--ink); border-color: var(--ink); }
 .ca-chip-icone { font-size: 0.7rem; color: var(--rust); }
@@ -105,7 +105,7 @@
   background: var(--parchment3);
   color: var(--ink);
 }
-.ca-chip--ativo .ca-chip-nd { background: var(--gold); }
+.ca-chip--ativo .ca-chip-nd { background: var(--gold); color: var(--faixa); }
 
 /* ── BOTÕES ──────────────────────────────────────────────────────── */
 .ca-btn {
@@ -184,8 +184,8 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: var(--ink);
-  color: var(--gold-light);
+  background: var(--faixa);
+  color: var(--faixa-ouro);
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.9rem;
   font-weight: 700;
@@ -423,11 +423,11 @@
 .ca-papel:hover { background: var(--gold-pale); border-color: var(--gold-dim); }
 .ca-papel--ativo,
 .ca-papel--ativo:hover {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--faixa);
+  border-color: var(--faixa);
 }
 .ca-papel-icone { font-size: 0.75rem; color: var(--rust); }
-.ca-papel--ativo .ca-papel-icone { color: var(--gold-light); }
+.ca-papel--ativo .ca-papel-icone { color: var(--faixa-ouro); }
 .ca-papel-nome {
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.8rem;
@@ -435,9 +435,9 @@
   letter-spacing: 0.04em;
   color: var(--ink);
 }
-.ca-papel--ativo .ca-papel-nome { color: var(--parchment); }
+.ca-papel--ativo .ca-papel-nome { color: var(--faixa-tinta); }
 .ca-papel-curto { font-size: 0.8rem; line-height: 1.3; color: var(--text-dim); }
-.ca-papel--ativo .ca-papel-curto { color: var(--parchment3); }
+.ca-papel--ativo .ca-papel-curto { color: color-mix(in srgb, var(--faixa-tinta) 76%, transparent); }
 
 /* ── DESLOCAMENTOS ESPECIAIS ─────────────────────────────────────── */
 .ca-desl-extras {
@@ -482,9 +482,9 @@
 .ca-nd--lenda     { border-bottom-color: var(--carmim); }
 .ca-nd--ativo,
 .ca-nd--ativo:hover {
-  background: var(--ink);
-  color: var(--gold-light);
-  border-color: var(--ink);
+  background: var(--faixa);
+  color: var(--faixa-ouro);
+  border-color: var(--faixa);
 }
 
 /* ── ESTATÍSTICAS DE COMBATE ─────────────────────────────────────── */
@@ -732,8 +732,8 @@
   justify-content: space-between;
   gap: 0.4rem;
   padding: 0.5rem 0.7rem;
-  background: var(--ink);
-  color: var(--parchment);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
 }
 .ca-previa-tit {
   font-family: var(--ga-fonte-rotulo);
@@ -1020,7 +1020,7 @@ button.ca-base-item:hover { background: var(--gold-pale); border-color: var(--go
 .ca-extra-cab .ca-btn { margin-left: auto; }
 .ca-btn--torm { background: #8a1c4a; border-color: #5e1233; color: #fff6ea; }
 .ca-btn--torm:hover { background: #a82458; }
-.ca-btn--dist { background: var(--gold-deep); border-color: var(--gold-dim); color: #fff6ea; }
+.ca-btn--dist { background: var(--gold-deep); border-color: var(--gold-dim); color: var(--parchment); }
 .ca-btn--dist:hover { filter: brightness(1.12); }
 
 .ca-extra-aviso {

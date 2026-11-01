@@ -24,7 +24,7 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.25rem 0.3rem 0.25rem 0.5rem;
-  background: var(--ink);
+  background: var(--faixa);
   border-radius: var(--raio) var(--raio) 0 0;
 }
 .ga-rol--fechado .ga-rol-cab { border-radius: var(--raio); }
@@ -133,9 +133,9 @@
   letter-spacing: 0.08em;
   padding: 0.28rem 0.6rem;
   cursor: pointer;
-  color: var(--parchment);
-  background: var(--ink);
-  border: 1px solid var(--ink);
+  color: var(--faixa-tinta);
+  background: var(--faixa);
+  border: 1px solid var(--faixa);
   border-radius: var(--raio);
 }
 .ga-rol-btn:hover { background: var(--gold-deep); border-color: var(--gold-deep); }

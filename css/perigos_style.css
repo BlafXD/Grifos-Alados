@@ -24,7 +24,7 @@
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  color: var(--gold-dim);
+  color: var(--gold-deep);
   margin-bottom: 0.4rem;
 }
 .pa-cabecalho h1 {
@@ -94,9 +94,9 @@
 }
 .pa-cat-btn:hover { background: var(--gold); }
 .pa-cat-btn--ativo {
-  background: var(--ink);
-  color: var(--parchment);
-  border-color: var(--ink);
+  background: var(--faixa);
+  color: var(--faixa-tinta);
+  border-color: var(--faixa);
 }
 
 /* ── CATEGORIAS ────────────────────────────────────────────────────── */

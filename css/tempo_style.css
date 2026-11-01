@@ -15,7 +15,7 @@
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.26em;
-  color: var(--gold-dim);
+  color: var(--gold-deep);
   margin-bottom: 0.55rem;
 }
 .tp-cabecalho h1 {
@@ -52,7 +52,7 @@
   display: flex; align-items: baseline; gap: 0.5rem;
 }
 .tp-bloco-tag {
-  font-family: var(--ga-fonte-rotulo); font-size: 0.55rem; letter-spacing: 0.06em; color: var(--parchment); background: var(--gold-dim); padding: 0.1rem 0.4rem; border-radius: var(--raio);
+  font-family: var(--ga-fonte-rotulo); font-size: 0.55rem; letter-spacing: 0.06em; color: var(--parchment); background: var(--gold-deep); padding: 0.1rem 0.4rem; border-radius: var(--raio);
 }
 .tp-bloco-dica {
   font-family: var(--ga-fonte-corpo); font-size: 0.9rem; font-style: italic; line-height: 1.4;

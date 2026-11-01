@@ -163,16 +163,16 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
   font-weight: 700;
   letter-spacing: 0.12em;
   text-decoration: none;
-  color: var(--ink);
+  color: var(--faixa);                 /* o ouro não inverte: a letra também não */
   background: var(--gold-light);
-  border: 2px solid var(--ink);
+  border: 2px solid var(--faixa);
   border-top: none;
   box-shadow: 0 4px 16px rgba(26, 16, 8, 0.45);
   transition: transform 0.16s ease;
 }
 .ga-salto:focus {
   transform: translate(-50%, 0);
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--faixa);
   outline-offset: -6px;
 }
 
@@ -210,7 +210,7 @@ html[data-ga-texto="5"] { font-size: 140%;   }   /* 22px */
     z-index: 100;
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.28)),
-      var(--ink);
+      var(--faixa);
     border-top: 1px solid var(--gold-dim);
     border-bottom: 3px double var(--gold);
   }
@@ -767,9 +767,9 @@ body.ga-modal-aberto { overflow: hidden; }
 }
 .ga-pref-passo:hover { border-color: var(--ink-faded); background: var(--gold-pale); }
 .ga-pref-passo[aria-checked="true"] {
-  color: var(--parchment);
-  background: var(--ink);
-  border-color: var(--ink);
+  color: var(--faixa-tinta);
+  background: var(--faixa);
+  border-color: var(--faixa);
 }
 .ga-pref-passo-a { line-height: 1; font-weight: 700; }
 .ga-pref-passo-n {
@@ -1021,7 +1021,7 @@ html.ga-noturno {
   --parchment2: #1f170e;
   --parchment3: #352817;
   --rust:       #e2793f;   /* mais claro que o original — precisa se ver no escuro */
-  --rust-dark:  #c96a30;   /* clareado mais um tanto: contra --parchment (texto, agora escuro) o tom antigo dava só 4:1 — abas ativas (.fi-aba--ativa) ficavam borradas */
+  --rust-dark:  #d27a44;   /* clareado duas vezes: contra --parchment era 4:1 (abas ativas borradas) e depois 3,81:1 sobre --parchment3; agora 4,50 no pior fundo */
   --gold:       #d9b13f;
   --gold-light: #ecd27a;
   --shadow:     rgba(0,0,0,0.55);
@@ -1030,15 +1030,20 @@ html.ga-noturno {
   --verde-dark: #55a362;   /* faltava nesta lista: ficava escuro nos dois modos — texto e selo (Amigos, Marca de Saúde) somem contra --parchment escuro */
   --azul:       #5ea0d8;
   --teal:       #3ecbb0;
-  --carmim:     #e2566a;
+  --carmim:     #e5697a;   /* 3,93:1 sobre --parchment3 era o pior par vermelho do noturno */
   --neutra:     #a89a7c;
   --gold-deep:  #d9b13f;
   --gold-pale:  #2c2314;
   --linha-hover:#2c2314;
+  /* a faixa NÃO inverte: é marca, não superfície. Um fio mais escura
+     que o papel da noite (#17110a), para ainda se ler como faixa. */
+  --faixa:       #0d0905;
+  --faixa-tinta: #ead9ba;
+  --faixa-ouro:  #ecd27a;
 
   --text:       #ead9ba;
   --text-mid:   #b7a179;
-  --text-dim:   #8a7858;
+  --text-dim:   #a28f6d;   /* era #8a7858 = 3,35:1 no pior fundo: TODA .fi-nota e .fi-conta do site reprovavam no noturno */
   --gold-dim:   #c9ab52;
   --border:     #352817;
 }
