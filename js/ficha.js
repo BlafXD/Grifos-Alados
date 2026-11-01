@@ -188,6 +188,19 @@
     f.classes = f.classes.map(c => ({
       classe: String((c && c.classe) || ''),
       nivel: Math.max(0, parseInt((c && c.nivel), 10) || 0),
+      //  O CAMINHO DO ARCANISTA (p. 37) e, no feiticeiro, a LINHAGEM
+      //  SOBRENATURAL (p. 39) — 01/11/2026, pedido dele. Moram na LINHA
+      //  da classe, e não na ficha, porque com duas classes conjuradoras
+      //  cada uma tem o SEU atributo-chave e a ficha guarda um só no
+      //  campo "Atributo das duas CDs".
+      //  Vazio = ainda não escolhido, e aí nenhum número muda: ver
+      //  atrChaveDaClasse(), que é quem cai no atributo das CDs nesse
+      //  caso — é assim que ficha velha de arcanista continua igual.
+      //  A linhagem fica como TEXTO porque pode ser uma que os livros
+      //  desta casa não imprimem (a "linhagem celestial" da Apoteose
+      //  Celestial é citada em Heróis de Arton, p. 54, e nunca descrita).
+      caminho: D.caminho((c && c.caminho) || '') ? String(c.caminho) : '',
+      linhagem: String((c && c.linhagem) || ''),
     }));
     if (!f.classes.length) f.classes = [{ classe: '', nivel: 1 }];
 
@@ -934,20 +947,55 @@
     atributosDoPm(f).forEach(x => { total += atrBase(f, x.atr); });   // o CRU: temporário não dá PM
     return total + (f.pm.outros || 0);
   }
-  // O atributo que as classes que lançam magia somam ao PM (e o paladino,
-  // pelo Abençoado) — ver `pmAtr` no ficha-data.js. Cada atributo entra
-  // UMA vez, por mais classes que o deem: "um clérigo/druida não soma
-  // duas vezes sua Sabedoria nos pontos de mana" (p. 226). O arcanista
-  // soma o atributo do Caminho, que é o mesmo da CD.
+  // ── O ATRIBUTO-CHAVE DE CADA CLASSE ─────────────────────────────
+  //  "Seu atributo-chave para lançar magias é definido pelo seu Caminho
+  //  (veja acima) e você soma seu atributo-chave no seu total de PM"
+  //  (arcanista, p. 37) — e cada classe conjuradora tem uma frase igual a
+  //  essa. Qual atributo é esse está na tabela das classes (`pmAtr`),
+  //  menos no arcanista, onde ele vem do CAMINHO: Bruxo e Mago,
+  //  Inteligência; Feiticeiro, Carisma.
+  //  SEM Caminho escolhido a ficha cai no atributo das CDs — que é o que
+  //  ela fazia para TODO arcanista até 01/11/2026, e era um defeito
+  //  silencioso: num frade/arcanista o total de PM subia ou descia
+  //  conforme o campo "Atributo das duas CDs", que não tem nada a ver com
+  //  o Caminho. Com Sab ali, o arcanista repetia a Sabedoria do frade e a
+  //  ficha somava UM atributo; com Int, somava DOIS. Agora quem decide é
+  //  o Caminho, e a queda no campo das CDs só vale para ficha velha.
+  function atrChaveDaClasse(f, c) {
+    const C = D.classe(c && c.classe);
+    if (!C || !C.pmAtr) return '';
+    if (C.pmAtr !== 'chave') return C.pmAtr;
+    const cam = D.caminho(c && c.caminho);
+    return cam ? cam.atr : f.cdAtributo;
+  }
+
+  // ── O ATRIBUTO QUE VAI PARA O PM ─────────────────────────────────
+  //  Toda classe que lança magia soma o atributo-chave DELA no total de
+  //  PM (e o paladino, pelo Abençoado) — ver `pmAtr` no ficha-data.js.
+  //  O MESMO atributo entra UMA vez só, por mais classes que o dêem:
+  //  "O valor de um mesmo atributo não se acumula em características do
+  //  personagem. Ou seja, um clérigo/druida não soma duas vezes sua
+  //  Sabedoria nos pontos de mana" (p. 226).
+  //  ATRIBUTOS DIFERENTES SOMAM OS DOIS. Ele perguntou isso em
+  //  01/11/2026 ("sou frade e arcanista está somando os atributos de PM
+  //  total… pode fazer isso? acho que não"): pode. A regra da p. 226 é
+  //  sobre o atributo, não sobre a habilidade — se fosse sobre a
+  //  habilidade, o exemplo do clérigo/druida não teria o que explicar. E
+  //  o quadro "Acumulando Efeitos", na mesma página, deixa habilidades de
+  //  classes diferentes acumularem ("o bônus na Defesa da Pele de Ferro
+  //  do bárbaro acumula com o bônus na Defesa da Esquiva Sagaz do
+  //  bucaneiro"). Uma mesa que leia ao contrário desconta em ＋ PM máximo,
+  //  que aceita número negativo — e a conta por extenso do cartão Vida &
+  //  Mana diz, atributo por atributo, de qual classe vem cada parcela.
   function atributosDoPm(f) {
     const vistos = {}, saida = [];
     f.classes.forEach(c => {
       const C = D.classe(c.classe);
-      if (!C || !C.pmAtr || !(c.nivel > 0)) return;
-      const k = C.pmAtr === 'chave' ? f.cdAtributo : C.pmAtr;
-      if (vistos[k]) return;
+      if (!C || !(c.nivel > 0)) return;
+      const k = atrChaveDaClasse(f, c);
+      if (!k || vistos[k]) return;
       vistos[k] = true;
-      saida.push({ atr: k, classe: C });
+      saida.push({ atr: k, classe: C, caminho: D.caminho(c.caminho) });
     });
     return saida;
   }
@@ -989,8 +1037,30 @@
     const n = nivel(f);
     let v = Math.floor(n / 2) + atr(f, atrPericia(P, e)) + treino(n, (e || {}).treinada) + ((e || {}).outros || 0);
     if (P.armadura) v -= Math.abs(f.defesa.penalidade || 0);
+    //  O modificador de TAMANHO (Tabela 1-21, p. 107) entra aqui, na
+    //  perícia que a tabela nomeia — e em nenhuma outra. Médio é 0, que é
+    //  a ficha de quase todo mundo; quem é Pequeno ou Grande vê o número
+    //  mudar, e a linha da perícia diz de onde ele vem.
+    if (P.chave === D.PERICIA_DO_TAMANHO) v += modFurtividade(f);
     return v;
   }
+
+  // ── O QUE O TAMANHO FAZ (Tabela 1-21, p. 107) ────────────────────
+  //  Pedido dele em 01/11/2026: "o tamanho deve ter seus benefícios
+  //  automáticos". Dos quatro, DOIS entram sozinhos na conta:
+  //    · Furtividade — soma na perícia, como o treino soma (calcPericia)
+  //    · manobras    — soma no teste de manobra, o ✊ ao lado de Luta
+  //  Os outros dois são leitura, e de propósito: o espaço ocupado é mapa,
+  //  e o passo de dano das armas depende da ARMA que está na mão —
+  //  empunhar uma de outra categoria de tamanho dá −5 no ataque em vez de
+  //  passo (p. 107). O número aparece, o jogador decide.
+  function tamMod(f) { return D.tamanhoMod(f.tamanho); }
+  function modFurtividade(f) { return tamMod(f).furtividade; }
+  function modManobra(f) { return tamMod(f).manobras; }
+  //  O teste de manobra É um teste de ataque corpo a corpo, feito com
+  //  Luta mesmo por quem está de arma à distância (p. 234), mais o
+  //  modificador de tamanho.
+  function valorManobra(f) { return valorPericia(f, D.PERICIA_DA_MANOBRA) + modManobra(f); }
   function valorPericia(f, chave) {
     return calcPericia(f, D.pericia(chave), f.pericias[chave]);
   }
@@ -1610,6 +1680,7 @@
           <select class="fi-sel" data-campo="classes.${i}.classe" title="Classe">${ops}</select>
           <input class="fi-num fi-num--nivel" type="number" min="0" max="20" value="${c.nivel}"
                  data-campo="classes.${i}.nivel" title="Nível nesta classe">
+          ${seletorCaminho(f, c, i)}
           ${f.classes.length > 1
             ? `<button type="button" class="fi-mini fi-mini--x" data-acao="tira-classe" data-i="${i}" title="Tirar esta classe">✕</button>`
             : ''}
@@ -1644,6 +1715,7 @@
             <input class="fi-num" type="number" min="0" step="1.5" value="${f.deslocamento}" data-campo="deslocamento"
                    title="O deslocamento que a raça lhe dá — 9 m para quase todas (p. 95). O que soma ou tira metros (armadura, poder, carga) vai em «O que mexe no deslocamento», no cartão Defesa & Carga."></label>
         </div>
+        ${notaDoTamanho(f)}
         <div class="fi-ident-classes">
           <span class="fi-rot">Classe(s) e nível</span>
           <div class="fi-classes">
@@ -1653,6 +1725,7 @@
           <span class="fi-nivel-selo">Nível <strong data-der="nivel">${nivel(f)}</strong>
             <em data-der="patamar">${patamar(nivel(f))}</em></span>
           ${avisoMesmaClasse(f)}
+          ${blocoCaminho(f)}
         </div>
         <div class="fi-ident-xp">
           <label class="fi-campo fi-campo--curto"><span class="fi-rot">XP</span>
@@ -1967,6 +2040,7 @@
               : 'Está marcado para <strong>não abrir sozinho</strong> neste navegador — abra pelo botão, ou ligue de novo lá dentro.'}</span>
           </p>
           <p class="fi-conta" data-der="pvconta">${contaPv(f)}</p>
+          ${notaDoPm(f)}
         </div>
 
         <div class="fi-cartao fi-defesa">
@@ -2236,6 +2310,28 @@
     return `PV = ${partes.join(' + ')}${f.pv.outros ? ' ' + sinal(f.pv.outros) : ''} · PM = ${pm}${f.pm.outros ? ' ' + sinal(f.pm.outros) : ''}`;
   }
   function sinalCon(con) { return con === 0 ? '' : (con > 0 ? ' + ' + con : ' − ' + Math.abs(con)); }
+  // ── A NOTA DO PM DE DUAS CLASSES CONJURADORAS ───────────────────
+  //  Pergunta dele em 01/11/2026: "sou frade e arcanista está somando os
+  //  atributos de PM total… pode fazer isso? acho que não". Pode — e a
+  //  ficha passa a DIZER por que, porque um total de PM que ninguém
+  //  consegue explicar é pior do que um total errado.
+  //  Só aparece quando há dois atributos na conta: é a única vez em que a
+  //  pergunta nasce. Sem números, de propósito: a conta por extenso
+  //  logo acima já os tem, e esta linha não é redesenhada a cada tecla.
+  function notaDoPm(f) {
+    const a = atributosDoPm(f);
+    if (a.length < 2) return '';
+    const quais = a.map(x => nomeAtr(x.atr) + ' pelo ' + x.classe.nome.toLowerCase() +
+      (x.caminho ? ' ' + x.caminho.nome.toLowerCase() : ''));
+    return `
+      <p class="fi-nota fi-nota--pm">✦ <strong>Duas classes suas lançam magia</strong>, e cada uma soma o
+        <em>seu</em> atributo-chave no total de PM: ${esc(quais.join(' e '))}. O <strong>mesmo</strong> atributo
+        não entraria duas vezes — <em>"um clérigo/druida não soma duas vezes sua Sabedoria nos pontos de
+        mana"</em> (p. 226) —, mas atributos <strong>diferentes</strong> somam os dois: a regra da p. 226 é sobre
+        o atributo, não sobre a habilidade, e na mesma página o quadro <em>Acumulando Efeitos</em> deixa
+        habilidades de classes diferentes acumularem. Se a sua mesa ler ao contrário, desconta em
+        <strong>＋ PM máximo</strong>, que aceita número negativo.</p>`;
+  }
   // O aviso da p. 141, com o preço já escrito: quem passa do limite
   // sofre −5 de armadura e −3m de deslocamento; acima do dobro, não
   // carrega. A ficha avisa e não impede — como o resto dela.
@@ -3107,11 +3203,203 @@
   }
 
   // ── PERÍCIAS ─────────────────────────────────────────────────────
-  function marcasDe(p) {
+  // ══ O CAMINHO DO ARCANISTA (p. 37) ═══════════════════════════════
+  //  Pedido dele em 01/11/2026: "poder escolher os caminhos do Arcanista
+  //  e fazer as coisas automáticas". O seletor fica na LINHA da classe,
+  //  colado no nível, porque é ali que se diz o que o personagem é; o que
+  //  o Caminho FAZ fica no painel abaixo das classes.
+  //  Só o arcanista tem Caminho a escolher. O Necromante, que é variante
+  //  dele, não tem: "Seu atributo-chave para magias é Inteligência"
+  //  (Heróis de Arton, p. 35), e já está na tabela das classes.
+  function ehArcanista(c) { return c && c.classe === 'arcanista'; }
+  //  A linhagem escrita à mão: casa pela chave, pelo nome ou pelo nome
+  //  sem acento — o campo é texto livre com datalist, e o datalist
+  //  oferece o NOME ("Dracônica"), não a chave. Procurar só pela chave
+  //  fazia a herança básica nunca aparecer para quem clicava na
+  //  sugestão. O que não casa com nenhuma das três fica como está: é a
+  //  porta para uma linhagem que os livros desta casa não imprimem.
+  function linhagemDe(txt) {
+    const k = semAcento(String(txt || '').trim());
+    if (!k) return null;
+    return (D.LINHAGENS || []).find(l => l.chave === k || semAcento(l.nome) === k) || null;
+  }
+  function seletorCaminho(f, c, i) {
+    if (!ehArcanista(c)) return '';
+    const ops = '<option value="">— Caminho —</option>' + D.CAMINHOS.map(k =>
+      `<option value="${k.chave}" ${k.chave === c.caminho ? 'selected' : ''}>${esc(k.nome)}</option>`).join('');
+    return `<select class="fi-sel fi-sel--caminho${c.caminho ? '' : ' fi-sel--pedindo'}"
+              data-campo="classes.${i}.caminho"
+              title="O Caminho do Arcanista (p. 37): Bruxo e Mago lançam com Inteligência, Feiticeiro com Carisma. Ele decide o atributo que entra no seu PM e na CD das suas magias, e quantas magias você conhece.">${ops}</select>`;
+  }
+
+  //  As linhas de arcanista desta ficha (com nível), na ordem em que estão.
+  function linhasDeArcanista(f) {
+    return (f.classes || []).map((c, i) => ({ c: c, i: i }))
+      .filter(x => ehArcanista(x.c) && (x.c.nivel > 0));
+  }
+
+  //  O painel: um por linha de arcanista. Diz o que o Caminho dá, com os
+  //  números desta ficha já feitos — e PERGUNTA, quando ainda não foi
+  //  escolhido, porque sem Caminho o atributo-chave é um chute.
+  function blocoCaminho(f) {
+    const linhas = linhasDeArcanista(f);
+    if (!linhas.length) return '';
+    return datalistLinhagens() + linhas.map(x => painelCaminho(f, x.c, x.i)).join('');
+  }
+
+  function painelCaminho(f, c, i) {
+    const cam = D.caminho(c.caminho);
+    if (!cam) {
+      return `
+        <p class="fi-nota fi-nota--pedindo">🜚 <strong>Escolha o Caminho do Arcanista</strong> ali em cima, no menu
+          ao lado do nível. Ele decide o atributo-chave (Bruxo e Mago, Inteligência; Feiticeiro, Carisma), e esse
+          atributo é o que soma no seu <strong>total de PM</strong> e o que dá a <strong>CD das suas magias</strong>.
+          Sem ele, a ficha usa o atributo do campo <em>Atributo das duas CDs</em> — que pode não ser o seu.
+          <em>(Tormenta 20, p. 37. "Uma vez feita, essa escolha não pode ser mudada.")</em></p>`;
+    }
+    const n = c.nivel || 0;
+    const m = D.magiasDoArcanista(cam.chave, n);
+    const circ = D.circulosDoArcanista(n);
+    const vAtr = atr(f, cam.atr);
+    const naFicha = (f.magias || []).length;
+    const bateCd = f.cdAtributo === cam.atr;
+
+    // O foco do bruxo e o grimório do mago: "RD 10 e PV iguais à metade
+    // dos seus" — a metade do PV MÁXIMO, que é o que a ficha sabe.
+    const item = cam.item
+      ? `<li><strong>${esc(cam.item.charAt(0).toUpperCase() + cam.item.slice(1))}:</strong>
+           RD 10 e <strong>${Math.floor(pvMax(f) / 2)} PV</strong>
+           <em>(metade dos seus ${pvMax(f)})</em>. Destruído, você fica atordoado por uma rodada;
+           danificado, volta inteiro quando você recuperar PM.</li>`
+      : '';
+
+    // A linhagem, só do feiticeiro. Texto livre com sugestão: as três do
+    // livro básico são as únicas impressas nos livros desta casa.
+    const linha = linhagemDe(c.linhagem);
+    const linhagem = cam.chave !== 'feiticeiro' ? '' : `
+      <li class="fi-cam-linhagem">
+        <strong>Linhagem sobrenatural:</strong>
+        <input class="fi-txt fi-txt--linhagem" type="text" value="${esc(c.linhagem)}"
+               list="fiLinhagens" data-campo="classes.${i}.linhagem" autocomplete="off"
+               placeholder="dracônica, feérica, rubra…"
+               title="A linhagem de que vem o seu sangue (p. 39). Você recebe a herança básica dela; as outras duas vêm pelos poderes Herança Aprimorada (6º) e Herança Superior (11º).">
+        ${linha ? `<span class="fi-cam-heranca"><em>${esc(linha.sangue)}</em>
+            <strong>Herança básica.</strong> ${esc(linha.basica)}
+            ${linha.pvCarisma ? `<span class="fi-cam-conta">São <strong>${sinal(atr(f, 'car'))} PV</strong>
+              (o seu Carisma) nos pontos de vida iniciais — ponha em <strong>＋ PV máximo</strong>, no cartão
+              Vida &amp; Mana, que é o campo do que vem de fora da classe.</span>` : ''}</span>`
+          : '<span class="fi-cam-heranca fi-cam-heranca--vazia">Escreva a linhagem e a herança básica dela aparece aqui. As impressas nos livros daqui são três: <strong>Dracônica</strong>, <strong>Feérica</strong> e <strong>Rubra</strong>.</span>'}
+      </li>`;
+
+    return `
+      <div class="fi-caminho">
+        <h3 class="fi-caminho-tit">🜚 Caminho do Arcanista <strong>${esc(cam.nome)}</strong>
+          <em>arcanista de ${n}º nível</em></h3>
+        <ul class="fi-caminho-lista">
+          <li><strong>Atributo-chave:</strong> ${esc(nomeAtr(cam.atr))} <strong>${sinal(vAtr)}</strong> —
+            soma no seu <strong>total de PM</strong> e é a <strong>CD das suas magias</strong>.
+            ${bateCd ? '' : `<span class="fi-cam-aviso">⚠ o campo <em>Atributo das duas CDs</em> desta ficha está em
+              <strong>${esc(nomeAtr(f.cdAtributo))}</strong>. O PM já usa o atributo do Caminho (${esc(nomeAtr(cam.atr))}), mas a
+              CD não: a ficha guarda um atributo de CD só, e com duas classes conjuradoras cada uma tem o seu.
+              <button type="button" class="fi-mini fi-mini--ok" data-acao="cd-do-caminho" data-i="${i}"
+                      title="Pôr ${esc(nomeAtr(cam.atr))} no campo «Atributo das duas CDs»">usar ${esc(nomeAtr(cam.atr))}</button></span>`}</li>
+          <li><strong>Círculos:</strong> você lança até o <strong>${circ}º círculo</strong>
+            <em>(1º no 1º nível, e um a mais a cada quatro: 5º, 9º, 13º, 17º)</em>.</li>
+          <li><strong>Magias conhecidas:</strong> <strong>${m.total}</strong> —
+            ${m.base} no 1º nível${m.ganhas ? ` + ${m.ganhas} por nível${cam.soImpar ? ' ímpar' : ''}` : ''}${
+              m.porCirculo ? ` + ${m.porCirculo} por círculo novo` : ''}.
+            <em>Esta ficha tem ${naFicha} no cartão ✦ Magias</em>${
+              naFicha === m.total ? ' — bate.' : '.'}
+            <span class="fi-cam-ressalva">A conta é a da classe: magia que vem de <strong>poder</strong>
+              (Conhecimento Mágico dá duas de cada vez), de raça, de origem ou de item entra por fora.</span></li>
+          ${item}
+          ${linhagem}
+        </ul>
+        <details class="fi-caminho-livro">
+          <summary>📖 O que o livro diz do ${esc(cam.nome)}</summary>
+          <p>${esc(cam.texto)}</p>
+          ${linha ? `<p><strong>${esc(linha.nome)} — aprimorada.</strong> ${esc(linha.aprimorada)}</p>
+            <p><strong>${esc(linha.nome)} — superior.</strong> ${esc(linha.superior)}</p>` : ''}
+          <p class="fi-nota">Tormenta 20, p. 37${cam.chave === 'feiticeiro' ? ' e 39' : ''}.</p>
+        </details>
+      </div>`;
+  }
+
+  //  O datalist das linhagens — um só na página, como o dos ofícios.
+  function datalistLinhagens() {
+    return '<datalist id="fiLinhagens">' +
+      D.LINHAGENS.map(l => `<option value="${esc(l.nome)}">`).join('') + '</datalist>';
+  }
+
+  // ══ O QUE O TAMANHO FAZ (Tabela 1-21, p. 107) ════════════════════
+  //  A linha de baixo do seletor de Tamanho. Em Médio ela não aparece:
+  //  "Criaturas Médias não recebem modificadores por tamanho", e uma
+  //  linha de "nada muda" em toda ficha do site é ruído.
+  function notaDoTamanho(f) {
+    const t = tamMod(f);
+    const nada = !t.furtividade && !t.manobras && !t.passoArma;
+    if (nada) return '';
+    const pericia = D.pericia(D.PERICIA_DO_TAMANHO);
+    const luta = D.pericia(D.PERICIA_DA_MANOBRA);
+    //  O bônus contado duas vezes: quem compensava o tamanho à mão no
+    //  "outros" da Furtividade agora soma dobrado. É o único jeito de
+    //  isto dar número errado, então a ficha procura o caso e avisa.
+    const naMao = ((f.pericias[D.PERICIA_DO_TAMANHO] || {}).outros) || 0;
+    const dobrado = naMao !== 0 && naMao === t.furtividade;
+    return `
+      <p class="fi-nota fi-nota--tamanho">📐 <strong>${esc(f.tamanho)}</strong>
+        <em>(${esc(t.exemplos)})</em> —
+        ${t.furtividade ? `<strong>${sinal(t.furtividade)} em ${esc(pericia.nome)}</strong>,
+          já somado na perícia; ` : ''}
+        ${t.manobras ? `<strong>${sinal(t.manobras)} em manobras de combate</strong>
+          (${esc(D.MANOBRAS.join(', '))}), já somado no ✊ ao lado de ${esc(luta.nome)}; ` : ''}
+        ocupa <strong>${esc(t.espaco)}</strong> (${t.quadrados === '1×1' ? 'um quadrado' :
+          esc(t.quadrados) + ' quadrados'}), que é também o seu alcance natural${
+          t.passoArma ? `; usa <strong>armas ${esc(t.arma)}</strong>, de
+          <strong>${sinal(t.passoArma)} passo${Math.abs(t.passoArma) === 1 ? '' : 's'} de dano</strong> —
+          este não entra sozinho, porque depende da arma que está na sua mão (empunhar uma de outra categoria
+          dá −5 no ataque em vez de passo). Ponha o número no campo <em>⇅</em> do ataque` : ''}.
+        <em>Tabela 1-21, p. 107.</em>
+        ${dobrado ? `<span class="fi-cam-aviso">⚠ a Furtividade desta ficha tem <strong>${sinal(naMao)}</strong>
+          em «outros», que é exatamente o seu bônus de tamanho — pode estar contado duas vezes agora que a ficha
+          soma sozinha. <button type="button" class="fi-mini fi-mini--ok" data-acao="zera-furt-tamanho"
+            title="Zerar o «outros» da ${esc(pericia.nome)}">zerar o «outros»</button></span>` : ''}</p>`;
+  }
+
+  //  `f` é opcional: só o selo de TAMANHO precisa da ficha, e ele só
+  //  aparece na perícia que a Tabela 1-21 nomeia. Um número que aparece
+  //  na perícia sem nada explicando é a pior saída possível — por isso o
+  //  modificador automático vem com etiqueta.
+  function marcasDe(p, f) {
+    const tam = (f && p.chave === D.PERICIA_DO_TAMANHO) ? modFurtividade(f) : 0;
     return (p.resist   ? '<span class="fi-selo fi-selo--res" title="Teste de resistência">resistência</span>' : '') +
            (p.ataque   ? '<span class="fi-selo fi-selo--atq" title="Teste de ataque ' + esc(p.ataque) + '">ataque</span>' : '') +
            (p.treinada ? '<span class="fi-selo" title="Só pode ser usada se você for treinado nela">só treinada</span>' : '') +
-           (p.armadura ? '<span class="fi-selo fi-selo--arm" title="Sofre a penalidade de armadura">armadura</span>' : '');
+           (p.armadura ? '<span class="fi-selo fi-selo--arm" title="Sofre a penalidade de armadura">armadura</span>' : '') +
+           (tam ? '<span class="fi-selo fi-selo--tam" title="' +
+             esc('Modificador de tamanho: ' + f.tamanho + ' dá ' + sinal(tam) + ' em ' + p.nome +
+                 ' (Tabela 1-21, p. 107). Já está somado no número ao lado.') +
+             '">tamanho ' + sinal(tam) + '</span>' : '');
+  }
+
+  //  O ✊ da linha de Luta: o TESTE DE MANOBRA. "Uma manobra é um ataque
+  //  corpo a corpo para fazer algo diferente de causar dano… Faça um teste
+  //  de manobra (um teste de ataque corpo a corpo) oposto com a criatura"
+  //  (p. 234) — por isso ele rola Luta, e não um valor próprio. O que o
+  //  botão acrescenta é o modificador de TAMANHO, que entra na manobra e
+  //  não no ataque comum (Tabela 1-21, p. 107).
+  //  Ele aparece SEMPRE, mesmo em Médio (modificador 0): a manobra é uma
+  //  rolagem com nome próprio na mesa, e esconder o botão de quem é Médio
+  //  seria esconder a regra de quase todo mundo.
+  function botaoManobra(f, p) {
+    if (p.chave !== D.PERICIA_DA_MANOBRA) return '';
+    const m = modManobra(f), v = valorManobra(f);
+    return `<button type="button" class="fi-mini fi-per-manobra${m ? ' fi-per-manobra--mod' : ''}"
+              data-acao="rolar-manobra"
+              title="${esc('Rolar um teste de MANOBRA: 1d20 ' + sinal(v) + ' (Luta ' +
+                sinal(valorPericia(f, D.PERICIA_DA_MANOBRA)) + (m ? ', tamanho ' + sinal(m) : '') +
+                '). É o teste oposto de ' + D.MANOBRAS.join(', ') + ' — p. 234.')}"
+              >✊ ${sinal(v)}</button>`;
   }
   function botaoTreinar(marcada, attrs) {
     return `<button type="button" class="fi-per-check" ${attrs}
@@ -3149,7 +3437,8 @@
           </button>
           <input class="fi-num fi-num--mini" type="number" value="${e.outros}"
                  data-campo="pericias.${p.chave}.outros" title="Outros bônus nesta perícia">
-          <span class="fi-per-marcas">${marcasDe(p)}</span>
+          ${botaoManobra(f, p)}
+          <span class="fi-per-marcas">${marcasDe(p, f)}</span>
           <span class="fi-res" data-res="per:${p.chave}" hidden></span>
         </li>`;
     }).join('');
@@ -3165,7 +3454,11 @@
           As <em>só treinada</em> aparecem mesmo sem treino porque o livro proíbe o uso, não a rolagem.
           A sigla do meio é o <strong>atributo</strong>: vem o da Tabela 2-1, e você pode trocar por outro
           (usar Sabedoria em Misticismo, por exemplo). Trocado, ele fica em destaque e o nome da rolagem
-          vai para a mesa com o atributo entre parênteses.</p>
+          vai para a mesa com o atributo entre parênteses.
+          O <strong>✊</strong> na linha de Luta rola um <strong>teste de manobra</strong> — agarrar, derrubar,
+          desarmar, empurrar, atropelar (p. 234) —, que é a Luta mais o modificador de <strong>tamanho</strong>.
+          Esse modificador entra sozinho também na Furtividade, e lá ele vem com o selo
+          <em>tamanho</em> dizendo quanto é (Tabela 1-21, p. 107).</p>
       </div>`;
   }
 
@@ -3197,7 +3490,7 @@
           <input class="fi-num fi-num--mini" type="number" value="${o.outros}"
                  data-campo="oficios.${i}.outros" title="Outros bônus neste ofício">
           <span class="fi-per-marcas">
-            ${marcasDe(p)}
+            ${marcasDe(p, f)}
             ${f.oficios.length > 2
               ? `<button type="button" class="fi-mini fi-mini--x" data-acao="tira-oficio" data-i="${i}"
                          title="Tirar este ofício">✕</button>` : ''}
@@ -5887,9 +6180,17 @@
       // mão: trocar o "modo" troca o campo de baixo (texto ↔ um dos
       // dois menus ligados).
       if (campo.indexOf('classes.') === 0 || campo.indexOf('amigos.') === 0 ||
-          campo.indexOf('treinador.') === 0 || campo.indexOf('maos.') === 0) return render();
+          campo.indexOf('treinador.') === 0 || campo.indexOf('maos.') === 0 ||
+          campo === 'tamanho' || campo === 'cdAtributo') return render();
       atualizarDerivados();
       return;
+    }
+    if (/^classes\.\d+\.linhagem$/.test((el.dataset || {}).campo || '')) {
+      const fl = fichaAberta();
+      if (!fl) return;
+      gravarCampo(fl, el.dataset.campo, el.value);
+      salvar();
+      return render();
     }
     //  Mudar o NÍVEL de uma classe (input numérico) altera QUAIS habilidades
     //  de classe automáticas já foram alcançadas — e o total de poderes etc.
@@ -6003,8 +6304,42 @@
       dados.aberta = dados.fichas.length ? dados.fichas[0].id : null;
       gravar(); return render();
     }
-    if (acao === 'add-classe')  { f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
+    if (acao === 'add-classe')  { f.classes.push({ classe: '', nivel: 1, caminho: '', linhagem: '' }); salvar(); return render(); }
     if (acao === 'tira-classe') { f.classes.splice(+btn.dataset.i, 1); if (!f.classes.length) f.classes.push({ classe: '', nivel: 1 }); salvar(); return render(); }
+    //  O teste de MANOBRA (p. 234): Luta + o modificador de tamanho. Cai
+    //  no mesmo lugar do resultado da linha de Luta, porque é a mesma
+    //  perícia — o que muda é o nome que vai para a mesa.
+    if (acao === 'rolar-manobra') {
+      if (!f) return;
+      const m = modManobra(f);
+      rolar(d20(valorManobra(f)),
+        quem(f) + ' · manobra (Luta' + (m ? ', tamanho ' + sinal(m) : '') + ')',
+        'per:' + D.PERICIA_DA_MANOBRA);
+      return;
+    }
+    //  "usar Inteligência": põe o atributo do Caminho no campo das CDs.
+    //  Não é automático porque a ficha guarda UM atributo de CD, e numa
+    //  ficha com duas classes conjuradoras escolher sozinha estragaria a
+    //  CD da outra. Ver painelCaminho().
+    if (acao === 'cd-do-caminho') {
+      if (!f) return;
+      const c = f.classes[+btn.dataset.i];
+      const cam = c && D.caminho(c.caminho);
+      if (!cam) return;
+      f.cdAtributo = cam.atr;
+      sujar(f.id, 'cdAtributo');
+      salvar(); return render();
+    }
+    //  O bônus de tamanho que estava contado à mão: agora a ficha soma
+    //  sozinha, e o "outros" da Furtividade duplicava o número.
+    if (acao === 'zera-furt-tamanho') {
+      if (!f) return;
+      const e = f.pericias[D.PERICIA_DO_TAMANHO];
+      if (!e) return;
+      e.outros = 0;
+      sujar(f.id, 'pericias');
+      salvar(); return render();
+    }
     if (acao === 'add-ataque')  { f.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0, dano: '', passos: 0, critico: '', tipo: '', alcance: '', notas: '', aberto: true }); salvar(); return render(); }
     if (acao === 'add-mao') { f.maos.push({ id: novoId(), modo: 'livre', ataqueId: '', itemId: '', nome: '', tipo: 'livre', notas: '', aberto: false }); sujar(f.id, 'maos'); salvar(); return render(); }
 

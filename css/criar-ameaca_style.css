@@ -1226,3 +1226,36 @@ button.ca-base-item:hover { background: var(--gold-pale); border-color: var(--go
   line-height: 1.4;
   color: var(--text-dim);
 }
+
+/* ══ A AJUDA DEBAIXO DO CAMPO (01/11/2026) ════════════════════════
+   Item 6 da comparação com o Fichas de Nimb: a explicação sai da nuvem
+   de mouse e vira linha de texto. Duas formas:
+     .ca-ajuda              dentro do <label>, debaixo do controle
+     .ca-ajuda--bloco       <p> solto, legenda de uma fileira inteira
+   Ela fica DENTRO do <label> de propósito: assim o leitor de tela lê a
+   ajuda junto do nome do campo. Um rótulo comprido é melhor que uma
+   ajuda que só o mouse alcança — que era o problema.
+   Cor e tamanho vêm das variáveis, como o resto da oficina. */
+.ca-ajuda {
+  font-family: var(--ga-fonte-nota);
+  font-style: italic;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--text-dim);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.ca-ajuda strong {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ink-faded);
+}
+.ca-ajuda em { font-style: normal; }
+.ca-ajuda--bloco {
+  margin: 0.15rem 0 0;
+  padding-left: 0.5rem;
+  border-left: 2px solid var(--parchment3);
+}
+/* a barra "Minhas ameaças" tem fundo próprio: a legenda respira nela */
+.ca-barra .ca-ajuda--bloco { margin-top: 0.45rem; }

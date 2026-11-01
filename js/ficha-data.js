@@ -155,6 +155,104 @@
   const BASICA_POR_CHAVE = {}; BASICAS.forEach(c => { BASICA_POR_CHAVE[c.chave] = c; });
   const CLASSES = BASICAS.concat(VARIANTES.map(v => Object.assign({}, BASICA_POR_CHAVE[v.de], v)));
 
+  // ── O CAMINHO DO ARCANISTA (p. 37) ──────────────────────────────
+  //  "A magia é um poder incrível… Esse poder tem fontes distintas e cada
+  //  uma opera conforme suas próprias regras. Escolha uma das opções a
+  //  seguir. Uma vez feita, essa escolha não pode ser mudada."
+  //  Pedido dele em 01/11/2026: "poder escolher os caminhos do Arcanista e
+  //  fazer as coisas automáticas". O Caminho decide quatro coisas que são
+  //  CONTA, e é por isso que ele virou dado e não texto:
+  //    atr          o atributo-chave, que vai para o total de PM e para a
+  //                 CD das magias ("Seu atributo-chave para lançar magias
+  //                 é definido pelo seu Caminho… e você soma seu
+  //                 atributo-chave no seu total de PM")
+  //    magiasBase   quantas magias ele tem no 1º nível (o mago começa com
+  //                 uma adicional, "para um total de 4")
+  //    soImpar      o feiticeiro aprende "uma magia nova a cada nível
+  //                 ímpar (3º, 5º, 7º etc.), em vez de a cada nível"
+  //    porCirculo   o mago aprende uma magia adicional "sempre que ganha
+  //                 acesso a um novo círculo de magias"
+  //  O Caminho mora na LINHA DA CLASSE (c.caminho), não na ficha: quem é
+  //  arcanista E outra classe conjuradora tem DOIS atributos-chave, um por
+  //  classe, e a ficha guarda um só no campo das CDs.
+  //  A variante NECROMANTE não tem Caminho: "Seu atributo-chave para
+  //  magias é Inteligência" (Heróis de Arton, p. 35), sem escolha — é por
+  //  isso que ela já tem pmAtr: 'int' na tabela acima, e não 'chave'.
+  const CAMINHOS = [
+    { chave: 'bruxo', nome: 'Bruxo', atr: 'int',
+      item: 'foco', itemEx: 'uma varinha, um cajado, um chapéu…',
+      magiasBase: 3, soImpar: false, porCirculo: 0,
+      texto: 'Você lança magias através de um foco — uma varinha, cajado, chapéu… Para lançar uma magia, precisa empunhar o foco com uma mão (e gesticular com a outra) ou fazer um teste de Misticismo (CD 20 + o custo em PM da magia; se falhar, a magia não funciona, mas você gasta os PM mesmo assim). O foco tem RD 10 e PV iguais à metade dos seus, independentemente de seu material ou forma. Se for danificado, é totalmente restaurado na próxima vez que você recuperar seus PM. Se for destruído (reduzido a 0 PV), você fica atordoado por uma rodada; recuperar um foco destruído ou perdido exige uma semana de trabalho e T$ 100.' },
+    { chave: 'feiticeiro', nome: 'Feiticeiro', atr: 'car',
+      item: '', itemEx: '',
+      magiasBase: 3, soImpar: true, porCirculo: 0,
+      texto: 'Você lança magias através de um poder inato que corre em seu sangue. Escolha uma linhagem como origem de seus poderes; você recebe a herança básica da linhagem escolhida. Você não depende de nenhum item ou estudo, mas sua capacidade de aprender magias é limitada — aprende uma magia nova a cada nível ímpar (3º, 5º, 7º etc.), em vez de a cada nível.' },
+    { chave: 'mago', nome: 'Mago', atr: 'int',
+      item: 'grimório', itemEx: 'as mesmas estatísticas de um foco',
+      magiasBase: 4, soImpar: false, porCirculo: 1,
+      texto: 'Você lança magias através de estudo e memorização de fórmulas arcanas. Só pode lançar magias MEMORIZADAS; as outras não podem ser lançadas, mesmo que você tenha pontos de mana para tal. Para memorizar, precisa estudar seu grimório por uma hora, e escolhe metade das magias que conhece (se conhece 7, escolhe 3). Pode memorizar uma vez por dia; sem poder estudar, não troca as memorizadas. O grimório tem as mesmas estatísticas de um foco (RD 10 e PV iguais à metade dos seus). Você começa com uma magia adicional (para um total de 4) e, sempre que ganha acesso a um novo círculo de magias, aprende uma magia adicional daquele círculo.' },
+  ];
+
+  // ── LINHAGENS SOBRENATURAIS (p. 39) — só o feiticeiro ───────────
+  //  "Ao escolher o caminho do feiticeiro, escolha uma linhagem da lista a
+  //  seguir. Você recebe a herança básica de sua linhagem e pode
+  //  desenvolver as demais através de poderes de arcanista."
+  //  São TRÊS, e são só estas nos livros desta casa. A "linhagem celestial"
+  //  aparece como pré-requisito da Apoteose Celestial (Heróis de Arton,
+  //  p. 54), mas NÃO está impressa em nenhum dos livros daqui — por isso
+  //  não está na lista, e a ficha deixa escrever uma à mão.
+  //  As heranças aprimorada e superior vêm pelos poderes Herança
+  //  Aprimorada (6º) e Herança Superior (11º), que já estão no
+  //  js/poderes-classe-data.js; aqui elas são texto para ler.
+  const LINHAGENS = [
+    { chave: 'draconica', nome: 'Dracônica',
+      sangue: 'Um de seus antepassados foi um majestoso dragão. Escolha um tipo de dano entre ácido, eletricidade, fogo ou frio.',
+      //  A única herança básica que é CONTA. A ficha mostra o número já
+      //  somado e diz em que campo pô-lo; não entra sozinha no PV porque
+      //  "pontos de vida iniciais" é o PV do 1º nível, e o campo que o
+      //  recebe (＋ PV máximo) é do jogador.
+      pvCarisma: true,
+      basica: 'Você soma seu Carisma em seus pontos de vida iniciais e recebe redução de dano 5 ao tipo escolhido.',
+      aprimorada: 'Suas magias do tipo escolhido custam −1 PM e causam +1 ponto de dano por dado.',
+      superior: 'Você passa a somar o dobro do seu Carisma em seus pontos de vida iniciais e se torna imune a dano do tipo escolhido. Além disso, sempre que reduz um ou mais inimigos a 0 PV ou menos com uma magia do tipo escolhido, recebe uma quantidade de PM temporários igual ao círculo da magia.' },
+    { chave: 'feerica', nome: 'Feérica',
+      sangue: 'Seu sangue foi tocado pelas fadas.',
+      basica: 'Você se torna treinado em Enganação e aprende uma magia de 1º círculo de encantamento ou ilusão, arcana ou divina, a sua escolha.',
+      aprimorada: 'A CD para resistir a suas magias de encantamento e ilusão aumenta em +2 e suas magias dessas escolas custam −1 PM.',
+      superior: 'Você recebe +2 em Carisma. Se uma criatura passar no teste de resistência contra uma magia de encantamento ou ilusão lançada por você, você fica alquebrado até o final da cena.' },
+    { chave: 'rubra', nome: 'Rubra',
+      sangue: 'Seu sangue foi corrompido pela Tormenta.',
+      basica: 'Você recebe um poder da Tormenta. Além disso, pode perder outro atributo em vez de Carisma por poderes da Tormenta.',
+      aprimorada: 'Escolha uma magia para cada poder da Tormenta que você possui. Essas magias custam −1 PM. Sempre que recebe um novo poder da Tormenta, você pode escolher uma nova magia. Esta herança conta como um poder da Tormenta (exceto para perda de Carisma).',
+      superior: 'Você recebe +4 PM para cada poder da Tormenta que tiver. Esta herança conta como um poder da Tormenta (exceto para perda de Carisma).' },
+  ];
+
+  //  "Você pode lançar magias arcanas de 1º círculo. A cada quatro níveis,
+  //  pode lançar magias de um círculo maior (2º círculo no 5º nível, 3º
+  //  círculo no 9º nível e assim por diante)" — 1º/5º/9º/13º/17º, e o 5º
+  //  é o teto porque o 20º é o último nível.
+  function circulosDoArcanista(nivelArcanista) {
+    const n = Math.max(0, parseInt(nivelArcanista, 10) || 0);
+    if (!n) return 0;
+    return Math.min(5, 1 + Math.floor((n - 1) / 4));
+  }
+  //  Quantas magias um arcanista deste Caminho conhece neste nível DE
+  //  ARCANISTA — "Você começa com três magias de 1º círculo. A cada nível,
+  //  aprende uma magia de qualquer círculo que possa lançar" (p. 37), mais
+  //  o que o Caminho muda. NÃO conta as magias que vêm de poder
+  //  (Conhecimento Mágico dá duas de cada vez), de raça, de origem ou de
+  //  item: a ficha diz isso na tela, para o número não parecer errado.
+  function magiasDoArcanista(caminho, nivelArcanista) {
+    const C = CAMINHO_POR_CHAVE[caminho];
+    const n = Math.max(0, parseInt(nivelArcanista, 10) || 0);
+    if (!C || !n) return null;
+    const ganhas = C.soImpar ? Math.floor((n - 1) / 2) : (n - 1);
+    const circ = circulosDoArcanista(n);
+    const extra = C.porCirculo * (circ - 1);
+    return { total: C.magiasBase + ganhas + extra, base: C.magiasBase,
+             ganhas: ganhas, porCirculo: extra, circulos: circ };
+  }
+
   // ── O MELHOR AMIGO DO TREINADOR (Heróis de Arton, p. 17–22) ─────
   //  "Ao contrário de outros parceiros, seu melhor amigo possui uma
   //  ficha completa, com as características a seguir — mesmo que sejam
@@ -358,10 +456,49 @@
       mestre: 'como acima, mas o bônus em testes de resistência muda para +5.' },
   ];
 
-  // Tamanhos (p. 106): só o rótulo e o deslocamento não mudam por aqui —
-  // o modificador de Furtividade/manobras fica de fora de propósito, é
-  // conta que a ficha não faz sozinha.
+  // ── TAMANHO (Tabela 1-21: Tamanho de Criaturas, p. 107) ─────────
+  //  Até 01/11/2026 isto era só uma lista de rótulos, com um comentário
+  //  dizendo que "o modificador de Furtividade/manobras fica de fora de
+  //  propósito, é conta que a ficha não faz sozinha". Deixou de ser, a
+  //  pedido dele: "o tamanho deve ter seus benefícios automáticos".
+  //  A linha inteira da tabela mora aqui, e cada coluna tem um destino:
+  //    furtividade  entra SOZINHO na perícia (ver calcPericia no ficha.js)
+  //    manobras     entra no TESTE DE MANOBRA, que é um teste de ataque
+  //                 corpo a corpo feito com Luta (p. 234) — e não no
+  //                 ataque comum, que a tabela não toca
+  //    espaco       espaço ocupado e alcance natural; `quadrados` é a
+  //                 mesma medida em quadrados de mapa (q = m ÷ 1,5)
+  //    passoArma    armas reduzidas (−1 passo), aumentadas (+1) ou
+  //                 gigantes (+2). Este NÃO entra sozinho: depende da
+  //                 arma que está na mão, e quem empunha uma de outra
+  //                 categoria sofre −5 no ataque em vez de ganhar passo.
+  //  A mesma tabela está no js/criar-ameaca-data.js (TAMANHOS). Duplicada
+  //  de propósito: lá ela monta criatura, aqui é a ficha do jogador —
+  //  dado de regra se duplica, ferramenta se compartilha.
   const TAMANHOS = ['Minúsculo', 'Pequeno', 'Médio', 'Grande', 'Enorme', 'Colossal'];
+  const TAMANHO_MOD = {
+    'Minúsculo': { furtividade:   5, manobras:  -5, espaco: '1,5m', quadrados: '1×1', passoArma: -1,
+                   arma: 'reduzidas',  exemplos: 'falcão, rato, sílfide' },
+    'Pequeno':   { furtividade:   2, manobras:  -2, espaco: '1,5m', quadrados: '1×1', passoArma:  0,
+                   arma: '',           exemplos: 'cão, goblin, hynne' },
+    'Médio':     { furtividade:   0, manobras:   0, espaco: '1,5m', quadrados: '1×1', passoArma:  0,
+                   arma: '',           exemplos: 'humano, anão, elfo' },
+    'Grande':    { furtividade:  -2, manobras:   2, espaco: '3m',   quadrados: '2×2', passoArma:  1,
+                   arma: 'aumentadas', exemplos: 'cavalo, ogro, serpe' },
+    'Enorme':    { furtividade:  -5, manobras:   5, espaco: '4,5m', quadrados: '3×3', passoArma:  1,
+                   arma: 'aumentadas', exemplos: 'ente, gigante, hidra' },
+    'Colossal':  { furtividade: -10, manobras:  10, espaco: '9m',   quadrados: '6×6', passoArma:  2,
+                   arma: 'gigantes',   exemplos: 'colosso, dragão, kraken' },
+  };
+  //  A perícia que o tamanho mexe, e a que o teste de manobra usa. Ficam
+  //  nomeadas aqui para que ninguém precise procurar a string no meio do
+  //  ficha.js se um livro novo mudar isso.
+  const PERICIA_DO_TAMANHO = 'furtividade';
+  const PERICIA_DA_MANOBRA = 'luta';
+  //  As manobras da p. 234, para a dica do botão dizer o que ele serve.
+  //  Fintar NÃO está na lista: ela é um teste de Enganação contra Reflexos,
+  //  e não um teste de manobra — o modificador de tamanho não entra nela.
+  const MANOBRAS = ['Agarrar', 'Derrubar', 'Desarmar', 'Empurrar', 'Atropelar'];
 
   // ── OS OFÍCIOS DO LIVRO (p. 121) ───────────────────────────────
   //  São só uma sugestão de preenchimento: o livro diz "Você pode
@@ -502,7 +639,9 @@
     };
   }
 
-  const PERICIA_POR_CHAVE = {}; PERICIAS.forEach(p => { PERICIA_POR_CHAVE[p.chave] = p; });
+  const PERICIA_POR_CHAVE  = {}; PERICIAS.forEach(p => { PERICIA_POR_CHAVE[p.chave]  = p; });
+  const CAMINHO_POR_CHAVE  = {}; CAMINHOS.forEach(c => { CAMINHO_POR_CHAVE[c.chave]  = c; });
+  const LINHAGEM_POR_CHAVE = {}; LINHAGENS.forEach(l => { LINHAGEM_POR_CHAVE[l.chave] = l; });
   const CLASSE_POR_CHAVE  = {}; CLASSES.forEach(c  => { CLASSE_POR_CHAVE[c.chave]  = c;  });
   const porChave = lista => { const m = {}; lista.forEach(x => { m[x.chave] = x; }); return k => m[k] || null; };
 
@@ -519,6 +658,19 @@
     truque:    porChave(TRUQUES),
     parceiro:  porChave(PARCEIROS),
     TAMANHOS: TAMANHOS,
+    TAMANHO_MOD: TAMANHO_MOD,
+    PERICIA_DO_TAMANHO: PERICIA_DO_TAMANHO,
+    PERICIA_DA_MANOBRA: PERICIA_DA_MANOBRA,
+    MANOBRAS: MANOBRAS,
+    CAMINHOS: CAMINHOS,
+    LINHAGENS: LINHAGENS,
+    caminho:  function (chave) { return CAMINHO_POR_CHAVE[chave]  || null; },
+    linhagem: function (chave) { return LINHAGEM_POR_CHAVE[chave] || null; },
+    //  O modificador da Tabela 1-21 para este tamanho; o que não está na
+    //  tabela cai em Médio, que é o padrão do livro e não mexe em nada.
+    tamanhoMod: function (nome) { return TAMANHO_MOD[nome] || TAMANHO_MOD['Médio']; },
+    circulosDoArcanista: circulosDoArcanista,
+    magiasDoArcanista: magiasDoArcanista,
     OFICIOS: OFICIOS,
     ESPACOS: ESPACOS,
     MOEDAS_POR_ESPACO: MOEDAS_POR_ESPACO,

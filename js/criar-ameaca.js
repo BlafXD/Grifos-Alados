@@ -1533,6 +1533,10 @@
         '</div>' +
       '</div>' +
       '<div class="ca-chips">' + chips + '</div>' +
+      ajuda('<strong>🔧 Modificar</strong> parte de uma criatura pronta e muda o ND dela <em>mantendo as ' +
+        'diferenças</em> em pontos — é a regra de modificar criaturas da p. 387. <strong>👥 Bando</strong> ' +
+        'transforma uma criatura numa turma que age como uma só (p. 387–389). Os dois perguntam de qual ' +
+        'criatura partir.') +
     '</div>';
   }
 
@@ -1572,10 +1576,28 @@
     return M.PASSOS.find(function (p) { return p.id === id; });
   }
 
+  // ── UM CAMPO DA OFICINA, COM A AJUDA EMBAIXO ──────────────────────
+  //  Até 01/11/2026 a `dica` saía como um <em> ao lado do RÓTULO, em
+  //  0,68rem e versalete — e o resto das explicações da oficina morava em
+  //  nuvem de mouse (`title=`), que no celular não existe. Era o item 6 da
+  //  comparação com o Fichas de Nimb, onde cada campo tem uma linha de
+  //  ajuda embaixo; agora é o que esta função faz.
+  //  Os `title=` ficaram onde estavam: eles não atrapalham quem usa mouse,
+  //  e a informação deixou de depender deles. O que não cabia num campo
+  //  (as colunas do Passo 3, a linha do ataque, a cota de habilidades)
+  //  virou uma LEGENDA do bloco — ver ajuda().
   function campo(rot, html, dica) {
     return '<label class="ca-campo">' +
-      '<span class="ca-campo-rot">' + rot + (dica ? '<em>' + esc(dica) + '</em>' : '') + '</span>' +
-      html + '</label>';
+      '<span class="ca-campo-rot">' + rot + '</span>' +
+      html +
+      (dica ? '<em class="ca-ajuda">' + esc(dica) + '</em>' : '') +
+      '</label>';
+  }
+  //  A legenda de um bloco que não é um campo só: explica a fileira
+  //  inteira, logo abaixo dela. Aceita HTML porque quase toda legenda
+  //  destaca o nome de um botão.
+  function ajuda(html) {
+    return '<p class="ca-ajuda ca-ajuda--bloco">' + html + '</p>';
   }
 
   // ── PAINEL DA CRIATURA-BASE (p. 387–389) ──────────────────────────
@@ -1671,15 +1693,17 @@
     return cascaPasso(passoDef('conceito'),
       '<div class="ca-grade">' +
         campo('Nome da ameaça',
-          '<input type="text" class="ca-input" data-campo="nome" value="' + esc(c.nome) + '" placeholder="Dejeto Vivo">') +
+          '<input type="text" class="ca-input" data-campo="nome" value="' + esc(c.nome) + '" placeholder="Dejeto Vivo">',
+          'É por ele que ela aparece na lista aqui em cima, na ficha e na aba Combates.') +
         campo('Função no encontro',
           '<select class="ca-select" data-campo="funcao">' + funcoes + '</select>',
-          'sugere o papel de combate') +
+          'Atalho: escolher aqui já marca o papel de combate do Passo 1. Dá para mudar depois.') +
       '</div>' +
       (f ? '<p class="ca-nota ca-nota--info"><strong>' + esc(f.nome) + '.</strong> ' + esc(f.desc) + '</p>' : '') +
-      campo('Conceito / descrição <em>(vira o texto de lore da ficha)</em>',
+      campo('Conceito / descrição',
         '<textarea class="ca-area" rows="4" data-campo="conceito" placeholder="Uma criatura amorfa que vive nos esgotos de grandes cidades…">' +
-        esc(c.conceito) + '</textarea>') +
+        esc(c.conceito) + '</textarea>',
+        'Vira o texto de lore no alto da ficha — o que você lê para narrar. Não entra em conta nenhuma.') +
       '<p class="ca-nota">Uma boa criatura é aquela que pode ser descrita em poucas palavras — o dragão é “réptil alado que cospe fogo”.</p>');
   }
 
@@ -1738,10 +1762,13 @@
 
     return cascaPasso(passoDef('tipo'),
       '<div class="ca-grade">' +
-        campo('Tipo', selTipo) +
+        campo('Tipo', selTipo,
+          'O tipo já dá habilidades de graça — as que aparecem na faixa dourada logo abaixo.') +
         campo('Subtipo / raça <em>(opcional)</em>',
-          '<input type="text" class="ca-input" data-campo="subtipo" value="' + esc(c.subtipo) + '" placeholder="humano, lefeu, elemental…">') +
-        campo('Tamanho', selTam) +
+          '<input type="text" class="ca-input" data-campo="subtipo" value="' + esc(c.subtipo) + '" placeholder="humano, lefeu, elemental…">',
+          'Só para a primeira linha da ficha: «Humanoide (goblin) Pequeno». Texto livre.') +
+        campo('Tamanho', selTam,
+          'Muda o espaço no mapa, o modificador de Furtividade e manobras, e o dado da arma natural.') +
       '</div>' +
       (tipo.habilidades
         ? '<p class="ca-nota ca-nota--auto"><strong>O tipo ' + esc(tipo.nome) + ' já dá:</strong> ' + esc(tipo.habilidades) + '. ' +
@@ -1755,11 +1782,14 @@
       '<p class="ca-nota">' + esc(papelDe(c.papel).dica) + '</p>' +
       '<div class="ca-sub-rot">Deslocamento <em>(Tabela 2-2)</em></div>' +
       '<div class="ca-grade">' +
-        campo('Forma', selForma) +
-        campo('Ritmo', selRitmo) +
+        campo('Forma', selForma,
+          'Bípede ou quadrúpede: é a linha da Tabela 2-2 de onde sai o deslocamento.') +
+        campo('Ritmo', selRitmo,
+          'Lento, normal ou rápido — as três colunas da mesma linha da tabela.') +
         campo('Deslocamento terrestre',
           '<input type="text" class="ca-input" data-campo="deslTerrestre" value="' +
-          esc(c.deslTerrestre || deslocamentoAuto(c)) + '">') +
+          esc(c.deslTerrestre || deslocamentoAuto(c)) + '">',
+          'Em metros; os quadrados são conta. Vem preenchido pela tabela — escreva por cima para fugir dela.') +
       '</div>' +
       '<label class="ca-chk"><input type="checkbox" data-campo="semTerrestre"' +
         (c.semTerrestre ? ' checked' : '') + '> A criatura não tem deslocamento terrestre</label>' +
@@ -1833,15 +1863,25 @@
         linhaStat(c, 'resMedia', 'Resistência média') +
         linhaStat(c, 'resFraca', 'Resistência fraca') +
       '</div>' +
+      ajuda(c.modo === 'nova' || !c.base || !c.deltas
+        ? 'Cada caixa é uma linha da <strong>Tabela 2-3</strong> no ND e no papel que você escolheu — ' +
+          'o número grande é o valor que vai para a ficha. O menu <strong>±0</strong> ao lado usa o valor ' +
+          'de outro ND (até dois acima ou abaixo), que é o jeito que o livro dá de desviar de propósito: ' +
+          'uma criatura muito dura e que erra muito, por exemplo.'
+        : 'Nesta criatura derivada cada caixa tem quatro números: o da <strong>criatura-base</strong>, ' +
+          'a <strong>linha da Tabela 2-3 no ND novo</strong> (depois da seta), a <strong>diferença em pontos</strong> ' +
+          'herdada da base — editável, é ela que o livro manda preservar — e o <strong>valor final</strong>, em ' +
+          'destaque. O menu <strong>±0</strong> usa o valor de outro ND, até dois acima ou abaixo.') +
       '<div class="ca-sub-rot">Distribuição das resistências</div>' +
       '<div class="ca-grade ca-grade--3">' +
         selRes('fort', 'Fortitude') + selRes('ref', 'Reflexos') + selRes('von', 'Vontade') +
       '</div>' +
       '<p class="ca-nota" data-calc="res-resumo"></p>' +
       '<div class="ca-grade">' +
-        campo('Defesas e imunidades extras <em>(entram na linha de Defesa)</em>',
+        campo('Defesas e imunidades extras',
           '<input type="text" class="ca-input" data-campo="defesasExtra" value="' + esc(c.defesasExtra) +
-          '" placeholder="resistência a alquimia e magia +5, imunidade a veneno…">') +
+          '" placeholder="resistência a alquimia e magia +5, imunidade a veneno…">',
+          'Texto livre: sai na ficha logo depois do número da Defesa, separado por vírgula.') +
       '</div>' +
       '<label class="ca-chk"><input type="checkbox" data-campo="usaPM"' + (c.usaPM ? ' checked' : '') +
         '> Esta ameaça usa pontos de mana <em>(o livro recomenda evitar)</em></label>' +
@@ -1902,6 +1942,12 @@
     return cascaPasso(passoDef('ataques'),
       '<div class="ca-conta-dano" data-calc="conta-dano"></div>' +
       '<div class="ca-ataques">' + lista + '</div>' +
+      ajuda('<strong>Qtd</strong> é quantos golpes deste ataque por rodada. O menu ao lado do nome preenche uma ' +
+        '<strong>arma natural</strong> da Tabela 2-1 com o tipo de dano dela. <strong>−</strong> e <strong>+</strong> ' +
+        'andam um <strong>passo de dano</strong> na Tabela 3-2 (1d6 → 1d8 → 1d10…). ' +
+        '<strong>🎯 Fechar o dano</strong> acerta o bônus para o dano médio bater o do ND — é a conta da caixa ' +
+        'cinza acima. E <strong>Ataque complementar</strong> é o golpe que não conta no dano médio: ele usa a ' +
+        'linha de dois ND abaixo, como o livro manda para ataques secundários.') +
       '<button type="button" class="ca-btn ca-btn--nova" data-acao="add-ataque">＋ Adicionar ataque</button>');
   }
 
@@ -1943,6 +1989,10 @@
     return cascaPasso(passoDef('habilidades'),
       '<div class="ca-cota" data-calc="cota"></div>' +
       '<div class="ca-habs">' + lista + '</div>' +
+      ajuda('A caixa <strong>Sentidos</strong> e o menu de cada habilidade saem direto na ficha. O menu diz a ' +
+        '<strong>execução</strong> — a ação que a habilidade exige (livre, padrão, completa, reação…) —, e ' +
+        '<strong>✦ mágica</strong> marca o selo do livro: habilidade mágica pode ser alvo de Dissipar Magia e de ' +
+        'tudo o mais que afeta magia.') +
       '<div class="ca-hab-acoes">' +
         '<button type="button" class="ca-btn ca-btn--nova" data-acao="add-hab">＋ Habilidade em branco</button>' +
         '<span class="ca-nota ca-nota--inline">Sentidos:</span>' +
@@ -2162,6 +2212,9 @@
     return cascaPasso(passoDef('secundarias'),
       '<div class="ca-sub-rot">Atributos <em>(Tabela 2-4)</em></div>' +
       '<div class="ca-atribs">' + atribs + '</div>' +
+      ajuda('O valor em Tormenta 20 <em>já é</em> o modificador: Força 3 soma +3. A palavra embaixo de cada caixa ' +
+        'é a categoria da Tabela 2-4 (fraco, médio, forte…) para o ND desta criatura — é por ela que se vê se o ' +
+        'número está dentro do que o livro espera.') +
       '<div class="ca-sub-rot">Iniciativa e Percepção</div>' +
       '<div class="ca-fixas">' +
         '<div class="ca-per">' +
@@ -2185,6 +2238,10 @@
       '<div class="ca-pers">' + (linhas || '<p class="ca-vazio">Nenhuma perícia listada — as não listadas valem metade do ND + atributo-chave.</p>') + '</div>' +
       '<select class="ca-select ca-select--add" data-acao="add-per"' +
         ' aria-label="Adicionar perícia à ameaça">' + opcoes + '</select>' +
+      ajuda('<strong>treinada</strong> soma o treino do ND; <strong>+extra</strong> é o que vem de fora da conta ' +
+        '(um poder, um item); a caixa de texto ao lado é a <strong>observação</strong> que sai entre parênteses na ' +
+        'ficha («+15 para nadar»). Perícia que não está nesta lista não precisa entrar: ela vale metade do ND ' +
+        'mais o atributo-chave, e a ficha já diz isso.') +
       '<p class="ca-nota" data-calc="per-formula"></p>');
   }
 
@@ -2197,19 +2254,25 @@
     return cascaPasso(passoDef('tesouro'),
       campo('Equipamento',
         '<input type="text" class="ca-input" data-campo="equipamento" value="' + esc(c.equipamento) +
-        '" placeholder="Espada longa, armadura de couro…">') +
+        '" placeholder="Espada longa, armadura de couro…">',
+        'O que ela carrega e o grupo pode pegar. Os números dos ataques e da Defesa já estão fechados: ' +
+        'isto aqui é a lista, não a conta.') +
       '<div class="ca-grade">' +
-        campo('Categoria de tesouro', '<select class="ca-select" data-campo="tesouro">' + tesouros + '</select>') +
+        campo('Categoria de tesouro', '<select class="ca-select" data-campo="tesouro">' + tesouros + '</select>',
+          'Quanto ela deixa cair, na escala do livro. Quem rola isso é o 🎁 Recompensas, por esta palavra.') +
         campo('Tesouro especial / observação',
           '<input type="text" class="ca-input" data-campo="tesouroObs" value="' + esc(c.tesouroObs) +
-          '" placeholder="(exceto itens alquímicos), 1d6 doses de ácido (CD 21 para extrair)">') +
+          '" placeholder="(exceto itens alquímicos), 1d6 doses de ácido (CD 21 para extrair)">',
+          'Sai entre parênteses depois da categoria. É aqui que entram os recursos naturais e o que se extrai dela.') +
       '</div>' +
       '<p class="ca-nota ca-nota--auto" data-calc="cd-extrair"></p>' +
       campo('Parceiro <em>(opcional)</em>',
         '<input type="text" class="ca-input" data-campo="parceiro" value="' + esc(c.parceiro) +
-        '" placeholder="Lobo (veja o Apêndice A)">') +
-      campo('Anotações do mestre <em>(não entram na ficha)</em>',
-        '<textarea class="ca-area" rows="2" data-campo="notas">' + esc(c.notas) + '</textarea>'));
+        '" placeholder="Lobo (veja o Apêndice A)">',
+        'A montaria, o animal, o capanga que vem com ela. Vira uma linha da ficha; o parceiro em si tem ficha própria.') +
+      campo('Anotações do mestre',
+        '<textarea class="ca-area" rows="2" data-campo="notas">' + esc(c.notas) + '</textarea>',
+        'Só para você: a tática dela, de onde ela veio, o que você mudou. Não sai na ficha nem vai para a mesa.'));
   }
 
   // ── Prévia da ficha ───────────────────────────────────────────────

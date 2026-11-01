@@ -3932,3 +3932,127 @@
 .fi-turno-pe { flex-wrap: wrap; gap: 0.35rem; }
 .fi-turno-calar { font-size: 0.72rem; }
 .fi-pml-limpar { margin-left: auto; }
+
+/* ══ O CAMINHO DO ARCANISTA E O QUE O TAMANHO FAZ (01/11/2026) ════
+   Nenhuma cor própria aqui: tudo sai das variáveis, para o modo
+   noturno e a pele nova continuarem valendo sem uma linha a mais. */
+
+/* o seletor do Caminho, colado no nível da classe */
+.fi-sel--caminho { width: auto; font-size: 0.82rem; padding: 0.15rem 0.25rem; }
+/* ainda não escolhido: o tracejado é o mesmo "falta algo aqui" do
+   .fi-mini--tem, e não um alarme */
+.fi-sel--pedindo {
+  border-style: dashed;
+  border-bottom-style: dashed;
+  border-color: var(--gold-dim);
+  color: var(--gold-deep);
+}
+
+.fi-caminho {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.6rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--raio);
+}
+.fi-caminho-tit {
+  margin: 0 0 0.3rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.fi-caminho-tit strong { color: var(--rust); }
+.fi-caminho-tit em {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.74rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 400;
+}
+.fi-caminho-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.fi-caminho-lista > li { padding: 0.12rem 0; }
+.fi-caminho-lista > li + li { border-top: 1px dotted var(--parchment3); }
+.fi-caminho-lista em { color: var(--text-dim); font-size: 0.8rem; }
+
+/* a ressalva e a conta da herança: linha própria, menor */
+.fi-cam-ressalva,
+.fi-cam-conta,
+.fi-cam-heranca {
+  display: block;
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+.fi-cam-heranca strong { color: var(--ink); }
+.fi-cam-heranca--vazia { font-style: italic; }
+.fi-cam-linhagem { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.35rem; }
+.fi-cam-linhagem .fi-cam-heranca { flex: 1 1 100%; }
+.fi-txt--linhagem { width: auto; flex: 0 1 11rem; font-size: 0.84rem; }
+
+/* o aviso dentro do painel: o atributo da CD que não é o do Caminho, e
+   o bônus de tamanho contado duas vezes. Avisa e não impede, como o
+   resto da ficha. */
+.fi-cam-aviso {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--carmim);
+}
+.fi-cam-aviso strong { color: var(--carmim); }
+.fi-cam-aviso .fi-mini { margin-left: 0.2rem; }
+
+/* "escolha o Caminho": o mesmo fio dourado dos temporários */
+.fi-nota--pedindo {
+  border-left: 3px solid var(--gold);
+  padding-left: 0.5rem;
+  font-style: normal;
+}
+.fi-nota--pedindo strong { color: var(--rust); }
+
+/* a linha do tamanho e a do PM de duas classes conjuradoras */
+.fi-nota--tamanho,
+.fi-nota--pm {
+  margin-top: 0.35rem;
+  font-style: normal;
+  border-left: 3px solid var(--parchment3);
+  padding-left: 0.5rem;
+}
+.fi-nota--tamanho strong,
+.fi-nota--pm strong { color: var(--ink); }
+
+/* o selo do modificador de tamanho na perícia */
+.fi-selo--tam { color: var(--gold-deep); border-color: var(--gold-dim); }
+
+/* o ✊ da manobra, na linha de Luta */
+.fi-per-manobra {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  padding: 0.1rem 0.3rem;
+  white-space: nowrap;
+}
+/* com modificador de tamanho ele deixa de ser "só a Luta" */
+.fi-per-manobra--mod { color: var(--gold-deep); border-color: var(--gold-dim); }
+
+/* no celular a linha do arcanista tem um controle a mais que as outras
+   (o Caminho). A regra de 560px já faz cada classe virar uma linha
+   inteira e os <select> dividirem o espaço — com três controles e o ✕
+   isso aperta demais, então a linha quebra e o Caminho desce sozinho. */
+@media (max-width: 560px) {
+  .fi-classe { flex-wrap: wrap; }
+  .fi-classe .fi-sel--caminho { flex: 1 1 100%; }
+}
