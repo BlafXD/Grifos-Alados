@@ -250,9 +250,43 @@
   // mesa + o grupo. Cada criatura rola 1d20 + o modificador dela; os
   // jogadores entram sem valor, para o mestre preencher com o que cada
   // um rolou.
+  //  O NOME DA CAMPANHA, não o id dela. `minhasMesas` é id → nome, e é
+  //  o que o mestre reconhece: «Penitência de Azgher» diz algo,
+  //  `penitencia-de-azgher` não. Sem o nome à mão, fica o id, que ainda
+  //  é melhor do que nada (o mesmo acordo do rotuloDaMesa do
+  //  js/mesa-de-hoje.js).
+  function rotuloDaCampanha(id) {
+    if (!id) return '';
+    const minhas = (window.GA_Mesa && window.GA_Mesa.minhasMesas && window.GA_Mesa.minhasMesas()) || {};
+    return minhas[id] || id;
+  }
+
+  //  O AVISO QUE RESOLVE, em vez de só reclamar (02/11/2026). Quando a
+  //  cena foi descartada por ser de outra campanha, o mestre tem duas
+  //  saídas, e as duas cabem num botão: ir para a campanha dela, ou
+  //  trazer a sessão para esta. A campanha é da SESSÃO, não da cena —
+  //  então o botão diz o nome da sessão e quantas cenas vêm junto, e
+  //  pergunta antes.
+  let largadaNaTela = null;      // a sessão que o último "montar" descartou
+
+  function botoesDoRecado() {
+    const l = largadaNaTela;
+    if (!l || !l.sessaoId) return '';
+    const nome = rotuloDaCampanha(l.mesa) || l.mesa;
+    let h = '<span class="ga-ini-recado-acoes">';
+    if (l.mesa && window.GA_Sala && window.GA_Sala.link) {
+      h += '<a class="ga-ini-btn" href="' + esc(window.GA_Sala.link(l.mesa)) + '">↪ Ir para «' + esc(nome) + '»</a>';
+    }
+    h += '<button type="button" class="ga-ini-btn" data-ini="trazer-sessao" ' +
+         'title="Muda a campanha da sessão «' + esc(l.sessao) + '» para esta mesa. Dá para desfazer no seletor da sessão, no ⚔ Combates.">' +
+         '⇤ Trazer «' + esc(l.sessao) + '» para cá</button>';
+    return h + '</span>';
+  }
+
   function montar() {
     if (!mando()) return;
     recado = '';
+    largadaNaTela = null;
     const cena = window.GA_Combates ? window.GA_Combates.cenaParaIniciativa() : null;
     const novas = [];
 
@@ -303,14 +337,40 @@
     // e ele viraria o `uid` da linha
     grupo().forEach(n => jogador(n, '', fichaDaLinha({ tipo: 'jogador', nome: n }, fichas)));
 
-    if (!novas.length) {
+    //  NUNCA MONTAR SEM CRIATURA E EM SILÊNCIO (02/11/2026).
+    //
+    //  Era aqui o defeito que fez as criaturas do mestre "sumirem": o
+    //  recado só existia quando a lista saía VAZIA. Mas a lista quase
+    //  nunca sai vazia — basta UM membro na mesa (o próprio mestre
+    //  conta) para ela ter uma linha. Então o mestre clicava em
+    //  "⚔ Iniciativa", a lista nascia só com os jogadores, as criaturas
+    //  não vinham, e **nada na tela dizia por quê**: a explicação estava
+    //  escrita e era jogada fora, e a prévia que avisaria some assim que
+    //  passa a existir lista. Um clique, e o combate inteiro evaporava
+    //  sem uma palavra.
+    //
+    //  Agora o aviso é sobre AS CRIATURAS, não sobre a lista. Se a cena
+    //  não trouxe nenhuma, ele é dito — com lista ou sem ela.
+    if (!criaturas.length) {
+      const largada = (cena && cena.largada) || null;
+      largadaNaTela = largada;
       recado = (cena && cena.foraDaCampanha)
-        ? 'A cena que estava marcada como "narrando" é de outra campanha — por segurança, ela não entra aqui. Escolha, no Painel de combate, uma cena desta campanha, ou escreva os nomes aqui embaixo.'
+        ? 'Nenhuma criatura entrou: a cena' +
+          (largada && largada.cena ? ' «' + largada.cena + '»' : '') +
+          ' que está marcada como "narrando" é de OUTRA campanha' +
+          (largada && largada.mesa ? ' («' + rotuloDaCampanha(largada.mesa) + '»)' : '') +
+          (largada && largada.criaturas
+            ? ' — as ' + largada.criaturas + ' criaturas dela estão lá, inteiras, e não se perderam.'
+            : '.') +
+          ' Abra aquela campanha, ou escolha uma cena desta no Painel de combate.'
         : (cena && cena.nome)
-        ? 'A cena "' + cena.nome + '" não tem criaturas. Escreva aqui embaixo quem entra no combate.'
-        : 'Nenhuma cena para montar. Escolha a cena que você está narrando no Painel de combate — ou escreva os nomes aqui embaixo.';
-      return render();
+        ? 'Nenhuma criatura entrou: a cena «' + cena.nome + '» está sem criaturas. ' +
+          'Adicione-as no Painel de combate, ou escreva os nomes aqui embaixo.'
+        : 'Nenhuma criatura entrou: não há cena desta campanha para montar. ' +
+          'Marque a cena que você está narrando no Painel de combate — ou escreva os nomes aqui embaixo.';
     }
+
+    if (!novas.length) return render();
     gravarLista(novas);
   }
 
@@ -515,6 +575,21 @@
       visivel = false; guardar(VISIVEL_KEY, '0');
       return render();
     }
+    if (acao === 'trazer-sessao') {
+      const l = largadaNaTela;
+      const C = window.GA_Combates;
+      if (!l || !l.sessaoId || !C || !C.trazerSessaoPara) return;
+      const aqui = (mesa && mesa.mesaId) || '';
+      if (!aqui) return;
+      const quantas = l.cenas === 1 ? 'a cena dela' : 'as ' + l.cenas + ' cenas dela';
+      if (!confirm('Trazer a sessão «' + l.sessao + '» para esta campanha?\n\n' +
+                   'Ela sai de «' + (rotuloDaCampanha(l.mesa) || 'sem campanha') + '» e vem com ' +
+                   quantas + '. Nada é apagado, e dá para desfazer no ' +
+                   'seletor da sessão, no ⚔ Combates.')) return;
+      const r = C.trazerSessaoPara(l.sessaoId, aqui);
+      if (!r) return;
+      return montar();              // agora a cena serve: monta de novo, já com as criaturas
+    }
     if (acao === 'montar') {
       // remontar zera o combate em andamento — pergunta antes
       if (quantas() && !confirm('Montar de novo apaga a ordem deste combate e rola tudo outra vez. Continuar?')) return;
@@ -684,8 +759,17 @@
               (seg.virou ? ' <em>— e a rodada vira</em>' : '') + '</p>'
             : '')
         : '<p class="ga-ini-vazio">' + esc(recado ||
-            'Nenhuma iniciativa rolada. Monte com a cena que você está narrando.') + '</p>';
+            'Nenhuma iniciativa rolada. Monte com a cena que você está narrando.') +
+          (mando() ? botoesDoRecado() : '') + '</p>';
       if (mando()) {
+        //  O RECADO ACOMPANHA A LISTA (02/11/2026). Ele só aparecia no
+        //  lugar da lista vazia — e a lista com jogadores e sem criatura
+        //  nenhuma, que é justamente o caso em que ele é necessário,
+        //  ficava muda. Agora ele vem junto, por cima dos botões, e só
+        //  para quem monta: os jogadores não precisam ver isto.
+        if (temLista && recado) {
+          corpo += '<p class="ga-ini-vazio ga-ini-vazio--alerta">⚠ ' + esc(recado) + botoesDoRecado() + '</p>';
+        }
         // Prévia de qual cena vai entrar — ANTES de montar, não depois. É o
         // que deixa ver, de cara, se o que vai subir para a mesa é a cena
         // certa (inclusive avisar se a "narrada" é de outra campanha), em

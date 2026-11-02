@@ -318,3 +318,30 @@
   .ga-coluna-mesa { left: 0.4rem; right: 0.4rem; width: auto; bottom: 3.2rem; }
   .ga-ini-lista { max-height: 30vh; }
 }
+
+/* ── O AVISO QUE NÃO PODE PASSAR BATIDO ────────────────────────────
+   02/11/2026. O «nenhuma criatura entrou» aparece agora JUNTO com a
+   lista (antes só existia no lugar da lista vazia, e por isso o mestre
+   nunca o via). Como é aviso, ele não usa o --text-dim do vazio comum:
+   leva tinta cheia, fundo e um talho carmim do lado, para o olho achar.
+   Pergaminho e tinta invertem juntos no modo noturno — a regra das
+   cores do site. */
+.ga-ini-vazio--alerta {
+  font-style: normal;
+  color: var(--ink);
+  background: var(--parchment2);
+  border-left: 3px solid var(--carmim);
+  border-top: 1px solid var(--parchment3);
+  padding: 0.5rem 0.6rem;
+  line-height: 1.4;
+}
+
+/* Os botões do aviso: ir para a campanha da cena, ou trazer a sessão
+   para cá. Ficam na linha de baixo do próprio aviso. */
+.ga-ini-recado-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.45rem;
+}
+.ga-ini-recado-acoes .ga-ini-btn { text-decoration: none; }

@@ -927,9 +927,14 @@
     }
     function inscrever() {
       if (window.GA_ehJogador && window.GA_ehJogador()) return;
+      //  UMA VAGA POR CAMPANHA (02/11/2026). Mesmo caso das Bases, e
+      //  pela mesma razão: a chave local já era por campanha e o nome da
+      //  área não, então a conta guardava só a última campanha aberta.
+      //  O porquê, a prova em quatro passos e a decisão de NÃO migrar o
+      //  nó antigo estão escritos no js/bases.js.
       const inscricao = {
-        nome: 'viagens',
-        rotulo: 'Viagens',
+        nome: 'viagens' + (GA_Sala.id ? '@' + GA_Sala.id : ''),
+        rotulo: 'Viagens' + (GA_Sala.id ? ' — campanha «' + GA_Sala.id + '»' : ''),
         chave: STORAGE_KEY,
         politica: 'perguntar',
         paraGuardar: semEstadoDeTela,

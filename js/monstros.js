@@ -1291,12 +1291,35 @@
       `<button class="mz-add mz-add--cena" data-acao="add-cena" data-s="${si}">＋ Adicionar Cena</button>`;
 
     // a que campanha esta sessão pertence (só aparece se houver alguma)
+    //  A CAMPANHA DA SESSÃO PASSOU A SE DENUNCIAR (02/11/2026). Ela
+    //  decide se as criaturas entram ou não na iniciativa — e vivia num
+    //  seletor neutro, do mesmo cinza de tudo. O mestre que montasse o
+    //  combate na campanha errada não via nada aqui, e lá a iniciativa
+    //  montava sem as criaturas (ver js/iniciativa.js). Agora o seletor
+    //  muda de cara conforme o caso:
+    //    • igual à campanha conectada → calmo, como sempre foi;
+    //    • SEM campanha → âmbar: não é erro, serve a todas, mas é bom
+    //      saber que esta sessão aparece em qualquer mesa;
+    //    • de OUTRA campanha → carmim: as criaturas daqui NÃO vão entrar
+    //      na iniciativa da mesa que está aberta agora.
     const camps = campanhasConhecidas();
     const idsCamp = Object.keys(camps);
+    const conectadaAgora = (window.GA_Mesa && window.GA_Mesa.mesaId()) || '';
+    let estadoCamp = '', diga = 'A campanha desta sessão';
+    if (!s.mesa) {
+      estadoCamp = ' mz-camp-sel--sem';
+      diga = 'Sem campanha: esta sessão aparece em TODAS as mesas, e as criaturas dela ' +
+             'entram na iniciativa de qualquer uma.';
+    } else if (conectadaAgora && s.mesa !== conectadaAgora) {
+      estadoCamp = ' mz-camp-sel--fora';
+      diga = 'Esta sessão é da campanha «' + (camps[s.mesa] || s.mesa) + '», e você está em «' +
+             (camps[conectadaAgora] || conectadaAgora) + '». As criaturas dela NÃO entram na ' +
+             'iniciativa desta mesa — troque aqui para trazê-la.';
+    }
     const selCampanha = idsCamp.length ? `
-          <select class="mz-camp-sel" data-campo="mesa-sessao" data-s="${si}"
-                  title="A campanha desta sessão">
-            <option value="">— sem campanha —</option>
+          <select class="mz-camp-sel${estadoCamp}" data-campo="mesa-sessao" data-s="${si}"
+                  title="${esc(diga)}">
+            <option value="">— sem campanha (vale em todas) —</option>
             ${idsCamp.map(id => `<option value="${esc(id)}"${s.mesa === id ? ' selected' : ''}>${esc(camps[id])}</option>`).join('')}
           </select>` : '';
 
@@ -7647,8 +7670,21 @@
 
     let ref = cenaNarradaRef();
     let foraDaCampanha = false;
+    //  DE ONDE ELA ERA, para o aviso poder dizer. Sem isto a iniciativa
+    //  só sabia "não é desta campanha" — e quem está perdido entre três
+    //  mesas precisa é do NOME da campanha certa para onde ir.
+    let largada = null;
     if (ref && !compativel(dados.sessoes[ref.si])) {
       foraDaCampanha = true;   // a cena "narrada" é de outra campanha — ignora
+      const s = dados.sessoes[ref.si];
+      const c = s && s.cenas[ref.ci];
+      largada = { mesa: (s && s.mesa) || '', cena: (c && c.nome) || 'Cena',
+                  criaturas: ((c && c.criaturas) || []).length,
+                  // a campanha é da SESSÃO, não da cena — então trazer a
+                  // cena é trazer a sessão inteira, e o aviso tem de
+                  // dizer isso com o nome e o tamanho dela
+                  sessaoId: (s && s.id) || '', sessao: (s && s.nome) || 'Sessão',
+                  cenas: ((s && s.cenas) || []).length };
       ref = null;
     }
     if (!ref) {
@@ -7661,17 +7697,22 @@
         if (candidatas[i].s.cenas.length) { ref = { si: candidatas[i].si, ci: 0 }; break; }
       }
     }
-    return { ref: ref, foraDaCampanha: foraDaCampanha };
+    return { ref: ref, foraDaCampanha: foraDaCampanha, largada: largada };
   }
   function cenaParaIniciativa() {
     const r = refCenaCompativel();
     const ref = r.ref, foraDaCampanha = r.foraDaCampanha;
-    if (!ref) return foraDaCampanha ? { nome: null, criaturas: [], foraDaCampanha: true } : null;
+    //  O que a iniciativa recebe quando não há cena que sirva. O
+    //  `largada` conta de onde era a cena descartada — ver o aviso do
+    //  js/iniciativa.js, que desde 02/11/2026 nunca cala.
+    const nada = { nome: null, criaturas: [], foraDaCampanha: foraDaCampanha, largada: r.largada || null };
+    if (!ref) return foraDaCampanha ? nada : null;
     const c = dados.sessoes[ref.si].cenas[ref.ci];
-    if (!c) return foraDaCampanha ? { nome: null, criaturas: [], foraDaCampanha: true } : null;
+    if (!c) return foraDaCampanha ? nada : null;
     return {
       nome: c.nome || 'Cena',
       foraDaCampanha: false,
+      largada: null,
       criaturas: (c.criaturas || []).map(cr => ({
         nome: cr.nome || '(criatura sem nome)',
         // o modificador de Iniciativa da ficha; em T20 ele é o valor de
@@ -7714,10 +7755,56 @@
     });
     return { sessoes: sessoes, cenas: cenas, criaturas: criaturas };
   }
+  //  TRAZER UMA SESSÃO PARA A CAMPANHA ABERTA (02/11/2026). É o que o
+  //  aviso da iniciativa oferece quando descarta uma cena por ser de
+  //  outra campanha: em vez de mandar o mestre caçar o seletor no meio
+  //  do ⚔ Combates, ele resolve dali. Muda UM campo (`s.mesa`) e é
+  //  desfazível pelo mesmo seletor — por isso não guarda versão
+  //  anterior nem pede rede de segurança.
+  function trazerSessaoPara(sessaoId, mesaId) {
+    const alvo = String(mesaId || '');
+    const s = (dados.sessoes || []).find(x => x && x.id === sessaoId);
+    if (!s || !alvo) return null;
+    const de = s.mesa || '';
+    s.mesa = alvo;
+    //  A sub-aba aberta segue a sessão: deixá-la na campanha de onde a
+    //  sessão saiu faria ela desaparecer da tela no mesmo clique.
+    if (dados.campanhaAberta && dados.campanhaAberta !== alvo) dados.campanhaAberta = alvo;
+    salvarAgora();
+    render();
+    return { nome: s.nome || 'Sessão', de: de, para: alvo, cenas: (s.cenas || []).length };
+  }
+
+  //  A LISTA DE MESAS CHEGA DEPOIS DO PRIMEIRO DESENHO (02/11/2026).
+  //  `minhasMesas()` vem do banco, e até ela chegar o seletor de
+  //  campanha de cada sessão escreve o ID («penitencia») em vez do nome
+  //  («Penitência de Azgher»). Dava para viver com isso enquanto o
+  //  seletor era decoração; agora que ele é o aviso de que as criaturas
+  //  não vão entrar na iniciativa, o mestre precisa LER o nome. Então a
+  //  aba se redesenha quando a lista muda — e só quando ela muda, que
+  //  redesenhar o Combates inteiro a cada piscada do banco seria caro.
+  (function () {
+    let visto = '';
+    function olhar() {
+      if (!window.GA_Mesa || !window.GA_Mesa.aoMudar) return false;
+      window.GA_Mesa.aoMudar(function () {
+        let agora = '';
+        try { agora = JSON.stringify(window.GA_Mesa.minhasMesas() || {}); } catch (e) {}
+        agora += '|' + ((window.GA_Mesa.mesaId && window.GA_Mesa.mesaId()) || '');
+        if (agora === visto) return;
+        visto = agora;
+        try { render(); } catch (e) { console.warn('[monstros] redesenho:', e && e.message); }
+      });
+      return true;
+    }
+    if (!olhar()) document.addEventListener('DOMContentLoaded', olhar, { once: true });
+  })();
+
   window.GA_Combates = {
     cenaParaIniciativa: cenaParaIniciativa,
     soltarDaCampanha: soltarDaCampanha,
     contarDaCampanha: contarDaCampanha,
+    trazerSessaoPara: trazerSessaoPara,
   };
 
   //  ── FIXAR TODA A CENA NO PAINEL (17/10/2026) ───────────────────

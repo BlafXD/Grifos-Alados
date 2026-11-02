@@ -812,9 +812,29 @@
     }
     function inscrever() {
       if (window.GA_ehJogador && window.GA_ehJogador()) return;
+      //  UMA VAGA POR CAMPANHA (02/11/2026) — era uma só para todas.
+      //
+      //  A chave LOCAL sempre foi por campanha (`GA_Sala.chave` →
+      //  `grifosAlados.bases@nuevosol`), mas o nome da área era
+      //  `'bases'` seco, e é ele que vira `usuarios/<uid>/gaveta/<nome>`.
+      //  Resultado, provado passo a passo: abrir a Penitência
+      //  SUBSTITUÍA na conta as bases do Nuevo Sol, sem tarja nenhuma —
+      //  a conta guardava sempre a última campanha aberta. E num
+      //  aparelho novo, abrir a Penitência trazia a base do Nuevo Sol.
+      //  Nada se perdia para sempre (o `mesas/<id>/dados` tem a cópia
+      //  certa de cada campanha, e o 📡 a devolve a quem chega vazio),
+      //  mas a conta entregava a campanha errada.
+      //
+      //  SEM MIGRAÇÃO, DE PROPÓSITO. O nó antigo `gaveta/bases` tem o
+      //  conteúdo de UMA campanha e não diz de qual — ler dele seria
+      //  chutar. Ele fica onde está, intacto, e passa a ser a vaga do
+      //  HUB (fora de campanha, `GA_Sala.id` é vazio e o nome volta a
+      //  ser `'bases'`). As vagas novas se enchem sozinhas: na primeira
+      //  abertura de cada campanha o banco não conhece a área, e a
+      //  gaveta sobe a cópia daqui — que é a certa daquela campanha.
       const inscricao = {
-        nome: 'bases',
-        rotulo: 'Bases do grupo',
+        nome: 'bases' + (GA_Sala.id ? '@' + GA_Sala.id : ''),
+        rotulo: 'Bases do grupo' + (GA_Sala.id ? ' — campanha «' + GA_Sala.id + '»' : ''),
         chave: STORAGE_KEY,
         politica: 'perguntar',
         paraGuardar: semEstadoDeTela,

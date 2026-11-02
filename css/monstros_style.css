@@ -3375,6 +3375,24 @@ color: var(--ink-faded); margin-right: 0.2rem;
 }
 .mz-camp-sel:hover { border-color: var(--ink-faded); color: var(--ink); }
 
+/* 02/11/2026 — o seletor passou a se denunciar. É ele que decide se as
+   criaturas desta sessão entram na iniciativa da mesa aberta, e vivia
+   do mesmo cinza de todo o resto. Âmbar = sem campanha (serve a todas,
+   e é bom saber); carmim = de OUTRA campanha, e aí as criaturas NÃO
+   entram aqui. Tinta e pergaminho invertem juntos no noturno. */
+.mz-camp-sel--sem {
+  color: var(--ink);
+  border-color: var(--gold-dim);
+  background: var(--gold-pale);
+}
+.mz-camp-sel--fora {
+  color: var(--ink);
+  border-color: var(--carmim);
+  border-left-width: 3px;
+  background: var(--parchment2);
+  font-weight: 600;
+}
+
 /* ── A FICHA INTEIRA EM MODO LEITURA (📖, 30/10/2026) ──────────────
    O mesmo overlay do "📖 Ler" dos campos, só que com a criatura toda no
    formato do statblock do livro: uma linha por bloco, rótulo em
