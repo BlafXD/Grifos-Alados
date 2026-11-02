@@ -103,25 +103,44 @@
   // O arquivo é a base; o banco entra por cima. Uma campanha publicada
   // manda no nome e nas notícias (é a versão viva dela); as que só
   // existem no banco entram no fim, na ordem em que o banco as devolve.
+  //  ARMADILHA DE 02/11/2026, com a gazeta preguiçosa. Uma campanha da
+  //  vitrine chega primeiro SÓ COM O NOME (`semCorpo`), porque as
+  //  notícias dela só descem quando a aba é aberta. Se o stub entrasse
+  //  por cima da campanha do arquivo, as notícias do `noticias-data.js`
+  //  piscariam para fora da tela — e ficariam fora de vez, se aquela
+  //  aba nunca fosse aberta. Então o stub NÃO mexe no miolo: ele só
+  //  carimba de quem é a campanha e se ela está na vitrine.
   function juntarComAMesa() {
     // as mesmas referências, não cópias: o que for editado numa campanha
     // do arquivo cai no arquivo na hora, e não se perde no próximo eco
     const saida = doArquivo.campanhas.slice();
     Object.keys(remotas).forEach(id => {
       const r = remotas[id] || {};
-      const viva = {
-        id: id,
-        nome: r.nome || id,
-        anos: paraLista(r.noticias).map(a => ({
-          ano: (a && a.ano) || '',
-          noticias: paraLista(a && a.noticias),
-        })),
-        hoje: hojeDe(r.hoje),
+      const i = saida.findIndex(c => c.id === id);
+      const antes = i >= 0 ? saida[i] : null;
+      const carimbo = {
         daMesa: true,
         dono: r.dono || '',
         autor: r.autor || '',
+        publica: !!r.publica,
+        semCorpo: !!r.semCorpo,
       };
-      const i = saida.findIndex(c => c.id === id);
+      const viva = r.semCorpo
+        ? Object.assign({
+            id: id,
+            nome: r.nome || (antes && antes.nome) || id,
+            anos: (antes && antes.anos) || [],
+            hoje: (antes && antes.hoje) || null,
+          }, carimbo)
+        : Object.assign({
+            id: id,
+            nome: r.nome || id,
+            anos: paraLista(r.noticias).map(a => ({
+              ano: (a && a.ano) || '',
+              noticias: paraLista(a && a.noticias),
+            })),
+            hoje: hojeDe(r.hoje),
+          }, carimbo);
       if (i >= 0) saida[i] = viva; else saida.push(viva);
     });
     return { campanhas: saida };
@@ -157,8 +176,25 @@
 
   function campanhaAtual() { return dados.campanhas[campAtiva] || null; }
 
+  //  `?gazeta=<id>` MANDA MAIS do que a memória. Quem chega por esse
+  //  link está sendo levado a uma gazeta oculta — abrir a última que
+  //  este navegador leu seria mostrar a campanha errada a quem acabou
+  //  de receber o convite de outra.
+  function idDoEndereco() {
+    try {
+      const g = (new URLSearchParams(location.search).get('gazeta') || '').trim();
+      if (!g) return '';
+      return window.GA_Sala ? window.GA_Sala.idDe(g) : g.toLowerCase();
+    } catch (e) { return ''; }
+  }
+
   // Reabre a última campanha que o mestre estava lendo.
   function indiceCampanhaSalva() {
+    const pedida = idDoEndereco();
+    if (pedida) {
+      const j = dados.campanhas.findIndex(c => c.id === pedida);
+      if (j >= 0) return j;
+    }
     let id = '';
     try { id = localStorage.getItem(CAMP_KEY) || ''; } catch (e) {}
     const i = dados.campanhas.findIndex(c => c.id === id);
@@ -197,12 +233,18 @@
   //  campanha desfaria essas mudanças na tela. A gazeta de outra pessoa
   //  fica de fora: ela é dela, e o meu arquivo não a carrega.
   function guardarNoArquivo() {
+    const jaNoArquivo = {};
+    doArquivo.campanhas.forEach(c => { jaNoArquivo[c.id] = true; });
     doArquivo = {
       campanhas: dados.campanhas
         // fica de fora só o que eu SEI ser de outra pessoa. Deslogado
         // não se sabe de ninguém — e perder a própria gazeta do backup
         // por causa disso seria bem pior do que carregar uma a mais.
         .filter(c => !(c.dono && meuUid && c.dono !== meuUid))
+        // e fica de fora a campanha da vitrine que ainda é só um nome:
+        // salvá-la no arquivo gravaria uma campanha VAZIA de outra
+        // pessoa. A que já estava no arquivo continua, com o miolo dela.
+        .filter(c => !(c.semCorpo && !jaNoArquivo[c.id]))
         // o "hoje" só entra no arquivo quando existe: campanha sem data
         // continua escrita exatamente como antes
         .map(c => Object.assign({ id: c.id, nome: c.nome, anos: c.anos }, c.hoje ? { hoje: c.hoje } : {})),
@@ -289,6 +331,7 @@
   //  Chamado pelo noticias-mesa.js a cada mudança em `campanhas`.
   // ══════════════════════════════════════════════════════════════════
   const pendentes = {};        // id → tem edição minha ainda subindo
+  let jaFuiAoEndereco = false; // o `?gazeta=` já escolheu a aba (uma vez só)
 
   //  Comparação estável: o Firebase devolve as chaves em outra ordem, e
   //  um JSON.stringify cru acharia diferença onde não há — o que faria
@@ -329,9 +372,22 @@
       if (i >= 0) dados.campanhas[i] = Object.assign(dados.campanhas[i], minhas[id]);
     });
 
+    //  A GAZETA DO LINK CHEGA DEPOIS. No carregamento ela ainda não
+    //  existe (a tela nasce do arquivo, e o índice do banco só volta
+    //  um instante depois) — então a escolha do `?gazeta=` tem de ser
+    //  feita aqui, na primeira vez que ela aparecer. Uma vez só: daí em
+    //  diante quem manda é a aba que a pessoa clicou.
+    let foiPeloEndereco = false;
+    if (!jaFuiAoEndereco) {
+      const pedida = idDoEndereco();
+      const j = pedida ? dados.campanhas.findIndex(c => c.id === pedida) : -1;
+      if (j >= 0) { campAtiva = j; jaFuiAoEndereco = true; foiPeloEndereco = true; }
+    }
+
     // a campanha aberta continua aberta, mesmo que a ordem tenha mudado
     const novo = dados.campanhas.findIndex(c => c.id === idAberta);
-    if (novo >= 0) campAtiva = novo;
+    if (foiPeloEndereco) { /* o link já escolheu */ }
+    else if (novo >= 0) campAtiva = novo;
     else if (campAtiva >= dados.campanhas.length) campAtiva = Math.max(0, dados.campanhas.length - 1);
 
     if (canon(dados.campanhas.map(c => ({ id: c.id, m: miolo(c) }))) !== antes) renderizar();
@@ -349,8 +405,14 @@
     if (!e) return;
     if (e.erro) {
       esperandoPublicar = false;
+      //  COM A GAZETA OCULTA, A RECUSA TEM DUAS CAUSAS e elas são
+      //  indistinguíveis daqui: a gazeta é de outra pessoa, ou o NOME
+      //  que você escolheu deu no mesmo id de uma campanha que você não
+      //  pode ver (é o preço de não dar para listar as campanhas).
+      //  Então o recado tem de citar as duas.
       mostrarToast('⚠ ' + (/permission/i.test(e.erro)
-        ? 'o banco recusou: esta gazeta não é sua' : e.erro));
+        ? 'o banco recusou: esta gazeta é de outra pessoa — ou o nome dela já está tomado. Tente outro nome.'
+        : e.erro));
       return;
     }
     if (!Object.keys(pendentes).length) {
@@ -405,8 +467,16 @@
 
     const camp = campanhaAtual();
 
+    //  A ABA ABERTA É QUEM PEDE O CORPO. A vitrine entrega só os nomes;
+    //  as notícias de uma campanha descem quando ela é esta aqui. Dizer
+    //  isto a cada desenho é de propósito — o módulo da mesa ignora o
+    //  pedido repetido, e assim nenhuma troca de aba fica sem corpo.
+    if (camp && mesaNoticias() && mesaNoticias().abrir) mesaNoticias().abrir(camp.id);
+
     if (!camp) {
       wrapper.appendChild(avisoVazio('Nenhuma campanha cadastrada.'));
+    } else if (camp.semCorpo && !camp.anos.length) {
+      wrapper.appendChild(avisoVazio('Abrindo a gazeta de ' + camp.nome + '…'));
     } else if (!camp.anos.length) {
       wrapper.appendChild(avisoVazio('Nenhuma notícia em ' + camp.nome + '.'));
     } else {
@@ -514,19 +584,27 @@
   //  foram coladas no console do Firebase.
   function recadoDoBanco(err) {
     if (/permission/i.test(err)) {
-      return 'o banco recusou. Se a gazeta ao vivo é nova aqui, falta publicar as regras ' +
-             'do <strong>MODO-JOGADOR.md</strong> no console do Firebase — o nó <code>campanhas</code>.';
+      return 'o banco recusou. Se a gazeta ao vivo é nova aqui, falta publicar as regras do ' +
+             '<strong>firebase-rules.json</strong> no console do Firebase — os nós ' +
+             '<code>campanhas</code> e <code>gazeta</code>.';
     }
     return esc(err);
   }
 
   function textoDaLinha(e, c) {
-    const doBanco = !!remotas[c.id];
-    const dono    = doBanco ? (remotas[c.id].dono || '') : '';
-    const autor   = doBanco ? (remotas[c.id].autor || '') : '';
-    const minha   = doBanco && dono && dono === e.meuUid;
-    const orfa    = doBanco && !dono;
-    const erro    = e.erro ? '<span class="nc-mesa-erro">⚠ ' + recadoDoBanco(e.erro) + '</span>' : '';
+    const r        = remotas[c.id];
+    const doBanco  = !!r;
+    //  SÓ SE SABE DE QUEM É quando o corpo desceu. A campanha que
+    //  chegou pela vitrine é um stub: dono vazio ali não quer dizer
+    //  "órfã", quer dizer "ainda não sei" — e oferecer "publicar" em
+    //  cima dela seria oferecer o que o banco vai recusar.
+    const sabido   = doBanco && !r.semCorpo;
+    const dono     = sabido ? (r.dono || '') : '';
+    const autor    = doBanco ? (r.autor || '') : '';
+    const minha    = sabido && dono && dono === e.meuUid;
+    const orfa     = sabido && !dono;
+    const publica  = doBanco && !!r.publica;
+    const erro     = e.erro ? '<span class="nc-mesa-erro">⚠ ' + recadoDoBanco(e.erro) + '</span>' : '';
 
     if (!edicaoAtiva) {
       if (!doBanco) return '';                      // gazeta do arquivo: o leitor não precisa saber
@@ -534,26 +612,99 @@
         (autor && !minha ? ' · escrita por <strong>' + esc(autor) + '</strong>' : '');
     }
 
+    //  O SELO DA VITRINE, e o link. A gazeta publicada nasce OCULTA: ela
+    //  existe no banco, serve à mesa de quem a escreveu, e só aparece
+    //  para o mundo quando o dono do site a aprova. Quem escreve precisa
+    //  de duas coisas aqui — saber em qual dos dois estados está, e ter
+    //  o link para mandar aos jogadores.
+    //  A LINHA 📡 É UM FLEX, e `<br>` não quebra dentro de um. Por isso
+    //  o selo é um <span> com `flex: 1 1 100%` (o mesmo truque do
+    //  nc-mesa-erro, que já estava aqui): é ele que desce de linha.
+    function selo() {
+      if (!sabido && !publica) return '';
+      const link = '<button type="button" class="nc-btn nc-btn-sm" data-acao="camp-link" ' +
+        'title="Copia o endereço desta gazeta: quem abrir o link vê as notícias, mesmo ela estando oculta">' +
+        '🔗 Copiar o link</button>';
+      const dono_ = e.souDono
+        ? ' <button type="button" class="nc-btn nc-btn-sm' + (publica ? ' nc-btn-danger' : ' nc-btn-add') +
+          '" data-acao="camp-vitrine">' + (publica ? '🙈 Tirar da vitrine' : '🌟 Aprovar na vitrine') + '</button>'
+        : '';
+      if (publica) {
+        return '<span class="nc-mesa-selo">🌟 <strong>Na vitrine</strong> — ela aparece para quem ' +
+          'abre o site. ' + link + dono_ + '</span>';
+      }
+      return '<span class="nc-mesa-selo">🔒 <strong>Oculta</strong> — não aparece na lista de ' +
+        'ninguém; só quem recebe o link entra. ' + link + dono_ +
+        (minha && !e.souDono
+          ? ' <em>Quer que ela entre na vitrine dos Grifos? Fale com o dono do site.</em>' : '') +
+        '</span>';
+    }
+
     if (!e.usuario) {
       return '📡 Esta gazeta está <strong>só neste navegador</strong>. ' +
-        'Entre com o Google na aba <strong>🎲 Mesa</strong> para publicá-la — aí ela aparece ' +
-        'para quem abrir o site, sem passar por commit.' + erro;
+        'Entre com o Google na aba <strong>🎲 Mesa</strong> para publicá-la — aí ela fica ' +
+        'de pé no banco, com link para os seus jogadores, sem passar por commit.' + selo() + erro;
+    }
+    // o corpo ainda não desceu: não se promete nem se oferece nada
+    if (doBanco && !sabido) {
+      return '📡 Abrindo a gazeta de <strong>' + esc(c.nome) + '</strong> no banco…' + selo() + erro;
     }
     if (doBanco && !minha && !orfa) {
       return '📡 A gazeta de <strong>' + esc(c.nome) + '</strong> é de <strong>' +
         esc(autor || 'outra pessoa') + '</strong>. O que você mudar aqui fica <strong>só neste ' +
-        'navegador</strong> — o banco não vai aceitar.' + erro;
+        'navegador</strong> — o banco não vai aceitar.' + selo() + erro;
     }
     if (minha) {
-      return '📡 <strong>No ar</strong>, e é sua: cada mudança sobe sozinha e aparece para quem ' +
-        'estiver com o site aberto. ' +
+      return '📡 <strong>No ar</strong>, e é sua: cada mudança sobe sozinha e aparece na hora ' +
+        'para quem estiver com o link aberto. ' +
         '<button type="button" class="nc-btn nc-btn-sm nc-btn-danger" data-acao="camp-tirar-do-ar">' +
-        '✕ Tirar do ar</button>' + erro;
+        '✕ Tirar do ar</button>' + selo() + erro;
     }
     return '📡 Esta gazeta ainda <strong>não está no ar</strong>. ' +
       '<button type="button" class="nc-btn nc-btn-sm nc-btn-add" data-acao="camp-publicar">' +
-      '📡 Publicar esta gazeta</button>' +
-      (orfa ? ' <em>(ela existe no banco sem dono — publicar é assumi-la)</em>' : '') + erro;
+      '📡 Publicar esta gazeta</button> <em>(ela nasce <strong>oculta</strong>: só quem receber ' +
+      'o seu link vê)</em>' +
+      (orfa ? ' <em>— ela existe no banco sem dono, e publicar é assumi-la</em>' : '') + erro;
+  }
+
+  //  O link da gazeta oculta. É `?gazeta=<id>`, e vale nas duas páginas:
+  //  colado no index.html abre a bancada do mestre naquela campanha, e
+  //  no jogadores.html abre a visão deles.
+  function copiarLink() {
+    const c = campanhaAtual();
+    const m = mesaNoticias();
+    if (!c || !m || !m.linkDa) return;
+    const url = m.linkDa(c.id, 'index.html');
+    const diga = ok => mostrarToast(ok ? '🔗 Link copiado' : '⚠ Copie à mão: ' + url);
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => diga(true), () => diga(false));
+      } else { diga(false); }
+    } catch (err) { diga(false); }
+  }
+
+  //  A VITRINE — só o dono do site. É o carimbo de "esta campanha pode
+  //  aparecer para todo mundo": entra em `gazeta/publicas/<id>`, que é
+  //  a lista leve que todo visitante baixa.
+  function mexerNaVitrine() {
+    const c = campanhaAtual();
+    const e = mesaNoticias() ? mesaNoticias().estado() : null;
+    if (!c || !e || !e.souDono) return;
+    const r = remotas[c.id] || {};
+    const b = window.GA_Mesa ? window.GA_Mesa.db() : null;
+    if (!b) return;
+    const tirar = !!r.publica;
+    if (tirar && !confirm('Tirar "' + c.nome + '" da vitrine?\n\n' +
+        'A gazeta continua inteira no banco e continua abrindo pelo link — ' +
+        'ela só deixa de aparecer na lista de quem abre o site.')) return;
+    b.ref('gazeta/publicas/' + c.id).set(tirar ? null : {
+      nome: String(c.nome || c.id),
+      autor: String(r.autor || ''),
+      em: firebase.database.ServerValue.TIMESTAMP,
+    }).then(
+      () => mostrarToast(tirar ? '🙈 Fora da vitrine' : '🌟 Na vitrine'),
+      err => mostrarToast('⚠ ' + err.message)
+    );
   }
 
   // Publicar é a primeira subida: daí em diante toda edição sobe sozinha.
@@ -613,6 +764,9 @@
         <button class="nc-btn nc-btn-danger nc-btn-sm" data-acao="camp-del">✕ Remover Campanha</button>
       ` : ''}
       <span class="nc-camp-sep" aria-hidden="true"></span>
+      ${(window.GA_PainelDono && mesaNoticias() && mesaNoticias().estado().souDono) ? `
+        <button class="nc-btn nc-btn-sm" data-acao="painel-dono"
+          title="Tudo o que existe no banco: campanhas (suas e de estranhos), mesas, e o que está na vitrine">🛡 Painel do dono</button>` : ''}
       <button class="nc-btn nc-btn-sm" data-acao="baixar"
         title="Gera o js/noticias-data.js para você trocar na pasta e dar commit">⬇ Baixar arquivo</button>
     `;
@@ -719,6 +873,9 @@
       case 'camp-del':      removerCampanha();            break;
       case 'camp-publicar':    publicarCampanha();        break;
       case 'camp-tirar-do-ar': tirarDoAr();               break;
+      case 'camp-link':        copiarLink();              break;
+      case 'camp-vitrine':     mexerNaVitrine();          break;
+      case 'painel-dono':      if (window.GA_PainelDono) window.GA_PainelDono.abrir(); break;
       case 'baixar':        baixarArquivo();              break;
       case 'ano-up':        moverAno(ai, -1);             break;
       case 'ano-down':      moverAno(ai,  1);             break;

@@ -1,0 +1,171 @@
+{
+  "rules": {
+    "usuarios": {
+      "$uid": {
+        ".read":  "auth != null && $uid === auth.uid",
+        ".write": "auth != null && $uid === auth.uid",
+        "campanhas": {
+          "$camp": { ".validate": "newData.isString() && newData.val().length <= 60" }
+        }
+      }
+    },
+
+    "mesas": {
+      ".read": "auth != null && auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2'",
+      "$sala": {
+        ".write": "auth != null && (auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' || (!data.exists() && auth.token.email_verified == true && newData.child('dono').val() === auth.uid && newData.child('membros').child(auth.uid).child('papel').val() === 'mestre'))",
+
+        "nome": {
+          ".read":  true,
+          ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists())",
+          ".validate": "newData.isString() && newData.val().length <= 60"
+        },
+        "dono": {
+          ".read":  true,
+          ".write": "auth != null && !root.child('mesas').child($sala).child('dono').exists() && newData.val() === auth.uid",
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "entradaLivre": {
+          ".read":  true,
+          ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists())",
+          ".validate": "newData.isBoolean()"
+        },
+        "criadaEm": { ".read": true },
+
+        "membros": {
+          ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
+          ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'",
+          "$uid": {
+            ".read":  "auth != null && $uid === auth.uid",
+            ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists() || ($uid === auth.uid && !data.exists() && auth.token.email_verified == true && root.child('mesas').child($sala).child('entradaLivre').val() === true && newData.child('papel').val() === 'jogador'))"
+          }
+        },
+
+        "pedidos": {
+          ".read": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'",
+          "$uid": {
+            ".read":  "auth != null && $uid === auth.uid",
+            ".write": "auth != null && ((auth.uid === $uid && auth.token.email_verified == true) || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre')"
+          }
+        },
+
+        "rolagens": {
+          ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
+          ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'",
+          "$rolagem": {
+            ".write": "auth != null && !data.exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador' && newData.child('uid').val() === auth.uid"
+          }
+        },
+
+        "iniciativa": {
+          ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
+          ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
+        },
+        "iniciativaValores": {
+          ".read":  "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')",
+          ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
+        },
+
+        "dados": {
+          ".read":  true,
+          ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
+        },
+        "meta": {
+          ".read":  true,
+          ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
+        },
+
+        "fichas": {
+          ".read":  "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')",
+          "$uid": {
+            ".read":  "auth != null && ($uid === auth.uid || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')",
+            ".write": "auth != null && (($uid === auth.uid && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador') || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
+          }
+        },
+
+        "efeitosArea": {
+          ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
+          ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador'"
+        },
+
+        "jogadores": {
+          "inventario": {
+            ".read":  true,
+            ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador'"
+          }
+        }
+      }
+    },
+
+    "gazeta": {
+      "publicas": {
+        ".read":  true,
+        ".write": "auth != null && auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2'",
+        "$camp": {
+          ".validate": "newData.hasChildren(['nome'])",
+          "nome":  { ".validate": "newData.isString() && newData.val().length <= 60" },
+          "autor": { ".validate": "newData.isString() && newData.val().length <= 80" },
+          "em":    { ".validate": "newData.isNumber()" },
+          "$outro": { ".validate": false }
+        }
+      }
+    },
+
+    "campanhas": {
+      ".read": "auth != null && auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2'",
+      "$camp": {
+        ".read":  true,
+        ".write": "auth != null && (auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' || ((data.child('dono').val() === auth.uid || (!data.child('dono').exists() && auth.token.email_verified == true)) && (newData.child('dono').val() === auth.uid || (!newData.exists() && data.child('dono').val() === auth.uid))))",
+        ".validate": "newData.hasChildren(['nome', 'dono'])",
+
+        "nome":         { ".validate": "newData.isString() && newData.val().length <= 60" },
+        "autor":        { ".validate": "newData.isString() && newData.val().length <= 80" },
+        "dono":         { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "criadaEm":     { ".validate": "newData.isNumber()" },
+        "atualizadoEm": { ".validate": "newData.isNumber()" },
+
+        "hoje": {
+          ".validate": "newData.hasChildren(['dia', 'mes'])",
+          "dia": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 40" },
+          "mes": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 24" },
+          "ano": { ".validate": "newData.isNumber()" },
+          "$outro": { ".validate": false }
+        },
+
+        "mesas": {
+          "$sala": { ".validate": "newData.isBoolean()" }
+        },
+
+        "noticias": {
+          "$ano": {
+            ".validate": "$ano.matches(/^([0-9]|[12][0-9])$/)",
+            "ano": { ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 20)" },
+            "noticias": {
+              "$n": {
+                ".validate": "$n.matches(/^([0-9]|[1-4][0-9])$/)",
+                "id":        { ".validate": "newData.isString() ? newData.val().length <= 40 : newData.isNumber()" },
+                "titulo":    { ".validate": "newData.isString() && newData.val().length <= 200" },
+                "corpo":     { ".validate": "newData.isString() && newData.val().length <= 4000" },
+                "data":      { ".validate": "newData.isString() && newData.val().length <= 80" },
+                "local":     { ".validate": "newData.isString() && newData.val().length <= 80" },
+                "tag":       { ".validate": "newData.isString() && newData.val().length <= 40" },
+                "span":      { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 12" },
+                "ornamento": { ".validate": "newData.isBoolean()" },
+                "quando": {
+                  "dia":   { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 40" },
+                  "mes":   { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 24" },
+                  "forma": { ".validate": "newData.isString() && newData.val().length <= 20" },
+                  "$outro": { ".validate": false }
+                },
+                "$outro": { ".validate": false }
+              }
+            },
+            "$outro": { ".validate": false }
+          }
+        },
+
+        "$outro": { ".validate": false }
+      }
+    }
+  }
+}

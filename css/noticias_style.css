@@ -582,3 +582,96 @@
   color: var(--carmim);
   font-size: 0.8rem;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   O SELO DA VITRINE, na linha 📡
+   A linha é um flex com wrap, então um <br> não quebraria nada: quem
+   desce de linha é este <span>, com a base 100%.
+   ══════════════════════════════════════════════════════════════════ */
+.nc-mesa-selo {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-top: 0.35rem;
+  border-top: 1px dotted var(--parchment3);
+  font-size: 0.8rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PAINEL DO DONO (js/painel-dono.js) — só aparece para o uid do dono
+   do site. Tabela larga, que no celular rola de lado em vez de
+   esmagar as colunas.
+   ══════════════════════════════════════════════════════════════════ */
+.pd-modal { max-width: 1000px; }
+.pd-corpo { gap: 0.6rem; }
+
+.pd-tit {
+  margin: 0.4rem 0 0;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pd-tab {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.82rem;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.pd-tab th,
+.pd-tab td {
+  padding: 0.4rem 0.55rem;
+  border-bottom: 1px solid var(--parchment3);
+  text-align: left;
+  vertical-align: top;
+  white-space: normal;
+}
+.pd-tab th {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  border-bottom: 2px solid var(--ink);
+}
+.pd-tab tbody tr:hover { background: var(--parchment2); }
+.pd-tab tr.pd-publica { background: color-mix(in srgb, var(--gold-dim) 12%, transparent); }
+
+.pd-id {
+  font-size: 0.72rem;
+  color: var(--ink-faded);
+  word-break: break-all;
+}
+
+.pd-selo {
+  display: inline-block;
+  padding: 0.08rem 0.4rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+.pd-selo--eu  { border-color: var(--verde-dark); color: var(--verde-dark); }
+.pd-selo--pub { border-color: var(--gold-dim); color: var(--rust); }
+
+.pd-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.pd-rodape {
+  margin: 0.2rem 0 0.6rem;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.78rem;
+  color: var(--ink-faded);
+}

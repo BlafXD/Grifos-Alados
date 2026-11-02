@@ -18,112 +18,25 @@ uma hospedagem para o site (**GitHub Pages**).
 3. No menu lateral: **Criação (Build) → Realtime Database** → **Criar banco de dados**
    → local `United States` → comece em **modo bloqueado** → ativar.
 4. Ainda no Realtime Database, abra a aba **Regras (Rules)**, apague o que estiver
-   lá e cole isto **como está** — não há nada para trocar, fora o e-mail do
-   paraquedas na penúltima seção (veja o aviso abaixo):
+   lá e cole **o conteúdo de `firebase-rules.json`** — ele é a cópia fiel
+   das regras que estão no ar, e passa no `JSON.parse` como está.
 
-   ```json
-   {
-     "rules": {
-       "usuarios": {
-         "$uid": {
-           ".read":  "auth != null && $uid === auth.uid",
-           ".write": "auth != null && $uid === auth.uid"
-         }
-       },
-
-       "mesas": {
-         "$sala": {
-           ".write": "auth != null && !data.exists() && newData.child('dono').val() === auth.uid && newData.child('membros').child(auth.uid).child('papel').val() === 'mestre'",
-
-           "nome": {
-             ".read":  true,
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists())"
-           },
-           "dono": {
-             ".read":  true,
-             ".write": "auth != null && !root.child('mesas').child($sala).child('dono').exists() && newData.val() === auth.uid"
-           },
-           "entradaLivre": {
-             ".read":  true,
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists())"
-           },
-           "criadaEm": { ".read": true },
-
-           "membros": {
-             ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists())",
-             "$uid": {
-               ".read":  "auth != null && $uid === auth.uid",
-               ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || !root.child('mesas').child($sala).child('dono').exists() || ($uid === auth.uid && !data.exists() && auth.token.email_verified == true && root.child('mesas').child($sala).child('entradaLivre').val() === true && newData.child('papel').val() === 'jogador'))"
-             }
-           },
-
-           "pedidos": {
-             ".read": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'",
-             "$uid": {
-               ".read":  "auth != null && $uid === auth.uid",
-               ".write": "auth != null && ((auth.uid === $uid && auth.token.email_verified == true) || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre')"
-             }
-           },
-
-           "rolagens": {
-             ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
-             ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre'",
-             "$rolagem": {
-               ".write": "auth != null && !data.exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador' && newData.child('uid').val() === auth.uid"
-             }
-           },
-
-           "iniciativa": {
-             ".read":  "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists()",
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
-           },
-           "iniciativaValores": {
-             ".read":  "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')",
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
-           },
-
-           "dados": {
-             ".read":  true,
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
-           },
-           "meta": {
-             ".read":  true,
-             ".write": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
-           },
-
-           "fichas": {
-             ".read": "auth != null && (root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')",
-             "$uid": {
-               ".read":  "auth != null && ($uid === auth.uid || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')",
-               ".write": "auth != null && (($uid === auth.uid && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador') || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'mestre' || root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() === 'auxiliar')"
-             }
-           },
-
-           "jogadores": {
-             "inventario": {
-               ".read":  true,
-               ".write": "auth != null && root.child('mesas').child($sala).child('membros').child(auth.uid).exists() && root.child('mesas').child($sala).child('membros').child(auth.uid).child('papel').val() !== 'espectador'"
-             }
-           }
-         }
-       },
-
-       "campanhas": {
-         ".read": true,
-         "$camp": {
-           ".write": "auth != null && (data.child('dono').val() === auth.uid || !data.child('dono').exists()) && (!newData.exists() || newData.child('dono').val() === auth.uid)"
-         }
-       }
-     }
-   }
-   ```
+   > 📌 **A cópia das regras vive em um arquivo só**, desde 02/11/2026:
+   > `firebase-rules.json`. Antes ela estava escrita aqui DENTRO, e o
+   > resultado foi o previsível — este arquivo ficou para trás (ainda falava do
+   > paraquedas de um e-mail que já tinha saído do ar). Quem precisa comparar
+   > com o console abre o JSON; quem precisa entender POR QUE cada linha é
+   > assim lê o `docs/regras-firebase.md` — que é caderno de bordo e fica só no
+   > disco de quem mantém o projeto, não no GitHub.
 
    → **Publicar**.
 
    **Como ler isto.** Quem pode o quê não está escrito na regra: está no banco,
    em `mesas/<sala>/membros/<uid>` e no campo `dono`. A regra só pergunta ao
-   banco. **Não há dono do site — há dono de cada mesa**, e é quem a criou.
+   banco. **Há dono de cada mesa** — quem a criou — e, desde 02/11/2026, **há um
+   dono do site**: um uid escrito nas regras, que lê as listas de `campanhas` e
+   `mesas`, carimba a vitrine da gazeta e apaga abuso. É tudo o que ele pode a
+   mais; de resto, mesa de cada um é de cada um.
 
    | Nó | Quem lê | Quem escreve |
    |---|---|---|
@@ -133,17 +46,29 @@ uma hospedagem para o site (**GitHub Pages**).
    | `nome`, `campanhaId`, `entradaLivre`, `dono` | qualquer um | o mestre da mesa |
    | `membros` | membros (e cada um sempre lê o próprio) | o mestre; e o próprio, entrando numa mesa de porta aberta |
    | `pedidos` | o mestre (e cada um o seu) | quem pede, e o mestre |
-   | `campanhas` | **qualquer um**, sem login (é a memória de Arton) | quem criou aquela campanha |
+   | `campanhas/<id>` | **qualquer um que tenha o id** (é o link da gazeta) | quem criou aquela campanha |
+   | `campanhas` (a LISTA) | **só o dono do site** — não dá para enumerar as gazetas | ninguém |
+   | `gazeta/publicas` | **qualquer um**, sem login (é a vitrine) | **só o dono do site** |
+   | `usuarios/<uid>/campanhas` | só a própria conta | só a própria conta |
 
-   > 📰 **`campanhas` é a gazeta ao vivo** (desde 10/09/2026). Cada campanha
-   > guarda as próprias notícias em `campanhas/<id>/noticias`, e elas são as
-   > únicas coisas do banco que **qualquer pessoa lê sem entrar em mesa
-   > nenhuma** — foi o pedido: *"qualquer pessoa que entrar nos Grifos Alados vê
-   > as notícias de todas as campanhas, porque ficam nas memórias"*. Escrever é
-   > só do **dono**, que é quem publicou; campanha sem dono é órfã e quem chegar
-   > assume, igual às mesas. **Enquanto este bloco não for publicado, a gazeta
-   > continua funcionando** — ela cai no `js/noticias-data.js` do repositório, e
-   > só o mestre, editando, vê o aviso de que o banco recusou.
+   > 📰 **`campanhas` é a gazeta ao vivo** (desde 10/09/2026), e desde
+   > **02/11/2026 ela nasce OCULTA**. Cada campanha guarda as próprias notícias
+   > em `campanhas/<id>/noticias`; **quem tem o id lê a gazeta inteira, sem
+   > login** — é esse o link que o mestre manda aos jogadores dele
+   > (`?gazeta=<id>`) — mas **a LISTA das campanhas não é pública**, então
+   > ninguém descobre a gazeta de quem não lhe deu o link. O que todo visitante
+   > baixa ao abrir o site é `gazeta/publicas`: a **vitrine**, um nome e um
+   > autor por campanha, escrita só pelo dono do site no 🛡 Painel do dono. O
+   > corpo de uma gazeta só desce quando a aba dela é aberta.
+   >
+   > Isso mudou porque o site foi divulgado no Reddit. O desenho anterior
+   > (`campanhas` inteira de leitura pública, todas as campanhas na tela de
+   > todo mundo) fazia duas coisas ruins: qualquer pessoa logada publicava na
+   > gazeta que todos veem, e **cada visitante baixava todas as gazetas do banco
+   > a cada F5**.
+   > **Enquanto este bloco não for publicado, a gazeta continua funcionando** —
+   > ela cai no `js/noticias-data.js` do repositório, e só o mestre, editando,
+   > vê o aviso de que o banco recusou.
 
    > 📖 **`fichas` é o único nó da mesa que não é público.** A loja, a gazeta e
    > as bases são de leitura aberta a quem tem o link — a ficha de alguém não
@@ -171,12 +96,13 @@ uma hospedagem para o site (**GitHub Pages**).
    > (`!data.exists()`): qualquer `.write` largo ali em cima entregaria a mesa
    > inteira, fichas e rolagens junto.
    >
-   > ⚠ **O `|| auth.token.email === 'mestret20@gmail.com'` em `dados` e `meta`
-   > é o último resquício de nome próprio nas regras** — um paraquedas para a
-   > transmissão do 📡 não cair enquanto o mestre da casa não confirmar por qual
-   > conta transmite (a de senha e a do Google têm **`uid` diferente**, mesmo com
-   > o mesmo e-mail). Troque pelo seu e-mail, ou **apague as duas linhas** depois
-   > de conferir que o 📡 fica verde logado pelo Google.
+   > ⚠ **Há UM nome próprio nas regras**: o uid do dono do site, em
+   > `campanhas/.read`, `mesas/.read`, `gazeta/publicas/.write` e no `||` que
+   > deixa apagar abuso. Quem for usar este projeto em outro Firebase troca esse
+   > uid pelo seu nos quatro lugares (e no `ADMIN_UID` de `js/noticias-mesa.js`
+   > e `js/painel-dono.js`) — ou apaga as quatro linhas, e fica sem painel. O
+   > paraquedas antigo, o e-mail `mestret20@gmail.com` em `dados` e `meta`, **já
+   > saiu do ar**: este arquivo é que ficou falando dele.
    >
    > ⚠ **`email_verified == true`, com o `== true` escrito.** Sem ele o console
    > recusa com *"Left operand of && must be boolean"*: cada pedaço de um `&&`
@@ -193,6 +119,15 @@ uma hospedagem para o site (**GitHub Pages**).
    | escrever `mesas/mesa/jogadores/inventario` como membro | passa |
    | escrever `mesas/mesa/jogadores/inventario` sem login | **falha** |
    | ler `mesas/mesa/membros` sem login | **falha** |
+   | ler `campanhas/penitencia-de-azgher` sem login | passa (é o link da gazeta) |
+   | ler `campanhas` sem login | **falha** (não dá para listar as gazetas) |
+   | ler `campanhas` como o dono do site | passa |
+   | ler `gazeta/publicas` sem login | passa (é a vitrine) |
+   | escrever `gazeta/publicas/x` como qualquer pessoa logada | **falha** |
+   | escrever `gazeta/publicas/x` como o dono do site | passa |
+   | criar `campanhas/nova` com `dono` = o próprio uid | passa |
+   | escrever `campanhas/<de outra pessoa>/nome` | **falha** |
+   | apagar `campanhas/<de outra pessoa>` como o dono do site | passa |
 
 5. Menu lateral: **Criação → Authentication** → **Vamos começar** → aba
    **Método de login**:
