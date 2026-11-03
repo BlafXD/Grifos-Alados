@@ -94,6 +94,16 @@
       iniciativaTreinada: false, iniciativaExtra: 0,
       percepcaoTreinada: false, percepcaoExtra: 0,
       ataques: [], habilidades: [], pericias: [],
+      // ── MAGIAS (03/11/2026) ──────────────────────────────────────
+      //  Os conjuradores do livro não gastam habilidade com magia: eles
+      //  abrem um bloco próprio, com uma linha de cabeçalho ("Como um
+      //  clérigo de 9º nível (CD 30)") e um marcador • por magia. Até
+      //  aqui a oficina empurrava tudo isso para dentro de UMA
+      //  habilidade de texto corrido — que contava na cota do Passo 5 e
+      //  entrava na multiplicação do bando, duas coisas que o manual não
+      //  manda. Agora são campo próprio, e o compêndio das 254 magias
+      //  (o mesmo do Painel de Combate) escreve cada linha.
+      magiasCab: '', magias: [],
       atributos: { for: 0, des: 0, con: 0, int: 0, sab: 0, car: 0 },
       // poderes de fora dos oito passos (ver o bloco "PODERES DA
       // TORMENTA E DISTINÇÕES"): chaves de GA_TORMENTA e ids de
@@ -132,7 +142,7 @@
     ['ajustes', 'resDistrib', 'atributos'].forEach(function (k) {
       c[k] = Object.assign({}, base[k], c[k] || {});
     });
-    ['deslExtras', 'ataques', 'habilidades', 'pericias',
+    ['deslExtras', 'ataques', 'habilidades', 'pericias', 'magias',
      'poderesTormenta', 'distincoes', 'distincoesAtivos'].forEach(function (k) {
       if (!Array.isArray(c[k])) c[k] = [];
     });
@@ -143,6 +153,28 @@
     c.ataques.forEach(function (a) { if (!a.id) a.id = uid('at'); });
     c.habilidades.forEach(function (h) { if (!h.id) h.id = uid('hb'); });
     c.pericias.forEach(function (p) { if (!p.id) p.id = uid('pe'); });
+    //  Uma coleção salva antes de 03/11/2026 traz as magias dentro de
+    //  uma habilidade chamada "Magias" (era o único lugar que havia).
+    //  Ela sobe para o campo novo aqui, uma vez só: a primeira linha
+    //  vira o cabeçalho e cada • vira uma magia.
+    c.magias = c.magias.map(function (m) {
+      if (typeof m === 'string') m = { texto: m };
+      if (!m.id) m.id = uid('mg');
+      return m;
+    });
+    const velha = c.habilidades.findIndex(function (h) { return /^magias?$/i.test((h.nome || '').trim()); });
+    if (velha >= 0 && !c.magias.length) {
+      const linhas = String(c.habilidades[velha].texto || '').split('\n')
+        .map(function (l) { return l.trim(); }).filter(Boolean);
+      linhas.forEach(function (l) {
+        if (/^magias\b/i.test(l)) {
+          if (!c.magiasCab) c.magiasCab = l.replace(/^magias\s*/i, '').replace(/\s*\.\s*$/, '').trim();
+        } else {
+          c.magias.push({ id: uid('mg'), texto: l.replace(/^\s*•\s*/, '') });
+        }
+      });
+      c.habilidades.splice(velha, 1);
+    }
 
     // criatura derivada: modo válido, delta completo, bando presente
     if (['nova', 'modificada', 'bando'].indexOf(c.modo) < 0) c.modo = 'nova';
@@ -828,10 +860,15 @@
         c.habilidades.push(lerHabilidade(l));
       });
 
-    if (magias.length) {
-      c.habilidades.push({ id: uid('hb'), nome: 'Magias', execucao: '—',
-                           texto: magias.join('\n'), magica: true });
-    }
+    //  As magias da criatura-base vão para o campo próprio, não para uma
+    //  habilidade: a linha "Magias …" é o cabeçalho e cada • é uma magia.
+    magias.forEach(function (l) {
+      if (/^magias\b/i.test(l)) {
+        if (!c.magiasCab) c.magiasCab = l.replace(/^magias\s*/i, '').replace(/\s*\.\s*$/, '').trim();
+      } else {
+        c.magias.push({ id: uid('mg'), texto: l.replace(/^\s*•\s*/, '').trim() });
+      }
+    });
 
     // tesouro: a categoria quando o livro a nomeia; senão a linha inteira
     // é recurso especial ("1 dose de éter elemental (CD 17 para extrair)").
@@ -1215,6 +1252,17 @@
       const exec = h.execucao && h.execucao !== '—' ? ' (' + h.execucao + ')' : '';
       L.push((h.magica ? '✦ ' : '') + (h.nome || 'Habilidade') + exec + ' ' + (h.texto || ''));
     });
+
+    // Magias: o cabeçalho do livro e um marcador • por magia. Vêm
+    // depois das habilidades e antes dos poderes, como nas fichas dos
+    // conjuradores do Guia de NPCs — e é nesse feitio que a aba
+    // 🗡 Combates volta a separá-las ao receber a ficha.
+    const magiasTxt = (c.magias || []).map(function (m) { return String(m.texto || '').trim(); })
+                                      .filter(Boolean);
+    if (magiasTxt.length || c.magiasCab) {
+      L.push('Magias' + (c.magiasCab ? ' ' + c.magiasCab : ''));
+      magiasTxt.forEach(function (t) { L.push(/^•/.test(t) ? t : '• ' + t); });
+    }
 
     // Poderes da Tormenta: uma linha cada, com o valor JÁ somado pela
     // quantidade de poderes da ficha.
@@ -2002,8 +2050,68 @@
       '<details class="ca-bib" id="ca-bib"><summary>📚 Biblioteca de habilidades gerais <em>(Capítulo 1, p. 15–17)</em></summary>' +
         '<p class="ca-nota">Um clique põe o texto na ficha, já com o ND e a CD desta criatura no lugar.</p>' +
         '<div class="ca-bib-lista">' + biblioteca + '</div></details>' +
-      // poderes de listas fechadas, com conta própria — fora da cota
-      blocoTormenta(c) + blocoDistincoes(c));
+      // magias e poderes de listas fechadas, com conta própria — fora da cota
+      blocoMagias(c) + blocoTormenta(c) + blocoDistincoes(c));
+  }
+
+  // ── ✨ MAGIAS (03/11/2026) ────────────────────────────────────────
+  //  O pedido dele: "poder adicionar magias em Criar Ameaças, bem
+  //  semelhante à forma que temos quando já abrimos a ficha". É o mesmo
+  //  compêndio — literalmente o mesmo: o modal mora no js/monstros.js e
+  //  a oficina entra por window.GA_Compendio. O que muda é só o destino
+  //  da linha pronta, que aqui é uma linha desta lista.
+  //  As magias NÃO entram na cota de habilidades do Passo 5 nem na
+  //  multiplicação de dano do bando — o manual é explícito nos dois
+  //  pontos, e por isso elas saíram de dentro das habilidades.
+  function blocoMagias(c) {
+    //  Só o compêndio de DADOS conta aqui: o js/monstros.js, que serve
+    //  a janela (window.GA_Compendio), é carregado DEPOIS deste arquivo
+    //  no index.html, e a oficina se desenha antes dele existir — o
+    //  botão nascia desligado e nunca mais acendia. Quem confere o
+    //  window.GA_Compendio é o clique, que acontece bem depois.
+    const temCompendio = !!(Array.isArray(window.GA_MAGIAS) && window.GA_MAGIAS.length);
+    const linhas = (c.magias || []).map(function (m, i) {
+      return '<div class="ca-mag" data-magia="' + m.id + '">' +
+        '<span class="ca-mag-marca" aria-hidden="true">•</span>' +
+        '<textarea class="ca-area ca-mag-texto" rows="2" data-magia-campo="texto" ' +
+          'placeholder="Bola de Fogo (Padrão, 5 PM) Esfera incandescente explode… (Ref reduz à metade)">' +
+          esc(m.texto || '') + '</textarea>' +
+        '<span class="ca-mag-ordem">' +
+          '<button type="button" class="ca-mini" data-acao="magia-sobe" data-id="' + m.id + '"' +
+            (i === 0 ? ' disabled' : '') + ' title="Mover para cima">↑</button>' +
+          '<button type="button" class="ca-mini" data-acao="magia-desce" data-id="' + m.id + '"' +
+            (i === c.magias.length - 1 ? ' disabled' : '') + ' title="Mover para baixo">↓</button>' +
+          '<button type="button" class="ca-mini ca-mini--perigo" data-acao="rem-magia" data-id="' + m.id +
+            '" title="Remover esta magia">✕</button>' +
+        '</span>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="ca-extra ca-extra--mag">' +
+      '<div class="ca-extra-cab">' +
+        '<span class="ca-extra-tit">✨ Magias</span>' +
+        '<span class="ca-extra-conta">' +
+          ((c.magias || []).length ? (c.magias.length + (c.magias.length === 1 ? ' magia' : ' magias')) : 'nenhuma') +
+          ' · fora da cota de habilidades</span>' +
+        '<button type="button" class="ca-btn ca-btn--mag" data-acao="abrir-magias"' +
+          (temCompendio ? '' : ' disabled title="O compêndio (js/magias-data.js) não carregou nesta página"') +
+          '>＋ Magia do compêndio</button>' +
+      '</div>' +
+      '<label class="ca-mag-cab-campo"><span class="ca-nota ca-nota--inline">Cabeçalho</span>' +
+        '<input type="text" class="ca-input" data-campo="magiasCab" value="' + esc(c.magiasCab || '') + '" ' +
+        'placeholder="Como um clérigo de 9º nível (CD ' + cdExtrair(c) + ')" ' +
+        'title="A linha que o livro imprime antes dos marcadores — é ela que diz o nível de conjurador e a CD"></label>' +
+      '<div class="ca-mags">' + (linhas ||
+        '<p class="ca-vazio">Nenhuma magia ainda. O <strong>＋ Magia do compêndio</strong> abre as ' +
+        (Array.isArray(window.GA_MAGIAS) ? window.GA_MAGIAS.length : 254) +
+        ' magias do livro, com os aprimoramentos somando no custo — a linha entra pronta aqui e pode ser editada.</p>') +
+      '</div>' +
+      ajuda('O bloco sai na ficha como o livro imprime: <strong>Magias</strong> + o cabeçalho, e um ' +
+        '<strong>•</strong> por magia. Magia <strong>não conta na cota de habilidades</strong> do Passo 5 e ' +
+        '<strong>não entra na multiplicação de dano do bando</strong> — as duas coisas que o manual diz em ' +
+        'letras. O custo em PM só aparece na ficha se o <strong>Passo 1</strong> estiver com “usa PM” ligado.') +
+      '<button type="button" class="ca-btn ca-btn--nova" data-acao="add-magia">＋ Magia em branco</button>' +
+    '</div>';
   }
 
   // ── PODERES DE FORA DOS OITO PASSOS (30/10/2026) ──────────────────
@@ -2575,6 +2683,12 @@
     if (!card || !c) return null;
     return c.habilidades.find(function (h) { return h.id === card.dataset.hab; }) || null;
   }
+  function alvoMagia(el) {
+    const card = el.closest('[data-magia]');
+    const c = criaturaAtual();
+    if (!card || !c) return null;
+    return (c.magias || []).find(function (m) { return m.id === card.dataset.magia; }) || null;
+  }
   function alvoPer(el) {
     const card = el.closest('[data-per]');
     const c = criaturaAtual();
@@ -2609,6 +2723,12 @@
       const h = alvoHab(el);
       if (!h) return;
       h[el.dataset.habCampo] = (el.type === 'checkbox') ? el.checked : el.value;
+      salvar(); atualizarCalculos(); return;
+    }
+    if (el.dataset.magiaCampo) {
+      const m = alvoMagia(el);
+      if (!m) return;
+      m[el.dataset.magiaCampo] = el.value;
       salvar(); atualizarCalculos(); return;
     }
     if (el.dataset.perCampo) {
@@ -2873,6 +2993,44 @@
       salvar(); render();
       return;
     }
+    // ── ✨ magias ──────────────────────────────────────────────────
+    if (acao === 'add-magia') {
+      if (!c) return;
+      c.magias.push({ id: uid('mg'), texto: '' });
+      salvar(); render();
+      return;
+    }
+    if (acao === 'abrir-magias') {
+      if (!c) return;
+      if (!window.GA_Compendio) {
+        alert('O compêndio de magias só existe na página principal (a aba 🗡 Combates é quem o carrega).');
+        return;
+      }
+      window.GA_Compendio.magias(c.nome || 'ameaça sem nome', function (linha) {
+        const atual = criaturaAtual();
+        if (!atual) return;
+        // a linha do compêndio já vem com o "• " na frente
+        atual.magias.push({ id: uid('mg'), texto: String(linha).replace(/^\s*•\s*/, '') });
+        salvar(); render();
+      });
+      return;
+    }
+    if (acao === 'rem-magia') {
+      if (!c) return;
+      c.magias = c.magias.filter(function (m) { return m.id !== el.dataset.id; });
+      salvar(); render();
+      return;
+    }
+    if (acao === 'magia-sobe' || acao === 'magia-desce') {
+      if (!c) return;
+      const i = c.magias.findIndex(function (m) { return m.id === el.dataset.id; });
+      const j = i + (acao === 'magia-sobe' ? -1 : 1);
+      if (i < 0 || j < 0 || j >= c.magias.length) return;
+      const t = c.magias[i]; c.magias[i] = c.magias[j]; c.magias[j] = t;
+      salvar(); render();
+      return;
+    }
+
     if (acao === 'rem-per') {
       if (!c) return;
       c.pericias = c.pericias.filter(function (p) { return p.id !== el.dataset.id; });

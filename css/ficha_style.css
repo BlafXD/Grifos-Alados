@@ -93,6 +93,113 @@
   padding: 2.5rem 1rem;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   O PALCO: DUAS COLUNAS E UM CARTÃO DE ABAS (03/11/2026)
+   A ficha era uma coluna só, com dezesseis cartões empilhados. Rolar
+   um ataque no meio do turno custava três telas de rolagem, e as
+   perícias — a consulta mais frequente da mesa inteira — ficavam no
+   meio do caminho.
+
+   Agora o palco é uma grade de duas colunas:
+     · a da ESQUERDA tem o que não se dobra (identidade, combate,
+       condições, atributos, PV/PM) e, embaixo, o cartão de abas;
+     · a da DIREITA tem as perícias, GRUDADAS no alto enquanto a
+       página rola (position: sticky) — é para isso que a coluna
+       estreita serve.
+   Abaixo de 1100px a grade vira uma coluna só e as perícias voltam
+   para o fluxo, logo depois do cartão de abas: num celular não há
+   coluna lateral que valha, e `sticky` com a tela cheia só atrapalha.
+   ══════════════════════════════════════════════════════════════════ */
+.fi-palco {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem);
+  gap: 0.9rem;
+  align-items: start;
+}
+.fi-coluna { min-width: 0; }
+.fi-coluna--lado {
+  position: sticky;
+  top: 0.6rem;
+  max-height: calc(100vh - 1.2rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+/* a barra de rolagem da coluna lateral é a mesma do site, só mais fina */
+.fi-coluna--lado::-webkit-scrollbar { width: 7px; }
+.fi-coluna--lado > .fi-cartao:last-child { margin-bottom: 0.3rem; }
+
+/* As perícias numa coluna de 20rem: o mesmo aperto do celular, pelo
+   mesmo motivo. O nome inteiro é o que importa — ele é o que se
+   procura —, então os selos (só treinada, armadura, resistência) saem
+   e os campos encolhem para abrir espaço. Os selos continuam na dica
+   de cada linha, e voltam inteiros quando a coluna vira página. */
+.fi-coluna--lado .fi-per-marcas { display: none; }
+.fi-coluna--lado .fi-per--oficio .fi-per-marcas { display: flex; gap: 0.2rem; }
+.fi-coluna--lado .fi-per-nome { font-size: 0.88rem; }
+.fi-coluna--lado .fi-per .fi-sel,
+.fi-coluna--lado .fi-per .fi-sel--mini { font-size: 0.6rem; padding: 0.1rem 0.1rem; }
+.fi-coluna--lado .fi-per .fi-num--mini { width: 2.4rem; }
+.fi-coluna--lado .fi-per { gap: 0.2rem; }
+.fi-coluna--lado .fi-cartao-tit { flex-wrap: wrap; }
+
+@media (max-width: 1100px) {
+  .fi-palco { grid-template-columns: 1fr; }
+  .fi-coluna--lado {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* ── O CARTÃO DE ABAS ──────────────────────────────────────────── */
+.fi-abas-cartao { padding-bottom: 0.6rem; }
+.fi-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--gold-dim);
+}
+.fi-abas-btn {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.42rem 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-bottom: none;
+  border-radius: var(--raio) var(--raio) 0 0;
+}
+.fi-abas-btn:hover:not(.fi-abas-btn--ativa) { background: var(--gold-pale); }
+/* a aba ativa é faixa escura com letra clara — a cara da gazeta. Como
+   o fundo NÃO inverte no noturno, a letra também não pode: --faixa e
+   --faixa-tinta, nunca --ink/--parchment (ver a lógica das cores). */
+.fi-abas-btn--ativa {
+  color: var(--faixa-tinta);
+  background: var(--faixa);
+  border-color: var(--faixa);
+  box-shadow: inset 0 -3px 0 var(--faixa-ouro);
+}
+/* dentro de um painel, o cartão de baixo não precisa da margem do fim */
+.fi-abas-painel > .fi-cartao:last-child,
+.fi-abas-painel > .fi-numeros:last-child { margin-bottom: 0; }
+/* os cartões de dentro do painel já estão dentro de um cartão: perdem o
+   quadro duplo e ficam só com o friso de cima */
+.fi-abas-painel > .fi-cartao {
+  border-width: 1px;
+  border-top-width: 3px;
+  box-shadow: none;
+}
+@media (max-width: 520px) {
+  .fi-abas { gap: 0.2rem; }
+  .fi-abas-btn { font-size: 0.68rem; padding: 0.4rem 0.55rem; }
+}
+
 /* ── O CARTÃO, QUE É A UNIDADE DA FICHA ────────────────────────── */
 .fi-cartao {
   background: var(--parchment);
@@ -1060,6 +1167,38 @@
 }
 .fi-busca-vazio { padding: 1rem; text-align: center; color: var(--text-dim); font-style: italic; }
 
+/* ── 📖 O CATÁLOGO NA MOCHILA (03/11/2026) ──────────────────────────
+   A mesma lista de busca das magias, com uma fileira de chips em cima
+   para cortar por tipo. O quadradinho da esquerda troca de cor pelo
+   tipo do item, porque é por ele que o olho procura. */
+.fi-cat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0.2rem 0 0.5rem;
+}
+.fi-cat-chip {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: 999px;
+}
+.fi-cat-chip:hover { background: var(--gold-pale); }
+.fi-cat-chip--on {
+  color: var(--faixa-tinta);
+  background: var(--faixa);
+  border-color: var(--faixa);
+}
+.fi-cat-item .fi-busca-circ { background: var(--neutra); font-size: 0.9rem; }
+.fi-inv-acoes { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.fi-add--cat { border-color: var(--azul); color: var(--azul); }
+.fi-add--cat:hover { background: var(--azul); color: var(--parchment); }
+
 .fi-mag-ficha {
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.72rem;
@@ -1395,14 +1534,19 @@
   color: var(--text-mid);
   white-space: nowrap;
 }
-.fi-res--erro { background: #f7e3e0; border-color: var(--carmim); color: var(--carmim); font-size: 0.8rem; }
+.fi-res--erro { background: var(--res-erro); border-color: var(--carmim); color: var(--carmim); font-size: 0.8rem; }
 /* nas linhas de ataque os três resultados ocupam a largura toda,
    embaixo dos campos */
 .fi-res--atq { grid-column: 1 / -1; margin-left: 0; align-self: start; justify-self: start; }
 .fi-res--crit {
-  background: repeating-linear-gradient(45deg, #f6d9a8 0 5px, var(--gold-pale) 5px 10px);
+  background: repeating-linear-gradient(45deg, var(--res-faixa) 0 5px, var(--gold-pale) 5px 10px);
   border-color: var(--rust);
+  box-shadow: 0 0 0 1px var(--rust) inset;   /* a listra escurece à noite: o fio é que diz «crítico» */
 }
+/* O número e os dados dentro da pílula do crítico: no noturno a listra
+   fica escura, então eles precisam da tinta CLARA — e o 1 natural em
+   vermelho não some porque o --carmim também é da paleta. */
+.fi-res--crit .fi-res-num { color: var(--rust); }
 
 /* ── HISTÓRICO DE ROLAGENS ─────────────────────────────────────── */
 .fi-hist-limpar { margin-left: auto; font-size: 0.6rem; }
@@ -3178,6 +3322,192 @@
   color: var(--text-dim);
 }
 .fi-desl-conta strong { font-style: normal; color: var(--rust-dark); }
+
+/* ══════════════════════════════════════════════════════════════════
+   🤝 PARCEIROS (Tormenta 20, p. 259–262) — 03/11/2026
+   Uma linha por parceiro, com o benefício do livro escrito embaixo
+   (muda sozinho quando se troca o tipo ou o nível de poder). O placar
+   do cabeçalho é o limite do patamar: verde enquanto sobra vaga, ouro
+   quando está cheio, carmim quando passou.
+   ══════════════════════════════════════════════════════════════════ */
+.fi-parc-placar {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--parchment3);
+  border-radius: 999px;
+  color: var(--text-mid);
+  background: var(--parchment2);
+}
+.fi-parc-placar strong { font-size: 0.9rem; }
+.fi-parc-placar em {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  margin-left: 0.3rem;
+}
+.fi-parc-placar--cheio { border-color: var(--gold-dim); background: var(--gold-pale); }
+.fi-parc-placar--acima { border-color: var(--carmim); color: var(--carmim); }
+.fi-parc-placar--acima em { color: var(--carmim); }
+.fi-parc-aviso {
+  margin: 0 0 0.6rem;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  background: var(--parchment2);
+  border-left: 3px solid var(--carmim);
+  border-radius: var(--raio);
+}
+.fi-parc-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.fi-parc {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1.4fr) minmax(7rem, 1fr) auto auto auto auto auto;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.4rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--teal);
+  border-radius: var(--raio);
+}
+.fi-parc--fora   { border-left-style: dashed; }
+.fi-parc--ferido { border-left-color: var(--carmim); }
+.fi-parc-nome { min-width: 0; }
+.fi-parc-benef {
+  grid-column: 1 / -1;
+  margin: 0.1rem 0 0;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--text-mid);
+}
+.fi-parc-benef strong { color: var(--rust-dark); }
+.fi-parc-nota {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--ga-fonte-nota);
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+.fi-parc-texto { grid-column: 1 / -1; }
+.fi-parc-regras { margin-top: 0.7rem; }
+.fi-parc-regras > summary {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.fi-parc-regras-lista {
+  list-style: none;
+  margin: 0.5rem 0 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.fi-parc-regras-lista > li {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--parchment3);
+}
+@media (max-width: 680px) {
+  .fi-parc { grid-template-columns: 1fr 1fr auto auto auto auto; }
+  .fi-parc-nome { grid-column: 1 / -1; }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   🛡 A ARMADURA VESTIDA E O ESCUDO NA MÃO (03/11/2026)
+   Duas linhas no cartão da Defesa. A primeira coisa de cada uma é o
+   interruptor — 🧥 vestida, ✋ na mão —, porque é ele que decide se o
+   bônus e a penalidade existem. Peça fora de uso fica esmaecida e com
+   o nome riscado: de longe se vê que o escudo está no chão.
+   ══════════════════════════════════════════════════════════════════ */
+.fi-pecas-pen {
+  margin-left: auto;
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+.fi-pecas-pen strong { font-style: normal; color: var(--carmim); }
+.fi-pecas-lista {
+  list-style: none;
+  margin: 0.4rem 0 0.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.fi-peca {
+  display: grid;
+  grid-template-columns: auto auto minmax(6rem, 1fr) auto auto auto;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.3rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--gold-dim);
+  border-radius: var(--raio);
+}
+.fi-peca--on  { border-left-color: var(--rust); }
+.fi-peca--off { opacity: 0.62; }
+.fi-peca--off .fi-peca-nome { text-decoration: line-through; }
+.fi-peca-mao {
+  width: 1.9rem;
+  height: 1.9rem;
+  padding: 0;
+  font-size: 0.95rem;
+  line-height: 1;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: 999px;
+  cursor: pointer;
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+.fi-peca-mao--on {
+  background: var(--gold-pale);
+  border-color: var(--rust);
+  box-shadow: 0 0 0 1px var(--rust) inset;
+  filter: none;
+  opacity: 1;
+}
+.fi-peca-mao:hover,
+.fi-peca-mao:focus-visible { filter: none; opacity: 1; }
+.fi-peca-rot {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.fi-peca-nome { min-width: 0; }
+.fi-peca-n {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.fi-peca-n > span {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.56rem;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+.fi-peca-n .fi-num--mini { width: 3.1rem; }
+.fi-peca-texto { grid-column: 1 / -1; }
+@media (max-width: 640px) {
+  .fi-peca { grid-template-columns: auto auto 1fr auto; }
+  .fi-peca-nome { grid-column: 3 / -1; }
+  .fi-peca-n   { grid-column: span 2; }
+}
 
 /* ══════════════════════════════════════════════════════════════════
    🌀 CONDIÇÕES (Tormenta 20, p. 394)

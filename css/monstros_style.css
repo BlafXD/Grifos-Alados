@@ -1191,7 +1191,10 @@
 
 /* d20 natural: 20 verde, 1 vermelho */
 .mz-d20-max { color: var(--verde); font-weight: 700; }
-.mz-d20-min { color: #b3261e; font-weight: 700; }
+/* era #b3261e cravado: vermelho de papel claro, que no noturno dava
+   2,5:1 contra o fundo escuro — o 1 natural sumia justo na rolagem em
+   que mais se olha para ele. O --carmim é da paleta e clareia à noite. */
+.mz-d20-min { color: var(--carmim); font-weight: 700; }
 
 /* ── CHAT / ROLADOR DE EXPRESSÕES ─────────────────────────────────── */
 .mz-chat {
@@ -2734,9 +2737,9 @@ color: var(--ink-faded); margin-right: 0.2rem;
   color: var(--ink);
 }
 .mz-mas-res--perigo {
-  color: #6a1d12;
-  background: #f0c3bb;
-  box-shadow: 0 0 0 1px #d39086 inset;
+  color: var(--res-perigo-tinta);
+  background: var(--res-perigo);
+  box-shadow: 0 0 0 1px var(--res-perigo-fio) inset;
   padding: 0.1rem 0.4rem;
   font-weight: 600;
 }

@@ -252,6 +252,38 @@
     ['armadura', 'escudo', 'outros', 'penalidade'].forEach(k => {
       if (typeof f.defesa[k] !== 'number') f.defesa[k] = 0;
     });
+    // ── A ARMADURA E O ESCUDO, COMO PEÇAS (03/11/2026) ─────────────
+    //  Antes eram três números soltos — «Armadura», «Escudo» e «Penal.
+    //  armadura» — e mais nada: não cabia o NOME da peça, não cabia a
+    //  descrição onde moram as melhorias e os encantos, e o escudo
+    //  somava na Defesa estivesse ele na mão ou largado no chão.
+    //  Agora cada uma é uma peça com nome, bônus, penalidade, texto e
+    //  um interruptor: a armadura está VESTIDA, o escudo está EMPUNHADO
+    //  (a ✋). Desligado, o bônus sai da Defesa e a penalidade sai das
+    //  perícias — as duas coisas juntas, que é o que o livro manda
+    //  (p. 152: a penalidade vem de usar o equipamento).
+    f.equipDefesa = f.equipDefesa || {};
+    ['armadura', 'escudo'].forEach(k => {
+      const p = f.equipDefesa[k] || {};
+      f.equipDefesa[k] = {
+        nome: String(p.nome || ''),
+        defesa: parseInt(p.defesa, 10) || 0,
+        penalidade: Math.abs(parseInt(p.penalidade, 10) || 0),
+        ativo: p.ativo === undefined ? true : !!p.ativo,
+        notas: String(p.notas || ''),
+        aberto: !!p.aberto,
+      };
+    });
+    //  Migração, UMA vez por ficha: os três números antigos viram a
+    //  peça. A penalidade inteira vai para a armadura (é de lá que ela
+    //  quase sempre vem); quem usa escudo separa as duas na tela em
+    //  dois segundos, e a soma continua a mesma enquanto não separar.
+    if (!f.equipDefesaMigrado) {
+      f.equipDefesaMigrado = true;
+      if (f.defesa.armadura)   { f.equipDefesa.armadura.defesa     += f.defesa.armadura;             f.defesa.armadura = 0; }
+      if (f.defesa.escudo)     { f.equipDefesa.escudo.defesa       += f.defesa.escudo;               f.defesa.escudo = 0; }
+      if (f.defesa.penalidade) { f.equipDefesa.armadura.penalidade += Math.abs(f.defesa.penalidade); f.defesa.penalidade = 0; }
+    }
     // ── O ATRIBUTO DA DEFESA (12/09/2026) ──────────────────────────
     //  Pelo livro a Defesa é 10 + DESTREZA + armadura + escudo (p. 106),
     //  e é com Destreza que toda ficha nasce. Mas há quem troque: um
@@ -676,6 +708,21 @@
     f.amigosPv = {};
     f.amigos.forEach(a => { if (typeof pvs[a.id] === 'number') f.amigosPv[a.id] = pvs[a.id]; });
 
+    // ── 🤝 PARCEIROS (Tormenta 20, p. 259–262) — 03/11/2026 ────────
+    //  Um NPC que não tem turno e não age: ajuda UM personagem, com um
+    //  bônus que depende do tipo e do nível de poder. `fora` é o "não
+    //  conta em seu limite" que uma pilha de poderes concede.
+    f.parceiros = lista(f.parceiros).map(p => ({
+      id: (p && p.id) || novoId(),
+      tipo: String((p && p.tipo) || ''),
+      nivel: ['iniciante', 'veterano', 'mestre'].indexOf((p && p.nivel)) >= 0 ? p.nivel : 'iniciante',
+      nome: String((p && p.nome) || ''),
+      fora: !!(p && p.fora),
+      ferido: !!(p && p.ferido),
+      notas: String((p && p.notas) || ''),
+      aberto: !!(p && p.aberto),
+    }));
+
     f.blocos = f.blocos || {};
     TODOS_BLOCOS.forEach(b => { if (typeof f.blocos[b.campo] !== 'string') f.blocos[b.campo] = ''; });
     return f;
@@ -1006,8 +1053,29 @@
   function somaFontesDefesa(f) {
     return ((f.defesa && f.defesa.fontes) || []).reduce((s, x) => s + (x.valor || 0), 0);
   }
+  //  A peça (armadura ou escudo) de uma ficha, sempre com os campos
+  //  completos — uma ficha que chegou da mesa pode vir sem ela.
+  function pecaDefesa(f, k) {
+    return (f.equipDefesa && f.equipDefesa[k]) ||
+      { nome: '', defesa: 0, penalidade: 0, ativo: true, notas: '', aberto: false };
+  }
+  //  Só conta o que está vestido / na mão: é esse o pedido do escudo.
+  function defesaDasPecas(f) {
+    const a = pecaDefesa(f, 'armadura'), e = pecaDefesa(f, 'escudo');
+    return (a.ativo ? a.defesa : 0) + (e.ativo ? e.defesa : 0);
+  }
+  //  A penalidade de armadura que vale AGORA: a da armadura vestida,
+  //  a do escudo empunhado, e o que o jogador tenha somado à mão.
+  //  Cai em Acrobacia, Furtividade e Ladinagem (as três com `armadura`
+  //  marcada na tabela de perícias).
+  function penalidadeArmadura(f) {
+    const a = pecaDefesa(f, 'armadura'), e = pecaDefesa(f, 'escudo');
+    return (a.ativo ? a.penalidade : 0) + (e.ativo ? e.penalidade : 0) +
+           Math.abs((f.defesa && f.defesa.penalidade) || 0);
+  }
   function defesa(f) {
-    return 10 + somaAtrDefesa(f) + f.defesa.armadura + f.defesa.escudo + f.defesa.outros + somaFontesDefesa(f);
+    return 10 + somaAtrDefesa(f) + defesaDasPecas(f) +
+           f.defesa.armadura + f.defesa.escudo + f.defesa.outros + somaFontesDefesa(f);
   }
   // Carga = 10 espaços + 2 por ponto de Força, ou −1 por ponto negativo (p. 141)
   function cargaMax(f) {
@@ -1036,7 +1104,7 @@
     if (!P) return 0;
     const n = nivel(f);
     let v = Math.floor(n / 2) + atr(f, atrPericia(P, e)) + treino(n, (e || {}).treinada) + ((e || {}).outros || 0);
-    if (P.armadura) v -= Math.abs(f.defesa.penalidade || 0);
+    if (P.armadura) v -= penalidadeArmadura(f);
     //  O modificador de TAMANHO (Tabela 1-21, p. 107) entra aqui, na
     //  perícia que a tabela nomeia — e em nenhuma outra. Médio é 0, que é
     //  a ficha de quase todo mundo; quem é Pequeno ou Grande vê o número
@@ -1259,6 +1327,14 @@
   let direcionar = {};        // id do amigo → true
   let truquesAbertos = {};    // id do amigo → true
   let tabelaPassosAberta = false;   // a Tabela 3-2 do cartão dos Ataques, aberta nesta tela
+  //  A aba aberta do cartão de abas da ficha. É deste NAVEGADOR, como
+  //  tudo o que dobra e desdobra por aqui: quem joga de ladino quer
+  //  abrir sempre em ⚔ Ataques, quem joga de arcanista em ✦ Magias, e
+  //  isso não é dado do personagem para subir para a mesa.
+  const ABA_KEY = 'ga_ficha_aba';
+  let abaAberta = (function () {
+    try { return localStorage.getItem(ABA_KEY) || 'ataques'; } catch (e) { return 'ataques'; }
+  })();
   let xpLogAberto = false;          // o caderno do XP, aberto nesta tela
   let pmLogAberto = false;          // o mini-log de PM, aberto nesta tela
   const HIST_KEY = 'grifosAlados.fichaRolagens';
@@ -1537,10 +1613,64 @@
     //  logo DEPOIS de Ataques e ANTES de Magias (pedido dele em 24/09/2026):
     //  são o que o personagem "sabe fazer", e ficavam soterradas embaixo das
     //  listas de magia e inventário. Anotações (📜) segue mais abaixo.
-    html += bloqueIdentidade(f) + blocoCombate(f) + blocoComplicacoes(f) + blocoCondicoes(f) + blocoEfeitosArea(f) + blocoNumeros(f) + blocoApara(f) + blocoPericias(f) + blocoAtaques(f) +
-            blocoDePoderes(f, 'racaOrigem') + blocoDePoderes(f, 'classePoderes') +
-            blocoAmigos(f) + blocoMagias(f) + blocoInventario(f) + blocoTextos(f) + blocoHistorico() +
-            blocoCompras(f);
+    //  ── A FICHA EM DUAS COLUNAS, COM ABAS (03/11/2026) ────────────
+    //  Era uma coluna só, de dezesseis cartões empilhados: para rolar
+    //  um ataque no meio do turno dava três telas de rolagem, e as
+    //  perícias — a consulta mais frequente de toda a mesa — ficavam no
+    //  meio do caminho. Agora:
+    //    · à ESQUERDA, o que não se dobra: quem é o personagem, o
+    //      estado de combate, as condições, os atributos e o PV/PM;
+    //    · logo abaixo, um cartão de ABAS com os seis assuntos que se
+    //      consultam um de cada vez (Ataques, Defesa, Poderes, Magias,
+    //      Equipamentos, Parceiros);
+    //    · à DIREITA, as perícias, que ficam fixas enquanto a página
+    //      rola — a coluna da direita é exatamente o que elas pedem;
+    //    · embaixo, de uma ponta à outra, os textos e os cadernos.
+    //  Nada de conteúdo mudou de dono: cada bloco é o mesmo de antes,
+    //  desenhado pela mesma função. O que mudou foi onde ele mora.
+    const abas = [
+      { id: 'ataques',   rot: '⚔ Ataques',      corpo: () => blocoAtaques(f) },
+      { id: 'defesa',    rot: '🛡 Defesa',       corpo: () => blocoNumeros(f, ['def']) + blocoApara(f) },
+      { id: 'poderes',   rot: '✨ Poderes',      corpo: () => blocoDePoderes(f, 'racaOrigem') + blocoDePoderes(f, 'classePoderes') },
+      { id: 'magias',    rot: '✦ Magias',       corpo: () => blocoMagias(f) },
+      { id: 'equip',     rot: '🎒 Equipamentos', corpo: () => blocoInventario(f) },
+      { id: 'parceiros', rot: '🤝 Parceiros',    corpo: () => blocoParceiros(f) + blocoAmigos(f) },
+    ];
+    if (!abas.some(a => a.id === abaAberta)) abaAberta = 'ataques';
+
+    html += `
+      <div class="fi-palco">
+        <div class="fi-coluna fi-coluna--principal">
+          ${bloqueIdentidade(f)}${blocoCombate(f)}${blocoComplicacoes(f)}${blocoCondicoes(f)}${blocoEfeitosArea(f)}
+          ${blocoNumeros(f, ['atr', 'vida'])}
+          <div class="fi-cartao fi-abas-cartao">
+            <div class="fi-abas" role="tablist" aria-label="Partes da ficha">
+              ${abas.map(a => `
+                <button type="button" role="tab" id="fiAba-${a.id}"
+                        class="fi-abas-btn ${a.id === abaAberta ? 'fi-abas-btn--ativa' : ''}"
+                        data-acao="aba-ficha" data-aba="${a.id}"
+                        aria-selected="${a.id === abaAberta}" aria-controls="fiPainel-${a.id}"
+                        tabindex="${a.id === abaAberta ? '0' : '-1'}">${a.rot}</button>`).join('')}
+            </div>
+            ${/*  Os seis painéis saem TODOS desenhados, e o que não é o
+                   da aba aberta fica `hidden`. Não é desperdício: meia
+                   dúzia de coisas do site procuram pedaços da ficha no
+                   DOM (o painel do turno, os efeitos em área, o eco da
+                   rolagem, a sincronia da mesa), e desenhar só a aba
+                   aberta faria cada uma delas achar que o bloco não
+                   existe. O custo é o mesmo da coluna única de antes.  */''}
+            ${abas.map(a => `
+              <div class="fi-abas-painel" role="tabpanel" id="fiPainel-${a.id}"
+                   aria-labelledby="fiAba-${a.id}" ${a.id === abaAberta ? '' : 'hidden'}>
+                ${a.corpo()}
+              </div>`).join('')}
+          </div>
+        </div>
+        <aside class="fi-coluna fi-coluna--lado">
+          ${blocoPericias(f)}
+        </aside>
+      </div>
+      ${blocoTextos(f)}${blocoHistorico()}${blocoCompras(f)}`;
     const donoAberta = donoDe(f.id);
     html += `
       <div class="fi-rodape">
@@ -1957,7 +2087,11 @@
   }
 
   // ── OS NÚMEROS: atributos · vida e mana · defesa e carga ─────────
-  function blocoNumeros(f) {
+  //  `quais` é a lista de cartões a desenhar, em ordem: 'atr', 'vida',
+  //  'def'. A ficha nova deixa Atributos e Vida & Mana sempre à vista,
+  //  no alto, e manda Defesa & Carga para a aba 🛡 Defesa. Sem `quais`,
+  //  saem os três — que é como era antes e como a impressão pede.
+  function blocoNumeros(f, quais) {
     const atrs = D.ATRIBUTOS.map(a => {
       const t = atrTemp(f, a.chave);
       return `
@@ -1997,16 +2131,16 @@
     const opsCd = D.ATRIBUTOS.map(a =>
       `<option value="${a.chave}" ${a.chave === f.cdAtributo ? 'selected' : ''}>${esc(a.curto)}</option>`).join('');
 
-    return `
-      <div class="fi-numeros">
+    const cartaoAtr = `
         <div class="fi-cartao fi-atributos">
           <h2 class="fi-cartao-tit">Atributos</h2>
           <div class="fi-atr-grade">${atrs}</div>
           <p class="fi-nota">Em Tormenta 20 o valor <em>já é</em> o modificador: Força 3 soma +3.
             Digite o total, com o que a raça deu.</p>
           ${temp}
-        </div>
+        </div>`;
 
+    const cartaoVida = `
         <div class="fi-cartao fi-vida">
           <h2 class="fi-cartao-tit">Vida &amp; Mana</h2>
           ${medidor(f, 'pv')}
@@ -2042,8 +2176,9 @@
           </p>
           <p class="fi-conta" data-der="pvconta">${contaPv(f)}</p>
           ${notaDoPm(f)}
-        </div>
+        </div>`;
 
+    const cartaoDef = `
         <div class="fi-cartao fi-defesa">
           <h2 class="fi-cartao-tit">Defesa &amp; Carga</h2>
           <div class="fi-grande">
@@ -2060,16 +2195,13 @@
                 'entra: com armadura pesada "você não aplica sua Destreza na Defesa" (p. 152), e há ' +
                 'poderes, condições e efeitos que dizem o mesmo. (Armadura pesada delicada ou de mitral ' +
                 'deixa 1 ou 2 pontos: escolha nenhum e ponha esses pontos em Outros.)', 'fi-sel', true)}</label>
-            <label class="fi-extra"><span>Armadura</span>
-              <input class="fi-num" type="number" value="${f.defesa.armadura}" data-campo="defesa.armadura"></label>
-            <label class="fi-extra"><span>Escudo</span>
-              <input class="fi-num" type="number" value="${f.defesa.escudo}" data-campo="defesa.escudo"></label>
             <label class="fi-extra"><span>Outros</span>
               <input class="fi-num" type="number" value="${f.defesa.outros}" data-campo="defesa.outros"></label>
-            <label class="fi-extra"><span>Penal. armadura</span>
+            <label class="fi-extra"><span>Penal. extra</span>
               <input class="fi-num" type="number" value="${f.defesa.penalidade}" data-campo="defesa.penalidade"
-                     title="O número do livro (ex.: 5). Cai só em Acrobacia, Furtividade e Ladinagem."></label>
+                     title="Penalidade de armadura que NÃO vem da armadura nem do escudo abaixo — uma condição, um poder, a sobrecarga. Cai só em Acrobacia, Furtividade e Ladinagem."></label>
           </div>
+          ${blocoPecasDefesa(f)}
           ${blocoFontesDefesa(f)}
           <div class="fi-linhas">
             <div class="fi-linha fi-linha--carga">
@@ -2107,14 +2239,89 @@
             </div>
           </div>
           ${blocoDesloc(f)}
-        </div>
-      </div>`;
+        </div>`;
+
+    const peca = { atr: cartaoAtr, vida: cartaoVida, def: cartaoDef };
+    const lista = (quais && quais.length) ? quais : ['atr', 'vida', 'def'];
+    return '<div class="fi-numeros fi-numeros--' + lista.join('-') + '">' +
+      lista.map(k => peca[k] || '').join('') + '</div>';
   }
 
   // ── FONTES DE DEFESA (30/09/2026) ────────────────────────────────
   //  Uma linha por fonte de Defesa com nome — como a Redução de Dano.
   //  O valor entra na conta; o texto diz de onde veio (uma magia, um
   //  item, um poder). Fica colado no número da Defesa.
+  // ── 🛡 A ARMADURA VESTIDA E O ESCUDO NA MÃO (03/11/2026) ─────────
+  //  Duas peças, não três números. Cada uma tem nome (porque é "Gibão
+  //  de peles", não "armadura"), bônus de Defesa, penalidade e um texto
+  //  dobrável — que é onde moram as melhorias, os encantos e o material
+  //  especial, exatamente como ele pediu.
+  //  O interruptor é o que faz a peça valer: a armadura VESTIDA e o
+  //  escudo EMPUNHADO (✋) somam na Defesa e cobram a penalidade; soltos,
+  //  não fazem nem uma coisa nem a outra. É a regra da p. 152 — a
+  //  penalidade vem de estar usando o equipamento — e resolve o caso de
+  //  todo dia: largar o escudo para empunhar a arma de duas mãos.
+  function blocoPecasDefesa(f) {
+    const def = (k, rot, icone, verbo, dica) => {
+      const p = pecaDefesa(f, k);
+      const ehEscudo = k === 'escudo';
+      return `
+      <li class="fi-peca ${p.ativo ? 'fi-peca--on' : 'fi-peca--off'}">
+        <button type="button" class="fi-peca-mao ${p.ativo ? 'fi-peca-mao--on' : ''}"
+                data-acao="peca-ativa" data-peca="${k}" aria-pressed="${p.ativo}"
+                title="${p.ativo
+                  ? esc(rot + ' em uso: ' + (p.defesa ? 'soma ' + sinal(p.defesa) + ' na Defesa' : 'sem bônus') +
+                        (p.penalidade ? ' e cobra −' + p.penalidade + ' em Acrobacia, Furtividade e Ladinagem' : '') +
+                        '. Clique para ' + (ehEscudo ? 'largar' : 'tirar') + '.')
+                  : esc(rot + ' fora de uso: não soma na Defesa nem cobra penalidade. Clique para ' + verbo + '.')}">
+          ${icone}</button>
+        <span class="fi-peca-rot">${esc(rot)}</span>
+        <input class="fi-txt fi-peca-nome" type="text" value="${esc(p.nome)}"
+               data-campo="equipDefesa.${k}.nome" autocomplete="off"
+               placeholder="${ehEscudo ? 'escudo leve, escudo pesado…' : 'gibão de peles, brunea, armadura completa…'}">
+        <label class="fi-peca-n"><span>Defesa</span>
+          <input class="fi-num fi-num--mini" type="number" value="${p.defesa}"
+                 data-campo="equipDefesa.${k}.defesa" title="${esc(dica)}"></label>
+        <label class="fi-peca-n"><span>Penal.</span>
+          <input class="fi-num fi-num--mini" type="number" min="0" value="${p.penalidade}"
+                 data-campo="equipDefesa.${k}.penalidade"
+                 title="A penalidade de armadura desta peça, sem sinal (o livro imprime −3; escreva 3). Cai em Acrobacia, Furtividade e Ladinagem — e só enquanto a peça estiver em uso."></label>
+        <button type="button" class="fi-mini ${p.aberto ? 'fi-mini--on' : ''}${p.notas && !p.aberto ? ' fi-mini--tem' : ''}"
+                data-acao="peca-texto" data-peca="${k}" aria-pressed="${!!p.aberto}"
+                title="${p.aberto ? 'Dobrar a descrição desta peça' : 'Abrir a descrição — material especial, melhorias, encantos, o que ela faz'}">✎</button>
+        ${p.aberto ? `
+        <div class="ga-rich-wrap ga-rich-wrap--barra fi-peca-texto" data-jog-edita>
+          ${window.GA_barraRica ? window.GA_barraRica() : ''}
+          <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
+               data-campo="equipDefesa.${k}.notas"
+               data-ph="${ehEscudo
+                 ? 'Mitral, +1 de encanto, a melhoria Espinhos, o poder que ele concede…'
+                 : 'Couro batido, −1 de penalidade por ser delicada, +1 de encanto, as melhorias…'}"
+               >${p.notas}</div>
+        </div>` : ''}
+      </li>`;
+    };
+    const pen = penalidadeArmadura(f);
+    return `
+      <div class="fi-desl fi-pecas">
+        <div class="fi-desl-topo">
+          <span class="fi-desl-rot">🛡 Vestido e empunhado</span>
+          <span class="fi-pecas-pen" data-der="penarm"${pen ? '' : ' hidden'}
+                title="Soma das penalidades em uso. Cai em Acrobacia, Furtividade e Ladinagem (p. 152).">
+            Penalidade de armadura <strong>−${pen}</strong></span>
+        </div>
+        <ul class="fi-pecas-lista">
+          ${def('armadura', 'Armadura', '🧥', 'vestir',
+                'Bônus de Defesa que esta armadura dá (p. 152). Só entra na conta enquanto ela estiver vestida.')}
+          ${def('escudo', 'Escudo', '✋', 'empunhar',
+                'Bônus de Defesa que este escudo dá (p. 152). Só entra na conta enquanto ele estiver NA MÃO — largue-o para usar a arma de duas mãos e o bônus sai sozinho.')}
+        </ul>
+        <p class="fi-nota">A <strong>✋</strong> do escudo é o interruptor: na mão, ele soma a Defesa e cobra a
+          penalidade; largado, não faz nenhuma das duas. Vale o mesmo para a armadura vestida. O que não for
+          peça — o +2 de uma magia, de um item ou de um poder — vai nas <em>Fontes de Defesa</em>, logo abaixo.</p>
+      </div>`;
+  }
+
   function blocoFontesDefesa(f) {
     const fontes = (f.defesa.fontes) || [];
     const linhas = fontes.map((x, i) => `
@@ -2347,6 +2554,11 @@
     const k = atrDefesa(f);
     const p = ['10'];
     if (k !== 'nenhum') p.push(atrCurto(k) + ' ' + sinal(atr(f, k)));
+    //  As duas peças entram pelo NOME quando ele existe — "Gibão de
+    //  peles +4" diz mais que "armadura +4" —, e só quando estão em uso.
+    const pa = pecaDefesa(f, 'armadura'), pe = pecaDefesa(f, 'escudo');
+    if (pa.ativo && pa.defesa) p.push((pa.nome ? esc(pa.nome) : 'armadura') + ' ' + sinal(pa.defesa));
+    if (pe.ativo && pe.defesa) p.push((pe.nome ? esc(pe.nome) : 'escudo') + ' ' + sinal(pe.defesa));
     if (f.defesa.armadura) p.push('armadura ' + sinal(f.defesa.armadura));
     if (f.defesa.escudo)   p.push('escudo ' + sinal(f.defesa.escudo));
     if (f.defesa.outros)   p.push('outros ' + sinal(f.defesa.outros));
@@ -4082,6 +4294,112 @@
       if (fica) a.tamanho = T.tamanho;
       else if (a.tamanho === T.tamanho) a.tamanho = 'Grande';       // o Amigão pede um amigo Grande
     }
+  }
+
+  // ═══ 🤝 PARCEIROS (Tormenta 20, p. 259–262) ═══════════════════════
+  //  O pedido dele: "eles também têm até uma pequena abinha de
+  //  'Parceiros' já contando com os limites dependendo do nosso nível".
+  //  O limite é da p. 260 e é de patamar, não de nível solto: 1 até o
+  //  4º, 2 do 5º ao 16º, 3 do 17º em diante.
+  //  A ficha CONTA e AVISA, mas não impede — porque o próprio livro
+  //  prevê o parceiro temporário além do limite (do qual você não se
+  //  beneficia, mas pode passar adiante) e porque meia dúzia de poderes
+  //  dão parceiro "que não conta em seu limite". É o que a chave ☆ de
+  //  cada linha faz: tira aquele parceiro da conta.
+  function limiteParceiros(f) {
+    const P = window.GA_PARCEIROS;
+    return P ? P.limite(nivel(f)) : { quantos: 1, patamar: 'iniciante' };
+  }
+  function parceirosQueContam(f) {
+    return (f.parceiros || []).filter(p => !p.fora).length;
+  }
+  function blocoParceiros(f) {
+    const P = window.GA_PARCEIROS;
+    if (!P) return '';
+    const lim = limiteParceiros(f);
+    const contam = parceirosQueContam(f);
+    const estado = contam > lim.quantos ? 'acima' : contam === lim.quantos ? 'cheio' : 'ok';
+
+    const grupos = [];
+    P.TIPOS.forEach(t => {
+      let g = grupos.find(x => x.nome === t.grupo);
+      if (!g) { g = { nome: t.grupo, itens: [] }; grupos.push(g); }
+      g.itens.push(t);
+    });
+
+    const linhas = (f.parceiros || []).map((p, i) => {
+      const t = P.porId(p.tipo);
+      const nvl = (P.NIVEIS.find(n => n.id === p.nivel) || P.NIVEIS[0]);
+      const beneficio = t ? (t[p.nivel] || '') : '';
+      const opsTipo = '<option value="">— escolha o tipo —</option>' + grupos.map(g =>
+        `<optgroup label="${esc(g.nome)}">` + g.itens.map(x =>
+          `<option value="${esc(x.id)}" ${x.id === p.tipo ? 'selected' : ''}>${esc(x.nome)}${
+            x.tamanho ? ' (' + esc(x.tamanho) + ')' : ''}</option>`).join('') + '</optgroup>').join('');
+      const opsNvl = P.NIVEIS.map(n =>
+        `<option value="${n.id}" ${n.id === p.nivel ? 'selected' : ''}>${esc(n.nome)}</option>`).join('');
+      return `
+        <li class="fi-parc ${p.fora ? 'fi-parc--fora' : ''} ${p.ferido ? 'fi-parc--ferido' : ''}">
+          <input class="fi-txt fi-parc-nome" type="text" value="${esc(p.nome)}" data-campo="parceiros.${i}.nome"
+                 placeholder="o nome dele — Ilde, o cavalo; a cavaleira do barão…" autocomplete="off">
+          <select class="fi-sel fi-sel--mini" data-campo="parceiros.${i}.tipo" title="Tipo de parceiro (p. 260–262)">${opsTipo}</select>
+          <select class="fi-sel fi-sel--mini" data-campo="parceiros.${i}.nivel"
+                  title="Nível de poder do parceiro. É uma classificação abstrata, que não diz classe nem nível do NPC, e fica a cargo do mestre (p. 260).">${opsNvl}</select>
+          <button type="button" class="fi-mini ${p.fora ? 'fi-mini--on' : ''}" data-acao="parc-fora" data-i="${i}"
+                  aria-pressed="${!!p.fora}"
+                  title="${p.fora
+                    ? 'Fora da conta: este parceiro NÃO conta no seu limite (é o que dizem os poderes que dão parceiro «que não conta em seu limite»). Clique para voltar a contar.'
+                    : 'Clique se este parceiro NÃO conta no seu limite — é o que dizem vários poderes de classe e de distinção.'}">☆</button>
+          <button type="button" class="fi-mini ${p.ferido ? 'fi-mini--on' : ''}" data-acao="parc-ferido" data-i="${i}"
+                  aria-pressed="${!!p.ferido}"
+                  title="${p.ferido
+                    ? 'Ferido (variante Parceiros Vulneráveis, p. 262): um novo «1» no ' + nvl.dado + ' e ele morre. Clique para curá-lo.'
+                    : 'Marcar como ferido — só na variante Parceiros Vulneráveis (p. 262), em que se rola um ' + nvl.dado + ' por parceiro a cada dano que você sofre.'}">🩹</button>
+          <button type="button" class="fi-mini ${p.aberto ? 'fi-mini--on' : ''}${p.notas && !p.aberto ? ' fi-mini--tem' : ''}"
+                  data-acao="parc-texto" data-i="${i}" aria-pressed="${!!p.aberto}"
+                  title="${p.aberto ? 'Dobrar o texto deste parceiro' : 'Escrever sobre ele — quem é, de onde veio, quais perícias ele escolheu'}">✎</button>
+          <button type="button" class="fi-mini fi-mini--x" data-acao="tira-parceiro" data-i="${i}"
+                  title="Tirar este parceiro">✕</button>
+          <p class="fi-parc-benef">${t
+            ? `<em>${esc(t.resumo)}</em> <strong>${esc(nvl.nome)}:</strong> ${esc(beneficio)}` +
+              (t.nota ? ` <span class="fi-parc-nota">${esc(t.nota)}</span>` : '')
+            : '<em>Escolha o tipo e o benefício do livro aparece aqui.</em>'}</p>
+          ${p.aberto ? `
+          <div class="ga-rich-wrap ga-rich-wrap--barra fi-parc-texto" data-jog-edita>
+            ${window.GA_barraRica ? window.GA_barraRica() : ''}
+            <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
+                 data-campo="parceiros.${i}.notas"
+                 data-ph="Quem é, de onde veio, que perícias o Ajudante escolheu, o tipo de dano do Destruidor…"
+                 >${p.notas}</div>
+          </div>` : ''}
+        </li>`;
+    }).join('');
+
+    return `
+      <div class="fi-cartao fi-bloco fi-parceiros">
+        <h2 class="fi-cartao-tit">🤝 Parceiros
+          <span class="fi-parc-placar fi-parc-placar--${estado}"
+                title="Limite do seu patamar (p. 260): 1 parceiro até o 4º nível, 2 do 5º ao 16º, 3 do 17º em diante.">
+            <strong>${contam}</strong> / ${lim.quantos}
+            <em>${esc(lim.patamar)}</em></span>
+          <span class="fi-pod-botoes">
+            <button type="button" class="fi-add fi-add--menor" data-acao="add-parceiro">＋ Acrescentar parceiro</button>
+          </span>
+        </h2>
+        ${estado === 'acima' ? `
+        <p class="fi-parc-aviso">⚠ Você está com <strong>${contam}</strong> parceiros contando para um limite de
+          <strong>${lim.quantos}</strong>. O livro não proíbe: diz que, se um efeito fornecer um parceiro temporário
+          além do limite, <em>você não se beneficia dele — mas pode passá-lo para outro personagem</em> (p. 260).
+          Se um deles vier de um poder que diz “não conta em seu limite”, marque o <strong>☆</strong> na linha dele.</p>` : ''}
+        <ul class="fi-parc-lista">${linhas ||
+          '<li class="fi-atq-vazio">Nenhum parceiro ainda. Parceiros são NPCs que se aventuram com o grupo: não têm turno e não agem — cada um ajuda <strong>um</strong> personagem com um bônus, conforme o tipo e o nível de poder.</li>'}</ul>
+        <details class="fi-parc-regras">
+          <summary>📖 As regras de parceiro, em miúdo</summary>
+          <ul class="fi-parc-regras-lista">
+            ${P.REGRAS.map(r => `<li>${r}</li>`).join('')}
+          </ul>
+          <p class="fi-nota">${esc(P.FONTE)}</p>
+        </details>
+      </div>`;
   }
 
   function blocoAmigos(f) {
@@ -5861,7 +6179,11 @@
         </div>
         <ul class="fi-inv-lista">${linhas || '<li class="fi-atq-vazio">Mochila vazia.</li>'}</ul>
         <datalist id="fiEspacos">${opsEsp}</datalist>
-        <button type="button" class="fi-add fi-add--menor" data-acao="add-item">＋ Acrescentar item</button>
+        <div class="fi-inv-acoes">
+          <button type="button" class="fi-add fi-add--menor" data-acao="add-item">＋ Acrescentar item</button>
+          <button type="button" class="fi-add fi-add--menor fi-add--cat" data-acao="catalogo-item"
+                  title="Escolher um item do catálogo do livro — a arma já vira um ataque pronto, o escudo e a armadura já viram as peças da Defesa">📖 Do catálogo</button>
+        </div>
 
         <div class="fi-inv-pe">
           <label class="fi-extra fi-extra--tibar"><span>💰 Tibares (T$)</span>
@@ -6036,6 +6358,12 @@
       if (d === 'desloconta') { el.innerHTML = contaDesloc(f); el.hidden = !contaDesloc(f); }
       if (d === 'pvconta')   el.innerHTML = contaPv(f);
       if (d === 'defconta')  el.innerHTML = contaDefesa(f);
+      if (d === 'penarm') {
+        const pen = penalidadeArmadura(f);
+        el.hidden = !pen;
+        const forte = el.querySelector('strong');
+        if (forte) forte.textContent = '−' + pen;
+      }
       if (d === 'xpconta')   el.innerHTML = contaXp(f);
       if (d === 'xpbarra')   el.innerHTML = barraXp(f);
       if (d === 'danoeco')   { el.innerHTML = ultimoDano; el.hidden = !ultimoDano; }
@@ -6293,8 +6621,11 @@
       // mesmo vale para o tipo, o parceiro e o treino do amigo. E pra
       // mão: trocar o "modo" troca o campo de baixo (texto ↔ um dos
       // dois menus ligados).
+      //  E para o parceiro: trocar o tipo ou o nível de poder troca o
+      //  benefício escrito embaixo da linha, que vem do livro.
       if (campo.indexOf('classes.') === 0 || campo.indexOf('amigos.') === 0 ||
           campo.indexOf('treinador.') === 0 || campo.indexOf('maos.') === 0 ||
+          /^parceiros\.\d+\.(tipo|nivel)$/.test(campo) ||
           campo === 'tamanho' || campo === 'cdAtributo') return render();
       atualizarDerivados();
       return;
@@ -6385,6 +6716,28 @@
     // a Tabela 3-2 recolhida lembra se está aberta, para um render não a
     // fechar na cara de quem está lendo (o clique vem ANTES de abrir)
     if (acao === 'passos-tabela') { tabelaPassosAberta = !(btn.closest('details') || {}).open; return; }
+    //  Trocar de aba não redesenha a ficha inteira: só troca o `hidden`
+    //  dos painéis e o estado dos botões. Assim nada que estivesse sendo
+    //  digitado ou rolado em outro painel se perde, e o resultado da
+    //  última rolagem continua pendurado onde estava.
+    if (acao === 'aba-ficha') {
+      const alvo = btn.dataset.aba;
+      if (!alvo || alvo === abaAberta) return;
+      abaAberta = alvo;
+      try { localStorage.setItem(ABA_KEY, alvo); } catch (e) {}
+      const cartao = btn.closest('.fi-abas-cartao');
+      if (!cartao) return render();
+      cartao.querySelectorAll('.fi-abas-btn').forEach(b => {
+        const on = b.dataset.aba === alvo;
+        b.classList.toggle('fi-abas-btn--ativa', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+        b.tabIndex = on ? 0 : -1;
+      });
+      cartao.querySelectorAll('.fi-abas-painel').forEach(p => {
+        p.hidden = (p.id !== 'fiPainel-' + alvo);
+      });
+      return;
+    }
     // o ✕ da pílula: some com a rolagem daqui. A da mesa (o painel
     // 🎲 Rolagens) continua lá — aquela é o histórico de todo mundo
     if (acao === 'fecha-res') {
@@ -6516,6 +6869,40 @@
       f.deslocMods.splice(+btn.dataset.i, 1);
       sujar(f.id, 'deslocMods'); salvar(); return render();
     }
+    // ── 🤝 PARCEIROS ───────────────────────────────────────────────
+    if (acao === 'add-parceiro') {
+      f.parceiros.push({ id: novoId(), tipo: '', nivel: 'iniciante', nome: '',
+                         fora: false, ferido: false, notas: '', aberto: false });
+      sujar(f.id, 'parceiros'); salvar(); return render();
+    }
+    if (acao === 'tira-parceiro') {
+      f.parceiros.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'parceiros'); salvar(); return render();
+    }
+    if (acao === 'parc-fora' || acao === 'parc-ferido' || acao === 'parc-texto') {
+      const p = f.parceiros[+btn.dataset.i];
+      if (!p) return;
+      const k = acao === 'parc-fora' ? 'fora' : acao === 'parc-ferido' ? 'ferido' : 'aberto';
+      p[k] = !p[k];
+      sujar(f.id, 'parceiros'); salvar(); return render();
+    }
+
+    // ── 🛡 A ARMADURA E O ESCUDO ───────────────────────────────────
+    if (acao === 'peca-ativa') {
+      const k = btn.dataset.peca;
+      const p = f.equipDefesa && f.equipDefesa[k];
+      if (!p) return;
+      p.ativo = !p.ativo;
+      sujar(f.id, 'equipDefesa'); salvar(); return render();
+    }
+    if (acao === 'peca-texto') {
+      const k = btn.dataset.peca;
+      const p = f.equipDefesa && f.equipDefesa[k];
+      if (!p) return;
+      p.aberto = !p.aberto;
+      sujar(f.id, 'equipDefesa'); salvar(); return render();
+    }
+
     if (acao === 'add-defesa-fonte') {
       f.defesa.fontes.push({ id: novoId(), valor: 2, de: '' });
       sujar(f.id, 'defesa'); salvar(); return render();
@@ -6796,6 +7183,7 @@
       f.inventario.push({ id: novoId(), nome: '', qtd: 1, espacos: 1, cada: true, obs: '' });
       salvar(); return render();
     }
+    if (acao === 'catalogo-item') return abrirCatalogoItens(f);
     // Tirar pergunta antes — "às vezes sem querer eu posso remover um item
     // que eu não queria" (11/09/2026). A linha em branco sai sem pergunta:
     // é quase sempre o ＋ apertado a mais.
@@ -7677,7 +8065,8 @@
     nome: 'nome', jogador: 'jogador', raca: 'raça', origem: 'origem', divindade: 'divindade',
     tamanho: 'tamanho', deslocamento: 'deslocamento', deslocMods: 'penalidades de deslocamento',
     classes: 'classes e níveis', atributos: 'atributos', atributosTemp: 'atributos temporários',
-    pv: 'PV', pm: 'PM', defesa: 'Defesa', carga: 'carga', cdAtributo: 'atributo da CD', xp: 'XP',
+    pv: 'PV', pm: 'PM', defesa: 'Defesa', equipDefesa: 'armadura e escudo',
+    carga: 'carga', cdAtributo: 'atributo da CD', xp: 'XP',
     xpLog: 'caderno do XP',
     pmCustos: 'custos em PM escritos por você', pmLog: 'mini-log de PM',
     resistencias: 'resistências', reducoes: 'RD', imunidades: 'imunidades', proficiencias: 'proficiências',
@@ -7686,7 +8075,8 @@
     compras: 'recibo da Loja', magias: 'magias', poderes: 'poderes', tormentaConta: 'conta da Tormenta',
     poderesOrdem: 'ordem das gavetas de poder',
     ataques: 'ataques', treinador: 'treinador', moedasPesam: 'peso das moedas',
-    amigos: 'melhor amigo', amigosPv: 'PV do melhor amigo', blocos: 'textos',
+    amigos: 'melhor amigo', amigosPv: 'PV do melhor amigo', parceiros: 'parceiros',
+    blocos: 'textos',
   };
   function gruposDiferentes(a, b) {
     const chaves = {}, saida = [];
@@ -7828,6 +8218,182 @@
   //  A busca tem DOIS passos de propósito: achar e, só depois de ler,
   //  adicionar. Antes um toque na lista já jogava a magia na ficha —
   //  e o dedo escorregando numa lista de 254 nomes é fácil demais.
+  // ═══ 📖 O CATÁLOGO NA MOCHILA (03/11/2026) ════════════════════════
+  //  O pedido dele: "os equipamentos que pode adicionar já algum item
+  //  existente… o que iria facilitar muito as adições de espadas,
+  //  escudos, armaduras".
+  //  A Loja já sabia mandar um item para a mochila, mas só de lá para
+  //  cá — era preciso sair da ficha, achar o item na vitrine do dia e
+  //  voltar. Agora a mochila puxa do mesmo catálogo (LojaCompleta, os
+  //  458 itens-base do livro) sem sair do lugar, e cada tipo de item
+  //  vai para onde é o lugar dele:
+  //    · ARMA    → vira linha do inventário E um ataque pronto, com o
+  //                dano, o crítico, o tipo de dano e a perícia certa
+  //                (Luta ou Pontaria, pela coluna de alcance do livro);
+  //    · ESCUDO  → vira a peça ✋ Escudo, com bônus e penalidade;
+  //    · ARMADURA→ vira a peça 🧥 Armadura, idem;
+  //    · o resto → linha do inventário, com os espaços do livro.
+  //  Nada de preço: o T$ é assunto da Loja, que tem o recibo. Aqui só
+  //  entra a FICHA do item.
+  const CAT_ICONE = { weapon: '⚔', armor: '🛡', misc: '🎒' };
+  function catalogoDaLoja() {
+    //  O loja_completa.js declara `const LojaCompleta` no topo do
+    //  arquivo — e `const` de script clássico NÃO vira propriedade do
+    //  window. Procurar por `window.LojaCompleta` devolvia sempre
+    //  undefined, com o catálogo carregado ali do lado.
+    const L = (typeof LojaCompleta !== 'undefined') ? LojaCompleta : null;
+    if (!L || typeof L.catalogoNomes !== 'function') return [];
+    return L.catalogoNomes().map(it => {
+      const s = (typeof L.statsDeItem === 'function' && L.statsDeItem(it.nome)) || {};
+      return { nome: it.nome, kind: it.kind, categoria: it.categoria || s.categoria || '', s: s };
+    });
+  }
+  //  O que se lê no fim da linha: a ficha do item em uma frase.
+  function resumoDoItemCat(it) {
+    const s = it.s || {};
+    if (it.kind === 'weapon') {
+      return [s.dano, s.critico, s.tipo, s.alcance].filter(Boolean).join(' · ') +
+             (s.peso ? ' · ' + arredonda(s.peso) + ' esp.' : '');
+    }
+    if (it.kind === 'armor') {
+      const pen = Math.abs(parseInt(s.penalidade, 10) || 0);
+      return (s.bonus ? '+' + s.bonus + ' de Defesa' : 'sem bônus') +
+             (pen ? ' · penalidade −' + pen : ' · sem penalidade') +
+             (s.peso ? ' · ' + arredonda(s.peso) + ' esp.' : '');
+    }
+    return (s.peso ? arredonda(s.peso) + ' espaço' + (s.peso === 1 ? '' : 's') : 'espaços à escolha');
+  }
+  //  Um escudo é uma "armadura" da categoria Escudos — é assim que o
+  //  livro organiza a Tabela 3-4, e é assim que o catálogo guarda.
+  function ehEscudoCat(it) { return /escudo/i.test(it.categoria || ''); }
+
+  function abrirCatalogoItens(f) {
+    const base = catalogoDaLoja();
+    if (!window.GA_abrirModal) return;
+    if (!base.length) {
+      alert('O catálogo de itens (js/loja_completa.js) não carregou nesta página.');
+      return;
+    }
+    const overlay = window.GA_abrirModal(`
+      <div class="ga-modal-cab">
+        <span>📖 Pôr um item do catálogo na mochila</span>
+        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
+      </div>
+      <div id="fiCatCorpo"></div>`);
+    const corpo = overlay.querySelector('#fiCatCorpo');
+    let filtro = '';     // '', 'weapon', 'escudo', 'armor', 'misc'
+
+    corpo.innerHTML = `
+      <p class="ga-modal-dica">Os ${base.length} itens-base do livro, os mesmos da 🏪 Loja. A <strong>arma</strong>
+        entra na mochila <em>e</em> vira um ataque pronto; o <strong>escudo</strong> e a <strong>armadura</strong>
+        viram as peças do cartão da Defesa, com bônus e penalidade. O preço fica com a Loja — aqui entra só a ficha
+        do item.</p>
+      <div class="fi-cat-chips">
+        <button type="button" class="fi-cat-chip fi-cat-chip--on" data-cat="">Tudo</button>
+        <button type="button" class="fi-cat-chip" data-cat="weapon">⚔ Armas</button>
+        <button type="button" class="fi-cat-chip" data-cat="escudo">✋ Escudos</button>
+        <button type="button" class="fi-cat-chip" data-cat="armor">🧥 Armaduras</button>
+        <button type="button" class="fi-cat-chip" data-cat="misc">🎒 Equipamento</button>
+      </div>
+      <input type="text" class="fi-busca-mag" id="fiBuscaCat" placeholder="espada longa, brunea, corda de seda…"
+             autocomplete="off" aria-label="Buscar item do catálogo">
+      <div class="fi-busca-res" id="fiCatRes"></div>`;
+    const campo = corpo.querySelector('#fiBuscaCat');
+    const res   = corpo.querySelector('#fiCatRes');
+
+    function casaFiltro(it) {
+      if (!filtro) return true;
+      if (filtro === 'weapon') return it.kind === 'weapon';
+      if (filtro === 'escudo') return it.kind === 'armor' && ehEscudoCat(it);
+      if (filtro === 'armor')  return it.kind === 'armor' && !ehEscudoCat(it);
+      return it.kind === 'misc';
+    }
+    function listar() {
+      const q = semAcento((campo.value || '').trim());
+      const achados = base.filter(it => casaFiltro(it) &&
+        (!q || semAcento(it.nome + ' ' + it.categoria).indexOf(q) >= 0)).slice(0, 80);
+      res.innerHTML = achados.length ? achados.map((it, i) => `
+        <button type="button" class="fi-busca-item fi-cat-item" data-i="${base.indexOf(it)}">
+          <span class="fi-busca-circ">${CAT_ICONE[it.kind] || '🎒'}</span>
+          <span class="fi-busca-nome">${esc(it.nome)}</span>
+          <span class="fi-busca-meta">${esc(it.categoria)}</span>
+          <span class="fi-busca-res-txt">${esc(resumoDoItemCat(it))}</span>
+        </button>`).join('')
+        : '<p class="fi-busca-vazio">Nenhum item com isso.</p>';
+    }
+    corpo.querySelectorAll('[data-cat]').forEach(b => b.addEventListener('click', () => {
+      filtro = b.dataset.cat;
+      corpo.querySelectorAll('[data-cat]').forEach(x => x.classList.toggle('fi-cat-chip--on', x === b));
+      listar();
+    }));
+    campo.addEventListener('input', listar);
+    res.addEventListener('click', e => {
+      const b = e.target.closest('[data-i]');
+      if (!b) return;
+      const it = base[+b.dataset.i];
+      if (!it) return;
+      porItemDoCatalogo(f, it);
+      overlay._fechar();
+      render();
+    });
+    listar();
+    campo.focus();
+  }
+
+  function porItemDoCatalogo(f, it) {
+    const s = it.s || {};
+    const esp = (typeof s.peso === 'number' && isFinite(s.peso)) ? s.peso : 1;
+
+    //  Escudo e armadura: viram a PEÇA do cartão da Defesa (e ficam
+    //  vestidos/empunhados de saída, que é o caso de quem acabou de
+    //  comprar). O que já estava lá é substituído — são peças únicas.
+    if (it.kind === 'armor') {
+      const k = ehEscudoCat(it) ? 'escudo' : 'armadura';
+      const antes = pecaDefesa(f, k);
+      f.equipDefesa[k] = {
+        nome: it.nome,
+        defesa: parseInt(s.bonus, 10) || 0,
+        penalidade: Math.abs(parseInt(s.penalidade, 10) || 0),
+        ativo: true,
+        notas: antes.notas || '',
+        aberto: antes.aberto || false,
+      };
+      sujar(f.id, 'equipDefesa');
+    }
+
+    //  Arma: além da linha da mochila, um ataque pronto. A perícia sai
+    //  da categoria do livro — "Ataque à Distância" é Pontaria, o resto
+    //  é Luta — e o alcance vem da coluna de alcance da tabela.
+    if (it.kind === 'weapon') {
+      const distancia = /dist[âa]ncia/i.test(it.categoria || '');
+      f.ataques.push({
+        id: novoId(),
+        nome: it.nome,
+        pericia: distancia ? 'pontaria' : 'luta',
+        extra: 0,
+        dano: s.dano || '',
+        passos: 0,
+        critico: s.critico || '',
+        tipo: s.tipo || '',
+        alcance: s.alcance || (distancia ? 'à distância' : 'corpo a corpo'),
+        notas: '', aberto: false,
+      });
+      sujar(f.id, 'ataques');
+    }
+
+    f.inventario.push({
+      id: novoId(),
+      nome: it.nome,
+      qtd: 1,
+      espacos: esp,
+      cada: true,
+      obs: it.categoria || '',
+      notas: '', aberto: false,
+    });
+    sujar(f.id, 'inventario');
+    salvar();
+  }
+
   function abrirBuscaMagia(f) {
     const base = window.GA_MAGIAS || [];
     if (!base.length || !window.GA_abrirModal) return;

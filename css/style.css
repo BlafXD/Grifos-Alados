@@ -57,6 +57,24 @@
   --gold-deep:  #675418;   /* dourado escuro: legível como texto no pergaminho */
   --gold-pale:  #f0e3c2;   /* realce quente: linha marcada, painel em foco */
 
+  /* ── AS CORES DA ROLAGEM ──────────────────────────────────────────
+     A pílula do resultado (Ataque, Dano, 💥 Crítico) e a marca de dano
+     massivo escreviam cor própria: hexadecimais CLAROS cravados no
+     CSS. No modo noturno o fundo continuava claro e a letra invertia
+     para clara em cima dele — o número do dano e o do crítico caíam
+     para 2,2:1, e o 1 natural (#b3261e) para 2,5:1 contra o papel
+     escuro. São PREENCHIMENTO, e preenchimento tem um valor por
+     paleta; é o que estes quatro passam a ter.
+       --res-faixa       a listra clara do crítico (a outra é --gold-pale)
+       --res-erro        o fundo da rolagem que não deu certo
+       --res-perigo      o fundo da marca de dano massivo
+       --res-perigo-fio  o fio dela                                     */
+  --res-faixa:      #f6d9a8;
+  --res-erro:       #f7e3e0;
+  --res-perigo:     #f0c3bb;
+  --res-perigo-fio: #d39086;
+  --res-perigo-tinta: #6a1d12;
+
   /* ── A FAIXA ESCURA ───────────────────────────────────────────
      O masthead, a barra de seções, a aba ativa, o chip ativo: a cara
      da gazeta é faixa escura com letra clara e ouro por cima. Isso é

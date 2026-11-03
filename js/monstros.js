@@ -3895,7 +3895,7 @@
       salvar(); render(); return;
     }
     if (acao === 'abrir-magias') {
-      abrirModalMagias(+alvo.dataset.s, +alvo.dataset.c, +alvo.dataset.cr);
+      abrirModalMagias({ s: +alvo.dataset.s, c: +alvo.dataset.c, cr: +alvo.dataset.cr });
       return;
     }
     if (acao === 'abrir-habilidade') {
@@ -6657,12 +6657,17 @@
   //  prévia antes de inserir. Na ficha vira texto rico comum — grifável
   //  e editável, porque quase nunca a magia entra igualzinha ao livro.
   // ═══════════════════════════════════════════════════════════════
-  let _magAlvo = null;         // { s, c, cr }
+  //  O alvo tem DOIS feitios, e o compêndio não precisa saber qual é:
+//    { s, c, cr }           — a criatura de uma cena do Painel de Combate
+//    { nome, inserir(ln, m) } — qualquer outro lugar do site (a oficina
+//                               ⚗ Criar Ameaça entra por aqui, pelo
+//                               window.GA_Compendio lá embaixo)
+  let _magAlvo = null;
   let _magEstado = {};         // id -> { pm, execucao, extras: {i:true}, res }
   const _magFiltro = { circulo: '', tipo: '' };
 
   function _magCriatura() {
-    if (!_magAlvo) return null;
+    if (!_magAlvo || _magAlvo.inserir) return null;    // alvo de fora: não há criatura de cena
     const cena = dados.sessoes[_magAlvo.s] && dados.sessoes[_magAlvo.s].cenas[_magAlvo.c];
     return (cena && cena.criaturas[_magAlvo.cr]) || null;
   }
@@ -6800,14 +6805,20 @@
 
   function _magInserir(item) {
     const m = magiaPorId(item && item.dataset.magId);
-    const cr = _magCriatura();
-    if (!m || !cr) return;
+    if (!m || !_magAlvo) return;
     const linha = magLinhaTexto(m, _magOpc(m, _magEstadoDe(m)));
-    cr.magiasAtivo = true;
-    cr.magiasHtml = (cr.magiasHtml || '').trim() + `<div>${_txtParaHtml(linha)}</div>`;
-    cr.magias = htmlParaTexto(cr.magiasHtml);
-    salvar();
-    render();                       // a ficha atrás do modal já mostra a linha
+    if (_magAlvo.inserir) {
+      // alvo de fora (a oficina): quem chamou decide onde a linha mora
+      _magAlvo.inserir(linha, m, _magOpc(m, _magEstadoDe(m)));
+    } else {
+      const cr = _magCriatura();
+      if (!cr) return;
+      cr.magiasAtivo = true;
+      cr.magiasHtml = (cr.magiasHtml || '').trim() + `<div>${_txtParaHtml(linha)}</div>`;
+      cr.magias = htmlParaTexto(cr.magiasHtml);
+      salvar();
+      render();                     // a ficha atrás do modal já mostra a linha
+    }
     const ok = item.querySelector('.mz-mag-ok');
     if (ok) { ok.hidden = false; setTimeout(() => { ok.hidden = true; }, 1600); }
   }
@@ -6827,16 +6838,19 @@
     });
   }
 
-  function abrirModalMagias(si, ci, cri) {
+  //  `alvo` é { s, c, cr } (criatura de cena) ou { nome, inserir } — ver
+  //  o comentário em _magAlvo.
+  function abrirModalMagias(alvo) {
     fecharModalMagias();
     const lista = window.GA_MAGIAS;
     if (!Array.isArray(lista) || !lista.length) {
       alert('O compêndio de magias não carregou (js/magias-data.js).'); return;
     }
-    _magAlvo = { s: si, c: ci, cr: cri };
+    _magAlvo = alvo;
     _magEstado = {};
     _magFiltro.circulo = ''; _magFiltro.tipo = '';
     const cr = _magCriatura();
+    const quem = (alvo && alvo.nome) || (cr && cr.nome) || 'criatura';
 
     let grupos = '';
     [1, 2, 3, 4, 5].forEach(circ => {
@@ -6878,7 +6892,7 @@
     overlay.innerHTML = `
       <div class="mz-cond-modal mz-mag-modal" role="dialog" aria-modal="true">
         <div class="mz-cond-modal-head">
-          <span>✨ Magias — ${esc((cr && cr.nome) || 'criatura')}</span>
+          <span>✨ Magias — ${esc(quem)}</span>
           <button class="mz-cond-modal-x" data-mag-fechar title="Fechar">✕</button>
         </div>
         <input class="mz-cond-busca" type="text" placeholder="Buscar por nome, escola ou efeito…" autocomplete="off">
@@ -7483,6 +7497,23 @@
   // ── API PÚBLICA (consumida pelas abas Viagem e Consultas rápidas) ─
   // Cria uma cena de combate ligada a uma viagem, agrupada numa sessão
   // própria, e devolve onde ficou. A aba Viagem chama isto e navega para cá.
+  // ═══════════════════════════════════════════════════════════════
+  //  O COMPÊNDIO DE MAGIAS, EMPRESTADO (03/11/2026)
+  //  O modal das 254 magias — com o montador, os aprimoramentos que
+  //  somam PM e a prévia da linha — nasceu aqui, para a criatura de uma
+  //  cena. Ele não tem nada de Painel de Combate: quem chama diz o nome
+  //  de quem vai receber e o que fazer com a linha pronta. A oficina
+  //  ⚗ Criar Ameaça usa exatamente este, e não uma cópia — assim uma
+  //  correção de magia vale nos dois lugares no mesmo dia.
+  //    GA_Compendio.magias('Goblin Xamã', function (linha, magia) { … })
+  // ═══════════════════════════════════════════════════════════════
+  window.GA_Compendio = {
+    magias: function (nome, inserir) {
+      abrirModalMagias({ nome: nome || 'criatura', inserir: inserir || function () {} });
+    },
+    fechar: fecharModalMagias,
+  };
+
   window.GA_Monstros = {
     // Insere um NPC da biblioteca (js/npcs-data.js) na cena narrada; se
     // nenhuma cena estiver sendo narrada, agrupa numa sessão própria.

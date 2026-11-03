@@ -998,6 +998,7 @@ button.ca-base-item:hover { background: var(--gold-pale); border-color: var(--go
 }
 .ca-extra--torm { border-top-color: #8a1c4a; }
 .ca-extra--dist { border-top-color: var(--gold-deep); }
+.ca-extra--mag  { border-top-color: var(--azul); }
 .ca-extra-cab {
   display: flex;
   flex-wrap: wrap;
@@ -1022,6 +1023,45 @@ button.ca-base-item:hover { background: var(--gold-pale); border-color: var(--go
 .ca-btn--torm:hover { background: #a82458; }
 .ca-btn--dist { background: var(--gold-deep); border-color: var(--gold-dim); color: var(--parchment); }
 .ca-btn--dist:hover { filter: brightness(1.12); }
+
+/* ── ✨ MAGIAS DA OFICINA (03/11/2026) ─────────────────────────────
+   Uma linha por magia, com o marcador • do livro à esquerda, o texto
+   num campo que cresce e as setas de ordem à direita. O cabeçalho
+   ("Como um clérigo de 9º nível (CD 30)") fica acima da lista, porque
+   é dele que sai a primeira linha do bloco na ficha. */
+.ca-btn--mag { background: var(--azul); border-color: var(--azul); color: var(--parchment); }
+.ca-btn--mag:hover:not(:disabled) { filter: brightness(1.12); }
+.ca-btn--mag:disabled { opacity: 0.5; cursor: not-allowed; }
+.ca-mag-cab-campo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+.ca-mag-cab-campo .ca-input { flex: 1 1 auto; min-width: 0; }
+.ca-mags { display: flex; flex-direction: column; gap: 0.35rem; }
+.ca-mag {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 0.35rem;
+  padding: 0.3rem 0.35rem;
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-left: 3px solid var(--azul);
+  border-radius: var(--raio);
+}
+.ca-mag-marca {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--azul);
+}
+.ca-mag-texto { resize: vertical; min-height: 2.6rem; }
+.ca-mag-ordem { display: flex; flex-direction: column; gap: 0.15rem; }
+@media (max-width: 620px) {
+  .ca-mag { grid-template-columns: auto 1fr; }
+  .ca-mag-ordem { grid-column: 1 / -1; flex-direction: row; justify-content: flex-end; }
+}
 
 .ca-extra-aviso {
   margin: 0 0 0.5rem;

@@ -1035,6 +1035,15 @@ html.ga-noturno {
   --gold-deep:  #d9b13f;
   --gold-pale:  #2c2314;
   --linha-hover:#2c2314;
+  /* as rolagens: fundos que antes ficavam CLAROS à noite, com a letra
+     invertida por cima (o dano e o crítico em 2,2:1). Agora escurecem
+     junto com o resto, e a listra do crítico continua se lendo como
+     listra — um tom acima do --gold-pale. */
+  --res-faixa:      #332710;
+  --res-erro:       #3a1a1e;
+  --res-perigo:     #3d1a14;
+  --res-perigo-fio: #8a3a2c;
+  --res-perigo-tinta: #f0a89a;
   /* a faixa NÃO inverte: é marca, não superfície. Um fio mais escura
      que o papel da noite (#17110a), para ainda se ler como faixa. */
   --faixa:       #0d0905;
@@ -1092,6 +1101,11 @@ html.ga-pele-nova {
   --gold-deep:  #5c4a13;   /* TEXTO dourado: escuro de propósito */
   --gold-pale:  #f6ead0;   /* agora realça mesmo, porque o papel clareou */
   --linha-hover:#efe4cb;
+  --res-faixa:      #f0d7a4;
+  --res-erro:       #f8e2de;
+  --res-perigo:     #f3c7bf;
+  --res-perigo-fio: #c97d70;
+  --res-perigo-tinta: #6b1c10;
 
   --text:       #15100b;
   --text-mid:   #4a3a2b;
