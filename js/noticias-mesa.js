@@ -282,6 +282,15 @@
   //  confirmação — não no teclado.
   function possoEscrever(id) {
     if (!configurado() || !meuUid()) return false;
+    //  A GAZETA SEGUE O DONO DA MESA (F3). Se esta é a campanha da mesa
+    //  aberta e ela TEM dono, só o mestre dela escreve na gazeta — é o que
+    //  a regra do banco passou a exigir também. Sem isto, um jogador (ou
+    //  qualquer logado que abrisse o link antes de o mestre publicar) via a
+    //  gazeta "editável", escrevia, e só levava "permission denied" ao
+    //  salvar — ou, pior, carimbava a gazeta da campanha alheia como sua.
+    //  Mesa órfã (sem dono) continua valendo quem chegar, como as mesas velhas.
+    const e = window.GA_Mesa ? window.GA_Mesa.estado() : null;
+    if (e && e.mesaId === id && e.mesa && e.mesa.dono) return e.souMestre;
     const c = corpos[id];
     if (c) return !c.dono || c.dono === meuUid();
     if (publicas[id] && !minhasIdx[id]) return false;   // aprovada de outra pessoa

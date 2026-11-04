@@ -115,7 +115,7 @@
       ".read": "auth != null && auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2'",
       "$camp": {
         ".read":  true,
-        ".write": "auth != null && (auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' || ((data.child('dono').val() === auth.uid || (!data.child('dono').exists() && auth.token.email_verified == true)) && (newData.child('dono').val() === auth.uid || (!newData.exists() && data.child('dono').val() === auth.uid))))",
+        ".write": "auth != null && (auth.uid === 'uxcc4lwMDceDqGFRrMwctv1Gi9D2' || ((root.child('mesas').child($camp).child('dono').val() === auth.uid || (!root.child('mesas').child($camp).child('dono').exists() && (data.child('dono').val() === auth.uid || (!data.child('dono').exists() && auth.token.email_verified == true)))) && (newData.child('dono').val() === auth.uid || (!newData.exists() && data.child('dono').val() === auth.uid))))",
         ".validate": "newData.hasChildren(['nome', 'dono'])",
 
         "nome":         { ".validate": "newData.isString() && newData.val().length <= 60" },

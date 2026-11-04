@@ -103,9 +103,13 @@
 
   // ── ASSINATURAS ──────────────────────────────────────────────────
   let refs = [];
+  let refsMembro = [];      // as escutas que dependem do PAPEL (ver abaixo)
+  let membrosLigado = '';   // sala/papel já assinados, para não re-assinar à toa
   function desligar() {
     refs.forEach(r => { try { r.ref.off('value', r.cb); } catch (e) {} });
     refs = [];
+    refsMembro = [];
+    membrosLigado = '';
   }
   function ligar(caminho, cb) {
     const b = db(); if (!b) return;
@@ -117,10 +121,8 @@
     refs.push({ ref: ref, cb: fn });
   }
 
-  let membrosLigado = '';
   function assinar() {
     desligar();
-    membrosLigado = '';
     const id = mesaId();
     est.membros = {}; est.pedidos = {}; est.meuPedido = null; est.papel = null;
     est.mesa = null; est.minhasMesas = {};
@@ -149,18 +151,43 @@
     ligar('mesas/' + id + '/membros/' + u.uid, v => {
       est.papel = (v && v.papel) || null;
       if (est.papel) { est.meuPedido = null; assinarDeMembro(id); }
+      else desligarMembro();   // saiu da mesa, ou o mestre o removeu: solta as escutas de membro
     });
     ligar('mesas/' + id + '/pedidos/' + u.uid, v => { est.meuPedido = v || null; });
     // as mesas de que ele participa — índice que ele mesmo guarda
     ligar('usuarios/' + u.uid + '/mesas', v => { est.minhasMesas = v || {}; });
   }
 
+  //  AS ESCUTAS QUE DEPENDEM DO PAPEL. `membros` e `pedidos` trocam quando
+  //  o mestre promove ou rebaixa alguém (o jogador vira auxiliar, o mestre
+  //  lê `pedidos` e os demais não). Ficam num balde à parte (`refsMembro`)
+  //  para serem DESLIGADAS na troca de papel — antes, cada promoção
+  //  empilhava uma escuta nova por cima da antiga sem nunca soltar a velha,
+  //  e um mestre rebaixado continuava lendo `pedidos` até recarregar.
+  function ligarMembro(caminho, cb) {
+    const b = db(); if (!b) return;
+    const ref = b.ref(caminho);
+    const fn = ref.on('value', snap => { cb(snap.val()); avisar(); },
+      err => console.warn('[mesa] ' + caminho + ':', err && err.message));
+    const r = { ref: ref, cb: fn };
+    refsMembro.push(r); refs.push(r);
+  }
+  function desligarMembro() {
+    refsMembro.forEach(r => {
+      try { r.ref.off('value', r.cb); } catch (e) {}
+      const i = refs.indexOf(r); if (i >= 0) refs.splice(i, 1);
+    });
+    refsMembro = [];
+    membrosLigado = '';
+  }
   function assinarDeMembro(id) {
-    if (membrosLigado === id + '/' + est.papel) return;
-    membrosLigado = id + '/' + est.papel;
-    ligar('mesas/' + id + '/membros', v => { est.membros = v || {}; });
+    const chave = id + '/' + est.papel;
+    if (membrosLigado === chave) return;
+    desligarMembro();
+    membrosLigado = chave;
+    ligarMembro('mesas/' + id + '/membros', v => { est.membros = v || {}; });
     if (est.papel !== 'mestre') return;
-    ligar('mesas/' + id + '/pedidos', v => { est.pedidos = v || {}; });
+    ligarMembro('mesas/' + id + '/pedidos', v => { est.pedidos = v || {}; });
   }
 
   // ── ENTRAR E SAIR ────────────────────────────────────────────────
@@ -206,12 +233,20 @@
   //    • a sala não existe        → cria, e ele é o mestre;
   //    • existe e não tem dono    → assume (as salas de antes desta aba);
   //    • existe e é de outra gente→ avisa que o nome já é de outra mesa.
-  function criarCampanha(nome) {
+  //  `idForcado` existe por causa do «Assumir esta campanha» (reivindicar):
+  //  ali o id TEM de ser o da sala aberta no endereço, não o que o nome de
+  //  exibição normaliza — uma sala «mesa» chamada "Penitência de Azgher"
+  //  normalizaria para `penitencia-de-azgher` e assumiria OUTRA sala.
+  function criarCampanha(nome, idForcado) {
     const b = db(), u = est.usuario;
     if (!b || !u) return;
     const nomeLimpo = String(nome || '').trim();
     if (!nomeLimpo) { est.erro = 'escreva o nome da campanha'; return avisar(); }
-    const id = idDe(nomeLimpo);
+    const id = idForcado || idDe(nomeLimpo);
+    //  Um nome só de símbolos ou emoji ("!!!", "😀", "—") normaliza para
+    //  vazio: sem esta guarda o id ficaria "" e o `b.ref('mesas//dono')`
+    //  estouraria sem dizer nada, e o botão "Criar" parecia não fazer nada.
+    if (!id) { est.erro = 'esse nome não vira um endereço de campanha — use ao menos uma letra ou número'; return avisar(); }
     est.erro = '';
 
     b.ref('mesas/' + id + '/dono').once('value').then(snap => {
@@ -250,8 +285,12 @@
   }
 
   // Assumir a mesa que está aberta agora (mesma coisa, com o nome dela).
+  //  O id é SEMPRE o da sala aberta (mesaId), e o nome só o rótulo — ver a
+  //  nota do `idForcado` no criarCampanha.
   function reivindicar() {
-    criarCampanha((est.mesa && est.mesa.nome) || mesaId());
+    const id = mesaId();
+    if (!id) return;
+    criarCampanha((est.mesa && est.mesa.nome) || id, id);
   }
 
   // Entrada livre: o jogador entra sozinho, com um clique.

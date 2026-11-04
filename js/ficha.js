@@ -1591,7 +1591,7 @@
           </button>`).join('')}
         <button type="button" class="fi-add" data-acao="nova">＋ Nova ficha</button>
       </div>
-      ${painelTodasFichas()}
+      ${lobbyFichas()}
       ${barraDaMesa()}
       ${avisoDeSincronia(f)}
       ${avisoAbaConcorrente(f)}
@@ -6587,6 +6587,12 @@
       sujar(f.id, 'blocos');
       salvar(); return render();
     }
+    //  O seletor de campanha do Lobby: muda a mesa de uma ficha DESTE
+    //  aparelho (não precisa ser a aberta), igual aos botões «Vincular» /
+    //  «Só na conta» do card da ficha — só que para qualquer uma da lista.
+    if (el && el.dataset && el.dataset.acao === 'lobby-campanha') {
+      return moverCampanhaFicha(el.dataset.id, el.value);
+    }
     if (!el || !el.dataset || !el.dataset.campo) return;
     const f = fichaAberta();
     if (!f) return;
@@ -6653,14 +6659,15 @@
     const f = fichaAberta();
 
     if (acao === 'nova') {
+      //  NASCE SEM CAMPANHA, de propósito (04/11/2026, decisão dele). Antes
+      //  ela colava na mesa aberta — e quem criava numa campanha querendo
+      //  outra só descobria depois, com a ficha já publicada no lugar errado.
+      //  Agora o padrão é previsível: toda ficha nova mora só na conta até
+      //  você vinculá-la à campanha — no card «🎲 Campanha» da própria ficha
+      //  ou no Lobby (🗂 Minhas fichas). Sem vínculo, ela não entra em mesa
+      //  nenhuma (ver o enviar() do ficha-mesa.js: ficha sem `mesa` só vai
+      //  para a gaveta da conta).
       const nova = normalizar({ nome: '' });
-      //  Nasce na campanha em que está sendo criada — é o vínculo certo na
-      //  maioria das vezes, e evita que ela vá parar na mesa errada.
-      const est = window.GA_Mesa ? window.GA_Mesa.estado() : null;
-      if (est && est.mesaId && est.souMembro) {
-        nova.mesa = est.mesaId;
-        nova.mesaNome = (est.mesa && est.mesa.nome) || est.mesaId;
-      }
       dados.fichas.push(nova);
       abrirFicha(nova.id);
       salvar(); return render();
@@ -7761,11 +7768,12 @@
       if (!vinda || typeof vinda !== 'object') return;
       const i = dados.fichas.findIndex(x => x.id === id);
       if (i < 0) return;                       // ficha que só existe na mesa: não puxo
-      //  Travada na conta, ou presa a OUTRA mesa: o que estiver nesta sala
-      //  conectada para este id é sobra (de um bug velho, ou escrita feita
-      //  no lugar errado) — a conta é quem manda, não a sala em que se está.
+      //  Travada na conta, SEM campanha, ou presa a OUTRA mesa: o que
+      //  estiver nesta sala conectada para este id é sobra (de um bug velho,
+      //  ou escrita feita no lugar errado) — a conta é quem manda, não a sala
+      //  em que se está. Ficha sem `mesa` é da conta: não adota a sala aberta.
       const local = dados.fichas[i];
-      if (local.contaSo || (local.mesa && salaConectada && local.mesa !== salaConectada)) return;
+      if (local.contaSo || !local.mesa || (salaConectada && local.mesa !== salaConectada)) return;
       minhasValidas[id] = true;
       // antes da conferência, e na ficha retida, o banco não entra por cima
       if (aguardando || retidas[id]) return;
@@ -7909,46 +7917,143 @@
     abrirFicha(id);
     salvar(); render();
   }
-  function linhaPainelTodas(it) {
+  // ═══ O LOBBY DE FICHAS (04/11/2026) ═══════════════════════════════
+  //  Um lar baseado na CONTA: toda ficha que você tem, agrupada pela
+  //  campanha a que pertence, dizendo onde ela mora (📱 este aparelho,
+  //  🗄 a conta, 📡 a mesa) e deixando MOVER de campanha ali mesmo, no
+  //  seletor de cada linha. Nasceu do painel "Todas as suas fichas", e
+  //  responde a pergunta que ficava solta — "em que mesa esta ficha está,
+  //  e como eu troco?". Aqui é só um APONTADOR: editar a ficha continua
+  //  nas abas de cima; o Lobby abre, traz e escolhe a campanha.
+
+  //  Mover a ficha de campanha a partir do Lobby. Mesmo efeito dos botões
+  //  «Vincular» / «Só na conta» do card da ficha, só que vale para qualquer
+  //  ficha deste aparelho e aceita o destino "sem campanha" (a órfã volta a
+  //  morar só na conta, sem publicar em sala nenhuma — ver o ficha-mesa.js).
+  function moverCampanhaFicha(id, destino) {
+    const fl = dados.fichas.find(x => x.id === id);
+    if (!fl) return;
+    if (destino === '__conta__') { fl.mesa = ''; fl.mesaNome = ''; fl.contaSo = true; }
+    else if (destino === '__sem__' || !destino) { fl.mesa = ''; fl.mesaNome = ''; fl.contaSo = false; }
+    else {
+      const minhas = (window.GA_Mesa && window.GA_Mesa.minhasMesas && window.GA_Mesa.minhasMesas()) || {};
+      fl.mesa = destino; fl.mesaNome = minhas[destino] || fl.mesaNome || destino; fl.contaSo = false;
+    }
+    sujar(fl.id, 'mesa'); sujar(fl.id, 'mesaNome'); sujar(fl.id, 'contaSo');
+    salvar(); return render();
+  }
+
+  //  Onde a ficha mora, pelos quatro cantos (os selos da linha).
+  function ondeMora(id) {
+    return {
+      aqui:  dados.fichas.some(f => f.id === id),
+      conta: !!gaveta[id],
+      mesa:  !!(remotas[meuUid] || {})[id],
+      outra: !!(outrasCampanhas && Object.keys(outrasCampanhas)
+               .some(s => ((outrasCampanhas[s] || {}).fichas || {})[id])),
+    };
+  }
+
+  //  A linha de uma ficha no Lobby. O seletor de campanha só aparece na
+  //  ficha DESTE aparelho — é onde o `mesa` se edita; para as de fora, o
+  //  caminho é "trazer" primeiro.
+  function lobbyLinha(it, minhas) {
     const f = it.f;
-    const aqui = dados.fichas.some(x => x.id === f.id);
-    const campanha = f.contaSo ? '🔒 só na conta' : (f.mesa ? esc(f.mesaNome || f.mesa) : 'sem campanha');
+    const onde = ondeMora(f.id);
+    const selos =
+      (onde.aqui  ? '<span class="fi-lobby-selo" title="Neste aparelho">📱</span>' : '') +
+      (onde.conta ? '<span class="fi-lobby-selo" title="Na sua conta, em qualquer aparelho">🗄</span>' : '') +
+      (onde.mesa || onde.outra ? '<span class="fi-lobby-selo" title="Numa mesa, ao vivo">📡</span>' : '');
+
     let acao;
-    if (aqui) {
+    if (onde.aqui) {
       acao = f.id === dados.aberta
-        ? `<span class="fi-mini fi-painel-todas-aqui">✓ aberta aqui</span>`
+        ? '<span class="fi-mini fi-lobby-aqui">✓ aberta</span>'
         : `<button type="button" class="fi-mini" data-acao="abrir" data-id="${esc(f.id)}">abrir</button>`;
     } else if (it.origem === 'conta') {
       acao = `<button type="button" class="fi-mini" data-acao="trazer" data-id="${esc(f.id)}">⬇ trazer</button>`;
     } else if (it.origem === 'mesa') {
       acao = `<button type="button" class="fi-mini" data-acao="trazer-mesa" data-id="${esc(f.id)}">⬇ trazer</button>`;
     } else {
-      acao = `<button type="button" class="fi-mini" data-acao="trazer-outra" data-id="${esc(f.id)}"
-                data-sala="${esc(it.salaId)}">⬇ trazer</button>`;
+      acao = `<button type="button" class="fi-mini" data-acao="trazer-outra" data-id="${esc(f.id)}" data-sala="${esc(it.salaId)}">⬇ trazer</button>`;
     }
+
+    let mover;
+    if (onde.aqui) {
+      let ops = `<option value="__sem__"${!f.mesa && !f.contaSo ? ' selected' : ''}>sem campanha</option>`;
+      Object.keys(minhas).forEach(cid => {
+        ops += `<option value="${esc(cid)}"${f.mesa === cid && !f.contaSo ? ' selected' : ''}>${esc(minhas[cid] || cid)}</option>`;
+      });
+      //  Ficha presa a uma campanha que não está na sua lista (você saiu
+      //  dela, ou é antiga): aparece assim mesmo, para a seleção não sumir.
+      if (f.mesa && !f.contaSo && !minhas[f.mesa]) {
+        ops += `<option value="${esc(f.mesa)}" selected>${esc(f.mesaNome || f.mesa)}</option>`;
+      }
+      ops += `<option value="__conta__"${f.contaSo ? ' selected' : ''}>🔒 só na conta</option>`;
+      mover = `<select class="fi-lobby-sel" data-acao="lobby-campanha" data-id="${esc(f.id)}" aria-label="Campanha desta ficha">${ops}</select>`;
+    } else {
+      mover = '<span class="fi-lobby-sel-off" title="Traga a ficha para este aparelho para trocar a campanha dela">traga para mover</span>';
+    }
+
     return `
-      <div class="fi-painel-todas-item">
-        <span class="fi-painel-todas-nome">${esc(f.nome || '(sem nome)')}</span>
-        <span class="fi-painel-todas-resumo">${esc(resumoDaFicha(f))}</span>
-        <span class="fi-painel-todas-campanha">${campanha}</span>
+      <div class="fi-lobby-item">
+        <span class="fi-lobby-nome">${esc(f.nome || '(sem nome)')}</span>
+        <span class="fi-lobby-resumo">${esc(resumoDaFicha(f))}</span>
+        <span class="fi-lobby-selos">${selos}</span>
+        ${mover}
         ${acao}
       </div>`;
   }
-  function painelTodasFichas() {
+
+  function lobbyFichas() {
     const e = window.GA_FichaMesa ? window.GA_FichaMesa.estado() : null;
     if (!e || !e.logado) return '';
+    const s = salaAtual();
+    const minhas = (window.GA_Mesa && window.GA_Mesa.minhasMesas && window.GA_Mesa.minhasMesas()) || {};
     const itens = todasAsFichas();
+
+    //  Agrupa por campanha. A ordem põe a campanha ABERTA em cima (é a que
+    //  importa agora), depois "sem campanha" (que pede uma escolha), as
+    //  outras campanhas, e por fim "só na conta".
+    const grupos = {};
+    function grupoDe(f) {
+      if (f.contaSo) return { chave: '__conta__', titulo: '🔒 Só na conta', ordem: 4 };
+      if (!f.mesa)   return { chave: '__sem__',   titulo: '🗂 Sem campanha', ordem: 1 };
+      const nome = esc(f.mesaNome || minhas[f.mesa] || f.mesa);
+      if (s.id && f.mesa === s.id) return { chave: f.mesa, titulo: '📍 Nesta campanha · ' + nome, ordem: 0 };
+      return { chave: f.mesa, titulo: '🎲 ' + nome, ordem: 2 };
+    }
+    itens.forEach(it => {
+      const g = grupoDe(it.f);
+      (grupos[g.chave] || (grupos[g.chave] = { titulo: g.titulo, ordem: g.ordem, itens: [] })).itens.push(it);
+    });
+    const chaves = Object.keys(grupos).sort((a, b) =>
+      grupos[a].ordem - grupos[b].ordem || grupos[a].titulo.localeCompare(grupos[b].titulo, 'pt-BR'));
+    const semCampanha = ((grupos['__sem__'] || {}).itens || []).length;
+
+    const corpo = chaves.map(k => {
+      const g = grupos[k];
+      return `
+        <div class="fi-lobby-grupo">
+          <h4 class="fi-lobby-grupo-tit">${g.titulo} <span class="fi-lobby-cont">${g.itens.length}</span></h4>
+          ${k === '__sem__' ? '<p class="fi-lobby-dica">Toda ficha nova nasce aqui. Escolha a campanha no seletor para o mestre dela poder ver a ficha.</p>' : ''}
+          ${g.itens.map(it => lobbyLinha(it, minhas)).join('')}
+        </div>`;
+    }).join('');
+
+    const rotulo = '🗂 Minhas fichas' + (itens.length ? ' (' + itens.length + ')' : '') +
+      (semCampanha ? ' · <span class="fi-lobby-aviso">' + semCampanha + ' sem campanha</span>' : '');
+
     return `
-      <div class="fi-painel-todas">
-        <button type="button" class="fi-mini fi-painel-todas-btn" data-acao="painel-todas-alterna">
-          ${painelTodasAberto ? '▾' : '▸'} 🗂 Todas as suas fichas${itens.length ? ' (' + itens.length + ')' : ''}
+      <div class="fi-lobby">
+        <button type="button" class="fi-mini fi-lobby-btn" data-acao="painel-todas-alterna">
+          ${painelTodasAberto ? '▾' : '▸'} ${rotulo}
         </button>
         ${painelTodasAberto ? `
-          <div class="fi-painel-todas-corpo">
-            ${itens.length ? itens.map(linhaPainelTodas).join('')
-              : '<p class="fi-hist-vazio">Nenhuma ficha encontrada ainda.</p>'}
-            <button type="button" class="fi-mini" data-acao="painel-todas-atualizar" ${carregandoOutras ? 'disabled' : ''}>
-              ${carregandoOutras ? '⏳ procurando em outras campanhas…' : '🔄 procurar em outras campanhas'}
+          <div class="fi-lobby-corpo">
+            ${corpo || '<p class="fi-hist-vazio">Nenhuma ficha ainda.</p>'}
+            <button type="button" class="fi-mini fi-lobby-buscar" data-acao="painel-todas-atualizar" ${carregandoOutras ? 'disabled' : ''}>
+              ${carregandoOutras ? '⏳ procurando em outras campanhas…' : '🔄 procurar fichas em outras campanhas'}
             </button>
           </div>` : ''}
       </div>`;
@@ -8024,9 +8129,12 @@
     let mudouDados = false;
     dados.fichas.forEach((local, i) => {
       const id = local.id;
-      //  Travada na conta, ou presa a OUTRA mesa: o que estiver na sala
-      //  conectada agora não conta como cópia dela — é sobra, não a dona.
-      const foraDaMesaAtual = local.contaSo || (local.mesa && salaConectada && local.mesa !== salaConectada);
+      //  Travada na conta, SEM campanha, ou presa a OUTRA mesa: o que
+      //  estiver na sala conectada agora não conta como cópia dela — é sobra,
+      //  não a dona. Ficha sem `mesa` é da conta e não publica em sala
+      //  nenhuma sozinha (era o vazamento: abrir uma mesa já empurrava a
+      //  órfã para dentro dela pela `faltaCopia`).
+      const foraDaMesaAtual = local.contaSo || !local.mesa || (salaConectada && local.mesa !== salaConectada);
       const m = foraDaMesaAtual ? null : copiaNormalizada(naMesa[id], id);
       const g = copiaNormalizada(naConta[id], id);
       const copias = [m, g].filter(Boolean);
@@ -9035,8 +9143,22 @@
   //  livro, e por isso não precisa conhecer o modelo da ficha.
   function visiveis() {
     const saida = [];
+    //  SÓ AS FICHAS DESTA CAMPANHA. Uma ficha presa a OUTRA mesa, ou travada
+    //  "só na conta", não conta para a iniciativa da mesa atual — nem a
+    //  minha, nem uma cópia que sobrou no nó desta mesa (resíduo de
+    //  re-vínculo). É o mesmo filtro da lista `fichasDaMesa`; sem ele, a
+    //  iniciativa de uma campanha mostrava o PV de uma ficha de outra (a
+    //  linha do próprio mestre pegava a ficha dele mexida mais recentemente,
+    //  fosse de que campanha fosse). Fora de mesa (sala conectada vazia) nada
+    //  é filtrado por campanha: a lista local do mestre segue como era.
+    const salaConectada = (window.GA_FichaMesa && window.GA_FichaMesa.estado().sala) || '';
+    function daMesaAtual(f) {
+      if (f.contaSo) return false;
+      return !(f.mesa && salaConectada && f.mesa !== salaConectada);
+    }
     function juntar(f, dono) {
       if (!f || typeof f !== 'object' || !f.pv) return;
+      if (!daMesaAtual(f)) return;
       saida.push({
         id: f.id, dono: dono || '',
         nome: f.nome || '', jogador: f.jogador || '',

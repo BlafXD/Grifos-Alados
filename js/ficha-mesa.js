@@ -198,15 +198,15 @@
       // a hora da última mudança feita num navegador (a conferência mostra)
       if (p.ficha && p.ficha.editadoEm) carimbo.editadoEm = p.ficha.editadoEm;
       const caminhos = [];
-      //  A ficha vai para a campanha DELA (`f.mesa`), não para "a sala aberta
-      //  agora". É o que impede a ficha de cair no nó da mesa errada (o caso
-      //  do jogador que criou a ficha da Mesa estando no Nuevo Sol). Sem
-      //  campanha marcada (legado), cai na sala conectada, como era. O banco
-      //  ainda barra quem não é membro — esta é a trava do cliente.
-      //  `contaSo` ("Salvar forçado") DESLIGA esse fallback: a ficha nunca
-      //  publica em mesa nenhuma, nem na que estiver aberta agora — só na
-      //  gaveta da conta, abaixo.
-      const salaDaFicha = (p.ficha && p.ficha.contaSo) ? '' : ((p.ficha && p.ficha.mesa) || salaLigada);
+      //  A ficha vai para a campanha DELA (`f.mesa`), e SÓ para ela. Uma
+      //  ficha SEM campanha marcada NÃO cai mais na "sala aberta agora" —
+      //  caía, e era assim que a ficha pessoal de alguém ia parar na primeira
+      //  mesa que ele abrisse (bastava abrir para olhar: a conferência
+      //  publicava a órfã na sala conectada). Agora ela fica só na gaveta da
+      //  conta até ser vinculada (no card «🎲 Campanha» da ficha ou no Lobby
+      //  🗂 Minhas fichas). Com `f.mesa` marcada, o banco ainda barra quem
+      //  não é membro. `contaSo` é a mesma coisa dita de forma explícita.
+      const salaDaFicha = (p.ficha && p.ficha.contaSo) ? '' : ((p.ficha && p.ficha.mesa) || '');
       if (ligado() && mesa.escreve && salaDaFicha) caminhos.push('mesas/' + salaDaFicha + '/fichas/' + p.dono + '/' + id);
       if (p.dono === meuUid())      caminhos.push('usuarios/' + meuUid() + '/fichas/' + id);
 
