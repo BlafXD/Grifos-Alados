@@ -7926,21 +7926,68 @@
   //  e como eu troco?". Aqui é só um APONTADOR: editar a ficha continua
   //  nas abas de cima; o Lobby abre, traz e escolhe a campanha.
 
-  //  Mover a ficha de campanha a partir do Lobby. Mesmo efeito dos botões
-  //  «Vincular» / «Só na conta» do card da ficha, só que vale para qualquer
-  //  ficha deste aparelho e aceita o destino "sem campanha" (a órfã volta a
-  //  morar só na conta, sem publicar em sala nenhuma — ver o ficha-mesa.js).
-  function moverCampanhaFicha(id, destino) {
-    const fl = dados.fichas.find(x => x.id === id);
-    if (!fl) return;
-    if (destino === '__conta__') { fl.mesa = ''; fl.mesaNome = ''; fl.contaSo = true; }
-    else if (destino === '__sem__' || !destino) { fl.mesa = ''; fl.mesaNome = ''; fl.contaSo = false; }
-    else {
-      const minhas = (window.GA_Mesa && window.GA_Mesa.minhasMesas && window.GA_Mesa.minhasMesas()) || {};
-      fl.mesa = destino; fl.mesaNome = minhas[destino] || fl.mesaNome || destino; fl.contaSo = false;
+  //  "há 2 dias", "há 3 min", "agora" — a última vez que a ficha foi mexida,
+  //  para o Lobby dizer qual é a mais atual de um relance. Além de ~1 ano,
+  //  volta para a data cheia (o dataHora de sempre).
+  function tempoRelativo(ms) {
+    if (!ms) return '';
+    const s = Math.floor((Date.now() - ms) / 1000);
+    if (s < 45) return 'agora';
+    const m = Math.floor(s / 60); if (m < 60) return 'há ' + m + ' min';
+    const h = Math.floor(m / 60); if (h < 24) return 'há ' + h + ' h';
+    const d = Math.floor(h / 24); if (d < 30) return 'há ' + d + (d > 1 ? ' dias' : ' dia');
+    const meses = Math.floor(d / 30); if (meses < 12) return 'há ' + meses + (meses > 1 ? ' meses' : ' mês');
+    return dataHora(ms);
+  }
+
+  //  Aplica um destino de campanha a uma ficha — o valor do seletor do
+  //  Lobby: uma mesa, "sem campanha" (só na conta, destravável) ou "🔒 só
+  //  na conta" (travado). Os mesmos três estados dos botões do card.
+  function aplicaDestinoCampanha(f, destino) {
+    if (destino === '__conta__') { f.mesa = ''; f.mesaNome = ''; f.contaSo = true; return; }
+    if (destino === '__sem__' || !destino) { f.mesa = ''; f.mesaNome = ''; f.contaSo = false; return; }
+    const minhas = (window.GA_Mesa && window.GA_Mesa.minhasMesas && window.GA_Mesa.minhasMesas()) || {};
+    f.mesa = destino; f.mesaNome = minhas[destino] || f.mesaNome || destino; f.contaSo = false;
+  }
+  //  A ficha, onde quer que ela esteja conhecida (local tem prioridade) —
+  //  é o que deixa mover a de FORA sem precisar trazer.
+  function fichaConhecida(id) {
+    const l = dados.fichas.find(x => x.id === id);
+    if (l) return { f: l, local: true };
+    if (gaveta[id]) return { f: gaveta[id], local: false };
+    if ((remotas[meuUid] || {})[id]) return { f: (remotas[meuUid])[id], local: false };
+    if (outrasCampanhas) {
+      let achada = null;
+      Object.keys(outrasCampanhas).forEach(s => { const x = ((outrasCampanhas[s] || {}).fichas || {})[id]; if (x) achada = x; });
+      if (achada) return { f: achada, local: false };
     }
-    sujar(fl.id, 'mesa'); sujar(fl.id, 'mesaNome'); sujar(fl.id, 'contaSo');
-    salvar(); return render();
+    return null;
+  }
+
+  //  Mover a ficha de campanha a partir do Lobby. Para a ficha DESTE
+  //  aparelho é igual aos botões «Vincular» / «Só na conta» do card. Para
+  //  uma ficha de FORA (só na conta, ou numa mesa) muda a campanha na cópia
+  //  da CONTA e publica na mesa nova se eu puder escrever lá — sem precisar
+  //  "trazer" primeiro. A conta é sempre atualizada; a cópia ao vivo da mesa
+  //  só quando estou conectado a ela com escrita (ver o enviar() do
+  //  ficha-mesa.js), e a cópia antiga da mesa de origem fica como resíduo
+  //  (some das listas pelo `mesa`, limpa com o ✕ do mestre).
+  function moverCampanhaFicha(id, destino) {
+    const achada = fichaConhecida(id);
+    if (!achada) return;
+    if (achada.local) {
+      aplicaDestinoCampanha(achada.f, destino);
+      sujar(id, 'mesa'); sujar(id, 'mesaNome'); sujar(id, 'contaSo');
+      salvar(); return render();
+    }
+    if (!window.GA_FichaMesa || !window.GA_FichaMesa.publicar) return;
+    const copia = normalizar(JSON.parse(JSON.stringify(achada.f)));
+    copia.id = id;
+    aplicaDestinoCampanha(copia, destino);
+    copia.editadoEm = Date.now();
+    gaveta[id] = copia;                       // otimista: a tela já mostra no grupo novo
+    window.GA_FichaMesa.publicar(copia, null, null);
+    return render();
   }
 
   //  Onde a ficha mora, pelos quatro cantos (os selos da linha).
@@ -7960,6 +8007,7 @@
   function lobbyLinha(it, minhas) {
     const f = it.f;
     const onde = ondeMora(f.id);
+    const retida = !!retidas[f.id];
     const selos =
       (onde.aqui  ? '<span class="fi-lobby-selo" title="Neste aparelho">📱</span>' : '') +
       (onde.conta ? '<span class="fi-lobby-selo" title="Na sua conta, em qualquer aparelho">🗄</span>' : '') +
@@ -7978,27 +8026,28 @@
       acao = `<button type="button" class="fi-mini" data-acao="trazer-outra" data-id="${esc(f.id)}" data-sala="${esc(it.salaId)}">⬇ trazer</button>`;
     }
 
-    let mover;
-    if (onde.aqui) {
-      let ops = `<option value="__sem__"${!f.mesa && !f.contaSo ? ' selected' : ''}>sem campanha</option>`;
-      Object.keys(minhas).forEach(cid => {
-        ops += `<option value="${esc(cid)}"${f.mesa === cid && !f.contaSo ? ' selected' : ''}>${esc(minhas[cid] || cid)}</option>`;
-      });
-      //  Ficha presa a uma campanha que não está na sua lista (você saiu
-      //  dela, ou é antiga): aparece assim mesmo, para a seleção não sumir.
-      if (f.mesa && !f.contaSo && !minhas[f.mesa]) {
-        ops += `<option value="${esc(f.mesa)}" selected>${esc(f.mesaNome || f.mesa)}</option>`;
-      }
-      ops += `<option value="__conta__"${f.contaSo ? ' selected' : ''}>🔒 só na conta</option>`;
-      mover = `<select class="fi-lobby-sel" data-acao="lobby-campanha" data-id="${esc(f.id)}" aria-label="Campanha desta ficha">${ops}</select>`;
-    } else {
-      mover = '<span class="fi-lobby-sel-off" title="Traga a ficha para este aparelho para trocar a campanha dela">traga para mover</span>';
+    //  O seletor de campanha vale para QUALQUER ficha — a de fora é movida
+    //  na cópia da conta, sem precisar trazer (ver moverCampanhaFicha).
+    let ops = `<option value="__sem__"${!f.mesa && !f.contaSo ? ' selected' : ''}>sem campanha</option>`;
+    Object.keys(minhas).forEach(cid => {
+      ops += `<option value="${esc(cid)}"${f.mesa === cid && !f.contaSo ? ' selected' : ''}>${esc(minhas[cid] || cid)}</option>`;
+    });
+    //  Ficha presa a uma campanha que não está na sua lista (você saiu dela,
+    //  ou é antiga): aparece assim mesmo, para a seleção não sumir.
+    if (f.mesa && !f.contaSo && !minhas[f.mesa]) {
+      ops += `<option value="${esc(f.mesa)}" selected>${esc(f.mesaNome || f.mesa)}</option>`;
     }
+    ops += `<option value="__conta__"${f.contaSo ? ' selected' : ''}>🔒 só na conta</option>`;
+    const mover = `<select class="fi-lobby-sel" data-acao="lobby-campanha" data-id="${esc(f.id)}" aria-label="Campanha desta ficha">${ops}</select>`;
+
+    const quando = f.editadoEm || f.atualizadoEm || 0;
+    const meta = quando ? `<span class="fi-lobby-quando" title="Última vez mexida">${esc(tempoRelativo(quando))}</span>` : '';
 
     return `
-      <div class="fi-lobby-item">
-        <span class="fi-lobby-nome">${esc(f.nome || '(sem nome)')}</span>
+      <div class="fi-lobby-item${retida ? ' fi-lobby-item--retida' : ''}">
+        <span class="fi-lobby-nome"${retida ? ' title="Esta ficha espera você escolher entre a deste navegador e a do banco"' : ''}>${retida ? '⚠ ' : ''}${esc(f.nome || '(sem nome)')}</span>
         <span class="fi-lobby-resumo">${esc(resumoDaFicha(f))}</span>
+        ${meta}
         <span class="fi-lobby-selos">${selos}</span>
         ${mover}
         ${acao}
@@ -8029,7 +8078,11 @@
     });
     const chaves = Object.keys(grupos).sort((a, b) =>
       grupos[a].ordem - grupos[b].ordem || grupos[a].titulo.localeCompare(grupos[b].titulo, 'pt-BR'));
+    //  Dentro de cada grupo, por nome — a lista fica estável e fácil de achar.
+    chaves.forEach(k => grupos[k].itens.sort((x, y) =>
+      String(x.f.nome || '').localeCompare(String(y.f.nome || ''), 'pt-BR')));
     const semCampanha = ((grupos['__sem__'] || {}).itens || []).length;
+    const nCampanhas = chaves.filter(k => k !== '__sem__' && k !== '__conta__').length;
 
     const corpo = chaves.map(k => {
       const g = grupos[k];
@@ -8044,6 +8097,10 @@
     const rotulo = '🗂 Minhas fichas' + (itens.length ? ' (' + itens.length + ')' : '') +
       (semCampanha ? ' · <span class="fi-lobby-aviso">' + semCampanha + ' sem campanha</span>' : '');
 
+    const resumoHdr = itens.length + (itens.length === 1 ? ' ficha' : ' fichas') +
+      (nCampanhas ? ' · ' + nCampanhas + (nCampanhas === 1 ? ' campanha' : ' campanhas') : '') +
+      (semCampanha ? ' · ' + semCampanha + ' sem campanha' : '');
+
     return `
       <div class="fi-lobby">
         <button type="button" class="fi-mini fi-lobby-btn" data-acao="painel-todas-alterna">
@@ -8051,6 +8108,8 @@
         </button>
         ${painelTodasAberto ? `
           <div class="fi-lobby-corpo">
+            <p class="fi-lobby-hdr"><span class="fi-lobby-resumo-num">${resumoHdr}</span>
+              <span class="fi-lobby-legenda">📱 aparelho · 🗄 conta · 📡 mesa</span></p>
             ${corpo || '<p class="fi-hist-vazio">Nenhuma ficha ainda.</p>'}
             <button type="button" class="fi-mini fi-lobby-buscar" data-acao="painel-todas-atualizar" ${carregandoOutras ? 'disabled' : ''}>
               ${carregandoOutras ? '⏳ procurando em outras campanhas…' : '🔄 procurar fichas em outras campanhas'}
