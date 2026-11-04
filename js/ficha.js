@@ -838,25 +838,58 @@
   //  A etiqueta EXPLÍCITA de campanha no topo da ficha, mais o vínculo (só
   //  se vincula à mesa em que se está conectado — muda de propósito, no
   //  lugar certo). Se a ficha é de outra campanha, avisa em destaque.
+  //  O ESTADO DA CAMPANHA DE UMA FICHA, em quatro palavras — a base do selo
+  //  de registro e da cor do seletor, no cartão e no Lobby:
+  //    sem   → sem campanha (mora só na conta até você registrar);
+  //    nesta → registrada na campanha ABERTA agora (ao vivo);
+  //    mesa  → registrada em OUTRA campanha (não a aberta);
+  //    conta → selada só na conta (nunca publica em mesa).
+  function estadoCampanha(f, salaId) {
+    if (f.contaSo) return 'conta';
+    if (!f.mesa) return 'sem';
+    return (salaId && f.mesa === salaId) ? 'nesta' : 'mesa';
+  }
+  //  O SELETOR DE CAMPANHA, um só desenho usado no cartão da ficha e em cada
+  //  linha do Lobby. É a oficialização do registro: escolher a campanha, ou
+  //  "sem campanha", ou "🔒 só na conta". A cor sai do estado (ver o CSS
+  //  .fi-selcamp--*). Move pela mesma mão nos dois lugares (moverCampanhaFicha).
+  function selectCampanha(f, minhas, salaId) {
+    const est = estadoCampanha(f, salaId);
+    let ops = `<option value="__sem__"${est === 'sem' ? ' selected' : ''}>sem campanha</option>`;
+    Object.keys(minhas || {}).forEach(cid => {
+      ops += `<option value="${esc(cid)}"${f.mesa === cid && !f.contaSo ? ' selected' : ''}>${esc(minhas[cid] || cid)}</option>`;
+    });
+    //  Campanha que não está na sua lista (você saiu, ou é antiga): aparece
+    //  assim mesmo, para a seleção não sumir.
+    if (f.mesa && !f.contaSo && !(minhas || {})[f.mesa]) {
+      ops += `<option value="${esc(f.mesa)}" selected>${esc(f.mesaNome || f.mesa)}</option>`;
+    }
+    ops += `<option value="__conta__"${est === 'conta' ? ' selected' : ''}>🔒 só na conta</option>`;
+    return `<span class="fi-selcamp-wrap fi-selcamp--${est}">` +
+      `<select class="fi-selcamp" data-acao="campanha-sel" data-id="${esc(f.id)}" aria-label="Campanha desta ficha">${ops}</select></span>`;
+  }
+
+  //  O CARTÃO DE CAMPANHA no topo da ficha — um SELO DE REGISTRO. O ponto
+  //  (o selo de cera) diz o estado numa cor; o seletor oficializa; a legenda
+  //  explica em uma linha. Enxuto: os três botões viraram um seletor só.
   function blocoCampanhaFicha(f) {
     const s = salaAtual();
-    const travada = !!f.contaSo;
-    const tem = !!f.mesa;
-    const nome = travada ? '🔒 só na conta (Google)' : (tem ? esc(f.mesaNome || f.mesa) : 'sem campanha');
-    const diverge = tem && s.id && f.mesa !== s.id;
+    const est = estadoCampanha(f, s.id);
+    const minhas = (window.GA_Mesa && window.GA_Mesa.minhasMesas && window.GA_Mesa.minhasMesas()) || {};
+    const legenda = {
+      sem:   'sem registro — escolha a campanha ao lado',
+      nesta: 'registrada nesta mesa, ao vivo',
+      mesa:  'registrada em outra campanha',
+      conta: 'selada só na sua conta — nunca publica em mesa',
+    }[est];
+    const diverge = est === 'mesa' && s.id && s.souMembro;
     return `
-      <div class="fi-campanha${diverge ? ' fi-campanha--alerta' : ''}${!tem && !travada ? ' fi-campanha--vazia' : ''}${travada ? ' fi-campanha--travada' : ''}">
-        <span class="fi-campanha-rot">🎲 Campanha</span>
-        <strong class="fi-campanha-nome">${nome}</strong>
-        ${diverge ? `<span class="fi-campanha-aviso">⚠ você está em «${esc(s.nome)}» — esta ficha é de outra campanha e não entra na lista dela</span>` : ''}
-        ${travada ? `<span class="fi-campanha-aviso fi-campanha-aviso--travada">🔒 nunca publica em nenhuma mesa — só é salva nesta conta, em qualquer aparelho em que você entrar com ela</span>` : ''}
-        ${s.souMembro && s.id && f.mesa !== s.id
-          ? `<button type="button" class="fi-mini fi-campanha-btn" data-acao="ficha-vincular-mesa"
-                  title="Marcar que esta ficha pertence à campanha «${esc(s.nome)}» — passa a publicar só ali">↪ Vincular a «${esc(s.nome)}»</button>` : ''}
-        ${!travada ? `<button type="button" class="fi-mini fi-campanha-btn" data-acao="ficha-desvincular-mesa"
-                  title="Salvar forçado: esta ficha fica independente de qualquer mesa, seguindo só a conta Google — nunca mais publica na sala em que você estiver">🔒 Só na conta</button>`
-                 : `<button type="button" class="fi-mini fi-campanha-btn" data-acao="ficha-destravar-mesa"
-                  title="Desfazer o «só na conta»: a ficha volta a poder ser vinculada a uma campanha">destravar</button>`}
+      <div class="fi-campanha fi-campanha--${est}">
+        <span class="fi-campanha-selo" aria-hidden="true"></span>
+        <span class="fi-campanha-rot">Campanha</span>
+        ${selectCampanha(f, minhas, s.id)}
+        <span class="fi-campanha-leg">${legenda}</span>
+        ${diverge ? `<span class="fi-campanha-aviso">⚠ você está em «${esc(s.nome)}» — esta ficha não entra na lista dela até ser registrada aqui</span>` : ''}
       </div>`;
   }
 
@@ -6587,10 +6620,10 @@
       sujar(f.id, 'blocos');
       salvar(); return render();
     }
-    //  O seletor de campanha do Lobby: muda a mesa de uma ficha DESTE
-    //  aparelho (não precisa ser a aberta), igual aos botões «Vincular» /
-    //  «Só na conta» do card da ficha — só que para qualquer uma da lista.
-    if (el && el.dataset && el.dataset.acao === 'lobby-campanha') {
+    //  O seletor de campanha (o selo de registro): muda a campanha de uma
+    //  ficha — a aberta, no cartão; ou qualquer uma, no Lobby (inclusive as
+    //  de fora, movidas na cópia da conta). Um só caminho: moverCampanhaFicha.
+    if (el && el.dataset && el.dataset.acao === 'campanha-sel') {
       return moverCampanhaFicha(el.dataset.id, el.value);
     }
     if (!el || !el.dataset || !el.dataset.campo) return;
@@ -6672,32 +6705,10 @@
       abrirFicha(nova.id);
       salvar(); return render();
     }
-    if (acao === 'ficha-vincular-mesa') {
-      if (!f) return;
-      const est = window.GA_Mesa ? window.GA_Mesa.estado() : null;
-      if (!est || !est.mesaId || !est.souMembro) return;
-      f.mesa = est.mesaId;
-      f.mesaNome = (est.mesa && est.mesa.nome) || est.mesaId;
-      f.contaSo = false;
-      sujar(f.id, 'mesa'); sujar(f.id, 'mesaNome'); sujar(f.id, 'contaSo');
-      salvar(); return render();
-    }
-    if (acao === 'ficha-desvincular-mesa') {
-      if (!f) return;
-      //  "Salvar forçado": trava a ficha na CONTA. Só tirar a campanha
-      //  (f.mesa = '') não bastava — uma ficha "sem campanha" ainda caía
-      //  na sala que estivesse aberta no próximo salvamento. `contaSo`
-      //  impede isso: ver o enviar() do ficha-mesa.js.
-      f.mesa = ''; f.mesaNome = ''; f.contaSo = true;
-      sujar(f.id, 'mesa'); sujar(f.id, 'mesaNome'); sujar(f.id, 'contaSo');
-      salvar(); return render();
-    }
-    if (acao === 'ficha-destravar-mesa') {
-      if (!f) return;
-      f.contaSo = false;
-      sujar(f.id, 'contaSo');
-      salvar(); return render();
-    }
+    //  Os botões «Vincular» / «Só na conta» / «destravar» do cartão viraram
+    //  um seletor só (o selo de registro) — ver selectCampanha e o handler
+    //  'campanha-sel' no aoMudar. Vincular = escolher a campanha; "só na
+    //  conta" e "sem campanha" são opções do mesmo seletor.
     if (acao === 'tira-ficha-mesa') {
       const id = btn.dataset.id, uid = btn.dataset.uid;
       const item = fichasDaMesa().find(x => x.ficha.id === id && x.uid === uid);
@@ -8004,7 +8015,7 @@
   //  A linha de uma ficha no Lobby. O seletor de campanha só aparece na
   //  ficha DESTE aparelho — é onde o `mesa` se edita; para as de fora, o
   //  caminho é "trazer" primeiro.
-  function lobbyLinha(it, minhas) {
+  function lobbyLinha(it, minhas, salaId) {
     const f = it.f;
     const onde = ondeMora(f.id);
     const retida = !!retidas[f.id];
@@ -8026,19 +8037,9 @@
       acao = `<button type="button" class="fi-mini" data-acao="trazer-outra" data-id="${esc(f.id)}" data-sala="${esc(it.salaId)}">⬇ trazer</button>`;
     }
 
-    //  O seletor de campanha vale para QUALQUER ficha — a de fora é movida
-    //  na cópia da conta, sem precisar trazer (ver moverCampanhaFicha).
-    let ops = `<option value="__sem__"${!f.mesa && !f.contaSo ? ' selected' : ''}>sem campanha</option>`;
-    Object.keys(minhas).forEach(cid => {
-      ops += `<option value="${esc(cid)}"${f.mesa === cid && !f.contaSo ? ' selected' : ''}>${esc(minhas[cid] || cid)}</option>`;
-    });
-    //  Ficha presa a uma campanha que não está na sua lista (você saiu dela,
-    //  ou é antiga): aparece assim mesmo, para a seleção não sumir.
-    if (f.mesa && !f.contaSo && !minhas[f.mesa]) {
-      ops += `<option value="${esc(f.mesa)}" selected>${esc(f.mesaNome || f.mesa)}</option>`;
-    }
-    ops += `<option value="__conta__"${f.contaSo ? ' selected' : ''}>🔒 só na conta</option>`;
-    const mover = `<select class="fi-lobby-sel" data-acao="lobby-campanha" data-id="${esc(f.id)}" aria-label="Campanha desta ficha">${ops}</select>`;
+    //  O MESMO seletor-selo do cartão — aqui vale para QUALQUER ficha, até a
+    //  de fora (movida na cópia da conta, sem trazer — ver moverCampanhaFicha).
+    const mover = selectCampanha(f, minhas, salaId);
 
     const quando = f.editadoEm || f.atualizadoEm || 0;
     const meta = quando ? `<span class="fi-lobby-quando" title="Última vez mexida">${esc(tempoRelativo(quando))}</span>` : '';
@@ -8090,7 +8091,7 @@
         <div class="fi-lobby-grupo">
           <h4 class="fi-lobby-grupo-tit">${g.titulo} <span class="fi-lobby-cont">${g.itens.length}</span></h4>
           ${k === '__sem__' ? '<p class="fi-lobby-dica">Toda ficha nova nasce aqui. Escolha a campanha no seletor para o mestre dela poder ver a ficha.</p>' : ''}
-          ${g.itens.map(it => lobbyLinha(it, minhas)).join('')}
+          ${g.itens.map(it => lobbyLinha(it, minhas, s.id)).join('')}
         </div>`;
     }).join('');
 

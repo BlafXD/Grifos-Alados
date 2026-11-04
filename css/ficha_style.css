@@ -317,30 +317,74 @@
   gap: 0.6rem;
   margin-bottom: 0.6rem;
 }
-/* a etiqueta EXPLÍCITA de campanha (mesa) da ficha — a isolação entre mesas */
+/* ══ O SELO DE REGISTRO: a campanha da ficha ═══════════════════════════
+   Num jornal de registros, vincular uma ficha a uma campanha é carimbá-la.
+   O ponto é o selo de cera; a cor (e a borda esquerda) dizem o estado:
+   sem registro (rust tracejado), nesta mesa ao vivo (verde cheio), outra
+   campanha (ouro), ou selada só na conta (rust cheio). Um seletor só no
+   lugar dos três botões antigos. */
 .fi-campanha {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   margin-bottom: 0.6rem;
-  padding: 0.3rem 0.5rem;
+  padding: 0.4rem 0.6rem;
   border-radius: var(--raio);
   background: var(--parchment2);
-  border: 1px solid var(--gold-deep);
+  border: 1px solid var(--gold-dim);
+  border-left-width: 3px;
+}
+.fi-campanha-selo {
+  width: 0.7rem; height: 0.7rem; flex: none;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
 }
 .fi-campanha-rot {
-  font-family: var(--ga-fonte-rotulo); font-size: 0.72rem; letter-spacing: 0.04em;
+  font-family: var(--ga-fonte-rotulo); font-size: 0.72rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--text-dim);
 }
-.fi-campanha-nome { font-family: var(--ga-fonte-titulo); font-size: 0.95rem; color: var(--gold-deep); }
-.fi-campanha--vazia .fi-campanha-nome { color: var(--text-dim); font-style: italic; }
-.fi-campanha-aviso { font-size: 0.82rem; color: var(--rust-dark); flex-basis: 100%; }
-.fi-campanha-btn { font-family: var(--ga-fonte-rotulo); font-size: 0.7rem; }
-.fi-campanha--alerta { border-color: var(--rust); background: rgba(150, 40, 20, 0.08); }
-.fi-campanha--travada { border-color: var(--verde-dark); }
-.fi-campanha--travada .fi-campanha-nome { color: var(--verde-dark); }
-.fi-campanha-aviso--travada { color: var(--verde-dark); }
+.fi-campanha-leg { font-size: 0.78rem; font-style: italic; color: var(--text-mid); }
+.fi-campanha-aviso { font-size: 0.82rem; color: var(--rust); flex-basis: 100%; }
+.fi-campanha--sem   { border-left-color: var(--rust); }
+.fi-campanha--sem   .fi-campanha-selo { border-color: var(--rust); border-style: dashed; }
+.fi-campanha--nesta { border-left-color: var(--verde); }
+.fi-campanha--nesta .fi-campanha-selo { border-color: var(--verde); background: var(--verde); }
+.fi-campanha--mesa  { border-left-color: var(--gold); }
+.fi-campanha--mesa  .fi-campanha-selo { border-color: var(--gold); }
+.fi-campanha--conta { border-left-color: var(--rust); }
+.fi-campanha--conta .fi-campanha-selo { border-color: var(--rust); background: var(--rust); }
+
+/* O SELETOR-SELO, usado no cartão e em cada linha do Lobby. appearance:none
+   + caret próprio (▾) para a cor seguir o estado também no modo noturno. */
+.fi-selcamp-wrap { position: relative; display: inline-flex; vertical-align: middle; }
+.fi-selcamp-wrap::after {
+  content: '▾'; position: absolute; right: 0.5rem; top: 50%;
+  transform: translateY(-50%); pointer-events: none;
+  font-size: 0.68rem; color: currentColor;
+}
+.fi-selcamp {
+  appearance: none; -webkit-appearance: none;
+  max-width: 12rem;
+  padding: 0.24rem 1.45rem 0.24rem 0.55rem;
+  font-family: var(--ga-fonte-rotulo); font-size: 0.78rem; letter-spacing: 0.02em;
+  color: var(--gold-deep);
+  background: var(--parchment);
+  border: 1.5px solid var(--gold-dim); border-radius: var(--raio);
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s, background-color .15s;
+}
+.fi-selcamp:hover { box-shadow: inset 0 0 0 1px var(--gold-dim); }
+.fi-selcamp:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.fi-selcamp--sem   { color: var(--rust); }
+.fi-selcamp--sem   .fi-selcamp { border-style: dashed; border-color: var(--rust); color: var(--rust); font-style: italic; background: color-mix(in srgb, var(--rust) 7%, var(--parchment)); }
+.fi-selcamp--nesta { color: var(--verde); }
+.fi-selcamp--nesta .fi-selcamp { border-color: var(--verde); color: var(--verde); background: color-mix(in srgb, var(--verde) 7%, var(--parchment)); box-shadow: inset 2px 0 0 var(--verde); }
+.fi-selcamp--mesa  { color: var(--gold-deep); }
+.fi-selcamp--mesa  .fi-selcamp { border-color: var(--gold); color: var(--gold-deep); }
+.fi-selcamp--conta { color: var(--rust); }
+.fi-selcamp--conta .fi-selcamp { border-color: var(--rust); color: var(--rust); background: color-mix(in srgb, var(--rust) 7%, var(--parchment)); }
 .fi-ident-classes {
   display: flex;
   flex-wrap: wrap;
@@ -1389,14 +1433,14 @@
 .fi-lobby-quando { font-size: 0.74rem; color: var(--text-mid); font-style: italic; white-space: nowrap; }
 .fi-lobby-selos { display: inline-flex; gap: 0.15rem; font-size: 0.85rem; }
 .fi-lobby-selo { opacity: 0.85; }
-.fi-lobby-sel { font-size: 0.8rem; max-width: 11rem; }
 .fi-lobby-item .fi-mini { margin-left: auto; }
 .fi-lobby-aqui { color: var(--verde-dark); font-weight: 600; }
 .fi-lobby-buscar { margin-top: 0.3rem; }
 @media (max-width: 540px) {
   .fi-lobby-nome { min-width: 100%; }
   .fi-lobby-resumo { flex: 1 1 auto; }
-  .fi-lobby-sel { max-width: 100%; flex: 1 1 auto; }
+  .fi-lobby-item .fi-selcamp-wrap { flex: 1 1 auto; }
+  .fi-lobby-item .fi-selcamp { max-width: 100%; width: 100%; }
   .fi-lobby-item .fi-mini { margin-left: 0; }
 }
 
