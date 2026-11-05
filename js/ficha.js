@@ -3412,19 +3412,42 @@
     return b('topo', '⇈', 'Levar para o topo') + b('sobe', '↑', 'Mover para cima') + b('desce', '↓', 'Mover para baixo');
   }
 
+  //  A imunidade é só uma PALAVRA (veneno, medo, sono…): vira uma PÍLULA que
+  //  quebra em linha, não uma linha inteira com valor, observação e setas.
+  //  Um nível 20 pode ter dez — dez pílulas cabem em duas ou três linhas, dez
+  //  linhas inteiras são uma parede. (Resistência e RD seguem em linha: têm
+  //  valor e observação que importam.) A observação não aparece na pílula: o
+  //  dado fica no modelo (não se perde) e volta como dica do mouse.
+  function linhaImune(f, b, x, i) {
+    return `
+      <li class="fi-imune"${x.obs ? ' title="' + esc(x.obs) + '"' : ''}>
+        <input class="fi-imune-txt" type="text" value="${esc(x.do_)}" data-campo="${b.campo}.${i}.do_"
+               placeholder="${esc(b.phDo)}" autocomplete="off" aria-label="Imunidade">
+        <button type="button" class="fi-imune-x" data-acao="tira-apara"
+                data-campo="${b.campo}" data-i="${i}" aria-label="Tirar esta imunidade" title="Tirar">✕</button>
+      </li>`;
+  }
+
   function blocoApara(f) {
     const cartoes = APARAM.map(b => {
       const lista = f[b.campo] || [];
+      const corpo = !b.comValor
+        ? `<ul class="fi-imune-lista">
+             ${lista.map((x, i) => linhaImune(f, b, x, i)).join('')}
+             <li class="fi-imune-add"><button type="button" class="fi-add fi-add--menor"
+                   data-acao="add-apara" data-campo="${b.campo}">＋ Imunidade</button></li>
+           </ul>`
+        : `<ul class="fi-apara-lista">
+             ${lista.length ? lista.map((x, i) => linhaApara(f, b, x, i)).join('')
+               : '<li class="fi-atq-vazio">Nada por enquanto.</li>'}
+           </ul>
+           <button type="button" class="fi-add fi-add--menor" data-acao="add-apara"
+                   data-campo="${b.campo}">＋ Acrescentar</button>`;
       return `
-        <div class="fi-apara-grupo">
+        <div class="fi-apara-grupo${b.comValor ? '' : ' fi-apara-grupo--imune'}">
           <h3 class="fi-apara-tit">${b.titulo}
             <span class="fi-apara-dica">${esc(b.dica)}</span></h3>
-          <ul class="fi-apara-lista">
-            ${lista.length ? lista.map((x, i) => linhaApara(f, b, x, i)).join('')
-              : '<li class="fi-atq-vazio">Nada por enquanto.</li>'}
-          </ul>
-          <button type="button" class="fi-add fi-add--menor" data-acao="add-apara"
-                  data-campo="${b.campo}">＋ Acrescentar</button>
+          ${corpo}
         </div>`;
     }).join('');
 

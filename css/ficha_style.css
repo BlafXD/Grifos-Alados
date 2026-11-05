@@ -117,6 +117,14 @@
   align-items: start;
 }
 .fi-coluna { min-width: 0; }
+/*  A coluna principal é um CONTAINER de medida: os grids de dentro (ataques
+    e inventário) empilham pela largura DELA, não pela do viewport. Sem isto,
+    numa tela larga as duas colunas deixavam a coluna principal com ~720px,
+    mas o `@media (max-width:900px)` do grid de ataque — que olha o viewport
+    (largo) — não disparava, e as doze colunas do layout de ataque, feitas
+    para a largura toda, transbordavam: os controles (✎ ✕ ⇈↑↓) caíam numa
+    linha implícita e sobrava uma caixa vazia embaixo de cada ataque. */
+.fi-coluna--principal { container: fi-col / inline-size; }
 .fi-coluna--lado {
   position: sticky;
   top: 0.6rem;
@@ -2048,6 +2056,44 @@
 .fi-apara-icone { text-align: center; color: var(--text-dim); }
 .fi-apara .fi-txt { min-width: 0; }
 .fi-apara .fi-txt--obs { font-size: 0.82rem; color: var(--text-mid); }
+
+/* ── IMUNIDADES: etiquetas que quebram em linha ────────────────────
+   Uma imunidade é só uma palavra; muitas etiquetas cabem onde muitas
+   linhas inteiras (valor, observação, setas) fariam uma parede — e um
+   nível 20 tem várias. O campo cresce com o texto (field-sizing). */
+.fi-imune-lista {
+  list-style: none; margin: 0.4rem 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center;
+}
+.fi-imune {
+  display: inline-flex; align-items: stretch;
+  background: var(--parchment); border: 1px solid var(--gold-dim);
+  border-radius: var(--raio); padding-left: 0.55rem;
+}
+.fi-imune:focus-within { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+.fi-imune-txt {
+  field-sizing: content;          /* cresce/encolhe com o texto (Chrome/Edge) */
+  width: 7rem;                    /* reserva para quem não tem field-sizing */
+  min-width: 4rem; max-width: 42vw;
+  border: none; background: transparent;
+  font-size: 0.85rem; color: var(--ink);
+  padding: 0.22rem 0; align-self: center;
+}
+/* onde o field-sizing existe, ele manda — o width fixo acima vira só o piso */
+@supports (field-sizing: content) {
+  .fi-imune-txt { width: auto; }
+}
+.fi-imune-txt:focus { outline: none; }
+.fi-imune-txt::placeholder { font-style: italic; color: var(--text-dim); }
+.fi-imune-x {
+  border: none; background: transparent; cursor: pointer;
+  color: var(--text-dim); font-size: 0.78rem; line-height: 1;
+  padding: 0 0.5rem; border-radius: 0 var(--raio) var(--raio) 0;
+}
+.fi-imune-x:hover { color: var(--rust); background: color-mix(in srgb, var(--rust) 12%, transparent); }
+.fi-imune-add { display: inline-flex; }
+.fi-imune-add .fi-add--menor { margin: 0; }
+
 .fi-prof { margin-top: 0.2rem; }
 
 /* ── A CARGA, DENTRO DO INVENTÁRIO ──────────────────────────────── */
@@ -2500,19 +2546,25 @@
    casa inteira. Agora cada peça tem o seu lugar, e a linha se lê de
    cima para baixo: a arma; com que perícia e quanto; o dano; o
    crítico; o tipo. O mesmo com o item do inventário, que vira a conta
-   por extenso: "3 × 0,5 cada = 1,5 esp.". */
-@media (max-width: 900px) {
+   por extenso: "3 × 0,5 cada = 1,5 esp.".
+   É um @container (não @media): o gatilho é a largura da COLUNA principal,
+   não a do viewport — ver a nota em .fi-coluna--principal. Assim o layout
+   empilhado vale tanto no celular quanto na coluna estreita das duas colunas. */
+@container fi-col (max-width: 900px) {
   .fi-atq {
     grid-template-columns: repeat(6, minmax(0, 1fr));
     grid-template-areas:
       "nome nome nome nome txt  sai"
       "per  per  ext  atq  atq  atq"
-      "dan  dan  dan  dbt  dbt  dbt"
+      "dan  dan  pas  dbt  dbt  dbt"
       "cri  cri  cri  cbt  cbt  cbt"
-      "tip  tip  tip  alc  alc  alc";
+      "tip  tip  alc  alc  ord  ord";
     gap: 0.35rem;
     padding: 0.6rem 0.1rem;
   }
+  /* o cabeçalho horizontal (Arma · Perícia · …) não alinha com as linhas
+     empilhadas — some, que cada campo se reconhece pelo que mostra */
+  .fi-atq-cab { display: none; }
   .fi-atq--am {
     grid-template-areas:
       "nome nome nome nome nome sai"
@@ -2533,6 +2585,11 @@
   .fi-atq > [data-campo$=".alcance"] { grid-area: alc; }
   .fi-atq > .fi-atq-nota             { grid-area: txt; }
   .fi-atq > .fi-mini--x              { grid-area: sai; }
+  .fi-atq > .fi-num--passos          { grid-area: pas; }
+  .fi-atq > .fi-atq-ordem            { grid-area: ord; }
+  /* o passo calculado, o resultado da rolagem e o texto da arma seguem
+     ocupando a largura toda, embaixo da linha */
+  .fi-atq > .fi-atq-passos           { grid-column: 1 / -1; }
 
   /* o ✎ ✕ sobe para o lado do nome, e a conta vira uma linha só que
      quebra se precisar — no dedo, cada botão tem 45px, e três colunas
