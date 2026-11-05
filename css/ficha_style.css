@@ -718,6 +718,7 @@
 .fi-per-lista > .fi-per { break-inside: avoid; }
 .fi-per {
   display: flex;
+  flex-wrap: wrap;                 /* o resultado da rolagem quebra para baixo */
   align-items: center;
   gap: 0.3rem;
   padding: 0.1rem 0.2rem;
@@ -725,6 +726,16 @@
   border-bottom: 1px dotted var(--parchment3);
 }
 .fi-per:hover { background: var(--linha-hover); }
+/*  O RESULTADO DA ROLAGEM NÃO ESTICA A LINHA (04/11/2026, pedido dele). Na
+    coluna estreita das perícias, o balão do resultado empurrava a largura e
+    dava scroll lateral. Agora ele desce para a PRÓPRIA linha, encostado à
+    esquerda sob o nome, usando o espaço vertical (que sobra) em vez do
+    horizontal (que não sobra). Vale para a perícia e o ofício. */
+.fi-per > .fi-res {
+  flex-basis: 100%;
+  max-width: max-content;
+  margin: 0.15rem 0 0.2rem 1.4rem;
+}
 .fi-per--treinada { background: rgba(184, 151, 46, 0.09); }
 .fi-per--treinada:hover { background: var(--gold-pale); }
 

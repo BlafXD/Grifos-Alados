@@ -2680,6 +2680,11 @@
     ((f.defesa.fontes) || []).forEach(x => {
       if (x.valor) p.push((x.de ? esc(x.de) : 'fonte') + ' ' + sinal(x.valor));
     });
+    //  Os efeitos em jogo com ∑ ligado que miram a Defesa — a conta diz a
+    //  fonte ("Oração +2"), senão o número subia sem explicação.
+    efeitosDoAlvo(f, 'defesa').filter(ef => ef.somar && ef.valor).forEach(ef => {
+      p.push((ef.fonte ? esc(ef.fonte) : 'efeito') + ' ' + sinal(ef.valor));
+    });
     // quando o atributo não é o da p. 106, a conta diz o que está
     // fazendo — senão o número parece errado para quem olha de fora
     const nota = k === 'des' ? ''
@@ -3871,7 +3876,7 @@
         ${t.furtividade ? `<strong>${sinal(t.furtividade)} em ${esc(pericia.nome)}</strong>,
           já somado na perícia; ` : ''}
         ${t.manobras ? `<strong>${sinal(t.manobras)} em manobras de combate</strong>
-          (${esc(D.MANOBRAS.join(', '))}), já somado no ✊ ao lado de ${esc(luta.nome)}; ` : ''}
+          (${esc(D.MANOBRAS.join(', '))}) — some na sua rolagem de ${esc(luta.nome)} quando a jogada é uma manobra, não no ataque comum; ` : ''}
         ocupa <strong>${esc(t.espaco)}</strong> (${t.quadrados === '1×1' ? 'um quadrado' :
           esc(t.quadrados) + ' quadrados'}), que é também o seu alcance natural${
           t.passoArma ? `; usa <strong>armas ${esc(t.arma)}</strong>, de
@@ -3957,7 +3962,6 @@
           </button>
           <input class="fi-num fi-num--mini" type="number" value="${e.outros}"
                  data-campo="pericias.${p.chave}.outros" title="Outros bônus nesta perícia">
-          ${botaoManobra(f, p)}
           <span class="fi-per-marcas">${marcasDe(p, f)}</span>
           <span class="fi-res" data-res="per:${p.chave}" hidden></span>
         </li>`;
@@ -3975,10 +3979,9 @@
           A sigla do meio é o <strong>atributo</strong>: vem o da Tabela 2-1, e você pode trocar por outro
           (usar Sabedoria em Misticismo, por exemplo). Trocado, ele fica em destaque e o nome da rolagem
           vai para a mesa com o atributo entre parênteses.
-          O <strong>✊</strong> na linha de Luta rola um <strong>teste de manobra</strong> — agarrar, derrubar,
-          desarmar, empurrar, atropelar (p. 234) —, que é a Luta mais o modificador de <strong>tamanho</strong>.
-          Esse modificador entra sozinho também na Furtividade, e lá ele vem com o selo
-          <em>tamanho</em> dizendo quanto é (Tabela 1-21, p. 107).</p>
+          O modificador de <strong>tamanho</strong> entra sozinho na Furtividade — com o selo
+          <em>tamanho</em> dizendo quanto é (Tabela 1-21, p. 107) — e, numa <strong>manobra</strong>
+          (agarrar, derrubar, desarmar, empurrar, atropelar, p. 234), soma na sua rolagem de Luta.</p>
       </div>`;
   }
 
