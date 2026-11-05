@@ -2094,6 +2094,45 @@
 .fi-imune-add { display: inline-flex; }
 .fi-imune-add .fi-add--menor { margin: 0; }
 
+/* ── ⚡ O QUE ESTÁ ME AFETANDO AGORA ────────────────────────────────
+   Um efeito por linha: ◉ liga/desliga · fonte · valor · alcance · duração ·
+   ∑ somar · ✕. Desligado fica apagado; quando SOMA no total, ganha um fio
+   verde à esquerda (o verde do "confirmado/ativo" do tema). */
+.fi-efj-cont {
+  font-size: 0.68rem; font-weight: 700; background: var(--gold-deep);
+  color: var(--parchment); border-radius: 999px; padding: 0.05rem 0.45rem;
+  vertical-align: middle;
+}
+.fi-efj-lista {
+  list-style: none; margin: 0.4rem 0 0.5rem; padding: 0;
+  display: flex; flex-direction: column; gap: 0.25rem;
+}
+.fi-efj-item {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.4rem;
+  padding: 0.3rem 0.15rem; border-bottom: 1px dotted var(--gold-dim);
+}
+.fi-efj-item:last-child { border-bottom: none; }
+.fi-efj-item--off { opacity: 0.5; }
+.fi-efj-item--soma { box-shadow: inset 2px 0 0 var(--verde); }
+.fi-efj-ativo {
+  border: none; background: transparent; cursor: pointer;
+  font-size: 1rem; line-height: 1; color: var(--verde); padding: 0.1rem 0.2rem;
+}
+.fi-efj-item--off .fi-efj-ativo { color: var(--text-dim); }
+.fi-efj-fonte { flex: 1 1 11rem; min-width: 8rem; }
+.fi-efj-valor { width: 3.4rem; flex: 0 0 auto; text-align: center; }
+.fi-efj-alc, .fi-efj-dur, .fi-efj-per { flex: 0 1 auto; font-size: 0.78rem; }
+.fi-efj-somar { font-weight: 700; min-width: 1.9rem; }
+.fi-efj-somar.fi-mini--on { background: var(--verde); color: var(--parchment); border-color: var(--verde); }
+/* a perícia cujo número um efeito em jogo MUDOU ganha um sublinhado
+   pontilhado verde — passar o mouse diz de onde veio ("− 3 Oração") */
+.fi-per-val--efj { text-decoration: underline dotted var(--verde); text-underline-offset: 2px; cursor: help; }
+.fi-efj-item .fi-mini--x { margin-left: auto; }
+@media (max-width: 560px) {
+  .fi-efj-fonte { flex: 1 1 100%; }
+  .fi-efj-item .fi-mini--x { margin-left: 0; }
+}
+
 .fi-prof { margin-top: 0.2rem; }
 
 /* ── A CARGA, DENTRO DO INVENTÁRIO ──────────────────────────────── */

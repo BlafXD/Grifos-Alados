@@ -162,6 +162,24 @@
 
   // Toda ficha salva ganha os campos do modelo de agora — fichas velhas
   // não podem quebrar a tela por falta de um bloco novo.
+  // ── EFEITOS EM JOGO: os alcances e as durações ───────────────────────
+  //  A lista fechada do «⚡ O que está me afetando agora». `tudo` é o que se
+  //  ROLA (perícias + ataque e dano), não a Defesa — que é um alcance à parte.
+  const EFEITO_ALCANCES = [
+    { v: 'tudo',       r: 'Tudo (perícias, ataque e dano)' },
+    { v: 'pericias',   r: 'Perícias' },
+    { v: 'ataquedano', r: 'Ataque e dano' },
+    { v: 'defesa',     r: 'Defesa' },
+    { v: 'pericia',    r: 'Uma perícia' },
+  ];
+  const EFEITO_DURACOES = [
+    { v: 'cena',       r: 'Cena' },
+    { v: 'dia',        r: '1 dia' },
+    { v: 'rodadas',    r: 'Rodadas' },
+    { v: 'permanente', r: 'Permanente' },
+    { v: 'outro',      r: 'Outro' },
+  ];
+
   function normalizar(f) {
     f = f || {};
     f.id = f.id || novoId();
@@ -221,6 +239,26 @@
     D.ATRIBUTOS.forEach(a => {
       if (typeof f.atributosTemp[a.chave] !== 'number') f.atributosTemp[a.chave] = 0;
     });
+    // ── EFEITOS EM JOGO (04/11/2026, pedido dele) ──────────────────────
+    //  "O que está me afetando agora": UM painel para o que a cena joga em
+    //  cima do personagem — a Oração da criatura (−3 em perícias e dano), a
+    //  estátua que dá −2 em alcance curto, o Heroísmo (+6 em Luta). Cada
+    //  efeito diz a FONTE, por QUANTO, em QUÊ (o alcance) e por quanto TEMPO,
+    //  com um liga/desliga. Por padrão é só LEMBRETE (mostra, não aplica —
+    //  ver [[nada-sintetico-na-ficha]]); marcando "somar", a ficha faz a
+    //  conta e o número passa a dizer de onde veio. Assim o jogador escreve
+    //  UMA vez, em vez de entrar em 29 perícias para pôr "−3".
+    if (!Array.isArray(f.efeitosEmJogo)) f.efeitosEmJogo = [];
+    f.efeitosEmJogo = f.efeitosEmJogo.map(x => ({
+      id: (x && x.id) || novoId(),
+      fonte: String((x && x.fonte) || ''),
+      valor: (x && typeof x.valor === 'number') ? x.valor : 0,          // pode ser negativo
+      alcance: EFEITO_ALCANCES.some(a => a.v === (x && x.alcance)) ? x.alcance : 'tudo',
+      pericia: String((x && x.pericia) || ''),                          // quando alcance === 'pericia'
+      duracao: EFEITO_DURACOES.some(d => d.v === (x && x.duracao)) ? x.duracao : 'cena',
+      somar: (x && x.somar) === true,                                   // padrão: só lembrete
+      ativo: (x && x.ativo) !== false,                                  // padrão: ligado
+    }));
     // PV e PM: `atual` null quer dizer "cheio" (a ficha nova não precisa
     // saber o máximo antes de ter classe). `temp` é a regra da p. 105 —
     // ver gastarPontos(), que é onde ela de fato acontece.
@@ -1108,7 +1146,8 @@
   }
   function defesa(f) {
     return 10 + somaAtrDefesa(f) + defesaDasPecas(f) +
-           f.defesa.armadura + f.defesa.escudo + f.defesa.outros + somaFontesDefesa(f);
+           f.defesa.armadura + f.defesa.escudo + f.defesa.outros + somaFontesDefesa(f) +
+           bonusEmJogo(f, 'defesa');            // os efeitos em jogo com ✓ somar
   }
   // Carga = 10 espaços + 2 por ponto de Força, ou −1 por ponto negativo (p. 141)
   function cargaMax(f) {
@@ -1133,6 +1172,46 @@
   //  `e` é a entrada da perícia nesta ficha ({treinada, outros}). Vem
   //  separada porque Ofício tem uma entrada por especialidade, e todas
   //  usam esta mesma conta.
+  //  O bônus que os EFEITOS EM JOGO ligados e marcados para «somar» jogam num
+  //  alvo. `alvo`: 'pericia' (com a chave), 'ataque' ou 'defesa'. Só entram os
+  //  ATIVOS e com ✓ somar — o resto é lembrete. `tudo` vale para o que se ROLA
+  //  (perícia e ataque); a Defesa é alcance à parte. O 'tudo'/'pericias' chega
+  //  ao ataque pela própria perícia (o ataque é um teste de Luta/Pontaria), e
+  //  por isso o ataque só soma POR AQUI o 'ataquedano' — para não contar duas vezes.
+  function bonusEmJogo(f, alvo, chave) {
+    const lista = f && f.efeitosEmJogo;
+    if (!Array.isArray(lista)) return 0;
+    return lista.reduce((s, ef) => {
+      if (!ef.ativo || !ef.somar || !ef.valor) return s;
+      const a = ef.alcance;
+      let bate = false;
+      if (alvo === 'pericia')     bate = (a === 'tudo' || a === 'pericias' || (a === 'pericia' && ef.pericia === chave));
+      else if (alvo === 'ataque') bate = (a === 'ataquedano');
+      else if (alvo === 'defesa') bate = (a === 'defesa');
+      return bate ? s + ef.valor : s;
+    }, 0);
+  }
+  //  As fontes "em jogo" ATIVAS que tocam este alvo (para o breakdown e a
+  //  marca na perícia) — aqui o ataque enxerga 'tudo' também, porque é mostra.
+  function efeitosDoAlvo(f, alvo, chave) {
+    const lista = f && f.efeitosEmJogo;
+    if (!Array.isArray(lista)) return [];
+    return lista.filter(ef => {
+      if (!ef.ativo) return false;
+      const a = ef.alcance;
+      if (alvo === 'pericia') return a === 'tudo' || a === 'pericias' || (a === 'pericia' && ef.pericia === chave);
+      if (alvo === 'ataque')  return a === 'tudo' || a === 'ataquedano';
+      if (alvo === 'defesa')  return a === 'defesa';
+      return false;
+    });
+  }
+  //  O "de onde veio" para a dica da perícia/ataque/Defesa afetada: só os
+  //  efeitos que SOMAM (os que mexem no número), com a fonte e o sinal.
+  function resumoEfj(f, alvo, chave) {
+    const efs = efeitosDoAlvo(f, alvo, chave).filter(ef => ef.somar && ef.valor);
+    if (!efs.length) return '';
+    return 'Com os efeitos em jogo: ' + efs.map(ef => sinal(ef.valor) + ' ' + (ef.fonte || 'sem fonte')).join(' · ');
+  }
   function calcPericia(f, P, e) {
     if (!P) return 0;
     const n = nivel(f);
@@ -1143,6 +1222,7 @@
     //  a ficha de quase todo mundo; quem é Pequeno ou Grande vê o número
     //  mudar, e a linha da perícia diz de onde ele vem.
     if (P.chave === D.PERICIA_DO_TAMANHO) v += modFurtividade(f);
+    v += bonusEmJogo(f, 'pericia', P.chave);     // os efeitos em jogo com ✓ somar
     return v;
   }
 
@@ -1187,7 +1267,9 @@
   //  seletor continua um só), mas somam bônus de fora independentes.
   function cdMagias(f) { return cdBase(f) + (f.cdMagiaOutros || 0); }
   function cdHabilidades(f) { return cdBase(f) + (f.cdHabOutros || 0); }
-  function valorAtaque(f, a) { return valorPericia(f, a.pericia) + (a.extra || 0); }
+  //  O 'tudo'/'pericias' já veio pela perícia (o ataque É um teste dela); aqui
+  //  só se acrescenta o alcance 'ataque e dano', para não contar duas vezes.
+  function valorAtaque(f, a) { return valorPericia(f, a.pericia) + (a.extra || 0) + bonusEmJogo(f, 'ataque'); }
   function pvAtual(f) { return f.pv.atual == null ? pvMax(f) : f.pv.atual; }
   function pmAtual(f) { return f.pm.atual == null ? pmMax(f) : f.pm.atual; }
 
@@ -1674,7 +1756,7 @@
     html += `
       <div class="fi-palco">
         <div class="fi-coluna fi-coluna--principal">
-          ${bloqueIdentidade(f)}${blocoCombate(f)}${blocoComplicacoes(f)}${blocoCondicoes(f)}${blocoEfeitosArea(f)}
+          ${bloqueIdentidade(f)}${blocoCombate(f)}${blocoComplicacoes(f)}${blocoCondicoes(f)}${blocoEfeitosArea(f)}${blocoEfeitosEmJogo(f)}
           ${blocoNumeros(f, ['atr', 'vida'])}
           <div class="fi-cartao fi-abas-cartao">
             <div class="fi-abas" role="tablist" aria-label="Partes da ficha">
@@ -3412,6 +3494,61 @@
     return b('topo', '⇈', 'Levar para o topo') + b('sobe', '↑', 'Mover para cima') + b('desce', '↓', 'Mover para baixo');
   }
 
+  // ═══ ⚡ O QUE ESTÁ ME AFETANDO AGORA (04/11/2026) ═════════════════════
+  //  UM painel para o que a cena joga no personagem. Cada efeito: a fonte,
+  //  por quanto, em quê (o alcance), por quanto tempo, com ◉ liga/desliga e
+  //  ∑ somar. Padrão: só lembrete. O ∑ ligado faz a ficha aplicar o valor
+  //  no total (perícia, ataque ou Defesa), e aí o número diz de onde veio.
+  function linhaEfeito(f, ef, i) {
+    const opsAlc = EFEITO_ALCANCES.map(a =>
+      `<option value="${a.v}"${ef.alcance === a.v ? ' selected' : ''}>${a.r}</option>`).join('');
+    const opsDur = EFEITO_DURACOES.map(d =>
+      `<option value="${d.v}"${ef.duracao === d.v ? ' selected' : ''}>${d.r}</option>`).join('');
+    const selPer = ef.alcance === 'pericia'
+      ? `<select class="fi-sel fi-sel--mini fi-efj-per" data-campo="efeitosEmJogo.${i}.pericia" aria-label="Qual perícia">
+           <option value="">— qual perícia? —</option>
+           ${D.PERICIAS.filter(p => !p.multipla).map(p =>
+             `<option value="${p.chave}"${ef.pericia === p.chave ? ' selected' : ''}>${esc(p.nome)}</option>`).join('')}
+         </select>`
+      : '';
+    return `
+      <li class="fi-efj-item${ef.ativo ? '' : ' fi-efj-item--off'}${ef.somar && ef.ativo ? ' fi-efj-item--soma' : ''}">
+        <button type="button" class="fi-efj-ativo" data-acao="efeito-ativo" data-i="${i}" aria-pressed="${ef.ativo}"
+                title="${ef.ativo ? 'Ativo — clique para desligar (guarda sem apagar)' : 'Desligado — clique para ligar'}">${ef.ativo ? '◉' : '○'}</button>
+        <input class="fi-txt fi-efj-fonte" type="text" value="${esc(ef.fonte)}" data-campo="efeitosEmJogo.${i}.fonte"
+               placeholder="Oração (criatura), Heroísmo, estátua da praça…" autocomplete="off">
+        <input class="fi-num fi-num--mini fi-efj-valor" type="number" value="${ef.valor}" data-campo="efeitosEmJogo.${i}.valor"
+               title="Quanto soma (+) ou tira (−). Só entra na conta com o ∑ ligado.">
+        <select class="fi-sel fi-sel--mini fi-efj-alc" data-campo="efeitosEmJogo.${i}.alcance" aria-label="Em que o efeito pega">${opsAlc}</select>
+        ${selPer}
+        <select class="fi-sel fi-sel--mini fi-efj-dur" data-campo="efeitosEmJogo.${i}.duracao" aria-label="Duração">${opsDur}</select>
+        <button type="button" class="fi-mini fi-efj-somar${ef.somar ? ' fi-mini--on' : ''}" data-acao="efeito-somar" data-i="${i}" aria-pressed="${ef.somar}"
+                title="${ef.somar ? 'A ficha SOMA este valor no total — clique para virar só lembrete' : 'Só lembrete (não muda os números) — clique para a ficha somar no total'}">∑</button>
+        <button type="button" class="fi-mini fi-mini--x" data-acao="tira-efeito" data-i="${i}" title="Tirar este efeito">✕</button>
+      </li>`;
+  }
+
+  function blocoEfeitosEmJogo(f) {
+    const lista = f.efeitosEmJogo || [];
+    const ativos = lista.filter(ef => ef.ativo).length;
+    return `
+      <div class="fi-cartao fi-bloco fi-efj">
+        <h2 class="fi-cartao-tit">⚡ O que está me afetando agora${ativos ? ' <span class="fi-efj-cont">' + ativos + '</span>' : ''}
+          <span class="fi-cartao-nota">a Oração da criatura, o Heroísmo, a estátua… — escreva uma vez, não em cada perícia</span>
+        </h2>
+        <ul class="fi-efj-lista">
+          ${lista.length ? lista.map((ef, i) => linhaEfeito(f, ef, i)).join('')
+            : '<li class="fi-atq-vazio">Nada te afetando agora.</li>'}
+        </ul>
+        <button type="button" class="fi-add fi-add--menor" data-acao="add-efeito">＋ Acrescentar efeito</button>
+        <p class="fi-nota">Cada efeito diz a <strong>fonte</strong>, por <strong>quanto</strong>, em <strong>quê</strong>
+          (perícias, ataque e dano, Defesa, ou uma perícia) e por quanto <strong>tempo</strong>. Por padrão é só
+          <strong>lembrete</strong> — a ficha mostra, você aplica. Ligue o <strong>∑</strong> de um efeito e a ficha
+          <strong>soma</strong> o valor no total, e aí o número da perícia (ou do ataque, ou da Defesa) já passa a
+          dizer de onde veio. O <strong>◉</strong> liga e desliga sem apagar — no fim da cena, desligue os de «Cena».</p>
+      </div>`;
+  }
+
   //  A imunidade é só uma PALAVRA (veneno, medo, sono…): vira uma PÍLULA que
   //  quebra em linha, não uma linha inteira com valor, observação e setas.
   //  Um nível 20 pode ter dez — dez pílulas cabem em duas ou três linhas, dez
@@ -3797,6 +3934,7 @@
       if (p.multipla) return linhasOficio(f, p);
       const e = f.pericias[p.chave];
       const v = valorPericia(f, p.chave);
+      const bEfj = bonusEmJogo(f, 'pericia', p.chave);   // modificada por efeito em jogo?
       //  O botão de rolar virou DOIS — o nome e o número —, com o
       //  seletor de atributo entre eles, onde antes ficava o "DES"
       //  escrito. Um <select> dentro de um <button> não abre (e o
@@ -3814,7 +3952,7 @@
             ' (Tabela 2-1, p. 115); se um poder, um item ou uma classe sua mandar outro, escolha aqui — muda só esta perícia.')}
           <button type="button" class="fi-per-rolar fi-per-rolar--val" data-acao="rolar-pericia" data-p="${p.chave}"
                   title="Rolar 1d20 ${sinal(v)} de ${esc(p.nome)}">
-            <span class="fi-per-val" data-der="per:${p.chave}">${sinal(v)}</span>
+            <span class="fi-per-val${bEfj ? ' fi-per-val--efj' : ''}" data-der="per:${p.chave}"${bEfj ? ' title="' + esc(resumoEfj(f, 'pericia', p.chave)) + '"' : ''}>${sinal(v)}</span>
             <span class="fi-per-dado" aria-hidden="true">🎲</span>
           </button>
           <input class="fi-num fi-num--mini" type="number" value="${e.outros}"
@@ -6687,6 +6825,7 @@
       //  benefício escrito embaixo da linha, que vem do livro.
       if (campo.indexOf('classes.') === 0 || campo.indexOf('amigos.') === 0 ||
           campo.indexOf('treinador.') === 0 || campo.indexOf('maos.') === 0 ||
+          campo.indexOf('efeitosEmJogo.') === 0 ||   // trocar o alcance mostra/esconde a perícia e refaz os totais
           /^parceiros\.\d+\.(tipo|nivel)$/.test(campo) ||
           campo === 'tamanho' || campo === 'cdAtributo') return render();
       atualizarDerivados();
@@ -6704,6 +6843,11 @@
     //  Isso vai no 'change' (commit), não no 'input': redesenhar a cada tecla
     //  atrapalharia a digitação. (Os números derivados já saem no 'input'.)
     if (el.type === 'number' && /^classes\.\d+\.nivel$/.test(el.dataset.campo || '')) {
+      return render();
+    }
+    //  Mudar o VALOR de um efeito em jogo com ∑ ligado refaz perícias, ataque
+    //  e Defesa — redesenha no commit (no 'input' a conta derivada já corre).
+    if (el.type === 'number' && /^efeitosEmJogo\.\d+\.valor$/.test(el.dataset.campo || '')) {
       return render();
     }
   }
@@ -6884,6 +7028,24 @@
       if (!Array.isArray(f[c])) return;
       f[c].splice(+btn.dataset.i, 1);
       sujar(f.id, c); salvar(); return render();
+    }
+    // ⚡ O que está me afetando agora: efeitos em jogo
+    if (acao === 'add-efeito') {
+      if (!f || !Array.isArray(f.efeitosEmJogo)) return;
+      f.efeitosEmJogo.push({ id: novoId(), fonte: '', valor: 0, alcance: 'tudo', pericia: '', duracao: 'cena', somar: false, ativo: true });
+      sujar(f.id, 'efeitosEmJogo'); salvar(); return render();
+    }
+    if (acao === 'tira-efeito') {
+      if (!f || !Array.isArray(f.efeitosEmJogo)) return;
+      f.efeitosEmJogo.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'efeitosEmJogo'); salvar(); return render();
+    }
+    if (acao === 'efeito-ativo' || acao === 'efeito-somar') {
+      if (!f || !Array.isArray(f.efeitosEmJogo)) return;
+      const ef = f.efeitosEmJogo[+btn.dataset.i];
+      if (!ef) return;
+      if (acao === 'efeito-ativo') ef.ativo = !ef.ativo; else ef.somar = !ef.somar;
+      sujar(f.id, 'efeitosEmJogo'); salvar(); return render();
     }
     // ⇈ ↑ ↓ (17/09/2026): "quero que o novo item esteja lá em cima em
     // vez de eu ficar escrevendo tudo para baixo"
