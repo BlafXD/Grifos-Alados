@@ -1705,6 +1705,8 @@
             ${retidas[x.id] ? '⚠ ' : ''}${esc(x.nome || '(sem nome)')}
           </button>`).join('')}
         <button type="button" class="fi-add" data-acao="nova">＋ Nova ficha</button>
+        <button type="button" class="fi-add fi-add--sortear" data-acao="sortear"
+                title="Monta uma ficha inteira ao acaso — raça, classe, atributos, origem — já aberta para você mexer">🎲 Sortear ficha</button>
       </div>
       ${lobbyFichas()}
       ${barraDaMesa()}
@@ -6875,6 +6877,13 @@
       abrirFicha(nova.id);
       salvar(); return render();
     }
+    //  🎲 Sortear ficha: o gerador (js/ficha-gerador.js) monta uma ficha
+    //  inteira ao acaso e a entrega por criarEabrir (abaixo). O módulo é
+    //  quem tem a camada de regras (mods raciais, perfis de atributo).
+    if (acao === 'sortear') {
+      if (window.GA_FichaGerador && window.GA_FichaGerador.abrir) window.GA_FichaGerador.abrir();
+      return;
+    }
     //  Os botões «Vincular» / «Só na conta» / «destravar» do cartão viraram
     //  um seletor só (o selo de registro) — ver selectCampanha e o handler
     //  'campanha-sel' no aoMudar. Vincular = escolher a campanha; "só na
@@ -9583,6 +9592,16 @@
     conferir: conferir,                // a gaveta (e a mesa) responderam: decide ficha a ficha
     mesaMudou: mesaMudou,              // login/papel mudou → redesenhar a barra
     minhasFichas: () => dados.fichas.slice(),
+    //  O gerador (js/ficha-gerador.js) entrega uma ficha pré-preenchida;
+    //  aqui ela passa pelo MESMO caminho da ＋ Nova ficha — normalizar,
+    //  entra na lista, abre, salva, redesenha. Nasce sem campanha.
+    criarEabrir: function (obj) {
+      const nova = normalizar(obj || {});
+      dados.fichas.push(nova);
+      abrirFicha(nova.id);
+      salvar(); render();
+      return nova;
+    },
     recarregar: () => { carregar(); render(); },
     visiveis: visiveis,                // as fichas que este navegador enxerga
     aoMudar: escutar,                  // avisa quando qualquer número muda
