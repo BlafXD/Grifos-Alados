@@ -3513,6 +3513,48 @@
 }
 .fi-desl-conta strong { font-style: normal; color: var(--rust-dark); }
 
+/* ── ⚙ REGRAS OPCIONAIS NA FICHA (Heróis de Arton) ───────────────── */
+/*  Defesa Épica (cartão Defesa) e Lesões (cartão Perícias). Discretas e
+    desligadas por padrão; acendem quando a mesa usa a regra. */
+.fi-regra-opc {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--parchment3);
+  font-size: 0.86rem;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.fi-regra-opc input { cursor: pointer; flex: none; }
+.fi-regra-opc em { font-style: italic; font-size: 0.8rem; }
+
+.fi-lesoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.15rem 0 0.6rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+.fi-lesoes--ativa {
+  border-color: var(--carmim);
+  border-left-width: 3px;
+  background: var(--gold-pale);
+}
+.fi-lesoes-rot { font-weight: 600; color: var(--ink-faded); }
+.fi-lesoes-rot em { font-weight: 400; font-style: italic; font-size: 0.78rem; color: var(--text-dim); }
+.fi-lesoes-stepper { display: inline-flex; align-items: center; gap: 0.35rem; }
+.fi-lesoes-n { min-width: 1.1rem; text-align: center; font-size: 1rem; }
+.fi-lesoes--ativa .fi-lesoes-n { color: var(--carmim); }
+.fi-lesoes-efeito { font-style: italic; margin-left: auto; }
+.fi-lesoes--ativa .fi-lesoes-efeito { color: var(--carmim); font-style: normal; }
+
 /* ══════════════════════════════════════════════════════════════════
    🤝 PARCEIROS (Tormenta 20, p. 259–262) — 03/11/2026
    Uma linha por parceiro, com o benefício do livro escrito embaixo

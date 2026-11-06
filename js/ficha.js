@@ -347,6 +347,19 @@
       valor: (x && typeof x.valor === 'number') ? x.valor : 0,   // pode ser negativo
       de: String((x && x.de) || ''),                             // "magia (Bênção)", "item"…
     }));
+    // ── REGRAS OPCIONAIS DE COMBATE (Heróis de Arton, p.296–304) ────
+    //  Opcionais de verdade: nascem DESLIGADAS e ligam por ficha, porque
+    //  quem decide é a mesa. Por ora duas, "o mais básico" (06/11/2026):
+    //    · Defesa Épica (p.297) — +1 na Defesa para cada nível PAR (a
+    //      mesma progressão das perícias). "Para ação exagerada."
+    //    · Lesões (p.304) — ao cair a 0 PV você ganha uma lesão, e cada
+    //      lesão é −2 CUMULATIVO em TODO teste de perícia (ataque e
+    //      manobra inclusos — são testes de perícia). Curam no descanso.
+    //  O resto do catálogo fica anotado para depois (ver a memória
+    //  regras-opcionais-t20): Morte Alternativa, RD Combinada, etc.
+    f.regras = (f.regras && typeof f.regras === 'object') ? f.regras : {};
+    f.regras.defesaEpica = !!f.regras.defesaEpica;
+    f.regras.lesoes = Math.max(0, parseInt(f.regras.lesoes, 10) || 0);
     f.carga = f.carga || {};
     ['usada', 'outros'].forEach(k => { if (typeof f.carga[k] !== 'number') f.carga[k] = 0; });
     if (typeof f.cdAtributo !== 'string') f.cdAtributo = 'int';
@@ -1144,9 +1157,18 @@
     return (a.ativo ? a.penalidade : 0) + (e.ativo ? e.penalidade : 0) +
            Math.abs((f.defesa && f.defesa.penalidade) || 0);
   }
+  // ── REGRAS OPCIONAIS LIGADAS NESTA FICHA (Heróis de Arton) ───────
+  //  Defesa Épica: +⌊nível ÷ 2⌋ na Defesa (só quando ligada). Lesões:
+  //  quantas lesões a ficha carrega — cada uma vale −2 em todo teste de
+  //  perícia (ver calcPericia). Ambas moram em f.regras (normalizar).
+  function defesaEpica(f) {
+    return (f.regras && f.regras.defesaEpica) ? Math.floor(nivel(f) / 2) : 0;
+  }
+  function lesoes(f) { return (f.regras && f.regras.lesoes) || 0; }
   function defesa(f) {
     return 10 + somaAtrDefesa(f) + defesaDasPecas(f) +
            f.defesa.armadura + f.defesa.escudo + f.defesa.outros + somaFontesDefesa(f) +
+           defesaEpica(f) +                     // regra opcional Defesa Épica (p.297)
            bonusEmJogo(f, 'defesa');            // os efeitos em jogo com ✓ somar
   }
   // Carga = 10 espaços + 2 por ponto de Força, ou −1 por ponto negativo (p. 141)
@@ -1217,6 +1239,10 @@
     const n = nivel(f);
     let v = Math.floor(n / 2) + atr(f, atrPericia(P, e)) + treino(n, (e || {}).treinada) + ((e || {}).outros || 0);
     if (P.armadura) v -= penalidadeArmadura(f);
+    //  Regra opcional Lesões (p.304): −2 CUMULATIVO em todo teste de
+    //  perícia. Cai aqui, no único lugar por onde passam perícia, ofício,
+    //  ataque e manobra — que são, todos, testes de perícia.
+    v -= 2 * lesoes(f);
     //  O modificador de TAMANHO (Tabela 1-21, p. 107) entra aqui, na
     //  perícia que a tabela nomeia — e em nenhuma outra. Médio é 0, que é
     //  a ficha de quase todo mundo; quem é Pequeno ou Grande vê o número
@@ -2320,6 +2346,10 @@
           </div>
           ${blocoPecasDefesa(f)}
           ${blocoFontesDefesa(f)}
+          <label class="fi-regra-opc" title="Regra OPCIONAL (Heróis de Arton, p.297). Com ela, sua Defesa aumenta em +1 para cada nível PAR — a mesma progressão das perícias (no 20 são +10). «Indicada para campanhas de ação exagerada.» Nasce desligada; ligue só se a sua mesa usa.">
+            <input type="checkbox" data-acao="regra-defesa-epica" ${f.regras.defesaEpica ? 'checked' : ''}>
+            <span>Defesa Épica <em>opcional · +⌊nível ÷ 2⌋ na Defesa</em></span>
+          </label>
           <div class="fi-linhas">
             <div class="fi-linha fi-linha--carga">
               <span>Carga</span>
@@ -2679,6 +2709,7 @@
     if (f.defesa.armadura) p.push('armadura ' + sinal(f.defesa.armadura));
     if (f.defesa.escudo)   p.push('escudo ' + sinal(f.defesa.escudo));
     if (f.defesa.outros)   p.push('outros ' + sinal(f.defesa.outros));
+    if (defesaEpica(f))    p.push('Defesa Épica ' + sinal(defesaEpica(f)));
     ((f.defesa.fontes) || []).forEach(x => {
       if (x.valor) p.push((x.de ? esc(x.de) : 'fonte') + ' ' + sinal(x.valor));
     });
@@ -3935,6 +3966,7 @@
 
   function blocoPericias(f) {
     const n = nivel(f);
+    const L = lesoes(f);
     const linhas = D.PERICIAS.map(p => {
       // Ofício não é UMA perícia: no lugar dela entram as especialidades
       // que este personagem tem (p. 121). Ver linhasOficio().
@@ -3972,8 +4004,20 @@
     return `
       <div class="fi-cartao fi-pericias">
         <h2 class="fi-cartao-tit">Perícias
-          <span class="fi-cartao-nota">⌊nível ÷ 2⌋ + atributo + treino <span data-der="treino">${sinal(treino(n, true))}</span> − penalidade de armadura</span>
+          <span class="fi-cartao-nota">⌊nível ÷ 2⌋ + atributo + treino <span data-der="treino">${sinal(treino(n, true))}</span> − penalidade de armadura${L ? ' − <strong>' + (2 * L) + '</strong> de lesão' : ''}</span>
         </h2>
+        <div class="fi-lesoes${L ? ' fi-lesoes--ativa' : ''}"
+             title="Regra OPCIONAL (Heróis de Arton, p.304). Ao cair a 0 PV você ganha uma lesão; cada lesão é −2 CUMULATIVO em TODO teste de perícia — ataque e manobra inclusos, porque também são testes de perícia. Lesões curam no descanso (1 por noite). Deixe em 0 se a sua mesa não usa a regra.">
+          <span class="fi-lesoes-rot">🩹 Lesões <em>opcional</em></span>
+          <div class="fi-lesoes-stepper">
+            <button type="button" class="fi-mini" data-acao="lesao-menos" aria-label="Menos uma lesão"${L ? '' : ' disabled'}>−</button>
+            <strong class="fi-lesoes-n">${L}</strong>
+            <button type="button" class="fi-mini" data-acao="lesao-mais" aria-label="Mais uma lesão">＋</button>
+          </div>
+          <span class="fi-lesoes-efeito">${L
+            ? '−' + (2 * L) + ' em todo teste de perícia e de ataque'
+            : 'cada uma: −2 em todo teste de perícia'}</span>
+        </div>
         <ul class="fi-per-lista">${linhas}</ul>
         <p class="fi-nota">O <strong>🎲</strong> rola 1d20 com o bônus já somado, e a rolagem aparece na mesa.
           O ✓ marca treinada — o site não confere quantas você pode treinar, isso é escolha sua.
@@ -7125,6 +7169,23 @@
     if (acao === 'tira-defesa-fonte') {
       f.defesa.fontes.splice(+btn.dataset.i, 1);
       sujar(f.id, 'defesa'); salvar(); return render();
+    }
+
+    // ── ⚙ REGRAS OPCIONAIS DE COMBATE (Heróis de Arton) ────────────
+    //  Ligam por ficha e nascem desligadas. Defesa Épica é liga/desliga;
+    //  Lesões é um contador (cada lesão, −2 em todo teste de perícia).
+    //  Um render() redesenha tudo que elas tocam — Defesa, a conta por
+    //  extenso, e cada perícia/ataque (o −2 passa por calcPericia).
+    if (acao === 'regra-defesa-epica') {
+      if (!f.regras) f.regras = {};
+      f.regras.defesaEpica = !f.regras.defesaEpica;
+      sujar(f.id, 'regras'); salvar(); return render();
+    }
+    if (acao === 'lesao-mais' || acao === 'lesao-menos') {
+      if (!f.regras) f.regras = {};
+      const d = acao === 'lesao-mais' ? 1 : -1;
+      f.regras.lesoes = Math.max(0, (f.regras.lesoes || 0) + d);
+      sujar(f.id, 'regras'); salvar(); return render();
     }
 
     // ── CONDIÇÕES ──────────────────────────────────────────────────
