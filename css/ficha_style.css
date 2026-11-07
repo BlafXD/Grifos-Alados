@@ -2163,6 +2163,75 @@
   .fi-efj-item .fi-mini--x { margin-left: 0; }
 }
 
+/* os botões do rodapé do painel ⚡ — ＋ Acrescentar e 🧹 Limpar os de Cena */
+.fi-efj-botoes { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.fi-efj-limpar { margin-left: auto; }
+
+/* ── 🔎 BREAKDOWN UNIVERSAL — o ⓘ e o popover «por que esse número?» ─ */
+.fi-bd-btn {
+  flex: 0 0 auto;
+  margin: 0 0 0 0.15rem;
+  padding: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  line-height: 1;
+  border: 0;
+  background: transparent;
+  color: var(--gold-deep);
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0.5;
+  border-radius: 50%;
+}
+.fi-bd-btn:hover,
+.fi-bd-btn:focus-visible { opacity: 1; background: var(--gold-pale); }
+
+.fi-bd {
+  position: fixed;
+  z-index: 1200;
+  min-width: 11rem;
+  max-width: min(21rem, 92vw);
+  background: var(--parchment);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+  box-shadow: 0 4px 16px var(--shadow);
+  font-size: 0.82rem;
+  color: var(--ink);
+  overflow: hidden;
+}
+.fi-bd[hidden] { display: none; }
+.fi-bd-cab {
+  padding: 0.35rem 0.6rem;
+  font-weight: 700;
+  background: var(--gold-pale);
+  border-bottom: 1px solid var(--parchment3);
+}
+.fi-bd-corpo { padding: 0.3rem 0.6rem 0.45rem; }
+.fi-bd-linha {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 0.12rem 0;
+  line-height: 1.35;
+}
+.fi-bd-rot { opacity: 0.85; }
+.fi-bd-val { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fi-bd-linha--efj .fi-bd-rot,
+.fi-bd-linha--efj .fi-bd-val { color: var(--verde); font-style: italic; }
+.fi-bd-linha--nota .fi-bd-rot,
+.fi-bd-linha--nota .fi-bd-val { opacity: 0.6; font-style: italic; }
+.fi-bd-total {
+  margin-top: 0.2rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--gold-dim);
+  font-weight: 700;
+}
+.fi-bd-total .fi-bd-rot { opacity: 1; }
+
+/* o ＋ (bônus por perícia) e o ⓘ moram juntos no fim da linha */
+.fi-per-acoes { display: inline-flex; align-items: center; gap: 0.1rem; flex: 0 0 auto; }
+.fi-per-maisbonus { font-weight: 700; }
+
 .fi-prof { margin-top: 0.2rem; }
 
 /* ── A CARGA, DENTRO DO INVENTÁRIO ──────────────────────────────── */

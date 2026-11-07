@@ -36,6 +36,7 @@
   //  classe, fotografamos o PV/PM máximos de agora; quando o nível é
   //  comitado, o atual sobe pelo mesmo tanto que o máximo subiu.
   let maxAoFocarNivel = null;   // { id, pv, pm } tirado no foco do campo de nível
+  let focarEfeitoNovo = false;  // o ＋ de uma perícia criou um efeito: focar a fonte no próximo render
   let secao = null;             // a <section> que hospeda a aba
 
   //  ── AVISO DE OUTRA ABA (25/10/2026) ───────────────────────────────
@@ -1750,6 +1751,7 @@
     //  Redesenhar troca o DOM (e o campo de nível que estivesse em edição):
     //  a foto do máximo tirada no foco deixa de valer, então se descarta.
     maxAoFocarNivel = null;
+    fecharBreakdown();   // o popover aponta para um ⓘ que o render vai recriar
     const f = fichaAberta();
 
     let html = `
@@ -1862,6 +1864,13 @@
     // …e o desenho sai inteiro: é aqui que a 🔍 barra volta a esconder o
     // que não casa (o termo vive fora do <input>, em filtroMagias)
     aplicarFiltroMagias();
+    //  O ＋ de uma perícia acabou de criar um efeito no painel ⚡: leva o
+    //  olho até ele e abre o cursor na fonte, para escrever de onde vem.
+    if (focarEfeitoNovo) {
+      focarEfeitoNovo = false;
+      const inp = secao && secao.querySelector('.fi-efj-lista .fi-efj-item:last-child .fi-efj-fonte');
+      if (inp) { try { inp.scrollIntoView({ block: 'center' }); inp.focus(); } catch (e) {} }
+    }
   }
 
   // ── A BARRA DA MESA ──────────────────────────────────────────────
@@ -2360,6 +2369,7 @@
           <div class="fi-grande">
             <span class="fi-grande-rot">Defesa</span>
             <strong class="fi-grande-val" data-der="defesa">${defesa(f)}</strong>
+            ${botaoBd('defesa', 'a Defesa')}
           </div>
           <p class="fi-conta" data-der="defconta">${contaDefesa(f)}</p>
           <div class="fi-extras">
@@ -2577,6 +2587,7 @@
         <button type="button" class="fi-passo" data-acao="${qual}-menos" title="−1 ${rot}">−</button>
         <input class="fi-medidor-val" type="number" value="${atual}" data-campo="${qual}.atual" title="${rot} atual">
         <span class="fi-medidor-max">/ <strong data-der="${qual}max">${max}</strong></span>
+        ${botaoBd(qual, 'o ' + rot + ' máximo')}
         <button type="button" class="fi-passo" data-acao="${qual}-mais" title="+1 ${rot}">+</button>
         <span class="fi-temp-selo fi-temp-selo--${qual}" data-der="${qual}selo" ${temp ? '' : 'hidden'}
               title="${rot} temporários — gastos antes do seu ${rot} de verdade">
@@ -2757,6 +2768,149 @@
       : k === 'nenhum' ? ' <em>(nenhum atributo na Defesa — como com armadura pesada, p. 152)</em>'
       : ' <em>(' + esc(nomeAtr(k)) + ' no lugar da Destreza)</em>';
     return p.join(' + ').replace(/\+ -/g, '− ') + nota;
+  }
+
+  // ═══ 🔎 BREAKDOWN UNIVERSAL — «por que esse número?» (07/11/2026) ═══
+  //  Um ⓘ ao lado de cada total (Defesa, PV, PM, cada perícia, cada
+  //  ataque) abre um popover com a conta ABERTA: base + cada fonte =
+  //  total. Decisão dele (07/11): ⓘ em TUDO, uniforme. As fontes «em
+  //  jogo» (o painel ⚡) entram marcadas, para o número nunca subir sem
+  //  dizer de onde veio. Reaproveita as MESMAS funções que fazem os
+  //  totais (defesa, pvMax, pmMax, valorPericia, valorAtaque): a conta é
+  //  só a soma aberta do que elas já somam fechado.
+  function partesBreakdown(f, tipo, chave) {
+    const L = [];
+    const efj = (alvo, ch, soAtaqueDano) => {
+      efeitosDoAlvo(f, alvo, ch).forEach(e => {
+        if (!e.somar || !e.valor) return;
+        if (soAtaqueDano && e.alcance !== 'ataquedano') return;  // o 'tudo' já entrou pela perícia
+        L.push({ rot: e.fonte || 'efeito', val: e.valor, efjMarca: true });
+      });
+    };
+    if (tipo === 'defesa') {
+      L.push({ rot: 'base', val: 10 });
+      const k = atrDefesa(f);
+      if (k !== 'nenhum') L.push({ rot: atrCurto(k), val: atr(f, k) });
+      const pa = pecaDefesa(f, 'armadura'), pe = pecaDefesa(f, 'escudo');
+      if (pa.ativo && pa.defesa) L.push({ rot: pa.nome || 'armadura', val: pa.defesa });
+      if (pe.ativo && pe.defesa) L.push({ rot: pe.nome || 'escudo', val: pe.defesa });
+      if (f.defesa.armadura) L.push({ rot: 'armadura (à mão)', val: f.defesa.armadura });
+      if (f.defesa.escudo)   L.push({ rot: 'escudo (à mão)', val: f.defesa.escudo });
+      if (f.defesa.outros)   L.push({ rot: 'outros', val: f.defesa.outros });
+      if (defesaEpica(f))    L.push({ rot: 'Defesa Épica', val: defesaEpica(f) });
+      ((f.defesa.fontes) || []).forEach(x => { if (x.valor) L.push({ rot: x.de || 'fonte', val: x.valor }); });
+      efj('defesa');
+      return { rot: 'Defesa', total: defesa(f), linhas: L, sinalTotal: false };
+    }
+    if (tipo === 'pv' || tipo === 'pm') {
+      const ehPv = tipo === 'pv';
+      const c = f.classes.filter(x => D.classe(x.classe) && x.nivel > 0);
+      if (!c.length) return { rot: ehPv ? 'PV máximo' : 'PM máximo', total: ehPv ? pvMax(f) : pmMax(f),
+        linhas: [{ rot: 'escolha a classe e o nível', val: 0, nota: true }], sinalTotal: false };
+      const con = atrBase(f, 'con');
+      c.forEach((x, i) => {
+        const C = D.classe(x.classe);
+        if (ehPv) {
+          const val = (i === 0) ? C.pvBase + con + (x.nivel - 1) * (C.pvNivel + con)
+                                : x.nivel * (C.pvNivel + con);
+          const detalhe = (i === 0)
+            ? C.pvBase + sinalCon(con) + ' + ' + (x.nivel - 1) + '×(' + C.pvNivel + sinalCon(con) + ')'
+            : x.nivel + '×(' + C.pvNivel + sinalCon(con) + ')';
+          L.push({ rot: C.nome + ' — ' + detalhe, val });
+        } else {
+          L.push({ rot: C.nome + ' — ' + x.nivel + '×' + C.pmNivel, val: x.nivel * C.pmNivel });
+        }
+      });
+      if (!ehPv) atributosDoPm(f).forEach(x =>
+        L.push({ rot: atrCurto(x.atr) + ' (' + x.classe.nome.toLowerCase() + ')', val: atrBase(f, x.atr) }));
+      const outros = ehPv ? (f.pv.outros || 0) : (f.pm.outros || 0);
+      if (outros) L.push({ rot: '＋ máximo (à mão)', val: outros });
+      const temp = f[tipo].temp || 0;
+      if (temp) L.push({ rot: 'temporários (entram por cima)', val: temp, nota: true });
+      return { rot: ehPv ? 'PV máximo' : 'PM máximo', total: ehPv ? pvMax(f) : pmMax(f), linhas: L, sinalTotal: false };
+    }
+    if (tipo === 'pericia') {
+      const P = D.pericia(chave);
+      if (!P) return null;
+      const e = f.pericias[chave] || {};
+      const n = nivel(f), k = atrPericia(P, e);
+      L.push({ rot: 'nível ÷ 2', val: Math.floor(n / 2) });
+      L.push({ rot: atrCurto(k), val: atr(f, k) });
+      if (e.treinada) L.push({ rot: 'treino', val: treino(n, true) });
+      if (e.outros)   L.push({ rot: 'outros', val: e.outros });
+      if (P.chave === D.PERICIA_DO_TAMANHO && modFurtividade(f)) L.push({ rot: 'tamanho', val: modFurtividade(f) });
+      if (P.armadura && penalidadeArmadura(f)) L.push({ rot: 'armadura', val: -penalidadeArmadura(f) });
+      if (lesoes(f)) L.push({ rot: 'Lesões', val: -2 * lesoes(f) });
+      efj('pericia', chave);
+      return { rot: P.nome, total: valorPericia(f, chave), linhas: L, sinalTotal: true };
+    }
+    if (tipo === 'ataque') {
+      const a = f.ataques[+chave];
+      if (!a) return null;
+      L.push({ rot: a.pericia === 'pontaria' ? 'Pontaria' : 'Luta', val: valorPericia(f, a.pericia) });
+      if (a.extra) L.push({ rot: 'extra', val: a.extra });
+      efj('ataque', null, true);
+      return { rot: a.nome || 'Ataque', total: valorAtaque(f, a), linhas: L, sinalTotal: true };
+    }
+    return null;
+  }
+  function htmlBreakdown(parts) {
+    const linhas = parts.linhas.map(l => `
+      <div class="fi-bd-linha${l.efjMarca ? ' fi-bd-linha--efj' : ''}${l.nota ? ' fi-bd-linha--nota' : ''}">
+        <span class="fi-bd-rot">${esc(l.rot)}</span>
+        <span class="fi-bd-val">${l.nota && !l.val ? '' : sinal(l.val)}</span>
+      </div>`).join('');
+    return `<div class="fi-bd-cab">${esc(parts.rot)}</div>
+      <div class="fi-bd-corpo">${linhas}
+        <div class="fi-bd-linha fi-bd-total"><span class="fi-bd-rot">= total</span>
+          <strong class="fi-bd-val">${parts.sinalTotal ? sinal(parts.total) : parts.total}</strong></div>
+      </div>`;
+  }
+  //  O ⓘ que abre o breakdown. `bd` é "tipo" (defesa, pv, pm) ou
+  //  "tipo:chave" (pericia:luta, ataque:0).
+  function botaoBd(bd, oQue) {
+    return `<button type="button" class="fi-bd-btn" data-acao="breakdown" data-bd="${esc(bd)}"
+            title="Por que esse número? — abre a conta" aria-label="Por que ${esc(oQue || 'esse número')}?">ⓘ</button>`;
+  }
+  //  O popover é UM só, filho do <body> (position:fixed), para não ser
+  //  cortado pela coluna nem apagado pelo render do #ficha-content.
+  let _bdPop = null;
+  function bdPopover() {
+    if (_bdPop && document.body.contains(_bdPop)) return _bdPop;
+    _bdPop = document.createElement('div');
+    _bdPop.className = 'fi-bd';
+    _bdPop.setAttribute('role', 'dialog');
+    _bdPop.hidden = true;
+    document.body.appendChild(_bdPop);
+    return _bdPop;
+  }
+  function fecharBreakdown() {
+    if (_bdPop) { _bdPop.hidden = true; _bdPop._btn = null; }
+  }
+  function abrirBreakdown(btn) {
+    const f = fichaAberta();
+    if (!f) return;
+    const pop = bdPopover();
+    if (pop._btn === btn && !pop.hidden) { fecharBreakdown(); return; }   // o mesmo ⓘ fecha
+    const campos = (btn.dataset.bd || '').split(':');
+    const parts = partesBreakdown(f, campos[0], campos[1]);
+    if (!parts) { fecharBreakdown(); return; }
+    pop.innerHTML = htmlBreakdown(parts);
+    pop._btn = btn;
+    pop.hidden = false;
+    posicionarBreakdown(pop, btn);
+  }
+  function posicionarBreakdown(pop, btn) {
+    const r = btn.getBoundingClientRect();
+    const pw = pop.offsetWidth, ph = pop.offsetHeight, marg = 8;
+    let left = r.left;
+    if (left + pw > window.innerWidth - marg) left = window.innerWidth - pw - marg;
+    if (left < marg) left = marg;
+    let top = r.bottom + 6;
+    if (top + ph > window.innerHeight - marg) top = r.top - ph - 6;   // não cabe embaixo → vai pra cima
+    if (top < marg) top = marg;
+    pop.style.left = Math.round(left) + 'px';
+    pop.style.top = Math.round(top) + 'px';
   }
 
   // ═══ 🌀 CONDIÇÕES (Tormenta 20, p. 394) ═══════════════════════════
@@ -3611,12 +3765,17 @@
           ${lista.length ? lista.map((ef, i) => linhaEfeito(f, ef, i)).join('')
             : '<li class="fi-atq-vazio">Nada te afetando agora.</li>'}
         </ul>
-        <button type="button" class="fi-add fi-add--menor" data-acao="add-efeito">＋ Acrescentar efeito</button>
+        <div class="fi-efj-botoes">
+          <button type="button" class="fi-add fi-add--menor" data-acao="add-efeito">＋ Acrescentar efeito</button>
+          ${lista.some(ef => ef.duracao === 'cena') ? `<button type="button" class="fi-mini fi-efj-limpar" data-acao="limpar-cena"
+                  title="Tirar da lista todos os efeitos de duração «Cena» — o fim da luta. Os de 1 dia, rodadas e permanente ficam.">🧹 Limpar os de Cena</button>` : ''}
+        </div>
         <p class="fi-nota">Cada efeito diz a <strong>fonte</strong>, por <strong>quanto</strong>, em <strong>quê</strong>
           (perícias, ataque e dano, Defesa, ou uma perícia) e por quanto <strong>tempo</strong>. Por padrão é só
           <strong>lembrete</strong> — a ficha mostra, você aplica. Ligue o <strong>∑</strong> de um efeito e a ficha
           <strong>soma</strong> o valor no total, e aí o número da perícia (ou do ataque, ou da Defesa) já passa a
-          dizer de onde veio. O <strong>◉</strong> liga e desliga sem apagar — no fim da cena, desligue os de «Cena».</p>
+          dizer de onde veio. O <strong>◉</strong> liga e desliga sem apagar; no fim da cena, o
+          <strong>🧹 Limpar os de Cena</strong> tira de uma vez os que duram só a luta.</p>
       </div>`;
   }
 
@@ -4029,6 +4188,12 @@
           </button>
           <input class="fi-num fi-num--mini" type="number" value="${e.outros}"
                  data-campo="pericias.${p.chave}.outros" title="Outros bônus nesta perícia">
+          <span class="fi-per-acoes">
+            <button type="button" class="fi-mini fi-per-maisbonus" data-acao="efeito-pericia" data-p="${p.chave}"
+                    title="Anotar um bônus COM FONTE nesta perícia (Heroísmo, Oração da criatura…) — cria uma linha em ⚡ O que está me afetando agora, já mirada aqui"
+                    aria-label="Bônus temporário em ${esc(p.nome)}">＋</button>
+            ${botaoBd('pericia:' + p.chave, p.nome)}
+          </span>
           <span class="fi-per-marcas">${marcasDe(p, f)}</span>
           <span class="fi-res" data-res="per:${p.chave}" hidden></span>
         </li>`;
@@ -4146,6 +4311,7 @@
                title="Bônus extra deste ataque (arma mágica, poder…)">
         <button type="button" class="fi-atq-val" data-acao="rolar-ataque" data-i="${i}"
                 title="Rolar 1d20 ${sinal(valorAtaque(f, a))} de ataque">${sinal(valorAtaque(f, a))} 🎲</button>
+        ${botaoBd('ataque:' + i, a.nome || 'o ataque')}
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.dano)}" data-campo="ataques.${i}.dano"
                placeholder="1d8+3" autocomplete="off">
         <input class="fi-num fi-num--passos${a.passos ? ' fi-num--andou' : ''}" type="number" min="-12" max="12" step="1"
@@ -7154,6 +7320,30 @@
       if (acao === 'efeito-ativo') ef.ativo = !ef.ativo; else ef.somar = !ef.somar;
       sujar(f.id, 'efeitosEmJogo'); salvar(); return render();
     }
+    //  O ＋ de uma perícia: cria, no painel ⚡, um efeito já mirado nela
+    //  (alcance «uma perícia», ∑ ligado) e abre o cursor na fonte. É o
+    //  atalho de «bônus temporário por perícia» — mora no painel central,
+    //  onde a conta pode somar e o breakdown mostra a origem.
+    if (acao === 'efeito-pericia') {
+      if (!f || !Array.isArray(f.efeitosEmJogo)) return;
+      f.efeitosEmJogo.push({ id: novoId(), fonte: '', valor: 0, alcance: 'pericia',
+        pericia: btn.dataset.p || '', duracao: 'cena', somar: true, ativo: true });
+      sujar(f.id, 'efeitosEmJogo'); salvar();
+      focarEfeitoNovo = true;          // o render foca a fonte do novo efeito
+      return render();
+    }
+    //  🧹 O fim da luta: tira de uma vez os efeitos de duração «Cena».
+    if (acao === 'limpar-cena') {
+      if (!f || !Array.isArray(f.efeitosEmJogo)) return;
+      const n = f.efeitosEmJogo.filter(ef => ef.duracao === 'cena').length;
+      if (!n) return;
+      if (!confirm('Tirar ' + (n === 1 ? 'o efeito de «Cena»' : 'os ' + n + ' efeitos de «Cena»') +
+        '?\n\nSaem da lista. Os de 1 dia, rodadas e permanente ficam.')) return;
+      f.efeitosEmJogo = f.efeitosEmJogo.filter(ef => ef.duracao !== 'cena');
+      sujar(f.id, 'efeitosEmJogo'); salvar(); return render();
+    }
+    //  ⓘ O breakdown de um total (Defesa, PV, PM, perícia, ataque).
+    if (acao === 'breakdown') { abrirBreakdown(btn); return; }
     // ⇈ ↑ ↓ (17/09/2026): "quero que o novo item esteja lá em cima em
     // vez de eu ficar escrevendo tudo para baixo"
     if (acao === 'apara-sobe' || acao === 'apara-desce' || acao === 'apara-topo') {
@@ -9701,6 +9891,16 @@
     secao.addEventListener('input', aoEntrada);
     secao.addEventListener('change', aoMudar);
     secao.addEventListener('focusin', aoFocarCampo);
+    //  Fechar o popover do breakdown: clique fora dele (que não seja num
+    //  ⓘ, pois esse é o próprio gatilho), Esc, ou a janela mudando de
+    //  tamanho (a âncora saiu do lugar).
+    document.addEventListener('click', e => {
+      if (!_bdPop || _bdPop.hidden) return;
+      if (e.target.closest('.fi-bd') || e.target.closest('[data-acao="breakdown"]')) return;
+      fecharBreakdown();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharBreakdown(); });
+    window.addEventListener('resize', fecharBreakdown);
     secao.addEventListener('mousedown', window.GA_richDescMousedown);
     secao.addEventListener('paste', window.GA_richPaste);
     window.addEventListener('beforeunload', () => { salvarAgora(); avisarAba('fechei', dados.aberta); });
