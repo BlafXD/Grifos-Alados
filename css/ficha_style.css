@@ -112,9 +112,23 @@
    ══════════════════════════════════════════════════════════════════ */
 .fi-palco {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem);
+  grid-template-columns: minmax(0, 1fr) minmax(21rem, 27rem);
   gap: 0.9rem;
   align-items: start;
+}
+/*  A FICHA PEDE LARGURA (07/11/2026, pedido dele: "tem muito espaço à
+    esquerda e à direita, vai mais pra direita"). Numa tela grande ela
+    ESCAPA do casco de 1120px do site e usa o vão vazio das laterais — e
+    a coluna das perícias deixa de apertar o ＋/ⓘ numa 2ª linha. Só acima
+    de 1100px, onde as duas colunas existem e há vão de sobra; no celular
+    a largura do site basta. Centraliza no VIEWPORT sem `transform` (que
+    quebraria o `sticky` da coluna): o `.wrapper` já é centrado, então
+    centrar o #ficha-content dentro do wrapper o centra na tela. */
+@media (min-width: 1101px) {
+  #ficha-content {
+    width: min(95vw, 1500px);
+    margin-left: calc((100% - min(95vw, 1500px)) / 2);
+  }
 }
 .fi-coluna { min-width: 0; }
 /*  A coluna principal é um CONTAINER de medida: os grids de dentro (ataques
