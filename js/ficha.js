@@ -32,6 +32,10 @@
 
   let dados = { fichas: [], aberta: null };
   let ultimoDano = '';          // "−7 PV: 5 dos temporários e 2 do PV"
+  //  SUBIR DE NÍVEL DEVOLVE OS PONTOS: ao FOCAR o campo de nível de uma
+  //  classe, fotografamos o PV/PM máximos de agora; quando o nível é
+  //  comitado, o atual sobe pelo mesmo tanto que o máximo subiu.
+  let maxAoFocarNivel = null;   // { id, pv, pm } tirado no foco do campo de nível
   let secao = null;             // a <section> que hospeda a aba
 
   //  ── AVISO DE OUTRA ABA (25/10/2026) ───────────────────────────────
@@ -1340,6 +1344,32 @@
     return f[qual].atual - agora;
   }
 
+  //  ── SUBIR DE NÍVEL DEVOLVE OS PONTOS GANHOS ─────────────────────
+  //  O PV/PM MÁXIMO é derivado do nível; o ATUAL é um número guardado.
+  //  Sem isto, "subir de nível" deixava o personagem machucado do mesmo
+  //  tanto (ou, ao corrigir um nível para baixo, com o atual acima do
+  //  novo máximo). Agora o atual acompanha: ganhou máximo, ganha o mesmo
+  //  no atual — ninguém acorda ferido por passar de nível (p. 40, cada
+  //  nível rende os PV daquele dado); perdeu máximo, o atual é só aparado
+  //  para não ultrapassar o novo teto. Quem estava CHEIO (atual == null)
+  //  já segue o máximo sozinho e fica de fora da conta.
+  //  O "antes" vem de maxAoFocarNivel, tirado no foco do campo de nível
+  //  (aoFocarCampo), antes de a primeira tecla mudar coisa alguma.
+  function ajustarPontosPorNivel(f) {
+    if (!maxAoFocarNivel || maxAoFocarNivel.id !== f.id) return;
+    const dPv = pvMax(f) - maxAoFocarNivel.pv;
+    const dPm = pmMax(f) - maxAoFocarNivel.pm;
+    maxAoFocarNivel = null;
+    if (f.pv.atual != null && dPv !== 0) {
+      f.pv.atual = dPv > 0 ? f.pv.atual + dPv : Math.min(f.pv.atual, pvMax(f));
+      sujar(f.id, 'pv');
+    }
+    if (f.pm.atual != null && dPm !== 0) {
+      f.pm.atual = dPm > 0 ? f.pm.atual + dPm : Math.min(f.pm.atual, pmMax(f));
+      sujar(f.id, 'pm');
+    }
+  }
+
   // ── PV MANCHADOS (Heróis de Arton, p. 290) ──────────────────────
   //  Quantos pontos do máximo estão presos, e o teto que sobra para a
   //  cura. A ficha MOSTRA e faz a conta; quem cumpre a condição (dormir
@@ -1717,6 +1747,9 @@
   function render() {
     const cont = document.getElementById('ficha-content');
     if (!cont) return;
+    //  Redesenhar troca o DOM (e o campo de nível que estivesse em edição):
+    //  a foto do máximo tirada no foco deixa de valer, então se descarta.
+    maxAoFocarNivel = null;
     const f = fichaAberta();
 
     let html = `
@@ -2289,7 +2322,7 @@
           ${medidor(f, 'pv')}
           ${medidor(f, 'pm')}
 
-          <p class="fi-dano-eco" data-der="danoeco" ${ultimoDano ? '' : 'hidden'}>${ultimoDano}</p>
+          <p class="fi-dano-eco" data-acao="fechar-eco" title="Clique para fechar este aviso" ${ultimoDano ? '' : 'hidden'}><span class="fi-dano-eco-txt" data-der="danoeco">${ultimoDano}</span><button type="button" class="fi-dano-eco-x" data-acao="fechar-eco" aria-label="Fechar este aviso" title="Fechar">✕</button></p>
 
           <div class="fi-extras">
             <label class="fi-extra fi-extra--temp"><span>⛨ PV temporários</span>
@@ -6609,7 +6642,11 @@
       }
       if (d === 'xpconta')   el.innerHTML = contaXp(f);
       if (d === 'xpbarra')   el.innerHTML = barraXp(f);
-      if (d === 'danoeco')   { el.innerHTML = ultimoDano; el.hidden = !ultimoDano; }
+      if (d === 'danoeco')   {
+        el.innerHTML = ultimoDano;
+        const ecoCaixa = el.closest('.fi-dano-eco');
+        if (ecoCaixa) ecoCaixa.hidden = !ultimoDano; else el.hidden = !ultimoDano;
+      }
       // os dois medidores: barra, pedaço temporário e o selo ao lado
       if (d === 'pvbarra')     el.style.width = fatia(pvAtual(f), pvMax(f), f.pv.temp) + '%';
       if (d === 'pmbarra')     el.style.width = fatia(pmAtual(f), pmMax(f), f.pm.temp) + '%';
@@ -6892,6 +6929,8 @@
     //  Isso vai no 'change' (commit), não no 'input': redesenhar a cada tecla
     //  atrapalharia a digitação. (Os números derivados já saem no 'input'.)
     if (el.type === 'number' && /^classes\.\d+\.nivel$/.test(el.dataset.campo || '')) {
+      ajustarPontosPorNivel(f);   // o atual de PV/PM acompanha o máximo que subiu
+      salvar();
       return render();
     }
     //  Mudar o VALOR de um efeito em jogo com ∑ ligado refaz perícias, ataque
@@ -6899,6 +6938,18 @@
     if (el.type === 'number' && /^efeitosEmJogo\.\d+\.valor$/.test(el.dataset.campo || '')) {
       return render();
     }
+  }
+
+  //  O foco entrou num campo de nível de classe: fotografa o PV/PM
+  //  máximos de agora, para ajustarPontosPorNivel saber de quanto o
+  //  máximo cresceu quando o nível for comitado. Só o nível muda entre o
+  //  foco e o commit — trocar de classe, de atributo ou de ＋máximo tira
+  //  o foco daqui antes, então a foto nunca mistura duas mudanças.
+  function aoFocarCampo(e) {
+    const el = e.target;
+    if (!el || !el.dataset || !/^classes\.\d+\.nivel$/.test(el.dataset.campo || '')) return;
+    const f = fichaAberta();
+    maxAoFocarNivel = f ? { id: f.id, pv: pvMax(f), pm: pmMax(f) } : null;
   }
 
   function aoClicar(e) {
@@ -7339,6 +7390,20 @@
       const sobra = pvAtual(f) - tetoPv(f);
       if (sobra <= 0) return;
       aplicarDano(f, 'pv', sobra, 'PV manchados');
+      return;
+    }
+    //  O ✕ do eco de PV/PM: o aviso ("🩸 −7 PM…") que nasce embaixo do
+    //  medidor ao gastar mana ou levar dano NÃO some sozinho — é bom
+    //  poder relê-lo depois. Clicar nele (no ✕ ou em qualquer ponto) o
+    //  apaga, sem redesenhar a ficha no meio do turno.
+    if (acao === 'fechar-eco') {
+      ultimoDano = '';
+      const cx = btn.closest('.fi-dano-eco');
+      if (cx) {
+        cx.hidden = true;
+        const txt = cx.querySelector('[data-der="danoeco"]');
+        if (txt) txt.innerHTML = '';
+      }
       return;
     }
 
@@ -9635,6 +9700,7 @@
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoEntrada);
     secao.addEventListener('change', aoMudar);
+    secao.addEventListener('focusin', aoFocarCampo);
     secao.addEventListener('mousedown', window.GA_richDescMousedown);
     secao.addEventListener('paste', window.GA_richPaste);
     window.addEventListener('beforeunload', () => { salvarAgora(); avisarAba('fechei', dados.aberta); });
