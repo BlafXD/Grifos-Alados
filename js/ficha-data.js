@@ -261,10 +261,12 @@
   //  "Ao escolher o caminho do feiticeiro, escolha uma linhagem da lista a
   //  seguir. Você recebe a herança básica de sua linhagem e pode
   //  desenvolver as demais através de poderes de arcanista."
-  //  São TRÊS, e são só estas nos livros desta casa. A "linhagem celestial"
-  //  aparece como pré-requisito da Apoteose Celestial (Heróis de Arton,
-  //  p. 54), mas NÃO está impressa em nenhum dos livros daqui — por isso
-  //  não está na lista, e a ficha deixa escrever uma à mão.
+  //  São QUATRO nos livros desta casa: as três do básico (Dracônica,
+  //  Feérica, Rubra) e a ABENÇOADA, do Deuses de Arton (p. 33, "Nova
+  //  Linhagem"). A "linhagem celestial" aparece como pré-requisito da
+  //  Apoteose Celestial (Heróis de Arton, p. 54), mas NÃO está impressa em
+  //  nenhum dos livros daqui — por isso não está na lista, e a ficha deixa
+  //  escrever uma à mão.
   //  As heranças aprimorada e superior vêm pelos poderes Herança
   //  Aprimorada (6º) e Herança Superior (11º), que já estão no
   //  js/poderes-classe-data.js; aqui elas são texto para ler.
@@ -289,6 +291,15 @@
       basica: 'Você recebe um poder da Tormenta. Além disso, pode perder outro atributo em vez de Carisma por poderes da Tormenta.',
       aprimorada: 'Escolha uma magia para cada poder da Tormenta que você possui. Essas magias custam −1 PM. Sempre que recebe um novo poder da Tormenta, você pode escolher uma nova magia. Esta herança conta como um poder da Tormenta (exceto para perda de Carisma).',
       superior: 'Você recebe +4 PM para cada poder da Tormenta que tiver. Esta herança conta como um poder da Tormenta (exceto para perda de Carisma).' },
+    //  Deuses de Arton, p. 33. O feiticeiro abençoado já nasce com a
+    //  centelha divina no sangue. A básica também dá uma magia divina de
+    //  1º círculo e, no 2º nível, um poder concedido do deus escolhido —
+    //  tudo isso fica no texto, como nas outras linhagens, para ler.
+    { chave: 'abencoada', nome: 'Abençoada',
+      sangue: 'Você já nasceu com a centelha divina no sangue: é contemplado com dons de um deus sem precisar lhe dedicar devoção, orações ou ritos — sequer seguir suas crenças e Obrigações & Restrições.',
+      basica: 'Escolha um deus maior. Uma vez feita, essa escolha não pode ser mudada. Você aprende uma magia divina de 1º círculo e pode aprender magias divinas de 1º círculo como magias de feiticeiro. No 2º nível, você recebe um poder concedido do deus escolhido, aprovado pelo mestre, sem precisar ser devoto dele (mas você ainda pode ser devoto desse ou de outro deus).',
+      aprimorada: 'Suas magias divinas de círculo igual ou menor que sua Sabedoria custam −1 PM e você pode aprender magias divinas de 2º e 3º círculos como magias de feiticeiro.',
+      superior: 'Você recebe +1 em Sabedoria e aprende uma magia divina de cada círculo a que tenha acesso, limitado por sua Sabedoria. A cada dia, após descansar, pode trocar essas magias por outras dos mesmos círculos. Por fim, pode aprender magias divinas de 4º e 5º círculos como magias de feiticeiro.' },
   ];
 
   //  "Você pode lançar magias arcanas de 1º círculo. A cada quatro níveis,

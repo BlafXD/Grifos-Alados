@@ -3838,14 +3838,14 @@
         <strong>Linhagem sobrenatural:</strong>
         <input class="fi-txt fi-txt--linhagem" type="text" value="${esc(c.linhagem)}"
                list="fiLinhagens" data-campo="classes.${i}.linhagem" autocomplete="off"
-               placeholder="dracônica, feérica, rubra…"
+               placeholder="dracônica, feérica, rubra, abençoada…"
                title="A linhagem de que vem o seu sangue (p. 39). Você recebe a herança básica dela; as outras duas vêm pelos poderes Herança Aprimorada (6º) e Herança Superior (11º).">
         ${linha ? `<span class="fi-cam-heranca"><em>${esc(linha.sangue)}</em>
             <strong>Herança básica.</strong> ${esc(linha.basica)}
             ${linha.pvCarisma ? `<span class="fi-cam-conta">São <strong>${sinal(atr(f, 'car'))} PV</strong>
               (o seu Carisma) nos pontos de vida iniciais — ponha em <strong>＋ PV máximo</strong>, no cartão
               Vida &amp; Mana, que é o campo do que vem de fora da classe.</span>` : ''}</span>`
-          : '<span class="fi-cam-heranca fi-cam-heranca--vazia">Escreva a linhagem e a herança básica dela aparece aqui. As impressas nos livros daqui são três: <strong>Dracônica</strong>, <strong>Feérica</strong> e <strong>Rubra</strong>.</span>'}
+          : '<span class="fi-cam-heranca fi-cam-heranca--vazia">Escreva a linhagem e a herança básica dela aparece aqui. As impressas nos livros daqui são quatro: <strong>Dracônica</strong>, <strong>Feérica</strong> e <strong>Rubra</strong> (básico) e <strong>Abençoada</strong> (Deuses de Arton).</span>'}
       </li>`;
 
     return `
