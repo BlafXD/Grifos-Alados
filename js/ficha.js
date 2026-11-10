@@ -160,9 +160,12 @@
     if (!dados || typeof dados !== 'object') dados = {};
     if (!Array.isArray(dados.fichas)) dados.fichas = [];
     dados.fichas = dados.fichas.map(normalizar);
-    if (!dados.fichas.some(f => f.id === dados.aberta)) {
-      dados.aberta = dados.fichas.length ? dados.fichas[0].id : null;
-    }
+    //  Começa SEM nenhuma ficha aberta (10/11/2026, pedido dele): abrir a
+    //  aba Ficha não joga mais uma ficha na tela de imediato — fica só o
+    //  seletor (a barra em cima e o 🗂 lobby embaixo) até você escolher.
+    //  Antes caía na `dados.fichas[0]`. `dados.aberta` só passa a valer
+    //  quando VOCÊ clica numa ficha (abrirFicha); nada o restaura no load.
+    dados.aberta = null;
   }
 
   // Toda ficha salva ganha os campos do modelo de agora — fichas velhas
@@ -317,16 +320,22 @@
         aberto: !!p.aberto,
       };
     });
-    //  Migração, UMA vez por ficha: os três números antigos viram a
-    //  peça. A penalidade inteira vai para a armadura (é de lá que ela
-    //  quase sempre vem); quem usa escudo separa as duas na tela em
-    //  dois segundos, e a soma continua a mesma enquanto não separar.
-    if (!f.equipDefesaMigrado) {
-      f.equipDefesaMigrado = true;
-      if (f.defesa.armadura)   { f.equipDefesa.armadura.defesa     += f.defesa.armadura;             f.defesa.armadura = 0; }
-      if (f.defesa.escudo)     { f.equipDefesa.escudo.defesa       += f.defesa.escudo;               f.defesa.escudo = 0; }
-      if (f.defesa.penalidade) { f.equipDefesa.armadura.penalidade += Math.abs(f.defesa.penalidade); f.defesa.penalidade = 0; }
-    }
+    //  Migração: os três números antigos viram a peça. A penalidade
+    //  inteira vai para a armadura (é de lá que ela quase sempre vem);
+    //  quem usa escudo separa as duas na tela em dois segundos, e a soma
+    //  continua a mesma enquanto não separar.
+    //  SEM a trava `!equipDefesaMigrado` (10/11/2026): era uma vez só, e
+    //  por isso uma ficha que ficou com a bandeira ligada mas o número
+    //  velho ainda em `f.defesa.armadura` (editada numa versão antiga em
+    //  cache, por exemplo) carregava um "+5 à mão" preso que não havia
+    //  mais campo na tela para apagar — e ainda somava por cima da peça.
+    //  Como NENHUM input escreve nesses campos legados, dobrá-los na peça
+    //  e zerar é idempotente: na próxima normalização já estão em zero e
+    //  os `if` abaixo nem entram. Assim toda ficha se conserta sozinha.
+    f.equipDefesaMigrado = true;
+    if (f.defesa.armadura)   { f.equipDefesa.armadura.defesa     += f.defesa.armadura;             f.defesa.armadura = 0; }
+    if (f.defesa.escudo)     { f.equipDefesa.escudo.defesa       += f.defesa.escudo;               f.defesa.escudo = 0; }
+    if (f.defesa.penalidade) { f.equipDefesa.armadura.penalidade += Math.abs(f.defesa.penalidade); f.defesa.penalidade = 0; }
     // ── O ATRIBUTO DA DEFESA (12/09/2026) ──────────────────────────
     //  Pelo livro a Defesa é 10 + DESTREZA + armadura + escudo (p. 106),
     //  e é com Destreza que toda ficha nasce. Mas há quem troque: um
@@ -1779,10 +1788,19 @@
     // na mesa, quem rola à mão é o painel 🎲 Rolagens (o mesmo do mestre);
     // na ficha, rola quem tem número — perícia, ataque, dano.
     if (!f) {
-      html += `
-        <p class="fi-vazio">Nenhuma ficha ainda.<br>
-        Clique em <strong>＋ Nova ficha</strong>: escolha a classe e o nível, digite os seis atributos,
-        e o resto — PV, PM, Defesa, carga e as 29 perícias — sai sozinho.</p>`;
+      //  Duas telas de "vazio": se já HÁ fichas para escolher (as minhas,
+      //  as da mesa, ou as que só estão na mesa esperando o ⬇), o texto
+      //  convida a escolher — porque agora a aba abre sem nada aberto
+      //  (ver carregar). Só quando não há nenhuma é que ensina a criar.
+      let temAlguma = dados.fichas.length;
+      try { temAlguma = temAlguma || fichasDaMesa().length || soNaMesa().length; } catch (e) {}
+      html += temAlguma
+        ? `<p class="fi-vazio">Escolha uma ficha para abrir — nas abas aqui em cima,
+           em <strong>👥 Da mesa</strong>, ou no <strong>🗂 Minhas fichas</strong> logo abaixo.<br>
+           Ou comece uma em <strong>＋ Nova ficha</strong>.</p>`
+        : `<p class="fi-vazio">Nenhuma ficha ainda.<br>
+           Clique em <strong>＋ Nova ficha</strong>: escolha a classe e o nível, digite os seis atributos,
+           e o resto — PV, PM, Defesa, carga e as 29 perícias — sai sozinho.</p>`;
       cont.innerHTML = html;
       return;
     }
