@@ -733,6 +733,17 @@
       // "abaixo da espada"), e o ✎ dobra quem não quiser vê-la.
       notas: String((a && a.notas) || ''),
       aberto: (a && a.aberto) !== false,
+      // Dano extra condicional (10/11/2026, pedido dele): um dano
+      // adicional de um poder/encanto (ex.: Imolação Sagrada, +1d6 fogo)
+      // que fica GUARDADO e o jogador LIGA (ativo) quando está valendo —
+      // aí o 🎲 dano e o 💥 crítico passam a somá-lo. Nasce DESLIGADO.
+      // Resolve a gambiarra do ataque falso só para lembrar do +1d6.
+      danoExtra: Array.isArray(a && a.danoExtra) ? a.danoExtra.map(e => ({
+        id: (e && e.id) || novoId(),
+        dado: String((e && e.dado) || ''),   // "1d6", "+2", "2d6" — o que SOMA
+        fonte: String((e && e.fonte) || ''), // "Imolação Sagrada (fogo)"
+        ativo: !!(e && e.ativo),
+      })) : [],
     }));
 
     // ── MÃOS OCUPADAS (22/10/2026) ───────────────────────────────────
@@ -4313,6 +4324,36 @@
               data-campo="${campo}" data-livro="${doLivro}" title="${esc(dica)}">${ops}</select>`;
   }
 
+  // ── DANO EXTRA POR ATAQUE (liga/desliga) ─────────────────────────
+  //  A lista do dano adicional condicional de um ataque, no padrão das
+  //  Fontes de Defesa: cada linha é {◉ ligar, dado, fonte, ✕}. Só os
+  //  LIGADOS (◉ aceso) entram no 🎲 dano e no 💥 crítico. Nasce vazio e
+  //  só aparece uma linha quando o jogador acrescenta — mas o «＋ dano
+  //  extra» está sempre ali, discreto, para a gambiarra morrer.
+  function blocoDanoExtra(a, i) {
+    const itens = (a.danoExtra || []).map((e, j) => `
+      <span class="fi-atq-extra-item${e.ativo ? ' fi-atq-extra-item--on' : ''}">
+        <button type="button" class="fi-mini fi-atq-extra-liga ${e.ativo ? 'fi-mini--on' : ''}"
+                data-acao="atq-extra-liga" data-i="${i}" data-j="${j}" aria-pressed="${e.ativo}"
+                title="${e.ativo ? 'Ligado — este dano extra ENTRA na rolagem. Clique para desligar.' : 'Desligado — clique para somar este dano no 🎲 dano e no 💥 crítico.'}">◉</button>
+        <input class="fi-txt fi-txt--mini fi-atq-extra-dado" type="text" value="${esc(e.dado)}"
+               data-campo="ataques.${i}.danoExtra.${j}.dado" placeholder="1d6" autocomplete="off"
+               title="O que SOMA no dano quando ligado (ex.: 1d6, +2, 2d6)">
+        <input class="fi-txt fi-txt--mini fi-atq-extra-fonte" type="text" value="${esc(e.fonte)}"
+               data-campo="ataques.${i}.danoExtra.${j}.fonte" placeholder="de onde vem (Imolação Sagrada, fogo)" autocomplete="off"
+               title="De onde vem — um poder, um encanto, uma magia">
+        <button type="button" class="fi-mini fi-mini--x" data-acao="atq-extra-tira" data-i="${i}" data-j="${j}"
+                title="Tirar este dano extra">✕</button>
+      </span>`).join('');
+    return `
+      <div class="fi-atq-extra">
+        <span class="fi-atq-extra-rot"
+              title="Dano adicional condicional — um poder, um encanto (a Imolação Sagrada dá +1d6 de fogo). Fica guardado e você LIGA com o ◉ quando estiver valendo; aí o 🎲 dano e o 💥 crítico passam a somá-lo.">🔥 Dano extra</span>
+        ${itens}
+        <button type="button" class="fi-mini fi-atq-extra-add" data-acao="atq-extra-add" data-i="${i}">＋ dano extra</button>
+      </div>`;
+  }
+
   // ── ATAQUES ──────────────────────────────────────────────────────
   function blocoAtaques(f) {
     const linhas = f.ataques.map((a, i) => {
@@ -4340,7 +4381,7 @@
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.critico)}" data-campo="ataques.${i}.critico"
                placeholder="19/×3" autocomplete="off">
         <button type="button" class="fi-atq-crit" data-acao="rolar-critico" data-i="${i}"
-                title="${esc(tituloCritico(danoDoAtaque(a).expr, mult))}">💥 Crítico</button>
+                title="${esc(tituloCritico(danoComExtras(a).expr, mult))}">💥 Crítico</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.tipo)}" data-campo="ataques.${i}.tipo"
                placeholder="corte" autocomplete="off">
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.alcance)}" data-campo="ataques.${i}.alcance"
@@ -4357,6 +4398,7 @@
           <button type="button" class="fi-mini" data-acao="atq-desce" data-i="${i}" ${i === f.ataques.length - 1 ? 'disabled' : ''}
                   title="Mover para baixo" aria-label="Mover ${esc(a.nome || 'este ataque')} para baixo">↓</button>
         </span>` : ''}
+        ${blocoDanoExtra(a, i)}
         <span class="fi-atq-passos${avisoDePassos(a) ? ' fi-atq-passos--aviso' : ''}" data-der="passos:${i}"
               ${passosDe(a.passos) ? '' : 'hidden'}>${linhaDePassos(a)}</span>
         <span class="fi-res fi-res--atq" data-res="atq:${i}" hidden></span>
@@ -4505,14 +4547,40 @@
   function danoDoAtaque(a, extra) {
     return D.danoComPassos(String((a && a.dano) || '').trim(), passosDe(a && a.passos) + (extra || 0));
   }
+  // ── DANO EXTRA CONDICIONAL (10/11/2026) ──────────────────────────
+  //  Os danos adicionais LIGADOS entram na rolagem. `sinalDeExtra` deixa
+  //  o pedaço pronto para colar na expressão ("1d6"→"+1d6", "-2" fica).
+  function sinalDeExtra(s) {
+    s = String(s || '').trim();
+    return s ? (/^[+\-−]/.test(s) ? s.replace('−', '-') : '+' + s) : '';
+  }
+  function extrasAtivos(a) {
+    return ((a && a.danoExtra) || []).filter(e => e.ativo && String(e.dado || '').trim());
+  }
+  //  A expressão de dano COM os extras ligados somados ao fim, e a lista
+  //  dos que entraram (para o rótulo da rolagem).
+  function danoComExtras(a, extra) {
+    const r = danoDoAtaque(a, extra);
+    const ativos = extrasAtivos(a);
+    return { base: r, extras: ativos,
+      expr: (r.expr || '') + ativos.map(e => sinalDeExtra(e.dado)).join('') };
+  }
+  //  "1d6 Imolação Sagrada, +2 veneno" — o que dizer na pílula da rolagem.
+  function rotuloExtras(a) {
+    const e = extrasAtivos(a);
+    return e.length ? ' + ' + e.map(x => sinalDeExtra(x.dado).replace(/^\+/, '') +
+      (x.fonte ? ' ' + x.fonte : '')).join(', ') : '';
+  }
   function textoPassos(n) {
     return (n > 0 ? '+' : '−') + Math.abs(n) + ' passo' + (Math.abs(n) === 1 ? '' : 's');
   }
   function tituloDano(a) {
     const r = danoDoAtaque(a);
     if (!r.expr) return 'Rolar o dano';
-    return 'Rolar o dano: ' + r.expr + (passosDe(a.passos) && r.ok && !r.semDado
-      ? ' (' + r.base + ' ' + textoPassos(passosDe(a.passos)) + ', Tabela 3-2)' : '');
+    const ex = danoComExtras(a);
+    return 'Rolar o dano: ' + ex.expr + (passosDe(a.passos) && r.ok && !r.semDado
+      ? ' (' + r.base + ' ' + textoPassos(passosDe(a.passos)) + ', Tabela 3-2)' : '') +
+      (ex.extras.length ? ' · com o dano extra ligado' : '');
   }
   // A linha embaixo do ataque: para onde o dado andou — ou por que não andou.
   function linhaDePassos(a, extra, fontes) {
@@ -7304,7 +7372,7 @@
       sujar(f.id, 'pericias');
       salvar(); return render();
     }
-    if (acao === 'add-ataque')  { f.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0, dano: '', passos: 0, critico: '', tipo: '', alcance: '', notas: '', aberto: true }); salvar(); return render(); }
+    if (acao === 'add-ataque')  { f.ataques.push({ id: novoId(), nome: '', pericia: 'luta', extra: 0, dano: '', passos: 0, critico: '', tipo: '', alcance: '', notas: '', aberto: true, danoExtra: [] }); salvar(); return render(); }
     if (acao === 'add-mao') { f.maos.push({ id: novoId(), modo: 'livre', ataqueId: '', itemId: '', nome: '', tipo: 'livre', notas: '', aberto: false }); sujar(f.id, 'maos'); salvar(); return render(); }
 
     // ── O QUE APARA O DANO ─────────────────────────────────────────
@@ -7526,6 +7594,27 @@
       const a = f.ataques[+btn.dataset.i];
       if (a) { a.aberto = !a.aberto; sujar(f.id, 'ataques'); salvar(); render(); }
       return;
+    }
+    // ── O DANO EXTRA CONDICIONAL DE UM ATAQUE ──────────────────────
+    if (acao === 'atq-extra-add') {
+      const a = f.ataques[+btn.dataset.i];
+      if (!a) return;
+      if (!Array.isArray(a.danoExtra)) a.danoExtra = [];
+      a.danoExtra.push({ id: novoId(), dado: '', fonte: '', ativo: false });
+      sujar(f.id, 'ataques'); salvar(); return render();
+    }
+    if (acao === 'atq-extra-tira') {
+      const a = f.ataques[+btn.dataset.i];
+      if (!a || !Array.isArray(a.danoExtra)) return;
+      a.danoExtra.splice(+btn.dataset.j, 1);
+      sujar(f.id, 'ataques'); salvar(); return render();
+    }
+    if (acao === 'atq-extra-liga') {
+      const a = f.ataques[+btn.dataset.i];
+      const e = a && a.danoExtra && a.danoExtra[+btn.dataset.j];
+      if (!e) return;
+      e.ativo = !e.ativo;
+      sujar(f.id, 'ataques'); salvar(); return render();
     }
 
     // o ✕ da mão mora colado no ✎, igual ao do ataque — e só pergunta
@@ -8070,8 +8159,10 @@
       const a = f.ataques[+btn.dataset.i];
       if (!a || !a.dano.trim()) return;
       const r = danoDoAtaque(a);
+      const ex = danoComExtras(a);
       const p = (passosDe(a.passos) && r.ok && !r.semDado) ? ' (' + textoPassos(passosDe(a.passos)) + ')' : '';
-      rolar(r.expr, quem(f) + ' · dano de ' + (a.nome || 'ataque') + p, 'dano:' + btn.dataset.i, 'Dano' + p);
+      rolar(ex.expr, quem(f) + ' · dano de ' + (a.nome || 'ataque') + p + rotuloExtras(a),
+            'dano:' + btn.dataset.i, 'Dano' + p + (ex.extras.length ? ' +extra' : ''));
       return;
     }
     if (acao === 'rolar-critico') {
@@ -8079,9 +8170,11 @@
       if (!a || !a.dano.trim()) return;
       const mult = multiplicadorCritico(a.critico);
       const r = danoDoAtaque(a);
+      const ex = danoComExtras(a);
       const p = (passosDe(a.passos) && r.ok && !r.semDado) ? ' (' + textoPassos(passosDe(a.passos)) + ')' : '';
-      rolar(expressaoCritica(r.expr, mult),
-            quem(f) + ' · 💥 CRÍTICO ×' + mult + ' de ' + (a.nome || 'ataque') + p, 'crit:' + i, '💥 Crítico ×' + mult + p);
+      rolar(expressaoCritica(ex.expr, mult),
+            quem(f) + ' · 💥 CRÍTICO ×' + mult + ' de ' + (a.nome || 'ataque') + p + rotuloExtras(a),
+            'crit:' + i, '💥 Crítico ×' + mult + p + (ex.extras.length ? ' +extra' : ''));
       return;
     }
     if (acao === 'limpar-hist') {
