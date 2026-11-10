@@ -878,6 +878,8 @@
 }
 .fi-atq-extra-liga { color: var(--text-dim); }
 .fi-atq-extra-liga.fi-mini--on { color: var(--rust); }
+.fi-atq-extra-crit { color: var(--text-dim); opacity: 0.55; filter: grayscale(1); }
+.fi-atq-extra-crit.fi-mini--on { opacity: 1; filter: none; color: var(--rust); }
 .fi-atq-extra-dado  { width: 4.5rem; flex: 0 0 auto; }
 .fi-atq-extra-fonte { width: 12rem; flex: 1 1 8rem; min-width: 6rem; }
 .fi-atq-extra-add { color: var(--ink-faded); }

@@ -743,6 +743,9 @@
         dado: String((e && e.dado) || ''),   // "1d6", "+2", "2d6" — o que SOMA
         fonte: String((e && e.fonte) || ''), // "Imolação Sagrada (fogo)"
         ativo: !!(e && e.ativo),
+        // Dano extra NÃO multiplica no crítico, em geral (p. 142) — nasce
+        // false. Alguns encantos são exceção e dobram: o 💥 da linha liga.
+        critico: !!(e && e.critico),
       })) : [],
     }));
 
@@ -3493,12 +3496,11 @@
       if (ac === 'turno-dano' || ac === 'turno-crit') {
         const a = f.ataques[+btn.dataset.i];
         if (!a || !String(a.dano || '').trim()) return;
-        const r = danoDoAtaque(a);
         const mult = multiplicadorCritico(a.critico);
         const crit = ac === 'turno-crit';
-        dizer((crit ? '💥 crítico ×' + mult + ' de ' : '💥 dano de ') + (a.nome || 'ataque'),
-              rolar(crit ? expressaoCritica(r.expr, mult) : r.expr,
-                    quem(f) + ' · ' + (crit ? '💥 CRÍTICO ×' + mult + ' de ' : 'dano de ') + (a.nome || 'ataque'),
+        dizer((crit ? '💥 crítico ×' + mult + ' de ' : '💥 dano de ') + (a.nome || 'ataque') + rotuloExtras(a),
+              rolar(crit ? danoCriticoExpr(a, mult) : danoComExtras(a).expr,
+                    quem(f) + ' · ' + (crit ? '💥 CRÍTICO ×' + mult + ' de ' : 'dano de ') + (a.nome || 'ataque') + rotuloExtras(a),
                     'turno'));
         return;
       }
@@ -4342,6 +4344,9 @@
         <input class="fi-txt fi-txt--mini fi-atq-extra-fonte" type="text" value="${esc(e.fonte)}"
                data-campo="ataques.${i}.danoExtra.${j}.fonte" placeholder="de onde vem (Imolação Sagrada, fogo)" autocomplete="off"
                title="De onde vem — um poder, um encanto, uma magia">
+        <button type="button" class="fi-mini fi-atq-extra-crit ${e.critico ? 'fi-mini--on' : ''}"
+                data-acao="atq-extra-crit" data-i="${i}" data-j="${j}" aria-pressed="${e.critico}"
+                title="${e.critico ? 'DOBRA no acerto crítico (exceção — só alguns encantos dobram).' : 'Normal: dano extra NÃO dobra no crítico. Ligue só se o encanto disser que dobra.'}">💥</button>
         <button type="button" class="fi-mini fi-mini--x" data-acao="atq-extra-tira" data-i="${i}" data-j="${j}"
                 title="Tirar este dano extra">✕</button>
       </span>`).join('');
@@ -4381,7 +4386,7 @@
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.critico)}" data-campo="ataques.${i}.critico"
                placeholder="19/×3" autocomplete="off">
         <button type="button" class="fi-atq-crit" data-acao="rolar-critico" data-i="${i}"
-                title="${esc(tituloCritico(danoComExtras(a).expr, mult))}">💥 Crítico</button>
+                title="${esc(tituloCriticoAtq(a))}">💥 Crítico</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.tipo)}" data-campo="ataques.${i}.tipo"
                placeholder="corte" autocomplete="off">
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.alcance)}" data-campo="ataques.${i}.alcance"
@@ -4570,6 +4575,22 @@
     const e = extrasAtivos(a);
     return e.length ? ' + ' + e.map(x => sinalDeExtra(x.dado).replace(/^\+/, '') +
       (x.fonte ? ' ' + x.fonte : '')).join(', ') : '';
+  }
+  //  A expressão do CRÍTICO: os dados da arma dobram (expressaoCritica),
+  //  e o dano extra SÓ dobra se a linha tiver o 💥 ligado (exceção dos
+  //  encantos, p. 142); o resto entra uma vez, DEPOIS da multiplicação.
+  function danoCriticoExpr(a, mult) {
+    const r = danoDoAtaque(a);
+    const ativos = extrasAtivos(a);
+    const dobram = ativos.filter(e => e.critico).map(e => sinalDeExtra(e.dado)).join('');
+    const umaVez = ativos.filter(e => !e.critico).map(e => sinalDeExtra(e.dado)).join('');
+    return expressaoCritica((r.expr || '') + dobram, mult) + umaVez;
+  }
+  function tituloCriticoAtq(a) {
+    const mult = multiplicadorCritico(a.critico);
+    const expr = danoCriticoExpr(a, mult);
+    return 'Rolar o dano CRÍTICO: ' + (expr || '—') +
+      ' (×' + mult + ' — os dados da arma dobram; o dano extra só dobra com o 💥 da linha, p. 142)';
   }
   function textoPassos(n) {
     return (n > 0 ? '+' : '−') + Math.abs(n) + ' passo' + (Math.abs(n) === 1 ? '' : 's');
@@ -6955,7 +6976,7 @@
     // com o dado já andado pelos passos
     secao.querySelectorAll('[data-acao="rolar-critico"]').forEach(b => {
       const a = f.ataques[+b.dataset.i];
-      if (a) b.title = tituloCritico(danoDoAtaque(a).expr, multiplicadorCritico(a.critico));
+      if (a) b.title = tituloCriticoAtq(a);
     });
     secao.querySelectorAll('[data-acao="rolar-dano"]').forEach(b => {
       const a = f.ataques[+b.dataset.i];
@@ -7616,6 +7637,13 @@
       e.ativo = !e.ativo;
       sujar(f.id, 'ataques'); salvar(); return render();
     }
+    if (acao === 'atq-extra-crit') {
+      const a = f.ataques[+btn.dataset.i];
+      const e = a && a.danoExtra && a.danoExtra[+btn.dataset.j];
+      if (!e) return;
+      e.critico = !e.critico;
+      sujar(f.id, 'ataques'); salvar(); return render();
+    }
 
     // o ✕ da mão mora colado no ✎, igual ao do ataque — e só pergunta
     // se houver nome (de qualquer modo) ou texto escrito
@@ -8172,7 +8200,7 @@
       const r = danoDoAtaque(a);
       const ex = danoComExtras(a);
       const p = (passosDe(a.passos) && r.ok && !r.semDado) ? ' (' + textoPassos(passosDe(a.passos)) + ')' : '';
-      rolar(expressaoCritica(ex.expr, mult),
+      rolar(danoCriticoExpr(a, mult),
             quem(f) + ' · 💥 CRÍTICO ×' + mult + ' de ' + (a.nome || 'ataque') + p + rotuloExtras(a),
             'crit:' + i, '💥 Crítico ×' + mult + p + (ex.extras.length ? ' +extra' : ''));
       return;
