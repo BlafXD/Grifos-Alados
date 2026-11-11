@@ -2453,6 +2453,10 @@
   color: var(--rust-dark);
 }
 .fi-apr-teto { display: block; margin-top: 0.1rem; color: var(--carmim); font-style: italic; }
+/*  A sugestão de folga ("cabe ainda +X PM"): discreta, verde da casa — é
+    ajuda, não aviso. No teto redondo fica em tom neutro. */
+.fi-apr-folga { display: block; margin-top: 0.1rem; color: var(--verde); font-style: italic; }
+.fi-apr-folga--cheio { color: var(--text-dim); }
 
 /* ══════════════════════════════════════════════════════════════════
    🐾 O MELHOR AMIGO DO TREINADOR (Heróis de Arton, p. 17–22)
@@ -3652,6 +3656,47 @@
 }
 .fi-desl-conta strong { font-style: normal; color: var(--rust-dark); }
 
+/* ── ⚡ LIMITE DE PM POR MAGIA (topo da aba de Magias) ────────────── */
+/*  O teto da p. 224 e as fontes que o aumentam. A caixa das fontes
+    reaproveita o .fi-desl das Fontes de Defesa; só muda a grade (sem a
+    coluna do dado) e perde a borda tracejada de cima, que viraria duas. */
+.fi-pmlim {
+  margin: 0 0 0.8rem;
+  padding: 0.5rem 0.7rem 0.4rem;
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+  border-radius: 4px;
+}
+.fi-pmlim-topo {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.fi-pmlim-rot {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.fi-pmlim-val {
+  margin-left: auto;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.9rem;
+  color: var(--text-mid);
+}
+.fi-pmlim-val strong { color: var(--ink); font-size: 1rem; }
+.fi-pmlim-val em { font-style: italic; color: var(--text-dim); font-size: 0.82rem; }
+.fi-pmlim-fontes { border-top: none; margin-top: 0.2rem; padding-top: 0; }
+.fi-pmlim-fontes .fi-desl-linha { grid-template-columns: 4.2rem 1fr auto; }
+/*  A redução tem uma coluna a mais: o seletor de escola entre o número e o
+    "de onde vem". */
+.fi-pmred { margin-top: 0; }
+.fi-pmred-fontes { border-top: none; margin-top: 0.2rem; padding-top: 0; }
+.fi-pmred-fontes .fi-desl-linha { grid-template-columns: 3.4rem minmax(6rem, auto) 1fr auto; }
+
 /* ── ⚙ REGRAS OPCIONAIS NA FICHA (Heróis de Arton) ───────────────── */
 /*  Defesa Épica (cartão Defesa) e Lesões (cartão Perícias). Discretas e
     desligadas por padrão; acendem quando a mesa usa a regra. */
@@ -4050,6 +4095,8 @@
 @media (max-width: 560px) {
   .fi-desl-linha { grid-template-columns: 4rem 1rem 1fr auto; }
   .fi-defesa-fontes .fi-desl-linha { grid-template-columns: 4rem 1fr auto; }
+  .fi-pmlim-fontes .fi-desl-linha { grid-template-columns: 4rem 1fr auto; }
+  .fi-pmred-fontes .fi-desl-linha { grid-template-columns: 3.2rem minmax(5rem, auto) 1fr auto; }
   .fi-cond-nuvem { left: auto; right: 0; }
 }
 

@@ -294,6 +294,17 @@
       motivo: String((m && m.motivo) || ''),     // "descanso", "magia de restauração"…
     }));
 
+    // ── O ATRIBUTO DO PV (11/11/2026, pedido dele) ─────────────────
+    //  Pelo livro o PV é Base + CONSTITUIÇÃO por nível (p. 40), e é com
+    //  Constituição que toda ficha nasce. Mas há quem jogue com uma
+    //  classe, um poder ou um acordo de mesa que mande usar OUTRO atributo
+    //  no lugar — Sabedoria, por exemplo. Agora se DIZ qual é, e a conta
+    //  por extenso passa a dizer qual foi. É SEMPRE o CRU (atrBase): o
+    //  atributo temporário não dá PV, exatamente como a Constituição nunca
+    //  deu (ver pvMax e a memória atributos-temporarios). O que não for um
+    //  atributo de verdade volta para 'con'.
+    f.pvAtr = ehAtributo(f.pvAtr) ? f.pvAtr : 'con';
+
     f.defesa = f.defesa || {};
     ['armadura', 'escudo', 'outros', 'penalidade'].forEach(k => {
       if (typeof f.defesa[k] !== 'number') f.defesa[k] = 0;
@@ -360,6 +371,40 @@
       id: (x && x.id) || novoId(),
       valor: (x && typeof x.valor === 'number') ? x.valor : 0,   // pode ser negativo
       de: String((x && x.de) || ''),                             // "magia (Bênção)", "item"…
+    }));
+    // ── LIMITE DE PM POR MAGIA + FONTES (11/11/2026, pedido dele) ──
+    //  O livro põe um teto no PM que se gasta POR USO de uma habilidade:
+    //  "o máximo de PM que pode ser gasto é igual ao seu nível" (p. 224).
+    //  A ficha já avisava quando o total de uma magia (base + os
+    //  aprimoramentos ligados) passava desse teto — mas o teto era fixo no
+    //  nível. Só que poderes (Magia Ilimitada, que sobe conforme o
+    //  atributo-chave), itens e acordos AUMENTAM esse máximo. Então agora
+    //  há uma LISTA de fontes com nome — igual às Fontes de Defesa e à RD:
+    //  cada linha diz quanto a mais e de onde vem. O teto = o seu nível
+    //  (a base, p. 224) + a soma destas fontes. Continua só AVISANDO, não
+    //  impede: quem decide é a mesa (ver limitePm e contaApr).
+    f.pmLimite = (f.pmLimite && typeof f.pmLimite === 'object' && !Array.isArray(f.pmLimite)) ? f.pmLimite : {};
+    if (!Array.isArray(f.pmLimite.fontes)) f.pmLimite.fontes = [];
+    f.pmLimite.fontes = f.pmLimite.fontes.map(x => ({
+      id: (x && x.id) || novoId(),
+      valor: (x && typeof x.valor === 'number') ? x.valor : 0,   // normalmente positivo; aceita negativo (uma penalidade)
+      de: String((x && x.de) || ''),                             // "Magia Ilimitada (+Int)", "item", "acordo da mesa"…
+    }));
+    // ── REDUÇÃO DE CUSTO DE PM, POR ESCOLA (11/11/2026, pedido dele) ─
+    //  Poderes e itens que baixam o custo de magia — e quase sempre de UMA
+    //  escola ("suas magias de Abjuração custam 1 PM a menos"). Uma lista
+    //  de fontes, cada linha com quanto reduz, de QUAL escola (ou «todas»)
+    //  e de onde vem. A redução pega a BASE + os aprimoramentos ligados, e
+    //  NUNCA zera: toda magia custa no mínimo 1 PM (regra dele). É só ≥ 0 —
+    //  "reduzir −2" não vira "aumentar"; para encarecer, use o campo
+    //  ⚡ Custo em PM da própria magia. Ver reducaoDaMagia e pmDaMagia.
+    f.pmReducao = (f.pmReducao && typeof f.pmReducao === 'object' && !Array.isArray(f.pmReducao)) ? f.pmReducao : {};
+    if (!Array.isArray(f.pmReducao.fontes)) f.pmReducao.fontes = [];
+    f.pmReducao.fontes = f.pmReducao.fontes.map(x => ({
+      id: (x && x.id) || novoId(),
+      valor: Math.max(0, parseInt(x && x.valor, 10) || 0),       // quanto reduz (sempre ≥ 0)
+      escola: escolaReducaoValida(x && x.escola),                // 'todas' ou uma das 8 escolas
+      de: String((x && x.de) || ''),                             // "Foco em Abjuração", um item, um acordo…
     }));
     // ── REGRAS OPCIONAIS DE COMBATE (Heróis de Arton, p.296–304) ────
     //  Opcionais de verdade: nascem DESLIGADAS e ligam por ficha, porque
@@ -1072,6 +1117,13 @@
     const k = atrDefesa(f);
     return k === 'nenhum' ? 0 : atr(f, k);
   }
+  //  O atributo do PV: Constituição (p. 40), salvo escolha desta ficha.
+  //  Não tem 'nenhum' — o PV sempre soma ALGUM atributo por nível; quem
+  //  não quiser nenhum põe 0 no atributo. O que não for atributo de
+  //  verdade volta para 'con'. `conPv` é o valor CRU dele (sem o
+  //  temporário), que é o que o PV e a conta por extenso usam.
+  function atrDoPv(f) { return ehAtributo(f && f.pvAtr) ? f.pvAtr : 'con'; }
+  function conPv(f) { return atrBase(f, atrDoPv(f)); }
   //  O de uma perícia: o da Tabela 2-1 (p. 115), salvo escolha desta
   //  linha. `e` é a entrada da perícia ou do ofício ({treinada, outros,
   //  atr}) — Ofício tem uma por especialidade, e cada uma escolhe a sua.
@@ -1085,7 +1137,7 @@
   // PV: a PRIMEIRA classe dá o PV inicial dela; o primeiro nível de uma
   // classe nova dá PV de nível subsequente, não do 1º (p. 40).
   function pvMax(f) {
-    const con = atrBase(f, 'con');   // o CRU: atributo temporário não dá PV
+    const con = conPv(f);   // o CRU do atributo escolhido (Con por padrão): temporário não dá PV
     let total = 0;
     f.classes.forEach((c, i) => {
       const C = D.classe(c.classe);
@@ -2375,6 +2427,13 @@
             <label class="fi-extra"><span>＋ PV máximo</span>
               <input class="fi-num" type="number" value="${f.pv.outros}" data-campo="pv.outros"
                      title="O que soma ao PV máximo além da classe: poderes (Vitalidade, Sarado…), itens, raça. Pode ser negativo."></label>
+            <label class="fi-extra fi-extra--atr"><span>Atributo do PV</span>
+              ${seletorAtr('pvAtr', atrDoPv(f), 'con',
+                'Qual atributo entra no PV por nível. Pelo livro é Constituição (p. 40); se uma classe, ' +
+                'um poder ou um acordo da sua mesa mandar outro — Sabedoria, por exemplo —, escolha aqui: ' +
+                'ele entra NO LUGAR da Constituição em toda a conta do PV, e a conta por extenso passa a ' +
+                'dizer qual foi. É sempre o valor CRU: o atributo temporário NÃO aumenta o PV, igual à ' +
+                'Constituição, que também nunca aumentou.', 'fi-sel', false)}</label>
             <label class="fi-extra"><span>＋ PM máximo</span>
               <input class="fi-num" type="number" value="${f.pm.outros}" data-campo="pm.outros"
                      title="O que soma ao PM máximo além da classe e do atributo: poderes (Vontade de Ferro, Totem Espiritual, Elo com a Natureza…), itens. Negativo para uma Penalidade de PM (p. 221)."></label>
@@ -2726,7 +2785,7 @@
   function contaPv(f) {
     const c = f.classes.filter(x => D.classe(x.classe) && x.nivel > 0);
     if (!c.length) return 'Escolha a classe e o nível para o PV e o PM aparecerem.';
-    const con = atrBase(f, 'con');   // a conta do PV usa o CRU, como o próprio PV
+    const con = conPv(f);   // a conta do PV usa o CRU do atributo escolhido, como o próprio PV
     const partes = c.map((x, i) => {
       const C = D.classe(x.classe);
       return i === 0
@@ -2738,7 +2797,9 @@
         const v = atrBase(f, x.atr);
         return ` + ${atrCurto(x.atr)} ${v < 0 ? '−' + Math.abs(v) : v} <em>(${esc(x.classe.nome.toLowerCase())})</em>`;
       }).join('');
-    return `PV = ${partes.join(' + ')}${f.pv.outros ? ' ' + sinal(f.pv.outros) : ''} · PM = ${pm}${f.pm.outros ? ' ' + sinal(f.pm.outros) : ''}`;
+    const notaPvAtr = atrDoPv(f) !== 'con'
+      ? ` <em>(${esc(nomeAtr(atrDoPv(f)))} no lugar de Constituição)</em>` : '';
+    return `PV = ${partes.join(' + ')}${f.pv.outros ? ' ' + sinal(f.pv.outros) : ''}${notaPvAtr} · PM = ${pm}${f.pm.outros ? ' ' + sinal(f.pm.outros) : ''}`;
   }
   function sinalCon(con) { return con === 0 ? '' : (con > 0 ? ' + ' + con : ' − ' + Math.abs(con)); }
   // ── A NOTA DO PM DE DUAS CLASSES CONJURADORAS ───────────────────
@@ -2839,7 +2900,7 @@
       const c = f.classes.filter(x => D.classe(x.classe) && x.nivel > 0);
       if (!c.length) return { rot: ehPv ? 'PV máximo' : 'PM máximo', total: ehPv ? pvMax(f) : pmMax(f),
         linhas: [{ rot: 'escolha a classe e o nível', val: 0, nota: true }], sinalTotal: false };
-      const con = atrBase(f, 'con');
+      const con = conPv(f);
       c.forEach((x, i) => {
         const C = D.classe(x.classe);
         if (ehPv) {
@@ -6093,6 +6154,105 @@
       </div>`;
   }
 
+  // ── ⚡ O LIMITE DE PM POR MAGIA, COM FONTES (11/11/2026) ─────────
+  //  O teto da p. 224 (base + aprimoramentos ligados ≤ o seu nível) e as
+  //  fontes que o AUMENTAM, num cartão só, no topo da aba de Magias —
+  //  para ele ver, "quando começar a fazer as melhorias", de quanto é o
+  //  teto e de onde vem cada ponto a mais. As fontes espelham as Fontes
+  //  de Defesa: cada linha é {valor, de, ✕}.
+  function contaLimitePm(f) {
+    const base = limitePmBase(f);
+    const fontes = somaLimitePmFontes(f);
+    const total = limitePm(f);
+    return fontes
+      ? `nível <strong>${base}</strong> ${fontes < 0 ? '−' : '+'} <strong>${Math.abs(fontes)}</strong> de fontes = <strong>${total}</strong> PM`
+      : `<strong>${total}</strong> PM <em>(o seu nível)</em>`;
+  }
+  function blocoLimitePmFontes(f) {
+    const fontes = (f.pmLimite && f.pmLimite.fontes) || [];
+    const linhas = fontes.map((x, i) => `
+      <li class="fi-desl-linha">
+        <input class="fi-num fi-num--mini" type="number" step="1" value="${x.valor}"
+               data-campo="pmLimite.fontes.${i}.valor" title="Quanto este poder/item soma ao seu teto de PM por magia (ou tira, com o sinal −)">
+        <input class="fi-txt" type="text" value="${esc(x.de)}" data-campo="pmLimite.fontes.${i}.de"
+               placeholder="Magia Ilimitada (+Int), item, acordo da mesa…" autocomplete="off">
+        <button type="button" class="fi-mini fi-mini--x" data-acao="tira-pm-fonte" data-i="${i}"
+                title="Tirar esta fonte">✕</button>
+      </li>`).join('');
+    return `
+      <div class="fi-desl fi-pmlim-fontes">
+        <div class="fi-desl-topo">
+          <span class="fi-desl-rot">Fontes do limite</span>
+          <button type="button" class="fi-add fi-add--menor" data-acao="add-pm-fonte"
+                  title="Um poder, um item ou um acordo que aumenta o seu teto de PM por magia — e fica escrito de onde veio">＋ Acrescentar</button>
+        </div>
+        ${linhas ? `<ul class="fi-desl-lista">${linhas}</ul>`
+          : '<p class="fi-desl-vazio">Nenhuma fonte. Use para <strong>Magia Ilimitada</strong> (que sobe conforme o seu atributo-chave de conjuração), um item ou um acordo da mesa que deixem você gastar mais PM por magia.</p>'}
+      </div>`;
+  }
+  function blocoLimitePm(f) {
+    return `
+      <div class="fi-pmlim">
+        <div class="fi-pmlim-topo">
+          <span class="fi-pmlim-rot">⚡ Limite de PM por magia</span>
+          <span class="fi-pmlim-val" data-der="pmlimconta">${contaLimitePm(f)}</span>
+        </div>
+        ${blocoLimitePmFontes(f)}
+        <p class="fi-nota">O máximo de PM que você gasta em <em>uma</em> magia — a base MAIS os aprimoramentos
+          ligados — é o <strong>seu nível</strong> (p. 224). Poderes como <strong>Magia Ilimitada</strong>,
+          itens e acordos da mesa aumentam esse teto: anote-os como <em>fontes</em> acima. Cada magia mostra,
+          nos <strong>✨ Aprimoramentos</strong>, quanto ainda cabe. A ficha <strong>só avisa</strong> quando
+          passa — não impede: o limite depende da classe que deu a magia, e quem decide é você.</p>
+      </div>`;
+  }
+
+  // ── ⚡ REDUÇÃO DE CUSTO DE PM, POR ESCOLA (11/11/2026) ───────────
+  //  Logo abaixo do limite, no mesmo feitio: uma lista de fontes, cada
+  //  linha com {quanto reduz, de qual escola, de onde vem, ✕}. O desconto
+  //  aparece já aplicado no 🔥 e nos ✨ Aprimoramentos de cada magia.
+  function blocoReducaoPmFontes(f) {
+    const fontes = (f.pmReducao && f.pmReducao.fontes) || [];
+    const linhas = fontes.map((x, i) => {
+      const opsEsc = ['todas'].concat(ESCOLAS_MAGIA).map(e =>
+        `<option value="${e}" ${e === x.escola ? 'selected' : ''}>${e === 'todas' ? 'todas as escolas' : esc(e)}</option>`).join('');
+      return `
+      <li class="fi-desl-linha">
+        <input class="fi-num fi-num--mini" type="number" min="0" step="1" value="${x.valor}"
+               data-campo="pmReducao.fontes.${i}.valor" title="Quantos PM esta fonte tira do custo da magia (base + aprimoramentos). Nunca zera: o mínimo é 1 PM.">
+        <select class="fi-sel fi-sel--mini" data-campo="pmReducao.fontes.${i}.escola" title="De qual escola esta redução vale — ou «todas as escolas»">${opsEsc}</select>
+        <input class="fi-txt" type="text" value="${esc(x.de)}" data-campo="pmReducao.fontes.${i}.de"
+               placeholder="de onde vem (um poder, um item…)" autocomplete="off">
+        <button type="button" class="fi-mini fi-mini--x" data-acao="tira-pm-red-fonte" data-i="${i}"
+                title="Tirar esta redução">✕</button>
+      </li>`;
+    }).join('');
+    return `
+      <div class="fi-desl fi-pmred-fontes">
+        <div class="fi-desl-topo">
+          <span class="fi-desl-rot">Reduções de custo</span>
+          <button type="button" class="fi-add fi-add--menor" data-acao="add-pm-red-fonte"
+                  title="Um poder ou item que baixa o custo das suas magias (de uma escola, ou de todas)">＋ Acrescentar</button>
+        </div>
+        ${linhas ? `<ul class="fi-desl-lista">${linhas}</ul>`
+          : '<p class="fi-desl-vazio">Nenhuma redução. Use para um poder ou item que baixe o custo das suas magias — de uma escola («Abjuração»), ou de «todas».</p>'}
+      </div>`;
+  }
+  function blocoReducaoPm(f) {
+    const n = ((f.pmReducao && f.pmReducao.fontes) || []).length;
+    return `
+      <div class="fi-pmlim fi-pmred">
+        <div class="fi-pmlim-topo">
+          <span class="fi-pmlim-rot">⚡ Redução de custo de PM</span>
+          <span class="fi-pmlim-val">${n ? n + ' fonte' + (n > 1 ? 's' : '') : '—'}</span>
+        </div>
+        ${blocoReducaoPmFontes(f)}
+        <p class="fi-nota">Um poder ou item que <strong>baixa o custo</strong> das suas magias. A redução tira PM da
+          <strong>base + os aprimoramentos ligados</strong> e <strong>nunca zera</strong>: toda magia custa no mínimo
+          <strong>1 PM</strong>. Escolha a <em>escola</em> de cada fonte (ou «todas»). Cada magia mostra o desconto já
+          aplicado no 🔥 e nos ✨ Aprimoramentos. Para <em>encarecer</em> uma magia, use o campo ⚡ Custo em PM dela.</p>
+      </div>`;
+  }
+
   function blocoMagias(f) {
     const temBase = Array.isArray(window.GA_MAGIAS) && window.GA_MAGIAS.length;
     // agrupadas por círculo, como o livro lista e como se procura na mesa
@@ -6129,6 +6289,7 @@
               ＋ Adicionar magia</button>
           </span>
         </h2>
+        ${total ? blocoLimitePm(f) + blocoReducaoPm(f) : ''}
         ${total > 1 ? `
         <div class="fi-mag-filtro">
           <span class="fi-mag-filtro-lupa" aria-hidden="true">🔍</span>
@@ -6199,9 +6360,46 @@
   //  O teto por magia (p. 224): "o máximo de PM que você pode gastar
   //  por uso é igual ao seu nível NA CLASSE que fornece a habilidade".
   //  Com uma classe só — o caso normal — é o nível dela.
-  function limitePm(f) {
+  //  A BASE do teto: o seu maior nível de classe (com uma classe só — o
+  //  caso normal — é o seu nível). É o que o livro chama de "o seu nível"
+  //  na p. 224.
+  function limitePmBase(f) {
     const n = f.classes.reduce((s, c) => Math.max(s, c.nivel || 0), 0);
     return Math.max(1, n || nivel(f));
+  }
+  //  O que as fontes com nome somam ao teto (Magia Ilimitada, um item, um
+  //  acordo da mesa). Pode ser negativo.
+  function somaLimitePmFontes(f) {
+    return ((f.pmLimite && f.pmLimite.fontes) || []).reduce((s, x) => s + (x.valor || 0), 0);
+  }
+  //  O teto DE VERDADE: a base + as fontes. Nunca abaixo de 1 — um teto de
+  //  0 esconderia o aviso em toda magia, inclusive nas que o jogador pode
+  //  mesmo lançar.
+  function limitePm(f) {
+    return Math.max(1, limitePmBase(f) + somaLimitePmFontes(f));
+  }
+  //  ── REDUÇÃO DE CUSTO DE PM, POR ESCOLA ──────────────────────────
+  //  As oito escolas do T20, com o acento exato do que as magias trazem
+  //  em `escola` (conferido na base GA_MAGIAS). «todas» é a fonte que não
+  //  escolhe escola — vale para qualquer magia.
+  const ESCOLAS_MAGIA = ['Abjuração', 'Adivinhação', 'Convocação', 'Encantamento',
+    'Evocação', 'Ilusão', 'Necromancia', 'Transmutação'];
+  function escolaReducaoValida(k) {
+    if (k === 'todas') return 'todas';
+    return ESCOLAS_MAGIA.indexOf(String(k)) >= 0 ? String(k) : 'todas';
+  }
+  //  O quanto reduz o custo DESTA magia: a soma das fontes «todas» mais as
+  //  da escola dela (comparando sem acento, por segurança). O piso de 1 PM
+  //  é aplicado em pmDaMagia, sobre a base + os aprimoramentos.
+  function reducaoDaMagia(f, m) {
+    const fontes = (f && f.pmReducao && f.pmReducao.fontes) || [];
+    if (!fontes.length) return 0;
+    const esc = semAcento(String((m && m.escola) || ''));
+    return fontes.reduce((s, x) => {
+      if (!x.valor) return s;
+      if (x.escola === 'todas' || semAcento(String(x.escola)) === esc) return s + x.valor;
+      return s;
+    }, 0);
   }
   function quantos(m, k) {
     return (m.apr || []).filter(x => x === k).length;
@@ -6407,14 +6605,25 @@
   //  aprimoramentos continuam somando por cima, porque eles também são
   //  do livro (p. 171) e o poder que barateia a magia não barateia o
   //  aprimoramento junto.
+  //  POR CIMA de tudo vem a REDUÇÃO de custo por escola (pedido dele,
+  //  11/11): ela pega a BASE + os aprimoramentos (o `bruto`) e NUNCA zera —
+  //  toda magia custa no mínimo 1 PM. `total` já é o que o 🔥 cobra, o que
+  //  o painel do turno gasta e o que o teto por magia confere. `bruto` e
+  //  `reducaoAplicada` existem só para a conta por extenso.
   function pmDaMagia(f, m) {
     const lista = aprimoramentosDe(m);
     const extra = (m.apr || []).reduce((s, k) => s + ((lista[k] && lista[k].pm) || 0), 0);
     const livro = m.pm || 0;
     const meu = f ? custoEscrito(f, chavePmMagia(m)) : null;
     const base = meu == null ? livro : meu;
+    const bruto = base + extra;
+    const reducao = f ? reducaoDaMagia(f, m) : 0;
+    //  O piso de 1 só morde quando há redução E havia o que gastar: uma
+    //  habilidade de 0 PM continua 0 (não se inventa custo onde não há).
+    const total = (reducao > 0 && bruto > 0) ? Math.max(1, bruto - reducao) : bruto;
     return {
-      livro: livro, meu: meu, base: base, extra: extra, total: base + extra,
+      livro: livro, meu: meu, base: base, extra: extra,
+      bruto: bruto, reducao: reducao, reducaoAplicada: bruto - total, total: total,
       trocado: meu != null && meu !== livro,
     };
   }
@@ -6565,12 +6774,30 @@
   //  impede — o limite depende da classe que deu a magia, e só quem
   //  está com ela na mão sabe qual foi.
   function contaApr(p, limite) {
-    const base = p.extra
-      ? '<strong>' + p.total + ' PM</strong> <em>(' + p.base + ' da magia + ' + p.extra + ')</em>'
-      : '<strong>' + p.base + ' PM</strong> <em>(sem aprimoramento)</em>';
-    if (!limite || p.total <= limite) return base;
-    return base + ' <em class="fi-apr-teto">⚠ passa do seu limite de ' + limite +
-      ' PM por magia (o seu nível na classe que a deu — p. 224)</em>';
+    const red = p.reducaoAplicada || 0;
+    let base;
+    if (p.extra && red) {
+      base = '<strong>' + p.total + ' PM</strong> <em>(' + p.base + ' da magia + ' + p.extra + ' − ' + red + ' de redução)</em>';
+    } else if (p.extra) {
+      base = '<strong>' + p.total + ' PM</strong> <em>(' + p.base + ' da magia + ' + p.extra + ')</em>';
+    } else if (red) {
+      base = '<strong>' + p.total + ' PM</strong> <em>(' + p.base + ' − ' + red + ' de redução)</em>';
+    } else {
+      base = '<strong>' + p.base + ' PM</strong> <em>(sem aprimoramento)</em>';
+    }
+    if (!limite) return base;
+    if (p.total > limite) {
+      return base + ' <em class="fi-apr-teto">⚠ passa do seu limite de ' + limite +
+        ' PM por magia (o seu nível, p. 224)</em>';
+    }
+    //  Quanto ainda cabe: o teto menos o que esta magia já gasta. No teto
+    //  redondo diz "no limite"; com folga, "cabe ainda +X PM" — a sugestão
+    //  que ele pediu, para saber de quanto ainda dá para aprimorar.
+    const folga = limite - p.total;
+    const sufixo = folga > 0
+      ? ' <em class="fi-apr-folga">cabe ainda +' + folga + ' PM (teto ' + limite + ')</em>'
+      : ' <em class="fi-apr-folga fi-apr-folga--cheio">no limite de ' + limite + ' PM</em>';
+    return base + sufixo;
   }
 
   // O cartão de uma magia na ficha. O nome inteiro é o botão que
@@ -6602,7 +6829,7 @@
           ${(p.total || p.meu != null) ? `<button type="button" class="fi-mag-pm-btn${p.extra ? ' fi-mag-pm-btn--apr' : ''}${p.trocado ? ' fi-pm-selo--meu' : ''}"
                   data-acao="gastar-magia" data-i="${i}"
                   data-pmselo="${esc(chavePmMagia(m))}" data-pmlivro="${p.livro}"
-                  title="Gastar ${p.total} PM${p.trocado ? ' — o SEU custo é ' + p.base + ', no livro são ' + p.livro : ''}${p.extra ? ' (' + p.base + ' da magia + ' + p.extra + ' de aprimoramento)' : ''} — os temporários saem primeiro"
+                  title="Gastar ${p.total} PM${p.trocado ? ' — o SEU custo é ' + p.base + ', no livro são ' + p.livro : ''}${p.extra ? ' (' + p.base + ' da magia + ' + p.extra + ' de aprimoramento)' : ''}${p.reducaoAplicada ? ' − ' + p.reducaoAplicada + ' de redução de custo' : ''} — os temporários saem primeiro"
             >🔥 ${p.total} PM</button>` : ''}
           ${rollHtml}
           <button type="button" class="fi-mini fi-mini--x" data-acao="tira-magia" data-i="${i}"
@@ -6884,6 +7111,14 @@
         if (it) el.textContent = arredonda(it.cada ? (it.espacos || 0) * (it.qtd || 0) : (it.espacos || 0));
         return;
       }
+      //  O aviso de aprimoramento de cada magia ("cabe ainda +X PM"): o teto
+      //  mudou quando uma fonte do limite foi editada, então recalcula aqui
+      //  sem redesenhar a aba (o cursor pode estar na fonte).
+      if (d.slice(0, 4) === 'apr:') {
+        const m = f.magias[+d.slice(4)];
+        if (m) el.innerHTML = contaApr(pmDaMagia(f, m), limitePm(f));
+        return;
+      }
       if (d === 'nivel')     el.textContent = n;
       if (d === 'patamar')   el.textContent = patamar(n);
       if (d === 'treino')    el.textContent = sinal(treino(n, true));
@@ -6900,6 +7135,7 @@
       if (d === 'invconta')  el.innerHTML = contaCarga(f);
       if (d === 'cargamaxconta') el.textContent = contaCargaMax(f);
       if (d === 'cdmag') el.textContent = cdMagias(f);
+      if (d === 'pmlimconta') el.innerHTML = contaLimitePm(f);
       if (d === 'cdhab') el.textContent = cdHabilidades(f);
       if (d === 'desloc')    el.textContent = deslocamento(f);
       if (d === 'desloc2')   el.textContent = f.deslocamento;
@@ -6953,6 +7189,13 @@
     secao.querySelectorAll('[data-livro]').forEach(sel => {
       sel.classList.toggle('fi-sel--trocado', sel.value !== sel.dataset.livro);
     });
+    //  Os 🔥 das magias: o total muda quando uma fonte de REDUÇÃO de custo
+    //  é editada (ela baixa todas as magias da escola de uma vez). O
+    //  pintarCustoPm já sabe recalcular o selo de cada magia no lugar, sem
+    //  redesenhar a aba. Só roda quando há redução — ficha sem isso nem entra.
+    if (f.pmReducao && (f.pmReducao.fontes || []).length) {
+      f.magias.forEach(m => pintarCustoPm(f, chavePmMagia(m)));
+    }
     // os campos de PV/PM atuais também mudam sozinhos (dano, cura, ＋/−)
     ['pv', 'pm'].forEach(q => {
       const campo = secao.querySelector('[data-campo="' + q + '.atual"]');
@@ -7186,7 +7429,7 @@
           campo.indexOf('treinador.') === 0 || campo.indexOf('maos.') === 0 ||
           campo.indexOf('efeitosEmJogo.') === 0 ||   // trocar o alcance mostra/esconde a perícia e refaz os totais
           /^parceiros\.\d+\.(tipo|nivel)$/.test(campo) ||
-          campo === 'tamanho' || campo === 'cdAtributo') return render();
+          campo === 'tamanho' || campo === 'cdAtributo' || campo === 'pvAtr') return render();
       atualizarDerivados();
       return;
     }
@@ -7517,6 +7760,34 @@
     if (acao === 'tira-defesa-fonte') {
       f.defesa.fontes.splice(+btn.dataset.i, 1);
       sujar(f.id, 'defesa'); salvar(); return render();
+    }
+
+    //  As fontes do LIMITE DE PM por magia (Magia Ilimitada, item, acordo):
+    //  o mesmo padrão das Fontes de Defesa. Nasce com +2, que é o aumento
+    //  mais comum, e o jogador acerta o número e escreve de onde vem.
+    if (acao === 'add-pm-fonte') {
+      if (!f.pmLimite || typeof f.pmLimite !== 'object') f.pmLimite = { fontes: [] };
+      if (!Array.isArray(f.pmLimite.fontes)) f.pmLimite.fontes = [];
+      f.pmLimite.fontes.push({ id: novoId(), valor: 2, de: '' });
+      sujar(f.id, 'pmLimite'); salvar(); return render();
+    }
+    if (acao === 'tira-pm-fonte') {
+      if (f.pmLimite && Array.isArray(f.pmLimite.fontes)) f.pmLimite.fontes.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'pmLimite'); salvar(); return render();
+    }
+
+    //  As fontes de REDUÇÃO de custo de PM, por escola. Nasce com −1 em
+    //  «todas» — o caso mais simples; o jogador acerta o número, a escola
+    //  e de onde vem.
+    if (acao === 'add-pm-red-fonte') {
+      if (!f.pmReducao || typeof f.pmReducao !== 'object') f.pmReducao = { fontes: [] };
+      if (!Array.isArray(f.pmReducao.fontes)) f.pmReducao.fontes = [];
+      f.pmReducao.fontes.push({ id: novoId(), valor: 1, escola: 'todas', de: '' });
+      sujar(f.id, 'pmReducao'); salvar(); return render();
+    }
+    if (acao === 'tira-pm-red-fonte') {
+      if (f.pmReducao && Array.isArray(f.pmReducao.fontes)) f.pmReducao.fontes.splice(+btn.dataset.i, 1);
+      sujar(f.id, 'pmReducao'); salvar(); return render();
     }
 
     // ── ⚙ REGRAS OPCIONAIS DE COMBATE (Heróis de Arton) ────────────
