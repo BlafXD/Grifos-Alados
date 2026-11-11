@@ -382,12 +382,15 @@
     //  há uma LISTA de fontes com nome — igual às Fontes de Defesa e à RD:
     //  cada linha diz quanto a mais e de onde vem. O teto = o seu nível
     //  (a base, p. 224) + a soma destas fontes. Continua só AVISANDO, não
-    //  impede: quem decide é a mesa (ver limitePm e contaApr).
+    //  impede: quem decide é a mesa (ver limiteDaMagia e contaApr). O teto
+    //  é POR MAGIA, segundo a classe que a deu (p. 224); as fontes têm
+    //  escopo (todas, ou uma classe). Ver o bloco grande em limiteDaMagia.
     f.pmLimite = (f.pmLimite && typeof f.pmLimite === 'object' && !Array.isArray(f.pmLimite)) ? f.pmLimite : {};
     if (!Array.isArray(f.pmLimite.fontes)) f.pmLimite.fontes = [];
     f.pmLimite.fontes = f.pmLimite.fontes.map(x => ({
       id: (x && x.id) || novoId(),
       valor: (x && typeof x.valor === 'number') ? x.valor : 0,   // normalmente positivo; aceita negativo (uma penalidade)
+      escopo: String((x && x.escopo) || 'todas'),                // 'todas' ou o chave de uma classe (fonte antiga, sem escopo, vale para todas)
       de: String((x && x.de) || ''),                             // "Magia Ilimitada (+Int)", "item", "acordo da mesa"…
     }));
     // ── REDUÇÃO DE CUSTO DE PM, POR ESCOLA (11/11/2026, pedido dele) ─
@@ -643,6 +646,10 @@
       pm: (m && typeof m.pm === 'number') ? m.pm : 0,
       tipo: String((m && m.tipo) || ''),
       escola: String((m && m.escola) || ''),
+      // de qual CLASSE da ficha veio esta magia (o chave; vazio = raça/
+      // origem/poder geral). Decide o teto de PM por uso (p. 224). Ver
+      // classeDaMagia/limiteDaMagia e o seletor em cartaoMagia.
+      classe: String((m && m.classe) || ''),
       execucao: String((m && m.execucao) || ''),
       alcance: String((m && m.alcance) || ''),
       alvo: String((m && m.alvo) || ''),
@@ -6160,25 +6167,23 @@
   //  para ele ver, "quando começar a fazer as melhorias", de quanto é o
   //  teto e de onde vem cada ponto a mais. As fontes espelham as Fontes
   //  de Defesa: cada linha é {valor, de, ✕}.
-  function contaLimitePm(f) {
-    const base = limitePmBase(f);
-    const fontes = somaLimitePmFontes(f);
-    const total = limitePm(f);
-    return fontes
-      ? `nível <strong>${base}</strong> ${fontes < 0 ? '−' : '+'} <strong>${Math.abs(fontes)}</strong> de fontes = <strong>${total}</strong> PM`
-      : `<strong>${total}</strong> PM <em>(o seu nível)</em>`;
-  }
   function blocoLimitePmFontes(f) {
     const fontes = (f.pmLimite && f.pmLimite.fontes) || [];
-    const linhas = fontes.map((x, i) => `
+    const classes = f.classes.filter(c => D.classe(c.classe));
+    const linhas = fontes.map((x, i) => {
+      const ops = `<option value="todas" ${x.escopo === 'todas' ? 'selected' : ''}>todas as magias</option>` +
+        classes.map(c => `<option value="${esc(c.classe)}" ${x.escopo === c.classe ? 'selected' : ''}>${esc(D.classe(c.classe).nome)}</option>`).join('');
+      return `
       <li class="fi-desl-linha">
         <input class="fi-num fi-num--mini" type="number" step="1" value="${x.valor}"
-               data-campo="pmLimite.fontes.${i}.valor" title="Quanto este poder/item soma ao seu teto de PM por magia (ou tira, com o sinal −)">
+               data-campo="pmLimite.fontes.${i}.valor" title="Quanto este poder/item soma ao teto de PM por magia (ou tira, com o sinal −)">
+        <select class="fi-sel fi-sel--mini" data-campo="pmLimite.fontes.${i}.escopo" title="A quais magias este aumento se aplica: todas, ou só as de uma classe">${ops}</select>
         <input class="fi-txt" type="text" value="${esc(x.de)}" data-campo="pmLimite.fontes.${i}.de"
-               placeholder="Magia Ilimitada (+Int), item, acordo da mesa…" autocomplete="off">
+               placeholder="Magia Ilimitada (+Int), item…" autocomplete="off">
         <button type="button" class="fi-mini fi-mini--x" data-acao="tira-pm-fonte" data-i="${i}"
                 title="Tirar esta fonte">✕</button>
-      </li>`).join('');
+      </li>`;
+    }).join('');
     return `
       <div class="fi-desl fi-pmlim-fontes">
         <div class="fi-desl-topo">
@@ -6187,22 +6192,30 @@
                   title="Um poder, um item ou um acordo que aumenta o seu teto de PM por magia — e fica escrito de onde veio">＋ Acrescentar</button>
         </div>
         ${linhas ? `<ul class="fi-desl-lista">${linhas}</ul>`
-          : '<p class="fi-desl-vazio">Nenhuma fonte. Use para <strong>Magia Ilimitada</strong> (que sobe conforme o seu atributo-chave de conjuração), um item ou um acordo da mesa que deixem você gastar mais PM por magia.</p>'}
+          : '<p class="fi-desl-vazio">Nenhuma fonte. Use para <strong>Magia Ilimitada</strong> (que sobe conforme o seu atributo-chave de conjuração), um item ou um acordo da mesa que deixem você gastar mais PM por magia — e diga de qual classe ela vale.</p>'}
       </div>`;
   }
   function blocoLimitePm(f) {
+    const classes = f.classes.filter(c => D.classe(c.classe));
+    const multi = classes.length > 1;
+    const nv = nivel(f);
+    const resumo = multi
+      ? classes.map(c => `<span class="fi-pmlim-classe">${esc(D.classe(c.classe).nome)}: <strong>${Math.max(0, c.nivel || 0)}</strong></span>`).join('') +
+        `<span class="fi-pmlim-classe fi-pmlim-classe--geral">raça/origem/geral: <strong>${nv}</strong></span>`
+      : `<strong>${classes.length ? Math.max(0, classes[0].nivel || 0) : nv}</strong> PM <em>(o seu nível)</em>`;
     return `
       <div class="fi-pmlim">
         <div class="fi-pmlim-topo">
           <span class="fi-pmlim-rot">⚡ Limite de PM por magia</span>
-          <span class="fi-pmlim-val" data-der="pmlimconta">${contaLimitePm(f)}</span>
+          <span class="fi-pmlim-val">${resumo}</span>
         </div>
         ${blocoLimitePmFontes(f)}
         <p class="fi-nota">O máximo de PM que você gasta em <em>uma</em> magia — a base MAIS os aprimoramentos
-          ligados — é o <strong>seu nível</strong> (p. 224). Poderes como <strong>Magia Ilimitada</strong>,
-          itens e acordos da mesa aumentam esse teto: anote-os como <em>fontes</em> acima. Cada magia mostra,
-          nos <strong>✨ Aprimoramentos</strong>, quanto ainda cabe. A ficha <strong>só avisa</strong> quando
-          passa — não impede: o limite depende da classe que deu a magia, e quem decide é você.</p>
+          ligados — é o <strong>seu nível na classe que deu a magia</strong> (p. 224); magia de raça, origem ou
+          poder geral usa o <strong>nível de personagem</strong>.${multi ? ' Como você tem mais de uma classe, diga em cada magia (lá embaixo) de qual classe ela veio.' : ''}
+          Poderes como <strong>Magia Ilimitada</strong>, itens e acordos aumentam o teto: anote-os como
+          <em>fontes</em>, cada uma com a classe a que se aplica (ou «todas»). Cada magia mostra, nos
+          <strong>✨ Aprimoramentos</strong>, quanto ainda cabe. A ficha <strong>só avisa</strong> quando passa.</p>
       </div>`;
   }
 
@@ -6359,24 +6372,49 @@
   }
   //  O teto por magia (p. 224): "o máximo de PM que você pode gastar
   //  por uso é igual ao seu nível NA CLASSE que fornece a habilidade".
-  //  Com uma classe só — o caso normal — é o nível dela.
-  //  A BASE do teto: o seu maior nível de classe (com uma classe só — o
-  //  caso normal — é o seu nível). É o que o livro chama de "o seu nível"
-  //  na p. 224.
-  function limitePmBase(f) {
-    const n = f.classes.reduce((s, c) => Math.max(s, c.nivel || 0), 0);
-    return Math.max(1, n || nivel(f));
+  //  ── O TETO DE PM É POR MAGIA (p. 224) ───────────────────────────
+  //  "o máximo de PM que você pode gastar por uso é igual ao seu nível NA
+  //  CLASSE que fornece a habilidade … Para habilidades de raça, origem ou
+  //  outras fontes e poderes gerais, o limite é o seu nível de personagem."
+  //  (Tormenta20, p. 224; a seção de Magia manda obedecer a essa regra.)
+  //  Então NÃO é um teto só: cada magia guarda de qual classe veio
+  //  (`m.classe` = o chave da classe; vazio = raça/origem/poder geral) e o
+  //  teto é o SEU NÍVEL NAQUELA classe — ou o nível de personagem, quando a
+  //  magia não é de classe. Com UMA classe só, nível de classe = nível de
+  //  personagem, e `m.classe` vazio já dá o número certo; o seletor por
+  //  magia só aparece quando há duas ou mais classes (ver cartaoMagia).
+  //  Pergunta dele em 11/11/2026: um druida 3/clérigo 3 tem teto 3 em cada
+  //  (não 6), e Liriel arcanista 3/frade 3 tem 3 para arcana e 3 para
+  //  divina. O antigo `limitePm` usava o MAIOR nível de classe — errado
+  //  para multiclasse assimétrica (um arcanista 3/frade 5 dava 5 em tudo).
+  function classeDaMagia(f, m) {
+    const k = m && m.classe;
+    return (k && f.classes.some(c => c.classe === k && D.classe(c.classe))) ? k : '';
   }
-  //  O que as fontes com nome somam ao teto (Magia Ilimitada, um item, um
-  //  acordo da mesa). Pode ser negativo.
-  function somaLimitePmFontes(f) {
-    return ((f.pmLimite && f.pmLimite.fontes) || []).reduce((s, x) => s + (x.valor || 0), 0);
+  function nivelNaClasse(f, chave) {
+    const c = f.classes.find(x => x.classe === chave);
+    return c ? Math.max(0, c.nivel || 0) : 0;
   }
-  //  O teto DE VERDADE: a base + as fontes. Nunca abaixo de 1 — um teto de
-  //  0 esconderia o aviso em toda magia, inclusive nas que o jogador pode
-  //  mesmo lançar.
-  function limitePm(f) {
-    return Math.max(1, limitePmBase(f) + somaLimitePmFontes(f));
+  function limiteBaseDaMagia(f, m) {
+    const k = classeDaMagia(f, m);
+    return Math.max(1, k ? nivelNaClasse(f, k) : nivel(f));
+  }
+  //  As fontes que AUMENTAM o teto (Magia Ilimitada, item, acordo), cada
+  //  uma com um escopo: «todas» (qualquer magia) ou o chave de UMA classe
+  //  (só as magias daquela classe). Uma magia de raça/origem/geral (classe
+  //  vazia) só recebe as de escopo «todas».
+  function somaFontesLimiteMagia(f, m) {
+    const k = classeDaMagia(f, m);
+    return ((f.pmLimite && f.pmLimite.fontes) || []).reduce((s, x) => {
+      if (!x.valor) return s;
+      if (x.escopo === 'todas' || (k && x.escopo === k)) return s + x.valor;
+      return s;
+    }, 0);
+  }
+  //  O teto DE VERDADE desta magia. Nunca abaixo de 1 — um teto de 0
+  //  esconderia o aviso até nas magias que o jogador pode mesmo lançar.
+  function limiteDaMagia(f, m) {
+    return Math.max(1, limiteBaseDaMagia(f, m) + somaFontesLimiteMagia(f, m));
   }
   //  ── REDUÇÃO DE CUSTO DE PM, POR ESCOLA ──────────────────────────
   //  As oito escolas do T20, com o acento exato do que as magias trazem
@@ -6722,11 +6760,32 @@
     });
     return { bases: bases, bonus: bonus };
   }
+  //  O seletor "de qual classe veio esta magia" — só aparece quando a
+  //  ficha tem duas ou mais classes (com uma só não há o que escolher: o
+  //  teto já é o nível dela). «raça/origem/poder geral» cai no nível de
+  //  personagem. O teto resultante fica escrito ao lado, para a escolha
+  //  ter consequência visível na hora.
+  function seletorClasseMagia(f, m, i) {
+    const classes = f.classes.filter(c => D.classe(c.classe));
+    if (classes.length < 2) return '';
+    const ops = classes.map(c =>
+      `<option value="${esc(c.classe)}" ${m.classe === c.classe ? 'selected' : ''}>${esc(D.classe(c.classe).nome)} (nível ${Math.max(0, c.nivel || 0)})</option>`).join('');
+    return `
+      <label class="fi-mag-classe">
+        <span>Classe da magia</span>
+        <select class="fi-sel fi-sel--mini" data-campo="magias.${i}.classe"
+                title="De qual classe veio esta magia — o teto de PM por uso é o seu nível NESSA classe (p. 224). «raça/origem/poder geral» usa o seu nível de personagem.">
+          ${ops}
+          <option value="" ${classeDaMagia(f, m) ? '' : 'selected'}>raça/origem/poder geral</option>
+        </select>
+        <em class="fi-mag-classe-teto">teto ${limiteDaMagia(f, m)} PM</em>
+      </label>`;
+  }
   function blocoAprimoramentos(f, m, i) {
     const lista = aprimoramentosDe(m);
     if (!lista.length) return '';
     const p = pmDaMagia(f, m);
-    const limite = limitePm(f);
+    const limite = limiteDaMagia(f, m);
     const linhas = lista.map((a, k) => {
       const n = quantos(m, k);
       const on = n > 0;
@@ -6844,6 +6903,7 @@
             ${campoMag('Resistência', m.resistencia)}
           </div>
           <div class="fi-mag-desc">${descricaoDaMagia(m)}</div>
+          ${seletorClasseMagia(f, m, i)}
           ${blocoAprimoramentos(f, m, i)}
           ${caixaCustoPm(f, chavePmMagia(m), p.livro,
              p.livro ? p.livro + ' PM' : 'sem custo', m.nome, 'magia', true)}
@@ -7116,7 +7176,7 @@
       //  sem redesenhar a aba (o cursor pode estar na fonte).
       if (d.slice(0, 4) === 'apr:') {
         const m = f.magias[+d.slice(4)];
-        if (m) el.innerHTML = contaApr(pmDaMagia(f, m), limitePm(f));
+        if (m) el.innerHTML = contaApr(pmDaMagia(f, m), limiteDaMagia(f, m));
         return;
       }
       if (d === 'nivel')     el.textContent = n;
@@ -7135,7 +7195,6 @@
       if (d === 'invconta')  el.innerHTML = contaCarga(f);
       if (d === 'cargamaxconta') el.textContent = contaCargaMax(f);
       if (d === 'cdmag') el.textContent = cdMagias(f);
-      if (d === 'pmlimconta') el.innerHTML = contaLimitePm(f);
       if (d === 'cdhab') el.textContent = cdHabilidades(f);
       if (d === 'desloc')    el.textContent = deslocamento(f);
       if (d === 'desloc2')   el.textContent = f.deslocamento;
@@ -7429,7 +7488,8 @@
           campo.indexOf('treinador.') === 0 || campo.indexOf('maos.') === 0 ||
           campo.indexOf('efeitosEmJogo.') === 0 ||   // trocar o alcance mostra/esconde a perícia e refaz os totais
           /^parceiros\.\d+\.(tipo|nivel)$/.test(campo) ||
-          campo === 'tamanho' || campo === 'cdAtributo' || campo === 'pvAtr') return render();
+          campo === 'tamanho' || campo === 'cdAtributo' || campo === 'pvAtr' ||
+          /^magias\.\d+\.classe$/.test(campo)) return render();
       atualizarDerivados();
       return;
     }
@@ -7768,7 +7828,7 @@
     if (acao === 'add-pm-fonte') {
       if (!f.pmLimite || typeof f.pmLimite !== 'object') f.pmLimite = { fontes: [] };
       if (!Array.isArray(f.pmLimite.fontes)) f.pmLimite.fontes = [];
-      f.pmLimite.fontes.push({ id: novoId(), valor: 2, de: '' });
+      f.pmLimite.fontes.push({ id: novoId(), valor: 2, escopo: 'todas', de: '' });
       sujar(f.id, 'pmLimite'); salvar(); return render();
     }
     if (acao === 'tira-pm-fonte') {

@@ -3687,10 +3687,33 @@
   font-size: 0.9rem;
   color: var(--text-mid);
 }
+.fi-pmlim-val { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; justify-content: flex-end; }
 .fi-pmlim-val strong { color: var(--ink); font-size: 1rem; }
 .fi-pmlim-val em { font-style: italic; color: var(--text-dim); font-size: 0.82rem; }
+/*  Com multiclasse, o teto é um por classe: uma pílula por classe, e uma
+    apagada para o nível de personagem (magia de raça/origem/geral). */
+.fi-pmlim-classe { white-space: nowrap; }
+.fi-pmlim-classe--geral { color: var(--text-dim); }
 .fi-pmlim-fontes { border-top: none; margin-top: 0.2rem; padding-top: 0; }
-.fi-pmlim-fontes .fi-desl-linha { grid-template-columns: 4.2rem 1fr auto; }
+.fi-pmlim-fontes .fi-desl-linha { grid-template-columns: 3.4rem minmax(6rem, auto) 1fr auto; }
+/*  O seletor "de qual classe veio esta magia", no corpo do cartão de
+    magia — só aparece em ficha multiclasse. */
+.fi-mag-classe {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0.1rem;
+}
+.fi-mag-classe > span {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.fi-mag-classe-teto { font-style: italic; color: var(--text-mid); font-size: 0.82rem; }
 /*  A redução tem uma coluna a mais: o seletor de escola entre o número e o
     "de onde vem". */
 .fi-pmred { margin-top: 0; }
@@ -4095,7 +4118,7 @@
 @media (max-width: 560px) {
   .fi-desl-linha { grid-template-columns: 4rem 1rem 1fr auto; }
   .fi-defesa-fontes .fi-desl-linha { grid-template-columns: 4rem 1fr auto; }
-  .fi-pmlim-fontes .fi-desl-linha { grid-template-columns: 4rem 1fr auto; }
+  .fi-pmlim-fontes .fi-desl-linha { grid-template-columns: 3.2rem minmax(5rem, auto) 1fr auto; }
   .fi-pmred-fontes .fi-desl-linha { grid-template-columns: 3.2rem minmax(5rem, auto) 1fr auto; }
   .fi-cond-nuvem { left: auto; right: 0; }
 }
