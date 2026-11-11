@@ -4551,6 +4551,38 @@
 .fi-pm-selo--meu { box-shadow: inset 0 -0.15rem 0 var(--gold-deep); }
 
 /* ═══ ⚡ O MINI-LOG DE PM ══════════════════════════════════════════ */
+/* 🔑 Troca do atributo-chave do PM (11/11/2026) — espelha o visual do
+   mini-log de PM (.fi-pml): um <details> discreto no cartão Vida & Mana. */
+.fi-trpm { margin: 0.5rem 0 0.2rem; }
+.fi-trpm > summary {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--gold-deep);
+  cursor: pointer;
+}
+.fi-trpm > summary em {
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.76rem;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0;
+  color: var(--text-dim);
+}
+.fi-trpm-lista { list-style: none; margin: 0.4rem 0 0.2rem; padding: 0; }
+.fi-trpm-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.4rem;
+  padding: 0.18rem 0;
+  border-bottom: 1px dotted var(--parchment3);
+}
+.fi-trpm-classe { font-weight: 700; color: var(--ink); }
+.fi-trpm-soma, .fi-trpm-fim { font-size: 0.82rem; color: var(--text-dim); }
+.fi-trpm-de { flex: 1 1 11rem; min-width: 0; }
+
 .fi-pml { margin: 0.5rem 0 0.2rem; }
 .fi-pml > summary {
   font-family: var(--ga-fonte-rotulo);

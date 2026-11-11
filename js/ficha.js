@@ -227,6 +227,17 @@
       //  Celestial é citada em Heróis de Arton, p. 54, e nunca descrita).
       caminho: D.caminho((c && c.caminho) || '') ? String(c.caminho) : '',
       linhagem: String((c && c.linhagem) || ''),
+      //  O ATRIBUTO-CHAVE DO PM, TROCADO À MÃO (11/11/2026, pedido dele).
+      //  Vazio = o automático (o da classe/Caminho). Preenchido = um
+      //  atributo que entra NO LUGAR dele na SOMA do PM — é o caso do
+      //  eiradaan (Magia Instintiva: "usar Sabedoria no lugar de seu
+      //  atributo-chave de magias arcanas", Heróis de Arton, p. 12) e da
+      //  Tradição Perdida (Heróis, p. 91). NÃO muda a base do PM (nível ×
+      //  PM por nível), que é fixa — só qual atributo é SOMADO. `pmAtrDe`
+      //  é o nome da fonte, só para o log dizer de onde veio.
+      //  Só vale para classe que já soma atributo no PM; ver atrChaveDaClasse.
+      pmAtr: (c && D.ATRIBUTOS.some(a => a.chave === c.pmAtr)) ? String(c.pmAtr) : '',
+      pmAtrDe: String((c && c.pmAtrDe) || ''),
     }));
     if (!f.classes.length) f.classes = [{ classe: '', nivel: 1 }];
 
@@ -1182,6 +1193,21 @@
   function atrChaveDaClasse(f, c) {
     const C = D.classe(c && c.classe);
     if (!C || !C.pmAtr) return '';
+    //  A TROCA À MÃO (eiradaan, Tradição Perdida…) só se aplica a classe
+    //  que JÁ soma um atributo no PM — ela diz QUAL, nunca liga a soma
+    //  numa classe que não conjura. Por isso o atalho fica aqui, depois
+    //  do `!C.pmAtr` que já barrou o guerreiro, e antes do automático.
+    if (c && D.ATRIBUTOS.some(a => a.chave === c.pmAtr)) return c.pmAtr;
+    if (C.pmAtr !== 'chave') return C.pmAtr;
+    const cam = D.caminho(c && c.caminho);
+    return cam ? cam.atr : f.cdAtributo;
+  }
+  //  O atributo AUTOMÁTICO da classe (sem a troca à mão): é o que o
+  //  seletor de troca mostra entre parênteses, e o que a conta compara
+  //  para saber se a linha saiu do padrão.
+  function atrChaveAutoDaClasse(f, c) {
+    const C = D.classe(c && c.classe);
+    if (!C || !C.pmAtr) return '';
     if (C.pmAtr !== 'chave') return C.pmAtr;
     const cam = D.caminho(c && c.caminho);
     return cam ? cam.atr : f.cdAtributo;
@@ -1213,7 +1239,10 @@
       const k = atrChaveDaClasse(f, c);
       if (!k || vistos[k]) return;
       vistos[k] = true;
-      saida.push({ atr: k, classe: C, caminho: D.caminho(c.caminho) });
+      const auto = atrChaveAutoDaClasse(f, c);
+      const trocado = !!(c.pmAtr && c.pmAtr === k && k !== auto);
+      saida.push({ atr: k, classe: C, caminho: D.caminho(c.caminho),
+        trocado, auto, de: trocado ? String(c.pmAtrDe || '') : '' });
     });
     return saida;
   }
@@ -1591,6 +1620,7 @@
   })();
   let xpLogAberto = false;          // o caderno do XP, aberto nesta tela
   let pmLogAberto = false;          // o mini-log de PM, aberto nesta tela
+  let trocaPmAberto = false;        // o painel de troca do atributo-chave do PM
   const HIST_KEY = 'grifosAlados.fichaRolagens';
   const HIST_MAX = 30;
 
@@ -2449,6 +2479,7 @@
             máximo, e são <strong>sempre os primeiros a serem gastos</strong> — por isso o dano daqui desce
             deles antes de tocar no seu PV. No fim do dia, somem.</p>
           ${blocoManchas(f)}
+          ${blocoAtrChavePm(f)}
           ${blocoPmLog(f)}
           <p class="fi-turno-chamar">
             <button type="button" class="fi-add fi-add--menor" data-acao="abrir-turno"
@@ -2802,7 +2833,12 @@
     const pm = c.map(x => `${D.classe(x.classe).pmNivel}×${x.nivel}`).join(' + ') +
       atributosDoPm(f).map(x => {
         const v = atrBase(f, x.atr);
-        return ` + ${atrCurto(x.atr)} ${v < 0 ? '−' + Math.abs(v) : v} <em>(${esc(x.classe.nome.toLowerCase())})</em>`;
+        //  Quando o atributo foi trocado à mão (eiradaan, Tradição
+        //  Perdida), a conta diz no lugar de quê — e a fonte, se nomeada.
+        const troca = x.trocado
+          ? ` no lugar de ${atrCurto(x.auto)}${x.de ? ', ' + esc(x.de) : ''}`
+          : '';
+        return ` + ${atrCurto(x.atr)} ${v < 0 ? '−' + Math.abs(v) : v} <em>(${esc(x.classe.nome.toLowerCase())}${troca})</em>`;
       }).join('');
     const notaPvAtr = atrDoPv(f) !== 'con'
       ? ` <em>(${esc(nomeAtr(atrDoPv(f)))} no lugar de Constituição)</em>` : '';
@@ -2831,6 +2867,77 @@
         habilidades de classes diferentes acumularem. Se a sua mesa ler ao contrário, desconta em
         <strong>＋ PM máximo</strong>, que aceita número negativo.</p>`;
   }
+
+  // ══ 🔑 O ATRIBUTO-CHAVE DO PM, TROCADO À MÃO (11/11/2026) ════════
+  //  Pedido dele: o eiradaan (raça de Heróis de Arton, p. 12) tem a
+  //  habilidade Magia Instintiva — "você pode usar Sabedoria no lugar de
+  //  seu atributo-chave de magias arcanas e Misticismo". Um feiticeiro
+  //  (Caminho do Arcanista, que lança com Carisma) eiradaan passa, então,
+  //  a lançar magia arcana com Sabedoria — e, pela mesma leitura, é a
+  //  Sabedoria que soma no PM, no lugar do Carisma. A Tradição Perdida
+  //  (Heróis, p. 91) faz a mesma coisa de forma geral.
+  //  Isto troca SÓ o atributo SOMADO no PM; a base (nível × PM por nível)
+  //  é fixa e não muda — o jogador foi claro nisso. É opt-in porque a
+  //  troca é uma leitura de regra que nem toda mesa faz igual (tal como o
+  //  Caminho OFERECE em vez de corrigir sozinho — ver o painelCaminho).
+  //
+  //  As classes desta ficha que já SOMAM um atributo no PM (com nível),
+  //  cada uma com o seu índice e o atributo automático (sem a troca).
+  function classesComPm(f) {
+    return (f.classes || []).map((c, i) => ({ c, i }))
+      .filter(x => x.c.nivel > 0 && (() => {
+        const C = D.classe(x.c.classe);
+        return C && C.pmAtr;
+      })())
+      .map(x => ({ c: x.c, i: x.i, C: D.classe(x.c.classe), auto: atrChaveAutoDaClasse(f, x.c) }));
+  }
+  //  O seletor da troca: «— o da classe (Car) —» (valor vazio) + os seis
+  //  atributos. Acende como «trocado» quando não é o automático.
+  function seletorTrocaPmAtr(f, c, i, auto) {
+    const atual = (c.pmAtr && D.ATRIBUTOS.some(a => a.chave === c.pmAtr)) ? c.pmAtr : '';
+    const ops = `<option value="" ${atual === '' ? 'selected' : ''}>— o da classe (${esc(atrCurto(auto))}) —</option>` +
+      D.ATRIBUTOS.map(a =>
+        `<option value="${a.chave}" ${a.chave === atual ? 'selected' : ''}>${esc(a.curto)}</option>`).join('');
+    return `<select class="fi-sel fi-sel--atr${atual === '' ? '' : ' fi-sel--trocado'}"
+              data-campo="classes.${i}.pmAtr"
+              title="Qual atributo esta classe soma no seu total de PM. O padrão é o da classe/Caminho; troque aqui quando um poder ou raça mandar outro — o eiradaan soma Sabedoria no lugar de Carisma (Magia Instintiva, Heróis p. 12). Troca só o que é SOMADO, nunca a base do PM.">${ops}</select>`;
+  }
+  //  O painel: uma linha por classe conjuradora. Só aparece se há alguma —
+  //  e fica fechado até o jogador abrir, ou aberto sozinho quando já há
+  //  uma troca em jogo, para a troca nunca ficar escondida.
+  function blocoAtrChavePm(f) {
+    const linhas = classesComPm(f);
+    if (!linhas.length) return '';
+    const temTroca = linhas.some(x => x.c.pmAtr && x.c.pmAtr !== x.auto);
+    const corpo = linhas.map(x => {
+      const trocado = x.c.pmAtr && x.c.pmAtr === atrChaveDaClasse(f, x.c) && x.c.pmAtr !== x.auto;
+      return `
+        <li class="fi-trpm-linha">
+          <span class="fi-trpm-classe">${esc(x.C.nome)}</span>
+          <span class="fi-trpm-soma">soma</span>
+          ${seletorTrocaPmAtr(f, x.c, x.i, x.auto)}
+          <span class="fi-trpm-fim">no PM</span>
+          <input class="fi-txt fi-txt--mini fi-trpm-de" type="text" value="${esc(x.c.pmAtrDe || '')}"
+                 data-campo="classes.${x.i}.pmAtrDe" autocomplete="off"
+                 placeholder="de onde vem (Magia Instintiva, Tradição Perdida…)"
+                 ${trocado ? '' : 'hidden'}
+                 title="O nome da fonte da troca, só para o log dizer de onde veio">
+        </li>`;
+    }).join('');
+    return `
+      <details class="fi-trpm"${(trocaPmAberto || temTroca) ? ' open' : ''}>
+        <summary data-acao="troca-pm">🔑 Atributo-chave do PM
+          ${temTroca ? '<em>trocado à mão</em>' : '<em>no automático</em>'}</summary>
+        <ul class="fi-trpm-lista">${corpo}</ul>
+        <p class="fi-nota">Toda classe que lança magia soma o <strong>atributo-chave dela</strong> no total de PM
+          (p. 226). O padrão é o da classe (ou do Caminho, no arcanista); troque aqui quando um poder ou raça
+          mandar outro — o <strong>eiradaan</strong> usa <strong>Sabedoria no lugar de Carisma</strong> pela
+          <em>Magia Instintiva</em> (Heróis de Arton, p. 12), e a <em>Tradição Perdida</em> (Heróis, p. 91) faz
+          isso de forma geral. A troca muda só o atributo <strong>somado</strong>; a <strong>base do PM</strong>
+          (nível × PM por nível) é fixa e não se mexe. O mesmo atributo nunca entra duas vezes.</p>
+      </details>`;
+  }
+
   // O aviso da p. 141, com o preço já escrito: quem passa do limite
   // sofre −5 de armadura e −3m de deslocamento; acima do dobro, não
   // carrega. A ficha avisa e não impede — como o resto dela.
@@ -2921,8 +3028,12 @@
           L.push({ rot: C.nome + ' — ' + x.nivel + '×' + C.pmNivel, val: x.nivel * C.pmNivel });
         }
       });
-      if (!ehPv) atributosDoPm(f).forEach(x =>
-        L.push({ rot: atrCurto(x.atr) + ' (' + x.classe.nome.toLowerCase() + ')', val: atrBase(f, x.atr) }));
+      if (!ehPv) atributosDoPm(f).forEach(x => {
+        const troca = x.trocado
+          ? ' no lugar de ' + atrCurto(x.auto) + (x.de ? ', ' + x.de : '')
+          : '';
+        L.push({ rot: atrCurto(x.atr) + ' (' + x.classe.nome.toLowerCase() + troca + ')', val: atrBase(f, x.atr) });
+      });
       const outros = ehPv ? (f.pv.outros || 0) : (f.pm.outros || 0);
       if (outros) L.push({ rot: '＋ máximo (à mão)', val: outros });
       const temp = f[tipo].temp || 0;
@@ -7493,7 +7604,11 @@
       atualizarDerivados();
       return;
     }
-    if (/^classes\.\d+\.linhagem$/.test((el.dataset || {}).campo || '')) {
+    if (/^classes\.\d+\.(linhagem|pmAtrDe)$/.test((el.dataset || {}).campo || '')) {
+      //  A linhagem e o NOME DA FONTE da troca do atributo-chave do PM são
+      //  texto: salvam a cada tecla no aoEntrada, mas só redesenham no
+      //  commit (blur), para a conta por extenso passar a mostrar a fonte
+      //  sem tirar o cursor de quem ainda está escrevendo.
       const fl = fichaAberta();
       if (!fl) return;
       gravarCampo(fl, el.dataset.campo, el.value);
@@ -8073,6 +8188,7 @@
     //  do que o número desatualizado. O que muda é repintado no lugar
     //  (atualizarDerivados cuida do PV/PM e das barras).
     if (acao === 'pm-log') { pmLogAberto = !(btn.closest('details') || {}).open; return; }
+    if (acao === 'troca-pm') { trocaPmAberto = !(btn.closest('details') || {}).open; return; }
     //  O 🌀 da ficha: abre o painel do turno na mão. Fora de combate
     //  também — ele é útil como "mesa de trabalho" do personagem, e o
     //  jogador que desligou o abrir-sozinho precisa de uma porta.
