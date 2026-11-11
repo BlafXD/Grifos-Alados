@@ -2891,6 +2891,19 @@
       })())
       .map(x => ({ c: x.c, i: x.i, C: D.classe(x.c.classe), auto: atrChaveAutoDaClasse(f, x.c) }));
   }
+  //  A CD SEGUE A TROCA (pedido dele, 11/11/2026): o atributo-chave rege o
+  //  PM E a CD das magias. A ficha guarda UM atributo de CD só (campo
+  //  "Atributo das duas CDs"), compartilhado por magias e habilidades —
+  //  por isso só dá para movê-lo sozinho quando há UMA classe que conjura.
+  //  Com duas, mover estragaria a CD da outra; aí o 🔑 oferece o botão e o
+  //  jogador escolhe (mesma razão do painelCaminho). Roda nas duas direções:
+  //  pôr e tirar a troca levam a CD junto, no caso de uma classe só.
+  function sincronizarCdComPm(f) {
+    const cl = classesComPm(f);
+    if (cl.length !== 1) return;
+    const k = atrChaveDaClasse(f, cl[0].c);
+    if (k && f.cdAtributo !== k) { f.cdAtributo = k; sujar(f.id, 'cdAtributo'); }
+  }
   //  O seletor da troca: «— o da classe (Car) —» (valor vazio) + os seis
   //  atributos. Acende como «trocado» quando não é o automático.
   function seletorTrocaPmAtr(f, c, i, auto) {
@@ -2909,8 +2922,21 @@
     const linhas = classesComPm(f);
     if (!linhas.length) return '';
     const temTroca = linhas.some(x => x.c.pmAtr && x.c.pmAtr !== x.auto);
+    const umaSo = linhas.length === 1;
     const corpo = linhas.map(x => {
-      const trocado = x.c.pmAtr && x.c.pmAtr === atrChaveDaClasse(f, x.c) && x.c.pmAtr !== x.auto;
+      const k = atrChaveDaClasse(f, x.c);
+      const trocado = x.c.pmAtr && x.c.pmAtr === k && x.c.pmAtr !== x.auto;
+      //  A CD das magias desta classe: bate com o atributo-chave, ou não.
+      //  Quando não bate, o botão move a CD para este atributo. Com uma
+      //  classe só, a CD já segue sozinha (sincronizarCdComPm), então o
+      //  botão quase nunca aparece ali; com duas, é como a ficha pergunta
+      //  qual das duas rege a CD, que é uma só.
+      const cdBate = f.cdAtributo === k;
+      const cdLinha = cdBate
+        ? `<span class="fi-trpm-cd fi-trpm-cd--ok" title="A CD das suas magias já usa ${esc(nomeAtr(k))}">✓ e na CD das magias (${esc(atrCurto(k))})</span>`
+        : `<span class="fi-trpm-cd fi-trpm-cd--aviso">a CD das magias está em <strong>${esc(atrCurto(f.cdAtributo))}</strong>
+             <button type="button" class="fi-mini fi-mini--ok" data-acao="cd-do-pmatr" data-i="${x.i}"
+                     title="Pôr ${esc(nomeAtr(k))} no campo «Atributo das duas CDs» — a CD das magias e das habilidades passa a usar ${esc(nomeAtr(k))}">usar ${esc(atrCurto(k))} na CD</button></span>`;
       return `
         <li class="fi-trpm-linha">
           <span class="fi-trpm-classe">${esc(x.C.nome)}</span>
@@ -2922,6 +2948,7 @@
                  placeholder="de onde vem (Magia Instintiva, Tradição Perdida…)"
                  ${trocado ? '' : 'hidden'}
                  title="O nome da fonte da troca, só para o log dizer de onde veio">
+          ${cdLinha}
         </li>`;
     }).join('');
     return `
@@ -2934,7 +2961,10 @@
           mandar outro — o <strong>eiradaan</strong> usa <strong>Sabedoria no lugar de Carisma</strong> pela
           <em>Magia Instintiva</em> (Heróis de Arton, p. 12), e a <em>Tradição Perdida</em> (Heróis, p. 91) faz
           isso de forma geral. A troca muda só o atributo <strong>somado</strong>; a <strong>base do PM</strong>
-          (nível × PM por nível) é fixa e não se mexe. O mesmo atributo nunca entra duas vezes.</p>
+          (nível × PM por nível) é fixa e não se mexe. O mesmo atributo nunca entra duas vezes.
+          ${umaSo
+            ? 'E a <strong>CD das suas magias segue a troca sozinha</strong>: como você só tem uma classe que lança magia, o atributo-chave rege o PM e a CD juntos.'
+            : 'A <strong>CD é uma só</strong> para as duas classes (campo «Atributo das duas CDs»), então, com dois conjuradores, a ficha <strong>pergunta</strong> qual atributo rege a CD em vez de mexer sozinha — pelo botão ao lado da classe.'}</p>
       </details>`;
   }
 
@@ -7574,6 +7604,14 @@
         sujar(f.id, 'origemEscolha'); sujar(f.id, 'origem');
         salvar(); return render();
       }
+      //  A troca do atributo-chave do PM: grava e, quando a ficha tem UMA
+      //  classe que conjura, leva a CD das magias junto (sincronizarCdComPm).
+      //  Com duas, a CD é compartilhada e quem decide é o botão do bloco 🔑.
+      if (/^classes\.\d+\.pmAtr$/.test(campo)) {
+        gravarCampo(f, campo, el.value);
+        sincronizarCdComPm(f);
+        salvar(); return render();
+      }
       // o tipo do amigo traz um pacote de atributos: sai o do velho e
       // entra o do novo, ANTES de gravar o nome do tipo
       const mt = /^amigos\.(\d+)\.tipo$/.exec(campo);
@@ -7798,6 +7836,20 @@
       const cam = c && D.caminho(c.caminho);
       if (!cam) return;
       f.cdAtributo = cam.atr;
+      sujar(f.id, 'cdAtributo');
+      salvar(); return render();
+    }
+    //  "Usar [atr] na CD" do bloco 🔑: põe no campo «Atributo das duas
+    //  CDs» o atributo-chave (trocado ou automático) daquela classe — a CD
+    //  das magias E das habilidades passa a usá-lo. É o jeito de a troca
+    //  levar a CD junto quando a ficha tem duas classes conjuradoras e não
+    //  pode mover sozinha (a CD é uma só). Ver sincronizarCdComPm.
+    if (acao === 'cd-do-pmatr') {
+      if (!f) return;
+      const c = f.classes[+btn.dataset.i];
+      const k = atrChaveDaClasse(f, c);
+      if (!k) return;
+      f.cdAtributo = k;
       sujar(f.id, 'cdAtributo');
       salvar(); return render();
     }

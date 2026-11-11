@@ -4582,6 +4582,17 @@
 .fi-trpm-classe { font-weight: 700; color: var(--ink); }
 .fi-trpm-soma, .fi-trpm-fim { font-size: 0.82rem; color: var(--text-dim); }
 .fi-trpm-de { flex: 1 1 11rem; min-width: 0; }
+.fi-trpm-cd {
+  flex: 1 1 100%;
+  font-family: var(--ga-fonte-nota);
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.fi-trpm-cd--ok { color: var(--text-dim); }
+.fi-trpm-cd--aviso { color: var(--rust); }
+.fi-trpm-cd--aviso strong { color: var(--rust); }
 
 .fi-pml { margin: 0.5rem 0 0.2rem; }
 .fi-pml > summary {
