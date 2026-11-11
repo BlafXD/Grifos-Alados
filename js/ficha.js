@@ -6404,6 +6404,9 @@
           <strong>base + os aprimoramentos ligados</strong> e <strong>nunca zera</strong>: toda magia custa no mínimo
           <strong>1 PM</strong>. Escolha a <em>escola</em> de cada fonte (ou «todas»). Cada magia mostra o desconto já
           aplicado no 🔥 e nos ✨ Aprimoramentos. Para <em>encarecer</em> uma magia, use o campo ⚡ Custo em PM dela.</p>
+        <blockquote class="fi-nota fi-nota--livro"><strong>Reduções de Custo.</strong> Reduções no custo de PM não são
+          cumulativas. Uma habilidade nunca pode ter seu custo reduzido para menos de 1 PM.
+          <cite>— Tormenta 20, p. 226</cite></blockquote>
       </div>`;
   }
 

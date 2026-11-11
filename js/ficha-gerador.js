@@ -457,65 +457,128 @@ window.GA_FichaGerador = (function () {
   //  tem a sua tabela. Como aqui o alvo é "plausível e editável, não a
   //  conta exata por tabela de classe", o motor dá um número SENSATO por
   //  nível (≈1 por nível, ~60% de classe e ~40% gerais), tirado dos pools
-  //  certos e filtrado pelo NÍVEL que o pré-requisito exige ("11º nível de
-  //  guerreiro"). Pré-requisitos mais finos (um poder antes de outro, um
-  //  atributo mínimo) NÃO são policiados — a ficha é editável e segue a
-  //  linha "conta e mostra, não policia". A contagem exata por tabela de
-  //  classe fica para uma leva de refinamento.
+  //  certos e filtrado pelo PRÉ-REQUISITO de cada poder (preReqOk): nível,
+  //  atributo mínimo ("Car 2"), perícia treinada ("treinado em Luta", com
+  //  "e"/"ou"), poder anterior pelo nome ("Ataque Poderoso"), conjuração
+  //  ("lançar magias de 2º círculo") e contagem de poderes da Tormenta.
+  //  A escolha é ITERATIVA (um por vez, refiltrando): assim uma cadeia de
+  //  poder se forma (o pré-requisito entra antes do que depende dele) e
+  //  nunca se oferece um poder ilegal. Cláusula que não sabemos verificar
+  //  (ex.: "possuir um familiar") conta como NÃO satisfeita — o sorteio a
+  //  evita, e quem de fato qualifica adiciona o poder à mão (ficha editável).
+  //  A contagem exata por tabela de classe fica para uma leva de refinamento.
   // ════════════════════════════════════════════════════════════════
 
   const CONJURADORES = ['arcanista', 'clerigo', 'druida', 'bardo', 'paladino', 'frade'];
   function ehConjurador(base) { return CONJURADORES.indexOf(base) >= 0; }
 
-  //  O nível que o pré-requisito exige, se disser "Nº nível" (º ou °); 0 se
-  //  não disser nada de nível.
-  function nivelExigido(preReq) {
-    const m = /(\d+)\s*[º°]\s*n[íi]vel/i.exec(String(preReq || ''));
-    return m ? parseInt(m[1], 10) : 0;
+  // ── O PRÉ-REQUISITO DE UM PODER, POLICIADO (11/11/2026) ──────────
+  const sa = (s) => (window.GA_semAcento || (x => String(x || '').toLowerCase()))(String(s || ''));
+  const NUMPT = { um: 1, uma: 1, outro: 1, outra: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5 };
+  //  Em que nível de personagem um conjurador costuma ganhar cada círculo
+  //  (aproximação — as tabelas variam por classe; o alvo é "plausível").
+  const CIRC_NIVEL = { 1: 1, 2: 4, 3: 8, 4: 12, 5: 16 };
+
+  function periciaTreinadaPorNome(f, nome) {
+    const ch = periciaChave(nome);
+    return ch ? jaTreinada(f, ch) : false;
   }
-  function cabeNoNivel(p, nivel) { return nivelExigido(p.preReq) <= nivel; }
+  //  Um poder com ESTE nome já está na ficha? (sem acento, sem parênteses).
+  function poderNaFichaPorNome(f, nome) {
+    const alvo = sa(nome).replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!alvo) return true;
+    return (f.poderes || []).some(x => {
+      const n = sa(x.nome).replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim();
+      return n && n === alvo;
+    });
+  }
+  //  Uma cláusula (um pedaço do preReq separado por vírgula) é satisfeita?
+  //  O que não dá para verificar conta como NÃO satisfeito, de propósito.
+  function clausulaOk(cl, f, nivel, base) {
+    const t = sa(cl).trim();
+    if (!t) return true;
+    let m = /(\d+)\s*(?:o|º|°|\.)?\s*nivel/.exec(t);          // "11º nível (de guerreiro)"
+    if (m) return parseInt(m[1], 10) <= nivel;
+    m = /\b(for|des|con|int|sab|car)\s+(-?\d+)/.exec(t);      // "Car 2"
+    if (m) return ((f.atributos && f.atributos[m[1]]) || 0) >= parseInt(m[2], 10);
+    if (/lancar magias|habilidade de classe magias|conjurad|conjurar magias/.test(t)) {
+      const mc = /(\d+)\s*(?:o|º|°)?\s*circulo/.exec(t);
+      const circ = mc ? parseInt(mc[1], 10) : 1;
+      return ehConjurador(base) && nivel >= (CIRC_NIVEL[circ] || 99);
+    }
+    m = /treinad[oa]\s+(?:em|na|no)\s+(.+)/.exec(t);          // "treinado em Luta (e/ou Y)"
+    if (m) {
+      const alvo = m[1];
+      if (/perici.? (escolhida|treinada)/.test(alvo)) return true;   // auto-referente
+      if (/\bou\b/.test(alvo)) return alvo.split(/\bou\b/).some(nm => periciaTreinadaPorNome(f, nm));
+      return alvo.split(/\be\b/).every(nm => periciaTreinadaPorNome(f, nm));
+    }
+    if (/poder(es)?\b[^]*tormenta|tormenta[^]*poder(es)?\b/.test(t)) {   // "quatro outros poderes da Tormenta"
+      const w = (/\b(um|uma|outro|outra|dois|duas|tres|quatro|cinco)\b/.exec(t) || [])[1];
+      const n = NUMPT[w] || 1;
+      return (f.poderes || []).filter(x => x.grupo === 'tormenta' || x.contaTormenta).length >= n;
+    }
+    return poderNaFichaPorNome(f, cl);                        // senão: é o nome de outro poder
+  }
+  //  Todas as cláusulas (separadas por vírgula/ponto-e-vírgula) precisam valer.
+  function preReqOk(p, f, nivel, base) {
+    const req = String(p.preReq || '').trim();
+    if (!req) return true;
+    return req.split(/[,;]/).map(s => s.trim()).filter(Boolean)
+      .every(cl => clausulaOk(cl, f, nivel, base));
+  }
   function pidsNaFicha(f) { return new Set(f.poderes.map(p => p.pid).filter(Boolean)); }
 
   //  Poderes DE CLASSE da classe do personagem (a variante usa a lista da
-  //  básica), que cabem no nível e ainda não estão na ficha.
+  //  básica), que passam no pré-requisito e ainda não estão na ficha.
   function poolClasse(classeChave, nivel, f) {
     const base = D().basicaDe(classeChave) || classeChave;
     const ja = pidsNaFicha(f);
     return (window.GA_PODERES_CLASSE || []).filter(p =>
-      p.classe === base && cabeNoNivel(p, nivel) && !ja.has(p.id));
+      p.classe === base && !ja.has(p.id) && preReqOk(p, f, nivel, base));
   }
   //  Poderes gerais de certas gavetas (combate, destino, grupo, magia…).
-  function poolGeral(categorias, nivel, f) {
+  function poolGeral(categorias, nivel, f, base) {
     const ja = pidsNaFicha(f);
     return PODERES().filter(p =>
-      categorias.indexOf(p.grupo) >= 0 && cabeNoNivel(p, nivel) && !ja.has(p.id));
+      categorias.indexOf(p.grupo) >= 0 && !ja.has(p.id) && preReqOk(p, f, nivel, base));
   }
   //  Poderes de raça (🧬, Heróis de Arton) marcados com a raça nas tags.
-  function poolRaca(racaNome, nivel, f) {
+  function poolRaca(racaNome, nivel, f, base) {
     const ja = pidsNaFicha(f);
     return PODERES().filter(p =>
-      p.grupo === 'raca' && cabeNoNivel(p, nivel) && !ja.has(p.id) && tagsTem(p.tags, racaNome));
+      p.grupo === 'raca' && !ja.has(p.id) && tagsTem(p.tags, racaNome) && preReqOk(p, f, nivel, base));
+  }
+  //  Pega `n` poderes UM A UM, refiltrando a cada vez — assim um poder que
+  //  é pré-requisito de outro entra primeiro e libera o dependente, e o
+  //  pool nunca oferece algo ilegal diante do estado atual da ficha.
+  function pegarIterando(n, montarPool, aoPegar) {
+    for (let i = 0; i < n; i++) {
+      const pool = montarPool();
+      if (!pool.length) break;
+      aoPegar(pick(pool));
+    }
   }
 
   function addPoderes(f, classeChave, nivel, base, racaNome) {
     const conj = ehConjurador(base);
     // ── de classe (~60% dos poderes do nível, no mínimo 1) ──
     const nClasse = Math.max(1, Math.round(nivel * 0.6));
-    pegarN(embaralhar(poolClasse(classeChave, nivel, f)), nClasse)
-      .forEach(p => f.poderes.push(poderParaFicha(p, 'classe')));
+    pegarIterando(nClasse, () => poolClasse(classeChave, nivel, f),
+      p => f.poderes.push(poderParaFicha(p, 'classe')));
     // ── gerais (combate, destino, grupo; e magia só para conjurador) ──
     const cats = ['combate', 'destino', 'grupo'].concat(conj ? ['magia'] : []);
     const nGeral = Math.round(nivel * 0.4);
-    pegarN(embaralhar(poolGeral(cats, nivel, f)), nGeral)
-      .forEach(p => f.poderes.push(poderParaFicha(p, p.grupo)));
+    pegarIterando(nGeral, () => poolGeral(cats, nivel, f, base),
+      p => f.poderes.push(poderParaFicha(p, p.grupo)));
     // ── um poder de raça, quando a raça tem um (metade das vezes) ──
     if (chance(0.5)) {
-      const pr = poolRaca(racaNome, nivel, f);
+      const pr = poolRaca(racaNome, nivel, f, base);
       if (pr.length) f.poderes.push(poderParaFicha(pick(pr), 'raca'));
     }
     // ── um poder da Tormenta, de vez em quando (nível 2+) ──
     if (nivel >= 2 && chance(0.22)) {
-      const pt = poolGeral(['tormenta'], nivel, f);
+      const pt = poolGeral(['tormenta'], nivel, f, base);
       if (pt.length) f.poderes.push(poderParaFicha(pick(pt), 'tormenta'));
     }
   }

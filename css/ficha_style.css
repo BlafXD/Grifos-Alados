@@ -1112,6 +1112,20 @@
 
 .fi-extra--temp > span { color: var(--gold-deep); font-weight: 700; }
 .fi-nota--temp { border-left: 3px solid var(--gold); padding-left: 0.5rem; }
+/* Citação literal do livro: filete dourado e a referência de página ao fim. */
+.fi-nota--livro {
+  border-left: 3px solid var(--gold);
+  padding-left: 0.6rem;
+  margin: 0.5rem 0 0;
+  opacity: 0.92;
+}
+.fi-nota--livro cite {
+  display: block;
+  margin-top: 0.25rem;
+  font-style: normal;
+  font-size: 0.76rem;
+  color: var(--text-dim);
+}
 
 /* ── ESTADO DA CARGA ────────────────────────────────────────────── */
 .fi-carga-estado {
