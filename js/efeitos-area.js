@@ -43,6 +43,27 @@
 
   const LOCAL_KEY = 'grifosAlados.efeitosAreaLocal';
 
+  // ── CARDÁPIO PRONTO — o disparador do mestre (12/11/2026) ────────
+  //  Preenche o formulário num clique: efeitos comuns (texto do livro) e
+  //  a Lista de Condições do T20 (GA_CONDICOES, texto integral). `lado` é
+  //  o lado padrão ao marcar os jogadores: buff → 🛡 aliado (ganha o
+  //  bônus); penalidade/condição → ⚔ inimigo (sofre o efeito). O mestre
+  //  ajusta os alvos depois — o efeito aparece sozinho na ficha de cada um.
+  const EFEITOS_PRONTOS = [
+    { nome: 'Oração', lado: 'bonus', dur: 'sustentada',
+      bonus: '+2 em testes de perícia e rolagens de dano',
+      contra: '−2 em testes de perícia e rolagens de dano' },
+    { nome: 'Bênção', lado: 'bonus', dur: 'cena',
+      bonus: '+1 em testes de ataque e rolagens de dano' },
+    { nome: 'Perdição', lado: 'contra', dur: 'cena',
+      contra: '−1 em testes de ataque e rolagens de dano' },
+  ];
+  function catalogoCondicoes() {
+    const C = window.GA_CONDICOES;
+    if (!C || !Array.isArray(C.LISTA)) return [];
+    return C.LISTA.map(c => ({ nome: c.nome, lado: 'contra', dur: 'cena', contra: c.texto, tipo: c.tipo || '' }));
+  }
+
   function db() { return window.GA_Mesa ? window.GA_Mesa.db() : null; }
   function est() { return (window.GA_Mesa && window.GA_Mesa.estado) ? window.GA_Mesa.estado() : null; }
   function naMesa() { const e = est(); return !!(e && e.souMembro && e.mesaId); }
@@ -187,7 +208,7 @@
       const meu = f && ((c.fichaId && c.fichaId === f.id) || (semAcento(c.nome) === semAcento(f.nome)));
       return `
         <div class="ea-alvo" data-id="${esc(c.id)}" data-nome="${esc(c.nome)}"
-             data-ficha="${esc(c.fichaId)}" data-uid="${esc(c.uid)}">
+             data-ficha="${esc(c.fichaId)}" data-uid="${esc(c.uid)}" data-tipo="${esc(c.tipo)}">
           <span class="ea-alvo-nome">${c.tipo === 'jogador' ? '🧑 ' : '👹 '}${esc(c.nome)}</span>
           <span class="ea-alvo-rel">
             <button type="button" class="ea-rel ea-rel--fora ea-on" data-rel="fora">— fora</button>
@@ -199,12 +220,25 @@
         Painel de combate (⚔) para escolher os alvos — ou crie o efeito assim mesmo e marque os
         alvos quando o combate começar.</p>`;
 
+    //  O cardápio pronto: efeitos comuns + a Lista de Condições. A ordem
+    //  no array é a ordem dos `value` (índice), que o handler usa de volta.
+    const conds = catalogoCondicoes();
+    const prontos = EFEITOS_PRONTOS.concat(conds);
+    const opPreset = (arr, off) => arr.map((p, i) =>
+      `<option value="${off + i}">${esc(p.nome)}${p.tipo ? ' — ' + esc(p.tipo) : ''}</option>`).join('');
+
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
         <span>🔆 Novo efeito em área</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
       <div class="ea-form">
+        <label class="ea-campo"><span>📋 Efeito pronto <em>(opcional — preenche os campos e marca os jogadores)</em></span>
+          <select id="eaPronto" class="ea-sel">
+            <option value="">— escolher um efeito ou condição —</option>
+            <optgroup label="Efeitos">${opPreset(EFEITOS_PRONTOS, 0)}</optgroup>
+            <optgroup label="Condições (Tormenta 20)">${opPreset(conds, EFEITOS_PRONTOS.length)}</optgroup>
+          </select></label>
         <label class="ea-campo"><span>Nome do efeito</span>
           <input type="text" id="eaNome" value="${esc(f && f._efeitoNome || '')}" placeholder="Oração, Bênção, Consagrar…" autocomplete="off"></label>
         <label class="ea-campo"><span>O que os aliados ganham</span>
@@ -270,6 +304,24 @@
         const jaOn = btn.classList.contains('ea-on');
         turnoBtns.forEach(b => b.classList.remove('ea-on'));
         if (!jaOn) btn.classList.add('ea-on');
+      });
+    });
+
+    // o cardápio pronto: preenche nome/efeito/duração e já marca os
+    // JOGADORES no lado padrão (buff → aliado; penalidade/condição →
+    // inimigo). As criaturas ficam como estão — o mestre as marca à mão.
+    const selPronto = overlay.querySelector('#eaPronto');
+    if (selPronto) selPronto.addEventListener('change', () => {
+      const p = prontos[parseInt(selPronto.value, 10)];
+      if (!p) return;
+      overlay.querySelector('#eaNome').value = p.nome || '';
+      overlay.querySelector('#eaBonus').value = p.bonus || '';
+      overlay.querySelector('#eaContra').value = p.contra || '';
+      overlay.querySelector('#eaDur').value = p.dur || '';
+      const relPad = p.lado === 'bonus' ? 'aliado' : 'inimigo';
+      overlay.querySelectorAll('.ea-alvo').forEach(row => {
+        if (row.dataset.tipo !== 'jogador') return;
+        row.querySelectorAll('.ea-rel').forEach(b => b.classList.toggle('ea-on', b.dataset.rel === relPad));
       });
     });
 

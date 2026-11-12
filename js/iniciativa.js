@@ -595,6 +595,13 @@
       if (quantas() && !confirm('Montar de novo apaga a ordem deste combate e rola tudo outra vez. Continuar?')) return;
       return montar();
     }
+    // o disparador de efeito/condição em área: o mestre escolhe um pronto
+    // (ou escreve), marca quem está sob ele na lista de combate, e o efeito
+    // aparece sozinho na ficha de cada afetado (nó compartilhado da mesa).
+    if (acao === 'efeito') {
+      if (window.GA_EfeitosArea && window.GA_EfeitosArea.abrirCriar) window.GA_EfeitosArea.abrirCriar();
+      return;
+    }
     // o PV: abre a ficha daquela pessoa na aba do site. Vale para o
     // jogador também — a ficha dele é dele.
     if (acao === 'ficha') {
@@ -790,6 +797,8 @@
           '<button type="button" class="ga-ini-btn ga-ini-btn--forte" data-ini="montar" ' +
             'title="Rola 1d20 para cada criatura da cena narrada e traz os jogadores">' +
             (temLista ? '⚔ Montar de novo' : '⚔ Montar com a cena') + '</button>' +
+          '<button type="button" class="ga-ini-btn ga-ini-btn--efeito" data-ini="efeito" ' +
+            'title="Disparar um efeito ou condição em área (Oração, Perdição, Abalado…) e marcar quem está sob ele — aparece sozinho na ficha de cada afetado">🔆 Efeito / condição</button>' +
           (temLista ? '<button type="button" class="ga-ini-btn" data-ini="ordena" title="Reordenar pelos valores">⇅ Ordenar</button>' +
                       '<button type="button" class="ga-ini-btn ga-ini-btn--x" data-ini="limpar">🗑 Limpar</button>' : '') +
         '</div>';

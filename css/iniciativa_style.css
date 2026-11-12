@@ -262,6 +262,8 @@
 .ga-ini-btn--forte { color: var(--faixa-tinta); background: var(--faixa); border-color: var(--faixa); }
 .ga-ini-btn--forte:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
 .ga-ini-btn--x:hover { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
+.ga-ini-btn--efeito { border-color: var(--gold-dim); }
+.ga-ini-btn--efeito:hover { background: var(--gold-dim); color: var(--faixa-tinta); border-color: var(--gold-dim); }
 .ga-ini-add input {
   min-width: 0;
   font-family: var(--ga-fonte-corpo);

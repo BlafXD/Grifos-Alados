@@ -4449,6 +4449,14 @@
 }
 .ea-campo input:focus { outline: 2px solid var(--foco); outline-offset: -1px; }
 .ea-campo--curto input { max-width: 14rem; }
+/* O cardápio "📋 Efeito pronto": espelha o input, com um fundo de destaque
+   por ser o atalho que preenche o resto num clique. */
+.ea-campo select.ea-sel {
+  font-family: var(--ga-fonte-corpo); font-size: 0.98rem; color: var(--ink);
+  background: var(--parchment2); border: 1px solid var(--gold-dim); border-radius: var(--raio);
+  padding: 0.4rem 0.5rem; width: 100%;
+}
+.ea-campo select.ea-sel:focus { outline: 2px solid var(--foco); outline-offset: -1px; }
 .ea-de { margin: 0; font-size: 0.9rem; color: var(--text-mid); }
 .ea-alvos-cab {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem;
