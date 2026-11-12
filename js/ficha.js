@@ -10411,6 +10411,7 @@
         pv: { atual: pvAtual(f), max: pvMax(f), temp: f.pv.temp || 0 },
         pm: { atual: pmAtual(f), max: pmMax(f), temp: f.pm.temp || 0 },
         defesa: defesa(f),
+        morto: !!f.morto,           // fora de combate: o iniciativa.js usa para não montar
         atualizadoEm: f.atualizadoEm || 0,
       });
     }

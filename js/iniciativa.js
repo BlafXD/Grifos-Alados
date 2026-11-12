@@ -323,6 +323,9 @@
     function jogador(nome, uid, ficha) {
       const k = chave(nome);
       if (!k || vistos[k]) return;
+      // fora de combate (marcado NA FICHA): não entra na montagem — vale por
+      // AQUI para pegar os dois caminhos (os membros e os nomes do grupo).
+      if (ficha && ficha.morto) return;
       vistos[k] = 1;
       novas.push({
         nome: String(nome).trim(), tipo: 'jogador', valor: null,
@@ -345,10 +348,9 @@
         // mestre ("Caique Harmatiuk Bodnar"), e a de jogadores sem ficha
         // vinculada aqui (Tekony, Pe H). A iniciativa é de personagens, não
         // de contas: sem ficha na mesa, não entra. (Quem faltou mesmo assim,
-        // o mestre acrescenta pelo nome no campo ＋.)
-        // O morto (fora de combate, marcado NA FICHA) também não entra nas
-        // próximas montagens — ele volta tirando a marca na ficha.
-        if (!f || f.morto) return;
+        // o mestre acrescenta pelo nome no campo ＋.) O morto (fora de
+        // combate) é barrado dentro do jogador(), que pega os dois caminhos.
+        if (!f) return;
         jogador(f.nome, uid, f);
       });
     }
@@ -1027,6 +1029,24 @@
   //  OS EFEITOS EM ÁREA ATIVOS, na mão do mestre durante o combate: cada um
   //  com ✎ (reabre o modal para remarcar quem entrou/saiu da área) e ✕
   //  (encerra para todos). Só o mestre vê — é ele quem dispara e gerencia.
+  //  O tooltip de um efeito: o que ele faz e QUEM está sob ele (aliados e
+  //  inimigos, pelo nome). É o que o mouse mostra na lista — e é por aqui
+  //  que se vê o efeito nas CRIATURAS, que não têm ficha para ler paraFicha.
+  function efeitoTooltip(e) {
+    const alvos = e.alvos || {};
+    const aliados = [], inimigos = [];
+    Object.keys(alvos).forEach(k => {
+      const a = alvos[k]; if (!a || !a.nome) return;
+      if (a.rel === 'aliado') aliados.push(a.nome);
+      else if (a.rel === 'inimigo') inimigos.push(a.nome);
+    });
+    const L = [(e.nome || 'efeito') + (e.de ? ' (de ' + e.de + ')' : '')];
+    if (e.bonus || aliados.length) L.push('🛡 ' + (e.bonus || 'em você') + (aliados.length ? ' → ' + aliados.join(', ') : ''));
+    if (e.contrario || inimigos.length) L.push('⚔ ' + (e.contrario || 'contra você') + (inimigos.length ? ' → ' + inimigos.join(', ') : ''));
+    if (e.porTurno) L.push((e.porTurnoTipo === 'cura' ? '💚 cura ' : '💥 dano ') + e.porTurno + ' por turno');
+    if (e.duracao) L.push('⏱ ' + e.duracao);
+    return L.join('\n');
+  }
   function efeitosAtivosHtml() {
     if (!mando() || !window.GA_EfeitosArea || !window.GA_EfeitosArea.ativos) return '';
     const efs = window.GA_EfeitosArea.ativos() || {};
@@ -1035,8 +1055,8 @@
     const linhas = ids.map(id => {
       const e = efs[id] || {};
       const n = e.alvos ? Object.keys(e.alvos).length : 0;
-      return '<li class="ga-ini-ef">' +
-        '<span class="ga-ini-ef-nome" title="' + esc(e.nome || 'efeito') + '">🔆 ' + esc(e.nome || 'efeito') + '</span>' +
+      return '<li class="ga-ini-ef" title="' + esc(efeitoTooltip(e)) + '">' +
+        '<span class="ga-ini-ef-nome">🔆 ' + esc(e.nome || 'efeito') + '</span>' +
         '<span class="ga-ini-ef-n">' + n + ' na área</span>' +
         '<button type="button" class="ga-ini-mini" data-ini="efeito-editar" data-ef="' + esc(id) + '" title="Editar — remarcar quem entrou ou saiu da área">✎</button>' +
         '<button type="button" class="ga-ini-mini ga-ini-mini--x" data-ini="efeito-tirar" data-ef="' + esc(id) + '" title="Encerrar este efeito para todos">✕</button>' +
