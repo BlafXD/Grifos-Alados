@@ -995,12 +995,20 @@
   //  linha do Lobby. É a oficialização do registro: escolher a campanha, ou
   //  "sem campanha", ou "🔒 só na conta". A cor sai do estado (ver o CSS
   //  .fi-selcamp--*). Move pela mesma mão nos dois lugares (moverCampanhaFicha).
-  function selectCampanha(f, minhas, salaId) {
+  function selectCampanha(f, minhas, salaId, salaNome, souMembro) {
     const est = estadoCampanha(f, salaId);
     let ops = `<option value="__sem__"${est === 'sem' ? ' selected' : ''}>sem campanha</option>`;
     Object.keys(minhas || {}).forEach(cid => {
       ops += `<option value="${esc(cid)}"${f.mesa === cid && !f.contaSo ? ' selected' : ''}>${esc(minhas[cid] || cid)}</option>`;
     });
+    //  A mesa em que você está AGORA (conectado e membro) sempre aparece,
+    //  mesmo fora do seu índice pessoal. Sem isto, quem entrou por link
+    //  direto (`?sala=…`, que conecta mas não grava o índice) não achava a
+    //  própria mesa no seletor e não conseguia registrar a ficha nela —
+    //  mesmo sendo jogador e podendo escrever ali (era o caso da Liriel).
+    if (salaId && souMembro && salaId !== f.mesa && !(minhas || {})[salaId]) {
+      ops += `<option value="${esc(salaId)}">${esc(salaNome || salaId)}</option>`;
+    }
     //  Campanha que não está na sua lista (você saiu, ou é antiga): aparece
     //  assim mesmo, para a seleção não sumir.
     if (f.mesa && !f.contaSo && !(minhas || {})[f.mesa]) {
@@ -1029,7 +1037,7 @@
       <div class="fi-campanha fi-campanha--${est}">
         <span class="fi-campanha-selo" aria-hidden="true"></span>
         <span class="fi-campanha-rot">Campanha</span>
-        ${selectCampanha(f, minhas, s.id)}
+        ${selectCampanha(f, minhas, s.id, s.nome, s.souMembro)}
         <span class="fi-campanha-leg">${legenda}</span>
         ${diverge ? `<span class="fi-campanha-aviso">⚠ você está em «${esc(s.nome)}» — esta ficha não entra na lista dela até ser registrada aqui</span>` : ''}
       </div>`;
@@ -9169,7 +9177,7 @@
   //  A linha de uma ficha no Lobby. O seletor de campanha só aparece na
   //  ficha DESTE aparelho — é onde o `mesa` se edita; para as de fora, o
   //  caminho é "trazer" primeiro.
-  function lobbyLinha(it, minhas, salaId) {
+  function lobbyLinha(it, minhas, salaId, salaNome, souMembro) {
     const f = it.f;
     const onde = ondeMora(f.id);
     const retida = !!retidas[f.id];
@@ -9193,7 +9201,7 @@
 
     //  O MESMO seletor-selo do cartão — aqui vale para QUALQUER ficha, até a
     //  de fora (movida na cópia da conta, sem trazer — ver moverCampanhaFicha).
-    const mover = selectCampanha(f, minhas, salaId);
+    const mover = selectCampanha(f, minhas, salaId, salaNome, souMembro);
 
     const quando = f.editadoEm || f.atualizadoEm || 0;
     const meta = quando ? `<span class="fi-lobby-quando" title="Última vez mexida">${esc(tempoRelativo(quando))}</span>` : '';
@@ -9245,7 +9253,7 @@
         <div class="fi-lobby-grupo">
           <h4 class="fi-lobby-grupo-tit">${g.titulo} <span class="fi-lobby-cont">${g.itens.length}</span></h4>
           ${k === '__sem__' ? '<p class="fi-lobby-dica">Toda ficha nova nasce aqui. Escolha a campanha no seletor para o mestre dela poder ver a ficha.</p>' : ''}
-          ${g.itens.map(it => lobbyLinha(it, minhas, s.id)).join('')}
+          ${g.itens.map(it => lobbyLinha(it, minhas, s.id, s.nome, s.souMembro)).join('')}
         </div>`;
     }).join('');
 
