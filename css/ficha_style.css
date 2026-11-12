@@ -717,6 +717,15 @@
 .fi-combate--on .fi-cartao-tit { background: var(--carmim); border-bottom-color: var(--carmim); }
 .fi-combate--on .fi-combate-txt { color: var(--ink); margin-bottom: 0.5rem; }
 .fi-combate-btn--sair { margin-top: 0.2rem; }
+/* fora de combate (💀): discreto quando desligado, carmim quando ligado */
+.fi-morto-btn {
+  margin-top: 0.5rem; display: inline-block; cursor: pointer;
+  font-family: var(--ga-fonte-rotulo); font-size: 0.7rem; letter-spacing: 0.02em;
+  padding: 0.2rem 0.6rem; border-radius: 999px;
+  color: var(--text-dim); background: var(--parchment2); border: 1px solid var(--parchment3);
+}
+.fi-morto-btn:hover { color: var(--ink); background: var(--gold-pale); }
+.fi-morto-btn--on, .fi-morto-btn--on:hover { color: #fff; background: var(--carmim); border-color: var(--carmim); }
 
 /* ── PERÍCIAS ──────────────────────────────────────────────────── */
 .fi-per-lista {

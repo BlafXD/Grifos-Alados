@@ -555,6 +555,11 @@
     //  volta na sala conectada a cada salvamento (era o jeito de uma ficha
     //  "pegar" a campanha errada sozinha).
     f.contaSo = f.contaSo === true;
+    //  `morto` = fora de combate (12/11/2026, pedido dele): marcado NA
+    //  ficha, o personagem NÃO entra em novas montagens de iniciativa (ver
+    //  o montar() do iniciativa.js). É deliberado e reversível — tirar a
+    //  marca o traz de volta. Não mexe em PV nem em nada mais da ficha.
+    f.morto = f.morto === true;
 
     //  `atr` é a MESMA ideia da Defesa, perícia por perícia: a Tabela
     //  2-1 (p. 115) diz o atributo-chave de cada uma, e é esse que vale
@@ -2378,6 +2383,11 @@
   //  sair, que restaura e pergunta antes.
   function blocoCombate(f) {
     const on = f.combate && f.combate.ativo;
+    //  Fora de combate (morto/inconsciente): não entra em novas iniciativas.
+    const morto = `
+      <button type="button" class="fi-morto-btn${f.morto ? ' fi-morto-btn--on' : ''}" data-acao="morto-toggle"
+        title="Fora de combate (morto/inconsciente): o personagem não entra em novas montagens de iniciativa. Clique de novo para voltar.">
+        ${f.morto ? '💀 Fora de combate — fora das próximas iniciativas' : '💀 Marcar fora de combate'}</button>`;
     if (on) {
       return `
         <div class="fi-cartao fi-combate fi-combate--on">
@@ -2387,6 +2397,7 @@
             valores voltam ao que eram; o <strong>PV e o PM</strong> que você gastou continuam gastos.</p>
           <button type="button" class="fi-add fi-combate-btn fi-combate-btn--sair" data-acao="combate-sair">
             ⏹ Sair do combate e restaurar</button>
+          ${morto}
         </div>`;
     }
     return `
@@ -2397,6 +2408,7 @@
             defesa e deslocamento à vontade. Ao sair, tudo isso volta ao <em>valor real</em> — só o PV e o PM
             gastos é que ficam.</p>
         </div>
+        ${morto}
       </div>`;
   }
 
@@ -8584,6 +8596,12 @@
       ['atributos', 'defesa', 'pericias', 'oficios', 'deslocamento', 'deslocMods',
        'cdMagiaOutros', 'cdHabOutros', 'combate'].forEach(g => sujar(f.id, g));
       salvar(); return render();
+    }
+    //  Fora de combate (morto/inconsciente): só liga/desliga o `morto`; o
+    //  iniciativa.js é quem o deixa de fora das novas montagens.
+    if (acao === 'morto-toggle') {
+      f.morto = !f.morto;
+      sujar(f.id, 'morto'); salvar(); return render();
     }
     //  Abre/fecha o card de uma distinção inteira (padrão: fechado).
     if (acao === 'dobra-distgrp') {

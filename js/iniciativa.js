@@ -340,13 +340,16 @@
         // do PERSONAGEM e amarrada a ela — é o que traz o PV para o lado
         // do nome, e o que tira da lista de combate o nome da conta.
         const f = fichaDoMembro(uid, fichas);
-        // O MESTRE E O AUXILIAR NÃO ENTRAM na iniciativa por conta própria
-        // (12/11/2026): eles narram e controlam as criaturas, não são
-        // personagens. Antes, a conta do mestre ("Caique Harmatiuk
-        // Bodnar") virava uma linha de combatente. Só entram se tiverem um
-        // PERSONAGEM (uma ficha) nesta mesa — aí entram pelo nome dele.
-        if ((m.papel === 'mestre' || m.papel === 'auxiliar') && !f) return;
-        jogador((f && f.nome) || m.nome || 'jogador', uid, f);
+        // SÓ ENTRA QUEM TEM PERSONAGEM (ficha) NESTA CAMPANHA (12/11/2026).
+        // Antes, qualquer membro virava uma linha pelo nome da CONTA — a do
+        // mestre ("Caique Harmatiuk Bodnar"), e a de jogadores sem ficha
+        // vinculada aqui (Tekony, Pe H). A iniciativa é de personagens, não
+        // de contas: sem ficha na mesa, não entra. (Quem faltou mesmo assim,
+        // o mestre acrescenta pelo nome no campo ＋.)
+        // O morto (fora de combate, marcado NA FICHA) também não entra nas
+        // próximas montagens — ele volta tirando a marca na ficha.
+        if (!f || f.morto) return;
+        jogador(f.nome, uid, f);
       });
     }
     // um nome por vez: o forEach entrega o índice no segundo argumento,
