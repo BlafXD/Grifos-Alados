@@ -194,14 +194,24 @@
   function emOrdem() {
     return Object.keys(linhas)
       .map(id => Object.assign({ id: id }, linhas[id]))
-      .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+      //  Os "fora de combate" (💀) afundam para o fim da lista, mantendo
+      //  a ordem entre si — saem da briga sem sumir (dá para reviver).
+      .sort((a, b) => ((a.morto ? 1 : 0) - (b.morto ? 1 : 0)) || ((a.ordem || 0) - (b.ordem || 0)));
   }
   function quantas() { return Object.keys(linhas).length; }
   function idSeguinte() {
     const lista = emOrdem();
     if (!lista.length) return null;
     const i = lista.findIndex(l => l.id === atual);
-    return { proximo: lista[(i + 1) % lista.length].id, virou: i >= 0 && i === lista.length - 1 };
+    //  O turno PULA quem está fora de combate (💀): procura o próximo VIVO,
+    //  dando a volta. Se ninguém mais está vivo, não há a quem passar.
+    for (let k = 1; k <= lista.length; k++) {
+      const cand = lista[(i + k) % lista.length];
+      if (cand && !cand.morto) {
+        return { proximo: cand.id, virou: i >= 0 && (i + k) >= lista.length };
+      }
+    }
+    return null;
   }
 
   //  RODADAS AUTOMÁTICAS: quando o turno chega numa linha ligada a uma ficha
@@ -330,6 +340,12 @@
         // do PERSONAGEM e amarrada a ela — é o que traz o PV para o lado
         // do nome, e o que tira da lista de combate o nome da conta.
         const f = fichaDoMembro(uid, fichas);
+        // O MESTRE E O AUXILIAR NÃO ENTRAM na iniciativa por conta própria
+        // (12/11/2026): eles narram e controlam as criaturas, não são
+        // personagens. Antes, a conta do mestre ("Caique Harmatiuk
+        // Bodnar") virava uma linha de combatente. Só entram se tiverem um
+        // PERSONAGEM (uma ficha) nesta mesa — aí entram pelo nome dele.
+        if ((m.papel === 'mestre' || m.papel === 'auxiliar') && !f) return;
         jogador((f && f.nome) || m.nome || 'jogador', uid, f);
       });
     }
@@ -612,6 +628,10 @@
     if (acao === 'limpar')  return limpar();
     if (acao === 'sobe')    return mover(id, -1);
     if (acao === 'desce')   return mover(id, 1);
+    if (acao === 'morto') {
+      const al = linhas[id]; if (!al) return;
+      return gravar({ ['linhas/' + id + '/morto']: !al.morto });
+    }
     if (acao === 'tira')    return remover(id);
     if (acao === 'ordena')  return reordenar();
     if (acao === 'add')     return acrescentarDoCampo();
@@ -683,11 +703,14 @@
       '<span class="ga-ini-ctrl">' +
         '<button type="button" class="ga-ini-mini" data-ini="sobe" data-id="' + esc(l.id) + '" title="Subir">↑</button>' +
         '<button type="button" class="ga-ini-mini" data-ini="desce" data-id="' + esc(l.id) + '" title="Descer">↓</button>' +
+        '<button type="button" class="ga-ini-mini ga-ini-mini--morto' + (l.morto ? ' ga-ini-mini--on' : '') +
+          '" data-ini="morto" data-id="' + esc(l.id) + '" title="' +
+          (l.morto ? 'Reviver — volta para a ordem do combate' : 'Fora de combate (morto/inconsciente) — sai da ordem, o turno pula') + '">💀</button>' +
         '<button type="button" class="ga-ini-mini ga-ini-mini--x" data-ini="tira" data-id="' + esc(l.id) + '" title="Tirar da lista">✕</button>' +
       '</span>'
       : '';
     return '<li class="ga-ini-linha' + (eu ? ' ga-ini-linha--vez' : '') +
-        (proximo ? ' ga-ini-linha--proximo' : '') + '">' +
+        (proximo ? ' ga-ini-linha--proximo' : '') + (l.morto ? ' ga-ini-linha--morto' : '') + '">' +
       '<span class="ga-ini-pos">' + (i + 1) + '</span>' +
       '<button type="button" class="ga-ini-nome" data-ini="' + (mando() ? 'vez' : '') + '" data-id="' + esc(l.id) + '"' +
         (mando() ? ' title="Dar a vez a esta linha"' : ' disabled') + '>' +

@@ -154,6 +154,11 @@
 .ga-ini-linha--vez .ga-ini-pos { color: var(--gold-deep); }
 /* quem joga logo depois: um traço discreto, para ir pegando os dados */
 .ga-ini-linha--proximo { box-shadow: inset 3px 0 0 var(--parchment3); }
+/* fora de combate (💀): recuado, riscado — está lá, mas fora da briga */
+.ga-ini-linha--morto { opacity: 0.5; }
+.ga-ini-linha--morto .ga-ini-txt { text-decoration: line-through; }
+.ga-ini-mini--morto.ga-ini-mini--on { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
+.ga-ini-mini--morto:hover { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
 .ga-ini-seguir {
   margin: 0;
   padding: 0 0.6rem 0.4rem;
