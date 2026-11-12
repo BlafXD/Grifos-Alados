@@ -159,6 +159,13 @@
 .ga-ini-linha--morto .ga-ini-txt { text-decoration: line-through; }
 .ga-ini-mini--morto.ga-ini-mini--on { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
 .ga-ini-mini--morto:hover { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
+/* arrastar para reordenar: o pegador ⠿ ocupa a coluna da posição (só o mestre) */
+.ga-ini-grip { cursor: grab; user-select: none; color: var(--text-dim); font-size: 0.85rem; line-height: 1; }
+.ga-ini-grip:hover { color: var(--gold-deep); }
+.ga-ini-grip:active { cursor: grabbing; }
+.ga-ini-linha--arrastando { opacity: 0.4; }
+.ga-ini-drop-antes  { box-shadow: inset 0 3px 0 var(--gold-deep); }
+.ga-ini-drop-depois { box-shadow: inset 0 -3px 0 var(--gold-deep); }
 .ga-ini-seguir {
   margin: 0;
   padding: 0 0.6rem 0.4rem;

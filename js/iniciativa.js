@@ -410,6 +410,7 @@
     ordenada.forEach((l, i) => {
       const id = l.id || ('l' + Date.now().toString(36) + i.toString(36));
       const linha = { nome: String(l.nome || ''), tipo: l.tipo === 'jogador' ? 'jogador' : 'criatura', ordem: i };
+      if (l.morto) linha.morto = true;    // a marca "fora de combate" sobrevive a montar/ordenar/adicionar
       // De quem é a linha e qual ficha ela puxa. É público, como o resto
       // da lista — e não abre nada: quem lê a FICHA continua sendo só o
       // dono dela e o mestre, pela regra do banco.
@@ -436,7 +437,7 @@
   // A lista de agora, no formato que o gravarLista come.
   function listaAtual() {
     return emOrdem().map(l => ({
-      id: l.id, nome: l.nome, tipo: l.tipo,
+      id: l.id, nome: l.nome, tipo: l.tipo, morto: !!l.morto,
       uid: l.uid || '', fichaId: l.fichaId || '',
       valor: (valores[l.id] && valores[l.id].valor != null) ? valores[l.id].valor : null,
       mod: (valores[l.id] && valores[l.id].mod) || 0,
@@ -477,6 +478,69 @@
       .catch(e => console.warn('[iniciativa] não deu para mudar o valor:', e && e.message));
   }
   function reordenar() { gravarLista(listaAtual(), true); }
+
+  //  ── ARRASTAR PARA REORDENAR (12/11/2026) ───────────────────────
+  //  Pedido dele ("fica apertando botão... demora muito"). Mexe no `ordem`
+  //  de cada linha DIRETO (como o mover das setas), nunca pelo gravarLista
+  //  — que reordenaria tudo por VALOR e desfaria o arrasto. As setas ↑ ↓
+  //  continuam, para o toque (o arrasto HTML5 é do mouse) e a precisão.
+  let arrastandoId = '';
+  function reordenarArrastando(draggedId, targetId, depois) {
+    if (!mando() || !draggedId || !targetId || draggedId === targetId) return;
+    const lista = emOrdem();
+    const from = lista.findIndex(l => l.id === draggedId);
+    if (from < 0) return;
+    const item = lista.splice(from, 1)[0];
+    let to = lista.findIndex(l => l.id === targetId);
+    if (to < 0) to = lista.length - 1;
+    lista.splice(depois ? to + 1 : to, 0, item);
+    const patch = {};
+    lista.forEach((l, i) => { patch['linhas/' + l.id + '/ordem'] = i; });
+    gravar(patch);
+  }
+  function limparIndicadores() {
+    if (!painel) return;
+    painel.querySelectorAll('.ga-ini-drop-antes, .ga-ini-drop-depois')
+      .forEach(el => el.classList.remove('ga-ini-drop-antes', 'ga-ini-drop-depois'));
+  }
+  function limpezaArrasto() {
+    limparIndicadores();
+    if (painel) painel.querySelectorAll('.ga-ini-linha--arrastando')
+      .forEach(el => el.classList.remove('ga-ini-linha--arrastando'));
+    arrastandoId = '';
+  }
+  function aoArrastarInicio(e) {
+    const grip = e.target.closest('.ga-ini-grip');
+    if (!grip || !mando()) return;
+    const li = grip.closest('.ga-ini-linha');
+    if (!li || !li.dataset.linhaId) return;
+    arrastandoId = li.dataset.linhaId;
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', arrastandoId); } catch (err) {}
+    try { e.dataTransfer.setDragImage(li, 12, 12); } catch (err) {}
+    li.classList.add('ga-ini-linha--arrastando');
+  }
+  function aoArrastarSobre(e) {
+    if (!arrastandoId || !painel) return;
+    const li = e.target.closest('.ga-ini-linha');
+    if (!li || !painel.contains(li)) return;
+    e.preventDefault();                       // sem isto o "soltar" não dispara
+    e.dataTransfer.dropEffect = 'move';
+    limparIndicadores();
+    if (li.dataset.linhaId === arrastandoId) return;
+    const r = li.getBoundingClientRect();
+    li.classList.add((e.clientY - r.top) > r.height / 2 ? 'ga-ini-drop-depois' : 'ga-ini-drop-antes');
+  }
+  function aoSoltar(e) {
+    if (!arrastandoId || !painel) return;
+    const li = e.target.closest('.ga-ini-linha');
+    e.preventDefault();
+    if (li && li.dataset.linhaId && li.dataset.linhaId !== arrastandoId) {
+      const r = li.getBoundingClientRect();
+      reordenarArrastando(arrastandoId, li.dataset.linhaId, (e.clientY - r.top) > r.height / 2);
+    }
+    limpezaArrasto();
+  }
 
   function remover(id) {
     if (!mando()) return;
@@ -569,6 +633,12 @@
         acrescentarDoCampo();
       }
     });
+    // arrastar para reordenar (só o mestre tem o pegador ⠿)
+    painel.addEventListener('dragstart', aoArrastarInicio);
+    painel.addEventListener('dragover', aoArrastarSobre);
+    painel.addEventListener('drop', aoSoltar);
+    painel.addEventListener('dragend', limpezaArrasto);
+    painel.addEventListener('dragleave', e => { if (e.target === painel) limparIndicadores(); });
     return painel;
   }
   function valorDe(id) { const el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; }
@@ -710,8 +780,11 @@
       '</span>'
       : '';
     return '<li class="ga-ini-linha' + (eu ? ' ga-ini-linha--vez' : '') +
-        (proximo ? ' ga-ini-linha--proximo' : '') + (l.morto ? ' ga-ini-linha--morto' : '') + '">' +
-      '<span class="ga-ini-pos">' + (i + 1) + '</span>' +
+        (proximo ? ' ga-ini-linha--proximo' : '') + (l.morto ? ' ga-ini-linha--morto' : '') +
+        '" data-linha-id="' + esc(l.id) + '">' +
+      (mando()
+        ? '<span class="ga-ini-pos ga-ini-grip" draggable="true" title="Arraste para reordenar — ou use ↑ ↓">⠿</span>'
+        : '<span class="ga-ini-pos">' + (i + 1) + '</span>') +
       '<button type="button" class="ga-ini-nome" data-ini="' + (mando() ? 'vez' : '') + '" data-id="' + esc(l.id) + '"' +
         (mando() ? ' title="Dar a vez a esta linha"' : ' disabled') + '>' +
         '<span class="ga-ini-ico" aria-hidden="true">' + icone + '</span>' +
