@@ -4145,6 +4145,12 @@
   padding: 0 0.35rem;
   border-radius: 2rem;
 }
+/* o −X curto ao lado do nome: o efeito mecânico no relance (resumo; o texto
+   inteiro do livro fica na nuvem). A ficha mostra, não aplica. */
+.fi-cond-efeito {
+  font-size: 0.8rem;
+  color: var(--text-mid);
+}
 /* a nuvem com o texto do livro: aparece no mouse E no foco do teclado */
 .fi-cond-nuvem {
   position: absolute;
@@ -4568,6 +4574,27 @@
 }
 .fi-ea--inimigo .fi-ea-rel { color: var(--carmim); }
 .fi-ea-topo .fi-mini--x { margin-left: 0.2rem; }
+/* ⚡ puxar o efeito de área para o painel «O que está me afetando agora» */
+.fi-ea-puxar {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rust);
+  background: none;
+  cursor: pointer;
+  border: 1px solid var(--parchment3);
+  border-radius: 999px;
+  padding: 0.12rem 0.5rem;
+}
+.fi-ea-puxar:hover { border-color: var(--rust); background: var(--gold-pale); }
+.fi-ea-nopainel {
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
 .fi-ea-txt { margin: 0.25rem 0 0; font-size: 0.95rem; line-height: 1.45; color: var(--text-mid); }
 .fi-ea-txt--vazio { font-style: italic; color: var(--text-dim); }
 .fi-ea-dur { margin: 0.2rem 0 0; font-size: 0.85rem; color: var(--text-dim); }

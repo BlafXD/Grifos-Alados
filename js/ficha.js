@@ -277,6 +277,9 @@
       duracao: EFEITO_DURACOES.some(d => d.v === (x && x.duracao)) ? x.duracao : 'cena',
       somar: (x && x.somar) === true,                                   // padrão: só lembrete
       ativo: (x && x.ativo) !== false,                                  // padrão: ligado
+      // quando este efeito foi PUXADO de um efeito em área do mestre
+      // (🔆), guarda o id dele — para não duplicar o "⚡ Somar no painel".
+      deArea: String((x && x.deArea) || ''),
     }));
     // PV e PM: `atual` null quer dizer "cheio" (a ficha nova não precisa
     // saber o máximo antes de ter classe). `temp` é a regra da p. 105 —
@@ -3220,8 +3223,54 @@
     return (f.condicoes || []).map(k => ({ chave: k, c: acharCond(k) })).filter(x => x.c);
   }
 
+  // ── O −X DE CADA CONDIÇÃO (12/11/2026, pedido dele) ──────────────
+  //  Um resumo CURTO do efeito mecânico, para o jogador ver no relance o
+  //  que a condição faz, sem abrir o tooltip. É um RESUMO (do texto do
+  //  livro, que continua inteiro na nuvem), não a transcrição — por isso
+  //  mora aqui, e não altera a base conferida em condicoes-data.js. A
+  //  ficha MOSTRA, não aplica ([[nada-sintetico-na-ficha]]): quem decide
+  //  os −2/−5 (que não se somam entre condições de mesmo efeito) é a mesa.
+  const EFEITO_CURTO_COND = {
+    'Abalado': '−2 em perícias',
+    'Agarrado': 'desprevenido, imóvel, −2 em ataque',
+    'Alquebrado': '+1 PM no custo das habilidades',
+    'Apavorado': '−5 em perícias; foge da fonte',
+    'Atordoado': 'desprevenido; sem ações',
+    'Caído': '−5 Defesa corpo a corpo, +5 à distância; −5 ataque corpo a corpo; desloc. 1,5m',
+    'Cego': 'desprevenido, lento; −5 em perícias de Força/Destreza',
+    'Confuso': 'age ao acaso (1d6 por turno)',
+    'Debilitado': '−5 em Força, Destreza e Constituição',
+    'Desprevenido': '−5 na Defesa e em Reflexos',
+    'Doente': 'sob efeito de uma doença',
+    'Em Chamas': '1d6 de dano de fogo por turno',
+    'Enfeitiçado': 'prestativo à fonte; ela recebe +10 em Diplomacia',
+    'Enjoado': 'só uma ação (padrão ou movimento) por rodada',
+    'Enredado': 'lento, vulnerável, −2 em ataque',
+    'Envenenado': 'varia com o veneno (perda de vida ou condição)',
+    'Esmorecido': '−5 em Inteligência, Sabedoria e Carisma',
+    'Exausto': 'debilitado, lento e vulnerável',
+    'Fascinado': '−5 em Percepção; sem ações exceto observar',
+    'Fatigado': 'fraco e vulnerável',
+    'Fraco': '−2 em Força, Destreza e Constituição',
+    'Frustrado': '−2 em Inteligência, Sabedoria e Carisma',
+    'Imóvel': 'deslocamento 0m',
+    'Inconsciente': 'indefeso; sem ações',
+    'Indefeso': 'desprevenido; −10 na Defesa; falha em Reflexos',
+    'Lento': 'deslocamento pela metade; sem corrida nem investida',
+    'Ofuscado': '−2 em ataque e em Percepção',
+    'Paralisado': 'imóvel e indefeso; só ações mentais',
+    'Pasmo': 'sem ações',
+    'Petrificado': 'inconsciente; redução de dano 8',
+    'Sangrando': 'Constituição CD 15 no turno, ou perde 1d6 PV',
+    'Sobrecarregado': 'penalidade de armadura −5; desloc. −3m',
+    'Surdo': '−5 em Iniciativa; não ouve; ruim para lançar magias',
+    'Surpreendido': 'desprevenido; sem ações',
+    'Vulnerável': '−2 na Defesa',
+  };
+
   function etiquetaCond(x, i) {
     const t = tipoCond(x.c);
+    const efeito = EFEITO_CURTO_COND[x.c.nome] || '';
     //  A etiqueta inteira recebe foco (tabindex="0"): é o que faz a
     //  nuvem abrir no TOQUE e no teclado, não só no mouse — sem isso,
     //  no celular o único jeito de chegar ao texto seria tocar no ✕.
@@ -3231,6 +3280,7 @@
             tabindex="0" aria-describedby="${id}">
         <span class="fi-cond-nome">${esc(x.c.nome)}</span>
         ${t ? `<span class="fi-cond-tipo">${esc(t.nome)}</span>` : ''}
+        ${efeito ? `<span class="fi-cond-efeito">${esc(efeito)}</span>` : ''}
         <button type="button" class="fi-mini fi-mini--x" data-acao="tira-condicao" data-i="${i}"
                 title="Tirar ${esc(x.c.nome)}">✕</button>
         <span class="fi-cond-nuvem" role="tooltip" id="${id}">
@@ -3894,6 +3944,25 @@
     return (window.GA_EfeitosArea && window.GA_EfeitosArea.paraFicha)
       ? window.GA_EfeitosArea.paraFicha(f) : [];
   }
+  //  Ao PUXAR um efeito de área para o ⚡ painel: um palpite do valor, lido
+  //  do texto do livro ("−3 em perícias", "+2 Defesa"). Só o primeiro
+  //  número com sinal; 0 quando não há um claro — o jogador corrige.
+  function valorDoTextoDeArea(txt) {
+    const m = String(txt || '').match(/[−–+\-]\s?\d+/);  // aceita o traço tipográfico e o en-dash
+    if (!m) return 0;
+    const n = parseInt(m[0].replace(/[−–]/, '-').replace(/\s/g, ''), 10);
+    return isFinite(n) ? n : 0;
+  }
+  //  A duração em texto ("5 rodadas", "sustentada", "1 dia") vira um balde
+  //  do painel; na dúvida, cena — o padrão do livro (p. 228).
+  function duracaoDeArea(txt) {
+    const s = semAcento(String(txt || '').toLowerCase());
+    if (/rodada/.test(s)) return 'rodadas';
+    if (/\bdia/.test(s)) return 'dia';
+    if (/permanente/.test(s)) return 'permanente';
+    if (/sustentad/.test(s)) return 'outro';
+    return 'cena';
+  }
   function blocoEfeitosArea(f) {
     const lista = efeitosDaFicha(f);
     const s = salaAtual();
@@ -3903,12 +3972,17 @@
     const cards = lista.map(e => {
       const inimigo = e.rel === 'inimigo';
       const podeTirar = e.souAutor || souMestre;
+      const jaNoPainel = (f.efeitosEmJogo || []).some(x => x.deArea === e.id);
       return `
         <li class="fi-ea${inimigo ? ' fi-ea--inimigo' : ''}">
           <div class="fi-ea-topo">
             <span class="fi-ea-nome">🔆 ${esc(e.nome)}</span>
             ${e.de ? `<span class="fi-ea-de">de ${esc(e.de)}</span>` : ''}
             <span class="fi-ea-rel">${inimigo ? '⚔ contra você' : '🛡 em você'}</span>
+            ${jaNoPainel
+              ? `<span class="fi-ea-nopainel" title="Já está no seu ⚡ painel «O que está me afetando agora» — ajuste o valor e o ∑ por lá">⚡ no painel</span>`
+              : `<button type="button" class="fi-mini fi-ea-puxar" data-acao="efeito-puxar" data-id="${esc(e.id)}"
+                      title="Trazer para o ⚡ painel «O que está me afetando agora»: lá você escreve de quanto é e liga o ∑ para somar no total (até lá, é só lembrete)">⚡ Somar no painel</button>`}
             ${podeTirar ? `<button type="button" class="fi-mini fi-mini--x" data-acao="efeito-remover" data-id="${esc(e.id)}"
                     title="Encerrar este efeito para todos">✕</button>` : ''}
           </div>
@@ -9018,6 +9092,30 @@
     if (acao === 'efeito-remover') {
       if (window.GA_EfeitosArea) window.GA_EfeitosArea.remover(btn.dataset.id);
       return;   // o aoMudar do módulo redesenha quando o banco confirmar
+    }
+    //  ⚡ PUXAR um efeito de área (🔆, do mestre) para o painel «O que está
+    //  me afetando agora». Nasce como LEMBRETE (somar:false) — a ficha
+    //  mostra, não aplica; o jogador escreve de quanto é e liga o ∑. Guarda
+    //  o `deArea` para o card do mestre virar "⚡ no painel" e não duplicar.
+    if (acao === 'efeito-puxar') {
+      if (!f || !Array.isArray(f.efeitosEmJogo)) return;
+      const e = efeitosDaFicha(f).find(x => x.id === btn.dataset.id);
+      if (!e) return;
+      if (f.efeitosEmJogo.some(x => x.deArea === e.id)) return;   // já puxado
+      f.efeitosEmJogo.push({
+        id: novoId(),
+        fonte: e.nome + (e.de ? ' (' + e.de + ')' : ''),
+        valor: valorDoTextoDeArea(e.texto),
+        alcance: 'tudo',
+        pericia: '',
+        duracao: duracaoDeArea(e.duracao),
+        somar: false,            // opt-in: só lembrete até o jogador ligar o ∑
+        ativo: true,
+        deArea: e.id,
+      });
+      sujar(f.id, 'efeitosEmJogo'); salvar();
+      focarEfeitoNovo = true;    // leva o olho ao novo efeito e abre o cursor na fonte
+      return render();
     }
   }
 
