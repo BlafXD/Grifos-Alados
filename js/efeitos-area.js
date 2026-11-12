@@ -192,6 +192,32 @@
     return saida.sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
   }
 
+  //  Como o paraFicha, mas casando por NOME — para a CRIATURA, que não tem
+  //  ficha para ler. As criaturas de uma cena têm nome único, e a iniciativa
+  //  usa o mesmo nome, então o alvo marcado bate com o nome do card.
+  function paraNome(nome) {
+    if (!nome) return [];
+    const alvo = semAcento(String(nome));
+    const saida = [];
+    Object.keys(efeitos).forEach(id => {
+      const ef = efeitos[id];
+      if (!ef || !ef.alvos) return;
+      let rel = '';
+      Object.keys(ef.alvos).forEach(k => {
+        const a = ef.alvos[k];
+        if (a && a.rel && a.nome && semAcento(String(a.nome)) === alvo) rel = a.rel;
+      });
+      if (!rel) return;
+      saida.push({
+        id: id, nome: ef.nome || 'efeito', de: ef.de || '', rel: rel,
+        texto: rel === 'inimigo' ? (ef.contrario || '') : (ef.bonus || ''),
+        duracao: ef.duracao || '', porTurno: ef.porTurno || '', porTurnoTipo: ef.porTurnoTipo || '',
+        criadoEm: ef.criadoEm || 0,
+      });
+    });
+    return saida.sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
+  }
+
   // ── O SELETOR / A OFICINA (o modal de criar) ─────────────────────
   function combatentes() {
     try { return (window.GA_Iniciativa && window.GA_Iniciativa.combatentes) ? window.GA_Iniciativa.combatentes() : []; }
@@ -445,6 +471,7 @@
     abrirCriar: abrirCriar,
     remover: remover,
     paraFicha: paraFicha,
+    paraNome: paraNome,
     ativos: function () { return Object.assign({}, efeitos); },
     aoMudar: function (fn) { if (typeof fn === 'function') ouvintes.push(fn); },
   };

@@ -1862,6 +1862,36 @@
       </div>`;
   }
 
+  // ── BARRA DE EFEITOS EM ÁREA (os do mestre, casados por NOME) ────
+  //  A criatura não tem ficha para ler o `paraFicha`; aqui ela mostra os
+  //  efeitos em área que a miram (12/11/2026, pedido dele). Só leitura — o
+  //  mestre liga/desliga e remarca os alvos no painel da Iniciativa (✎).
+  function construirBarraEfeitos(cr) {
+    if (!cr || !window.GA_EfeitosArea || !window.GA_EfeitosArea.paraNome) return '';
+    const efs = window.GA_EfeitosArea.paraNome(cr.nome) || [];
+    if (!efs.length) return '';
+    const chips = efs.map(e => {
+      const inimigo = e.rel === 'inimigo';
+      const desc = (inimigo ? '⚔ contra ' : '🛡 em ') + (cr.nome || 'esta criatura') +
+        (e.texto ? ': ' + e.texto : '') + (e.de ? ' · de ' + e.de : '') +
+        (e.porTurno ? ' · ' + (e.porTurnoTipo === 'cura' ? '💚 cura ' : '💥 dano ') + e.porTurno + ' por turno' : '') +
+        (e.duracao ? ' · ⏱ ' + e.duracao : '');
+      return `
+        <span class="mz-cond-chip mz-cond-chip--simples" style="--cor:${inimigo ? '#8a1c1c' : '#1f5c8a'}">
+          <span class="mz-cond-nome">🔆 ${esc(e.nome)}${e.texto ? ' <small>(' + esc(e.texto) + ')</small>' : ''}</span>
+          <span class="mz-cond-tip">
+            <span class="mz-cond-tip-topo"><strong>🔆 ${esc(e.nome)}</strong></span>
+            <span class="mz-cond-tip-desc">${esc(desc)}</span>
+          </span>
+        </span>`;
+    }).join('');
+    return `
+      <div class="mz-condicoes mz-condicoes--sub">
+        <span class="mz-cond-titulo">🔆 Efeitos em área</span>
+        <div class="mz-cond-lista">${chips}</div>
+      </div>`;
+  }
+
   // ── CHIP GENÉRICO (tipo de criatura e habilidades gerais) ────────
   function _chipHtml(item, cor, acaoRem, ds) {
     return `
@@ -3443,6 +3473,8 @@
         <div class="mz-criatura-corpo">
 
           ${construirBarraCondicoes(cr, ds)}
+
+          ${construirBarraEfeitos(cr)}
 
           ${construirBarraMorte(cr, ds)}
 
@@ -7901,6 +7933,16 @@
     render();
     montarLateral();
     renderLog();
+
+    // os efeitos em área do mestre: quando mudam, redesenha os cards — cada
+    // criatura mostra os efeitos que a miram (casados por nome). O guarda do
+    // foco evita arrancar o cursor de uma caixa que o mestre está editando.
+    if (window.GA_EfeitosArea && window.GA_EfeitosArea.aoMudar) {
+      window.GA_EfeitosArea.aoMudar(function () {
+        if (secao.contains(document.activeElement)) return;
+        render();
+      });
+    }
 
     // ouvintes na seção inteira — cobrem o conteúdo, o log E o chat
     secao.addEventListener('click',     aoClicar);

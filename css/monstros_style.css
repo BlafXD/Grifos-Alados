@@ -1503,6 +1503,8 @@
 }
 .mz-cond-chip--simples { padding-top: 0.32rem; padding-bottom: 0.32rem; }
 .mz-cond-chip--simples .mz-cond-nome { font-size: 0.92rem; }
+/* o "(+5 em perícias…)" dentro do chip de efeito em área, mais discreto */
+.mz-cond-nome small { font-size: 0.8em; opacity: 0.8; font-weight: 400; }
 
 /* ═══ MODAL "⧉ DUPLICAR / MOVER FICHA" ════════════════════════════ */
 /* Reaproveita o corpo do modal de condições; só acrescenta o seletor
