@@ -197,23 +197,41 @@
     try { return (window.GA_Iniciativa && window.GA_Iniciativa.combatentes) ? window.GA_Iniciativa.combatentes() : []; }
     catch (e) { return []; }
   }
-  //  `f` é a ficha de quem está lançando (opcional): dá o nome do
-  //  personagem para o "de", e marca ele como aliado por padrão.
-  function abrirCriar(f) {
+  //  Casa um alvo SALVO de um efeito ao combatente de AGORA (por ficha,
+  //  uid ou nome) — os ids da iniciativa mudam quando o combate é remontado.
+  function relDoAlvoSalvo(c, orig) {
+    const alvos = (orig && orig.alvos) || {};
+    if (alvos[c.id] && alvos[c.id].rel) return alvos[c.id].rel;
+    for (const k in alvos) {
+      const a = alvos[k];
+      if (!a || !a.rel) continue;
+      if (c.fichaId && a.fichaId && c.fichaId === a.fichaId) return a.rel;
+      if (c.uid && a.uid && c.uid === a.uid) return a.rel;
+      if (c.nome && semAcento(c.nome) === semAcento(a.nome || '')) return a.rel;
+    }
+    return 'fora';
+  }
+  //  `f` = ficha de quem lança (opcional). `efeitoId` REABRE um efeito já
+  //  ativo para editar — inclusive remarcar quem entrou/saiu da área (#2).
+  function abrirCriar(f, efeitoId) {
     if (!window.GA_abrirModal) return;
+    const orig = (efeitoId && efeitos[efeitoId]) ? efeitos[efeitoId] : null;
+    const editando = !!orig;
     const lista = combatentes();
-    const deInicial = (f && f.nome) || meuNome() || 'alguém';
+    const deInicial = (orig && orig.de) || (f && f.nome) || meuNome() || 'alguém';
+    const onIf = (c) => c ? ' ea-on' : '';
 
     const linhasAlvos = lista.length ? lista.map(c => {
-      const meu = f && ((c.fichaId && c.fichaId === f.id) || (semAcento(c.nome) === semAcento(f.nome)));
+      const rel0 = editando ? relDoAlvoSalvo(c, orig)
+        : (f && ((c.fichaId && c.fichaId === f.id) || (semAcento(c.nome) === semAcento(f.nome))) ? 'aliado' : 'fora');
       return `
         <div class="ea-alvo" data-id="${esc(c.id)}" data-nome="${esc(c.nome)}"
              data-ficha="${esc(c.fichaId)}" data-uid="${esc(c.uid)}" data-tipo="${esc(c.tipo)}">
           <span class="ea-alvo-nome">${c.tipo === 'jogador' ? '🧑 ' : '👹 '}${esc(c.nome)}</span>
           <span class="ea-alvo-rel">
-            <button type="button" class="ea-rel ea-rel--fora ea-on" data-rel="fora">— fora</button>
-            <button type="button" class="ea-rel ea-rel--aliado${meu ? '' : ''}" data-rel="aliado">🛡 aliado</button>
-            <button type="button" class="ea-rel ea-rel--inimigo" data-rel="inimigo">⚔ inimigo</button>
+            <button type="button" class="ea-rel ea-rel--fora${onIf(rel0 === 'fora')}" data-rel="fora">— fora</button>
+            <button type="button" class="ea-rel ea-rel--aliado${onIf(rel0 === 'aliado')}" data-rel="aliado">🛡 aliado</button>
+            <button type="button" class="ea-rel ea-rel--inimigo${onIf(rel0 === 'inimigo')}" data-rel="inimigo">⚔ inimigo</button>
           </span>
         </div>`;
     }).join('') : `<p class="ea-vazio">Nenhum combatente na lista de agora. Monte a iniciativa no
@@ -229,7 +247,7 @@
 
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
-        <span>🔆 Novo efeito em área</span>
+        <span>${editando ? '✎ Editar efeito em área' : '🔆 Novo efeito em área'}</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
       <div class="ea-form">
@@ -239,20 +257,36 @@
             <optgroup label="Efeitos">${opPreset(EFEITOS_PRONTOS, 0)}</optgroup>
             <optgroup label="Condições (Tormenta 20)">${opPreset(conds, EFEITOS_PRONTOS.length)}</optgroup>
           </select></label>
+        <div class="ea-campo ea-montar">
+          <span>🔧 Montar o efeito <em>(opcional — escolha o quanto e o que afeta; preenche os campos abaixo)</em></span>
+          <div class="ea-montar-linha">
+            <span class="ea-montar-val">
+              <button type="button" class="ea-mstep" data-mstep="-1" title="Diminuir">−</button>
+              <input type="number" id="eaMval" value="2" step="1" inputmode="numeric" aria-label="Valor do efeito">
+              <button type="button" class="ea-mstep" data-mstep="1" title="Aumentar">+</button>
+            </span>
+            <span class="ea-montar-chips">
+              <button type="button" class="ea-chip" data-alc="pericias">Perícias</button>
+              <button type="button" class="ea-chip" data-alc="ataquedano">Ataque e dano</button>
+              <button type="button" class="ea-chip" data-alc="defesa">Defesa</button>
+              <button type="button" class="ea-chip" data-alc="resist">Resistências</button>
+            </span>
+          </div>
+        </div>
         <label class="ea-campo"><span>Nome do efeito</span>
-          <input type="text" id="eaNome" value="${esc(f && f._efeitoNome || '')}" placeholder="Oração, Bênção, Consagrar…" autocomplete="off"></label>
+          <input type="text" id="eaNome" value="${esc(editando ? orig.nome : (f && f._efeitoNome || ''))}" placeholder="Oração, Bênção, Consagrar…" autocomplete="off"></label>
         <label class="ea-campo"><span>O que os aliados ganham</span>
-          <input type="text" id="eaBonus" value="${esc(f && f._efeitoBonus || '')}" placeholder="+1 em ataque, testes de perícia e resistência" autocomplete="off"></label>
+          <input type="text" id="eaBonus" value="${esc(editando ? (orig.bonus || '') : (f && f._efeitoBonus || ''))}" placeholder="+1 em ataque, testes de perícia e resistência" autocomplete="off"></label>
         <label class="ea-campo"><span>O que os inimigos sofrem <em>(opcional — o efeito contrário)</em></span>
-          <input type="text" id="eaContra" placeholder="−1 em ataque, testes e resistência" autocomplete="off"></label>
+          <input type="text" id="eaContra" value="${esc(editando ? (orig.contrario || '') : '')}" placeholder="−1 em ataque, testes e resistência" autocomplete="off"></label>
         <label class="ea-campo ea-campo--curto"><span>Duração <em>(opcional)</em></span>
-          <input type="text" id="eaDur" placeholder="cena, 5 rodadas, sustentada…" autocomplete="off"></label>
+          <input type="text" id="eaDur" value="${esc(editando ? (orig.duracao || '') : '')}" placeholder="cena, 5 rodadas, sustentada…" autocomplete="off"></label>
         <div class="ea-campo">
           <span>Cura ou dano por turno <em>(opcional — vira um 🎲 no aviso de início de turno de quem recebe)</em></span>
           <div class="ea-turno-linha">
-            <input type="text" id="eaPorTurno" placeholder="1d6" inputmode="text" autocomplete="off">
-            <button type="button" class="ea-rel ea-rel--cura" data-turno-tipo="cura" title="Cura por turno">💚 cura</button>
-            <button type="button" class="ea-rel ea-rel--dano" data-turno-tipo="dano" title="Dano por turno">💥 dano</button>
+            <input type="text" id="eaPorTurno" value="${esc(editando ? (orig.porTurno || '') : '')}" placeholder="1d6" inputmode="text" autocomplete="off">
+            <button type="button" class="ea-rel ea-rel--cura${onIf(editando && orig.porTurnoTipo === 'cura')}" data-turno-tipo="cura" title="Cura por turno">💚 cura</button>
+            <button type="button" class="ea-rel ea-rel--dano${onIf(editando && orig.porTurnoTipo === 'dano')}" data-turno-tipo="dano" title="Dano por turno">💥 dano</button>
           </div>
         </div>
         <p class="ea-de">De <strong>${esc(deInicial)}</strong></p>
@@ -269,7 +303,7 @@
         <p class="ea-recado" id="eaRecado" hidden></p>
         <div class="ga-modal-acoes">
           <button type="button" class="ga-btn-sec" data-ga-fechar>Cancelar</button>
-          <button type="button" class="ga-btn-principal" id="eaCriar">🔆 Criar efeito</button>
+          <button type="button" class="ga-btn-principal" id="eaCriar">${editando ? '💾 Salvar alterações' : '🔆 Criar efeito'}</button>
         </div>
       </div>`);
 
@@ -325,6 +359,29 @@
       });
     });
 
+    // o COMPOSITOR 🔧: o valor (±) e os alcances montam os dois campos de
+    // texto (como o painel ⚡ "O que está me afetando agora" da ficha).
+    const ROT_ALC = { pericias: 'perícias', ataquedano: 'ataque e dano', defesa: 'Defesa', resist: 'testes de resistência' };
+    function recomporEfeito() {
+      const ons = Array.from(overlay.querySelectorAll('.ea-chip.ea-on')).map(c => c.dataset.alc);
+      if (!ons.length) return;
+      const v = parseInt(overlay.querySelector('#eaMval').value, 10) || 0;
+      const txt = ons.map(k => ROT_ALC[k]).filter(Boolean).join(', ');
+      const mag = Math.abs(v);
+      overlay.querySelector('#eaBonus').value = (v < 0 ? '−' : '+') + mag + ' em ' + txt;
+      overlay.querySelector('#eaContra').value = (v < 0 ? '+' : '−') + mag + ' em ' + txt;
+    }
+    overlay.querySelectorAll('.ea-chip').forEach(ch => ch.addEventListener('click', () => {
+      ch.classList.toggle('ea-on'); recomporEfeito();
+    }));
+    overlay.querySelectorAll('.ea-mstep').forEach(b => b.addEventListener('click', () => {
+      const inp = overlay.querySelector('#eaMval');
+      inp.value = (parseInt(inp.value, 10) || 0) + (parseInt(b.dataset.mstep, 10) || 0);
+      recomporEfeito();
+    }));
+    const mval = overlay.querySelector('#eaMval');
+    if (mval) mval.addEventListener('input', recomporEfeito);
+
     overlay.querySelector('#eaCriar').addEventListener('click', () => {
       const nome = (overlay.querySelector('#eaNome').value || '').trim();
       const bonus = (overlay.querySelector('#eaBonus').value || '').trim();
@@ -349,7 +406,7 @@
         try { window.GA_Dados.avaliar(porTurnoTxt); }
         catch (e) { recado.hidden = false; recado.textContent = 'Dado de cura/dano por turno inválido: ' + (e && e.message || porTurnoTxt); return; }
       }
-      const alvos = {};
+      let alvos = {};
       let algum = false;
       overlay.querySelectorAll('.ea-alvo').forEach(row => {
         const on = row.querySelector('.ea-rel.ea-on');
@@ -361,15 +418,20 @@
           fichaId: row.dataset.ficha || '', uid: row.dataset.uid || '',
         };
       });
+      // editando SEM combatentes na lista de agora: não há como remarcar, e
+      // reconstruir do vazio apagaria quem já estava na área — então preserva.
+      if (editando && !lista.length) { alvos = orig.alvos || {}; algum = Object.keys(alvos).length > 0; }
       if (!algum && lista.length) {
         recado.hidden = false; recado.textContent = 'Marque quem está na área (pelo menos um aliado ou inimigo).';
         return;
       }
-      const id = novoId();
+      const id = editando ? efeitoId : novoId();
       const efeito = {
         nome: nome, bonus: bonus, contrario: contra, duracao: dur,
         porTurno: porTurnoTxt, porTurnoTipo: turnoOn ? turnoOn.dataset.turnoTipo : '',
-        de: deInicial, autorUid: meuUid(), alvos: alvos, criadoEm: Date.now(),
+        de: editando ? (orig.de || deInicial) : deInicial,
+        autorUid: editando ? (orig.autorUid || meuUid()) : meuUid(),
+        alvos: alvos, criadoEm: editando ? (orig.criadoEm || Date.now()) : Date.now(),
       };
       gravar(id, efeito, err => {
         if (err) { recado.hidden = false; recado.textContent = err; return; }

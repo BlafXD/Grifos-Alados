@@ -4487,6 +4487,25 @@
 .ea-turno-linha input { max-width: 7rem; }
 .ea-rel.ea-on.ea-rel--cura { color: #fff; background: var(--verde); border-color: var(--verde); }
 .ea-rel.ea-on.ea-rel--dano { color: #fff; background: var(--carmim); border-color: var(--carmim); }
+/* O compositor 🔧: valor com ± e as pílulas de alcance (como os .ea-rel) */
+.ea-montar-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.ea-montar-val { display: inline-flex; align-items: center; gap: 0.2rem; }
+.ea-montar-val input { width: 3.2rem; text-align: center; }
+.ea-mstep {
+  width: 1.6rem; height: 1.6rem; line-height: 1; cursor: pointer;
+  color: var(--ink); background: var(--parchment2);
+  border: 1px solid var(--parchment3); border-radius: var(--raio); font-size: 1rem;
+}
+.ea-mstep:hover { background: var(--gold-pale); }
+.ea-montar-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.ea-chip {
+  font-family: var(--ga-fonte-rotulo); font-size: 0.66rem; letter-spacing: 0.02em;
+  padding: 0.18rem 0.5rem; cursor: pointer;
+  color: var(--text-dim); background: var(--parchment2);
+  border: 1px solid var(--parchment3); border-radius: 999px;
+}
+.ea-chip:hover { color: var(--ink); background: var(--gold-pale); }
+.ea-chip.ea-on { color: var(--faixa-tinta); background: var(--gold-dim); border-color: var(--gold-dim); }
 .ea-vazio { font-style: italic; color: var(--text-dim); font-size: 0.92rem; }
 .ea-recado { margin: 0; padding: 0.4rem 0.5rem; font-size: 0.9rem; color: var(--carmim); background: var(--parchment2); border: 1px solid var(--carmim); border-radius: var(--raio); }
 

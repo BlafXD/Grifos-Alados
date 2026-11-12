@@ -688,6 +688,14 @@
       if (window.GA_EfeitosArea && window.GA_EfeitosArea.abrirCriar) window.GA_EfeitosArea.abrirCriar();
       return;
     }
+    if (acao === 'efeito-editar') {
+      if (window.GA_EfeitosArea && window.GA_EfeitosArea.abrirCriar) window.GA_EfeitosArea.abrirCriar(null, btn.dataset.ef);
+      return;
+    }
+    if (acao === 'efeito-tirar') {
+      if (window.GA_EfeitosArea && window.GA_EfeitosArea.remover) window.GA_EfeitosArea.remover(btn.dataset.ef);
+      return;
+    }
     // o PV: abre a ficha daquela pessoa na aba do site. Vale para o
     // jogador também — a ficha dele é dele.
     if (acao === 'ficha') {
@@ -903,6 +911,7 @@
           '<input type="number" id="gaIniValor" placeholder="ini" inputmode="numeric">' +
           '<button type="button" class="ga-ini-btn" data-ini="add">＋</button>' +
         '</div>';
+        corpo += efeitosAtivosHtml();
         if (local()) {
           corpo += '<p class="ga-ini-nota">Esta lista está só nesta tela. Entre numa mesa (aba 🎲) para os jogadores verem a ordem.</p>';
         }
@@ -1012,8 +1021,39 @@
     });
   }
 
+  //  OS EFEITOS EM ÁREA ATIVOS, na mão do mestre durante o combate: cada um
+  //  com ✎ (reabre o modal para remarcar quem entrou/saiu da área) e ✕
+  //  (encerra para todos). Só o mestre vê — é ele quem dispara e gerencia.
+  function efeitosAtivosHtml() {
+    if (!mando() || !window.GA_EfeitosArea || !window.GA_EfeitosArea.ativos) return '';
+    const efs = window.GA_EfeitosArea.ativos() || {};
+    const ids = Object.keys(efs).sort((a, b) => (efs[a].criadoEm || 0) - (efs[b].criadoEm || 0));
+    if (!ids.length) return '';
+    const linhas = ids.map(id => {
+      const e = efs[id] || {};
+      const n = e.alvos ? Object.keys(e.alvos).length : 0;
+      return '<li class="ga-ini-ef">' +
+        '<span class="ga-ini-ef-nome" title="' + esc(e.nome || 'efeito') + '">🔆 ' + esc(e.nome || 'efeito') + '</span>' +
+        '<span class="ga-ini-ef-n">' + n + ' na área</span>' +
+        '<button type="button" class="ga-ini-mini" data-ini="efeito-editar" data-ef="' + esc(id) + '" title="Editar — remarcar quem entrou ou saiu da área">✎</button>' +
+        '<button type="button" class="ga-ini-mini ga-ini-mini--x" data-ini="efeito-tirar" data-ef="' + esc(id) + '" title="Encerrar este efeito para todos">✕</button>' +
+      '</li>';
+    }).join('');
+    return '<div class="ga-ini-efeitos-cab">🔆 efeitos em área</div><ul class="ga-ini-efeitos">' + linhas + '</ul>';
+  }
+  let efeitosLigados = false;
+  function ligarEfeitos() {
+    if (efeitosLigados || !window.GA_EfeitosArea || !window.GA_EfeitosArea.aoMudar) return;
+    efeitosLigados = true;
+    window.GA_EfeitosArea.aoMudar(function () {
+      if (painel && painel.contains(document.activeElement)) return;   // não arranca o foco
+      render();
+    });
+  }
+
   function init(segundaChance) {
     ligarFicha();
+    ligarEfeitos();
     if (window.GA_Mesa) {
       window.GA_Mesa.aoMudar(function (e) { mesa = e; assinar(); render(); });
       return;

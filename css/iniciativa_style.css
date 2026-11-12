@@ -166,6 +166,15 @@
 .ga-ini-linha--arrastando { opacity: 0.4; }
 .ga-ini-drop-antes  { box-shadow: inset 0 3px 0 var(--gold-deep); }
 .ga-ini-drop-depois { box-shadow: inset 0 -3px 0 var(--gold-deep); }
+/* a lista de efeitos em área ativos, na mão do mestre (✎ editar · ✕ encerrar) */
+.ga-ini-efeitos-cab {
+  font-family: var(--ga-fonte-rotulo); font-size: 0.6rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-dim); margin: 0.4rem 0 0.15rem;
+}
+.ga-ini-efeitos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+.ga-ini-ef { display: flex; align-items: center; gap: 0.3rem; }
+.ga-ini-ef-nome { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.88rem; color: var(--ink); }
+.ga-ini-ef-n { flex: 0 0 auto; font-size: 0.62rem; color: var(--text-dim); }
 .ga-ini-seguir {
   margin: 0;
   padding: 0 0.6rem 0.4rem;
