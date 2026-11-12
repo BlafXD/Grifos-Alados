@@ -2009,6 +2009,8 @@
     aplicarFiltroMagias();
     aplicarFiltroPericias();
     aplicarFiltroAtaques();
+    aplicarFiltroPoderes('racaOrigem');
+    aplicarFiltroPoderes('classePoderes');
     //  O ＋ de uma perícia acabou de criar um efeito no painel ⚡: leva o
     //  olho até ele e abre o cursor na fonte, para escrever de onde vem.
     if (focarEfeitoNovo) {
@@ -5543,6 +5545,8 @@
   //  fim do render() e a cada tecla: um caminho só, sem o desenho e a
   //  digitação divergirem.
   let filtroMagias = '';
+  //  ⭐ só favoritos (combate) nas magias — do MOMENTO, não se guarda.
+  let soFavMagias = false;
   //  O que a busca varre: nome, escola, tipo, círculo ("3º"), o resumo do
   //  livro e A ANOTAÇÃO DO JOGADOR — procurar "chefe" acha a magia onde
   //  ele escreveu "guardar para o chefe".
@@ -5554,8 +5558,10 @@
   //  ▸ Recolher todas mexe: procurar "cura" e abrir todas abre só elas.
   function magiasVisiveis(f) {
     const q = semAcento(String(filtroMagias).trim());
-    if (!q) return f.magias.slice();
-    return f.magias.filter(m => textoDeBuscaMagia(m).indexOf(q) >= 0);
+    let lista = f.magias.slice();
+    if (soFavMagias) lista = lista.filter(m => m.fav);
+    if (q) lista = lista.filter(m => textoDeBuscaMagia(m).indexOf(q) >= 0);
+    return lista;
   }
   function aplicarFiltroMagias() {
     const cartao = secao && secao.querySelector('.fi-magias');
@@ -5565,7 +5571,9 @@
     cartao.querySelectorAll('.fi-mag-grupo').forEach(g => {
       let n = 0;
       g.querySelectorAll('.fi-mag').forEach(li => {
-        const casa = !q || (li.dataset.busca || '').indexOf(q) >= 0;
+        const casaBusca = !q || (li.dataset.busca || '').indexOf(q) >= 0;
+        const casaFav = !soFavMagias || li.dataset.fav === '1';
+        const casa = casaBusca && casaFav;
         li.hidden = !casa;
         total++;
         if (casa) n++;
@@ -5576,9 +5584,9 @@
       if (conta) conta.textContent = n + (n === 1 ? ' magia' : ' magias');
     });
     const conta = cartao.querySelector('[data-mag-conta]');
-    if (conta) conta.textContent = q ? (vistas + ' de ' + total) : '';
+    if (conta) conta.textContent = (q || soFavMagias) ? (vistas + ' de ' + total) : '';
     const nada = cartao.querySelector('[data-mag-nada]');
-    if (nada) nada.hidden = !(q && vistas === 0);
+    if (nada) nada.hidden = !((q || soFavMagias) && vistas === 0);
     const limpar = cartao.querySelector('[data-acao="limpa-filtro-magias"]');
     if (limpar) limpar.hidden = !q;
   }
@@ -5599,6 +5607,11 @@
   //  ficha (o jogador mexe, sincroniza entre aparelhos).
   let filtroPericias = '', filtroAtaques = '';
   let soFavAtaques = false;
+  //  Poderes têm DOIS cartões (racaOrigem, classePoderes) e cada um filtra
+  //  sozinho — estado por campo. A ⭐ sobe DENTRO da gaveta (não cruza
+  //  gavetas), e o "só favoritos" esconde o resto no cartão.
+  let filtroPoderes = { racaOrigem: '', classePoderes: '' };
+  let soFavPoderes = { racaOrigem: false, classePoderes: false };
 
   //  A barra de um cartão: 🔍 + campo + ✕ (limpar) + contador, e opcional
   //  o botão ⭐ só favoritos. `tipo` casa com o data-filtro do campo e com
@@ -5649,11 +5662,47 @@
   function aplicarFiltroAtaques() {
     aplicarFiltroLista('.fi-ataques', '.fi-atq', filtroAtaques, soFavAtaques);
   }
+  //  Poderes: além de esconder os cards, esconde a GAVETA cujos cards
+  //  sumiram todos (uma gaveta recolhida — sem cards no DOM — fica como
+  //  está, mostrando só o cabeçalho). `campo` é 'racaOrigem' ou
+  //  'classePoderes'.
+  function aplicarFiltroPoderes(campo) {
+    const cartao = secao && secao.querySelector('.fi-poderes--' + campo);
+    if (!cartao) return;
+    const q = semAcento(String(filtroPoderes[campo] || '').trim());
+    const soFav = !!soFavPoderes[campo];
+    let vistas = 0, total = 0;
+    cartao.querySelectorAll('.fi-pod').forEach(li => {
+      const casaBusca = !q || (li.dataset.busca || '').indexOf(q) >= 0;
+      const casaFav = !soFav || li.dataset.fav === '1';
+      const casa = casaBusca && casaFav;
+      li.hidden = !casa;
+      total++;
+      if (casa) vistas++;
+    });
+    cartao.querySelectorAll('.fi-pod-grupo').forEach(g => {
+      const cards = g.querySelectorAll('.fi-pod');
+      if (!cards.length) return;      // gaveta recolhida: deixa o cabeçalho
+      g.hidden = ![...cards].some(li => !li.hidden);
+    });
+    const conta = cartao.querySelector('[data-busca-conta]');
+    if (conta) conta.textContent = (q || soFav) ? (vistas + ' de ' + total) : '';
+    const x = cartao.querySelector('[data-acao^="limpa-filtro-"]');
+    if (x) x.hidden = !q;
+    const nada = cartao.querySelector('[data-busca-nada]');
+    if (nada) nada.hidden = !((q || soFav) && vistas === 0);
+  }
   //  O texto que a busca de um ataque varre: nome, tipo, alcance, dano,
   //  crítico e a anotação (o ✎), sem as marcas de HTML.
   function buscaDeAtaque(a) {
     return semAcento([a.nome, a.tipo, a.alcance, a.dano, a.critico,
       String(a.notas || '').replace(/<[^>]*>/g, ' ')].join(' '));
+  }
+  //  O texto que a busca de um poder varre: nome, tags (distinção/raça),
+  //  deus, pré-requisito, a anotação e o texto do livro.
+  function buscaDePoder(p) {
+    return semAcento([p.nome, p.tags, p.deus, p.preReq, p.obs,
+      (p.texto || []).join(' ')].join(' '));
   }
 
   // ═══ ✨ PODERES ═══════════════════════════════════════════════════
@@ -5866,7 +5915,7 @@
     const kPm = chavePmPoder(p);
     const cPm = custoPmDe(f, kPm, p.custo, (p.texto || []).join(' '), p.nome, 'poder');
     return `
-      <li class="fi-pod${fechado ? ' fi-pod--fechado' : ''}${p.contaTormenta ? ' fi-pod--conta' : ''}">
+      <li class="fi-pod${fechado ? ' fi-pod--fechado' : ''}${p.contaTormenta ? ' fi-pod--conta' : ''}${p.fav ? ' fi-pod--fav' : ''}" data-fav="${p.fav ? '1' : '0'}" data-busca="${esc(buscaDePoder(p))}">
         <button type="button" class="fi-pod-abrir" data-acao="dobra-poder" data-i="${i}"
                 aria-expanded="${!fechado}"
                 title="${fechado ? 'Abrir' : 'Recolher'} o texto de ${esc(p.nome)}">
@@ -5879,6 +5928,10 @@
         </button>
         <span class="fi-pod-ordem">${setasDeOrdem('pod', i, pos, quantos, p.nome, '')}</span>
         <span class="fi-pod-acoes">
+          <button type="button" class="fi-mini fi-pod-fav${p.fav ? ' fi-pod-fav--on' : ''}" data-acao="fav-poder" data-i="${i}"
+                  aria-pressed="${p.fav}" title="${p.fav
+                    ? 'Favorito — fica no topo da gaveta e aparece no «⭐ só favoritos». Clique para tirar.'
+                    : 'Marcar favorito — sobe na gaveta e aparece no «⭐ só favoritos» do combate.'}">${p.fav ? '⭐' : '☆'}</button>
           ${seloPm(f, kPm, cPm.s.pm, p.nome, 'poder')}
           ${p.pid ? '' : `<button type="button" class="fi-mini" data-acao="editar-poder" data-i="${i}"
                   title="Editar este poder escrito à mão">✍</button>`}
@@ -6013,7 +6066,8 @@
           </button>
           ${setasGrupo}
         </h3>
-        ${aberto ? `<ul class="fi-pod-lista">${g.itens.map((x, i) =>
+        ${aberto ? `<ul class="fi-pod-lista">${g.itens.slice()
+          .sort((a2, b2) => (b2.p.fav ? 1 : 0) - (a2.p.fav ? 1 : 0)).map((x, i) =>
           cartaoPoder(f, x.p, x.i, i, n)).join('')}</ul>` : ''}
       </div>`;
     }
@@ -6024,7 +6078,8 @@
           <em>${n} poder${n > 1 ? 'es' : ''}</em>
           ${setasGrupo}
         </h3>
-        <ul class="fi-pod-lista">${g.itens.map((x, i) =>
+        <ul class="fi-pod-lista">${g.itens.slice()
+          .sort((a2, b2) => (b2.p.fav ? 1 : 0) - (a2.p.fav ? 1 : 0)).map((x, i) =>
           cartaoPoder(f, x.p, x.i, i, n)).join('')}</ul>
       </div>`;
   }
@@ -6331,7 +6386,7 @@
         //  por classe e nível — e a chave é o que lhe dá identidade.
         const cPm = custoPmDe(f, key, '', a.texto || '', a.nome, 'habilidade');
         return `
-        <li class="fi-pod fi-pod--fixa${origem === 'extra' ? ' fi-pod--fixaextra' : ''}${fechado ? ' fi-pod--fechado' : ''}">
+        <li class="fi-pod fi-pod--fixa${origem === 'extra' ? ' fi-pod--fixaextra' : ''}${fechado ? ' fi-pod--fechado' : ''}" data-fav="0" data-busca="${esc(semAcento((a.nome || '') + ' ' + (a.texto || '')))}">
           <button type="button" class="fi-pod-abrir" data-acao="dobra-fixa" data-k="${esc(key)}"
                   aria-expanded="${!fechado}" title="${fechado ? 'Abrir' : 'Recolher'} ${esc(a.nome)}">
             <span class="fi-pod-seta" aria-hidden="true">${fechado ? '▸' : '▾'}</span>
@@ -6408,8 +6463,11 @@
               ＋ Adicionar${daClasse ? ' poder' : ''}</button>
           </span>
         </h2>
+        ${meus.length > 1 ? barraBusca('pod-' + campo, filtroPoderes[campo],
+          'buscar poder: nome, distinção, deus, texto…', true, soFavPoderes[campo]) : ''}
         ${daClasse ? blocoTormenta(f) + fixasDaClasse(f) : blocoOrigem(f)}
         ${grupos || vazia}
+        <p class="fi-busca-nada" data-busca-nada hidden>Nenhum poder casa a busca neste cartão.</p>
         <p class="fi-nota">Cada poder traz o <strong>texto inteiro</strong> do livro, com a página. Clique no
           <strong>nome</strong> para recolher ou abrir, e use <strong>⇈ ↑ ↓</strong> para pôr na ordem que você quer
           ler — as setas <em>do cartão</em> andam com o poder dentro da gaveta dele, e as setas <em>do título de
@@ -6549,7 +6607,9 @@
           ${c === '0' ? 'sem círculo' : 'círculo'}
           <em data-mag-conta-grupo>${porCirculo[c].length} magia${porCirculo[c].length > 1 ? 's' : ''}</em>
         </h3>
-        <ul class="fi-mag-lista">${porCirculo[c].map(({ m, i }) => cartaoMagia(f, m, i)).join('')}</ul>
+        <ul class="fi-mag-lista">${porCirculo[c].slice()
+          .sort((x, y) => (y.m.fav ? 1 : 0) - (x.m.fav ? 1 : 0))
+          .map(({ m, i }) => cartaoMagia(f, m, i)).join('')}</ul>
       </div>`).join('');
 
     return `
@@ -6574,6 +6634,10 @@
                  aria-label="Procurar entre as magias desta ficha" autocomplete="off">
           <button type="button" class="fi-mag-filtro-x" data-acao="limpa-filtro-magias"
                   title="Mostrar todas de novo" aria-label="Limpar a procura" hidden>✕</button>
+          <button type="button" class="fi-busca-fav${soFavMagias ? ' fi-busca-fav--on' : ''}"
+                  data-acao="so-fav-magias" aria-pressed="${!!soFavMagias}"
+                  title="${soFavMagias ? 'Mostrando só as ⭐ favoritas — clique para ver todas'
+                    : 'Mostrar só as ⭐ favoritas (para o combate)'}">${soFavMagias ? '⭐' : '☆'} só favoritos</button>
           <span class="fi-mag-filtro-conta" data-mag-conta aria-live="polite"></span>
         </div>` : ''}
         ${grupos || '<p class="fi-mag-vazia">Nenhuma magia ainda. O <strong>＋ Adicionar magia</strong> abre a busca nas ' +
@@ -7138,7 +7202,7 @@
     const fechada = estaFechada(m);
     //  data-busca: o que a 🔍 barra do cartão compara (ver aplicarFiltroMagias)
     return `
-      <li class="fi-mag${fechada ? ' fi-mag--fechada' : ''}" data-busca="${esc(textoDeBuscaMagia(m))}">
+      <li class="fi-mag${fechada ? ' fi-mag--fechada' : ''}${m.fav ? ' fi-mag--fav' : ''}" data-fav="${m.fav ? '1' : '0'}" data-busca="${esc(textoDeBuscaMagia(m))}">
         <button type="button" class="fi-mag-abrir" data-acao="dobra-magia" data-i="${i}"
                 aria-expanded="${!fechada}"
                 title="${fechada ? 'Abrir' : 'Recolher'} o texto de ${esc(m.nome)}">
@@ -7148,6 +7212,10 @@
           ${m.tipo ? `<span class="fi-mag-tag fi-mag-tag--tipo">${esc(m.tipo)}</span>` : ''}
         </button>
         <span class="fi-mag-acoes">
+          <button type="button" class="fi-mini fi-mag-fav${m.fav ? ' fi-mag-fav--on' : ''}" data-acao="fav-magia" data-i="${i}"
+                  aria-pressed="${m.fav}" title="${m.fav
+                    ? 'Favorita — fica no topo do círculo e aparece no «⭐ só favoritos». Clique para tirar.'
+                    : 'Marcar favorita — sobe no círculo e aparece no «⭐ só favoritos» do combate.'}">${m.fav ? '⭐' : '☆'}</button>
           ${(p.total || p.meu != null) ? `<button type="button" class="fi-mag-pm-btn${p.extra ? ' fi-mag-pm-btn--apr' : ''}${p.trocado ? ' fi-pm-selo--meu' : ''}"
                   data-acao="gastar-magia" data-i="${i}"
                   data-pmselo="${esc(chavePmMagia(m))}" data-pmlivro="${p.livro}"
@@ -7632,6 +7700,11 @@
     if (el.dataset.filtro === 'ataques') {
       filtroAtaques = el.value;
       return aplicarFiltroAtaques();
+    }
+    if (el.dataset.filtro && el.dataset.filtro.indexOf('pod-') === 0) {
+      const campo = el.dataset.filtro.slice(4);
+      filtroPoderes[campo] = el.value;
+      return aplicarFiltroPoderes(campo);
     }
     //  ⚡ O CUSTO EM PM ESCRITO PELO JOGADOR (29/10/2026). Não passa
     //  pelo caminho de sempre de propósito: lá o campo numérico em
@@ -8761,6 +8834,47 @@
       if (!a) return;
       a.fav = !a.fav;
       sujar(f.id, 'ataques'); salvar(); return render();
+    }
+    if (acao === 'so-fav-magias') {
+      soFavMagias = !soFavMagias;
+      btn.classList.toggle('fi-busca-fav--on', soFavMagias);
+      btn.setAttribute('aria-pressed', String(soFavMagias));
+      btn.innerHTML = (soFavMagias ? '⭐' : '☆') + ' só favoritos';
+      btn.title = soFavMagias ? 'Mostrando só as ⭐ favoritas — clique para ver todas'
+        : 'Mostrar só as ⭐ favoritas (para o combate)';
+      return aplicarFiltroMagias();
+    }
+    if (acao === 'fav-magia') {
+      const m = f.magias[+btn.dataset.i];
+      if (!m) return;
+      m.fav = !m.fav;
+      sujar(f.id, 'magias'); salvar(); return render();
+    }
+    //  Poderes: cada cartão (racaOrigem/classePoderes) tem busca e ⭐ só
+    //  favoritos próprios — o campo vem no fim da ação.
+    if (acao.indexOf('limpa-filtro-pod-') === 0) {
+      const campo = acao.slice('limpa-filtro-pod-'.length);
+      filtroPoderes[campo] = '';
+      const campoEl = secao.querySelector('[data-filtro="pod-' + campo + '"]');
+      if (campoEl) { campoEl.value = ''; campoEl.focus(); }
+      return aplicarFiltroPoderes(campo);
+    }
+    if (acao.indexOf('so-fav-pod-') === 0) {
+      const campo = acao.slice('so-fav-pod-'.length);
+      soFavPoderes[campo] = !soFavPoderes[campo];
+      const on = soFavPoderes[campo];
+      btn.classList.toggle('fi-busca-fav--on', on);
+      btn.setAttribute('aria-pressed', String(on));
+      btn.innerHTML = (on ? '⭐' : '☆') + ' só favoritos';
+      btn.title = on ? 'Mostrando só os ⭐ favoritos — clique para ver todos'
+        : 'Mostrar só os ⭐ favoritos (para o combate)';
+      return aplicarFiltroPoderes(campo);
+    }
+    if (acao === 'fav-poder') {
+      const p = f.poderes[+btn.dataset.i];
+      if (!p) return;
+      p.fav = !p.fav;
+      sujar(f.id, 'poderes'); salvar(); return render();
     }
     // o ✕ da magia mora colado no 🔥 de lançar — pergunta antes
     if (acao === 'tira-magia') {

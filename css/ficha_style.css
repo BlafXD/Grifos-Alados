@@ -2064,6 +2064,36 @@
 .fi-atq-fav--on { opacity: 1; color: var(--gold-dim); }
 .fi-atq--fav { background: var(--gold-pale); }
 
+/* ⭐ favorito nas magias: entre as ações (não soma coluna ao grid 1fr auto). */
+.fi-mag-fav {
+  padding: 0 0.15rem;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-dim);
+  opacity: 0.55;
+  background: none;
+  border: none;
+}
+.fi-mag-fav:hover,
+.fi-mag-fav--on { opacity: 1; color: var(--gold-dim); }
+.fi-mag--fav { background: var(--gold-pale); }
+
+/* ⭐ favorito nos poderes: entre as ações (grid 1fr auto intacto). */
+.fi-pod-fav {
+  padding: 0 0.15rem;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-dim);
+  opacity: 0.55;
+  background: none;
+  border: none;
+}
+.fi-pod-fav:hover,
+.fi-pod-fav--on { opacity: 1; color: var(--gold-dim); }
+.fi-pod--fav { background: var(--gold-pale); }
+
 .fi-mag-pm-btn {
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
