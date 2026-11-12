@@ -677,6 +677,10 @@
       // base). Fica guardado porque na mesa se repete a mesma combinação
       // toda vez: "bola de fogo com +2d6" é a mesma magia de sempre.
       apr: Array.isArray(m && m.apr) ? m.apr.map(n => parseInt(n, 10)).filter(n => n >= 0) : [],
+      // ⭐ favorita: o jogador fixa as que mais usa no combate — sobe pro
+      // topo e entra no filtro "só favoritos". Mora NA FICHA (ele mexe,
+      // sincroniza entre aparelhos — ver [[nada-sintetico-na-ficha]]).
+      fav: !!(m && m.fav),
     }));
 
     // ── PODERES ────────────────────────────────────────────────────
@@ -711,6 +715,8 @@
       obs: String((p && p.obs) || ''),
       // marcado como "conta como um poder da Tormenta" sem ser um
       contaTormenta: !!(p && p.contaTormenta),
+      // ⭐ favorito: sobe pro topo da gaveta dele e entra no "só favoritos"
+      fav: !!(p && p.fav),
     }));
     // o que conta como poder da Tormenta e não é poder nenhum (os bônus
     // da Deformidade do lefou, p. 24)
@@ -815,6 +821,9 @@
         // false. Alguns encantos são exceção e dobram: o 💥 da linha liga.
         critico: !!(e && e.critico),
       })) : [],
+      // ⭐ favorito: a arma que você mais usa sobe pro topo e entra no
+      // filtro "só favoritos" do combate.
+      fav: !!(a && a.fav),
     }));
 
     // ── MÃOS OCUPADAS (22/10/2026) ───────────────────────────────────
@@ -1995,9 +2004,11 @@
     cont.innerHTML = html;
     // o innerHTML apagou os resultados — recoloca cada um no seu lugar
     Object.keys(resultados).forEach(pintarResultado);
-    // …e o desenho sai inteiro: é aqui que a 🔍 barra volta a esconder o
-    // que não casa (o termo vive fora do <input>, em filtroMagias)
+    // …e o desenho sai inteiro: é aqui que as 🔍 barras voltam a esconder o
+    // que não casa (os termos vivem fora dos <input>, em filtroMagias etc.)
     aplicarFiltroMagias();
+    aplicarFiltroPericias();
+    aplicarFiltroAtaques();
     //  O ＋ de uma perícia acabou de criar um efeito no painel ⚡: leva o
     //  olho até ele e abre o cursor na fonte, para escrever de onde vem.
     if (focarEfeitoNovo) {
@@ -4432,7 +4443,7 @@
       //  clique cairia no botão), então o botão teve de se partir; os
       //  dois rolam a mesma perícia, e a linha continua igual na tela.
       return `
-        <li class="fi-per ${e.treinada ? 'fi-per--treinada' : ''}">
+        <li class="fi-per ${e.treinada ? 'fi-per--treinada' : ''}" data-busca="${esc(semAcento(p.nome))}">
           ${botaoTreinar(e.treinada, 'data-acao="treinar" data-p="' + p.chave + '"')}
           <button type="button" class="fi-per-rolar fi-per-rolar--nome" data-acao="rolar-pericia" data-p="${p.chave}"
                   title="Rolar 1d20 ${sinal(v)} de ${esc(p.nome)}">
@@ -4476,7 +4487,9 @@
             ? '−' + (2 * L) + ' em todo teste de perícia e de ataque'
             : 'cada uma: −2 em todo teste de perícia'}</span>
         </div>
+        ${barraBusca('pericias', filtroPericias, 'buscar perícia (Luta, Furtividade, Ofício…)', false, false)}
         <ul class="fi-per-lista">${linhas}</ul>
+        <p class="fi-busca-nada" data-busca-nada hidden>Nenhuma perícia casa a busca.</p>
         <p class="fi-nota">O <strong>🎲</strong> rola 1d20 com o bônus já somado, e a rolagem aparece na mesa.
           O ✓ marca treinada — o site não confere quantas você pode treinar, isso é escolha sua.
           As <em>só treinada</em> aparecem mesmo sem treino porque o livro proíbe o uso, não a rolagem.
@@ -4500,7 +4513,7 @@
     return f.oficios.map((o, i) => {
       const v = valorOficio(f, i);
       return `
-        <li class="fi-per fi-per--oficio ${o.treinada ? 'fi-per--treinada' : ''}">
+        <li class="fi-per fi-per--oficio ${o.treinada ? 'fi-per--treinada' : ''}" data-busca="${esc(semAcento('oficio ' + (o.esp || '')))}">
           ${botaoTreinar(o.treinada, 'data-acao="treinar-oficio" data-i="' + i + '"')}
           <span class="fi-per-nome fi-per-nome--of">Ofício</span>
           <input class="fi-txt fi-of-esp" type="text" value="${esc(o.esp)}" list="fiOficios"
@@ -4590,12 +4603,24 @@
 
   // ── ATAQUES ──────────────────────────────────────────────────────
   function blocoAtaques(f) {
-    const linhas = f.ataques.map((a, i) => {
+    //  Ordem de EXIBIÇÃO: as ⭐ favoritas primeiro (sort estável — mantém a
+    //  ordem que as setas ⇈↑↓ montaram dentro de cada grupo). O data-i de
+    //  cada linha continua sendo o índice GUARDADO no array, para as setas,
+    //  o ✕ e os campos mexerem no ataque certo mesmo com a lista reordenada.
+    const ordem = f.ataques.map((a, i) => ({ a, i }))
+      .sort((x, y) => (y.a.fav ? 1 : 0) - (x.a.fav ? 1 : 0));
+    const linhas = ordem.map(({ a, i }) => {
       const mult = multiplicadorCritico(a.critico);
       return `
-      <li class="fi-atq">
-        <input class="fi-txt fi-txt--atq" type="text" value="${esc(a.nome)}" data-campo="ataques.${i}.nome"
-               placeholder="espada longa" autocomplete="off">
+      <li class="fi-atq${a.fav ? ' fi-atq--fav' : ''}" data-fav="${a.fav ? '1' : '0'}" data-busca="${esc(buscaDeAtaque(a))}">
+        <span class="fi-atq-nomecel">
+          <button type="button" class="fi-mini fi-atq-fav${a.fav ? ' fi-atq-fav--on' : ''}" data-acao="fav-ataque" data-i="${i}"
+                  aria-pressed="${a.fav}" title="${a.fav
+                    ? 'Favorita — fica no topo e aparece no «⭐ só favoritos». Clique para tirar.'
+                    : 'Marcar favorita — sobe para o topo e aparece no «⭐ só favoritos» do combate.'}">${a.fav ? '⭐' : '☆'}</button>
+          <input class="fi-txt fi-txt--atq" type="text" value="${esc(a.nome)}" data-campo="ataques.${i}.nome"
+                 placeholder="espada longa" autocomplete="off">
+        </span>
         <select class="fi-sel fi-sel--mini" data-campo="ataques.${i}.pericia" title="Com qual perícia se ataca">
           <option value="luta" ${a.pericia === 'luta' ? 'selected' : ''}>Luta</option>
           <option value="pontaria" ${a.pericia === 'pontaria' ? 'selected' : ''}>Pontaria</option>
@@ -4654,11 +4679,13 @@
         <h2 class="fi-cartao-tit">Ataques
           <span class="fi-cartao-nota">o valor de ataque <em>é</em> a perícia — Luta ou Pontaria</span>
         </h2>
+        ${f.ataques.length > 1 ? barraBusca('ataques', filtroAtaques, 'buscar arma, tipo, dano, alcance…', true, soFavAtaques) : ''}
         <div class="fi-atq-cab">
           <span>Arma</span><span>Perícia</span><span>Extra</span><span>Ataque</span>
           <span>Dano</span><span title="Passos de dano — Tabela 3-2, p. 143">Passos</span><span></span><span>Crítico</span><span></span><span>Tipo</span><span>Alcance</span><span></span><span></span>
         </div>
         <ul class="fi-atq-lista">${linhas || '<li class="fi-atq-vazio">Nenhum ataque ainda.</li>'}</ul>
+        <p class="fi-busca-nada" data-busca-nada hidden>Nenhum ataque casa a busca.</p>
         <button type="button" class="fi-add fi-add--menor" data-acao="add-ataque">＋ Acrescentar ataque</button>
         <p class="fi-nota">O dano de corpo a corpo e de arremesso soma a Força — escreva o total aqui (ex.: <code>1d8+3</code>).
           O <strong>💥 Crítico</strong> rola o crítico <em>à mão</em>, porque quem decide se o 20 virou crítico é a mesa:
@@ -5556,6 +5583,78 @@
     if (limpar) limpar.hidden = !q;
   }
 
+  // ── BUSCA E ⭐ FAVORITOS NOS CARTÕES (12/11/2026) ────────────────
+  //  Pedido dele (ideia #4): num nível alto há dezenas de perícias,
+  //  poderes, ataques e magias — buscar/filtrar, e FIXAR os mais usados
+  //  no topo pro combate. As Magias já tinham a barra (04/10); isto
+  //  estende o mesmo princípio aos outros cartões.
+  //  Como nas Magias: o termo vive AQUI FORA, não no <input>, porque todo
+  //  clique redesenha a ficha (render reescreve o innerHTML) — assim o
+  //  filtro sobrevive a ligar um aprimoramento ou gastar PM. E quem
+  //  esconde/mostra é SEMPRE a aplicarFiltro...(), chamada no fim do
+  //  render() e a cada tecla: um caminho só, sem o desenho e a digitação
+  //  divergirem.
+  //  O "⭐ só favoritos" é do MOMENTO (combate), então também vive aqui
+  //  fora e não se guarda; já a estrela — O QUE é favorito — mora na
+  //  ficha (o jogador mexe, sincroniza entre aparelhos).
+  let filtroPericias = '', filtroAtaques = '';
+  let soFavAtaques = false;
+
+  //  A barra de um cartão: 🔍 + campo + ✕ (limpar) + contador, e opcional
+  //  o botão ⭐ só favoritos. `tipo` casa com o data-filtro do campo e com
+  //  as ações limpa-filtro-<tipo> / so-fav-<tipo>.
+  function barraBusca(tipo, termo, ph, comFav, soFav) {
+    return `
+      <div class="fi-busca" data-busca-cartao="${tipo}">
+        <span class="fi-busca-lupa" aria-hidden="true">🔍</span>
+        <input type="text" class="fi-busca-campo" data-filtro="${tipo}" value="${esc(termo)}"
+               placeholder="${esc(ph)}" autocomplete="off" aria-label="${esc(ph)}">
+        <button type="button" class="fi-busca-x" data-acao="limpa-filtro-${tipo}"
+                title="Limpar a busca" aria-label="Limpar a busca"${termo ? '' : ' hidden'}>✕</button>
+        ${comFav ? `<button type="button" class="fi-busca-fav${soFav ? ' fi-busca-fav--on' : ''}"
+                data-acao="so-fav-${tipo}" aria-pressed="${!!soFav}"
+                title="${soFav ? 'Mostrando só as ⭐ favoritas — clique para ver todas'
+                  : 'Mostrar só as ⭐ favoritas (para o combate)'}">${soFav ? '⭐' : '☆'} só favoritos</button>` : ''}
+        <span class="fi-busca-conta" data-busca-conta aria-live="polite"></span>
+      </div>`;
+  }
+
+  //  O aplicador genérico: esconde cada item cujo data-busca não casa o
+  //  termo (e, se "só favoritos" estiver ligado, cada um sem data-fav="1");
+  //  atualiza o contador, o ✕ e a mensagem de "nada encontrado".
+  function aplicarFiltroLista(cartaoSel, itemSel, termo, soFav) {
+    const cartao = secao && secao.querySelector(cartaoSel);
+    if (!cartao) return;
+    const q = semAcento(String(termo || '').trim());
+    let vistas = 0, total = 0;
+    cartao.querySelectorAll(itemSel).forEach(li => {
+      const casaBusca = !q || (li.dataset.busca || '').indexOf(q) >= 0;
+      const casaFav = !soFav || li.dataset.fav === '1';
+      const casa = casaBusca && casaFav;
+      li.hidden = !casa;
+      total++;
+      if (casa) vistas++;
+    });
+    const conta = cartao.querySelector('[data-busca-conta]');
+    if (conta) conta.textContent = (q || soFav) ? (vistas + ' de ' + total) : '';
+    const x = cartao.querySelector('[data-acao^="limpa-filtro-"]');
+    if (x) x.hidden = !q;
+    const nada = cartao.querySelector('[data-busca-nada]');
+    if (nada) nada.hidden = !((q || soFav) && vistas === 0);
+    return vistas;
+  }
+  function aplicarFiltroPericias() {
+    aplicarFiltroLista('.fi-pericias', '.fi-per', filtroPericias, false);
+  }
+  function aplicarFiltroAtaques() {
+    aplicarFiltroLista('.fi-ataques', '.fi-atq', filtroAtaques, soFavAtaques);
+  }
+  //  O texto que a busca de um ataque varre: nome, tipo, alcance, dano,
+  //  crítico e a anotação (o ✎), sem as marcas de HTML.
+  function buscaDeAtaque(a) {
+    return semAcento([a.nome, a.tipo, a.alcance, a.dano, a.critico,
+      String(a.notas || '').replace(/<[^>]*>/g, ' ')].join(' '));
+  }
 
   // ═══ ✨ PODERES ═══════════════════════════════════════════════════
   //  Pedido dele em 15/09/2026: "ADICIONAR PODER… e dentro da aba um
@@ -7526,6 +7625,14 @@
       filtroMagias = el.value;
       return aplicarFiltroMagias();
     }
+    if (el.dataset.filtro === 'pericias') {
+      filtroPericias = el.value;
+      return aplicarFiltroPericias();
+    }
+    if (el.dataset.filtro === 'ataques') {
+      filtroAtaques = el.value;
+      return aplicarFiltroAtaques();
+    }
     //  ⚡ O CUSTO EM PM ESCRITO PELO JOGADOR (29/10/2026). Não passa
     //  pelo caminho de sempre de propósito: lá o campo numérico em
     //  branco vira 0, e aqui 0 é um custo DE VERDADE (há poder que zera
@@ -8618,6 +8725,42 @@
       const campo = secao.querySelector('[data-filtro="magias"]');
       if (campo) { campo.value = ''; campo.focus(); }
       return aplicarFiltroMagias();
+    }
+
+    // ── BUSCA E ⭐ FAVORITOS (12/11/2026) ───────────────────────────
+    //  Limpar a busca não mexe na ficha nem redesenha (tiraria o foco): só
+    //  zera o termo que vive fora do <input> e reaplica o filtro.
+    if (acao === 'limpa-filtro-pericias') {
+      filtroPericias = '';
+      const campo = secao.querySelector('[data-filtro="pericias"]');
+      if (campo) { campo.value = ''; campo.focus(); }
+      return aplicarFiltroPericias();
+    }
+    if (acao === 'limpa-filtro-ataques') {
+      filtroAtaques = '';
+      const campo = secao.querySelector('[data-filtro="ataques"]');
+      if (campo) { campo.value = ''; campo.focus(); }
+      return aplicarFiltroAtaques();
+    }
+    //  ⭐ só favoritos é do MOMENTO (combate): não se guarda nem redesenha,
+    //  só alterna e reaplica o filtro. O botão troca de cara pelo render?
+    //  Não — para não perder o foco da busca, repinta o próprio botão.
+    if (acao === 'so-fav-ataques') {
+      soFavAtaques = !soFavAtaques;
+      btn.classList.toggle('fi-busca-fav--on', soFavAtaques);
+      btn.setAttribute('aria-pressed', String(soFavAtaques));
+      btn.innerHTML = (soFavAtaques ? '⭐' : '☆') + ' só favoritos';
+      btn.title = soFavAtaques ? 'Mostrando só as ⭐ favoritas — clique para ver todas'
+        : 'Mostrar só as ⭐ favoritas (para o combate)';
+      return aplicarFiltroAtaques();
+    }
+    //  A estrela SIM mora na ficha (sincroniza entre aparelhos). Marcar
+    //  reordena a lista (favoritas no topo), então redesenha.
+    if (acao === 'fav-ataque') {
+      const a = f.ataques[+btn.dataset.i];
+      if (!a) return;
+      a.fav = !a.fav;
+      sujar(f.id, 'ataques'); salvar(); return render();
     }
     // o ✕ da magia mora colado no 🔥 de lançar — pergunta antes
     if (acao === 'tira-magia') {

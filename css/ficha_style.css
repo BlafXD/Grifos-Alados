@@ -1964,6 +1964,106 @@
   white-space: nowrap;
   color: var(--text-dim);
 }
+
+/* ── Busca e ⭐ favoritos nos cartões (12/11/2026) ───────────────────── */
+/* A barra genérica (Perícias e Ataques; as Magias têm a sua .fi-mag-filtro). */
+.fi-busca {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 0.6rem;
+  padding: 0.2rem 0.5rem;
+  background: var(--parchment2);
+  border: 1px solid var(--parchment3);
+  border-radius: var(--raio);
+}
+.fi-busca:focus-within { border-color: var(--rust); }
+.fi-busca-lupa { flex: 0 0 auto; font-size: 0.85rem; opacity: 0.65; }
+.fi-busca-campo {
+  flex: 1 1 6rem;
+  min-width: 0;
+  padding: 0.3rem 0.1rem;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: none;
+  border: none;
+}
+.fi-busca-campo:focus { outline: none; }
+.fi-busca-campo::placeholder { color: var(--text-dim); font-style: italic; }
+.fi-busca-x {
+  flex: 0 0 auto;
+  padding: 0.1rem 0.3rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+}
+.fi-busca-x:hover { color: var(--carmim); }
+.fi-busca-x[hidden] { display: none; }
+.fi-busca-fav {
+  flex: 0 0 auto;
+  padding: 0.15rem 0.5rem;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: var(--text-dim);
+  background: none;
+  border: 1px solid var(--parchment3);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.fi-busca-fav:hover { border-color: var(--gold-dim); color: var(--ink); }
+.fi-busca-fav--on {
+  border-color: var(--gold-dim);
+  background: var(--gold-pale);
+  color: var(--ink);
+}
+.fi-busca-conta {
+  flex: 0 0 auto;
+  font-family: var(--ga-fonte-rotulo);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: var(--text-dim);
+}
+.fi-busca-nada {
+  margin: 0 0 0.6rem;
+  padding: 0.4rem 0.2rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+.fi-busca-nada[hidden] { display: none; }
+
+/* A célula nome-da-arma: a ⭐ + o campo do nome juntos num só filho do grid,
+   para a estrela entrar SEM somar uma coluna ao grid de 12 do ataque (senão
+   o cabeçalho desalinha). */
+.fi-atq-nomecel {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.fi-atq-nomecel .fi-txt--atq { flex: 1 1 auto; min-width: 0; }
+.fi-atq-fav {
+  flex: 0 0 auto;
+  padding: 0 0.1rem;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-dim);
+  opacity: 0.55;
+  background: none;
+  border: none;
+}
+.fi-atq-fav:hover,
+.fi-atq-fav--on { opacity: 1; color: var(--gold-dim); }
+.fi-atq--fav { background: var(--gold-pale); }
+
 .fi-mag-pm-btn {
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
