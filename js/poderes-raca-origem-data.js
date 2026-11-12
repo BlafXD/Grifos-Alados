@@ -2647,7 +2647,7 @@
     'Enquanto estiver em Transe Dançante, você soma o bônus do seu Transe na CD dos testes de Vontade das suas habilidades contra criaturas dentro da aura.',
   ] },
   { id: 'dist-dancarina-no-ritmo-da-magia', nome: 'No Ritmo da Magia', grupo: 'distincao', livro: 'deuses', pagina: 84,
-    tags: 'Dançarina de Marah', distincao: 'dancarina-de-marah', marca: false, deus: 'Marah', magica: true,
+    tags: 'Dançarina de Marah', distincao: 'dancarina-de-marah', marca: false, deus: 'Marah', magica: false,
     preReq: 'Transe Dançante', custo: null, quadro: null, texto: [
     'Os passos da dançarina de Marah são carregados de magia.',
     'Enquanto está em Transe Dançante, você pode lançar a magia Salto Dimensional (Tormenta20, p. 205). Caso aprenda essa magia, durante o Transe o custo dela diminui em –1 PM.',
@@ -2803,7 +2803,7 @@
     'Quando faz um ataque corpo a corpo, você pode gastar 2 PM para canalizar a realidade em seu golpe. Você soma seu Carisma ao teste de ataque e +1d8 à rolagem de dano e, se o alvo for uma criatura da Tormenta, ignora sua imunidade a acertos críticos. Se possuir a habilidade Golpe Divino, em vez disso ela causa dois dados extras de dano e ignora a imunidade a acertos críticos de criaturas da Tormenta.',
   ] },
   { id: 'dist-guardiao-detectar-anticriacao', nome: 'Detectar Anticriação', grupo: 'distincao', livro: 'deuses', pagina: 97,
-    tags: 'Guardião da Realidade', distincao: 'guardiao-da-realidade', marca: false, deus: null, magica: true,
+    tags: 'Guardião da Realidade', distincao: 'guardiao-da-realidade', marca: false, deus: null, magica: false,
     preReq: 'treinado em Percepção, Destruir Anticriação', custo: null, quadro: null, texto: [
     'Você sabe instintivamente o que é ou não real.',
     'Você soma seu Carisma em Intuição e Percepção. Além disso, está permanentemente sob o efeito da magia Detectar Ameaças, com todos os seus aprimoramentos, mas apenas para efeitos da Tormenta.',
@@ -3169,7 +3169,7 @@
     'Enquanto estiver sob efeito de Manto de Sombras, você causa +1 ponto de dano por dado de dano de trevas. Além disso, quando faz um ataque, você pode gastar 1 PM para cobrir sua arma de sombras. Se fizer isso, esse ataque pode afetar uma criatura normal e, se for um ataque furtivo, o dano extra dessa habilidade se torna dano de trevas.',
   ] },
   { id: 'dist-sombra-miragem-de-sombras', nome: 'Miragem de Sombras', grupo: 'distincao', livro: 'deuses', pagina: 123,
-    tags: 'Sombra de Tenebra', distincao: 'sombra-de-tenebra', marca: false, deus: 'Tenebra', magica: true,
+    tags: 'Sombra de Tenebra', distincao: 'sombra-de-tenebra', marca: false, deus: 'Tenebra', magica: false,
     preReq: 'Caminhar nas Trevas', custo: null, quadro: null, texto: [
     'Aqueles que não enxergam no escuro tentam preencher o vazio com imagens criadas por suas mentes.',
     'Você aprende a magia Criar Ilusões (CD Int). Se possuir três outros poderes da distinção, a magia recebe o seguinte aprimoramento. +2PM: suas ilusões emanam uma aura de 3m que concede camuflagem leve por escuridão a criaturas adjacentes a elas.',
