@@ -168,7 +168,7 @@
         'No 3º nível, você pode vender itens 10% mais caro (não cumulativo com barganha).' },
       { nome: 'Encontrar Fraqueza', nivel: 7, magica: false, texto:
         'A partir do 7º nível, você pode gastar uma ação de movimento e 2 PM para analisar um objeto em alcance curto e ignorar a redução de dano dele. Também pode analisar um inimigo: se ele estiver de armadura ou for um construto, você recebe +2 em ataques contra ele. Os benefícios duram até o fim da cena.' },
-      { nome: 'Fabricar Item Mágico', nivel: 9, magica: false, texto:
+      { nome: 'Fabricar Item Mágico', nivel: 9, magica: true, texto:
         'No 9º nível, você recebe um item mágico menor e passa a fabricar itens mágicos menores. No 13º nível, itens mágicos médios; no 17º, itens mágicos maiores.' },
       { nome: 'Olho do Dragão', nivel: 10, magica: false, texto:
         'A partir do 10º nível, você pode gastar uma ação completa para analisar um item e automaticamente descobrir se ele é mágico, suas propriedades e como utilizá-las.' },

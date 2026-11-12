@@ -311,7 +311,7 @@
     { id: 'de-outro-mundo', nome: 'De Outro Mundo', livro: 'atlas', pagina: 472, tipo: 'especial', regiao: 'Éter Divino',
       beneficio: 'Você possui uma habilidade ou tecnologia especial de seu mundo de origem. Para representar esse efeito, escolha uma magia de 1º círculo e um atributo-chave para ela. Se for uma habilidade, você pode lançar essa magia. Se for uma tecnologia, você recebe um item Minúsculo (RD 10, PV iguais à metade dos seus) que ocupa 1 espaço e deve ser empunhado para lançar a magia, mas seu limite de PM para ela aumenta em +2. Por fim, escolha se o efeito será mágico ou mundano (nesse caso, não contará como uma magia, exceto para fins de acúmulo). O mestre tem a palavra final sobre qualquer efeito e combinação.',
       itens: 'Trajes exóticos, um item qualquer de até T$ 100 do seu mundo natal.' },
-    { id: 'descendente-colleniano', nome: 'Descendente Colleniano', livro: 'atlas', pagina: 473, tipo: 'especial', regiao: 'Ahlen',
+    { id: 'descendente-colleniano', nome: 'Descendente Colleniano', livro: 'atlas', pagina: 473, tipo: 'especial', regiao: 'Ahlen', magica: true,
       beneficio: 'Você recebe +2 em Percepção e pode lançar a magia Visão Mística. Caso aprenda essa magia novamente, seu custo diminui em –1 PM. ✦',
       itens: 'Arma simples, estojo de disfarces, ração de viagem x5.' },
     { id: 'desertor-da-supremacia', nome: 'Desertor da Supremacia', livro: 'atlas', pagina: 473, tipo: 'especial', regiao: 'Supremacia Purista',
@@ -470,7 +470,7 @@
       if (jaNaBusca[id]) return;
       window.GA_PODERES.push({
         id: id, nome: o.nome, grupo: 'origem', livro: o.livro, pagina: o.pagina || 0,
-        tags: o.regiao || '', deus: null, magica: false, preReq: null, custo: null,
+        tags: o.regiao || '', deus: null, magica: o.magica === true, preReq: null, custo: null,
         quadro: null, texto: [o.beneficio],
       });
     });

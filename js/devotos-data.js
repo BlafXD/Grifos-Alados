@@ -461,7 +461,7 @@ Multiclasse: no caso de classes com listas de devoções permitidas, a classe co
       texto: `Suas magias com resistência Fortitude recebem o seguinte aprimoramento. +1 PM: além do normal, criaturas que falharem perdem 1d12 PV por veneno, ou 1d6 se passarem na resistência.` },
     { chave: 'mantoArdiloso', nome: 'Manto Ardiloso', deuses: ['sszzaas'], magica: true,
       texto: `Você aprende a magia Disfarce Ilusório (CD Car). Na primeira vez que interage com alguém enquanto está sob efeito dessa magia, você recebe +10 no teste de Diplomacia para mudar a atitude dela. Caso aprenda novamente essa magia, seu custo diminui em –1 PM.` },
-    { chave: 'marRevolto', nome: 'Mar Revolto', deuses: ['oceano'], magica: false,
+    { chave: 'marRevolto', nome: 'Mar Revolto', deuses: ['oceano'], magica: true,
       texto: `Você pode gastar 1 PM para gerar uma aura de 6m de raio com duração sustentada. No início de seus turnos, criaturas a sua escolha na área devem passar em um teste de Acrobacia (CD Sab, +5 se a criatura estiver dentro da água) para não cair.` },
     { chave: 'mediadorDaTempestade', nome: 'Mediador da Tempestade', deuses: ['aharadak'], magica: false,
       texto: `Você pode se comunicar com lefeu inteligentes (Int –3 ou maior) livremente e recebe +5 em testes de Diplomacia e Intuição com criaturas da Tormenta e devotos de Aharadak.` },
