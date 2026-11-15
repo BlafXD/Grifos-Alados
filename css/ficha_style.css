@@ -451,7 +451,7 @@
 /* ── OS TRÊS CARTÕES DE NÚMEROS ────────────────────────────────── */
 .fi-numeros {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
   gap: 0.9rem;
   align-items: start;
   /* os três cartões daqui dentro zeram a margem de baixo (quem separa é
@@ -682,6 +682,7 @@
 .fi-linhas { margin-top: 0.55rem; padding-top: 0.5rem; border-top: 1px solid var(--parchment3); }
 .fi-linha {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
@@ -692,7 +693,7 @@
 }
 .fi-linha > span:first-child { color: var(--text-dim); }
 .fi-linha strong { font-family: var(--ga-fonte-titulo); font-size: 1rem; }
-.fi-linha > span:last-child { display: flex; align-items: center; gap: 0.3rem; }
+.fi-linha > span:last-child { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; }
 /* CD (28/09/2026): o "Outros" avulso de cada CD — o rótulo miúdo em cima
    de um campo estreito, no mesmo espírito dos "Outros" da Defesa. */
 .fi-cd-outros { display: inline-flex; align-items: center; gap: 0.25rem; }
@@ -1925,6 +1926,7 @@
 .fi-mag-filtro {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.35rem;
   margin: 0 0 0.6rem;
   padding: 0.2rem 0.5rem;
@@ -1932,6 +1934,7 @@
   border: 1px solid var(--parchment3);
   border-radius: var(--raio);
 }
+/* A busca e os favoritos podem quebrar linha sem cortar os controles. */
 .fi-mag-filtro-lupa { flex: 0 0 auto; font-size: 0.85rem; opacity: 0.65; }
 .fi-mag-filtro-campo {
   flex: 1 1 6rem;
@@ -2038,6 +2041,27 @@
   color: var(--text-dim);
 }
 .fi-busca-nada[hidden] { display: none; }
+/* display:grid/flex vence o hidden padrão do navegador. A procura deve
+   esconder a linha de verdade, inclusive depois dos ajustes responsivos. */
+#ficha-content .fi-atq[hidden],
+#ficha-content .fi-per[hidden],
+#ficha-content .fi-pod[hidden],
+#ficha-content .fi-pod-grupo[hidden] { display: none; }
+
+/* Em telefone, a procura usa a primeira linha e o filtro/contador a
+   segunda. O botão de favoritos não rouba a largura do campo. */
+@media (max-width: 560px) {
+  .fi-busca, .fi-mag-filtro {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+  .fi-busca-lupa, .fi-mag-filtro-lupa { grid-area: 1 / 1; }
+  .fi-busca-campo, .fi-mag-filtro-campo { grid-area: 1 / 2; width: 100%; }
+  .fi-busca-x, .fi-mag-filtro-x { grid-area: 1 / 3; }
+  .fi-busca-fav { grid-area: 2 / 1 / 3 / 3; justify-self: start; }
+  .fi-busca-conta, .fi-mag-filtro-conta { grid-area: 2 / 3; justify-self: end; }
+  .fi-busca-conta:empty, .fi-mag-filtro-conta:empty { display: none; }
+}
 
 /* A célula nome-da-arma: a ⭐ + o campo do nome juntos num só filho do grid,
    para a estrela entrar SEM somar uma coluna ao grid de 12 do ataque (senão
@@ -2049,6 +2073,9 @@
   min-width: 0;
 }
 .fi-atq-nomecel .fi-txt--atq { flex: 1 1 auto; min-width: 0; }
+/* O total e sua explicação compartilham a coluna Ataque. */
+.fi-atq-rolagem { display: flex; align-items: center; gap: 0.2rem; min-width: 0; }
+.fi-atq-rolagem .fi-atq-val { flex: 1 1 auto; }
 .fi-atq-fav {
   flex: 0 0 auto;
   padding: 0 0.1rem;
@@ -2183,7 +2210,8 @@
   /* a linha de ataque já vira ficha por item lá em cima; as três
      faixas de resultado ocupam a largura toda do mesmo jeito */
   .fi-atq-cab, .fi-atq { grid-template-columns: repeat(2, 1fr); }
-  .fi-atq > .fi-txt--atq { grid-column: 1 / -1; }
+  .fi-atq > .fi-txt--atq,
+  .fi-atq > .fi-atq-nomecel { grid-column: 1 / -1; }
   .fi-atq > .fi-txt--mini, .fi-atq > .fi-sel--mini { min-width: 0; }
   .fi-res--atq { grid-column: 1 / -1; }
   .fi-hist-item { grid-template-columns: 2.6rem 1fr; }
@@ -2252,7 +2280,7 @@
 /* ── O QUE APARA O DANO (resistência ≠ redução ≠ imunidade) ─────── */
 .fi-apara-grade {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
   gap: 0.9rem;
   margin-bottom: 0.6rem;
 }
@@ -2435,6 +2463,24 @@
 /* o ＋ (bônus por perícia) e o ⓘ moram juntos no fim da linha */
 .fi-per-acoes { display: inline-flex; align-items: center; gap: 0.1rem; flex: 0 0 auto; }
 .fi-per-maisbonus { font-weight: 700; }
+/* Duas linhas previsíveis no celular: nome e rolagem; depois atributo,
+   outros bônus e ações. O nome longo pode quebrar sem sumir sob reticências. */
+@media (max-width: 560px) {
+  .fi-pericias .fi-per:not(.fi-per--oficio) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+  .fi-pericias .fi-per-check { grid-area: 1 / 1; }
+  .fi-pericias .fi-per-rolar--nome { grid-area: 1 / 2 / 2 / 4; }
+  .fi-pericias .fi-per-nome { white-space: normal; overflow-wrap: anywhere; }
+  .fi-pericias .fi-per-rolar--val { grid-area: 1 / 4; margin-left: 0; justify-self: end; }
+  .fi-pericias .fi-per > .fi-sel--atr { grid-area: 2 / 2; justify-self: start; }
+  .fi-pericias .fi-per > .fi-num--mini { grid-area: 2 / 3; }
+  .fi-pericias .fi-per-acoes { grid-area: 2 / 4; margin-left: auto; }
+  .fi-pericias .fi-per > .fi-res { grid-column: 1 / -1; margin-left: 0; }
+}
 
 .fi-prof { margin-top: 0.2rem; }
 
@@ -2674,7 +2720,7 @@
 .fi-am-linha--parc { border-left: 3px solid var(--gold); padding-left: 0.5rem; }
 .fi-am-grade {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
   gap: 0.8rem;
   align-items: start;
   margin-top: 0.3rem;
@@ -2897,46 +2943,6 @@
    não a do viewport — ver a nota em .fi-coluna--principal. Assim o layout
    empilhado vale tanto no celular quanto na coluna estreita das duas colunas. */
 @container fi-col (max-width: 900px) {
-  .fi-atq {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    grid-template-areas:
-      "nome nome nome nome txt  sai"
-      "per  per  ext  atq  atq  atq"
-      "dan  dan  pas  dbt  dbt  dbt"
-      "cri  cri  cri  cbt  cbt  cbt"
-      "tip  tip  alc  alc  ord  ord";
-    gap: 0.35rem;
-    padding: 0.6rem 0.1rem;
-  }
-  /* o cabeçalho horizontal (Arma · Perícia · …) não alinha com as linhas
-     empilhadas — some, que cada campo se reconhece pelo que mostra */
-  .fi-atq-cab { display: none; }
-  .fi-atq--am {
-    grid-template-areas:
-      "nome nome nome nome nome sai"
-      "per  per  ext  atq  atq  atq"
-      "dan  dan  dan  dbt  dbt  dbt"
-      "cri  cri  cri  cbt  cbt  cbt"
-      "tip  tip  tip  tip  tip  tip";
-  }
-  .fi-atq > .fi-txt--atq             { grid-area: nome; }
-  .fi-atq > .fi-sel--mini            { grid-area: per; }
-  .fi-atq > .fi-num--mini            { grid-area: ext; }
-  .fi-atq > .fi-atq-val              { grid-area: atq; }
-  .fi-atq > [data-campo$=".dano"]    { grid-area: dan; }
-  .fi-atq > .fi-atq-dano             { grid-area: dbt; }
-  .fi-atq > [data-campo$=".critico"] { grid-area: cri; }
-  .fi-atq > .fi-atq-crit             { grid-area: cbt; }
-  .fi-atq > [data-campo$=".tipo"]    { grid-area: tip; }
-  .fi-atq > [data-campo$=".alcance"] { grid-area: alc; }
-  .fi-atq > .fi-atq-nota             { grid-area: txt; }
-  .fi-atq > .fi-mini--x              { grid-area: sai; }
-  .fi-atq > .fi-num--passos          { grid-area: pas; }
-  .fi-atq > .fi-atq-ordem            { grid-area: ord; }
-  /* o passo calculado, o resultado da rolagem e o texto da arma seguem
-     ocupando a largura toda, embaixo da linha */
-  .fi-atq > .fi-atq-passos           { grid-column: 1 / -1; }
-
   /* o ✎ ✕ sobe para o lado do nome, e a conta vira uma linha só que
      quebra se precisar — no dedo, cada botão tem 45px, e três colunas
      não cabem numa ficha de 330px */
@@ -2999,6 +3005,9 @@
    aperta o − três vezes seguidas no meio do combate. */
 @media (pointer: coarse) {
   #ficha-content button { touch-action: manipulation; }
+  #ficha-content :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
+    font-size: max(1rem, 16px);
+  }
 
   #ficha-content .fi-atr-val     { font-size: 1.7rem; }
   #ficha-content .fi-medidor-val { font-size: 1.25rem; }
@@ -3007,6 +3016,12 @@
   #ficha-content .fi-passo       { width: 2.75rem; height: 2.75rem; font-size: 1.25rem; }
   #ficha-content .fi-per-check   { width: 2rem; height: 2rem; font-size: 0.95rem; }
   #ficha-content .fi-mini        { min-width: 2.5rem; min-height: 2.5rem; }
+  #ficha-content .fi-bd-btn       { width: 2.5rem; height: 2.5rem; }
+  #ficha-content .fi-busca-x,
+  #ficha-content .fi-mag-filtro-x { min-width: 2.5rem; min-height: 2.5rem; }
+  #ficha-content .fi-busca-fav,
+  #ficha-content .fi-per-rolar    { min-height: 2.5rem; }
+  #ficha-content .fi-abas-btn     { min-height: 2.75rem; }
   #ficha-content .fi-res-x       { width: 2rem; height: 2rem; font-size: 0.8rem; }
   #ficha-content .fi-apr-btn     { min-width: 2.5rem; min-height: 2.5rem; justify-content: center; }
   #ficha-content .fi-aba,
@@ -3067,7 +3082,7 @@
    errar aqui troca o atributo da perícia sem querer. */
 @media (pointer: coarse) {
   #ficha-content .fi-per > .fi-sel--atr {
-    font-size: 0.7rem;
+    font-size: max(1rem, 16px);
     min-height: 2rem;
     padding: 0.15rem 0.25rem;
     border-color: var(--parchment3);
@@ -3134,25 +3149,58 @@
   padding: 0 0.2rem 0.1rem;
 }
 
-@media (max-width: 900px) {
-  /* no celular o passo fica na linha do dano: [dano][passos][🎲] */
-  .fi-atq {
+/* A largura da coluna decide o desenho, inclusive no desktop em duas
+   colunas. Uma única grade evita áreas órfãs criando colunas implícitas.
+   Fica DEPOIS das colunas de Passos, para elas não sobrescreverem a grade. */
+@container fi-col (max-width: 1000px) {
+  .fi-atq, .fi-atq.fi-atq--am {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     grid-template-areas:
-      "nome nome nome nome txt  sai"
+      "nome nome nome nome nome nome"
       "per  per  ext  atq  atq  atq"
       "dan  dan  pas  dbt  dbt  dbt"
       "cri  cri  cri  cbt  cbt  cbt"
-      "tip  tip  tip  alc  alc  alc";
+      "tip  tip  tip  alc  alc  alc"
+      "txt  txt  .    .    sai  sai";
+    gap: 0.35rem;
+    padding: 0.6rem 0.1rem;
   }
-  .fi-atq--am {
+  .fi-atq.fi-atq--am {
     grid-template-areas:
-      "nome nome nome nome nome sai"
+      "nome nome nome nome nome nome"
       "per  per  ext  atq  atq  atq"
       "dan  dan  pas  dbt  dbt  dbt"
       "cri  cri  cri  cbt  cbt  cbt"
-      "tip  tip  tip  tip  tip  tip";
+      "tip  tip  tip  tip  tip  tip"
+      ".    .    .    .    sai  sai";
   }
-  .fi-atq > .fi-num--passos { grid-area: pas; }
+  .fi-atq-cab { display: none; }
+  .fi-atq > .fi-txt--atq,
+  .fi-atq > .fi-atq-nomecel          { grid-area: nome; }
+  .fi-atq > .fi-sel--mini            { grid-area: per; }
+  .fi-atq > .fi-num--mini            { grid-area: ext; }
+  .fi-atq > .fi-atq-val,
+  .fi-atq > .fi-atq-rolagem          { grid-area: atq; }
+  .fi-atq > [data-campo$=".dano"]    { grid-area: dan; }
+  .fi-atq > .fi-num--passos          { grid-area: pas; }
+  .fi-atq > .fi-atq-dano             { grid-area: dbt; }
+  .fi-atq > [data-campo$=".critico"] { grid-area: cri; }
+  .fi-atq > .fi-atq-crit             { grid-area: cbt; }
+  .fi-atq > [data-campo$=".tipo"]    { grid-area: tip; }
+  .fi-atq > [data-campo$=".alcance"] { grid-area: alc; }
+  .fi-atq > .fi-atq-nota             { grid-area: txt; justify-self: start; }
+  .fi-atq > .fi-mini--x              { grid-area: sai; justify-self: end; }
+  .fi-atq > .fi-atq-ordem            { grid-column: 1 / -1; }
+  .fi-atq-ordem { flex-wrap: wrap; }
+  .fi-atq > .fi-txt, .fi-atq > .fi-sel, .fi-atq > .fi-num { min-width: 0; }
+  .fi-atq-extra-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    width: 100%;
+    min-width: 0;
+  }
+  .fi-atq-extra-fonte { grid-column: 1 / -1; grid-row: 1; width: 100%; min-width: 0; }
+  .fi-atq-extra-dado { width: 100%; min-width: 0; }
 }
 
 /* A Tabela 3-2 inteira, recolhida no cartão dos Ataques: a linha da
@@ -4242,6 +4290,18 @@
 .fi-apara .fi-txt--obs { grid-column: 1 / -1; }
 /* e o cartão de poder também */
 .fi-pod { grid-template-columns: 1fr auto auto; }
+/* As ações incluem favorito, PM, edição e exclusão. No cartão estreito
+   elas têm sua própria linha e continuam inteiras com alvos de toque. */
+@container fi-col (max-width: 600px) {
+  .fi-pod, .fi-mag { grid-template-columns: minmax(0, 1fr); }
+  .fi-pod > *, .fi-mag > * { min-width: 0; }
+  .fi-pod-acoes, .fi-mag-acoes { flex-wrap: wrap; justify-content: flex-end; }
+  .fi-apara { grid-template-columns: 3rem minmax(0, 1fr) auto; }
+  .fi-apara > .fi-txt:not(.fi-txt--obs) { grid-area: 1 / 2 / 2 / -1; }
+  .fi-apara-ordem { grid-area: 2 / 1 / 3 / 3; flex-wrap: wrap; }
+  .fi-apara > .fi-mini--x { grid-area: 2 / 3; }
+  .fi-apara > .fi-txt--obs { grid-area: 3 / 1 / 4 / -1; }
+}
 
 /* o selo ✦ do livro: aquele poder é uma habilidade MÁGICA */
 .fi-pod-magica {
@@ -4279,7 +4339,13 @@
   .fi-defesa-fontes .fi-desl-linha { grid-template-columns: 4rem 1fr auto; }
   .fi-pmlim-fontes .fi-desl-linha { grid-template-columns: 3.2rem minmax(5rem, auto) 1fr auto; }
   .fi-pmred-fontes .fi-desl-linha { grid-template-columns: 3.2rem minmax(5rem, auto) 1fr auto; }
-  .fi-cond-nuvem { left: auto; right: 0; }
+}
+@media (max-width: 900px) {
+  /* O chip curto podia jogar o texto do livro para fora da borda esquerda. */
+  .fi-cond { width: 100%; min-width: 0; flex-wrap: wrap; border-radius: 0.6rem; }
+  .fi-cond > .fi-mini--x { margin-left: auto; }
+  .fi-cond-efeito { flex: 1 1 100%; order: 1; }
+  .fi-cond-nuvem { left: 0; right: auto; width: 100%; }
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -4291,7 +4357,7 @@
 /* ── ⚠ Complicações: duas caixas, e ficam LÁ EM CIMA ────────────── */
 .fi-compl-grade {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
   gap: 0.7rem;
 }
 .fi-compl-caixa { min-width: 0; }

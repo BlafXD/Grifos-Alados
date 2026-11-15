@@ -212,6 +212,7 @@
 .tp-tabela { width: 100%; border-collapse: collapse; font-family: var(--ga-fonte-corpo); font-size: 0.9rem; }
 .tp-tabela th, .tp-tabela td {
   border: 1px solid var(--ink-faded); padding: 0.3rem 0.55rem; text-align: left; color: var(--ink);
+  overflow-wrap: anywhere;
 }
 .tp-tabela th {
   font-family: var(--ga-fonte-rotulo); font-size: 0.62rem; letter-spacing: 0.05em; background: var(--parchment3); color: var(--rust-dark);
@@ -219,11 +220,15 @@
 .tp-tabela tbody tr:nth-child(even) { background: rgba(217, 201, 168, 0.35); }
 .tp-tabela td:first-child { text-align: center; font-weight: 700; width: 4rem; }
 
-.tp-ref-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.8rem; padding: 0.6rem 0.7rem; }
+.tp-ref-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 0.8rem; padding: 0.6rem 0.7rem; }
 .tp-ref-sub { font-family: var(--ga-fonte-rotulo); font-size: 0.8rem; color: var(--rust-dark); margin: 0 0 0.35rem; }
 .tp-ref-lista { margin: 0 0 0 1.1rem; font-family: var(--ga-fonte-corpo); font-size: 0.9rem; line-height: 1.4; }
 .tp-ref-lista li { margin-bottom: 0.35rem; }
 
 @media (max-width: 560px) {
   .tp-input--mes, .tp-input--nota { flex: 1 1 100%; }
+  .tp-tabela th, .tp-tabela td { padding: 0.3rem 0.35rem; }
+  .tp-tabela th:first-child { white-space: nowrap; }
+  .tp-tabela td:first-child { width: auto; }
+  .tp-tabela td:nth-child(2) { overflow-wrap: normal; }
 }

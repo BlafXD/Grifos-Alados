@@ -4703,9 +4703,11 @@
         </select>
         <input class="fi-num fi-num--mini" type="number" value="${a.extra}" data-campo="ataques.${i}.extra"
                title="Bônus extra deste ataque (arma mágica, poder…)">
-        <button type="button" class="fi-atq-val" data-acao="rolar-ataque" data-i="${i}"
-                title="Rolar 1d20 ${sinal(valorAtaque(f, a))} de ataque">${sinal(valorAtaque(f, a))} 🎲</button>
-        ${botaoBd('ataque:' + i, a.nome || 'o ataque')}
+        <span class="fi-atq-rolagem">
+          <button type="button" class="fi-atq-val" data-acao="rolar-ataque" data-i="${i}"
+                  title="Rolar 1d20 ${sinal(valorAtaque(f, a))} de ataque">${sinal(valorAtaque(f, a))} 🎲</button>
+          ${botaoBd('ataque:' + i, a.nome || 'o ataque')}
+        </span>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.dano)}" data-campo="ataques.${i}.dano"
                placeholder="1d8+3" autocomplete="off">
         <input class="fi-num fi-num--passos${a.passos ? ' fi-num--andou' : ''}" type="number" min="-12" max="12" step="1"
