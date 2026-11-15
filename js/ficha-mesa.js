@@ -42,7 +42,8 @@
   let gaveta = {};              // fichaId → ficha            (a conta)
   let pendentes = {};           // fichaId → { dono, grupos:Set, ficha }
   let timer = null;
-  let ultimoErro = '';
+  let erros = {};               // operação/destino → aviso ainda não resolvido
+  let sessao = 0;               // invalida respostas de outra conta ou mesa
   //  A CONFERÊNCIA (15/09/2026). Entrar na conta ou na mesa mandava a
   //  cópia deste navegador por cima do banco, sem olhar — e um navegador
   //  com a ficha de dias atrás apagava o que outro aparelho tinha
@@ -61,6 +62,38 @@
   function vejoTodas() { return !!(mesa && (mesa.papel === 'mestre' || mesa.papel === 'auxiliar')); }
   function meuUid() { return (mesa && mesa.usuario) ? mesa.usuario.uid : ''; }
 
+  // Um erro pertence à operação que falhou. Salvar na conta não prova
+  // que a mesa aceitou a ficha; um sucesso no MESMO destino resolve o aviso.
+  function avisarEstado() {
+    try {
+      if (window.GA_Ficha && window.GA_Ficha.mesaMudou) window.GA_Ficha.mesaMudou();
+    } catch (e) { console.warn('[ficha-mesa] estado:', e && e.message); }
+  }
+  function registrarErro(chave, contexto, err, caminho) {
+    const mensagem = contexto + ': ' + ((err && (err.message || err.code)) || 'erro desconhecido');
+    console.warn('[ficha-mesa] ' + (caminho || chave) + ':', mensagem);
+    if (erros[chave] === mensagem) return;
+    erros[chave] = mensagem;
+    avisarEstado();
+  }
+  function limparErro(chave) {
+    if (!Object.prototype.hasOwnProperty.call(erros, chave)) return;
+    delete erros[chave];
+    avisarEstado();
+  }
+  function acompanharEscrita(promessa, caminho, contexto) {
+    const nestaSessao = sessao;
+    promessa.then(() => {
+      if (nestaSessao === sessao) limparErro('escrita:' + caminho);
+    }, err => {
+      if (nestaSessao === sessao) registrarErro('escrita:' + caminho, contexto, err);
+    });
+  }
+  function destinoDaEscrita(caminho, ficha) {
+    const destino = caminho.startsWith('mesas/') ? 'na mesa “' + caminho.split('/')[1] + '”' : 'na sua conta';
+    return 'Não foi possível salvar “' + (ficha.nome || 'Ficha sem nome') + '” ' + destino;
+  }
+
   // ── ASSINATURA ───────────────────────────────────────────────────
   //  O caminho muda com o papel: quem é mestre escuta `fichas` inteiro,
   //  quem é jogador escuta `fichas/<meu uid>`. Trocar de papel (o mestre
@@ -70,37 +103,41 @@
     const b = db();
     if (!b) return;
     const sala = mesa.mesaId;
-    const escopo = vejoTodas() ? 'todas' : meuUid();
+    const uid = meuUid(), todas = vejoTodas();
+    const escopo = (todas ? 'todas:' : 'propria:') + uid;
     if (sala === salaLigada && escopo === escopoLigado) return;
     desligar();
     salaLigada = sala; escopoLigado = escopo;
 
-    const caminho = 'mesas/' + sala + '/fichas' + (vejoTodas() ? '' : '/' + meuUid());
-    refFichas = b.ref(caminho);
+    const caminho = 'mesas/' + sala + '/fichas' + (todas ? '' : '/' + uid);
+    const ref = refFichas = b.ref(caminho);
     mesaChegou = false;
+    pedirConferencia();
     cbFichas = refFichas.on('value', snap => {
+      if (refFichas !== ref) return;
+      limparErro('leitura:mesa');
       const v = snap.val() || {};
-      remotas = vejoTodas() ? v : { [meuUid()]: v };
+      remotas = todas ? v : { [uid]: v };
       mesaChegou = true;
       entregar();
       talvezConferir();
     }, err => {
-      // "sem permissão" aqui não é falha: é a resposta certa para quem
-      // não é da mesa, ou para a mesa que ainda não publicou as regras.
-      ultimoErro = (err && err.message) || '';
-      console.warn('[ficha-mesa] leitura:', ultimoErro);
-      mesaChegou = true;            // não há o que esperar dela
-      talvezConferir();
+      if (refFichas !== ref) return;
+      // Recusa não significa pasta vazia. A conferência só pode decidir
+      // o que subir depois de conhecer as cópias do banco.
+      mesaChegou = false;
+      pedirConferencia();
+      registrarErro('leitura:mesa', 'Não foi possível ler as fichas da mesa “' + sala + '”', err, caminho);
     });
     // Até 15/09/2026 aqui se mandava TUDO o que é meu, por cima do que
     // estivesse na mesa. Agora quem decide é a conferência, com a mesa
     // e a gaveta já respondidas.
-    pedirConferencia();
   }
 
   function desligar() {
     if (refFichas && cbFichas) { try { refFichas.off('value', cbFichas); } catch (e) {} }
     refFichas = null; cbFichas = null; salaLigada = ''; escopoLigado = '';
+    limparErro('leitura:mesa');
     mesaChegou = false;
     if (Object.keys(remotas).length) { remotas = {}; entregar(); }
   }
@@ -116,24 +153,27 @@
     if (uidGaveta === meuUid()) return;
     desligarGaveta();
     uidGaveta = meuUid();
-    refGaveta = b.ref('usuarios/' + uidGaveta + '/fichas');
+    const ref = refGaveta = b.ref('usuarios/' + uidGaveta + '/fichas');
     gavetaChegou = false;
     cbGaveta = refGaveta.on('value', snap => {
+      if (refGaveta !== ref) return;
+      limparErro('leitura:conta');
       gaveta = snap.val() || {};
       gavetaChegou = true;
       entregarGaveta();
       talvezConferir();
     }, err => {
-      ultimoErro = (err && err.message) || '';
-      console.warn('[ficha-mesa] gaveta:', ultimoErro);
-      gavetaChegou = true;          // sem gaveta, a conferência segue só com a mesa
-      talvezConferir();
+      if (refGaveta !== ref) return;
+      gavetaChegou = false;
+      pedirConferencia();
+      registrarErro('leitura:conta', 'Não foi possível ler as fichas da sua conta', err);
     });
   }
 
   function desligarGaveta() {
     if (refGaveta && cbGaveta) { try { refGaveta.off('value', cbGaveta); } catch (e) {} }
     refGaveta = null; cbGaveta = null; uidGaveta = '';
+    limparErro('leitura:conta');
     gavetaChegou = false;
     if (Object.keys(gaveta).length) { gaveta = {}; entregarGaveta(); }
   }
@@ -219,10 +259,7 @@
           p.grupos.forEach(g => { patch[g] = valorLimpo(p.ficha[g]); });
           promessa = b.ref(base).update(patch);
         }
-        promessa.catch(e => {
-          ultimoErro = e.message;
-          console.warn('[ficha-mesa] não deu para publicar em ' + base + ':', e.message);
-        });
+        acompanharEscrita(promessa, base, destinoDaEscrita(base, p.ficha));
       });
     });
   }
@@ -233,13 +270,14 @@
   function guardarNaConta(ficha) {
     const b = db();
     if (!b || !logado() || !ficha || !ficha.id) return;
-    b.ref('usuarios/' + meuUid() + '/fichas/' + ficha.id)
+    const caminho = 'usuarios/' + meuUid() + '/fichas/' + ficha.id;
+    const promessa = b.ref(caminho)
       .set(Object.assign(limpar(ficha), {
         dono: meuUid(),
         autor: (mesa.usuario.displayName || mesa.usuario.email || ''),
         atualizadoEm: firebase.database.ServerValue.TIMESTAMP,
-      }))
-      .catch(e => console.warn('[ficha-mesa] gaveta:', e && e.message));
+      }));
+    acompanharEscrita(promessa, caminho, destinoDaEscrita(caminho, ficha));
   }
 
   // O Realtime Database recusa `undefined` e transforma array com
@@ -349,7 +387,7 @@
         escreve: !!(mesa && mesa.escreve),
         sala: mesa ? mesa.mesaId : '',
         meuUid: meuUid(),
-        erro: ultimoErro,
+        erro: Object.values(erros).join(' · '),
       };
     },
   };
@@ -370,12 +408,25 @@
     }
     window.GA_Mesa.aoMudar(e => {
       const antes = ligado(), antesLogado = logado();
+      const mudouSessao = meuUid() !== ((e.usuario && e.usuario.uid) || '') ||
+        (mesa && mesa.mesaId !== e.mesaId);
+      if (mudouSessao) {
+        sessao++;
+        clearTimeout(timer);
+        pendentes = {};
+        erros = {};
+        // As edições locais continuam no aparelho. A nova conta refaz
+        // a conferência; não herda envios nem respostas da anterior.
+        gavetaChegou = false;
+        mesaChegou = false;
+      }
       mesa = e;
+      // Suspende a aplicação de snapshots antes de soltar as assinaturas
+      // antigas. A nova sessão precisa receber também a conta novamente.
+      if (mudouSessao || (!antes && ligado()) || (!antesLogado && logado())) pedirConferencia();
+      if (mudouSessao) { desligar(); desligarGaveta(); }
       ligar();
       ligarGaveta();
-      // acabou de entrar na mesa, ou acabou de entrar na conta: confere
-      // com o banco ANTES de subir qualquer coisa (15/09/2026)
-      if ((!antes && ligado()) || (!antesLogado && logado())) pedirConferencia();
       try {
         if (window.GA_Ficha && window.GA_Ficha.mesaMudou) window.GA_Ficha.mesaMudou();
       } catch (err) { console.warn('[ficha-mesa]', err && err.message); }
