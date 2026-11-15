@@ -201,7 +201,8 @@ window.NOTICIAS_DADOS = {
           ]
         }
       ],
-      "arquivada": true
+      "arquivada": true,
+      "ignorarBancoAte": 1793635002791
     },
     {
       "id": "nuevo-sol",

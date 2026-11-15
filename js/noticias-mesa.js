@@ -273,7 +273,9 @@
   //  campanha de estranho é invisível: um nome novo pode cair num id
   //  que já existe. Aqui diz-se "pode", e quem recusa é o banco — o
   //  recado do erro então sugere trocar o nome.
-  //  O DONO DO SITE NÃO ENTRA AQUI, de propósito. A regra do banco
+  //  Fora dos acervos mantidos pelo site, o DONO NÃO ENTRA AQUI.
+  //  Nos acervos ele pode editar sem ser mestre da sala antiga.
+  //  Nas demais campanhas, a regra do banco
   //  deixa-o escrever em qualquer campanha (é o que o faz poder apagar
   //  abuso), mas dizer "pode" nesta função ligaria o SALVAMENTO
   //  AUTOMÁTICO: ele abriria a gazeta de um estranho na edição, uma
@@ -282,6 +284,9 @@
   //  confirmação — não no teclado.
   function possoEscrever(id) {
     if (!configurado() || !meuUid()) return false;
+    const acervo = ((window.NOTICIAS_DADOS || {}).campanhas || [])
+      .some(c => c.id === id && c.arquivada === true);
+    if (acervo) return souDono();
     //  A GAZETA SEGUE O DONO DA MESA (F3). Se esta é a campanha da mesa
     //  aberta e ela TEM dono, só o mestre dela escreve na gazeta — é o que
     //  a regra do banco passou a exigir também. Sem isto, um jogador (ou
@@ -312,6 +317,8 @@
     if (!b || !uid) return;
     const agora_ = fila; fila = {};
     Object.keys(agora_).forEach(id => {
+      // A conta pode mudar enquanto a escrita aguarda os 700 ms.
+      if (!possoEscrever(id)) return;
       const camp = agora_[id];
       const existe = !!corpos[id];
       const base = 'campanhas/' + id + '/';

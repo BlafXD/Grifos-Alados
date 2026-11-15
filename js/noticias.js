@@ -118,9 +118,11 @@
       const r = remotas[id] || {};
       const i = saida.findIndex(c => c.id === id);
       const antes = i >= 0 ? saida[i] : null;
-      // O acervo de uma campanha encerrada é publicado com o site.
-      // Uma cópia antiga do banco não pode substituir esse conteúdo.
-      if (antes && antes.arquivada) return;
+      // Ignora a cópia anterior à consolidação do acervo. Depois da
+      // primeira edição do dono, atualizadoEm permite usar o banco de novo.
+      if (antes && antes.arquivada && (r.semCorpo ||
+          !Number.isFinite(antes.ignorarBancoAte) ||
+          !(r.atualizadoEm > antes.ignorarBancoAte))) return;
       const carimbo = {
         daMesa: true,
         dono: r.dono || '',
@@ -144,6 +146,10 @@
             })),
             hoje: hojeDe(r.hoje),
           }, carimbo);
+      if (antes && antes.arquivada) {
+        viva.arquivada = true;
+        viva.ignorarBancoAte = antes.ignorarBancoAte;
+      }
       if (i >= 0) saida[i] = viva; else saida.push(viva);
     });
     return { campanhas: saida };
@@ -172,6 +178,7 @@
         id:   c.id   || ('campanha-' + (i + 1)),
         nome: c.nome || ('Campanha ' + (i + 1)),
         arquivada: c.arquivada === true,
+        ignorarBancoAte: Number.isFinite(c.ignorarBancoAte) ? c.ignorarBancoAte : null,
         anos: Array.isArray(c.anos) ? c.anos : [],
         hoje: hojeDe(c.hoje),
       })),
@@ -227,9 +234,16 @@
 
   function mesaNoticias() { return window.GA_NoticiasMesa || null; }
   function podePublicar(id) {
-    if (dados.campanhas.some(c => c.id === id && c.arquivada)) return false;
     const m = mesaNoticias();
+    if (dados.campanhas.some(c => c.id === id && c.arquivada)) {
+      return !!(m && m.souDono() && m.possoEscrever(id));
+    }
     return !!(m && m.possoEscrever(id));
+  }
+
+  function podeEditarAtual() {
+    const c = campanhaAtual();
+    return !c || !c.arquivada || !!(mesaNoticias() && mesaNoticias().souDono());
   }
 
   //  O ARQUIVO GUARDA TUDO O QUE É MEU. Trocar de nome, criar, remover e
@@ -245,7 +259,7 @@
         // fica de fora só o que eu SEI ser de outra pessoa. Deslogado
         // não se sabe de ninguém — e perder a própria gazeta do backup
         // por causa disso seria bem pior do que carregar uma a mais.
-        .filter(c => !(c.dono && meuUid && c.dono !== meuUid))
+        .filter(c => c.arquivada || !(c.dono && meuUid && c.dono !== meuUid))
         // e fica de fora a campanha da vitrine que ainda é só um nome:
         // salvá-la no arquivo gravaria uma campanha VAZIA de outra
         // pessoa. A que já estava no arquivo continua, com o miolo dela.
@@ -253,7 +267,7 @@
         // o "hoje" só entra no arquivo quando existe: campanha sem data
         // continua escrita exatamente como antes
         .map(c => Object.assign({ id: c.id, nome: c.nome, anos: c.anos },
-          c.arquivada ? { arquivada: true } : {}, c.hoje ? { hoje: c.hoje } : {})),
+          c.arquivada ? { arquivada: true, ignorarBancoAte: c.ignorarBancoAte } : {}, c.hoje ? { hoje: c.hoje } : {})),
     };
   }
 
@@ -264,6 +278,7 @@
   }
 
   async function salvar() {
+    if (!podeEditarAtual()) return;
     guardarNoArquivo();
     const c = campanhaAtual();
     if (c && podePublicar(c.id)) {
@@ -431,6 +446,8 @@
   function mesaMudou() {
     conferirPublicacao();
     pintarLinhaMesa();
+    if ((campanhaAtual() || {}).arquivada) renderizar();
+    sincronizarBotaoEdicao();
   }
 
   //  Esta campanha tem gazeta? É o que o aviso de "🗑 Encerrar a
@@ -454,6 +471,8 @@
   //  RENDERIZAÇÃO
   // ══════════════════════════════════════════════════════════════════
   function renderizar() {
+    if (!podeEditarAtual()) edicaoAtiva = false;
+    sincronizarBotaoEdicao();
     const wrapper = document.querySelector('#noticias .wrapper');
     if (!wrapper) return;
     wrapper.innerHTML = '';
@@ -600,7 +619,9 @@
   function textoDaLinha(e, c) {
     if (c.arquivada) {
       return '📜 <strong>Acervo da campanha encerrada</strong>' +
-        (edicaoAtiva ? ' — use “Baixar arquivo” para guardar as alterações e publicá-las com o site.' : '');
+        (edicaoAtiva && podePublicar(c.id)
+          ? ' — suas alterações são salvas online. Use ↑ e ↓ para ordenar as notícias.' : '') +
+        (e.erro ? '<span class="nc-mesa-erro">⚠ ' + recadoDoBanco(e.erro) + '</span>' : '');
     }
     const r        = remotas[c.id];
     const doBanco  = !!r;
@@ -869,6 +890,7 @@
     if (!btn) return;
 
     const acao = btn.dataset.acao;
+    if (!podeEditarAtual() && !['camp-sel', 'camp-link', 'painel-dono', 'baixar'].includes(acao)) return;
     const ai   = btn.dataset.ai !== undefined ? +btn.dataset.ai : null;
     const ni   = btn.dataset.ni !== undefined ? +btn.dataset.ni : null;
     const ci   = btn.dataset.ci !== undefined ? +btn.dataset.ci : null;
@@ -1569,6 +1591,7 @@
     btn.className = 'nc-btn-edicao';
     btn.textContent = '✏ Editar Notícias';
     btn.addEventListener('click', () => {
+      if (!podeEditarAtual()) return;
       edicaoAtiva = !edicaoAtiva;
       sincronizarBotaoEdicao();
       renderizar();
@@ -1582,7 +1605,7 @@
     if (!btn) return;
     const sec = document.getElementById('noticias');
     const visivel = sec && sec.classList.contains('active');
-    btn.style.display = visivel ? 'block' : 'none';
+    btn.style.display = visivel && podeEditarAtual() ? 'block' : 'none';
     if (edicaoAtiva) {
       btn.classList.add('nc-btn-edicao--ativa');
       btn.textContent = '✔ Sair da Edição';
