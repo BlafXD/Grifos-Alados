@@ -38,6 +38,21 @@ window.NOTICIAS_DADOS = {
               "titulo": "O Pilar que Respira"
             },
             {
+              "corpo": "A capital do Reinado foi palco de uma tragédia sem precedentes nesta semana. Um único lefou realizou um ataque que resultou em mais de oitenta vítimas fatais, além de deixar centenas de cidadãos em estado de choque.\n\nSegundo relatos dos sobreviventes, a criatura teria liberado uma vasta nuvem de origem desconhecida, responsável por provocar episódios de paranoia, alucinações e surtos psicóticos entre os presentes. Testemunhas afirmam ter visto um adolescente alertando sobre a presença de um \"lefou ou lefeu\" antes que o caos se instaurasse pelas ruas da cidade.\n\nDiversos depoimentos também mencionam repetidamente o nome Gabriel Lobo, cuja possível ligação com os acontecimentos ainda permanece incerta. As autoridades de Zhakarin iniciaram uma investigação em larga escala e anunciaram cooperação com o grupo da Imperatriz de Jade para localizar o responsável pelo ataque.\n\nEnquanto a população tenta se recuperar do ocorrido, cresce o temor de que o incidente seja apenas o prenúncio de eventos ainda mais graves.",
+              "data": "Zhakarov, 4 de Pomo de 1424",
+              "id": "mvzfyh6iishl",
+              "local": "Zhakarov",
+              "ornamento": true,
+              "quando": {
+                "dia": 4,
+                "forma": "curta",
+                "mes": 2
+              },
+              "span": 12,
+              "tag": "Manchete - Ano corrente",
+              "titulo": "Ataque de Lefou em Zhakarin deixa mais de 80 mortos e mergulha a capital em desespero"
+            },
+            {
               "corpo": "A capital do Reinado foi alvo de um ataque coordenado e sem precedentes, atribuído a supostas crias da Tormenta, deixando um rastro de destruição, feridos e mais de 150 mortos.\n\nTestemunhas relatam que quatro figuras surgiram simultaneamente em diferentes pontos da cidade, indicando uma ação planejada.\n\nEntre os locais atingidos estão:\n\nBiblioteca dedicada a Tanna-Toh\nO local sagrado foi incendiado, deixando diversos estudiosos feridos.\n\nOrfanato mantido por devotos de Lena\nCrianças ficaram gravemente feridas após o ataque.\n\nCentro comercial local\nSofreu danos menores em comparação aos demais pontos.\n\nEntrada sul de Valkaria\nOnde ocorreu um confronto entre um pirata e uma das figuras. O pirata acabou morto por sua própria companheira, levantando suspeitas de controle mental.\n\nAo final do ataque, uma chuva rubra caiu sobre a cidade, ferindo inúmeros cidadãos e contribuindo para o alto número de vítimas fatais.\n\nSuspeitas e Investigação\nAutoridades apontam como principal suspeito o criminoso procurado Gabriel Lobo, cuja recompensa foi aumentada em 25.000 TO$.\n\nUm guarda local, que preferiu não se identificar, declarou: \"Se eu tivesse confiado nele…\"\n\nSegundo informações, o guarda teria recebido um aviso prévio de um informante sobre o ataque, mas não levou a denúncia adiante. Medidas disciplinares estão sendo consideradas.\n\nResposta do Reinado\nA situação mobilizou altas autoridades. A própria Regente de Valkaria deverá intervir no caso, com apoio de representantes de Lin-Wu.\n\nTambém foram convocadas a Imperatriz de Jade, Mikhela, e sua filha, Ysabel, para auxiliar nas investigações e possíveis retaliações.\n\nEstado Atual\nValkaria encontra-se em alerta máximo. Cidadãos são aconselhados a evitar aglomerações e reportar qualquer atividade suspeita às autoridades locais.",
               "data": "Valkaria, 28º dia de Pomo (Fevereiro) — Ano 1424",
               "id": "n1424a",
@@ -185,7 +200,8 @@ window.NOTICIAS_DADOS = {
             }
           ]
         }
-      ]
+      ],
+      "arquivada": true
     },
     {
       "id": "nuevo-sol",

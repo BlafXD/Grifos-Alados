@@ -118,6 +118,9 @@
       const r = remotas[id] || {};
       const i = saida.findIndex(c => c.id === id);
       const antes = i >= 0 ? saida[i] : null;
+      // O acervo de uma campanha encerrada é publicado com o site.
+      // Uma cópia antiga do banco não pode substituir esse conteúdo.
+      if (antes && antes.arquivada) return;
       const carimbo = {
         daMesa: true,
         dono: r.dono || '',
@@ -168,6 +171,7 @@
       campanhas: camps.map((c, i) => ({
         id:   c.id   || ('campanha-' + (i + 1)),
         nome: c.nome || ('Campanha ' + (i + 1)),
+        arquivada: c.arquivada === true,
         anos: Array.isArray(c.anos) ? c.anos : [],
         hoje: hojeDe(c.hoje),
       })),
@@ -223,6 +227,7 @@
 
   function mesaNoticias() { return window.GA_NoticiasMesa || null; }
   function podePublicar(id) {
+    if (dados.campanhas.some(c => c.id === id && c.arquivada)) return false;
     const m = mesaNoticias();
     return !!(m && m.possoEscrever(id));
   }
@@ -247,7 +252,8 @@
         .filter(c => !(c.semCorpo && !jaNoArquivo[c.id]))
         // o "hoje" só entra no arquivo quando existe: campanha sem data
         // continua escrita exatamente como antes
-        .map(c => Object.assign({ id: c.id, nome: c.nome, anos: c.anos }, c.hoje ? { hoje: c.hoje } : {})),
+        .map(c => Object.assign({ id: c.id, nome: c.nome, anos: c.anos },
+          c.arquivada ? { arquivada: true } : {}, c.hoje ? { hoje: c.hoje } : {})),
     };
   }
 
@@ -592,6 +598,10 @@
   }
 
   function textoDaLinha(e, c) {
+    if (c.arquivada) {
+      return '📜 <strong>Acervo da campanha encerrada</strong>' +
+        (edicaoAtiva ? ' — use “Baixar arquivo” para guardar as alterações e publicá-las com o site.' : '');
+    }
     const r        = remotas[c.id];
     const doBanco  = !!r;
     //  SÓ SE SABE DE QUEM É quando o corpo desceu. A campanha que
