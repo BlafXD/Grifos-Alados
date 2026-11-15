@@ -121,9 +121,13 @@ numa porta (útil para testar em celular na mesma rede):
 npx http-server -p 8080 -c-1 .
 ```
 
-As **Notícias** se publicam pelo botão **⬇ Baixar arquivo** da própria aba, que gera o
-`js/noticias-data.js` pelo navegador — depois é só commit e push. (Existe um
-`backend/server.py` em Flask que faz o mesmo automaticamente, mas ele é opcional.)
+As **Notícias** são lidas e salvas exclusivamente no **Firebase**. A página mostra
+“Carregando notícias…” até receber a gazeta; falhas de conexão oferecem nova tentativa.
+Entre com sua conta para editar suas campanhas. Textos e ordem são salvos online,
+sem commit. **⬇ Baixar backup** exporta um JSON das campanhas já carregadas.
+`data/noticias.json` é apenas uma cópia de segurança histórica e não é lido pelo site.
+A gazeta padrão é indicada por seu ID em `noticias-mesa.js`; seu conteúdo vem do banco.
+As notícias precisam de conexão, mesmo usando um servidor local.
 
 ## 🗂️ Estrutura
 
@@ -134,10 +138,10 @@ Grifos-Alados/
 ├── css/                ← um arquivo por aba
 ├── js/                 ← lógica e dados (Vanilla JS, sem framework nem build)
 ├── fonts/              ← fontes embutidas, para funcionar offline
-├── data/               ← noticias.json
+├── data/               ← backup histórico das notícias (não carregado pelo site)
 ├── img/                ← imagens do README
 ├── Fichas/             ← modelo de ficha T20 em branco (PDF)
-└── backend/            ← server.py, opcional, só para as Notícias
+└── backend/            ← servidor estático local opcional
 ```
 
 ## 🛠️ Tecnologia

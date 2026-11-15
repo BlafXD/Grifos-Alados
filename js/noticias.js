@@ -7,10 +7,8 @@
 //  guarda os seus anos e notícias. A barra de abas no topo escolhe
 //  qual noticiário está aberto; a escolha fica no localStorage.
 //
-//  Lê:    js/noticias-data.js  (window.NOTICIAS_DADOS)
-//  Salva: data/noticias.json + js/noticias-data.js (POST /api/noticias),
-//         ou pelo botão "⬇ Baixar arquivo", que gera o mesmo
-//         js/noticias-data.js pelo navegador — sem precisar do server.py.
+//  Leitura e publicação exclusivamente no Firebase, via noticias-mesa.js.
+//  A exportação JSON é apenas um backup, nunca uma fonte de carregamento.
 //
 //  As DATAS são do Calendário Artoniano (js/calendario.js): a de cada
 //  notícia se escolhe num mês de Valk a Leen, e cada campanha pode ter o
@@ -26,17 +24,11 @@
   let dados       = { campanhas: [] };
   let campAtiva   = 0;              // índice da campanha aberta
   let edicaoAtiva = false;
+  let demorouInicial = false;
 
-  // ── O QUE VEM DO BANCO ───────────────────────────────────────────
-  //  A gazeta tem DOIS chãos, e a ordem importa: primeiro o arquivo
-  //  `js/noticias-data.js` (que funciona offline, do disco, sem conta
-  //  nenhuma), depois o banco POR CIMA — cada campanha publicada
-  //  substitui a do arquivo, e as que só existem no banco entram no
-  //  fim. Quem cuida do Firebase é o `js/noticias-mesa.js`; aqui só se
-  //  desenha e se manda escrever.
-  let remotas = {};                 // id → { nome, dono, noticias, autor }
-  let meuUid  = '';
-  let doArquivo = { campanhas: [] };   // o que veio do noticias-data.js, intacto
+  // O banco é a única fonte. Edições aguardando confirmação ficam em memória.
+  let remotas = {};
+  let usuarioAtual = '';
 
   // ── ID ÚNICO ─────────────────────────────────────────────────────
   function uid() {
@@ -65,7 +57,7 @@
   // O "📅 hoje" de uma campanha, limpo (dia, mês e ano), ou null. É null,
   // e não chave ausente, quando não há data: o Object.assign que segura a
   // minha versão durante o eco do banco precisa copiar o "tirei a data".
-  //  Sem o calendário carregado ele passa como veio — o arquivo não pode
+  //  Sem o calendário carregado ele passa como veio — a edição não pode
   //  perder a data do mestre só porque um script falhou.
   function hojeDe(h) {
     const cal = calendario();
@@ -77,6 +69,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     carregarNoticias();
     criarBotaoEdicao();
+    setTimeout(() => { demorouInicial = true; renderizar(); }, 12000);
 
     // Atualiza visibilidade do botão ao trocar de seção
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -86,73 +79,25 @@
     });
   });
 
-  // ── CARREGAR ─────────────────────────────────────────────────────
-  //  Lê as notícias da variável window.NOTICIAS_DADOS, definida pelo
-  //  arquivo js/noticias-data.js. Como é um <script>, funciona mesmo
-  //  com o index.html aberto offline (sem o server.py).
+  // O primeiro desenho contém apenas o estado de carregamento.
   function carregarNoticias() {
-    doArquivo = normalizar(window.NOTICIAS_DADOS);
     dados = juntarComAMesa();
-    if (!dados.campanhas.length) {
-      console.warn('[noticias] noticias-data.js não encontrado ou sem campanhas.');
-    }
     campAtiva = indiceCampanhaSalva();
     renderizar();
   }
 
-  // O arquivo é a base; o banco entra por cima. Uma campanha publicada
-  // manda no nome e nas notícias (é a versão viva dela); as que só
-  // existem no banco entram no fim, na ordem em que o banco as devolve.
-  //  ARMADILHA DE 02/11/2026, com a gazeta preguiçosa. Uma campanha da
-  //  vitrine chega primeiro SÓ COM O NOME (`semCorpo`), porque as
-  //  notícias dela só descem quando a aba é aberta. Se o stub entrasse
-  //  por cima da campanha do arquivo, as notícias do `noticias-data.js`
-  //  piscariam para fora da tela — e ficariam fora de vez, se aquela
-  //  aba nunca fosse aberta. Então o stub NÃO mexe no miolo: ele só
-  //  carimba de quem é a campanha e se ela está na vitrine.
   function juntarComAMesa() {
-    // as mesmas referências, não cópias: o que for editado numa campanha
-    // do arquivo cai no arquivo na hora, e não se perde no próximo eco
-    const saida = doArquivo.campanhas.slice();
-    Object.keys(remotas).forEach(id => {
+    return { campanhas: Object.keys(remotas).map(id => {
       const r = remotas[id] || {};
-      const i = saida.findIndex(c => c.id === id);
-      const antes = i >= 0 ? saida[i] : null;
-      // Ignora a cópia anterior à consolidação do acervo. Depois da
-      // primeira edição do dono, atualizadoEm permite usar o banco de novo.
-      if (antes && antes.arquivada && (r.semCorpo ||
-          !Number.isFinite(antes.ignorarBancoAte) ||
-          !(r.atualizadoEm > antes.ignorarBancoAte))) return;
-      const carimbo = {
-        daMesa: true,
-        dono: r.dono || '',
-        autor: r.autor || '',
-        publica: !!r.publica,
-        semCorpo: !!r.semCorpo,
+      return {
+        id, nome: r.nome || id,
+        anos: r.semCorpo ? [] : paraLista(r.noticias).map(a => ({
+          ano: (a && a.ano) || '', noticias: paraLista(a && a.noticias),
+        })),
+        hoje: hojeDe(r.hoje), daMesa: true, dono: r.dono || '',
+        autor: r.autor || '', publica: !!r.publica, semCorpo: !!r.semCorpo,
       };
-      const viva = r.semCorpo
-        ? Object.assign({
-            id: id,
-            nome: r.nome || (antes && antes.nome) || id,
-            anos: (antes && antes.anos) || [],
-            hoje: (antes && antes.hoje) || null,
-          }, carimbo)
-        : Object.assign({
-            id: id,
-            nome: r.nome || id,
-            anos: paraLista(r.noticias).map(a => ({
-              ano: (a && a.ano) || '',
-              noticias: paraLista(a && a.noticias),
-            })),
-            hoje: hojeDe(r.hoje),
-          }, carimbo);
-      if (antes && antes.arquivada) {
-        viva.arquivada = true;
-        viva.ignorarBancoAte = antes.ignorarBancoAte;
-      }
-      if (i >= 0) saida[i] = viva; else saida.push(viva);
-    });
-    return { campanhas: saida };
+    }) };
   }
 
   // O Realtime Database devolve array como objeto de chaves numéricas
@@ -164,25 +109,6 @@
       return Object.keys(v).sort((a, b) => Number(a) - Number(b)).map(k => v[k]).filter(x => x != null);
     }
     return [];
-  }
-
-  // Aceita o formato novo ({campanhas:[…]}) e também o antigo
-  // ({anos:[…]}, de quando o site tinha um noticiário só).
-  function normalizar(d) {
-    let camps = [];
-    if (d && Array.isArray(d.campanhas))  camps = d.campanhas;
-    else if (d && Array.isArray(d.anos))  camps = [{ nome: 'Campanha', anos: d.anos }];
-
-    return {
-      campanhas: camps.map((c, i) => ({
-        id:   c.id   || ('campanha-' + (i + 1)),
-        nome: c.nome || ('Campanha ' + (i + 1)),
-        arquivada: c.arquivada === true,
-        ignorarBancoAte: Number.isFinite(c.ignorarBancoAte) ? c.ignorarBancoAte : null,
-        anos: Array.isArray(c.anos) ? c.anos : [],
-        hoje: hojeDe(c.hoje),
-      })),
-    };
   }
 
   function campanhaAtual() { return dados.campanhas[campAtiva] || null; }
@@ -218,57 +144,21 @@
     else   { try { localStorage.removeItem(CAMP_KEY); } catch (e) {} }
   }
 
-  // ── SALVAR ───────────────────────────────────────────────────────
-  //  DOIS CAMINHOS, e o primeiro que servir é o que vale:
-  //
-  //   1. a GAZETA AO VIVO — se esta campanha é minha (ou ainda não tem
-  //      dono) e eu entrei com o Google, ela sobe para `campanhas/<id>`
-  //      e a manchete aparece na hora para quem estiver com o site
-  //      aberto. É a etapa 5 do plano da mesa;
-  //   2. o ARQUIVO — o caminho de sempre, para quem não tem banco: o
-  //      server.py grava, e sem ele fica o "⬇ Baixar arquivo".
-  //
-  //  O caminho 2 não foi aposentado de propósito: é ele que mantém a
-  //  gazeta de pé offline, do disco e sem conta nenhuma.
+  // ── SALVAR NO FIREBASE ───────────────────────────────────────────
   let esperandoPublicar = false;
 
   function mesaNoticias() { return window.GA_NoticiasMesa || null; }
   function podePublicar(id) {
     const m = mesaNoticias();
-    if (dados.campanhas.some(c => c.id === id && c.arquivada)) {
-      return !!(m && m.souDono() && m.possoEscrever(id));
-    }
     return !!(m && m.possoEscrever(id));
   }
-
+  function podeCriar() {
+    const e = mesaNoticias() ? mesaNoticias().estado() : null;
+    return !!(e && e.configurado && e.usuario);
+  }
   function podeEditarAtual() {
     const c = campanhaAtual();
-    return !c || !c.arquivada || !!(mesaNoticias() && mesaNoticias().souDono());
-  }
-
-  //  O ARQUIVO GUARDA TUDO O QUE É MEU. Trocar de nome, criar, remover e
-  //  reordenar campanha mexe na LISTA, e a lista do banco é um mapa sem
-  //  ordem — se o arquivo não acompanhasse, o próximo eco de qualquer
-  //  campanha desfaria essas mudanças na tela. A gazeta de outra pessoa
-  //  fica de fora: ela é dela, e o meu arquivo não a carrega.
-  function guardarNoArquivo() {
-    const jaNoArquivo = {};
-    doArquivo.campanhas.forEach(c => { jaNoArquivo[c.id] = true; });
-    doArquivo = {
-      campanhas: dados.campanhas
-        // fica de fora só o que eu SEI ser de outra pessoa. Deslogado
-        // não se sabe de ninguém — e perder a própria gazeta do backup
-        // por causa disso seria bem pior do que carregar uma a mais.
-        .filter(c => c.arquivada || !(c.dono && meuUid && c.dono !== meuUid))
-        // e fica de fora a campanha da vitrine que ainda é só um nome:
-        // salvá-la no arquivo gravaria uma campanha VAZIA de outra
-        // pessoa. A que já estava no arquivo continua, com o miolo dela.
-        .filter(c => !(c.semCorpo && !jaNoArquivo[c.id]))
-        // o "hoje" só entra no arquivo quando existe: campanha sem data
-        // continua escrita exatamente como antes
-        .map(c => Object.assign({ id: c.id, nome: c.nome, anos: c.anos },
-          c.arquivada ? { arquivada: true, ignorarBancoAte: c.ignorarBancoAte } : {}, c.hoje ? { hoje: c.hoje } : {})),
-    };
+    return c ? !c.semCorpo && podePublicar(c.id) : podeCriar();
   }
 
   // O que sobe para o banco: a campanha inteira, com o "hoje" (null o
@@ -278,58 +168,29 @@
   }
 
   async function salvar() {
-    if (!podeEditarAtual()) return;
-    guardarNoArquivo();
     const c = campanhaAtual();
-    if (c && podePublicar(c.id)) {
-      pendentes[c.id] = true;
-      esperandoPublicar = true;
-      mesaNoticias().publicar(paraPublicar(c));
-      return;
-    }
-    try {
-      const r = await fetch('/api/noticias', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(paraArquivo()),
-      });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      mostrarToast('✔ Salvo');
-    } catch (e) {
-      mostrarToast('⚠ Sem servidor — use "⬇ Baixar arquivo"');
-      console.error('[noticias] Erro ao salvar:', e.message);
-    }
+    if (!c || !podeEditarAtual()) return;
+    pendentes[c.id] = true;
+    esperandoPublicar = true;
+    mesaNoticias().publicar(paraPublicar(c));
   }
 
-  // ── BAIXAR ───────────────────────────────────────────────────────
-  //  Gera o js/noticias-data.js igualzinho ao que o server.py escreve.
-  //  É só trocar o arquivo na pasta js/ e dar commit para publicar.
-  //  O arquivo guarda só o que é dele: id, nome e anos. O que a gazeta
-  //  ao vivo carimba por cima (dono, autor, "veio da mesa") fica de
-  //  fora — senão o `noticias-data.js` do repositório encheria de uid.
+  // Exporta somente os corpos já carregados, sem alimentar o site de volta.
   function paraArquivo() {
-    guardarNoArquivo();
-    return { campanhas: doArquivo.campanhas };
+    return { campanhas: dados.campanhas.filter(c => !c.semCorpo).map(paraPublicar) };
   }
 
   function baixarArquivo() {
-    const conteudo =
-      '// Noticias do Grifos Alados.\n' +
-      '// Gerado ao salvar (server.py) ou pelo botao "Baixar arquivo" do site.\n' +
-      '// Ele permite que as noticias sejam lidas mesmo offline (sem servidor).\n' +
-      'window.NOTICIAS_DADOS = ' + JSON.stringify(paraArquivo(), null, 2) + ';\n';
-
-    const url = URL.createObjectURL(
-      new Blob([conteudo], { type: 'text/javascript;charset=utf-8' })
-    );
+    const url = URL.createObjectURL(new Blob([JSON.stringify(paraArquivo(), null, 2)],
+      { type: 'application/json;charset=utf-8' }));
     const a = document.createElement('a');
-    a.href     = url;
-    a.download = 'noticias-data.js';
+    a.href = url;
+    a.download = 'noticias-backup.json';
     document.body.appendChild(a);
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    mostrarToast('⬇ Baixado — troque o js/noticias-data.js');
+    mostrarToast('⬇ Backup das campanhas carregadas baixado');
   }
 
   // ── TOAST ─────────────────────────────────────────────────────────
@@ -365,8 +226,14 @@
   function miolo(c) { return canon({ nome: c.nome || '', anos: c.anos || [], hoje: c.hoje || null }); }
 
   function receberDaMesa(mapa, uid) {
+    if (usuarioAtual !== (uid || '')) {
+      Object.keys(pendentes).forEach(id => { delete pendentes[id]; });
+      esperandoPublicar = false;
+      edicaoAtiva = false;
+      fecharModal();
+    }
+    usuarioAtual = uid || '';
     remotas = mapa || {};
-    meuUid = uid || '';
 
     // O que eu acabei de escrever ainda pode não ter voltado do banco.
     // Enquanto não voltar igual, a MINHA versão é a que fica na tela —
@@ -385,16 +252,16 @@
       else minhas[id] = local;
     });
 
-    const antes = canon(dados.campanhas.map(c => ({ id: c.id, m: miolo(c) })));
     const idAberta = (campanhaAtual() || {}).id;
     dados = juntarComAMesa();
     Object.keys(minhas).forEach(id => {
       const i = dados.campanhas.findIndex(c => c.id === id);
       if (i >= 0) dados.campanhas[i] = Object.assign(dados.campanhas[i], minhas[id]);
+      else dados.campanhas.push(minhas[id]);
     });
 
     //  A GAZETA DO LINK CHEGA DEPOIS. No carregamento ela ainda não
-    //  existe (a tela nasce do arquivo, e o índice do banco só volta
+    //  existe (a tela aguarda o banco, e o índice só volta
     //  um instante depois) — então a escolha do `?gazeta=` tem de ser
     //  feita aqui, na primeira vez que ela aparecer. Uma vez só: daí em
     //  diante quem manda é a aba que a pessoa clicou.
@@ -409,10 +276,11 @@
     const novo = dados.campanhas.findIndex(c => c.id === idAberta);
     if (foiPeloEndereco) { /* o link já escolheu */ }
     else if (novo >= 0) campAtiva = novo;
+    else if (!idAberta) campAtiva = indiceCampanhaSalva();
     else if (campAtiva >= dados.campanhas.length) campAtiva = Math.max(0, dados.campanhas.length - 1);
 
-    if (canon(dados.campanhas.map(c => ({ id: c.id, m: miolo(c) }))) !== antes) renderizar();
-    else pintarLinhaMesa();
+    // Uma resposta vazia ou um erro também encerra o carregamento.
+    renderizar();
     conferirPublicacao();
   }
 
@@ -436,18 +304,16 @@
         : e.erro));
       return;
     }
-    if (!Object.keys(pendentes).length) {
+    if (!Object.keys(pendentes).length && !e.salvando) {
       esperandoPublicar = false;
       mostrarToast('📡 Publicado na gazeta ao vivo');
     }
   }
 
-  // Login, erro do banco ou publicação concluída: só a linha 📡 muda.
+  // Login, erro ou publicação concluída atualizam os controles e avisos.
   function mesaMudou() {
     conferirPublicacao();
-    pintarLinhaMesa();
-    if ((campanhaAtual() || {}).arquivada) renderizar();
-    sincronizarBotaoEdicao();
+    renderizar();
   }
 
   //  Esta campanha tem gazeta? É o que o aviso de "🗑 Encerrar a
@@ -470,6 +336,21 @@
   // ══════════════════════════════════════════════════════════════════
   //  RENDERIZAÇÃO
   // ══════════════════════════════════════════════════════════════════
+  function estadoDaLeitura(camp) {
+    const e = mesaNoticias() ? mesaNoticias().estado() : null;
+    if (!e || !e.iniciado) {
+      return demorouInicial
+        ? { erro: true, texto: 'Não foi possível conectar às notícias. Tente novamente.' }
+        : { carregando: true, texto: 'Carregando notícias…' };
+    }
+    if (!e.configurado) return { erro: true, texto: 'As notícias estão indisponíveis. Verifique sua conexão e tente novamente.' };
+    if (camp && !camp.semCorpo) return null;
+    const erro = camp ? (e.errosCampanhas || {})[camp.id] : e.erroLeitura;
+    if (erro) return { erro: true, texto: 'Não foi possível carregar as notícias. Verifique sua conexão e tente novamente.' };
+    if (camp || e.carregando) return { carregando: true, texto: 'Carregando notícias…' };
+    return { texto: 'Nenhuma campanha publicada disponível.' };
+  }
+
   function renderizar() {
     if (!podeEditarAtual()) edicaoAtiva = false;
     sincronizarBotaoEdicao();
@@ -487,6 +368,14 @@
       wrapper.appendChild(renderizarAbasCampanha());
     }
     if (edicaoAtiva) wrapper.appendChild(renderizarCtrlCampanha());
+    else if (podeCriar() && !podeEditarAtual()) {
+      const nova = document.createElement('button');
+      nova.type = 'button';
+      nova.className = 'nc-btn nc-btn-add nc-btn-sm';
+      nova.dataset.acao = 'camp-nova';
+      nova.textContent = '+ Nova Campanha';
+      wrapper.appendChild(nova);
+    }
     const linha = linhaMesa();
     if (linha) wrapper.appendChild(linha);
 
@@ -498,10 +387,20 @@
     //  pedido repetido, e assim nenhuma troca de aba fica sem corpo.
     if (camp && mesaNoticias() && mesaNoticias().abrir) mesaNoticias().abrir(camp.id);
 
-    if (!camp) {
-      wrapper.appendChild(avisoVazio('Nenhuma campanha cadastrada.'));
-    } else if (camp.semCorpo && !camp.anos.length) {
-      wrapper.appendChild(avisoVazio('Abrindo a gazeta de ' + camp.nome + '…'));
+    const leitura = estadoDaLeitura(camp);
+    wrapper.setAttribute('aria-busy', String(!!(leitura && leitura.carregando)));
+    if (leitura) {
+      const aviso = avisoVazio(leitura.texto);
+      aviso.setAttribute('role', 'status');
+      wrapper.appendChild(aviso);
+      if (leitura.erro) {
+        const tentar = document.createElement('button');
+        tentar.type = 'button';
+        tentar.className = 'nc-btn';
+        tentar.dataset.acao = 'tentar-novamente';
+        tentar.textContent = 'Tentar novamente';
+        wrapper.appendChild(tentar);
+      }
     } else if (!camp.anos.length) {
       wrapper.appendChild(avisoVazio('Nenhuma notícia em ' + camp.nome + '.'));
     } else {
@@ -617,12 +516,6 @@
   }
 
   function textoDaLinha(e, c) {
-    if (c.arquivada) {
-      return '📜 <strong>Acervo da campanha encerrada</strong>' +
-        (edicaoAtiva && podePublicar(c.id)
-          ? ' — suas alterações são salvas online. Use ↑ e ↓ para ordenar as notícias.' : '') +
-        (e.erro ? '<span class="nc-mesa-erro">⚠ ' + recadoDoBanco(e.erro) + '</span>' : '');
-    }
     const r        = remotas[c.id];
     const doBanco  = !!r;
     //  SÓ SE SABE DE QUEM É quando o corpo desceu. A campanha que
@@ -638,7 +531,7 @@
     const erro     = e.erro ? '<span class="nc-mesa-erro">⚠ ' + recadoDoBanco(e.erro) + '</span>' : '';
 
     if (!edicaoAtiva) {
-      if (!doBanco) return '';                      // gazeta do arquivo: o leitor não precisa saber
+      if (!doBanco) return '';
       return '📡 <strong>Gazeta ao vivo</strong> — o que o mestre escrever aparece aqui sozinho' +
         (autor && !minha ? ' · escrita por <strong>' + esc(autor) + '</strong>' : '');
     }
@@ -672,9 +565,7 @@
     }
 
     if (!e.usuario) {
-      return '📡 Esta gazeta está <strong>só neste navegador</strong>. ' +
-        'Entre com o Google na aba <strong>🎲 Mesa</strong> para publicá-la — aí ela fica ' +
-        'de pé no banco, com link para os seus jogadores, sem passar por commit.' + selo() + erro;
+      return 'Entre com o Google na aba <strong>🎲 Mesa</strong> para editar suas notícias.' + selo() + erro;
     }
     // o corpo ainda não desceu: não se promete nem se oferece nada
     if (doBanco && !sabido) {
@@ -682,14 +573,12 @@
     }
     if (doBanco && !minha && !orfa) {
       return '📡 A gazeta de <strong>' + esc(c.nome) + '</strong> é de <strong>' +
-        esc(autor || 'outra pessoa') + '</strong>. O que você mudar aqui fica <strong>só neste ' +
-        'navegador</strong> — o banco não vai aceitar.' + selo() + erro;
+        esc(autor || 'outra pessoa') + '</strong>. Apenas quem tem permissão pode editar.' + selo() + erro;
     }
     if (minha) {
       return '📡 <strong>No ar</strong>, e é sua: cada mudança sobe sozinha e aparece na hora ' +
         'para quem estiver com o link aberto. ' +
-        '<button type="button" class="nc-btn nc-btn-sm nc-btn-danger" data-acao="camp-tirar-do-ar">' +
-        '✕ Tirar do ar</button>' + selo() + erro;
+        selo() + erro;
     }
     return '📡 Esta gazeta ainda <strong>não está no ar</strong>. ' +
       '<button type="button" class="nc-btn nc-btn-sm nc-btn-add" data-acao="camp-publicar">' +
@@ -748,18 +637,6 @@
     mostrarToast('📡 Subindo…');
   }
 
-  // Tirar do ar não apaga nada daqui: a campanha continua na tela e no
-  // arquivo, e volta a ser só deste navegador.
-  function tirarDoAr() {
-    const c = campanhaAtual();
-    if (!c || !remotas[c.id]) return;
-    if (!confirm('Tirar "' + c.nome + '" da gazeta ao vivo?\n\n' +
-                 'Ela some para quem abre o site. O que está escrito continua aqui, ' +
-                 'e você pode publicar de novo depois.')) return;
-    delete pendentes[c.id];
-    mesaNoticias().apagar(c.id).then(() => mostrarToast('✔ Fora do ar'));
-  }
-
   // ── ABAS DE CAMPANHA (uma gazeta por RPG) ────────────────────────
   function renderizarAbasCampanha() {
     const barra = document.createElement('nav');
@@ -786,8 +663,6 @@
     ctrl.innerHTML = `
       <button class="nc-btn nc-btn-add nc-btn-sm" data-acao="camp-nova">+ Nova Campanha</button>
       ${temCamp ? `
-        <button class="nc-btn nc-btn-sm" data-acao="camp-esq" title="Mover campanha para a esquerda">◀</button>
-        <button class="nc-btn nc-btn-sm" data-acao="camp-dir" title="Mover campanha para a direita">▶</button>
         <button class="nc-btn nc-btn-sm" data-acao="camp-renomear">✏ Renomear</button>
         ${cal ? `<button class="nc-btn nc-btn-sm${hj ? '' : ' nc-btn-add'}" data-acao="camp-hoje"
           title="O dia de hoje em Arton nesta campanha: vai para o alto da gazeta e é a data que uma notícia nova já traz">📅 ${
@@ -799,7 +674,7 @@
         <button class="nc-btn nc-btn-sm" data-acao="painel-dono"
           title="Tudo o que existe no banco: campanhas (suas e de estranhos), mesas, e o que está na vitrine">🛡 Painel do dono</button>` : ''}
       <button class="nc-btn nc-btn-sm" data-acao="baixar"
-        title="Gera o js/noticias-data.js para você trocar na pasta e dar commit">⬇ Baixar arquivo</button>
+        title="Baixa uma cópia JSON das campanhas já carregadas">⬇ Baixar backup</button>
     `;
     return ctrl;
   }
@@ -890,6 +765,15 @@
     if (!btn) return;
 
     const acao = btn.dataset.acao;
+    if (acao === 'tentar-novamente') {
+      if (mesaNoticias()) mesaNoticias().tentarNovamente();
+      else location.reload();
+      return;
+    }
+    if (acao === 'camp-nova') {
+      if (podeCriar()) abrirModalCampanha('add');
+      return;
+    }
     if (!podeEditarAtual() && !['camp-sel', 'camp-link', 'painel-dono', 'baixar'].includes(acao)) return;
     const ai   = btn.dataset.ai !== undefined ? +btn.dataset.ai : null;
     const ni   = btn.dataset.ni !== undefined ? +btn.dataset.ni : null;
@@ -897,14 +781,11 @@
 
     switch (acao) {
       case 'camp-sel':      trocarCampanha(ci);           break;
-      case 'camp-esq':      moverCampanha(-1);            break;
-      case 'camp-dir':      moverCampanha( 1);            break;
       case 'camp-nova':     abrirModalCampanha('add');    break;
       case 'camp-renomear': abrirModalCampanha('edit');   break;
       case 'camp-hoje':     abrirModalHoje();             break;
       case 'camp-del':      removerCampanha();            break;
       case 'camp-publicar':    publicarCampanha();        break;
-      case 'camp-tirar-do-ar': tirarDoAr();               break;
       case 'camp-link':        copiarLink();              break;
       case 'camp-vitrine':     mexerNaVitrine();          break;
       case 'painel-dono':      if (window.GA_PainelDono) window.GA_PainelDono.abrir(); break;
@@ -933,16 +814,7 @@
     window.scrollTo({ top: 0, behavior: 'auto' });
   }
 
-  function moverCampanha(delta) {
-    const arr  = dados.campanhas;
-    const dest = campAtiva + delta;
-    if (dest < 0 || dest >= arr.length) return;
-    [arr[campAtiva], arr[dest]] = [arr[dest], arr[campAtiva]];
-    campAtiva = dest;
-    salvar(); renderizar();
-  }
-
-  function removerCampanha() {
+  async function removerCampanha() {
     const c = campanhaAtual();
     if (!c) return;
     const qtd = (c.anos || []).reduce((s, a) => s + (a.noticias || []).length, 0);
@@ -953,14 +825,17 @@
       (noAr ? '\n\nEla está NO AR: sai também da gazeta ao vivo, para todo mundo.' : '');
     if (!confirm(msg)) return;
 
-    if (noAr) mesaNoticias().apagar(c.id);
+    if (noAr) {
+      try { await mesaNoticias().apagar(c.id); }
+      catch (e) { mostrarToast('⚠ Não foi possível excluir a campanha.'); return; }
+    }
     delete pendentes[c.id];
-    dados.campanhas.splice(campAtiva, 1);
+    dados.campanhas = dados.campanhas.filter(x => x.id !== c.id);
     if (campAtiva >= dados.campanhas.length) {
       campAtiva = Math.max(0, dados.campanhas.length - 1);
     }
     lembrarCampanha();
-    salvar(); renderizar();
+    renderizar();
   }
 
   // ══════════════════════════════════════════════════════════════════
@@ -1436,6 +1311,7 @@
   }
 
   function confirmarCampanha(modo) {
+    if (modo === 'add' ? !podeCriar() : !podeEditarAtual()) return;
     const nome = document.getElementById('ncCampNome').value.trim();
     if (!nome) { alert('Dê um nome à campanha.'); return; }
 

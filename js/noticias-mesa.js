@@ -1,63 +1,13 @@
-// ═══════════════════════════════════════════════════════════════════
-//  NOTICIAS-MESA.JS — a gazeta no banco: oculta por padrão, pública
-//  quando o dono do site aprova.
-//  Carregado nas DUAS páginas, depois do mesa.js.
+// NOTICIAS-MESA.JS — leitura e publicação das gazetas no Firebase.
 //
-//  O QUE ISTO RESOLVE. Até aqui as notícias moravam em
-//  `js/noticias-data.js`, um arquivo do repositório: escrever uma
-//  manchete era editar no site, baixar o arquivo, trocar na pasta e
-//  dar `git push`. Ou seja — só o dono do repositório publicava, e a
-//  notícia só chegava aos jogadores no próximo commit. Agora cada
-//  campanha vive em `campanhas/<id>` e a manchete aparece na hora.
+// campanhas/<id>: corpo da gazeta, acessível a quem tem o endereço.
+// gazeta/publicas: índice público aprovado pelo dono do site.
+// usuarios/<uid>/campanhas: índice privado das campanhas da conta.
 //
-//  ── A MUDANÇA DE 02/11/2026: A GAZETA DEIXOU DE SER UM MURAL ABERTO
-//
-//  O site foi divulgado no Reddit, e o desenho antigo não aguentava
-//  gente de fora: o nó `campanhas` era de leitura pública INTEIRO, e
-//  a tela mostrava TODAS as campanhas do banco a TODO visitante. Duas
-//  consequências, as duas ruins:
-//
-//    1. qualquer pessoa logada publicava na gazeta que todo mundo vê;
-//    2. o navegador de cada visitante BAIXAVA todas as gazetas do
-//       banco a cada carregamento de página — inclusive as que não
-//       interessavam a ele. Com dez campanhas de estranhos, dez
-//       gazetas por F5, na cota de graça do Firebase.
-//
-//  O desenho novo tem três camadas, e a primeira é o que muda tudo:
-//  **`campanhas` (o pai) não é mais legível; `campanhas/<id>` é.**
-//  Quem tem o id lê a gazeta inteira; quem não tem não consegue nem
-//  descobrir que ela existe. Daí:
-//
-//    • `gazeta/publicas/<id>` → { nome, autor, em } — a lista das
-//      campanhas APROVADAS. Leitura pública, escrita SÓ do dono do
-//      site. É a vitrine ("já existiram estas campanhas nos Grifos"),
-//      e é a única coisa que o visitante baixa ao abrir o site: um
-//      nome e um autor por campanha, não a gazeta.
-//    • `usuarios/<uid>/campanhas/<id>` → true — o índice das MINHAS
-//      campanhas, dentro do nó que já era privado de cada conta. É
-//      assim que o dono reencontra a própria gazeta em outro
-//      navegador, mesmo ela estando oculta.
-//    • o ENDEREÇO (`?gazeta=<id>`, ou a própria mesa em `?mesa=`) abre
-//      uma campanha oculta para quem recebeu o link. É o que faz o
-//      mestre de fora poder mandar a gazeta dele para os jogadores
-//      dele sem que ela apareça para mais ninguém.
-//
-//  E O CORPO VEM SÓ QUANDO SE ABRE. A lista dá os nomes das abas; as
-//  notícias de uma campanha só descem quando ela é a aba aberta (ou
-//  quando é sua). Por isso o site ficou mais leve do que era antes,
-//  não mais pesado — e por isso a vitrine pode crescer sem medo.
-//
-//  QUEM ESCREVE (é regra de banco, não botão escondido): só o DONO
-//  daquela campanha — quem a publicou —, e o dono do site, que pode
-//  apagar abuso. Uma campanha sem dono é órfã, e quem chegar assume,
-//  igualzinho às mesas velhas (ver mesa.js).
-//
-//  O ARQUIVO NÃO MORREU, e não deve morrer: ele é o chão. Sem Firebase
-//  configurado, sem internet ou com o site aberto do disco, a gazeta
-//  continua sendo a do `noticias-data.js` — o banco só ENTRA POR CIMA
-//  das campanhas que existem nele. É o mesmo acordo do resto do site:
-//  offline nada quebra, só deixa de atualizar.
-// ═══════════════════════════════════════════════════════════════════
+// A gazeta padrão é consultada pelo ID, sem matérias embutidas no código.
+// As demais são carregadas por índice, endereço ou seleção da aba.
+// As regras do Firebase continuam sendo a autoridade sobre a escrita.
+// Sem resposta, a tela mostra carregamento, erro e nova tentativa.
 (function () {
   'use strict';
 
@@ -66,9 +16,18 @@
   //  regra do banco, que tem este mesmo uid escrito nela.
   const ADMIN_UID = 'uxcc4lwMDceDqGFRrMwctv1Gi9D2';
 
+  // Apenas o endereço da gazeta padrão; nenhum conteúdo fica no código.
+  const GAZETA_PADRAO = 'penitencia-de-azgher';
+  const PRAZO_LEITURA = 12000;
+  let iniciado = false, indiceCarregado = false, minhasCarregadas = true;
+  let erroIndice = '', erroMinhas = '';
+  const errosCorpos = {};
+  const prazos = {};
+
   let mesa = null;                 // último estado do GA_Mesa
   let ultimoErro = '';
   let timer = null, fila = {};
+  let gravando = 0;
 
   //  O QUE ESTÁ NO AR, em três mapas separados — o que se SABE que
   //  existe (índices, leves) e o que se BAIXOU (corpos, pesados).
@@ -91,6 +50,15 @@
     return (u && (u.displayName || u.email)) || '';
   }
   function agora() { return firebase.database.ServerValue.TIMESTAMP; }
+
+  function aguardar(chave, falhar) {
+    concluir(chave);
+    prazos[chave] = setTimeout(() => { delete prazos[chave]; falhar(); entregar(); }, PRAZO_LEITURA);
+  }
+  function concluir(chave) {
+    clearTimeout(prazos[chave]);
+    delete prazos[chave];
+  }
 
   // ── O QUE O ENDEREÇO PEDE ────────────────────────────────────────
   //  `?gazeta=<id>` é o link de uma gazeta oculta. O id da MESA também
@@ -118,16 +86,18 @@
     if (!b) return;
 
     if (!refPub) {
+      aguardar('publicas', () => { erroIndice = 'A consulta demorou demais.'; });
       refPub = b.ref('gazeta/publicas');
       cbPub = refPub.on('value', snap => {
+        concluir('publicas');
+        indiceCarregado = true; erroIndice = '';
         publicas = snap.val() || {};
         acertarCorpos();
         entregar();
       }, err => {
-        // sem as regras publicadas o banco recusa — e isso é recado, não
-        // acidente: a gazeta local continua na tela
-        ultimoErro = (err && err.message) || '';
-        console.warn('[noticias-mesa] vitrine:', ultimoErro);
+        concluir('publicas');
+        erroIndice = (err && err.message) || 'Falha na consulta.';
+        console.warn('[noticias-mesa] vitrine:', erroIndice);
         entregar();
       });
     }
@@ -137,13 +107,21 @@
     if (minhasDe !== uid) {
       if (refMinhas && cbMinhas) { try { refMinhas.off('value', cbMinhas); } catch (e) {} }
       refMinhas = null; cbMinhas = null; minhasIdx = {}; minhasDe = uid;
+      concluir('minhas');
+      minhasCarregadas = !uid; erroMinhas = '';
       if (uid) {
+        aguardar('minhas', () => { erroMinhas = 'A consulta da conta demorou demais.'; });
         refMinhas = b.ref('usuarios/' + uid + '/campanhas');
         cbMinhas = refMinhas.on('value', snap => {
+          concluir('minhas');
+          minhasCarregadas = true; erroMinhas = '';
           minhasIdx = snap.val() || {};
           acertarCorpos();
           entregar();
-        }, err => console.warn('[noticias-mesa] índice da conta:', err && err.message));
+        }, err => {
+          concluir('minhas'); erroMinhas = (err && err.message) || 'Falha na consulta da conta.';
+          entregar();
+        });
       }
     }
 
@@ -155,14 +133,16 @@
     if (refMinhas && cbMinhas) { try { refMinhas.off('value', cbMinhas); } catch (e) {} }
     refPub = null; cbPub = null; refMinhas = null; cbMinhas = null; minhasDe = '';
     Object.keys(ouvindo).forEach(largar);
+    Object.keys(prazos).forEach(concluir);
+    indiceCarregado = false; minhasCarregadas = !meuUid();
   }
 
   // ── OS CORPOS, UM A UM ───────────────────────────────────────────
-  //  Baixa-se a gazeta de: toda campanha minha (para o arquivo e o
+  //  Baixa-se a gazeta de: toda campanha minha (para a edição e o
   //  painel não perderem nada), a que veio no endereço, e a que está
   //  aberta na tela. As outras da vitrine ficam só com o nome.
   function queroOCorpo() {
-    const q = {};
+    const q = { [GAZETA_PADRAO]: true };
     Object.keys(minhasIdx).forEach(id => { q[id] = true; });
     ENDERECO.forEach(id => { q[id] = true; });
     if (abertaId) q[abertaId] = true;
@@ -186,7 +166,9 @@
     const b = db();
     if (!b) return;
     const ref = b.ref('campanhas/' + id);
+    aguardar(id, () => { errosCorpos[id] = 'A consulta demorou demais.'; });
     const cb = ref.on('value', snap => {
+      concluir(id); delete errosCorpos[id];
       const v = snap.val();
       //  PEDI E NÃO HÁ NADA. Acontece de verdade: o "🗑 Encerrar a
       //  campanha" (mesa.js) apaga `campanhas/<id>` e não mexe no
@@ -197,14 +179,16 @@
       else   { delete corpos[id]; vazios[id] = true; }
       entregar();
     }, err => {
+      concluir(id);
+      errosCorpos[id] = (err && err.message) || 'Falha na consulta.';
       console.warn('[noticias-mesa] campanha ' + id + ':', err && err.message);
-      largar(id);
       entregar();
     });
     ouvindo[id] = { ref: ref, cb: cb };
   }
 
   function largar(id) {
+    concluir(id);
     const o = ouvindo[id];
     if (!o) return;
     try { o.ref.off('value', o.cb); } catch (e) {}
@@ -230,6 +214,7 @@
         publica: !!publicas[id],
       };
     }
+    por(GAZETA_PADRAO, publicas[GAZETA_PADRAO]);
     Object.keys(publicas).forEach(id => por(id, publicas[id]));
     Object.keys(minhasIdx).forEach(id => por(id, publicas[id]));
     ENDERECO.forEach(id => por(id, publicas[id]));
@@ -273,9 +258,8 @@
   //  campanha de estranho é invisível: um nome novo pode cair num id
   //  que já existe. Aqui diz-se "pode", e quem recusa é o banco — o
   //  recado do erro então sugere trocar o nome.
-  //  Fora dos acervos mantidos pelo site, o DONO NÃO ENTRA AQUI.
-  //  Nos acervos ele pode editar sem ser mestre da sala antiga.
-  //  Nas demais campanhas, a regra do banco
+  //  O dono do site edita suas próprias gazetas fora da sala antiga.
+  //  Nas campanhas de outras pessoas, a regra do banco
   //  deixa-o escrever em qualquer campanha (é o que o faz poder apagar
   //  abuso), mas dizer "pode" nesta função ligaria o SALVAMENTO
   //  AUTOMÁTICO: ele abriria a gazeta de um estranho na edição, uma
@@ -284,9 +268,10 @@
   //  confirmação — não no teclado.
   function possoEscrever(id) {
     if (!configurado() || !meuUid()) return false;
-    const acervo = ((window.NOTICIAS_DADOS || {}).campanhas || [])
-      .some(c => c.id === id && c.arquivada === true);
-    if (acervo) return souDono();
+    // O administrador pode editar sua própria gazeta, mesmo fora da sala.
+    const c = corpos[id];
+    if (souDono() && c && c.dono === meuUid()) return true;
+    if (errosCorpos[id] || (ouvindo[id] && !c && !vazios[id])) return false;
     //  A GAZETA SEGUE O DONO DA MESA (F3). Se esta é a campanha da mesa
     //  aberta e ela TEM dono, só o mestre dela escreve na gazeta — é o que
     //  a regra do banco passou a exigir também. Sem isto, um jogador (ou
@@ -296,7 +281,6 @@
     //  Mesa órfã (sem dono) continua valendo quem chegar, como as mesas velhas.
     const e = window.GA_Mesa ? window.GA_Mesa.estado() : null;
     if (e && e.mesaId === id && e.mesa && e.mesa.dono) return e.souMestre;
-    const c = corpos[id];
     if (c) return !c.dono || c.dono === meuUid();
     if (publicas[id] && !minhasIdx[id]) return false;   // aprovada de outra pessoa
     return true;                                        // não se sabe: tenta
@@ -306,6 +290,7 @@
   //  e o banco recebe uma escrita só.
   function publicar(camp) {
     if (!camp || !camp.id || !possoEscrever(camp.id)) return;
+    ultimoErro = '';
     fila[camp.id] = camp;
     clearTimeout(timer);
     timer = setTimeout(enviar, 700);
@@ -346,9 +331,11 @@
         upd['usuarios/' + uid + '/campanhas/' + id] = String(camp.nome || id);
       }
 
+      gravando++;
       b.ref().update(upd)
-        .then(() => { ultimoErro = ''; avisar(); })
+        .then(() => { gravando--; ultimoErro = ''; avisar(); })
         .catch(e => {
+          gravando--;
           ultimoErro = e.message;
           console.warn('[noticias-mesa] não deu para publicar:', e.message);
           avisar();
@@ -356,8 +343,7 @@
     });
   }
 
-  // Tirar do ar. O que está no `noticias-data.js` continua no arquivo —
-  // isto some do banco, para todo mundo. Sai também da vitrine e do
+  // Excluir a campanha remove o conteúdo do banco, da vitrine e do
   // índice da conta, senão fica uma aba apontando para o vazio.
   function apagar(id) {
     const b = db();
@@ -369,7 +355,7 @@
     upd['usuarios/' + uid + '/campanhas/' + id] = null;
     if (souDono()) upd['gazeta/publicas/' + id] = null;
     return b.ref().update(upd)
-      .catch(e => { ultimoErro = e.message; console.warn('[noticias-mesa] não deu para apagar:', e.message); });
+      .catch(e => { ultimoErro = e.message; avisar(); throw e; });
   }
 
   function avisar() {
@@ -392,10 +378,20 @@
     abrir: abrir,
     linkDa: linkDa,
     souDono: souDono,
+    tentarNovamente: function () {
+      desligar();
+      erroIndice = ''; erroMinhas = '';
+      Object.keys(errosCorpos).forEach(id => { delete errosCorpos[id]; });
+      ligar(); entregar();
+    },
     ADMIN_UID: ADMIN_UID,
     estado: function () {
       return {
-        configurado: configurado(),
+        iniciado: iniciado,
+        carregando: !iniciado || (configurado() && ((!indiceCarregado && !erroIndice) || (!minhasCarregadas && !erroMinhas))),
+        erroLeitura: erroIndice || erroMinhas,
+        errosCampanhas: Object.assign({}, errosCorpos),
+        configurado: configurado() && !!db(),
         usuario: mesa ? mesa.usuario : null,
         meuUid: meuUid(),
         souDono: souDono(),
@@ -409,6 +405,7 @@
         publicas: Object.assign({}, publicas),
         minhas: Object.assign({}, minhasIdx),
         erro: ultimoErro,
+        salvando: gravando > 0 || Object.keys(fila).length > 0,
       };
     },
   };
@@ -421,8 +418,10 @@
     if (window.GA_Mesa) {
       window.GA_Mesa.aoMudar(function (e) {
         const antes = meuUid();
-        mesa = e;
+        mesa = e; iniciado = true;
+        if (antes !== meuUid()) { clearTimeout(timer); fila = {}; }
         ligar();
+        entregar();
         if (antes !== meuUid()) avisar();      // entrou ou saiu: a tela muda de botão
       });
       return;
@@ -431,7 +430,8 @@
       document.addEventListener('DOMContentLoaded', function () { init(true); }, { once: true });
       return;
     }
-    // sem Firebase a gazeta é a do arquivo, e está tudo certo assim
+    iniciado = true;
+    avisar();
   }
   init();
 })();

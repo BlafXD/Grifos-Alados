@@ -66,9 +66,9 @@ uma hospedagem para o site (**GitHub Pages**).
    > todo mundo) fazia duas coisas ruins: qualquer pessoa logada publicava na
    > gazeta que todos veem, e **cada visitante baixava todas as gazetas do banco
    > a cada F5**.
-   > **Enquanto este bloco não for publicado, a gazeta continua funcionando** —
-   > ela cai no `js/noticias-data.js` do repositório, e só o mestre, editando,
-   > vê o aviso de que o banco recusou.
+   > **As notícias dependem do Firebase.** Sem acesso ao banco, a página mostra
+   > um aviso e permite tentar novamente; não carrega notícias de um arquivo local.
+   > A gazeta padrão da Penitência é consultada pelo ID mesmo fora da vitrine.
 
    > 📖 **`fichas` é o único nó da mesa que não é público.** A loja, a gazeta e
    > as bases são de leitura aberta a quem tem o link — a ficha de alguém não

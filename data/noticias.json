@@ -8,13 +8,13 @@
           "ano": 1424,
           "noticias": [
             {
-              "corpo": "Exploradores e curiosos que se aproximaram recentemente do Pilar da Luz relataram um fenômeno inquietante na fronteira da Tormenta do Deserto da Perdição.\n\nDe acordo com diversas testemunhas, uma figura humanoide permanece imóvel na distância, observando silenciosamente os arredores. A estranha aparição não demonstrou qualquer movimento ou reação, mas sua simples presença foi suficiente para impedir que qualquer pessoa se aproximasse.\n\nAté o momento, nenhuma expedição oficial foi enviada para investigar o local.",
-              "data": "Trebuck, 6º dia de Pomo (Keenvia), Ano 1424",
-              "id": "n1424d",
-              "ornamento": true,
+              "corpo": "BOA NOITE, CIDADÃOS! Uma notícia extraordinária! O pilar voltou a mudar de cor! Belíssimo, não? Tão vivo, tão brilhante... tão faminto.\n\nFaminto? Hahahaha! Ora, que absurdo! Pedras não comem pessoas! PEDRAS NÃO COMEM PESSOAS!\n\n...Então, por que ele está menor? Por que está mais perto?\n\nMeus caros, se ouvirem sussurros vindos das paredes, não respondam. Se virem o pilar, não pisquem. E, acima de tudo, se ele chamar pelo seu nome...\n\nNÃO DIGAM QUE EU AVISEI!\n\n(O Jornal é rasgado com o inicio de várias risadas)",
+              "data": "Deserto da Perdição, restam apenas 2 Dias...",
+              "id": "n1424f",
+              "ornamento": false,
               "span": 12,
               "tag": "✦ Ano Corrente",
-              "titulo": "Figura misteriosa surge na fronteira da Tormenta do Deserto da Perdição"
+              "titulo": "O Pilar que Respira"
             },
             {
               "corpo": "Um grupo de aventureiros que segue em uma missão considerada crucial para alcançar o Pilar da Luz encontra-se atualmente impedido de prosseguir viagem.\n\nDruidas devotos de Allihanna que habitam a região bloquearam a passagem do grupo, alegando não possuir garantias suficientes de que os viajantes não representam ameaça ao equilíbrio natural da floresta.\n\nSegundo fontes locais, os aventureiros permanecerão sob observação até que a autoridade máxima do culto na região, a Sumo-Sacerdotisa de Allihanna, determine se poderão ou não continuar sua jornada.\n\nA situação permanece indefinida, enquanto a expectativa cresce entre aqueles que acompanham os desdobramentos da expedição.",
@@ -26,13 +26,13 @@
               "titulo": "Aventureiros rumo ao Pilar da Luz enfrentam impasse em Bosques de Allihanna"
             },
             {
-              "corpo": "BOA NOITE, CIDADÃOS! Uma notícia extraordinária! O pilar voltou a mudar de cor! Belíssimo, não? Tão vivo, tão brilhante... tão faminto.\n\nFaminto? Hahahaha! Ora, que absurdo! Pedras não comem pessoas! PEDRAS NÃO COMEM PESSOAS!\n\n...Então, por que ele está menor? Por que está mais perto?\n\nMeus caros, se ouvirem sussurros vindos das paredes, não respondam. Se virem o pilar, não pisquem. E, acima de tudo, se ele chamar pelo seu nome...\n\nNÃO DIGAM QUE EU AVISEI!\n\n(O Jornal é rasgado com o inicio de várias risadas)",
-              "data": "Deserto da Perdição, restam apenas 2 Dias...",
-              "id": "n1424f",
-              "ornamento": false,
+              "corpo": "Exploradores e curiosos que se aproximaram recentemente do Pilar da Luz relataram um fenômeno inquietante na fronteira da Tormenta do Deserto da Perdição.\n\nDe acordo com diversas testemunhas, uma figura humanoide permanece imóvel na distância, observando silenciosamente os arredores. A estranha aparição não demonstrou qualquer movimento ou reação, mas sua simples presença foi suficiente para impedir que qualquer pessoa se aproximasse.\n\nAté o momento, nenhuma expedição oficial foi enviada para investigar o local.",
+              "data": "Trebuck, 6º dia de Pomo (Keenvia), Ano 1424",
+              "id": "n1424d",
+              "ornamento": true,
               "span": 6,
               "tag": "✦ Ano Corrente",
-              "titulo": "O Pilar que Respira"
+              "titulo": "Figura misteriosa surge na fronteira da Tormenta do Deserto da Perdição"
             },
             {
               "corpo": "A capital do Reinado foi palco de uma tragédia sem precedentes nesta semana. Um único lefou realizou um ataque que resultou em mais de oitenta vítimas fatais, além de deixar centenas de cidadãos em estado de choque.\n\nSegundo relatos dos sobreviventes, a criatura teria liberado uma vasta nuvem de origem desconhecida, responsável por provocar episódios de paranoia, alucinações e surtos psicóticos entre os presentes. Testemunhas afirmam ter visto um adolescente alertando sobre a presença de um \"lefou ou lefeu\" antes que o caos se instaurasse pelas ruas da cidade.\n\nDiversos depoimentos também mencionam repetidamente o nome Gabriel Lobo, cuja possível ligação com os acontecimentos ainda permanece incerta. As autoridades de Zhakarin iniciaram uma investigação em larga escala e anunciaram cooperação com o grupo da Imperatriz de Jade para localizar o responsável pelo ataque.\n\nEnquanto a população tenta se recuperar do ocorrido, cresce o temor de que o incidente seja apenas o prenúncio de eventos ainda mais graves.",
@@ -197,14 +197,7 @@
             }
           ]
         }
-      ],
-      "arquivada": true,
-      "ignorarBancoAte": 1793635002791
-    },
-    {
-      "id": "nuevo-sol",
-      "nome": "Nuevo Sol",
-      "anos": []
+      ]
     }
   ]
 }
