@@ -8,6 +8,33 @@
           "ano": 1424,
           "noticias": [
             {
+              "corpo": "Exploradores e curiosos que se aproximaram recentemente do Pilar da Luz relataram um fenômeno inquietante na fronteira da Tormenta do Deserto da Perdição.\n\nDe acordo com diversas testemunhas, uma figura humanoide permanece imóvel na distância, observando silenciosamente os arredores. A estranha aparição não demonstrou qualquer movimento ou reação, mas sua simples presença foi suficiente para impedir que qualquer pessoa se aproximasse.\n\nAté o momento, nenhuma expedição oficial foi enviada para investigar o local.",
+              "data": "Trebuck, 6º dia de Pomo (Keenvia), Ano 1424",
+              "id": "n1424d",
+              "ornamento": true,
+              "span": 12,
+              "tag": "✦ Ano Corrente",
+              "titulo": "Figura misteriosa surge na fronteira da Tormenta do Deserto da Perdição"
+            },
+            {
+              "corpo": "Um grupo de aventureiros que segue em uma missão considerada crucial para alcançar o Pilar da Luz encontra-se atualmente impedido de prosseguir viagem.\n\nDruidas devotos de Allihanna que habitam a região bloquearam a passagem do grupo, alegando não possuir garantias suficientes de que os viajantes não representam ameaça ao equilíbrio natural da floresta.\n\nSegundo fontes locais, os aventureiros permanecerão sob observação até que a autoridade máxima do culto na região, a Sumo-Sacerdotisa de Allihanna, determine se poderão ou não continuar sua jornada.\n\nA situação permanece indefinida, enquanto a expectativa cresce entre aqueles que acompanham os desdobramentos da expedição.",
+              "data": "Tauron, 6º dia de Pomo (Keenvia), Ano 1424",
+              "id": "n1424e",
+              "ornamento": false,
+              "span": 6,
+              "tag": "✦ Ano Corrente",
+              "titulo": "Aventureiros rumo ao Pilar da Luz enfrentam impasse em Bosques de Allihanna"
+            },
+            {
+              "corpo": "BOA NOITE, CIDADÃOS! Uma notícia extraordinária! O pilar voltou a mudar de cor! Belíssimo, não? Tão vivo, tão brilhante... tão faminto.\n\nFaminto? Hahahaha! Ora, que absurdo! Pedras não comem pessoas! PEDRAS NÃO COMEM PESSOAS!\n\n...Então, por que ele está menor? Por que está mais perto?\n\nMeus caros, se ouvirem sussurros vindos das paredes, não respondam. Se virem o pilar, não pisquem. E, acima de tudo, se ele chamar pelo seu nome...\n\nNÃO DIGAM QUE EU AVISEI!\n\n(O Jornal é rasgado com o inicio de várias risadas)",
+              "data": "Deserto da Perdição, restam apenas 2 Dias...",
+              "id": "n1424f",
+              "ornamento": false,
+              "span": 6,
+              "tag": "✦ Ano Corrente",
+              "titulo": "O Pilar que Respira"
+            },
+            {
               "corpo": "A capital do Reinado foi alvo de um ataque coordenado e sem precedentes, atribuído a supostas crias da Tormenta, deixando um rastro de destruição, feridos e mais de 150 mortos.\n\nTestemunhas relatam que quatro figuras surgiram simultaneamente em diferentes pontos da cidade, indicando uma ação planejada.\n\nEntre os locais atingidos estão:\n\nBiblioteca dedicada a Tanna-Toh\nO local sagrado foi incendiado, deixando diversos estudiosos feridos.\n\nOrfanato mantido por devotos de Lena\nCrianças ficaram gravemente feridas após o ataque.\n\nCentro comercial local\nSofreu danos menores em comparação aos demais pontos.\n\nEntrada sul de Valkaria\nOnde ocorreu um confronto entre um pirata e uma das figuras. O pirata acabou morto por sua própria companheira, levantando suspeitas de controle mental.\n\nAo final do ataque, uma chuva rubra caiu sobre a cidade, ferindo inúmeros cidadãos e contribuindo para o alto número de vítimas fatais.\n\nSuspeitas e Investigação\nAutoridades apontam como principal suspeito o criminoso procurado Gabriel Lobo, cuja recompensa foi aumentada em 25.000 TO$.\n\nUm guarda local, que preferiu não se identificar, declarou: \"Se eu tivesse confiado nele…\"\n\nSegundo informações, o guarda teria recebido um aviso prévio de um informante sobre o ataque, mas não levou a denúncia adiante. Medidas disciplinares estão sendo consideradas.\n\nResposta do Reinado\nA situação mobilizou altas autoridades. A própria Regente de Valkaria deverá intervir no caso, com apoio de representantes de Lin-Wu.\n\nTambém foram convocadas a Imperatriz de Jade, Mikhela, e sua filha, Ysabel, para auxiliar nas investigações e possíveis retaliações.\n\nEstado Atual\nValkaria encontra-se em alerta máximo. Cidadãos são aconselhados a evitar aglomerações e reportar qualquer atividade suspeita às autoridades locais.",
               "data": "Valkaria, 28º dia de Pomo (Fevereiro) — Ano 1424",
               "id": "n1424a",
