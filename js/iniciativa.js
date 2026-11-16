@@ -43,7 +43,7 @@
   let linhas = {};            // id → { nome, tipo, ordem }
   let valores = {};           // id → { valor, mod }   (só o mestre)
   let atual = null, rodada = 1;
-  let turnoVisto;             // o 'atual' já visto: não repete o aviso de turno
+  let turnoVisto;             // combatente + rodada já vistos: não repete o aviso de turno
   let refs = [], salaLigada = '';
   let recado = '';            // aviso de uma vez só, no lugar da lista vazia
 
@@ -73,7 +73,7 @@
   function baseVal() { return 'mesas/' + mesa.mesaId + '/iniciativaValores'; }
 
   // ── A LISTA DESTE NAVEGADOR ──────────────────────────────────────
-  function zerar() { linhas = {}; valores = {}; atual = null; rodada = 1; }
+  function zerar() { linhas = {}; valores = {}; atual = null; rodada = 1; turnoVisto = undefined; }
   function salvarLocal() {
     try {
       localStorage.setItem(LOCAL_KEY, JSON.stringify({
@@ -89,6 +89,10 @@
       atual   = (j && j.atual)   || null;
       rodada  = (j && j.rodada)  || 1;
     } catch (e) { zerar(); }
+    // A carga inicial só registra o turno. O primeiro clique em passar
+    // já é um turno novo, inclusive quando só resta um combatente vivo.
+    turnoVisto = undefined;
+    aoMudarAtual();
   }
 
   // O GRUPO: os nomes que o mestre digitou na mão. Ficam guardados para
@@ -161,16 +165,17 @@
 
   // ── ASSINATURAS ──────────────────────────────────────────────────
   function desligarRefs() {
-    refs.forEach(r => { try { r.ref.off('value', r.cb); } catch (e) {} });
+    refs.forEach(r => { r.ativa = false; try { r.ref.off('value', r.cb); } catch (e) {} });
     refs = [];
     salaLigada = '';
   }
   function ligar(caminho, cb) {
     const b = db(); if (!b) return;
     const ref = b.ref(caminho);
-    const fn = ref.on('value', snap => { cb(snap.val()); render(); },
-      err => console.warn('[iniciativa] ' + caminho + ':', err && err.message));
-    refs.push({ ref: ref, cb: fn });
+    const r = { ref, cb: null, ativa: true };
+    refs.push(r);
+    r.cb = ref.on('value', snap => { if (r.ativa) { cb(snap.val()); render(); } },
+      err => { if (r.ativa) console.warn('[iniciativa] ' + caminho + ':', err && err.message); });
   }
   function assinar() {
     if (local()) {                    // fora de mesa: a lista é a deste navegador
@@ -179,12 +184,19 @@
       return carregarLocal();
     }
     if (!naMesa()) { desligarRefs(); zerar(); return; }
-    if (mesa.mesaId === salaLigada) return;
+    const assinatura = mesa.mesaId + '|' + ((mesa.usuario && mesa.usuario.uid) || '') + '|' + mando();
+    if (assinatura === salaLigada) return;
     desligarRefs(); zerar(); recado = '';
-    salaLigada = mesa.mesaId;
-    ligar(base() + '/linhas', v => { linhas = v || {}; });
-    ligar(base() + '/atual',  v => { atual = v || null; aoMudarAtual(); });
-    ligar(base() + '/rodada', v => { rodada = v || 1; });
+    salaLigada = assinatura;
+    // Uma leitura do estado público inteiro mantém o combatente e a
+    // rodada do MESMO instante. Com três assinaturas, o aviso de turno
+    // podia abrir antes de chegar a nova rodada (ou a nova linha).
+    ligar(base(), v => {
+      linhas = (v && v.linhas) || {};
+      atual = (v && v.atual) || null;
+      rodada = (v && v.rodada) || 1;
+      aoMudarAtual();
+    });
     // os valores são só do mestre — assinar sendo jogador daria um
     // "permission denied" no console a cada carga, e por nada
     if (mando()) ligar(baseVal(), v => { valores = v || {}; });
@@ -219,9 +231,10 @@
   //  sustentadas, Outros). A 1ª sincronização só registra — não abre sozinho
   //  ao carregar. O GA_Ficha.avisoTurno devolve false se a ficha não é daqui.
   function aoMudarAtual() {
-    if (turnoVisto === undefined) { turnoVisto = atual; return; }
-    if (atual === turnoVisto) return;
-    turnoVisto = atual;
+    const turno = (atual || '') + '|' + rodada;
+    if (turnoVisto === undefined) { turnoVisto = turno; return; }
+    if (turno === turnoVisto) return;
+    turnoVisto = turno;
     if (!atual) return;
     const l = linhas[atual];
     const fid = l && l.fichaId;
@@ -241,7 +254,7 @@
     //  há banco nenhum. Com o painel do turno de 29/10 isso passou a
     //  importar — ele é útil para o próprio mestre, que também tem
     //  ficha. Mesma função, mesma guarda contra repetir (turnoVisto).
-    if (p[0] === 'atual')  { atual  = valor; aoMudarAtual(); return; }
+    if (p[0] === 'atual')  { atual  = valor; return; }
     if (p[0] === 'rodada') { rodada = valor; return; }
     if (p[0] === 'linhas' && p[1] && p[2] && linhas[p[1]]) linhas[p[1]][p[2]] = valor;
   }
@@ -249,6 +262,7 @@
     if (!mando()) return;
     if (local()) {
       Object.keys(patch).forEach(k => aplicarLocal(k, patch[k]));
+      aoMudarAtual();
       salvarLocal(); return render();
     }
     const b = db(); if (!b) return;
@@ -430,6 +444,7 @@
     if (local()) {
       linhas = publico.linhas; valores = secreto;
       atual = publico.atual;   rodada = publico.rodada;
+      aoMudarAtual();
       salvarLocal(); return render();
     }
     const b = db(); if (!b) return;
@@ -456,16 +471,17 @@
     gravar(p.virou ? { atual: p.proximo, rodada: (rodada || 1) + 1 } : { atual: p.proximo });
   }
 
-  // Arrastar é ↑/↓: troca a ordem com a vizinha e regrava só as duas.
+  // As setas trocam as vizinhas na ordem VISÍVEL. Renumerar todas
+  // evita índices repetidos depois de um morto afundar para o fim.
   function mover(id, passo) {
     if (!mando()) return;
     const lista = emOrdem();
     const i = lista.findIndex(l => l.id === id);
     const j = i + passo;
     if (i < 0 || j < 0 || j >= lista.length) return;
+    [lista[i], lista[j]] = [lista[j], lista[i]];
     const patch = {};
-    patch['linhas/' + lista[i].id + '/ordem'] = j;
-    patch['linhas/' + lista[j].id + '/ordem'] = i;
+    lista.forEach((l, k) => { patch['linhas/' + l.id + '/ordem'] = k; });
     gravar(patch);
   }
 
@@ -971,14 +987,15 @@
       const lista = emOrdem();
       if (!lista.length) return null;
       const i = lista.findIndex(function (l) { return l.id === atual; });
-      const seg = i >= 0 ? lista[(i + 1) % lista.length] : null;
+      const seguinte = i >= 0 ? idSeguinte() : null;
+      const seg = seguinte ? linhas[seguinte.proximo] : null;
       return {
         rodada: rodada,
         quantos: lista.length,
         posicao: i >= 0 ? i + 1 : 0,
         agora: i >= 0 ? { nome: lista[i].nome, tipo: lista[i].tipo || 'criatura' } : null,
         proximo: seg ? { nome: seg.nome, tipo: seg.tipo || 'criatura' } : null,
-        viraRodada: i >= 0 && i === lista.length - 1,
+        viraRodada: !!(seguinte && seguinte.virou),
         ordem: lista.map(function (l, k) {
           return { nome: l.nome, tipo: l.tipo || 'criatura', vez: k === i, pos: k + 1 };
         }),

@@ -81,6 +81,7 @@
     } catch (e) { console.warn('[viagem] não carregou:', e.message); }
     if (!dados || typeof dados !== 'object') dados = {};
     if (!Array.isArray(dados.viagens)) dados.viagens = [];
+    dados.viagens = dados.viagens.filter(v => v && typeof v === 'object' && !Array.isArray(v));
     dados.viagens.forEach(normalizarViagem);
   }
 
@@ -168,6 +169,8 @@
     if (typeof v.dias !== 'number') v.dias = parseInt(v.dias, 10) || 0;
     if (!Array.isArray(v.diario)) v.diario = [];
     if (!Array.isArray(v.paradas)) v.paradas = [];
+    v.diario = v.diario.filter(d => d && typeof d === 'object' && !Array.isArray(d));
+    v.paradas = v.paradas.filter(p => p && typeof p === 'object' && !Array.isArray(p));
     // diário/paradas: texto rico (grifos e ※) com espelho PURO em .texto
     // (o export .txt lê o puro). Migração idempotente de dados antigos.
     v.diario.forEach(d => {
@@ -829,8 +832,14 @@
       const bruto = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.viagens)) ? parsed.viagens : null;
       if (!bruto) { alert('Backup sem viagens.'); return; }
       if (parsed && parsed.tipo && parsed.tipo !== 'viagens') { alert('Este arquivo é um backup de "' + parsed.tipo + '", não de viagens.'); return; }
-      const viagens = bruto.filter(x => x && typeof x === 'object');
-      viagens.forEach(x => { x.id = uid('vg'); normalizarViagem(x); });
+      const viagens = bruto.filter(x => x && typeof x === 'object' && !Array.isArray(x));
+      viagens.forEach(x => {
+        x.id = uid('vg'); normalizarViagem(x);
+        // A cópia é outra viagem: diário e paradas também precisam de
+        // identidades próprias na caixa de edição dos jogadores.
+        x.diario.forEach(d => { d.id = uid('d'); });
+        x.paradas.forEach(p => { p.id = uid('p'); });
+      });
       if (!viagens.length) { alert('Nenhuma viagem válida no arquivo.'); return; }
       const sub = dados.viagens.length && confirm('OK = SUBSTITUIR todas as viagens atuais.\nCancelar = ADICIONAR as do arquivo às atuais.');
       dados.viagens = sub ? viagens : dados.viagens.concat(viagens);

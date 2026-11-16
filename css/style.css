@@ -54,6 +54,11 @@
   --teal:       #186054;   /* mesa ao vivo (📡) conectada */
   --carmim:     #8b1020;   /* remover, erro, perda */
   --neutra:     #5e544a;   /* item que não escolheu cor — var(--cor, …) */
+  --roxo:       #593877;   /* magia: tinta e preenchimento adaptáveis */
+  --tormenta:   #8a1c4a;
+  --papel-reflexo: rgba(255,255,255,0.35);
+  --papel-zebra: rgba(232,217,188,0.55);
+  --cor-mistura: 40%;     /* cores de categorias também precisam ser tinta legível */
   --gold-deep:  #675418;   /* dourado escuro: legível como texto no pergaminho */
   --gold-pale:  #f0e3c2;   /* realce quente: linha marcada, painel em foco */
 
@@ -106,6 +111,20 @@
 
 html { scroll-behavior: smooth; }
 
+/* Calculada onde a categoria é definida: herda a cor correta de cada
+   livro, condição ou anotação, sem clarear os seus fios decorativos. */
+[style*="--cor:"] {
+  --cor-legivel: color-mix(in srgb, var(--cor) var(--cor-mistura), var(--ink));
+}
+[style*="--cond:"] {
+  --cond-legivel: color-mix(in srgb, var(--cond) var(--cor-mistura), var(--ink));
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-dim);
+  opacity: 1;
+}
+
 body {
   background: var(--faixa);
   font-family: var(--ga-fonte-corpo);
@@ -153,7 +172,7 @@ input:not([type]), textarea, [contenteditable="true"] {
    O azul do navegador é a única coisa na página que não é de Arton.
    Ouro chapado com tinta por cima funciona igual sobre pergaminho e
    sobre as caixas escuras (nuvens de regra, cabeçalhos). */
-::selection { background: var(--gold); color: var(--ink); }
+::selection { background: var(--gold); color: var(--faixa); }
 
 /* ── FOCO DE TECLADO ───────────────────────────────────────────────
    Um anel só, em toda parte. Também serve de âncora visual: mesmo se o
@@ -616,20 +635,20 @@ section.active { display: flow-root; }
 .prog-table td:last-child { border-right: none; }
 .prog-table tbody tr:last-child td { border-bottom: none; }
 
-.prog-table tbody tr:nth-child(even) td { background: rgba(232,217,188,0.55); }
+.prog-table tbody tr:nth-child(even) td { background: var(--papel-zebra); }
 .prog-table tbody tr:hover td { background: var(--linha-hover); }
 
 /* coluna-chave (ex.: "Normal" na Tabela 3-2) — vence a zebra por ordem/especificidade */
 .prog-table thead th.prog-col-key {
   background: var(--rust-dark);
-  color: var(--gold-light);
+  color: var(--parchment);
 }
 .prog-table tbody tr td.prog-col-key {
-  background: rgba(184,151,46,0.20);
+  background: var(--gold-pale);
   font-weight: 700;
   color: var(--rust-dark);
 }
-.prog-table tbody tr:hover td.prog-col-key { background: rgba(184,151,46,0.32); }
+.prog-table tbody tr:hover td.prog-col-key { background: var(--parchment3); }
 
 .prog-table-nota {
   font-family: var(--ga-fonte-corpo);
@@ -1353,7 +1372,7 @@ footer {
   font-weight: 700;
   letter-spacing: 0.3em;
 
-  color: var(--gold-light);
+  color: var(--parchment);
   padding-left: 0.3em;                   /* compensa o letter-spacing */
 }
 #recompensas .nd-selo-num {
@@ -1952,7 +1971,7 @@ footer {
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.65rem;
   letter-spacing: 0.2em;
-  color: var(--parchment3);
+  color: var(--ink-faded);
 
 }
 

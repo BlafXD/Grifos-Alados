@@ -130,8 +130,8 @@
 
   // ── PERSISTÊNCIA ─────────────────────────────────────────────────
   let _timer = null;
-  function salvar() { clearTimeout(_timer); _timer = setTimeout(gravarTudo, 250); }
-  function salvarAgora() { clearTimeout(_timer); gravarTudo(); }
+  function salvar() { clearTimeout(_timer); _timer = setTimeout(() => { _timer = null; gravarTudo(); }, 250); }
+  function salvarAgora() { clearTimeout(_timer); _timer = null; gravarTudo(); }
   // `avisar` é o que faz o PV da lista de iniciativa acompanhar o da
   // ficha. Fica no salvamento, e não em cada tecla, porque o salvamento
   // já é a rede que segura a digitação (250 ms).
@@ -1336,9 +1336,9 @@
   //  separada porque Ofício tem uma entrada por especialidade, e todas
   //  usam esta mesma conta.
   //  O bônus que os EFEITOS EM JOGO ligados e marcados para «somar» jogam num
-  //  alvo. `alvo`: 'pericia' (com a chave), 'ataque' ou 'defesa'. Só entram os
+  //  alvo. `alvo`: 'pericia' (com a chave), 'ataque', 'dano' ou 'defesa'. Só entram os
   //  ATIVOS e com ✓ somar — o resto é lembrete. `tudo` vale para o que se ROLA
-  //  (perícia e ataque); a Defesa é alcance à parte. O 'tudo'/'pericias' chega
+  //  (perícia, ataque e dano); a Defesa é alcance à parte. O 'tudo'/'pericias' chega
   //  ao ataque pela própria perícia (o ataque é um teste de Luta/Pontaria), e
   //  por isso o ataque só soma POR AQUI o 'ataquedano' — para não contar duas vezes.
   function bonusEmJogo(f, alvo, chave) {
@@ -1350,6 +1350,7 @@
       let bate = false;
       if (alvo === 'pericia')     bate = (a === 'tudo' || a === 'pericias' || (a === 'pericia' && ef.pericia === chave));
       else if (alvo === 'ataque') bate = (a === 'ataquedano');
+      else if (alvo === 'dano')   bate = (a === 'tudo' || a === 'ataquedano');
       else if (alvo === 'defesa') bate = (a === 'defesa');
       return bate ? s + ef.valor : s;
     }, 0);
@@ -1364,6 +1365,7 @@
       const a = ef.alcance;
       if (alvo === 'pericia') return a === 'tudo' || a === 'pericias' || (a === 'pericia' && ef.pericia === chave);
       if (alvo === 'ataque')  return a === 'tudo' || a === 'ataquedano';
+      if (alvo === 'dano')    return a === 'tudo' || a === 'ataquedano';
       if (alvo === 'defesa')  return a === 'defesa';
       return false;
     });
@@ -1723,6 +1725,9 @@
   // Trocar de ficha troca o caderno: os resultados pendurados nas linhas
   // e o histórico são daquele personagem, não desta tela.
   function abrirFicha(id) {
+    // subir() envia a ficha aberta. Entregue a edição pendente ANTES de
+    // trocar o ponteiro; senão o timer enviaria apenas a próxima ficha.
+    if (dados.aberta !== id && _timer !== null) salvarAgora();
     dados.aberta = id;
     resultados = {};
     direcionar = {};
@@ -3464,7 +3469,7 @@
           <button type="button" class="ga-btn-sec fi-turno-b" data-acao="turno-atq" data-i="${i}"
                   title="Rolar 1d20 ${sinal(valorAtaque(f, a))}">🎯 ${sinal(valorAtaque(f, a))}</button>
           ${temDano ? `<button type="button" class="ga-btn-sec fi-turno-b" data-acao="turno-dano" data-i="${i}"
-                  title="${esc(tituloDano(a))}">💥 ${esc(danoDoAtaque(a).expr)}</button>
+                  title="${esc(tituloDano(a, f))}">💥 ${esc(danoComExtras(a, f).expr)}</button>
           <button type="button" class="ga-btn-sec fi-turno-b fi-turno-b--crit" data-acao="turno-crit" data-i="${i}"
                   title="Crítico ×${mult}">×${mult}</button>` : ''}
         </li>`;
@@ -3790,9 +3795,9 @@
         if (!a || !String(a.dano || '').trim()) return;
         const mult = multiplicadorCritico(a.critico);
         const crit = ac === 'turno-crit';
-        dizer((crit ? '💥 crítico ×' + mult + ' de ' : '💥 dano de ') + (a.nome || 'ataque') + rotuloExtras(a),
-              rolar(crit ? danoCriticoExpr(a, mult) : danoComExtras(a).expr,
-                    quem(f) + ' · ' + (crit ? '💥 CRÍTICO ×' + mult + ' de ' : 'dano de ') + (a.nome || 'ataque') + rotuloExtras(a),
+        dizer((crit ? '💥 crítico ×' + mult + ' de ' : '💥 dano de ') + (a.nome || 'ataque') + rotuloExtras(a, f),
+              rolar(crit ? danoCriticoExpr(a, mult, f) : danoComExtras(a, f).expr,
+                    quem(f) + ' · ' + (crit ? '💥 CRÍTICO ×' + mult + ' de ' : 'dano de ') + (a.nome || 'ataque') + rotuloExtras(a, f),
                     'turno'));
         return;
       }
@@ -4714,11 +4719,11 @@
                value="${a.passos}" data-campo="ataques.${i}.passos" aria-label="Passos de dano"
                title="Passos de dano (Tabela 3-2, p. 143): +1 para cada passo que um poder, a arma adaptável usada com as duas mãos ou uma arma maior sobem; −1 para cada um que descem. O dado da arma anda na tabela sozinho — o resto do dano fica como está.">
         <button type="button" class="fi-atq-dano" data-acao="rolar-dano" data-i="${i}"
-                title="${esc(tituloDano(a))}">🎲 dano</button>
+                title="${esc(tituloDano(a, f))}">🎲 dano</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.critico)}" data-campo="ataques.${i}.critico"
                placeholder="19/×3" autocomplete="off">
         <button type="button" class="fi-atq-crit" data-acao="rolar-critico" data-i="${i}"
-                title="${esc(tituloCriticoAtq(a))}">💥 Crítico</button>
+                title="${esc(tituloCriticoAtq(a, f))}">💥 Crítico</button>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.tipo)}" data-campo="ataques.${i}.tipo"
                placeholder="corte" autocomplete="off">
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.alcance)}" data-campo="ataques.${i}.alcance"
@@ -4898,44 +4903,49 @@
   }
   //  A expressão de dano COM os extras ligados somados ao fim, e a lista
   //  dos que entraram (para o rótulo da rolagem).
-  function danoComExtras(a, extra) {
-    const r = danoDoAtaque(a, extra);
+  function danoComExtras(a, f) {
+    const r = danoDoAtaque(a);
     const ativos = extrasAtivos(a);
+    const efeito = bonusEmJogo(f, 'dano');
     return { base: r, extras: ativos,
-      expr: (r.expr || '') + ativos.map(e => sinalDeExtra(e.dado)).join('') };
+      expr: (r.expr || '') + ativos.map(e => sinalDeExtra(e.dado)).join('') + (efeito ? sinal(efeito) : '') };
   }
   //  "1d6 Imolação Sagrada, +2 veneno" — o que dizer na pílula da rolagem.
-  function rotuloExtras(a) {
+  function rotuloExtras(a, f) {
     const e = extrasAtivos(a);
-    return e.length ? ' + ' + e.map(x => sinalDeExtra(x.dado).replace(/^\+/, '') +
+    const extra = e.length ? ' + ' + e.map(x => sinalDeExtra(x.dado).replace(/^\+/, '') +
       (x.fonte ? ' ' + x.fonte : '')).join(', ') : '';
+    const efeitos = resumoEfj(f, 'dano');
+    return extra + (efeitos ? ' (' + efeitos + ')' : '');
   }
   //  A expressão do CRÍTICO: os dados da arma dobram (expressaoCritica),
   //  e o dano extra SÓ dobra se a linha tiver o 💥 ligado (exceção dos
   //  encantos, p. 142); o resto entra uma vez, DEPOIS da multiplicação.
-  function danoCriticoExpr(a, mult) {
+  function danoCriticoExpr(a, mult, f) {
     const r = danoDoAtaque(a);
     const ativos = extrasAtivos(a);
     const dobram = ativos.filter(e => e.critico).map(e => sinalDeExtra(e.dado)).join('');
     const umaVez = ativos.filter(e => !e.critico).map(e => sinalDeExtra(e.dado)).join('');
-    return expressaoCritica((r.expr || '') + dobram, mult) + umaVez;
+    const efeito = bonusEmJogo(f, 'dano');
+    return expressaoCritica((r.expr || '') + dobram, mult) + umaVez + (efeito ? sinal(efeito) : '');
   }
-  function tituloCriticoAtq(a) {
+  function tituloCriticoAtq(a, f) {
     const mult = multiplicadorCritico(a.critico);
-    const expr = danoCriticoExpr(a, mult);
+    const expr = danoCriticoExpr(a, mult, f);
     return 'Rolar o dano CRÍTICO: ' + (expr || '—') +
       ' (×' + mult + ' — os dados da arma dobram; o dano extra só dobra com o 💥 da linha, p. 142)';
   }
   function textoPassos(n) {
     return (n > 0 ? '+' : '−') + Math.abs(n) + ' passo' + (Math.abs(n) === 1 ? '' : 's');
   }
-  function tituloDano(a) {
+  function tituloDano(a, f) {
     const r = danoDoAtaque(a);
     if (!r.expr) return 'Rolar o dano';
-    const ex = danoComExtras(a);
+    const ex = danoComExtras(a, f);
     return 'Rolar o dano: ' + ex.expr + (passosDe(a.passos) && r.ok && !r.semDado
       ? ' (' + r.base + ' ' + textoPassos(passosDe(a.passos)) + ', Tabela 3-2)' : '') +
-      (ex.extras.length ? ' · com o dano extra ligado' : '');
+      (ex.extras.length ? ' · com o dano extra ligado' : '') +
+      (resumoEfj(f, 'dano') ? ' · ' + resumoEfj(f, 'dano') : '');
   }
   // A linha embaixo do ataque: para onde o dado andou — ou por que não andou.
   function linhaDePassos(a, extra, fontes) {
@@ -7685,11 +7695,11 @@
     // com o dado já andado pelos passos
     secao.querySelectorAll('[data-acao="rolar-critico"]').forEach(b => {
       const a = f.ataques[+b.dataset.i];
-      if (a) b.title = tituloCriticoAtq(a);
+      if (a) b.title = tituloCriticoAtq(a, f);
     });
     secao.querySelectorAll('[data-acao="rolar-dano"]').forEach(b => {
       const a = f.ataques[+b.dataset.i];
-      if (a) b.title = tituloDano(a);
+      if (a) b.title = tituloDano(a, f);
     });
     // o campo de passos acende quando sai do zero, como o atributo trocado
     secao.querySelectorAll('.fi-num--passos').forEach(el => {
@@ -8060,7 +8070,8 @@
           'A cópia que essa pessoa tem no navegador dela continua lá.'
         : 'Apagar a ficha de ' + nome + '? Isto não tem volta.';
       if (!confirm(aviso)) return;
-      if (window.GA_FichaMesa) window.GA_FichaMesa.apagar(f.id, dono);
+      if (window.GA_FichaMesa) window.GA_FichaMesa.apagar(f.id, dono, dono ? undefined : (f.contaSo ? '' : (f.mesa || '')));
+      clearTimeout(_timer); _timer = null;
       if (dono) {
         if (remotas[dono]) delete remotas[dono][f.id];
       } else {
@@ -9048,9 +9059,9 @@
       const a = f.ataques[+btn.dataset.i];
       if (!a || !a.dano.trim()) return;
       const r = danoDoAtaque(a);
-      const ex = danoComExtras(a);
+      const ex = danoComExtras(a, f);
       const p = (passosDe(a.passos) && r.ok && !r.semDado) ? ' (' + textoPassos(passosDe(a.passos)) + ')' : '';
-      rolar(ex.expr, quem(f) + ' · dano de ' + (a.nome || 'ataque') + p + rotuloExtras(a),
+      rolar(ex.expr, quem(f) + ' · dano de ' + (a.nome || 'ataque') + p + rotuloExtras(a, f),
             'dano:' + btn.dataset.i, 'Dano' + p + (ex.extras.length ? ' +extra' : ''));
       return;
     }
@@ -9059,10 +9070,10 @@
       if (!a || !a.dano.trim()) return;
       const mult = multiplicadorCritico(a.critico);
       const r = danoDoAtaque(a);
-      const ex = danoComExtras(a);
+      const ex = danoComExtras(a, f);
       const p = (passosDe(a.passos) && r.ok && !r.semDado) ? ' (' + textoPassos(passosDe(a.passos)) + ')' : '';
-      rolar(danoCriticoExpr(a, mult),
-            quem(f) + ' · 💥 CRÍTICO ×' + mult + ' de ' + (a.nome || 'ataque') + p + rotuloExtras(a),
+      rolar(danoCriticoExpr(a, mult, f),
+            quem(f) + ' · 💥 CRÍTICO ×' + mult + ' de ' + (a.nome || 'ataque') + p + rotuloExtras(a, f),
             'crit:' + i, '💥 Crítico ×' + mult + p + (ex.extras.length ? ' +extra' : ''));
       return;
     }

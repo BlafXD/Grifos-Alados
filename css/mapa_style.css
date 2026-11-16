@@ -204,7 +204,7 @@
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: var(--cor, var(--neutra));
+  color: var(--cor-legivel, var(--neutra));
   background: var(--parchment);
   border: 1px solid var(--cor, var(--neutra));
   padding: 0.18rem 0.26rem;

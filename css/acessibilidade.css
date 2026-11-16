@@ -840,7 +840,7 @@ html.ga-contraste {
   --ink-faded:  #2a1a0e;   /* era #3d2b1f — os rótulos miúdos */
   --text-mid:   #2a1a0e;
   --text-dim:   #3a2716;   /* era #6e5a44 — o que reprovava em 4,5:1 */
-  --parchment3: #a08b62;   /* bordas: de bege claro para bege escuro */
+  /* --parchment3 também é FUNDO de campos; escurecê-lo apagava texto. */
   --border:     #a08b62;
   --gold-dim:   #6b5712;
   --gold-deep:  #55450f;
@@ -859,7 +859,6 @@ html.ga-contraste :where(input, select, textarea, [contenteditable="true"]) {
     --ink-faded:  #2a1a0e;
     --text-mid:   #2a1a0e;
     --text-dim:   #3a2716;
-    --parchment3: #a08b62;
     --gold-dim:   #6b5712;
   }
 }
@@ -1015,6 +1014,7 @@ html.ga-foco-forte :where(a, button, summary, select, input, textarea,
    bloco só aqui vira a gazeta inteira, sem tocar em mais nada.
    ══════════════════════════════════════════════════════════════════ */
 html.ga-noturno {
+  color-scheme: dark;
   --ink:        #ead9ba;   /* era a tinta escura; aqui é o texto claro */
   --ink-faded:  #b7a179;
   --parchment:  #17110a;   /* era o pergaminho claro; aqui é o fundo escuro */
@@ -1032,6 +1032,11 @@ html.ga-noturno {
   --teal:       #3ecbb0;
   --carmim:     #e5697a;   /* 3,93:1 sobre --parchment3 era o pior par vermelho do noturno */
   --neutra:     #a89a7c;
+  --roxo:       #c39be8;
+  --tormenta:   #ec86b1;
+  --papel-reflexo: rgba(255,255,255,0.025);
+  --papel-zebra: #1f170e;
+  --cor-mistura: 35%;
   --gold-deep:  #d9b13f;
   --gold-pale:  #2c2314;
   --linha-hover:#2c2314;
@@ -1080,7 +1085,7 @@ html.ga-noturno {
    Conferido com o medidor de contraste: nenhum par de texto cai abaixo
    de 4.5:1, e os pares de corpo passam de 7:1 (AAA).
    ══════════════════════════════════════════════════════════════════ */
-html.ga-pele-nova {
+html.ga-pele-nova:not(.ga-noturno) {
   --ink:        #15100b;   /* tinta: um fio mais escura e menos avermelhada */
   --ink-faded:  #4a3a2b;   /* rótulo apagado — 8:1 no papel novo */
   --parchment:  #f7f1e4;   /* o papel, mais claro e menos amarelo */
@@ -1112,4 +1117,36 @@ html.ga-pele-nova {
   --text-dim:   #5c4c3a;
   --gold-dim:   #9a8328;
   --border:     #d8caae;
+}
+
+/* As preferências se combinam. O contraste precisa vir DEPOIS das
+   paletas e reforçar a tinta sem clarear os fundos do modo noturno. */
+html.ga-contraste:not(.ga-noturno) {
+  --ink-faded: #2a1a0e;
+  --text-mid: #2a1a0e;
+  --text-dim: #3a2716;
+  --gold-dim: #6b5712;
+  --gold-deep: #55450f;
+  --rust: #7a2508;
+  --neutra: #4c4238;
+}
+html.ga-noturno.ga-contraste {
+  --ink-faded: #ead9ba;
+  --text-mid: #ead9ba;
+  --text-dim: #ead9ba;
+  --gold-dim: #ecd27a;
+}
+@media (prefers-contrast: more) {
+  html:not(.ga-noturno) {
+    --ink-faded: #2a1a0e;
+    --text-mid: #2a1a0e;
+    --text-dim: #3a2716;
+    --gold-dim: #6b5712;
+  }
+  html.ga-noturno {
+    --ink-faded: #ead9ba;
+    --text-mid: #ead9ba;
+    --text-dim: #ead9ba;
+    --gold-dim: #ecd27a;
+  }
 }

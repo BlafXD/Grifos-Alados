@@ -24,6 +24,7 @@
     } catch (e) { console.warn('[bases] não carregou:', e.message); }
     if (!dados || typeof dados !== 'object') dados = {};
     if (!Array.isArray(dados.bases)) dados.bases = [];
+    dados.bases = dados.bases.filter(b => b && typeof b === 'object' && !Array.isArray(b));
     dados.bases.forEach(normalizarBase);
   }
 
@@ -704,12 +705,13 @@
         alert('Este arquivo é um backup de "' + parsed.tipo + '", não das Bases.'); return;
       }
       const bruto = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.bases) ? parsed.bases : null);
-      if (!bruto || !bruto.length) { alert('Backup sem bases — verifique o arquivo.'); return; }
-      bruto.forEach(b => { b.id = uid('base'); normalizarBase(b); });
+      const bases = bruto && bruto.filter(b => b && typeof b === 'object' && !Array.isArray(b));
+      if (!bases || !bases.length) { alert('Backup sem bases válidas — verifique o arquivo.'); return; }
+      bases.forEach(b => { b.id = uid('base'); normalizarBase(b); });
       const totalAtual = dados.bases.length;
       const overlay = GA_abrirModal(`
         <div class="ga-modal-cab"><span>⬆ Importar bases</span><button class="ga-modal-x" data-ga-fechar title="Fechar">✕</button></div>
-        <p class="ga-modal-dica">O arquivo traz <strong>${bruto.length} base${bruto.length !== 1 ? 's' : ''}</strong>. Você tem ${totalAtual} no momento.</p>
+        <p class="ga-modal-dica">O arquivo traz <strong>${bases.length} base${bases.length !== 1 ? 's' : ''}</strong>. Você tem ${totalAtual} no momento.</p>
         <div class="ga-modal-acoes">
           <button class="ga-btn-sec" data-ga-fechar>Cancelar</button>
           <button class="ga-btn-sec" data-imp-modo="adicionar">➕ Adicionar</button>
@@ -720,9 +722,9 @@
         if (!btn) return;
         if (btn.dataset.impModo === 'substituir') {
           if (totalAtual && !confirm('Isto APAGA as ' + totalAtual + ' bases atuais. Continuar?')) return;
-          dados.bases = bruto;
+          dados.bases = bases;
         } else {
-          dados.bases = dados.bases.concat(bruto);
+          dados.bases = dados.bases.concat(bases);
         }
         salvarAgora(); overlay._fechar(); render();
       });

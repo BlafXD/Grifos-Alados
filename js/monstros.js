@@ -5587,6 +5587,11 @@
       .replace(/\r/g, '')
       .replace(/\s*\n\s*/g, ' ')
       .replace(/[ \t]+/g, ' ')
+      // O PDF usa menos tipográfico e às vezes separa sinal e número.
+      // Normalize só sinais seguidos de dígitos: o travessão de um
+      // atributo ausente (Int —) precisa continuar sendo um travessão.
+      .replace(/[–−]\s*(?=\d)/g, '-')
+      .replace(/([+\-])\s+(?=\d)/g, '$1')
       .trim();
     if (!t) return { cr: null, avisos: ['Cole o texto da ficha primeiro.'] };
 

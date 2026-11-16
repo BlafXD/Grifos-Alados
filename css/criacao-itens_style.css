@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════
    CRIACAO-ITENS_STYLE.CSS — Sub-aba "🔨 Criação de Itens" (Consultas)
-   Reaproveita .cr-*/.vc-*/.prog-table de consultas_style.css e style.css;
+   Reaproveita as classes cr-, vc- e prog-table de consultas_style.css e style.css;
    aqui só o que é exclusivo da calculadora (prefixo .ci-).
 
    Linguagem visual: mesmo "bloco" usado nos cards de consulta (.vc-card)
@@ -24,7 +24,7 @@
 .ci-bloco {
   position: relative;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.35), transparent 55%),
+    linear-gradient(180deg, var(--papel-reflexo), transparent 55%),
     var(--parchment2);
   border: 1px solid var(--gold-dim);
   border-left: 4px solid var(--rust);
@@ -125,6 +125,7 @@
 .ci-item-resultado--vazio:hover { background: none; }
 
 .ci-item-custom { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.ci-calc [hidden] { display: none !important; }
 .ci-item-custom .ci-custom-nome { flex: 2 1 12rem; }
 .ci-item-custom .ci-custom-preco { flex: 1 1 8rem; }
 
@@ -164,7 +165,7 @@
 .ci-resultado {
   position: relative;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.4), transparent 60%),
+    linear-gradient(180deg, var(--papel-reflexo), transparent 60%),
     var(--parchment);
   border: 1px solid var(--gold-dim);
   border-left: 5px solid var(--gold);
@@ -293,9 +294,10 @@
   vertical-align: middle;
 }
 .ci-ajustes-tabela tbody tr:last-child td { border-bottom: none; }
-.ci-ajustes-tabela tbody tr:nth-child(even) td { background: rgba(232,217,188,0.5); }
+.ci-ajustes-tabela tbody tr:nth-child(even) td { background: var(--papel-zebra); }
 .ci-ajustes-tabela tbody tr:hover td { background: var(--linha-hover); }
 .ci-ajustes-tabela input[type="number"] {
+  color: var(--ink);
   width: 6.4rem;
   padding: 0.22rem 0.4rem;
   font-family: var(--ga-fonte-corpo);

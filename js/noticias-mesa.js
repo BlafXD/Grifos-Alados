@@ -28,6 +28,8 @@
   let ultimoErro = '';
   let timer = null, fila = {};
   let gravando = 0;
+  let sessao = 0;
+  const errosEscrita = {};
 
   //  O QUE ESTÁ NO AR, em três mapas separados — o que se SABE que
   //  existe (índices, leves) e o que se BAIXOU (corpos, pesados).
@@ -87,14 +89,16 @@
 
     if (!refPub) {
       aguardar('publicas', () => { erroIndice = 'A consulta demorou demais.'; });
-      refPub = b.ref('gazeta/publicas');
+      const ref = refPub = b.ref('gazeta/publicas');
       cbPub = refPub.on('value', snap => {
+        if (refPub !== ref) return;
         concluir('publicas');
         indiceCarregado = true; erroIndice = '';
         publicas = snap.val() || {};
         acertarCorpos();
         entregar();
       }, err => {
+        if (refPub !== ref) return;
         concluir('publicas');
         erroIndice = (err && err.message) || 'Falha na consulta.';
         console.warn('[noticias-mesa] vitrine:', erroIndice);
@@ -111,14 +115,16 @@
       minhasCarregadas = !uid; erroMinhas = '';
       if (uid) {
         aguardar('minhas', () => { erroMinhas = 'A consulta da conta demorou demais.'; });
-        refMinhas = b.ref('usuarios/' + uid + '/campanhas');
+        const ref = refMinhas = b.ref('usuarios/' + uid + '/campanhas');
         cbMinhas = refMinhas.on('value', snap => {
+          if (refMinhas !== ref) return;
           concluir('minhas');
           minhasCarregadas = true; erroMinhas = '';
           minhasIdx = snap.val() || {};
           acertarCorpos();
           entregar();
         }, err => {
+          if (refMinhas !== ref) return;
           concluir('minhas'); erroMinhas = (err && err.message) || 'Falha na consulta da conta.';
           entregar();
         });
@@ -166,8 +172,10 @@
     const b = db();
     if (!b) return;
     const ref = b.ref('campanhas/' + id);
+    const assinatura = ouvindo[id] = { ref: ref, cb: null };
     aguardar(id, () => { errosCorpos[id] = 'A consulta demorou demais.'; });
     const cb = ref.on('value', snap => {
+      if (ouvindo[id] !== assinatura) return;
       concluir(id); delete errosCorpos[id];
       const v = snap.val();
       //  PEDI E NÃO HÁ NADA. Acontece de verdade: o "🗑 Encerrar a
@@ -179,12 +187,13 @@
       else   { delete corpos[id]; vazios[id] = true; }
       entregar();
     }, err => {
+      if (ouvindo[id] !== assinatura) return;
       concluir(id);
       errosCorpos[id] = (err && err.message) || 'Falha na consulta.';
       console.warn('[noticias-mesa] campanha ' + id + ':', err && err.message);
       entregar();
     });
-    ouvindo[id] = { ref: ref, cb: cb };
+    assinatura.cb = cb;
   }
 
   function largar(id) {
@@ -290,7 +299,6 @@
   //  e o banco recebe uma escrita só.
   function publicar(camp) {
     if (!camp || !camp.id || !possoEscrever(camp.id)) return;
-    ultimoErro = '';
     fila[camp.id] = camp;
     clearTimeout(timer);
     timer = setTimeout(enviar, 700);
@@ -300,6 +308,7 @@
     const b = db();
     const uid = meuUid();
     if (!b || !uid) return;
+    const nestaSessao = sessao;
     const agora_ = fila; fila = {};
     Object.keys(agora_).forEach(id => {
       // A conta pode mudar enquanto a escrita aguarda os 700 ms.
@@ -333,10 +342,16 @@
 
       gravando++;
       b.ref().update(upd)
-        .then(() => { gravando--; ultimoErro = ''; avisar(); })
+        .then(() => {
+          if (nestaSessao !== sessao) return;
+          gravando--; delete errosEscrita[id];
+          ultimoErro = Object.values(errosEscrita).join(' · '); avisar();
+        })
         .catch(e => {
+          if (nestaSessao !== sessao) return;
           gravando--;
-          ultimoErro = e.message;
+          errosEscrita[id] = 'Gazeta “' + (camp.nome || id) + '”: ' + e.message;
+          ultimoErro = Object.values(errosEscrita).join(' · ');
           console.warn('[noticias-mesa] não deu para publicar:', e.message);
           avisar();
         });
@@ -419,7 +434,10 @@
       window.GA_Mesa.aoMudar(function (e) {
         const antes = meuUid();
         mesa = e; iniciado = true;
-        if (antes !== meuUid()) { clearTimeout(timer); fila = {}; }
+        if (antes !== meuUid()) {
+          sessao++; clearTimeout(timer); fila = {}; gravando = 0; ultimoErro = '';
+          Object.keys(errosEscrita).forEach(id => { delete errosEscrita[id]; });
+        }
         ligar();
         entregar();
         if (antes !== meuUid()) avisar();      // entrou ou saiu: a tela muda de botão

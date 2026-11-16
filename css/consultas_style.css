@@ -12,7 +12,7 @@
   padding: 0.6rem 0.4rem 0.75rem;
   margin-bottom: 1.2rem;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.22), transparent 45%),
+    linear-gradient(180deg, var(--papel-reflexo), transparent 45%),
     var(--parchment);
   border-bottom: 3px double var(--gold-dim);
   /* gruda logo abaixo do menu principal (altura real em --nav-h) */
@@ -147,7 +147,7 @@
   border: 1px solid var(--gold-dim);
   border-left: 4px solid var(--rust);
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.35), transparent 55%),
+    linear-gradient(180deg, var(--papel-reflexo), transparent 55%),
     var(--parchment2);
   transition: box-shadow 0.16s ease, border-color 0.16s ease;
 }
@@ -329,7 +329,7 @@
   border-radius: var(--raio);
   padding: 0.12rem 0.4rem;
 }
-.am-badge--desl { background: var(--faixa); }
+.am-badge--desl { background: var(--faixa); color: var(--faixa-tinta); }
 .am-item-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.35rem 0; }
 .am-tag {
   font-family: var(--ga-fonte-nota);
@@ -377,8 +377,8 @@
   text-align: center;
   border-radius: var(--raio);
 }
-.am-tier:nth-child(2) .am-tier-rot { background: var(--rust); }
-.am-tier:nth-child(3) .am-tier-rot { background: var(--rust-dark); }
+.am-tier:nth-child(2) .am-tier-rot { background: var(--rust); color: var(--parchment); }
+.am-tier:nth-child(3) .am-tier-rot { background: var(--rust-dark); color: var(--parchment); }
 .am-tier-txt {
   font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
@@ -726,7 +726,7 @@
   font-weight: 700;
   letter-spacing: 0.09em;
 
-  color: var(--cor, var(--rust-dark));
+  color: var(--cor-legivel, var(--rust-dark));
   border-bottom: 1px dashed var(--gold-dim);
   padding-bottom: 0.25rem;
   margin-bottom: 0.3rem;
@@ -841,7 +841,7 @@
   margin-left: 0.3rem;
   white-space: nowrap;
 }
-.dev-badge--magica { color: #5a3a7a; border-color: #5a3a7a; background: rgba(90, 58, 122, 0.07); }
+.dev-badge--magica { color: var(--roxo); border-color: var(--roxo); background: color-mix(in srgb, var(--roxo) 7%, transparent); }
 
 /* ═══ SUB-ABA 🌀 CONDIÇÕES ═════════════════════════════════════════ */
 /* regra de acúmulo/fim de cena, em destaque acima dos filtros */
@@ -870,7 +870,7 @@
   font-weight: 700;
   letter-spacing: 0.07em;
 
-  color: var(--cor, var(--ink));
+  color: var(--cor-legivel, var(--ink));
   background: var(--parchment);
   border: 1px solid var(--cor, var(--ink-faded));
   padding: 0.22rem 0.55rem;
@@ -881,7 +881,7 @@
    .cond-chip--on e, sem ele, o chip ativo fica claro-sobre-claro
    enquanto o ponteiro continua em cima dele depois do clique */
 .cond-chip:not(.cond-chip--on):hover { background: var(--parchment3); }
-.cond-chip--on { background: var(--cor, var(--ink)); color: var(--parchment); }
+.cond-chip--on { background: var(--cor-legivel, var(--ink)); color: var(--parchment); }
 
 /* coluna "Descrição" da Tabela 4-7 (ingredientes da Culinária) */
 .prog-table td.cul-ing-desc {
@@ -898,7 +898,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
 
-  color: var(--cor, var(--ink));
+  color: var(--cor-legivel, var(--ink));
   border: 1px solid var(--cor, var(--ink-faded));
   background: var(--parchment);
   padding: 0.1rem 0.4rem;
@@ -960,8 +960,8 @@
   margin-right: 0.3rem;
   white-space: nowrap;
 }
-.mag-selo--arcana    { background: #3a2a6b; }
-.mag-selo--divina    { background: var(--gold); color: var(--ink); }
+.mag-selo--arcana    { background: #3a2a6b; color: var(--faixa-tinta); }
+.mag-selo--divina    { background: var(--gold); color: var(--faixa); }
 .mag-selo--universal { background: var(--rust-dark); }
 
 /* resumo de uma linha, antes do texto integral */

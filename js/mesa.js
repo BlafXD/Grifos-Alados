@@ -106,7 +106,7 @@
   let refsMembro = [];      // as escutas que dependem do PAPEL (ver abaixo)
   let membrosLigado = '';   // sala/papel já assinados, para não re-assinar à toa
   function desligar() {
-    refs.forEach(r => { try { r.ref.off('value', r.cb); } catch (e) {} });
+    refs.forEach(r => { r.ativa = false; try { r.ref.off('value', r.cb); } catch (e) {} });
     refs = [];
     refsMembro = [];
     membrosLigado = '';
@@ -114,11 +114,12 @@
   function ligar(caminho, cb) {
     const b = db(); if (!b) return;
     const ref = b.ref(caminho);
+    const r = { ref: ref, cb: null, ativa: true };
+    refs.push(r);
     // "sem permissão" aqui é resposta, não falha: quer dizer que esta
     // pessoa não é dessa parte da mesa.
-    const fn = ref.on('value', snap => { cb(snap.val()); avisar(); },
+    r.cb = ref.on('value', snap => { if (r.ativa) { cb(snap.val()); avisar(); } },
       err => console.warn('[mesa] ' + caminho + ':', err && err.message));
-    refs.push({ ref: ref, cb: fn });
   }
 
   function assinar() {
@@ -167,18 +168,20 @@
   function ligarMembro(caminho, cb) {
     const b = db(); if (!b) return;
     const ref = b.ref(caminho);
-    const fn = ref.on('value', snap => { cb(snap.val()); avisar(); },
-      err => console.warn('[mesa] ' + caminho + ':', err && err.message));
-    const r = { ref: ref, cb: fn };
+    const r = { ref: ref, cb: null, ativa: true };
     refsMembro.push(r); refs.push(r);
+    r.cb = ref.on('value', snap => { if (r.ativa) { cb(snap.val()); avisar(); } },
+      err => console.warn('[mesa] ' + caminho + ':', err && err.message));
   }
   function desligarMembro() {
     refsMembro.forEach(r => {
+      r.ativa = false;
       try { r.ref.off('value', r.cb); } catch (e) {}
       const i = refs.indexOf(r); if (i >= 0) refs.splice(i, 1);
     });
     refsMembro = [];
     membrosLigado = '';
+    est.membros = {}; est.pedidos = {};
   }
   function assinarDeMembro(id) {
     const chave = id + '/' + est.papel;

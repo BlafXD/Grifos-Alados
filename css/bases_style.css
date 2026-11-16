@@ -90,7 +90,7 @@
 }
 .bs-base-tag {
   flex: 0 0 auto; font-family: var(--ga-fonte-rotulo); font-size: 0.58rem; letter-spacing: 0.05em;
-color: var(--parchment); border: 1px solid var(--gold);
+  color: var(--faixa-tinta); border: 1px solid var(--gold);
   padding: 0.12rem 0.4rem; border-radius: var(--raio); white-space: nowrap;
 }
 .bs-base-tag--tipo { border-color: var(--gold-light); }
@@ -283,7 +283,7 @@ color: var(--ink-faded);
 .bs-tag-compart {
   font-family: var(--ga-fonte-corpo); font-size: 0.62rem; font-weight: 600;
   letter-spacing: 0.03em; text-transform: uppercase; color: var(--parchment);
-  background: var(--gold-dim); border-radius: var(--raio); padding: 0.08rem 0.4rem;
+  background: var(--gold-deep); border-radius: var(--raio); padding: 0.08rem 0.4rem;
   margin-left: 0.5rem; vertical-align: middle;
 }
 .bs-compart-dica {

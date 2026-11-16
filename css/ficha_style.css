@@ -80,7 +80,7 @@
   border: 1px solid var(--faixa);
   border-radius: var(--raio);
 }
-.fi-add:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
+.fi-add:hover { background: var(--gold-deep); border-color: var(--gold-deep); color: var(--parchment); }
 .fi-add--menor { font-size: 0.62rem; padding: 0.3rem 0.6rem; }
 
 .fi-vazio {
@@ -536,7 +536,7 @@
   margin-left: 0.3rem;
   padding: 0 0.4rem;
   font-size: 0.62rem;
-  color: #fff;
+  color: var(--parchment);
   background: var(--azul);
   border-radius: 999px;
 }
@@ -726,7 +726,7 @@
   color: var(--text-dim); background: var(--parchment2); border: 1px solid var(--parchment3);
 }
 .fi-morto-btn:hover { color: var(--ink); background: var(--gold-pale); }
-.fi-morto-btn--on, .fi-morto-btn--on:hover { color: #fff; background: var(--carmim); border-color: var(--carmim); }
+.fi-morto-btn--on, .fi-morto-btn--on:hover { color: var(--parchment); background: var(--carmim); border-color: var(--carmim); }
 
 /* ── PERÍCIAS ──────────────────────────────────────────────────── */
 .fi-per-lista {
@@ -1061,7 +1061,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
 
-  color: var(--ink);
+  color: var(--faixa);
   background: var(--gold-light);
   border: 1px solid var(--gold-deep);
   border-radius: 999px;
@@ -1353,7 +1353,7 @@
 }
 .fi-cat-item .fi-busca-circ { background: var(--neutra); font-size: 0.9rem; }
 .fi-inv-acoes { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
-.fi-add--cat { border-color: var(--azul); color: var(--azul); }
+.fi-add--cat { border-color: var(--azul); color: var(--azul); background: var(--parchment); }
 .fi-add--cat:hover { background: var(--azul); color: var(--parchment); }
 
 .fi-mag-ficha {
@@ -4182,14 +4182,14 @@
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--cond, var(--rust-dark));
+  color: var(--cond-legivel, var(--rust-dark));
 }
 .fi-cond-tipo {
   font-family: var(--ga-fonte-nota);
   font-size: 0.72rem;
   font-style: italic;
   color: var(--parchment);
-  background: var(--cond, var(--rust-dark));
+  background: var(--cond-legivel, var(--rust-dark));
   padding: 0 0.35rem;
   border-radius: 2rem;
 }
@@ -4222,7 +4222,7 @@
 }
 .fi-cond:hover .fi-cond-nuvem,
 .fi-cond:focus-within .fi-cond-nuvem { opacity: 1; visibility: visible; }
-.fi-cond-nuvem strong { font-family: var(--ga-fonte-rotulo); font-size: 0.86rem; color: var(--cond, var(--rust-dark)); }
+.fi-cond-nuvem strong { font-family: var(--ga-fonte-rotulo); font-size: 0.86rem; color: var(--cond-legivel, var(--rust-dark)); }
 .fi-cond-nuvem em { font-size: 0.82rem; color: var(--text-dim); }
 .fi-cond-nuvem span { display: block; margin-top: 0.25rem; }
 
@@ -4258,7 +4258,7 @@
   flex: 0 0 auto;
   width: 1.1rem;
   text-align: center;
-  color: var(--cond, var(--rust-dark));
+  color: var(--cond-legivel, var(--rust-dark));
   font-weight: 700;
 }
 .fi-cond-opcao-nome {
@@ -4491,7 +4491,7 @@
   transition: width 0.18s ease-out;
 }
 .fi-temp-selo--mancha {
-  color: var(--ink);
+  color: var(--faixa);
   background: #ded8cc;
   border-color: var(--neutra);
 }
@@ -4581,7 +4581,7 @@
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: var(--cond, var(--rust-dark));
+  color: var(--cond-legivel, var(--rust-dark));
 }
 .fi-condl--sustentada .fi-condl-rot { cursor: help; }
 /* o rótulo é de uma linha só, mas a nuvem que mora dentro dele NÃO:
@@ -4712,13 +4712,13 @@
   color: var(--text-dim); background: var(--parchment2);
   border: 1px solid var(--parchment3); border-radius: 999px;
 }
-.ea-rel.ea-on.ea-rel--aliado { color: #fff; background: var(--azul); border-color: var(--azul); }
-.ea-rel.ea-on.ea-rel--inimigo { color: #fff; background: var(--carmim); border-color: var(--carmim); }
+.ea-rel.ea-on.ea-rel--aliado { color: var(--parchment); background: var(--azul); border-color: var(--azul); }
+.ea-rel.ea-on.ea-rel--inimigo { color: var(--parchment); background: var(--carmim); border-color: var(--carmim); }
 .ea-rel.ea-on.ea-rel--fora { color: var(--ink); background: var(--parchment3); }
 .ea-turno-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
 .ea-turno-linha input { max-width: 7rem; }
-.ea-rel.ea-on.ea-rel--cura { color: #fff; background: var(--verde); border-color: var(--verde); }
-.ea-rel.ea-on.ea-rel--dano { color: #fff; background: var(--carmim); border-color: var(--carmim); }
+.ea-rel.ea-on.ea-rel--cura { color: var(--parchment); background: var(--verde); border-color: var(--verde); }
+.ea-rel.ea-on.ea-rel--dano { color: var(--parchment); background: var(--carmim); border-color: var(--carmim); }
 /* O compositor 🔧: valor com ± e as pílulas de alcance (como os .ea-rel) */
 .ea-montar-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
 .ea-montar-val { display: inline-flex; align-items: center; gap: 0.2rem; }

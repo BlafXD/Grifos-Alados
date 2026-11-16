@@ -330,7 +330,7 @@
   font-family: var(--ga-fonte-corpo);
   font-size: 0.95rem;
   color: var(--ink);
-  background: #fffaf0;
+  background: var(--parchment2);
   border: 1px solid var(--parchment3);
   border-radius: var(--raio);
   padding: 0.34rem 0.5rem;
@@ -1211,7 +1211,7 @@ button.ca-base-item:hover { background: var(--gold-pale); border-color: var(--go
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.66rem;
   cursor: help;
-  color: #8a1c4a;
+  color: var(--tormenta);
 }
 
 /* ── O MODAL DOS DOIS PICKERS ────────────────────────────────────── */

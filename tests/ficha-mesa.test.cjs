@@ -213,3 +213,49 @@ test('falha da ficha de outra campanha não é atribuída ao Mael', async () => 
   assert.match(h.api.estado().erro, /antiga/);
   assert.doesNotMatch(h.api.estado().erro, /Mael|nuevosol/);
 });
+
+test('fichas de donos diferentes com o mesmo id não se sobrescrevem na fila', async () => {
+  const h = ambiente(estado('mestre', 'mestre'));
+  h.api.publicar({ ...ficha, nome: 'Primeiro' }, 'jogador-a', new Set(['nome']));
+  h.api.publicar({ ...ficha, nome: 'Segundo' }, 'jogador-b', new Set(['nome']));
+  await h.flush();
+  assert.deepEqual(h.writes.map(w => [w.caminho, w.value.nome]), [
+    ['mesas/nuevosol/fichas/jogador-a/mael', 'Primeiro'],
+    ['mesas/nuevosol/fichas/jogador-b/mael', 'Segundo'],
+  ]);
+});
+
+test('excluir uma ficha pessoal remove da campanha vinculada, sem tocar a mesa aberta', async () => {
+  const h = ambiente();
+  h.api.apagar('mael', null, 'outra'); await h.flush();
+  assert.deepEqual(h.writes.map(w => w.caminho), ['mesas/outra/fichas/jogador/mael', contaPath]);
+});
+
+test('excluir ficha só da conta não tenta apagar homônima da mesa', async () => {
+  const h = ambiente();
+  h.api.apagar('mael', null, ''); await h.flush();
+  assert.deepEqual(h.writes.map(w => w.caminho), [contaPath]);
+});
+
+test('exclusão no HUB também remove a cópia vinculada a uma campanha', async () => {
+  const h = ambiente({ ...estado('jogador', null), mesaId: '' });
+  h.api.apagar('mael', null, 'nuevosol'); await h.flush();
+  assert.deepEqual(h.writes.map(w => w.caminho), [mesaPath, contaPath]);
+});
+
+test('tirar ficha alheia desta mesa não apaga a conta nem o envio de outro dono', async () => {
+  const h = ambiente(estado('mestre', 'mestre'));
+  h.api.publicar(ficha, 'jogador-a', new Set(['pv']));
+  h.api.publicar(ficha, 'jogador-b', new Set(['pv']));
+  h.api.apagar('mael', 'jogador-a'); await h.flush();
+  assert.deepEqual(h.writes.map(w => [w.caminho, w.method]), [
+    ['mesas/nuevosol/fichas/jogador-a/mael', 'remove'],
+    ['mesas/nuevosol/fichas/jogador-b/mael', 'update'],
+  ]);
+});
+
+test('falha ao apagar aparece no estado da ficha', async () => {
+  const h = ambiente(); h.failures.add(mesaPath);
+  h.api.apagar('mael', null, 'nuevosol'); await h.flush();
+  assert.match(h.api.estado().erro, /apagar.*mael.*nuevosol/);
+});

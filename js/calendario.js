@@ -51,16 +51,20 @@
   //  Realtime Database recusa.
   function valida(q, comAno) {
     if (!q || typeof q !== 'object') return null;
-    const m = Number(q.mes), d = Number(q.dia);
+    // Zero é um mês válido (Nimb), mas null, "" e false não são o mês 0.
+    // Aceita strings numéricas dos formulários sem converter campos vazios
+    // ou estruturas de um backup malformado em datas aparentemente válidas.
+    const numero = v => (typeof v === 'number' || (typeof v === 'string' && v.trim() !== '')) ? Number(v) : NaN;
+    const m = numero(q.mes), d = numero(q.dia);
     if (!Number.isInteger(m) || m < 0 || m > MESES_NO_ANO) return null;
     if (!Number.isInteger(d) || d < 1 || d > (m === 0 ? CAL.nimb.max : DIAS_NO_MES)) return null;
     const out = { dia: d, mes: m };
     if (m === 0) {
-      const ap = Number(q.apos);
+      const ap = numero(q.apos);
       if (Number.isInteger(ap) && ap >= 1 && ap <= MESES_NO_ANO) out.apos = ap;
     }
     if (comAno) {
-      const a = (q.ano === '' || q.ano == null) ? NaN : Number(q.ano);
+      const a = numero(q.ano);
       if (!anoOk(a)) return null;
       out.ano = a;
     }

@@ -39,11 +39,12 @@
       const txt = localStorage.getItem(STORAGE_KEY);
       if (txt) dados = JSON.parse(txt);
     } catch (e) { console.warn('[tempo] não carregou:', e.message); }
-    if (!dados || typeof dados !== 'object') dados = {};
-    if (!dados.config || typeof dados.config !== 'object') dados.config = {};
+    if (!registroValido(dados)) dados = {};
+    if (!registroValido(dados.config)) dados.config = {};
     if (!MEDIDAS.some(m => m.chave === dados.config.medida)) dados.config.medida = 'mes';
     if (!CUSTO_VIDA.some(c => c.chave === dados.config.custoVida)) dados.config.custoVida = 'medio';
     if (!Array.isArray(dados.jogadores)) dados.jogadores = [];
+    dados.jogadores = dados.jogadores.filter(registroValido);
     dados.jogadores.forEach(normalizarJogador);
   }
 
@@ -58,12 +59,14 @@
   function uid(p) { return p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   const esc = window.GA_esc;
   const d = n => Math.floor(Math.random() * n) + 1;
+  const registroValido = v => !!v && typeof v === 'object' && !Array.isArray(v);
 
   function normalizarJogador(j) {
     if (!j.id) j.id = uid('jg');
     if (typeof j.nome !== 'string') j.nome = '';
     if (!CUSTO_VIDA.some(c => c.chave === j.custoVida)) j.custoVida = 'medio';
     if (!Array.isArray(j.acoes)) j.acoes = [];
+    j.acoes = j.acoes.filter(registroValido);
     j.acoes.forEach(a => {
       if (!a.id) a.id = uid('ac');
       if (typeof a.mes !== 'string') a.mes = '';

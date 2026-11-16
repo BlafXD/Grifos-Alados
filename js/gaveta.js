@@ -35,7 +35,7 @@
 (function () {
   'use strict';
 
-  // A digital deste navegador, por área: { area: { dig, em } }.
+  // A digital deste navegador, por área: { area: { uid, dig, em } }.
   //  `dig` é o que combinamos com o banco da última vez; `em` é quando
   //  isso mudou AQUI, e serve de desempate para quem usa 'maisNovo'.
   const SINC_KEY = 'grifosAlados.gavetaSinc';
@@ -57,6 +57,8 @@
   catch (e) { guardadas = {}; }
 
   let uidLigado = '';                 // de quem é a gaveta que estamos ouvindo
+  let sessao = 0;
+  const emVoo = {};                   // área → envio ainda sem confirmação
   const refs = {};                    // nome → { ref, cb }
   const remoto = {};                  // nome → { conteudo, em, porQuem } | null
   const chegou = {};                  // nome → o banco já respondeu?
@@ -130,13 +132,13 @@
     escrevendoEuMesmo = true;
     try {
       const grava = window.GA_guardar || function (c, v) { localStorage.setItem(c, v); return true; };
-      grava(areas[nome].chave, texto);
-    } catch (e) { console.warn('[gaveta] não deu para gravar', nome, e && e.message); }
-    escrevendoEuMesmo = false;
+      return grava(areas[nome].chave, texto) !== false;
+    } catch (e) { console.warn('[gaveta] não deu para gravar', nome, e && e.message); return false; }
+    finally { escrevendoEuMesmo = false; }
   }
 
   function marcarSinc(nome, texto) {
-    sinc[nome] = { dig: digital(texto), em: Date.now() };
+    sinc[nome] = { uid: uidLigado, dig: digital(texto), em: Date.now() };
     guardarSinc();
   }
   function guardarSinc() {
@@ -149,8 +151,8 @@
   function guardarGuardadas() {
     try {
       const grava = window.GA_guardar || function (c, v) { localStorage.setItem(c, v); return true; };
-      grava(GUARDADAS_KEY, JSON.stringify(guardadas));
-    } catch (e) {}
+      return grava(GUARDADAS_KEY, JSON.stringify(guardadas)) !== false;
+    } catch (e) { return false; }
   }
 
   function avisar() {
@@ -183,13 +185,16 @@
     nomes.forEach(function (nome) {
       const r = retidas[nome];
       html += '<div class="gv-caso" data-gv-area="' + esc(nome) + '">' +
-        '<strong>' + esc(rotuloDe(nome)) + '</strong> mudou <em>aqui</em> e também <em>na sua conta</em>' +
-        (r && r.de ? ' (' + esc(r.de) + ')' : '') + '. Qual fica?' +
+        '<strong>' + esc(rotuloDe(nome)) + '</strong>' + (r.contaVazia
+          ? ' tem uma cópia local de outra conta. Deseja guardá-la também na conta atual?'
+          : ' mudou <em>aqui</em> e também <em>na sua conta</em>' +
+            (r.de ? ' (' + esc(r.de) + ')' : '') + '. Qual fica?') +
         '<span class="gv-botoes">' +
-          '<button type="button" class="gv-btn" data-gv="daqui" data-gv-area="' + esc(nome) + '">Ficar com a daqui</button>' +
-          '<button type="button" class="gv-btn" data-gv="dela" data-gv-area="' + esc(nome) + '">Ficar com a da conta</button>' +
+          '<button type="button" class="gv-btn" data-gv="daqui" data-gv-area="' + esc(nome) + '">' +
+            (r.contaVazia ? 'Guardar na conta atual' : 'Ficar com a daqui') + '</button>' +
+          (r.contaVazia ? '' : '<button type="button" class="gv-btn" data-gv="dela" data-gv-area="' + esc(nome) + '">Ficar com a da conta</button>') +
         '</span>' +
-        '<span class="gv-mini">A outra fica guardada — dá para voltar.</span>' +
+        '<span class="gv-mini">' + (r.contaVazia ? 'A cópia local fica preservada enquanto você decide.' : 'A outra fica guardada — dá para voltar.') + '</span>' +
       '</div>';
     });
     comVolta.forEach(function (nome) {
@@ -248,7 +253,7 @@
   //  cópia velha comer a ficha boa no dia da mudança.
   function conferir(nome) {
     const a = areas[nome];
-    if (!a || !chegou[nome]) return;
+    if (!a || !uidLigado || !chegou[nome] || emVoo[nome]) return;
 
     const local = lerLocal(nome);
     const r = remoto[nome];
@@ -256,7 +261,10 @@
 
     const dL = digital(local);
     const dR = digital(laTexto);
-    const k = sinc[nome];
+    // Uma digital de outra conta (ou antiga, sem dono identificado) não
+    // autoriza substituir o acervo local pela nuvem de quem entrou agora.
+    const anterior = sinc[nome];
+    const k = anterior && anterior.uid === uidLigado ? anterior : null;
     const dK = k && k.dig;
 
     if (dL === dR) {                       // já combinam
@@ -265,6 +273,10 @@
       return avisar();
     }
     if (laTexto == null) {                 // o banco não conhece esta área
+      if (local != null && anterior && anterior.uid && anterior.uid !== uidLigado) {
+        retidas[nome] = { contaVazia: true };
+        return avisar();
+      }
       delete retidas[nome];
       return subir(nome, local);
     }
@@ -307,28 +319,42 @@
       try { paraGravar = a.mesclar(texto); }
       catch (e) { console.warn('[gaveta] não deu para mesclar', nome, e && e.message); }
     }
-    gravarLocal(nome, paraGravar);
+    if (!gravarLocal(nome, paraGravar)) {
+      ultimoErro = 'Não foi possível guardar ' + rotuloDe(nome) + ' neste aparelho. Libere espaço e tente novamente.';
+      avisar(); return false;
+    }
     marcarSinc(nome, texto);
     const fn = areas[nome].aoReceber;
     if (typeof fn === 'function') {
       try { fn(texto); } catch (e) { console.warn('[gaveta] aoReceber de', nome, e && e.message); }
     }
     avisar();
+    return true;
   }
 
   function subir(nome, texto) {
     const b = db(), uid = meuUid();
     if (!b || !uid) return;
     if (texto == null) return;             // não há o que mandar
+    if (emVoo[nome]) return;
+    const nestaSessao = sessao;
+    emVoo[nome] = true;
     b.ref('usuarios/' + uid + '/gaveta/' + nome).set({
       conteudo: texto,
       em: firebase.database.ServerValue.TIMESTAMP,
       porQuem: esteAparelho(),
     }).then(function () {
+      if (sessao !== nestaSessao) return;
+      delete emVoo[nome];
       marcarSinc(nome, texto);
       ultimoErro = '';
+      // A pessoa pode ter continuado a escrever durante a ida ao banco.
+      // O próximo conteúdo só é comparado depois de confirmar este envio.
+      if (lerLocal(nome) !== texto) conferir(nome);
       avisar();
     }).catch(function (e) {
+      if (sessao !== nestaSessao) return;
+      delete emVoo[nome];
       ultimoErro = (e && e.message) || '';
       console.warn('[gaveta] não deu para guardar', nome, ultimoErro);
       avisar();
@@ -351,17 +377,20 @@
     Object.keys(areas).forEach(function (nome) {
       if (refs[nome]) return;
       const ref = b.ref('usuarios/' + uidLigado + '/gaveta/' + nome);
+      const nestaSessao = sessao;
       const cb = ref.on('value', function (snap) {
+        if (sessao !== nestaSessao) return;
         remoto[nome] = snap.val() || null;
         chegou[nome] = true;
         conferir(nome);
       }, function (err) {
+        if (sessao !== nestaSessao) return;
         // "sem permissão" aqui não é falha: é a resposta certa enquanto
         // a regra de usuarios/$uid/gaveta não estiver publicada.
         ultimoErro = (err && err.message) || '';
         console.warn('[gaveta] leitura de', nome + ':', ultimoErro);
         remoto[nome] = null;
-        chegou[nome] = true;      // não há o que esperar dela
+        chegou[nome] = false;     // recusa não prova que a gaveta esteja vazia
         avisar();
       });
       refs[nome] = { ref: ref, cb: cb };
@@ -369,6 +398,9 @@
   }
 
   function desligar() {
+    sessao++;
+    Object.keys(espera).forEach(nome => { clearTimeout(espera[nome]); delete espera[nome]; });
+    Object.keys(emVoo).forEach(nome => { delete emVoo[nome]; });
     Object.keys(refs).forEach(function (nome) {
       try { refs[nome].ref.off('value', refs[nome].cb); } catch (e) {}
       delete refs[nome];
@@ -377,6 +409,7 @@
       delete retidas[nome];
     });
     uidLigado = '';
+    ultimoErro = '';
     avisar();
   }
 
@@ -441,16 +474,26 @@
       const dela = r && typeof r.conteudo === 'string' ? r.conteudo : null;
       const ficaComADela = qual === 'dela' && dela != null;
       const perdedora = ficaComADela ? daqui : dela;
-      delete retidas[nome];
       if (perdedora != null) {
+        const anterior = guardadas[nome];
         guardadas[nome] = {
           quando: Date.now(),
           ficou: ficaComADela ? 'da conta' : 'daqui',
           conteudo: perdedora,
         };
-        guardarGuardadas();
+        if (!guardarGuardadas()) {
+          if (anterior) guardadas[nome] = anterior;
+          else delete guardadas[nome];
+          ultimoErro = 'Não foi possível guardar a cópia de segurança. Libere espaço antes de escolher uma versão.';
+          return avisar();
+        }
       }
-      if (ficaComADela) return descer(nome, dela);
+      if (ficaComADela) {
+        if (!descer(nome, dela)) return;
+        delete retidas[nome];
+        return avisar();
+      }
+      delete retidas[nome];
       subir(nome, daqui);
     },
 
@@ -460,13 +503,23 @@
       const g = guardadas[nome];
       if (!g || typeof g.conteudo !== 'string' || !areas[nome]) return;
       const atual = lerLocal(nome);
-      descer(nome, g.conteudo);                 // grava e avisa a aba
       guardadas[nome] = {
         quando: Date.now(),
         ficou: g.ficou === 'da conta' ? 'daqui' : 'da conta',
         conteudo: atual,                        // agora a outra é a guardada
       };
-      guardarGuardadas();
+      // Preservar a versão atual vem antes de substituí-la, inclusive no
+      // "voltar". Sem espaço para o backup, nenhuma das versões é trocada.
+      if (!guardarGuardadas()) {
+        guardadas[nome] = g;
+        ultimoErro = 'Não foi possível guardar a cópia de segurança. Libere espaço antes de voltar à versão anterior.';
+        return avisar();
+      }
+      if (!descer(nome, g.conteudo)) {
+        guardadas[nome] = g;
+        guardarGuardadas();
+        return;
+      }
       subir(nome, g.conteudo);
     },
     estado: estado,

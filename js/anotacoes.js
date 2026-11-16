@@ -37,10 +37,13 @@
     } catch (e) {
       console.warn('[anotacoes] Não foi possível carregar:', e.message);
     }
-    if (!dados || typeof dados !== 'object') dados = {};
+    if (!registroValido(dados)) dados = {};
     if (!Array.isArray(dados.ramos)) dados.ramos = [];
+    dados.ramos = dados.ramos.filter(registroValido);
     dados.ramos.forEach(normalizarRamo);
   }
+
+  function registroValido(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
 
   function normalizarRamo(r) {
     if (typeof r.titulo !== 'string') r.titulo = '';
@@ -55,6 +58,7 @@
     if (typeof r.aberto !== 'boolean') r.aberto = true;
     if (!r.id) r.id = uid('r');
     if (!Array.isArray(r.filhos)) r.filhos = [];
+    r.filhos = r.filhos.filter(registroValido);
     r.filhos.forEach(normalizarRamo);
   }
 

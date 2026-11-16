@@ -755,6 +755,7 @@
 /* cada bloco de status ecoa a moldura das tabelas: fio de ouro no topo
    + brilho interno (igual ao .prog-table-wrap) */
 .mz-stat {
+  min-width: 0;
   border: 1px solid var(--ink-faded);
   border-top: 2px solid var(--gold-dim);
   background: var(--parchment);
@@ -895,7 +896,7 @@
   letter-spacing: 0.04em;
   text-align: center;
   cursor: help;
-  color: #8a1c4a;
+  color: var(--tormenta);
 }
 .mz-atrs-obs {
   display: flex;
@@ -1305,7 +1306,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
 
-  color: var(--cor, var(--neutra));
+  color: var(--cor-legivel, var(--neutra));
 }
 .mz-cond-x {
   flex: 0 0 auto;
@@ -1355,7 +1356,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
 
-  color: var(--cor, var(--neutra));
+  color: var(--cor-legivel, var(--neutra));
   white-space: nowrap;
 }
 .mz-cond-tip-desc {
@@ -1378,6 +1379,7 @@
   padding: 1rem;
 }
 .mz-cond-modal {
+  min-width: 0;
   background: var(--parchment);
   border: 1px solid var(--ink);
   box-shadow: 0 10px 40px rgba(0,0,0,0.4);
@@ -1391,6 +1393,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.6rem;
   padding: 0.7rem 0.9rem;
   background: var(--faixa);
   color: var(--faixa-tinta);
@@ -1399,7 +1402,9 @@
   font-weight: 600;
   letter-spacing: 0.04em;
 }
+.mz-cond-modal-head > span { min-width: 0; overflow-wrap: anywhere; }
 .mz-cond-modal-x {
+  flex-shrink: 0;
   width: 1.6rem; height: 1.6rem;
   background: transparent;
   border: 1px solid currentColor;
@@ -1430,7 +1435,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
 
-  color: var(--cor, var(--neutra));
+  color: var(--cor-legivel, var(--neutra));
   border-bottom: 2px solid var(--cor, var(--neutra));
   padding-bottom: 0.2rem;
   margin-bottom: 0.4rem;
@@ -1460,7 +1465,7 @@
   width: 1.2rem;
   font-family: var(--ga-fonte-rotulo);
   font-weight: 700;
-  color: var(--cor, var(--neutra));
+  color: var(--cor-legivel, var(--neutra));
 }
 .mz-cond-opcao-nome {
   font-family: var(--ga-fonte-nota);
@@ -1473,7 +1478,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
 
-  color: var(--cor, var(--neutra));
+  color: var(--cor-legivel, var(--neutra));
 }
 .mz-cond-opcao-desc {
   display: block;
@@ -2099,7 +2104,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
   font-size: 0.54rem;
   letter-spacing: 0.07em;
 
-  color: var(--cor, var(--ink-faded));
+  color: var(--cor-legivel, var(--ink-faded));
   white-space: nowrap;
 }
 .mz-amb-nome {
@@ -2163,7 +2168,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
   gap: 0.6rem;
   margin: -1.3rem -1.5rem 1rem;
   padding: 0.75rem 1.5rem;
-  background: var(--cor, var(--rust-dark));
+  background: var(--cor-legivel, var(--rust-dark));
   color: var(--parchment);
 }
 .mz-amb-pop-tag {
@@ -2246,7 +2251,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
 
 /* opção "Outros" no topo do seletor de ambientes */
 .mz-cond-opcao--livre { border-style: dashed; }
-.mz-cond-opcao--livre .mz-cond-opcao-check { color: var(--cor); }
+.mz-cond-opcao--livre .mz-cond-opcao-check { color: var(--cor-legivel, var(--neutra)); }
 
 /* campo de título dentro do editor do "Outros" */
 .mz-amb-livre-tit {
@@ -2429,6 +2434,12 @@ color: var(--ink-faded); margin-right: 0.2rem;
   .mz-stats-grade { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
   .mz-sessao-corpo, .mz-cena-corpo, .mz-criatura-corpo { padding-left: 0.5rem; padding-right: 0.5rem; }
 }
+@media (max-width: 380px) {
+  /* Um bloco que ocupa duas colunas criava uma coluna implícita quando
+     só cabia uma, alargando a página e deslocando os modais para fora. */
+  .mz-stats-grade { grid-template-columns: minmax(0, 1fr); }
+  .mz-stat--grande, .mz-stat--medio { grid-column: auto; }
+}
 
 /* ── BOTÃO E MODAL "👤 GUIA DE NPCS" ─────────────────────────────── */
 .mz-add--npc {
@@ -2460,9 +2471,9 @@ color: var(--ink-faded); margin-right: 0.2rem;
   color: var(--ink);
   cursor: pointer;
 }
-.mz-npc-cat:hover { border-color: var(--cor, var(--rust)); color: var(--cor, var(--rust)); }
+.mz-npc-cat:hover { border-color: var(--cor, var(--rust)); color: var(--cor-legivel, var(--rust)); }
 .mz-npc-cat.ativo {
-  background: var(--cor, var(--ink));
+  background: var(--cor-legivel, var(--ink));
   border-color: var(--cor, var(--ink));
   color: var(--parchment);
 }
@@ -2475,7 +2486,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
   font-weight: 700;
   letter-spacing: 0.1em;
 
-  color: var(--cor, var(--ink));
+  color: var(--cor-legivel, var(--ink));
   border-bottom: 1px dashed var(--gold-dim);
   padding: 0.5rem 0 0.25rem;
   margin-bottom: 0.35rem;
@@ -2916,7 +2927,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
    e o modal reaproveita o do seletor de condições (.mz-cond-*).
    ══════════════════════════════════════════════════════════════════ */
 .mz-magias { margin-top: -0.35rem; }
-.mz-magias--on { border-left: 4px solid #4a3f6b; }
+.mz-magias--on { border-left: 4px solid var(--roxo); }
 .mz-magias-add { margin-left: auto; }
 
 /* linha do livro: "Como um clérigo de 9º nível (CD 30)" */
@@ -2962,7 +2973,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
   padding: 0.6rem 0.7rem 0.55rem;
   background: var(--parchment3);
   border: 1px solid var(--parchment3);
-  border-left: 5px solid var(--cor, #4a3f6b);
+  border-left: 5px solid var(--cor, var(--roxo));
   border-top: none;
 }
 .mz-mag-corpo .mz-ferr-linha { margin-bottom: 0.5rem; }
@@ -3026,7 +3037,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
 .mz-mag-apr--on {
   background: var(--gold-pale);
   border-style: solid;
-  border-color: #4a3f6b;
+  border-color: var(--roxo);
 }
 .mz-mag-apr-alvo {
   flex: 1 1 auto;
@@ -3055,12 +3066,12 @@ color: var(--ink-faded); margin-right: 0.2rem;
   font-size: 0.72rem;
   font-weight: 700;
   line-height: 1;
-  color: #4a3f6b;
+  color: var(--roxo);
   background: var(--parchment);
   border: 1px solid var(--ink-faded);
   cursor: pointer;
 }
-.mz-mag-apr-btn:hover { background: #4a3f6b; color: var(--parchment); border-color: #4a3f6b; }
+.mz-mag-apr-btn:hover { background: var(--roxo); color: var(--parchment); border-color: var(--roxo); }
 .mz-mag-apr-n {
   min-width: 1.6rem;
   text-align: center;
@@ -3069,14 +3080,14 @@ color: var(--ink-faded); margin-right: 0.2rem;
   font-weight: 700;
   color: var(--ink-faded);
 }
-.mz-mag-apr--on .mz-mag-apr-n { color: #4a3f6b; }
+.mz-mag-apr--on .mz-mag-apr-n { color: var(--roxo); }
 .mz-mag-apr-pm {
   flex: 0 0 auto;
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: #4a3f6b;
+  color: var(--roxo);
 }
 .mz-mag-apr-txt {
   font-family: var(--ga-fonte-corpo);
@@ -3102,7 +3113,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
   font-family: var(--ga-fonte-rotulo);
   font-size: 0.62rem;
   letter-spacing: 0.06em;
-  color: #3f7a3f;
+  color: var(--verde);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -3122,7 +3133,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
   letter-spacing: 0.08em;
 
   color: var(--parchment);
-  background: #8a1c4a;
+  background: var(--tormenta);
   border-radius: 999px;
   padding: 0.14rem 0.6rem;
 }
@@ -3191,7 +3202,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
 .mz-torm-falta {
   font-family: var(--ga-fonte-corpo);
   font-size: 0.82rem;
-  color: #8a1c4a;
+  color: var(--tormenta);
   margin-top: 0.15rem;
 }
 .mz-torm-prereq {
@@ -3281,7 +3292,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
   font-family: var(--ga-fonte-nota);
   font-style: italic;
   font-size: 0.68rem;
-  color: #8a6a1c;
+  color: var(--gold-deep);
 }
 
 /* condição bloqueada por imunidade de distinção, no modal de Condições */
@@ -3290,7 +3301,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
   cursor: not-allowed;
   background: var(--parchment3);
 }
-.mz-cond-opcao--bloqueada .mz-cond-opcao-check { color: #8a6a1c; }
+.mz-cond-opcao--bloqueada .mz-cond-opcao-check { color: var(--gold-deep); }
 
 /* ── LEGENDA DO ✦ (habilidade mágica) ────────────────────────────── */
 /* Só aparece nas fichas que trazem habilidade mágica marcada. O ✦ em si
@@ -3299,7 +3310,7 @@ color: var(--ink-faded); margin-right: 0.2rem;
 .mz-legenda-magica {
   margin-left: 0.5rem;
   padding: 0.04rem 0.34rem;
-  background: #7a4a9e;
+  background: var(--roxo);
   color: var(--parchment);
   border-radius: 2px;
   font-size: 0.56rem;
@@ -3312,11 +3323,11 @@ color: var(--ink-faded); margin-right: 0.2rem;
 
 /* botão que liga/desliga o selo ✦ numa habilidade */
 .mz-grifo--magica {
-  border-color: #7a4a9e;
-  color: #5d3579;
+  border-color: var(--roxo);
+  color: var(--roxo);
   font-weight: 700;
 }
-.mz-grifo--magica:hover { background: #7a4a9e; color: var(--parchment); border-color: #7a4a9e; }
+.mz-grifo--magica:hover { background: var(--roxo); color: var(--parchment); border-color: var(--roxo); }
 .mz-grifo--magica.mz-grifo--aviso {
   background: var(--rust);
   border-color: var(--rust);

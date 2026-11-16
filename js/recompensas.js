@@ -1733,23 +1733,18 @@ function sorteiaMagicoPadrao(tipo, rolls, permiteEspec = true) {
   const encantos = [];
   const usados   = new Set();
   for (let i = 0; i < rolls; i++) {
-    let dp, item, tentativas = 0;
-    do {
-      dp = rolarPercent();
-      if (permiteEspec && dp >= 91) {                   // 91-100 = item específico
-        const lados = ladosDaTabela(tabelaEspecifica(tipo));
-        const dpE   = rolarDado(lados);
-        return { especifico: { dp, dpE, dadoE: rotuloDado(lados), item: lookupEspecifico(tipo, dpE) } };
-      }
-      // dp 01-90 → encanto; dp 91-100 com específico desligado → null (relança)
-      item = lookupMagico(tipo, dp);
-      tentativas++;
-    } while (
-      tentativas < 40 &&
-      (!item || usados.has(item.item) || (item.doisEncantos && rolls === 1))
-    );
-    // Salvaguarda: nunca registra encanto vazio (caso raro de estourar tentativas)
-    while (!item) { dp = rolarPercent(); item = lookupMagico(tipo, dp); }
+    const dp = rolarFacePermitida(100, face => {
+      if (permiteEspec && face >= 91) return true;
+      const candidato = lookupMagico(tipo, face);
+      return candidato && !usados.has(candidato.item) && !(candidato.doisEncantos && rolls === 1);
+    });
+    if (dp == null) break;
+    if (permiteEspec && dp >= 91) {
+      const lados = ladosDaTabela(tabelaEspecifica(tipo));
+      const dpE = rolarDado(lados);
+      return { especifico: { dp, dpE, dadoE: rotuloDado(lados), item: lookupEspecifico(tipo, dpE) } };
+    }
+    const item = lookupMagico(tipo, dp);
     usados.add(item.item);
     encantos.push({ dp, item });
   }
@@ -2065,20 +2060,14 @@ function rolarMelhorias(tipo, qtd, nomeBase) {
   const melhorias = [];
   const usados = new Set();
   for (let i = 0; i < qtd; i++) {
-    let dp, item, tentativas = 0;
-    do {
-      dp   = rolarDado(tabMel.lados);
-      item = lookupMelhoria(tipo, dp);
-      tentativas++;
-    } while (
-      tentativas < 40 &&
-      (
-        usados.has(item.item) ||
-        melhoriaPrereqFalta(item.item, usados) ||   // pré-requisito ausente
-        melhoriaExclui(item.item, usados) ||        // par incompatível (Precisa/Maciça etc.)
-        !melhoriaCabe(item, nomeBase)               // não serve para ESTE item
-      )
-    );
+    const dp = rolarFacePermitida(tabMel.lados, face => {
+      const candidato = lookupMelhoria(tipo, face);
+      return candidato && !usados.has(candidato.item) &&
+        !melhoriaPrereqFalta(candidato.item, usados) &&
+        !melhoriaExclui(candidato.item, usados) && melhoriaCabe(candidato, nomeBase);
+    });
+    if (dp == null) break;
+    const item = lookupMelhoria(tipo, dp);
     usados.add(item.item);
     // "Material especial" não é um efeito, é uma porta: rola também o
     // material que está do outro lado dela (ver sortearMaterial).
@@ -2149,9 +2138,7 @@ const TABELAS = {
 
     // d6 → tipo (1-2 Arma, 3 Armadura, 4 Esotérico, 5-6 Acessório).
     // No Customizável com acessórios desligados, 5-6 são relançados.
-    let d6;
-    do { d6 = rolarDado(6); }
-    while (custom && !f.acessorios && d6 > 4);
+    const d6 = rolarDado(custom && !f.acessorios ? 4 : 6);
     const tipo = d6 <= 2 ? "Arma" : d6 === 3 ? "Armadura" : d6 === 4 ? "Esotérico" : "Acessório";
 
     // Acessório → acessório mágico nomeado (com preço), pela categoria do tier
@@ -2197,6 +2184,16 @@ const TABELAS = {
 
 function rolarDado(lados)  { return Math.floor(Math.random() * lados) + 1; }
 function rolarPercent()    { return Math.floor(Math.random() * 100) + 1;   }
+
+// Sortear entre as FACES válidas preserva o peso de cada faixa da tabela,
+// exatamente como relançar resultados proibidos, mas sempre termina. O
+// antigo limite de 40 tentativas acabava aceitando o último resultado mesmo
+// quando ele violava um filtro, pré-requisito ou limite de repetição.
+function rolarFacePermitida(lados, permite) {
+  const faces = [];
+  for (let face = 1; face <= lados; face++) if (permite(face)) faces.push(face);
+  return faces.length ? faces[rolarDado(faces.length) - 1] : null;
+}
 
 // Círculo máximo de magia para um pergaminho conforme o ND do encontro —
 // mantém o valor do prêmio coerente (ND baixo = magias de círculo baixo).
@@ -2391,7 +2388,7 @@ function renderDinheiro(dpRoll, resolved) {
     resolved.riquezas.forEach((riq, i) => {
       const lbl     = n > 1 ? `<strong>Riqueza ${i+1}:</strong> ` : '';
       const pctNote = riq.pct
-        ? `<span style="color:var(--gold);font-size:0.8rem"> (${riq.dpBase} +20 = ${riq.dpFinal})</span>`
+        ? `<span style="color:var(--gold-deep);font-size:0.8rem"> (${riq.dpBase} +20 = ${riq.dpFinal})</span>`
         : '';
       const multFmt   = riq.row.mult.toLocaleString('pt-BR');
       const valorFmt  = riq.valorFinal.toLocaleString('pt-BR');
@@ -2413,7 +2410,7 @@ function renderDinheiro(dpRoll, resolved) {
             ${diceInline(riq.row.dice + ' × ' + multFmt)}
             = <span style="color:var(--text-mid)">${riq.val.detail}</span>
             &nbsp;→&nbsp;
-            <strong style="color:var(--gold-light)">${valorFmt} T$</strong>
+            <strong style="color:var(--gold-deep)">${valorFmt} T$</strong>
             <span style="color:var(--text-dim);font-size:0.82rem">&nbsp;(${riq.row.vAprox})</span>
           </div>
           <div class="sub-indent" style="font-style:italic;color:var(--text-dim);font-size:0.84rem;margin-top:4px">
@@ -2427,7 +2424,7 @@ function renderDinheiro(dpRoll, resolved) {
     const totalFmt = resolved.totalGeral.toLocaleString('pt-BR');
     const totalLine = n > 1
       ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);
-                    font-family: var(--ga-fonte-rotulo);font-size:0.85rem;color:var(--gold-light)">
+                    font-family: var(--ga-fonte-rotulo);font-size:0.85rem;color:var(--gold-deep)">
            ⊞ Total estimado: ${totalFmt} T$
          </div>`
       : '';
@@ -2775,7 +2772,7 @@ function refItemHTML(item) {
 
 function blockEquip(equip, prefixo='') {
   const obsHtml = equip.item?.obs
-    ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${equip.item.obs}</span>`
+    ? `<span style="color:var(--gold-deep);font-size:0.78rem"> ⚠ ${equip.item.obs}</span>`
     : '';
   return `<div class="sub-line">
     <span class="bullet">◆</span>
@@ -2801,7 +2798,7 @@ function blockPocao(pocao, idx, total, pct) {
     ? `<span style="color:var(--text-dim);font-size:0.8rem"> (${pocao.item.preco} T$)</span>`
     : '';
   const obsHtml  = pocao.item?.obs
-    ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${pocao.item.obs}</span>`
+    ? `<span style="color:var(--gold-deep);font-size:0.78rem"> ⚠ ${pocao.item.obs}</span>`
     : '';
   return `<div class="sub-indent">
     <span class="bullet">◇</span>
@@ -2918,7 +2915,7 @@ function blockSuperior(sup, prefixo='') {
     const avisos = [m.item?.so ? RESTRICAO_ROTULO[m.item.so] : '', m.item?.obs]
       .filter(Boolean).join(' · ');
     const obsHtml = avisos
-      ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${avisos}</span>`
+      ? `<span style="color:var(--gold-deep);font-size:0.78rem"> ⚠ ${avisos}</span>`
       : '';
     s += `<div class="sub-indent">
       <span class="bullet">◇</span>
@@ -2983,7 +2980,7 @@ function blockMagico(mag, prefixo='') {
     mag.encantos.forEach((enc, i) => {
       const doisTag = enc.item?.doisEncantos ? `&nbsp;${tag('conta como 2 encantos')}` : '';
       const obsHtml = enc.item?.obs
-        ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${enc.item.obs}</span>`
+        ? `<span style="color:var(--gold-deep);font-size:0.78rem"> ⚠ ${enc.item.obs}</span>`
         : '';
       s += `<div class="sub-indent" style="margin-top:3px">
         <span class="bullet">◇</span>
@@ -3024,7 +3021,7 @@ function blockMagico(mag, prefixo='') {
   {
     // Item base
     const obsBase = mag.itemBase?.obs
-      ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${mag.itemBase.obs}</span>`
+      ? `<span style="color:var(--gold-deep);font-size:0.78rem"> ⚠ ${mag.itemBase.obs}</span>`
       : '';
     s += `<div class="sub-indent">
       <span class="bullet">◇</span>
@@ -3043,7 +3040,7 @@ function blockMagico(mag, prefixo='') {
     mag.encantos.forEach((enc, i) => {
       const doisTag = enc.item?.doisEncantos ? `&nbsp;${tag('conta como 2 encantos')}` : '';
       const obsHtml = enc.item?.obs
-        ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${enc.item.obs}</span>`
+        ? `<span style="color:var(--gold-deep);font-size:0.78rem"> ⚠ ${enc.item.obs}</span>`
         : '';
       s += `<div class="sub-indent" style="margin-top:3px">
         <span class="bullet">◇</span>
@@ -3063,7 +3060,7 @@ function blockMagico(mag, prefixo='') {
       const avisos = [m.item?.so ? RESTRICAO_ROTULO[m.item.so] : '', m.item?.obs]
         .filter(Boolean).join(' · ');
       const obsHtml = avisos
-        ? `<span style="color:var(--gold-dim);font-size:0.78rem"> ⚠ ${avisos}</span>`
+        ? `<span style="color:var(--gold-deep);font-size:0.78rem"> ⚠ ${avisos}</span>`
         : '';
       s += `<div class="sub-indent" style="margin-top:3px">
         <span class="bullet">◇</span>
@@ -3099,7 +3096,7 @@ function renderItens(dpRoll, resolved) {
     const item = resolved.res;
     dpTexto = item.item;
     const obsHtml = item.obs
-      ? `<div class="sub-indent" style="font-size:0.82rem;color:var(--gold-dim);margin-top:3px">
+      ? `<div class="sub-indent" style="font-size:0.82rem;color:var(--gold-deep);margin-top:3px">
            <span class="bullet">◇</span>⚠ ${item.obs}
          </div>`
       : '';
@@ -3651,13 +3648,10 @@ function _categoriaBloqueada(r) {
 function _rolarColuna(tabela) {
   const dpD = rolarPercent();
   const resD = resolverDinheiro(lookupTable(tabela.m, dpD));
-  let dpI = rolarPercent();
-  let r = lookupTable(tabela.i, dpI);
-  // Customizável: relança o item enquanto a categoria sorteada estiver excluída.
-  if (MODO_RECOMP === 'customizavel') {
-    let t = 0;
-    while (_categoriaBloqueada(r) && t < 40) { dpI = rolarPercent(); r = lookupTable(tabela.i, dpI); t++; }
-  }
+  const dpI = MODO_RECOMP === 'customizavel'
+    ? rolarFacePermitida(100, face => !_categoriaBloqueada(lookupTable(tabela.i, face)))
+    : rolarPercent();
+  const r = dpI == null ? null : lookupTable(tabela.i, dpI);
   const resI = resolverItem(r, MODO_RECOMP);
   // "Pergaminhos como adicional": um pergaminho de bônus, sem alterar o item rolado.
   let bonusPergaminho = null;
@@ -3780,10 +3774,10 @@ function rolarRecompensas() {
 /* ═══════════════════════════════════════════════════════
    6d. CALCULADORA DE ND DE ENCONTRO (vários inimigos)
    Regra "Recompensas por vários inimigos" (Ameaças de Arton):
-   calcule XP e tesouro pelo ND TOTAL do encontro. O ND total sai de
-   somar o "valor" 2^(ND/2) de cada criatura e converter de volta —
-   equivale à regra clássica "dobrar inimigos de mesmo ND = +2 ND" e
-   reproduz o exemplo oficial (2× ND 8 → ND 10, 10.000 XP).
+   calcule XP e tesouro pelo ND TOTAL do encontro. Para ND < 1, somam-se
+   os NDs; para ND >= 1, a curva reproduz "dobrar inimigos de mesmo ND
+   = +2 ND". Grupos mistos e arredondamentos são estimativas identificadas
+   na tela. A XP resultante é do grupo, antes da divisão entre personagens.
    ═══════════════════════════════════════════════════════ */
 let encGrupo = [];
 
@@ -3803,9 +3797,17 @@ function numeroParaNDProximo(x) {
 }
 function calcEncontro() {
   if (!encGrupo.length) return null;
-  const soma = encGrupo.reduce((s, nd) => s + Math.pow(2, ndParaNumero(nd) / 2), 0);
-  const ndStr = numeroParaNDProximo(2 * Math.log2(soma));
-  return { ndStr: ndStr, xp: Math.round(ndParaNumero(ndStr) * 1000) };
+  const niveis = encGrupo.map(ndParaNumero);
+  // T20 p. 282: criaturas de ND abaixo de 1 somam seus NDs. A curva
+  // exponencial só descreve a regra de dobrar inimigos com ND >= 1.
+  // Para grupos mistos, preserva-se a aproximação anterior do site;
+  // o livro não fornece uma fórmula geral para quaisquer NDs misturados.
+  const ndTotal = niveis.every(nd => nd < 1)
+    ? niveis.reduce((s, nd) => s + nd, 0)
+    : 2 * Math.log2(niveis.reduce((s, nd) => s + Math.pow(2, nd / 2), 0));
+  const ndStr = numeroParaNDProximo(ndTotal);
+  const aproximado = new Set(niveis).size > 1 || Math.abs(ndTotal - ndParaNumero(ndStr)) > 1e-9;
+  return { ndStr: ndStr, xp: Math.round(ndParaNumero(ndStr) * 1000), aproximado };
 }
 function encRender() {
   const lista = document.getElementById('encLista');
@@ -3820,7 +3822,7 @@ function encRender() {
     `<span class="enc-chip">ND ${nd}<button type="button" class="enc-chip-x" data-enc-rem="${i}" title="Remover">✕</button></span>`
   ).join('');
   const c = calcEncontro();
-  document.getElementById('encResNd').textContent = 'ND ' + c.ndStr;
+  document.getElementById('encResNd').textContent = 'ND ' + c.ndStr + (c.aproximado ? ' (estimado)' : '');
   document.getElementById('encResXp').textContent = c.xp.toLocaleString('pt-BR') + ' XP';
   res.hidden = false;
 }

@@ -40,7 +40,7 @@
   let refGaveta = null, cbGaveta = null, uidGaveta = '';
   let remotas = {};             // uid → { fichaId: ficha }   (a mesa)
   let gaveta = {};              // fichaId → ficha            (a conta)
-  let pendentes = {};           // fichaId → { dono, grupos:Set, ficha }
+  let pendentes = {};           // dono/fichaId → { dono, grupos:Set, ficha }
   let timer = null;
   let erros = {};               // operação/destino → aviso ainda não resolvido
   let sessao = 0;               // invalida respostas de outra conta ou mesa
@@ -209,7 +209,8 @@
     const paraGaveta = logado() && !dono;
     if (!paraMesa && !paraGaveta) return;
     const uid = dono || meuUid();
-    const p = pendentes[ficha.id] || (pendentes[ficha.id] = { dono: uid, grupos: new Set(), ficha: null });
+    const chave = uid + '/' + ficha.id;
+    const p = pendentes[chave] || (pendentes[chave] = { dono: uid, grupos: new Set(), ficha: null });
     p.dono = uid;
     p.ficha = ficha;
     //  `mesa`/`contaSo` mudando é o DESTINO mudando — um pedaço só (`update()`)
@@ -228,8 +229,8 @@
     const b = db();
     if (!b || !logado()) return;
     const fila = pendentes; pendentes = {};
-    Object.keys(fila).forEach(id => {
-      const p = fila[id];
+    Object.keys(fila).forEach(chave => {
+      const p = fila[chave], id = p.ficha.id;
       const carimbo = {
         dono: p.dono,
         autor: (mesa.usuario.displayName || mesa.usuario.email || ''),
@@ -356,17 +357,23 @@
   }
 
   // Apagar de verdade: some da mesa e da conta junto.
-  function apagar(id, dono) {
+  function apagar(id, dono, salaDaFicha) {
     const b = db();
     if (!b || !logado()) return;
-    delete pendentes[id];
-    if (ligado() && mesa.escreve) {
-      b.ref('mesas/' + salaLigada + '/fichas/' + (dono || meuUid()) + '/' + id).remove()
-        .catch(e => console.warn('[ficha-mesa] não deu para apagar da mesa:', e && e.message));
+    const uid = dono || meuUid();
+    delete pendentes[uid + '/' + id];
+    // A exclusão da própria ficha segue o vínculo DELA, inclusive no HUB.
+    // O botão "tirar desta mesa" omite o terceiro argumento de propósito.
+    const sala = salaDaFicha === undefined ? salaLigada : salaDaFicha;
+    if (sala && (!dono || (ligado() && mesa.escreve))) {
+      const caminho = 'mesas/' + sala + '/fichas/' + uid + '/' + id;
+      acompanharEscrita(b.ref(caminho).remove(), caminho,
+        'Não foi possível apagar a ficha “' + id + '” da mesa “' + sala + '”');
     }
     if (!dono) {
-      b.ref('usuarios/' + meuUid() + '/fichas/' + id).remove()
-        .catch(e => console.warn('[ficha-mesa] não deu para apagar da conta:', e && e.message));
+      const caminho = 'usuarios/' + meuUid() + '/fichas/' + id;
+      acompanharEscrita(b.ref(caminho).remove(), caminho,
+        'Não foi possível apagar a ficha “' + id + '” da sua conta');
     }
   }
 

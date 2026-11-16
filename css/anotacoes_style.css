@@ -110,7 +110,7 @@
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: var(--cor, var(--neutra));
+  color: var(--cor-legivel, var(--neutra));
   background: var(--parchment);
   border: 1px solid var(--cor, var(--neutra));
   padding: 0.22rem 0.3rem;

@@ -29,6 +29,13 @@
     lojaLog: 'loja', lojaLogSel: 'loja', lojaComunidade: 'loja',
     viagens: 'viagem', bases: 'bases',
   };
+  // O snapshot é completo. Uma chave ausente significa que o mestre a
+  // apagou; conservar a cópia anterior ressuscita dados de uma mesa encerrada.
+  // Valores vazios explícitos também limpam módulos que guardam estado em memória.
+  const VAZIOS = {
+    lojaLog: '[]', lojaLogSel: '', lojaComunidade: '',
+    viagens: '{"viagens":[]}', bases: '{"bases":[]}',
+  };
   function redesenhar(mod) {
     try {
       if (mod === 'loja'   && window.GA_Loja)   return GA_Loja.recarregar(), true;
@@ -114,7 +121,7 @@
   function aplicar(dados) {
     const mods = new Set();
     Object.keys(CHAVES).forEach(nome => {
-      const v = dados[nome];
+      const v = dados[nome] == null ? VAZIOS[nome] : dados[nome];
       if (typeof v !== 'string') return;
       let atual = null;
       try { atual = localStorage.getItem(CHAVES[nome]); } catch (e) {}
@@ -226,11 +233,12 @@
   // caixa que é só deles) ou 'residentes'/'inventario' (edição que segue
   // para o mestre absorver). Junta rajadas de digitação em um envio só.
   function escreverInbox(baseId, campo, html) {
+    if (!podeEscrever()) return;
     (pendenteInv[baseId] || (pendenteInv[baseId] = {}))[campo] = html;
     if (timerInv) clearTimeout(timerInv);
     timerInv = setTimeout(() => {
       const paraEnviar = pendenteInv; pendenteInv = {};
-      if (!dbRef) return;
+      if (!dbRef || !podeEscrever()) return;
       Object.keys(paraEnviar).forEach(id => {
         dbRef.child(id).update(paraEnviar[id])
           .catch(e => {
@@ -370,7 +378,12 @@
       window.GA_Mesa.aoMudar(e => {
         mesa = e;
         const quem = (e.usuario ? e.usuario.uid : '') + '/' + (e.papel || '');
-        if (quem !== quemEra) { quemEra = quem; semPermissao = false; }
+        if (quem !== quemEra) {
+          quemEra = quem; semPermissao = false;
+          // Uma edição feita pela conta anterior não pode sair assinada
+          // pela conta que acabou de entrar durante o debounce.
+          clearTimeout(timerInv); pendenteInv = {};
+        }
         refletirLogin();
       });
     } else {

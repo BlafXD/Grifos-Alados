@@ -135,7 +135,7 @@
   border: 1px solid var(--gold-dim);
   border-left: 4px solid var(--rust);
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.35), transparent 55%),
+    linear-gradient(180deg, var(--papel-reflexo), transparent 55%),
     var(--parchment2);
   transition: box-shadow 0.16s ease, border-color 0.16s ease;
 }

@@ -944,7 +944,7 @@ const LojaCompleta = (function () {
 
     // modo porcentagem: testa CADA item do catálogo uma vez
     if (modo === 'porcentagem') {
-      return pool.filter(() => Math.random() * 100 <= prob);
+      return pool.filter(() => Math.random() * 100 < prob);
     }
 
     // modos quantidade / ambos: monta `qtd` candidatos
@@ -960,7 +960,7 @@ const LojaCompleta = (function () {
 
     // no modo ambos, cada candidato ainda precisa passar na chance de prob%
     if (modo === 'ambos') {
-      candidatos = candidatos.filter(() => Math.random() * 100 <= prob);
+      candidatos = candidatos.filter(() => Math.random() * 100 < prob);
     }
     return candidatos;
   }

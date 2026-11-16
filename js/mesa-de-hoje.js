@@ -170,10 +170,11 @@
     alvo.innerHTML = '<span class="ga-hoje-seta" aria-hidden="true">⟶</span>' +
       '<span class="ga-hoje-rot">' + o.rotulo + ':</span>' +
       '<span class="ga-hoje-txt"></span>' +
-      '<span class="ga-hoje-btn">' + o.botao + '</span>';
+      '<span class="ga-hoje-btn"></span>';
     // o texto entra como TEXTO: nome de campanha e de cena são escritos
     // pelo mestre, e um «<img onerror>» de nome de cena não vira HTML aqui
     alvo.querySelector('.ga-hoje-txt').textContent = o.texto;
+    alvo.querySelector('.ga-hoje-btn').textContent = o.botao;
 
     if (!o.href) {
       alvo.addEventListener('click', function () {

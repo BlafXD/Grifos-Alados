@@ -13,6 +13,7 @@ const gazeta = () => ({ nome: copia.nome, noticias: structuredClone(copia.anos),
 // sem rede, servidor local ou escritas no banco de produção.
 function ambiente({ uid = '', configurado = true, search = '' } = {}) {
   const assinaturas = new Map(), timers = new Map(), escritas = [], eventos = {};
+  let escrever = () => Promise.resolve();
   let timerId = 0, mudouConta;
   let sessao = { configurado, usuario: uid ? { uid, displayName: 'Dono' } : null,
     mesaId: 'mesa', mesa: { dono: 'outro-mestre' }, souMestre: false };
@@ -33,7 +34,7 @@ function ambiente({ uid = '', configurado = true, search = '' } = {}) {
   const banco = { ref: (caminho = '') => ({
     on(evento, ok, falha) { assinaturas.set(caminho, { ok, falha }); return ok; },
     off(evento, cb) { if (assinaturas.get(caminho)?.ok === cb) assinaturas.delete(caminho); },
-    update(dados) { escritas.push(structuredClone(dados)); return Promise.resolve(); }
+    update(dados) { escritas.push(structuredClone(dados)); return escrever(dados); }
   }) };
   const window = {
     GA_esc: s => String(s || ''), GA_guardar() {}, scrollTo() {},
@@ -61,6 +62,7 @@ function ambiente({ uid = '', configurado = true, search = '' } = {}) {
   window.teste.carregarNoticias();
   return {
     ...window.teste, api: window.GA_NoticiasMesa, escritas, wrapper, toast, assinaturas,
+    escrita(fn) { escrever = fn; },
     mostrar() { mostrarWrapper = true; window.teste.renderizar(); },
     emitir(caminho, valor) {
       assert.ok(assinaturas.has(caminho), `Assinatura de ${caminho}`);
@@ -184,4 +186,46 @@ test('exportação é backup JSON e nenhuma página carrega o antigo script de n
     assert.doesNotMatch(fs.readFileSync(path.join(root, file), 'utf8'), /noticias-data\.js/);
   }
   assert.doesNotMatch(fs.readFileSync(path.join(root, 'js/noticias.js'), 'utf8'), /NOTICIAS_DADOS|\/api\/noticias/);
+});
+
+test('índice atrasado de outra conta não injeta campanhas na conta atual', () => {
+  const h = ambiente({ uid: 'alice' });
+  const antigo = h.assinaturas.get('usuarios/alice/campanhas');
+  h.conta('bob');
+  h.emitir('usuarios/bob/campanhas', { 'de-bob': 'Bob' });
+  antigo.ok({ val: () => ({ 'de-alice': 'Alice' }) });
+  assert.deepEqual(Object.keys(h.api.estado().minhas), ['de-bob']);
+  assert.equal(h.assinaturas.has('campanhas/de-alice'), false);
+});
+
+test('callback de tentativa anterior não sobrescreve a gazeta após reconectar', () => {
+  const h = ambiente();
+  const antigo = h.assinaturas.get('campanhas/' + id);
+  h.api.tentarNovamente(); h.emitir('campanhas/' + id, gazeta());
+  antigo.ok({ val: () => null });
+  assert.equal(h.campanhas()[0].anos.flatMap(a => a.noticias).length, 18);
+});
+
+test('erro de envio de uma sessão encerrada não aparece para a próxima conta', async () => {
+  const h = ambiente({ uid: admin }); h.emitir('campanhas/' + id, gazeta());
+  let falhar;
+  h.escrita(() => new Promise((resolve, reject) => { falhar = reject; }));
+  h.moverNoticia(0, 0, 1); h.passar(700);
+  h.conta('bob'); falhar(new Error('PERMISSION_DENIED')); await new Promise(r => setImmediate(r));
+  assert.equal(h.api.estado().erro, '');
+  assert.equal(h.api.estado().salvando, false);
+});
+
+test('salvar outra gazeta não esconde erro de publicação da primeira', async () => {
+  const h = ambiente({ uid: admin }); h.emitir('campanhas/' + id, gazeta());
+  h.escrita(dados => Object.keys(dados).some(k => k.startsWith('campanhas/' + id + '/'))
+    ? Promise.reject(new Error('PERMISSION_DENIED')) : Promise.resolve());
+  h.moverNoticia(0, 0, 1); h.passar(700); await new Promise(r => setImmediate(r));
+  h.api.publicar({ id: 'segunda', nome: 'Outra', anos: [] }); h.passar(700);
+  await new Promise(r => setImmediate(r));
+  assert.match(h.api.estado().erro, /PERMISSION_DENIED/);
+  h.escrita(() => Promise.resolve());
+  h.api.publicar({ id, nome: copia.nome, anos: copia.anos }); h.passar(700);
+  await new Promise(r => setImmediate(r));
+  assert.equal(h.api.estado().erro, '');
 });

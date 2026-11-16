@@ -55,6 +55,7 @@
   let timer = null;
   let ultimoEnvio = null;     // Date do último push OK
   let ultimoErro = '';
+  let sessao = 0;
 
   // ── A TRAVA (15/09/2026) ─────────────────────────────────────────
   //  O caso que a pediu: o mestre anotou no site publicado, abriu o
@@ -104,6 +105,13 @@
       if (window.GA_Mesa) {
         window.GA_Mesa.aoMudar(e => {
           const antes = podeTransmitir;
+          const mudouConta = (usuario && usuario.uid) !== (e.usuario && e.usuario.uid);
+          if (mudouConta || (antes && !e.transmite)) {
+            sessao++;
+            clearTimeout(timer); pendentes.clear();
+            ultimoErro = ''; ultimoEnvio = null;
+            desligarBanco();
+          }
           usuario = e.usuario;
           podeTransmitir = e.transmite;
           papelAqui = e.papel;
@@ -112,7 +120,7 @@
           atualizarBotao();
           // virou mestre → foto completa. Desde 15/09/2026 ela espera a
           // primeira foto do banco e é conferida chave a chave (a TRAVA)
-          if (podeTransmitir && !antes) enviarTudo();
+          if (podeTransmitir && (!antes || mudouConta)) enviarTudo();
         });
       }
       ligarInventario();
@@ -142,7 +150,7 @@
       err => console.warn('[sync] leitura de inventário dos jogadores:', err && err.message));
   }
 
-  const CHAVE_INV_JOGADORES = 'grifosAlados.basesJogadoresInventario';
+  const CHAVE_INV_JOGADORES = GA_Sala.chave('grifosAlados.basesJogadoresInventario');
 
   // Aqui somos o DONO do arquivo: o que os jogadores escreveram em
   // Residentes / Inventário da base e no diário / nas paradas de uma viagem
@@ -150,6 +158,7 @@
   // edição velha voltaria por cima da próxima edição dele). O salvamento
   // retransmite para todos. Devolve true se alguma aba já se redesenhou.
   function absorver(mapa) {
+    if (!podeTransmitir) return false;
     let redesenhou = false;
     [window.GA_Bases, window.GA_Viagem].forEach(mod => {
       try {
@@ -168,7 +177,10 @@
     document.addEventListener('focusout', function sair() {
       document.removeEventListener('focusout', sair);
       absorcaoAdiada = false;
-      setTimeout(() => { if (!digitando()) absorver(inboxLocal()); }, 0);
+      setTimeout(() => {
+        if (digitando()) return adiarAbsorcao();
+        absorver(inboxLocal());
+      }, 0);
     });
   }
   function digitando() {
@@ -216,7 +228,7 @@
   //  dela não faria nada — já o update troca a string por um objeto sem
   //  aquele campo, que é exatamente o que queremos.
   function limparInbox(baseId, campo) {
-    if (!db) return;
+    if (!db || !podeTransmitir || !sala()) return;
     const patch = {}; patch[campo] = null;
     db.ref('mesas/' + sala() + '/jogadores/inventario/' + baseId).update(patch)
       .catch(e => console.warn('[sync] não deu para limpar:', e && e.message));
@@ -342,11 +354,17 @@
     if (s === salaBanco) return;
     desligarBanco();
     salaBanco = s;
-    refBanco = db.ref('mesas/' + s + '/dados');
-    cbBanco = refBanco.on('value', snap => { banco = snap.val() || {}; conferirBanco(); },
+    const ref = refBanco = db.ref('mesas/' + s + '/dados');
+    cbBanco = refBanco.on('value', snap => {
+      if (refBanco !== ref) return;
+      banco = snap.val() || {}; conferirBanco();
+    },
       err => console.warn('[sync] leitura dos dados da mesa:', err && err.message));
-    refMeta = db.ref('mesas/' + s + '/meta');
-    cbMeta = refMeta.on('value', snap => { metaBanco = snap.val() || {}; atualizarBotao(); },
+    const meta = refMeta = db.ref('mesas/' + s + '/meta');
+    cbMeta = refMeta.on('value', snap => {
+      if (refMeta !== meta) return;
+      metaBanco = snap.val() || {}; atualizarBotao();
+    },
       err => console.warn('[sync] leitura do meta da mesa:', err && err.message));
   }
   function desligarBanco() {
@@ -437,31 +455,46 @@
     const s = sala();
     const pacote = {};
     pendentes.forEach(nome => {
+      // A foto local do Firebase já contém o eco de um envio em voo,
+      // mas ele ainda não foi confirmado. Guarde a edição seguinte até
+      // essa confirmação em vez de classificá-la como conflito e perdê-la.
+      if (emVoo.has(nome)) return;
       const e = estadoDaChave(nome);
       if (e === 'livre') pacote[nome] = valorLocal(nome);
       else if (e === 'conflito') conflitos[nome] = true;
+      pendentes.delete(nome);
     });
-    pendentes.clear();
     atualizarBotao();
     if (Object.keys(pacote).length) mandar(s, pacote);
     avisarConflito();
   }
 
   function mandar(s, pacote) {
+    const nestaSessao = sessao;
     const nomes = Object.keys(pacote);
     nomes.forEach(n => emVoo.add(n));
     db.ref('mesas/' + s + '/dados').update(pacote)
       .then(() => {
+        if (nestaSessao !== sessao) return;
         nomes.forEach(n => { emVoo.delete(n); marcarConhecido(s, n, pacote[n]); delete conflitos[n]; });
         guardarConhecido();
+        enviarPendentes();
         return db.ref('mesas/' + s + '/meta').update({
           atualizadoEm: firebase.database.ServerValue.TIMESTAMP,
         });
       })
-      .then(() => { ultimoEnvio = new Date(); ultimoErro = ''; atualizarBotao(); })
+      .then(() => {
+        if (nestaSessao !== sessao) return;
+        ultimoEnvio = new Date(); ultimoErro = ''; atualizarBotao();
+      })
       .catch(e => {
+        if (nestaSessao !== sessao) return;
         nomes.forEach(n => emVoo.delete(n));
         ultimoErro = e.message;
+        // Uma versão mais recente pode ter ficado esperando este envio.
+        // Ela ganha sua tentativa; a versão que falhou não volta à fila,
+        // portanto uma conexão recusada não cria um laço de reenvio.
+        if (pendentes.size) enviarPendentes();
         atualizarBotao();
         console.warn('[sync] envio falhou:', e.message);
       });

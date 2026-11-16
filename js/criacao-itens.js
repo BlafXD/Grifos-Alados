@@ -18,10 +18,19 @@
   // categorias de item geral (kind 'misc') que podem receber melhorias
   const CATS_MISC_ELEGIVEIS = new Set(['Ferramentas', 'Vestuário', 'Esotéricos']);
 
+  // O catálogo guarda propósito/empunhadura, não a proficiência. T20 p. 144,
+  // Ameaças p. 394 e Heróis p. 218: estas armas usam CD base 15 (T20 p. 122).
+  const ARMAS_SIMPLES = new Set([
+    'Adaga', 'Espada curta', 'Foice', 'Clava', 'Lança', 'Maça', 'Bordão',
+    'Pique', 'Tacape', 'Azagaia', 'Besta leve', 'Funda', 'Arco curto',
+    'Porrete', 'Zarabatana', 'Bastão lúdico', 'Besta de mão',
+  ].map(semAcento));
+
   // opções da categoria (define a CD base de fabricação)
   const CATEGORIA_OPCOES = [
     { id: 'arma-simples',    rotulo: 'Arma simples',                        cd: 15 },
     { id: 'arma-marcial',    rotulo: 'Arma marcial, exótica ou de fogo',    cd: 20 },
+    { id: 'municao',         rotulo: 'Munição (pacote)',                   cd: 15 },
     { id: 'armadura-leve',   rotulo: 'Armadura leve ou escudo',             cd: 15 },
     { id: 'armadura-pesada', rotulo: 'Armadura pesada',                     cd: 20 },
     { id: 'ferramenta',      rotulo: 'Ferramenta',                          cd: 20 },
@@ -91,7 +100,11 @@
     return false;
   }
   function categoriaAutoDetectada(it) {
-    if (it.kind === 'weapon') return 'arma-marcial';
+    if (it.kind === 'weapon') {
+      // Os pacotes do catálogo terminam em (20), ou (1) para bola de ferro.
+      if (/\(\s*\d+\s*\)\s*$/.test(it.nome || '')) return 'municao';
+      return ARMAS_SIMPLES.has(semAcento(it.nome || '')) ? 'arma-simples' : 'arma-marcial';
+    }
     if (it.kind === 'armor')  return (it.categoria === 'Armaduras Pesadas') ? 'armadura-pesada' : 'armadura-leve';
     if (it.categoria === 'Ferramentas') return 'ferramenta';
     if (it.categoria === 'Vestuário')   return 'vestuario';
@@ -397,7 +410,7 @@
       const linha = e.target.closest('.ci-item-resultado[data-nome]');
       if (!linha) return;
       itemAtual = { nome: linha.dataset.nome, preco: parseFloat(linha.dataset.preco) || 0 };
-      const catId = categoriaAutoDetectada({ kind: linha.dataset.kind, categoria: linha.dataset.categoria });
+      const catId = categoriaAutoDetectada({ nome: itemAtual.nome, kind: linha.dataset.kind, categoria: linha.dataset.categoria });
       elCategoria.value = catId;
       elCdCustomLin.hidden = (catId !== 'personalizado');
       elBuscaItem.value = itemAtual.nome;
@@ -436,9 +449,12 @@
 
       const linMelhoria = TAB.melhorias.find(m => m.n === nMelhorias);
       const linEncanto  = TAB.encantos.find(e => e.n === nEncantos);
-      const precoMelhorias = linMelhoria ? linMelhoria.preco : 0;
+      // T20 p. 151: só o acréscimo no PREÇO é reduzido à metade; a CD
+      // das melhorias/encantos e o preço base do pacote permanecem inteiros.
+      const fatorPreco = catId === 'municao' ? 0.5 : 1;
+      const precoMelhorias = (linMelhoria ? linMelhoria.preco : 0) * fatorPreco;
       const cdMelhorias    = linMelhoria ? linMelhoria.cd    : 0;
-      const precoEncantos  = linEncanto  ? linEncanto.preco  : 0;
+      const precoEncantos  = (linEncanto ? linEncanto.preco : 0) * fatorPreco;
       const cdEncantos     = linEncanto  ? linEncanto.cd     : 0;
 
       const precoBase  = itemAtual.preco || 0;
@@ -486,6 +502,7 @@
             <div class="ci-res-detalhe">matéria-prima gasta ao fabricar</div>
           </div>
         </div>
+        ${catId === 'municao' ? '<p class="ci-res-detalhe">Munição: acréscimos de melhorias e encantos pela metade (T20, p. 151).</p>' : ''}
         ${avisoEstimado}`;
     }
 

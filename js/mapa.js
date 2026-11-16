@@ -64,6 +64,7 @@
   function normalizar() {
     if (!dados || typeof dados !== 'object') dados = {};
     if (!Array.isArray(dados.nos)) dados.nos = [];
+    dados.nos = dados.nos.filter(n => n && typeof n === 'object' && !Array.isArray(n));
     if (!Array.isArray(dados.ligacoes)) dados.ligacoes = [];
     dados.snap = !!dados.snap;
     if (!dados.view || typeof dados.view !== 'object') dados.view = { x: 40, y: 40, zoom: 1 };
@@ -253,6 +254,8 @@
   //  RENDER
   // ═══════════════════════════════════════════════════════════════
   function renderTudo() {
+    const btnSnap = painel && painel.querySelector('[data-mp-acao="snap"]');
+    if (btnSnap) btnSnap.classList.toggle('mp-btn--ativo', !!dados.snap);
     if (!montado) return;
     canvas.querySelectorAll('.mp-no').forEach(n => n.remove());
     for (const k in elNo) delete elNo[k];
@@ -1100,7 +1103,7 @@
     const pacote = {
       app: 'Grifos Alados', tipo: 'anotacoes-mapa', versao: 1,
       exportadoEm: new Date().toISOString(),
-      nos: dados.nos, ligacoes: dados.ligacoes, view: dados.view,
+      nos: dados.nos, ligacoes: dados.ligacoes, view: dados.view, snap: dados.snap,
     };
     baixarTxt(`mapa_anotacoes_${carimboArquivo()}.json`, JSON.stringify(pacote, null, 2));
   }
@@ -1148,6 +1151,10 @@
         alert('Este arquivo é um backup de "' + parsed.tipo + '", não do Mapa.'); return;
       }
       if (!parsed || !Array.isArray(parsed.nos)) { alert('Backup sem nós — verifique o arquivo.'); return; }
+      parsed.nos = parsed.nos.filter(n => n && typeof n === 'object' && !Array.isArray(n));
+      if (!parsed.nos.length) { alert('Nenhum nó válido encontrado no arquivo.'); return; }
+      parsed.ligacoes = Array.isArray(parsed.ligacoes)
+        ? parsed.ligacoes.filter(l => l && typeof l === 'object' && !Array.isArray(l)) : [];
       abrirModalImportar(parsed);
     };
     leitor.onerror = () => alert('Não foi possível ler o arquivo.');
@@ -1174,11 +1181,12 @@
       const btn = e.target.closest('[data-imp-modo]');
       if (!btn) return;
       const novosNos = pacote.nos.map(n => ({ ...n, id: uid('n') }));
-      const idAntigoParaNovo = {};
-      pacote.nos.forEach((n, i) => { idAntigoParaNovo[n.id] = novosNos[i].id; });
+      const idAntigoParaNovo = new Map();
+      pacote.nos.forEach((n, i) => { if (n.id != null) idAntigoParaNovo.set(n.id, novosNos[i].id); });
       const novasLig = (pacote.ligacoes || [])
-        .filter(l => idAntigoParaNovo[l.de] && idAntigoParaNovo[l.para])
-        .map(l => ({ id: uid('l'), de: idAntigoParaNovo[l.de], para: idAntigoParaNovo[l.para] }));
+        .filter(l => idAntigoParaNovo.has(l.de) && idAntigoParaNovo.has(l.para))
+        .map(l => ({ id: uid('l'), de: idAntigoParaNovo.get(l.de), para: idAntigoParaNovo.get(l.para),
+          rotulo: typeof l.rotulo === 'string' ? l.rotulo : '' }));
 
       const modo = btn.dataset.impModo;
       if (modo === 'substituir') {
@@ -1186,6 +1194,7 @@
         dados.nos = novosNos;
         dados.ligacoes = novasLig;
         if (pacote.view) dados.view = pacote.view;
+        if (typeof pacote.snap === 'boolean') dados.snap = pacote.snap;
       } else {
         dados.nos = dados.nos.concat(novosNos);
         dados.ligacoes = dados.ligacoes.concat(novasLig);

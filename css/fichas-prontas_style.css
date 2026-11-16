@@ -48,7 +48,7 @@
   background: rgba(0, 0, 0, 0.14);
   border-radius: 2px;
 }
-.fp-livro--ativo .fp-livro-qtd { background: rgba(255, 255, 255, 0.2); }
+.fp-livro--ativo .fp-livro-qtd { background: rgba(0, 0, 0, 0.24); color: var(--faixa-tinta); }
 
 /* ── SELO DE ABA PRIVADA ───────────────────────────────────────────── */
 .fp-selo {
@@ -113,10 +113,10 @@
   letter-spacing: 0.05em;
 
 }
-.fp-cat:hover { border-color: var(--cor, var(--rust)); color: var(--cor, var(--rust)); }
+.fp-cat:hover { border-color: var(--cor, var(--rust)); color: var(--cor-legivel, var(--rust)); }
 .fp-cat--ativa,
 .fp-cat--ativa:hover {
-  background: var(--cor, var(--ink));
+  background: var(--cor-legivel, var(--rust));
   border-color: var(--cor, var(--ink));
   color: var(--parchment);
 }
@@ -177,7 +177,7 @@
   cursor: pointer;
 }
 button.fp-ref:hover {
-  background: var(--cor, var(--rust));
+  background: var(--cor-legivel, var(--rust));
   border-color: var(--cor, var(--rust));
   color: var(--parchment);
 }
@@ -262,7 +262,7 @@ button.fp-ref:hover {
 }
 .mz-npc-livro:hover { background: var(--parchment); }
 .mz-npc-livro.ativo {
-  background: var(--cor, var(--ink));
+  background: var(--cor-legivel, var(--rust));
   border-color: var(--cor, var(--ink));
   color: var(--parchment);
 }

@@ -474,17 +474,25 @@ window.GA_abrirModal = function (htmlInterno) {
       el => el.offsetWidth || el.offsetHeight || el.getClientRects().length);
   }
 
+  function estaNoTopo() {
+    const abertos = document.querySelectorAll('.ga-modal-overlay');
+    return abertos.length > 0 && abertos[abertos.length - 1] === overlay;
+  }
+
   function fechar() {
+    if (!overlay.isConnected) return;
+    const eraTopo = estaNoTopo();
     overlay.remove();
-    document.body.classList.remove('ga-modal-aberto');
+    if (!document.querySelector('.ga-modal-overlay')) document.body.classList.remove('ga-modal-aberto');
     document.removeEventListener('keydown', aoTeclar, true);
     // O botão que abriu pode ter sumido no meio do caminho (um
     // re-render da aba por baixo) — aí não há para onde voltar.
-    if (focoAnterior && document.contains(focoAnterior)) focoAnterior.focus();
+    if (eraTopo && focoAnterior && document.contains(focoAnterior)) focoAnterior.focus();
   }
 
   function aoTeclar(e) {
-    if (e.key === 'Escape') { e.preventDefault(); fechar(); return; }
+    if (!estaNoTopo()) return;
+    if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); fechar(); return; }
     if (e.key !== 'Tab') return;
     const lista = focaveis();
     if (!lista.length) { e.preventDefault(); caixa.focus(); return; }
