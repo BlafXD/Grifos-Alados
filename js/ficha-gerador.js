@@ -1,48 +1,6 @@
-// ════════════════════════════════════════════════════════════════════
-//  FICHA-GERADOR.JS — o "🎲 Sortear ficha": uma ficha inteira ao acaso
-//  Localização: /grifos-alados/js/ficha-gerador.js
-//
-//  Pedido dele (05/11/2026): "Gerador randômico de fichas aleatórias,
-//  absolutamente TUDO!" — raça, classe, deus (com Fundamentalista),
-//  poderes de toda espécie, magias e equipamento com melhorias até o
-//  teto de dinheiro do nível. Feito em PARTES, cada uma fechando sozinha.
-//
-//  ESTA É A PARTE 1 — A IDENTIDADE. Sorteia e já deixa pronto:
-//    • nível (escolhido ou ao acaso);
-//    • atributos pela Tabela 1-1 (p. 17): método "Pontos" (todos em 0,
-//      10 pontos; +1=1, +2=2, +3=4, +4=7; pode baixar UM a −1 por +1
-//      ponto). Com peso no atributo-chave da classe, como o livro aconselha
-//      ("prefira uma raça que forneça um bônus no atributo principal");
-//    • raça (bônus de atributo + tamanho + deslocamento + o card de
-//      habilidades no bloco ✨ Poderes);
-//    • classe (perícias treinadas da classe + as extras de Inteligência,
-//      proficiências, e o Caminho/Linhagem do arcanista/feiticeiro);
-//    • origem do núcleo (perícias e poder, 2 benefícios ao acaso);
-//    • um nome, para a ficha não nascer "(sem nome)".
-//  PV, PM, Defesa, perícias e as habilidades fixas de classe saem sozinhos
-//  da própria ficha (ela já computa por classe+nível+atributos).
-//
-//  A PARTE 1 PARA AQUI, DE PROPÓSITO. Ficam para as próximas levas:
-//    P2 divindade (deus/sem deus, Fundamentalista +1, poderes concedidos);
-//    P3 poderes (geral/combate/destino/magia/tormenta/raça + de classe);
-//    P4 magias (se conjurador, por círculo/nível);
-//    P5 equipamento (riqueza por nível do PDF + itens + melhorias até o teto).
-//
-//  POR QUE UM MÓDULO À PARTE, E NÃO DENTRO DO ficha.js. O gerador precisa
-//  de uma CAMADA DE REGRAS que a ficha não tem: a ficha MOSTRA a raça e
-//  deixa o jogador digitar o atributo ("conta e mostra, não policia"); o
-//  gerador PRECISA saber que anão é Con +2/Sab +1/Des −1 para preencher
-//  sozinho. Esse saber (mods raciais, perfil de atributo por classe) mora
-//  aqui, longe da ficha, e alimenta o motor pelos globais já carregados
-//  (window.GA_FichaData, GA_PODERES, GA_ORIGENS).
-//
-//  A ficha nasce pela mesma porta da ＋ Nova ficha: GA_Ficha.criarEabrir
-//  (ficha.js) faz normalizar → push → abrir → salvar → render. Nasce SEM
-//  campanha, como toda ficha nova (decisão de 04/11/2026).
-//
-//  Carregado no index.html depois do ficha.js. Só age ao clique no botão
-//  🎲 Sortear ficha do Lobby (🗂 Minhas fichas) — data-acao="sortear".
-// ════════════════════════════════════════════════════════════════════
+// Gerador de personagens: seleções fixas ou aleatórias, devoção e equipamento.
+// Compartilhado pelo mestre e pelos jogadores; cria pela mesma porta da ficha manual.
+// Magias e a progressão exata dos poderes de classe continuam fora deste motor.
 window.GA_FichaGerador = (function () {
   'use strict';
 
@@ -139,9 +97,9 @@ window.GA_FichaGerador = (function () {
   //              (Suraggel aggelus/sulfure, Nagah macho/fêmea) — sorteia uma
   //    tamanho   só quando não é Médio
   //    desloc    só quando não é 9 m
-  //  MOREAU fica FORA do sorteio: os atributos dele saem da herança animal
-  //  (um sub-card de escolha), e isso entra numa leva à parte.
+  // Moreau sorteia uma herança antes de distribuir atributos.
   const RACAS = {
+    'raca-moreau': { escolha: [{q: 2, v: 1, distintos: true}] },
     // ── Tormenta20 Jogo do Ano (núcleo) ──
     'raca-humano':        { escolha: [{ q: 3, v: 1, distintos: true }] },
     'raca-anao':          { mods: { con: 2, sab: 1, des: -1 }, desloc: 6 },
@@ -353,16 +311,20 @@ window.GA_FichaGerador = (function () {
     return perfil.prim[0];
   }
 
-  //  ORIGEM (só as do núcleo nesta leva): o rótulo, a escolha estruturada
-  //  (origemEscolha) e a APLICAÇÃO dos 2 benefícios — perícia treinada ou
-  //  poder no cartão. As origens especiais/regionais (benefício único em
-  //  prosa) entram numa leva à parte.
-  function addOrigem(f) {
-    const nucleo = ORIGENS().filter(o => (o.tipo || 'nucleo') === 'nucleo');
+  // Origens comuns sorteiam benefícios; especiais conservam seu poder e descrição.
+  function addOrigem(f, origemId) {
+    const nucleo = ORIGENS();
     if (!nucleo.length) return;
-    const o = pick(nucleo);
+    const o = origemId ? nucleo.find(o => o.id === origemId) : pick(nucleo);
+    if (!o) throw new Error('Origem indisponível.');
     f.origem = o.nome;
     f.origemEscolha = { origem: o.id, itens: [] };
+    if (o.tipo === 'especial') {
+      const pod = PODERES().find(p => p.id === 'origem-' + o.id);
+      if (pod) f.poderes.push(poderParaFicha(pod, 'origem'));
+      f.anotacoes += '\nOrigem ' + o.nome + ': ' + (o.beneficio || '') + '\nConfira as escolhas do benefício na ficha.';
+      return;
+    }
     const limite = o.escolher || 2;
 
     // candidatos: cada perícia e cada poder oferecidos é 1 benefício
@@ -397,22 +359,24 @@ window.GA_FichaGerador = (function () {
   }
 
   // ════════════════════════════════════════════════════════════════
-  //  CAMADA DE REGRAS — DIVINDADE (P2, 05/11/2026)
-  //  Em T20, ser devoto é uma ESCOLHA — menos para quem conjura em nome de
-  //  um deus: clérigo, druida, paladino e frade (e suas variantes) são
-  //  SEMPRE devotos (p. 229 / devotos-data). Ao se tornar devoto, recebe
-  //  UM poder concedido da lista do deus; o jogador marcou que um
-  //  FUNDAMENTALISTA recebe +1. Os 20 Deuses Maiores vêm de GA_DEVOTOS; os
-  //  poderes concedidos já moram em GA_PODERES (grupo 'concedido'), com o
-  //  deus no campo `tags` ("Khalmyr", "Thwor, Valkaria"). A elegibilidade
-  //  por raça/classe (a seção "Devotos" de cada deus) está em prosa — por
-  //  ora o sorteio não a policia; o deus é editável na ficha.
-  // ════════════════════════════════════════════════════════════════
-
-  //  As classes que conjuram em nome de um deus — sempre devotas. A
-  //  variante responde pela básica (D.basicaDe).
+  // Divindade: um poder por devoção, dois para classes divinas e +1 por
+  // fundamentalismo. Dogmas: Deuses de Arton, capítulo 1.
   function ehDivino(base) {
     return base === 'clerigo' || base === 'druida' || base === 'paladino' || base === 'frade';
+  }
+
+  function compativel(classe, raca, deus, fundamentalista) {
+    const base = classe.de || classe.chave;
+    if (classe.chave === 'usurpador') return false;
+    if (base === 'druida' && !['aharadak','allihanna','megalokk','oceano','tenebra'].includes(deus.chave)) return false;
+    if (base === 'paladino' && !['azgher','khalmyr','lena','linwu','marah','tannatoh','thyatis','valkaria'].includes(deus.chave)) return false;
+    if (fundamentalista && base === 'paladino' && deus.chave === 'valkaria' && !['raca-humano','raca-moreau'].includes(raca)) return false;
+    if (ehDivino(base) || ['raca-humano','raca-moreau'].includes(raca) || deus.chave === 'aharadak') return true;
+    const nomes = {anao:'anoes', elfo:'elfos', goblin:'goblins', minotauro:'minotauros', silfide:'silfides', medusa:'medusas', trog:'trogs', hynne:'hynne', qareen:'qareen', dahllan:'dahllan', suraggel:'aggelus,sulfure'};
+    const tags = semAc(deus.devotos);
+    const nr = nomes[raca.replace('raca-','')] || raca.replace('raca-','') + 's';
+    const nc = semAc((D().classe(base) || classe).nome) + 's';
+    return nr.split(',').some(n=>tags.includes(n)) || tags.includes(nc);
   }
 
   //  Um nome de deus está na lista de `tags` do poder? (tags vêm por
@@ -427,26 +391,40 @@ window.GA_FichaGerador = (function () {
   }
 
   //  DIVINDADE: decide se é devoto, de qual deus, se é Fundamentalista, e
-  //  entrega 1 (ou 2) poderes concedidos. Sem deus, deixa o campo vazio.
-  function addDivindade(f, base) {
-    const divino = ehDivino(base);
-    const devoto = divino || chance(0.55);   // leigo: ~55% é devoto, por sabor
-    if (!devoto) { f.divindade = ''; return; }
-
-    const deuses = DEUSES();
-    if (!deuses.length) { f.divindade = ''; return; }
-    const deus = pick(deuses);
-    const fundamentalista = chance(0.30);
-    f.divindade = deus.nome + (fundamentalista ? ' (fundamentalista)' : '');
-
-    const quantos = 1 + (fundamentalista ? 1 : 0);
-    const pool = embaralhar(concedidosDoDeus(deus.nome));
+  //  entrega os poderes concedidos da classe e o adicional de fundamentalista.
+  function addDivindade(f, base, opts) {
+    if (opts.divindade === 'nenhuma') {
+      f.divindade = '';
+      if (ehDivino(base) && f.classes[0].classe !== 'usurpador') {
+        const nivel = f.classes[0].nivel;
+        f.pm = {outros: 2 * (nivel >= 17 ? 4 : nivel >= 11 ? 3 : nivel >= 5 ? 2 : 1)};
+        f.anotacoes += '\nDevoção ampla: ' + (base === 'paladino' ? 'paladino do bem' : base === 'druida' ? 'druida de Arton' : 'Panteão') + '. Sem poderes concedidos; +2 PM por patamar (Deuses de Arton, p. 11).';
+      }
+      return;
+    }
+    if (!opts.divindade && !opts.fundamentalista && !ehDivino(base) && !chance(0.55)) return;
+    const deus = opts.divindade ? DEUSES().find(d => d.chave === opts.divindade) : pick(DEUSES());
+    if (!deus) throw new Error('Divindade indisponível.');
+    const fundamentalista = !!opts.fundamentalista;
+    f.divindade = deus.nome;
+    const dogmas = (window.GA_DOGMAS || {})[deus.chave];
+    const tradicao = base === 'druida' || base === 'paladino' ? base : 'sacerdote';
+    if (fundamentalista && (!dogmas || !dogmas[tradicao])) throw new Error('Esta divindade não tem dogma para a classe escolhida.');
+    if (fundamentalista && base === 'paladino' && deus.chave === 'valkaria' && !['Humano','Moreau'].includes(f.raca)) throw new Error('Paladinos fundamentalistas de Valkaria devem ser humanos.');
+    const quantos = (ehDivino(base) ? 2 : 1) + (fundamentalista ? 1 : 0);
+    const pool = embaralhar(concedidosDoDeus(deus.nome)).filter(p => !f.poderes.some(x => x.pid === p.id));
     pegarN(pool, quantos).forEach((pod, i) => {
       const entrada = poderParaFicha(pod, 'concedido');
       entrada.deus = deus.nome;
-      if (fundamentalista && i === 1) entrada.obs = 'Poder concedido extra — Fundamentalista.';
+      if (fundamentalista && i === quantos - 1) entrada.obs = 'Poder concedido extra — Fundamentalista.';
       f.poderes.push(entrada);
     });
+    f.anotacoes += '\nDevoção a ' + deus.nome + ': ' + deus.obrigacoes;
+    if (fundamentalista) {
+      const dogma = dogmas[tradicao].replace('Como o sacerdote.', dogmas.sacerdote);
+      f.anotacoes += '\nFundamentalista de ' + deus.nome + ' — tradição: ' + tradicao + '.\nDogma: ' + dogma +
+        '\nUsa apenas a arma favorita: ' + deus.arma + '. Recebe um poder concedido adicional. Pela regra geral (salvo exceção do dogma), violações retiram PM e habilidades de classe divina; recupera PM a partir do próximo dia e habilidades após descanso. Reincidência na mesma aventura exige penitência imposta por outro fundamentalista do mesmo deus. Deuses de Arton, p. 11.';
+    }
   }
 
   // ════════════════════════════════════════════════════════════════
@@ -588,15 +566,26 @@ window.GA_FichaGerador = (function () {
   //    opts.nivel   1..20, ou ausente/0 = ao acaso
   // ════════════════════════════════════════════════════════════════
   function gerar(opts) {
-    opts = opts || {};
+    opts = Object.assign({}, opts);
     if (!D() || !window.GA_Ficha || !window.GA_Ficha.criarEabrir) return null;
+    if (opts.fundamentalista && opts.divindade === 'nenhuma') throw new Error('Escolha uma divindade para o fundamentalista.');
 
     const nivel = (opts.nivel >= 1 && opts.nivel <= 20) ? (opts.nivel | 0) : (1 + rand(20));
 
     // CLASSE (com Caminho do arcanista decidido já, porque ele manda no
     // atributo principal e no das CDs)
-    const classe = pick(D().CLASSES);
+    const racaIds = Object.keys(RACAS).filter(id => PODERES().some(p => p.id === id));
+    const classes = D().CLASSES.filter(c => !opts.classe || c.chave === opts.classe);
+    const racas = racaIds.filter(id => !opts.raca || id === opts.raca);
+    const pares = classes.flatMap(c => racas.map(r => ({c, r, deuses: DEUSES().filter(d => compativel(c, r, d, opts.fundamentalista))})))
+      .filter(p => opts.divindade && opts.divindade !== 'nenhuma' ? p.deuses.some(d=>d.chave===opts.divindade) :
+        opts.divindade === 'nenhuma' ? p.c.chave !== 'santo' : (!opts.fundamentalista && (!ehDivino(p.c.de || p.c.chave) || p.c.chave === 'usurpador')) || p.deuses.length);
+    if (!pares.length) throw new Error('Raça, classe e divindade não têm uma combinação permitida. Deixe uma delas aleatória ou altere a seleção.');
+    const par = pick(pares), classe = par.c;
+    if (!classe) throw new Error('Classe indisponível.');
     const base = classe.de || classe.chave;
+    if (!opts.divindade) opts.divindade = (opts.fundamentalista || ehDivino(base) || chance(0.55)) && par.deuses.length ? pick(par.deuses).chave : 'nenhuma';
+    if (classe.chave === 'usurpador') opts.divindade = 'nenhuma';
     let caminho = '';
     if (base === 'arcanista' && classe.chave !== 'necromante' && D().CAMINHOS && D().CAMINHOS.length) {
       caminho = pick(D().CAMINHOS).chave;
@@ -610,11 +599,18 @@ window.GA_FichaGerador = (function () {
     }
     if (!perfil) perfil = { prim: ['for'], sec: ['con', 'des'], dump: ['car'] };
 
-    // RAÇA (fora o Moreau, que depende de herança)
-    const racaIds = Object.keys(RACAS).filter(id => PODERES().some(p => p.id === id));
-    const racaId = pick(racaIds);
+    // RAÇA e variantes, incluindo a herança Moreau
+    const racaId = par.r;
+    if (!racaIds.includes(racaId)) throw new Error('Raça indisponível.');
     const raca = Object.assign({}, RACAS[racaId]);
     if (raca.variantes) raca.variante = pick(raca.variantes);
+    let heranca;
+    if (racaId === 'raca-moreau') {
+      heranca = pick(PODERES().find(p=>p.id===racaId).escolhas[0].opcoes);
+      const atr = {Força:'for', Destreza:'des', Constituição:'con', Inteligência:'int', Sabedoria:'sab', Carisma:'car'};
+      const chave = Object.keys(atr).find(k=>heranca.texto[0].includes(k));
+      raca.mods = {[atr[chave]]: 1};
+    }
 
     // ATRIBUTOS (pontos + raça)
     const atributos = gerarAtributos(perfil, raca);
@@ -623,6 +619,7 @@ window.GA_FichaGerador = (function () {
     const f = {
       nome: opts.nome || pick(NOMES),
       jogador: '',
+      anotacoes: '',
       classes: [{ classe: classe.chave, nivel: nivel }],
       atributos: atributos,
       xp: (D().XP_POR_NIVEL && D().XP_POR_NIVEL[nivel]) || 0,
@@ -637,11 +634,17 @@ window.GA_FichaGerador = (function () {
                  { id: 'o2', esp: '', treinada: false, outros: 0, atr: '' }];
 
     addRaca(f, racaId);
+    if (heranca) {
+      f.poderes[0].obs = 'Herança: ' + heranca.nome;
+      f.poderes[0].texto.push(...heranca.texto);
+      if (heranca.nome === 'Raposa') f.deslocamento = 12;
+    }
     addClasse(f, classe.chave, nivel, caminho);
-    addOrigem(f);
-    addDivindade(f, base);
+    addOrigem(f, opts.origem);
+    addDivindade(f, base, opts);
     addPoderes(f, classe.chave, nivel, base, f.raca);
 
+    window.GA_FichaEquipamento.gerar(f, nivel, opts.itens || 'nenhum', !!opts.fundamentalista);
     return window.GA_Ficha.criarEabrir(f);
   }
 
@@ -657,11 +660,7 @@ window.GA_FichaGerador = (function () {
         <span>🎲 Sortear ficha</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
-      <p class="ga-modal-dica">Uma ficha nova, montada ao acaso e já aberta para você mexer. Por enquanto
-        sorteia: nível, atributos (método Pontos, p. 17), raça (com bônus, tamanho e deslocamento),
-        classe (perícias, proficiências, Caminho), origem, <strong>divindade</strong> (deus ou nenhum,
-        Fundamentalista, poderes concedidos) e <strong>poderes</strong> (de classe, combate, destino,
-        magia, Tormenta e raça). Magias e equipamento vêm nas próximas levas.</p>
+      <p class="ga-modal-dica">Fixe o que quiser e deixe o restante ao acaso. A ficha fica editável; use o seletor de campanha nela para colocá-la em uma mesa. Magias e escolhas abertas de poderes ainda precisam de revisão.</p>
       <div class="fi-ger-opcoes">
         <label class="fi-ger-nivelrad"><input type="radio" name="fiGerNivel" value="aleatorio" checked>
           <span>Nível ao acaso (1–20)</span></label>
@@ -669,6 +668,15 @@ window.GA_FichaGerador = (function () {
           <span>Nível escolhido:</span></label>
         <select class="fi-sel" data-ger-nivel disabled>${opts}</select>
       </div>
+      <div class="fi-ger-seletores">
+        <label>Raça<select class="fi-sel" data-ger-raca><option value="">Aleatória</option>${Object.keys(RACAS).map(id => PODERES().find(p => p.id === id)).filter(Boolean).map(p => '<option value="'+esc(p.id)+'">'+esc(p.nome)+'</option>').join('')}</select></label>
+        <label>Classe<select class="fi-sel" data-ger-classe><option value="">Aleatória</option>${D().CLASSES.map(c => '<option value="'+esc(c.chave)+'">'+esc(c.nome)+'</option>').join('')}</select></label>
+        <label>Origem<select class="fi-sel" data-ger-origem><option value="">Aleatória</option>${ORIGENS().map(o => '<option value="'+esc(o.id)+'">'+esc(o.nome)+'</option>').join('')}</select></label>
+        <label>Divindade<select class="fi-sel" data-ger-divindade><option value="">Aleatória</option><option value="nenhuma">Nenhuma</option>${DEUSES().map(d => '<option value="'+esc(d.chave)+'">'+esc(d.nome)+'</option>').join('')}</select></label>
+        <label><input type="checkbox" data-ger-fundamentalista> Fundamentalista (+1 poder concedido e dogmas)</label>
+        <label>Itens<select class="fi-sel" data-ger-itens><option value="nenhum">Não gerar itens</option><option value="gastar">Gerar e consumir o dinheiro do nível</option><option value="gratis">Gerar sem gastar dinheiro</option></select></label>
+      </div><p class="ga-modal-dica">Os itens gerados cabem, juntos, na riqueza do nível, inclusive no modo sem gasto. Entram no inventário; equipe-os e configure seus ataques na ficha.</p>
+      <p data-ger-erro role="alert"></p>
       <div class="ga-modal-acoes">
         <button type="button" class="ga-btn-sec" data-ga-fechar>Cancelar</button>
         <button type="button" class="ga-btn-principal" data-ger-sortear>🎲 Sortear</button>
@@ -682,11 +690,18 @@ window.GA_FichaGerador = (function () {
       sel.disabled = !fixo;
       if (fixo) sel.focus();
     }));
+    const div = overlay.querySelector('[data-ger-divindade]');
+    const fund = overlay.querySelector('[data-ger-fundamentalista]');
+    div.addEventListener('change', () => { fund.disabled = div.value === 'nenhuma'; if (fund.disabled) fund.checked = false; });
     overlay.querySelector('[data-ger-sortear]').addEventListener('click', () => {
       const fixo = overlay.querySelector('input[name="fiGerNivel"][value="fixo"]').checked;
       const nivel = fixo ? (parseInt(sel.value, 10) || 1) : 0;
-      if (overlay._fechar) overlay._fechar();
-      gerar({ nivel: nivel });
+      try {
+        const escolhas = { nivel, fundamentalista: fund.checked };
+        ['raca','classe','origem','divindade','itens'].forEach(k => escolhas[k] = overlay.querySelector('[data-ger-' + k + ']').value);
+        gerar(escolhas);
+        if (overlay._fechar) overlay._fechar();
+      } catch (e) { overlay.querySelector('[data-ger-erro]').textContent = e.message; }
     });
   }
 

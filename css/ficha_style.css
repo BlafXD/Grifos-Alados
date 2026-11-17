@@ -2483,6 +2483,10 @@
 }
 
 .fi-prof { margin-top: 0.2rem; }
+.fi-ger-seletores { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1rem; margin: 1rem 0; }
+.fi-ger-seletores label { display: flex; flex-direction: column; gap: .35rem; min-width: 0; color: var(--ink); }
+.fi-ger-seletores select { width: 100%; min-width: 0; }
+.fi-ger-seletores label:has(input[type=checkbox]) { flex-direction: row; align-items: center; }
 
 /* ── A CARGA, DENTRO DO INVENTÁRIO ──────────────────────────────── */
 .fi-inv-carga {

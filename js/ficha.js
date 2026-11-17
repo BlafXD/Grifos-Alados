@@ -10962,7 +10962,7 @@
       const nova = normalizar(obj || {});
       dados.fichas.push(nova);
       abrirFicha(nova.id);
-      salvar(); render();
+      salvarAgora(); render();
       return nova;
     },
     recarregar: () => { carregar(); render(); },
