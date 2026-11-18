@@ -7,6 +7,7 @@
   <link rel="icon" type="image/png" href="favicon.png"><!-- 64px, 9,5 KB: a arte cheia (Grifos_Alados.png, 1024px) fica para o README -->
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/caderno.css">
   <link rel="stylesheet" href="css/loja_style.css">
   <link rel="stylesheet" href="css/noticias_style.css">
   <link rel="stylesheet" href="css/monstros_style.css">
@@ -97,6 +98,8 @@
       </button>
       <div class="nav-grupo-menu" id="nav-menu-mesa">
         <a href="#" class="nav-link" data-section="mesa">🎲 Mesa</a>
+        <a href="backup.html" class="nav-link">💾 Backup completo</a>
+        <a href="#" class="nav-link" data-section="caderno">📚 Caderno da campanha</a>
         <a href="#" class="nav-link" data-section="monstros">⚔ Combates</a>
         <a href="#" class="nav-link" data-section="fichas">📖 Fichas</a>
       </div>
@@ -152,6 +155,7 @@
 <main id="ga-conteudo" tabindex="-1">
 
 <!-- ══════════════════ NOTÍCIAS ══════════════════ -->
+<section id="caderno"><div id="caderno-content" class="ga-caderno"></div></section>
 <section id="noticias" class="active">
   <div class="wrapper">
     <p class="nc-vazio" role="status">Carregando notícias…</p>
@@ -562,6 +566,7 @@
 <script src="js/ficha-tormenta.js" defer></script>
 <script src="js/ficha-distincoes.js" defer></script>
 <script src="js/distincoes-efeitos-data.js" defer></script>
+<script src="js/historico-jogo.js" defer></script>
 <script src="js/ficha.js" defer></script>
 <script src="js/ficha-gerador-dogmas.js" defer></script>
 <script src="js/ficha-gerador-equipamento.js" defer></script>
@@ -661,6 +666,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js" defer></script>
 <script src="js/firebase-config.js" defer></script>
+<script src="js/recuperacao.js" defer></script>
 <script src="js/mesa.js" defer></script>
 <script src="js/gaveta.js" defer></script>
 <script src="js/sync-mestre.js" defer></script>
@@ -674,5 +680,18 @@
 <!-- efeitos em área: usa o GA_Mesa, o GA_Iniciativa e o GA_Ficha; vem por último -->
 <script src="js/efeitos-area.js" defer></script>
 
+<script src="js/deuses-menores-data.js" defer></script>
+<script src="js/ascensao-divina.js" defer></script>
+<script src="js/caderno-core.js" defer></script>
+<script src="js/referencias-magias-data.js" defer></script>
+<script src="js/busca-regras.js" defer></script>
+<script src="js/dominios-data.js" defer></script>
+<script src="js/dominios.js" defer></script>
+<script src="js/maldicoes-data.js" defer></script>
+<script src="js/itens-inteligentes.js" defer></script>
+<script src="js/caderno-store.js" defer></script>
+<script src="js/caderno.js" defer></script>
+<script src="js/caderno-dominios.js" defer></script>
+<script src="js/caderno-itens.js" defer></script>
 </body>
 </html>

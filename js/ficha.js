@@ -1745,8 +1745,10 @@
   //  `tipo` só vale para o PM, e é a etiqueta do mini-log (magia, poder,
   //  habilidade, sustentar, outro). Quem não passa nada cai em 'outro'.
   function aplicarDano(f, qual, n, porQue, tipo) {
+    const antes = window.GA_HistoricoJogo?.foto(f, [qual + '.atual', qual + '.temp']);
     const rot = qual === 'pv' ? 'PV' : 'PM';
     const r = gastarPontos(f, qual, n);
+    if (antes) window.GA_HistoricoJogo.registrar('ficha:' + (donoDe(f.id) || meuUid || 'local') + ':' + f.id, (f.nome || 'Personagem') + ' perdeu ' + n + ' ' + rot, antes, f);
     sujar(f.id, qual);
     //  Todo gasto de mana passa por aqui, e é aqui que ele vira linha do
     //  mini-log — nenhum caminho do site escapa (ver anotarPm).
@@ -1763,10 +1765,12 @@
     salvar();
   }
   function aplicarCura(f, qual, n) {
+    const antes = window.GA_HistoricoJogo?.foto(f, [qual + '.atual', qual + '.temp']);
     const rot = qual === 'pv' ? 'PV' : 'PM';
     const preso = qual === 'pv' ? manchado(f) : 0;
     const noTeto = qual === 'pv' && preso > 0 && pvAtual(f) >= tetoPv(f);
     const ganho = curarPontos(f, qual, n);
+    if (antes) window.GA_HistoricoJogo.registrar('ficha:' + (donoDe(f.id) || meuUid || 'local') + ':' + f.id, (f.nome || 'Personagem') + ' recuperou ' + ganho + ' ' + rot, antes, f);
     sujar(f.id, qual);
     // o "o resto passaria do máximo" vira outra frase quando quem
     // segurou a cura foi a mancha: ali o teto não é o máximo
@@ -2489,8 +2493,16 @@
 
     const cartaoVida = `
         <div class="fi-cartao fi-vida">
-          <h2 class="fi-cartao-tit">Vida &amp; Mana</h2>
+            <h2 class="fi-cartao-tit">Vida &amp; Mana</h2>
+            <button type="button" class="fi-mini" data-acao="caderno-objetivos">Objetivo Heroico e jornada divina</button>
+            <button type="button" class="fi-mini" data-acao="caderno-itens">Itens especiais vinculados</button>
+            <div data-caderno-ficha="${esc(f.id)}">${window.GA_Caderno?.resumoFicha(f.id) || ''}</div>
           ${medidor(f, 'pv')}
+          <div class="ga-dano-real"><label>Quanto de dano tomou verdadeiramente?
+            <input class="fi-num" type="number" min="1" step="1" inputmode="numeric" data-dano-real placeholder="Dano final" aria-label="Dano final recebido"></label>
+            <button type="button" class="fi-mini" data-acao="dano-real">Aplicar dano</button>
+            <button type="button" class="fi-mini" data-acao="historico-jogo">Histórico / desfazer</button>
+            <small>Sem descontar RD. PV temporários são consumidos primeiro.</small></div>
           ${medidor(f, 'pm')}
 
           <p class="fi-dano-eco" data-acao="fechar-eco" title="Clique para fechar este aviso" ${ultimoDano ? '' : 'hidden'}><span class="fi-dano-eco-txt" data-der="danoeco">${ultimoDano}</span><button type="button" class="fi-dano-eco-x" data-acao="fechar-eco" aria-label="Fechar este aviso" title="Fechar">✕</button></p>
@@ -7759,6 +7771,9 @@
   }
 
   function gravarCampo(f, caminho, valor) {
+    const raizHistorico = caminho.split('.')[0];
+    const camposHistorico = /^(pv|pm)\.(atual|temp)$/.test(caminho) ? [caminho] : ['inventario','condicoes','condicoesLivres'].includes(raizHistorico) ? [raizHistorico] : [];
+    const antes = camposHistorico.length ? window.GA_HistoricoJogo?.foto(f, camposHistorico) : null;
     const p = caminho.split('.');
     let alvo = f;
     for (let i = 0; i < p.length - 1; i++) {
@@ -7766,7 +7781,12 @@
       if (!alvo) return;
     }
     alvo[p[p.length - 1]] = valor;
+    registrarHistoricoFicha(f, 'Editou ' + caminho, antes);
     sujar(f.id, p[0]);      // 'pv', 'pericias', 'inventario'… → sobe só isso
+  }
+
+  function registrarHistoricoFicha(f, rotulo, antes) {
+    if (antes) window.GA_HistoricoJogo.registrar('ficha:' + (donoDe(f.id) || meuUid || 'local') + ':' + f.id, rotulo, antes, f);
   }
 
   function aoEntrada(e) {
@@ -8327,7 +8347,9 @@
     // ── CONDIÇÕES ──────────────────────────────────────────────────
     if (acao === 'add-condicao')  return abrirBuscaCondicao(f);
     if (acao === 'tira-condicao') {
+      const antes = window.GA_HistoricoJogo?.foto(f, ['condicoes']);
       f.condicoes.splice(+btn.dataset.i, 1);
+      registrarHistoricoFicha(f, 'Removeu uma condição', antes);
       sujar(f.id, 'condicoes'); salvar(); return render();
     }
     // "a menos que especificado o contrário, condições terminam no fim
@@ -8340,17 +8362,21 @@
       if (!confirm('Tirar as ' + quantas + ' condições desta ficha?\n\n' +
                    'É o que acontece no fim da cena — mas as que duram mais que ela saem junto, ' +
                    'e o que você escreveu nas linhas ✋ e ✎ vai junto também.')) return;
+      const antes = window.GA_HistoricoJogo?.foto(f, ['condicoes', 'condicoesLivres']);
       f.condicoes = [];
       f.condicoesLivres = [];
+      registrarHistoricoFicha(f, 'Encerrou as condições', antes);
       sujar(f.id, 'condicoes'); sujar(f.id, 'condicoesLivres'); salvar(); return render();
     }
     // ── AS DUAS CAIXAS ESCRITAS: ✋ Sustentada e ✎ Outros ──────────
     if (acao === 'add-livre') {
+      const antes = window.GA_HistoricoJogo?.foto(f, ['condicoesLivres']);
       f.condicoesLivres.push({
         id: novoId(),
         tipo: btn.dataset.tipo === 'sustentada' ? 'sustentada' : 'outros',
         texto: '', magia: false,
       });
+      registrarHistoricoFicha(f, 'Adicionou uma condição livre', antes);
       sujar(f.id, 'condicoesLivres'); salvar(); return render();
     }
     if (acao === 'tira-livre') {
@@ -8359,7 +8385,9 @@
       if (temConteudo(c.texto) &&
           !confirm('Tirar esta linha' + (c.tipo === 'sustentada' ? ' de sustentada' : '') + '?\n\n' +
                    '"' + c.texto + '"')) return;
+      const antes = window.GA_HistoricoJogo?.foto(f, ['condicoesLivres']);
       f.condicoesLivres.splice(+btn.dataset.i, 1);
+      registrarHistoricoFicha(f, 'Removeu uma condição livre', antes);
       sujar(f.id, 'condicoesLivres'); salvar(); return render();
     }
     // o ✦: esta sustentada é uma MAGIA — "apenas uma magia sustentada
@@ -8473,6 +8501,24 @@
     //  atual enquanto ainda há escudo temporário em pé.
     if (acao === 'pv-menos' || acao === 'pm-menos') {
       aplicarDano(f, acao.slice(0, 2), 1); return;
+    }
+      if (acao === 'caderno-objetivos') { window.GA_Caderno?.abrir('objetivos', f.id); return; }
+      if (acao === 'caderno-itens') { window.GA_Caderno?.abrir('itens', f.id); return; }
+      if (acao === 'dano-real') {
+      const input = btn.closest('.ga-dano-real').querySelector('[data-dano-real]');
+      const n = Number(input.value);
+      if (!Number.isSafeInteger(n) || n <= 0) { input.setCustomValidity('Informe um dano inteiro positivo.'); input.reportValidity(); input.setCustomValidity(''); return; }
+      aplicarDano(f, 'pv', n, 'dano final recebido'); input.value = ''; return;
+    }
+    if (acao === 'historico-jogo') {
+      const id = f.id;
+        const identidade = meuUid, campanhaHistorico = window.GA_Sala?.id, proprietario = donoDe(id);
+      window.GA_HistoricoJogo?.abrir('ficha:' + (donoDe(id) || meuUid || 'local') + ':' + id,
+          () => {
+            if (meuUid !== identidade || window.GA_Sala?.id !== campanhaHistorico || (proprietario && !window.GA_Mesa?.transmite())) return null;
+            return fichaConhecida(id)?.f || remotas[proprietario]?.[id];
+          }, campos => { campos.forEach(c=>sujar(id,c)); salvarAgora(); render(); });
+      return;
     }
     if (acao === 'pv-mais' || acao === 'pm-mais') {
       aplicarCura(f, acao.slice(0, 2), 1); return;
@@ -8635,7 +8681,10 @@
 
     // ── INVENTÁRIO ─────────────────────────────────────────────────
     if (acao === 'add-item') {
+      const antes = window.GA_HistoricoJogo?.foto(f, ['inventario']);
       f.inventario.push({ id: novoId(), nome: '', qtd: 1, espacos: 1, cada: true, obs: '' });
+      registrarHistoricoFicha(f, 'Adicionou item ao inventário', antes);
+      sujar(f.id, 'inventario');
       salvar(); return render();
     }
     if (acao === 'catalogo-item') return abrirCatalogoItens(f);
@@ -8648,7 +8697,9 @@
       if (temConteudo(it.nome, it.obs, it.notas) &&
           !confirm('Tirar "' + (it.nome || 'este item') + '" do inventário?' +
                    (it.notas ? '\n\nO texto escrito nele vai junto.' : ''))) return;
+      const antes = window.GA_HistoricoJogo?.foto(f, ['inventario']);
       f.inventario.splice(+btn.dataset.i, 1);
+      registrarHistoricoFicha(f, 'Removeu ' + (it.nome || 'item') + ' do inventário', antes);
       sujar(f.id, 'inventario'); salvar(); return render();
     }
     // A ordem: ↑ e ↓ um passo, e ⇈ direto para o topo ("adicionei um
@@ -8667,7 +8718,9 @@
     if (acao === 'inv-menos' || acao === 'inv-mais') {
       const it = f.inventario[+btn.dataset.i];
       if (!it) return;
+      const antes = window.GA_HistoricoJogo?.foto(f, ['inventario']);
       it.qtd = Math.max(0, (it.qtd || 0) + (acao === 'inv-mais' ? 1 : -1));
+      registrarHistoricoFicha(f, 'Alterou quantidade de ' + (it.nome || 'item'), antes);
       sujar(f.id, 'inventario');
       const campo = secao.querySelector('[data-campo="inventario.' + btn.dataset.i + '.qtd"]');
       if (campo) campo.value = it.qtd;
@@ -10057,6 +10110,7 @@
   }
 
   function porItemDoCatalogo(f, it) {
+    const antes = window.GA_HistoricoJogo?.foto(f, ['inventario', 'ataques', 'equipDefesa']);
     const s = it.s || {};
     const esp = (typeof s.peso === 'number' && isFinite(s.peso)) ? s.peso : 1;
 
@@ -10106,6 +10160,7 @@
       obs: it.categoria || '',
       notas: '', aberto: false,
     });
+    registrarHistoricoFicha(f, 'Adicionou ' + it.nome + ' pelo catálogo', antes);
     sujar(f.id, 'inventario');
     salvar();
   }
@@ -10247,7 +10302,9 @@
       const b = e.target.closest('[data-cond]');
       if (!b) return;
       const k = b.dataset.cond, i = f.condicoes.indexOf(k);
+      const antes = window.GA_HistoricoJogo?.foto(f, ['condicoes']);
       if (i >= 0) f.condicoes.splice(i, 1); else f.condicoes.push(k);
+      registrarHistoricoFicha(f, (i >= 0 ? 'Removeu ' : 'Adicionou ') + 'condição ' + k, antes);
       sujar(f.id, 'condicoes');
       salvar();
       pintar();
@@ -10837,6 +10894,7 @@
     if (!f) return { ok: false, motivo: 'sem-ficha' };
     const nome = String((item && item.nome) || '').trim();
     if (!nome) return { ok: false, motivo: 'sem-nome' };
+    const antesHistorico = window.GA_HistoricoJogo?.foto(f, ['inventario', 'tibares', 'compras']);
 
     const qtd     = Math.max(1, parseInt(item.qtd, 10) || 1);
     const espacos = (typeof item.espacos === 'number' && isFinite(item.espacos)) ? item.espacos : 1;
@@ -10875,6 +10933,7 @@
       por: quemComprou(f),
     });
     f.compras = f.compras.slice(0, COMPRAS_MAX);
+    registrarHistoricoFicha(f, 'Recebeu ' + nome + ' da loja', antesHistorico);
     sujar(f.id, 'compras');
 
     salvar(); render();
@@ -10955,6 +11014,14 @@
     conferir: conferir,                // a gaveta (e a mesa) responderam: decide ficha a ficha
     mesaMudou: mesaMudou,              // login/papel mudou → redesenhar a barra
     minhasFichas: () => dados.fichas.slice(),
+    referenciasCaderno: () => {
+      const lista = dados.fichas.map(f => ({ f, dono: meuUid || 'local' }));
+      if (window.GA_Mesa?.transmite()) Object.entries(remotas).forEach(([dono, fs]) => {
+        Object.values(fs || {}).forEach(f => { if (!lista.some(x => x.f.id === f.id)) lista.push({ f, dono }); });
+      });
+      return lista.map(({ f, dono }) => ({ id:f.id, nome:f.nome || 'Sem nome', dono,
+        inventario:(f.inventario || []).map(i => ({ id:i.id, nome:i.nome || 'Item sem nome' })) }));
+    },
     //  O gerador (js/ficha-gerador.js) entrega uma ficha pré-preenchida;
     //  aqui ela passa pelo MESMO caminho da ＋ Nova ficha — normalizar,
     //  entra na lista, abre, salva, redesenha. Nasce sem campanha.

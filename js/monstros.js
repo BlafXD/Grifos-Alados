@@ -3398,6 +3398,10 @@
                    data-campo="stat" data-stat="${st.chave}" data-sub="atual" ${ds}>
             ${dado('atual')}
           </div>
+          ${st.chave === 'pv' ? `<div class="ga-dano-real"><label>Quanto de dano tomou verdadeiramente?
+            <input type="number" min="1" step="1" inputmode="numeric" data-dano-real placeholder="Dano final" aria-label="Dano final recebido"></label>
+            <button type="button" class="mz-step" data-acao="dano-real" ${ds}>Aplicar dano</button>
+            <button type="button" class="mz-step" data-acao="historico-jogo" ${ds}>Histórico / desfazer</button><small>Valor final, sem descontar RD.</small></div>` : ''}
         </div>`;
     });
 
@@ -3621,6 +3625,23 @@
     const alvo = e.target.closest('[data-acao]');
     if (!alvo) return;
     const acao = alvo.dataset.acao;
+    if (acao === 'dano-real') {
+      const cr = pegarCriatura(alvo), input = alvo.closest('.ga-dano-real').querySelector('[data-dano-real]');
+      const n = Number(input.value), pv = cr?.stats?.pv;
+      const atual = pv && String(pv.atual).trim() !== '' ? Number(pv.atual) : Number(pv?.padrao);
+      if (!Number.isSafeInteger(n) || n <= 0 || !Number.isFinite(atual)) { input.setCustomValidity('Informe um dano inteiro positivo e um PV numérico.'); input.reportValidity(); input.setCustomValidity(''); return; }
+      const antes = window.GA_HistoricoJogo?.foto(cr, ['stats.pv.atual']);
+      pv.atual = String(atual - n);
+      if (antes) window.GA_HistoricoJogo.registrar('criatura:' + cr.id, (cr.nome || 'Criatura') + ' recebeu ' + n + ' de dano', antes, cr);
+      salvar(); render(); return;
+    }
+    if (acao === 'historico-jogo') {
+      const cr = pegarCriatura(alvo);
+      window.GA_HistoricoJogo?.abrir('criatura:' + cr.id, () => {
+        try { const atual = pegarCriatura(alvo); return atual?.id === cr.id ? atual : null; } catch { return null; }
+      }, () => { salvar(); render(); });
+      return;
+    }
 
     if (acao === 'alternar-visao') {
       dados.modoPainel = !dados.modoPainel;
@@ -5297,9 +5318,11 @@
   function toggleCondicao(chave, botaoOpcao) {
     if (!_condAlvo) return;
     const cr = dados.sessoes[_condAlvo.s].cenas[_condAlvo.c].criaturas[_condAlvo.cr];
+    const antes = window.GA_HistoricoJogo?.foto(cr, ['condicoesAtivas']);
     const i = cr.condicoesAtivas.indexOf(chave);
     if (i >= 0) cr.condicoesAtivas.splice(i, 1);
     else cr.condicoesAtivas.push(chave);
+    if (antes) window.GA_HistoricoJogo.registrar('criatura:' + cr.id, 'Alterou condição ' + chave, antes, cr);
     salvar();
     render();   // atualiza os chips na ficha
     if (botaoOpcao) {

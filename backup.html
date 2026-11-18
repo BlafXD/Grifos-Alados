@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Backup — Grifos Alados</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/caderno.css"><link rel="stylesheet" href="css/acessibilidade.css"></head>
+<body><main class="wrapper ga-caderno"><h1>Guardar minhas coisas</h1>
+<p>Um pacote com o conteúdo deste navegador e seus PDFs. Dados da nuvem que não foram carregados não estão incluídos.</p>
+<p><a href="index.html">Voltar ao mestre</a> · <a href="jogadores.html">Voltar ao jogador</a></p>
+<button type="button" class="ga-btn-principal" id="backup-exportar">Baixar backup completo</button>
+<h2>Prévia de restauração</h2><p>Escolha um pacote para conferir os registros. Nada é alterado antes de “Restaurar escolhas”. Ao restaurar, as outras abas deste site entram em recuperação e a sincronização fica suspensa.</p>
+<label>Pacote JSON <input type="file" accept=".json,application/json" id="backup-arquivo"></label>
+<p id="backup-status" role="status"></p><div id="backup-previa"></div>
+<button type="button" class="ga-btn-principal" id="backup-aplicar" hidden>Restaurar escolhas</button>
+<section id="backup-offline" hidden><h2>Conteúdo restaurado em modo local</h2><p>Confira o resultado nas fichas e ferramentas. Você pode continuar usando o site sem transmitir dados. Ao reconectar, as escolhas normais entre a cópia local e a conta voltarão a aparecer.</p><button type="button" class="ga-btn-sec" id="backup-reconectar">Reativar conexão com a conta</button></section>
+</main><script src="js/script.js"></script><script src="js/acessibilidade.js"></script><script src="js/backup-core.js"></script><script src="js/backup-ui.js"></script></body></html>

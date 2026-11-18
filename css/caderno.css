@@ -1,0 +1,42 @@
+.ga-caderno { max-width:1100px; margin:2rem auto; padding:1rem; color:var(--ink); background:var(--parchment); }
+.ga-caderno button,.ga-caderno input,.ga-caderno select,.ga-caderno textarea { font:inherit; }
+.ga-caderno input,.ga-caderno select,.ga-caderno textarea { background:var(--parchment);color:var(--ink); border:1px solid var(--gold); padding:.5rem; max-width:100%; }
+.ga-caderno p { margin:1rem 0; }
+.ga-caderno > section { display:block; }
+.ga-caderno [hidden] { display:none!important; }
+.ga-caderno a { color:var(--ink); text-decoration:underline; }
+.ga-caderno h2 { margin:1.5rem 0 .7rem; }
+.ga-backup-linha { display:grid; grid-template-columns:minmax(0,1fr) minmax(8rem,13rem);gap:1rem;border-bottom:1px solid var(--gold);padding:.7rem 0; }
+.ga-backup-linha small { display:block; overflow-wrap:anywhere; }
+.ga-recuperacao { position:sticky;top:0;z-index:9999;padding:.7rem;background:var(--parchment);color:var(--ink);border:2px solid var(--gold); }
+@media(max-width:480px){.ga-backup-linha{grid-template-columns:1fr;gap:.3rem;}}
+.ga-cad-top { border-bottom:3px double var(--gold); padding-bottom:1rem; }
+.ga-cad-top h2 { margin:0; font-family:'Cinzel',Georgia,serif; }
+.ga-caderno .ga-cad-tabs { position:static; display:flex; flex-wrap:wrap; gap:.4rem; padding:1rem 0; margin:0; background:transparent; box-shadow:none; border-bottom:1px solid var(--gold); }
+.ga-caderno button { border:1px solid var(--gold); border-radius:3px; padding:.55rem .85rem; margin:.25rem .25rem .25rem 0; background:var(--parchment2); color:var(--ink); cursor:pointer; min-height:42px; }
+.ga-caderno button:hover { background:var(--parchment3); }
+.ga-caderno button[aria-pressed="true"] { color:var(--faixa-tinta);background:var(--faixa);border-color:var(--faixa); }
+.ga-caderno button:focus-visible,.ga-caderno input:focus-visible,.ga-caderno select:focus-visible,.ga-caderno textarea:focus-visible,.ga-caderno summary:focus-visible { outline:3px solid var(--azul);outline-offset:3px; }
+.ga-caderno button:disabled { opacity:.6; cursor:not-allowed; }
+.ga-cad-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:1rem; }
+.ga-cad-card { padding:1.1rem; border:1px solid var(--gold); margin:1rem 0; background:var(--parchment2); min-width:0; overflow-wrap:anywhere; }
+.ga-cad-card .ga-cad-card { background:var(--parchment); }
+.ga-cad-card h3 { font-family:'Cinzel',Georgia,serif; margin:0 0 .75rem; font-size:1.15rem; color:var(--ink); }
+.ga-caderno h4 { color:var(--ink);font-size:1rem;margin:1rem 0 .4rem; }
+.ga-caderno details { border-top:1px solid var(--gold);padding:.7rem 0; }
+.ga-caderno details.ga-cad-card { padding:1rem; }
+.ga-caderno summary { cursor:pointer; font-weight:700; color:var(--ink); }
+.ga-caderno summary small { display:inline-block;margin-left:.7rem;color:var(--ink-faded);font-weight:400; }
+.ga-texto { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.65; margin:.75rem 0; }
+.ga-caderno form { margin:1rem 0; padding:1rem; border-left:3px solid var(--gold); background:var(--parchment); }
+.ga-campos { display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:.8rem;align-items:start; }
+.ga-campos label { display:flex;flex-direction:column;gap:.35rem; min-width:0; font-size:.95rem; color:var(--ink); }
+.ga-campos input:not([type="checkbox"]),.ga-campos select,.ga-campos textarea { width:100%;box-sizing:border-box; }
+.ga-campos .ga-check { flex-direction:row;align-items:center;align-self:center; }
+.ga-check input { flex:0 0 auto;min-width:20px;min-height:20px;accent-color:var(--rust); }
+.ga-cad-erro { color:var(--carmim); border:2px solid currentColor;padding:1rem; }
+.ga-vazio { color:var(--ink-faded);font-style:italic; }
+.ga-calendario { grid-column:1/-1;min-width:0; }
+.cal-dia--obrigacao { box-shadow:inset 0 -4px 0 var(--azul); }
+.cal-obrigacoes { padding:.75rem;border:1px solid var(--gold);color:var(--ink);background:var(--parchment); }
+@media(max-width:600px){.ga-caderno{padding:.7rem;margin:.75rem auto}.ga-cad-card{padding:.75rem}.ga-caderno form{padding:.7rem}.ga-cad-tabs button{flex:1 1 44%}.ga-campos{grid-template-columns:1fr}}
