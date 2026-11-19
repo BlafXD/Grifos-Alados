@@ -604,12 +604,9 @@
     });
     if (typeof cr.atrsObs !== 'string') cr.atrsObs = '';
     cr.atributos = linhaAtributos(cr);
-    // uma habilidade por linha, uma linha de distância — ver
-    // umaLinhaPorHabilidade. Só a caixa de Ataque e Habilidades: as
-    // caixas ricas de prosa (descrição, recompensas, magias) guardam
-    // parágrafo, e lá o vão em branco é de propósito.
+    // Migração única; as quebras editadas depois são preservadas ao recarregar.
     if (typeof cr.ataques !== 'string') cr.ataques = '';
-    cr.ataques = umaLinhaPorHabilidade(cr.ataques);
+
     if (!Array.isArray(cr.condicoesAtivas)) cr.condicoesAtivas = [];
     if (typeof cr.tipoCriatura !== 'string') cr.tipoCriatura = '';
     if (!Array.isArray(cr.habilidades)) cr.habilidades = [];
@@ -635,6 +632,11 @@
       if (typeof cr[h] === 'string' && cr[h] !== '') cr[h] = window.GA_limparHtml(cr[h]);
       else cr[h] = window.GA_nl2br(cr[k]);
     });
+    if (!cr.espacamentoHabilidadesV2) {
+      cr.ataques = umaLinhaPorHabilidade(cr.ataques);
+      cr.magiasHtml = umaLinhaPorHabilidade(cr.magiasHtml);
+      cr.espacamentoHabilidadesV2 = true;
+    }
     // montaria opcional da criatura (com nível de parceiro)
     if (!cr.montaria || typeof cr.montaria !== 'object') cr.montaria = { chave: '', nivel: 'iniciante' };
     if (typeof cr.montaria.chave !== 'string') cr.montaria.chave = '';
@@ -5167,22 +5169,14 @@
     return true;
   }
 
-  // Cola uma linha no fim de uma caixa rica de habilidades, com UM <br>
+  // Cola uma linha no fim de uma caixa rica de habilidades, com DOIS <br>
   // de distância — e sem empilhar os <br> que já estavam lá no fim.
   function anexarLinhaRica(htmlAtual, htmlLinha) {
     const base = String(htmlAtual || '').replace(/(?:\s|&nbsp;|<br\s*\/?>)+$/i, '');
-    return base ? base + '<br>' + htmlLinha : htmlLinha;
+    return base ? base + '<br><br>' + htmlLinha : htmlLinha;
   }
 
-  // Uma habilidade por linha, UMA linha de distância. Conserta o que o
-  // Enter do navegador deixou para trás nas fichas antigas: <div>/<p> de
-  // bloco (que o ✦ Mágica nem reconhecia como linha) e vãos de duas,
-  // três linhas. É idempotente: rodar de novo não muda mais nada.
-  //   · bloco (<div>, <p>, </div>) → uma quebra <br>
-  //   · "\n" solto (a caixa é white-space: pre-wrap) → <br>
-  //   · dois ou mais <br> seguidos → um só
-  //   · quebras no começo e no fim → fora
-  // O texto e o grifo não se mexem: só as quebras.
+  // Espaçamento inicial de importações e fichas antigas; não reformatar edições.
   function umaLinhaPorHabilidade(html) {
     let h = String(html == null ? '' : html);
     if (!h) return '';
@@ -5190,7 +5184,7 @@
          .replace(/<(?:div|p)\b[^>]*>/gi, '<br>')                   // bloco que abre sem fechar antes
          .replace(/<\/(?:div|p)>/gi, '')                            // o fechamento já virou quebra
          .replace(/\r\n?|\n/g, '<br>')                              // "\n" do pre-wrap
-         .replace(/(?:\s*(?:<br\s*\/?>|&nbsp;)\s*){2,}/gi, '<br>')  // vão de duas ou mais → uma
+         .replace(/(?:<br\s*\/?>[ \t]*)+/gi, t => (t.match(/<br/gi) || []).length === 1 ? '<br><br>' : t)  // preserva vãos maiores
          .replace(/^(?:\s|&nbsp;|<br\s*\/?>)+/i, '')                // quebra no começo
          .replace(/(?:\s|&nbsp;|<br\s*\/?>)+$/i, '');               // quebra no fim
     return h;
@@ -5778,12 +5772,12 @@
       if (bloco) {
         // conjuradores: a seção "Magias" ganha o bloco próprio da ficha
         const part = _separarMagias(_formatarAtaques(bloco));
-        if (part.ataques) cr.ataques = _txtParaHtml(part.ataques);
+        if (part.ataques) cr.ataques = umaLinhaPorHabilidade(_txtParaHtml(part.ataques));
         if (part.magias) {
           cr.magiasAtivo = true;
           cr.magiasCab   = part.cab;
           cr.magias      = part.magias;
-          cr.magiasHtml  = _txtParaHtml(part.magias);
+          cr.magiasHtml  = umaLinhaPorHabilidade(_txtParaHtml(part.magias));
         }
       }
     }
@@ -6874,7 +6868,7 @@
       const cr = _magCriatura();
       if (!cr) return;
       cr.magiasAtivo = true;
-      cr.magiasHtml = (cr.magiasHtml || '').trim() + `<div>${_txtParaHtml(linha)}</div>`;
+      cr.magiasHtml = anexarLinhaRica(cr.magiasHtml, _txtParaHtml(linha));
       cr.magias = htmlParaTexto(cr.magiasHtml);
       salvar();
       render();                     // a ficha atrás do modal já mostra a linha
