@@ -2498,10 +2498,10 @@
             <button type="button" class="fi-mini" data-acao="caderno-itens">Itens especiais vinculados</button>
             <div data-caderno-ficha="${esc(f.id)}">${window.GA_Caderno?.resumoFicha(f.id) || ''}</div>
           ${medidor(f, 'pv')}
-          <div class="ga-dano-real"><label>Quanto de dano tomou verdadeiramente?
+          <div class="ga-dano-real"><label><span>Dano recebido</span>
             <input class="fi-num" type="number" min="1" step="1" inputmode="numeric" data-dano-real placeholder="Dano final" aria-label="Dano final recebido"></label>
-            <button type="button" class="fi-mini" data-acao="dano-real">Aplicar dano</button>
-            <button type="button" class="fi-mini" data-acao="historico-jogo">Histórico / desfazer</button>
+            <button type="button" class="ga-dano-btn ga-dano-btn--aplicar" data-acao="dano-real">Aplicar dano</button>
+            <button type="button" class="ga-dano-btn ga-dano-btn--historico" data-acao="historico-jogo">Histórico / desfazer</button>
             <small>Sem descontar RD. PV temporários são consumidos primeiro.</small></div>
           ${medidor(f, 'pm')}
 

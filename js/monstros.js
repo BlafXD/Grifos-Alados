@@ -3400,10 +3400,10 @@
                    data-campo="stat" data-stat="${st.chave}" data-sub="atual" ${ds}>
             ${dado('atual')}
           </div>
-          ${st.chave === 'pv' ? `<div class="ga-dano-real"><label>Quanto de dano tomou verdadeiramente?
+          ${st.chave === 'pv' ? `<div class="ga-dano-real"><label><span>Dano recebido</span>
             <input type="number" min="1" step="1" inputmode="numeric" data-dano-real placeholder="Dano final" aria-label="Dano final recebido"></label>
-            <button type="button" class="mz-step" data-acao="dano-real" ${ds}>Aplicar dano</button>
-            <button type="button" class="mz-step" data-acao="historico-jogo" ${ds}>Histórico / desfazer</button><small>Valor final, sem descontar RD.</small></div>` : ''}
+            <button type="button" class="ga-dano-btn ga-dano-btn--aplicar" data-acao="dano-real" ${ds}>Aplicar dano</button>
+            <button type="button" class="ga-dano-btn ga-dano-btn--historico" data-acao="historico-jogo" ${ds}>Histórico / desfazer</button><small>Valor final, sem descontar RD.</small></div>` : ''}
         </div>`;
     });
 
