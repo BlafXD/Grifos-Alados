@@ -25,6 +25,7 @@
   const prazos = {};
 
   let mesa = null;                 // último estado do GA_Mesa
+  let chaveMesa = null;            // configuração + conta que sustentam as escutas da gazeta
   let ultimoErro = '';
   let timer = null, fila = {};
   let gravando = 0;
@@ -433,7 +434,15 @@
     if (window.GA_Mesa) {
       window.GA_Mesa.aoMudar(function (e) {
         const antes = meuUid();
+        const proximaChave = (e && e.configurado ? '1' : '0') + ':' +
+          ((e && e.usuario && e.usuario.uid) || '');
+        const mudouConexao = chaveMesa !== proximaChave;
         mesa = e; iniciado = true;
+        // A Mesa também avisa por membros, pedidos e metadados. A gazeta
+        // não precisa reabrir todas as suas leituras por esses eventos.
+        // noticias.js atualiza só o botão/linha de estado nesse caso.
+        if (!mudouConexao) { avisar(); return; }
+        chaveMesa = proximaChave;
         if (antes !== meuUid()) {
           sessao++; clearTimeout(timer); fila = {}; gravando = 0; ultimoErro = '';
           Object.keys(errosEscrita).forEach(id => { delete errosEscrita[id]; });

@@ -19,7 +19,7 @@ function ambiente({ uid = '', configurado = true, search = '' } = {}) {
     mesaId: 'mesa', mesa: { dono: 'outro-mestre' }, souMestre: false };
   function elemento() {
     return { children: [], dataset: {}, style: {}, classList: { add() {}, remove() {}, contains: () => true },
-      set innerHTML(v) { this.children = []; this.html = v; }, get innerHTML() { return this.html || ''; },
+      set innerHTML(v) { this.limpezas = (this.limpezas || 0) + 1; this.children = []; this.html = v; }, get innerHTML() { return this.html || ''; },
       setAttribute(k, v) { this[k] = v; }, appendChild(e) { this.children.push(e); }, addEventListener() {} };
   }
   const wrapper = elemento(), toast = elemento();
@@ -74,7 +74,8 @@ function ambiente({ uid = '', configurado = true, search = '' } = {}) {
         timers.delete(chave); tarefa.fn();
       }
     },
-    conta(novoUid) { sessao = { ...sessao, usuario: novoUid ? { uid: novoUid } : null }; mudouConta(sessao); }
+    conta(novoUid) { sessao = { ...sessao, usuario: novoUid ? { uid: novoUid } : null }; mudouConta(sessao); },
+    atualizarMesa(dados = {}) { sessao = { ...sessao, ...dados }; mudouConta(sessao); }
   };
 }
 
@@ -203,6 +204,18 @@ test('callback de tentativa anterior não sobrescreve a gazeta após reconectar'
   const antigo = h.assinaturas.get('campanhas/' + id);
   h.api.tentarNovamente(); h.emitir('campanhas/' + id, gazeta());
   antigo.ok({ val: () => null });
+  assert.equal(h.campanhas()[0].anos.flatMap(a => a.noticias).length, 18);
+});
+
+test('atualização da Mesa ou eco idêntico não remonta notícias do jogador', () => {
+  const h = ambiente();
+  h.mostrar();
+  h.emitir('campanhas/' + id, gazeta());
+  const depoisDoCorpo = h.wrapper.limpezas;
+  h.atualizarMesa({ mesa: { dono: 'outro-mestre', entradaLivre: true } });
+  assert.equal(h.wrapper.limpezas, depoisDoCorpo, 'metadado da Mesa não limpa a gazeta');
+  h.emitir('campanhas/' + id, gazeta());
+  assert.equal(h.wrapper.limpezas, depoisDoCorpo, 'eco idêntico não limpa a gazeta');
   assert.equal(h.campanhas()[0].anos.flatMap(a => a.noticias).length, 18);
 });
 

@@ -214,6 +214,7 @@
   // ══════════════════════════════════════════════════════════════════
   const pendentes = {};        // id → tem edição minha ainda subindo
   let jaFuiAoEndereco = false; // o `?gazeta=` já escolheu a aba (uma vez só)
+  let ultimaEntrega = '';      // uid + conteúdo já desenhado; evita piscar por eventos da Mesa
 
   //  Comparação estável: o Firebase devolve as chaves em outra ordem, e
   //  um JSON.stringify cru acharia diferença onde não há — o que faria
@@ -226,6 +227,15 @@
   function miolo(c) { return canon({ nome: c.nome || '', anos: c.anos || [], hoje: c.hoje || null }); }
 
   function receberDaMesa(mapa, uid) {
+    // A Mesa avisa também por mudanças de membros, pedidos e metadados.
+    // Nenhuma delas muda a gazeta. Sem esta guarda, cada aviso limpava o
+    // wrapper e o montava de novo, parecendo um F5 para os jogadores.
+    const assinatura = (uid || '') + '|' + canon(mapa || {});
+    if (assinatura === ultimaEntrega) {
+      mesaMudou();
+      return;
+    }
+    ultimaEntrega = assinatura;
     if (usuarioAtual !== (uid || '')) {
       Object.keys(pendentes).forEach(id => { delete pendentes[id]; });
       esperandoPublicar = false;
@@ -310,10 +320,22 @@
     }
   }
 
-  // Login, erro ou publicação concluída atualizam os controles e avisos.
+  // Login, papel, erro ou publicação concluída atualizam somente os
+  // controles. O corpo da gazeta vem por receberDaMesa; redesenhá-lo aqui
+  // faria a tela piscar a cada atualização não relacionada da Mesa.
   function mesaMudou() {
     conferirPublicacao();
-    renderizar();
+    if (!podeEditarAtual() && edicaoAtiva) {
+      edicaoAtiva = false;
+      fecharModal();
+      renderizar();
+      return;
+    }
+    sincronizarBotaoEdicao();
+    const linha = document.querySelector('#noticias [data-nc-mesa]');
+    const e = mesaNoticias() ? mesaNoticias().estado() : null;
+    const c = campanhaAtual();
+    if (linha && e && c) linha.innerHTML = textoDaLinha(e, c);
   }
 
   //  Esta campanha tem gazeta? É o que o aviso de "🗑 Encerrar a
