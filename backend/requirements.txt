@@ -9,16 +9,19 @@
 #   - Antes (commit b1d8e79): versoes antigas DE PROPOSITO -> 17 findings
 #     (2 flask + 9 werkzeug + 5 jinja2).
 #
-# FASE 1 (este commit): corrige flask e werkzeug subindo para as versoes
-#   indicadas pelo proprio OSV. Zera os 12 findings de flask+werkzeug.
-#   O jinja2 permanece vulneravel DE PROPOSITO -> sobram 5 findings pendentes,
-#   que serao corrigidos na fase 2. Esperado: SCA 17 -> 5.
+# FASE 1 (commit a551d87): corrigiu flask e werkzeug subindo para as versoes
+#   indicadas pelo proprio OSV. Zerou os 12 findings de flask+werkzeug.
+#   Esperado e confirmado: SCA 17 -> 5 (sobraram os 5 do jinja2).
+#
+# FASE 2 (este commit): corrige o jinja2 subindo para 3.1.6, a versao que o
+#   OSV aponta como corrigida para o finding mais recente (PYSEC-2026-1471).
+#   Zera os 5 findings restantes. Esperado: SCA 5 -> 0.
 #
 # Nao instale este arquivo com pip: ele e so para o scan.
 # ---------------------------------------------------------------------------
 flask==3.1.3
 werkzeug==3.1.9
-jinja2==3.1.2
+jinja2==3.1.6
 itsdangerous==2.1.2
 click==8.1.3
 markupsafe==2.1.1
