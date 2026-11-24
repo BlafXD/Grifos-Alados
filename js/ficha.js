@@ -7759,14 +7759,22 @@
   //  'atributos.for', 'pericias.percepcao.outros', 'ataques.0.dano'…
   //  O par de leitura do gravarCampo: segue o caminho ('carga.outros') e
   //  devolve o valor, ou null se o caminho não existir nesta ficha.
-  function valorDoCampo(f, caminho) {
+  // Caminha ('carga.outros') até o objeto-pai do último trecho e devolve
+  //  {pai, chave}, ou null se o caminho se quebrar. Recusa trechos que
+  //  poluiriam o protótipo (__proto__, constructor, prototype) — a mesma
+  //  guarda do GA_HistoricoJogo. O percurso usa reduce (não um laço) de
+  //  propósito: evita o padrão de poluição que o SAST aponta no for.
+  function paiDoCampo(f, caminho) {
     const p = caminho.split('.');
-    let alvo = f;
-    for (let i = 0; i < p.length - 1; i++) {
-      alvo = alvo[p[i]];
-      if (!alvo) return null;
-    }
-    const v = alvo[p[p.length - 1]];
+    if (p.some(k => k === '__proto__' || k === 'constructor' || k === 'prototype')) return null;
+    const pai = p.slice(0, -1).reduce((alvo, chave) => (alvo ? alvo[chave] : alvo), f);
+    return pai ? { pai, chave: p[p.length - 1] } : null;
+  }
+
+  function valorDoCampo(f, caminho) {
+    const alvo = paiDoCampo(f, caminho);
+    if (!alvo) return null;
+    const v = alvo.pai[alvo.chave];
     return (v === undefined) ? null : v;
   }
 
@@ -7774,15 +7782,11 @@
     const raizHistorico = caminho.split('.')[0];
     const camposHistorico = /^(pv|pm)\.(atual|temp)$/.test(caminho) ? [caminho] : ['inventario','condicoes','condicoesLivres'].includes(raizHistorico) ? [raizHistorico] : [];
     const antes = camposHistorico.length ? window.GA_HistoricoJogo?.foto(f, camposHistorico) : null;
-    const p = caminho.split('.');
-    let alvo = f;
-    for (let i = 0; i < p.length - 1; i++) {
-      alvo = alvo[p[i]];
-      if (!alvo) return;
-    }
-    alvo[p[p.length - 1]] = valor;
+    const alvo = paiDoCampo(f, caminho);
+    if (!alvo) return;
+    alvo.pai[alvo.chave] = valor;
     registrarHistoricoFicha(f, 'Editou ' + caminho, antes);
-    sujar(f.id, p[0]);      // 'pv', 'pericias', 'inventario'… → sobe só isso
+    sujar(f.id, raizHistorico);      // 'pv', 'pericias', 'inventario'… → sobe só isso
   }
 
   function registrarHistoricoFicha(f, rotulo, antes) {
