@@ -1,14 +1,23 @@
 # ---------------------------------------------------------------------------
 # Dependencias do backend/server.py (servidor Flask local do Grifos Alados).
 #
-# USO DIDATICO - atividade de AppSec (SCA):
-# o repositorio nao tinha nenhum manifesto de dependencias e o OSV-Scanner
-# falhou com "No lockfiles found" (commit f8358becb087). As versoes abaixo
-# sao antigas DE PROPOSITO, para o SCA ter o que analisar. A correcao sera
-# atualiza-las. Nao instale este arquivo com pip: ele e so para o scan.
+# USO DIDATICO - atividade de AppSec (SCA).
+#
+# HISTORICO (para a evidencia antes/depois):
+#   - Baseline (commit f8358be): repositorio sem manifesto -> OSV falhou com
+#     "No lockfiles found".
+#   - Antes (commit b1d8e79): versoes antigas DE PROPOSITO -> 17 findings
+#     (2 flask + 9 werkzeug + 5 jinja2).
+#
+# FASE 1 (este commit): corrige flask e werkzeug subindo para as versoes
+#   indicadas pelo proprio OSV. Zera os 12 findings de flask+werkzeug.
+#   O jinja2 permanece vulneravel DE PROPOSITO -> sobram 5 findings pendentes,
+#   que serao corrigidos na fase 2. Esperado: SCA 17 -> 5.
+#
+# Nao instale este arquivo com pip: ele e so para o scan.
 # ---------------------------------------------------------------------------
-flask==2.2.2
-werkzeug==2.2.2
+flask==3.1.3
+werkzeug==3.1.9
 jinja2==3.1.2
 itsdangerous==2.1.2
 click==8.1.3
