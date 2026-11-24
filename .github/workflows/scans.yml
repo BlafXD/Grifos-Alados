@@ -1,0 +1,244 @@
+name: SAST/DAST SCAN
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sast:
+    name: SAST - Semgrep
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    outputs:
+      resumo: ${{ steps.resultados.outputs.resumo }}
+      total: ${{ steps.resultados.outputs.total }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Analisar código
+        run: semgrep scan --config p/default --config p/security-audit --config p/owasp-top-ten --metrics=off --json --output semgrep.json .
+
+      - name: Resumir findings SAST
+        id: resultados
+        if: ${{ always() }}
+        run: |
+          python3 - <<'PY'
+          import base64
+          import html
+          import json
+          import os
+          from pathlib import Path
+
+          def celula(valor, limite=130):
+              texto = ' '.join(str(valor if valor is not None else '-').split())
+              texto = html.escape(texto[:limite], quote=False)
+              return texto.replace('|', '&#124;').replace('`', '&#96;')
+
+          arquivo = Path('semgrep.json')
+          if not arquivo.is_file():
+              raise SystemExit('Semgrep não gerou semgrep.json. Verifique o log do scan.')
+          dados = json.loads(arquivo.read_text(encoding='utf-8'))
+          achados = dados.get('results')
+          if not isinstance(achados, list):
+              raise SystemExit('Formato inesperado no resultado do Semgrep.')
+
+          linhas = ['## SAST - Semgrep', '', f'**Findings: {len(achados)}**', '']
+          if achados:
+              linhas += [
+                  '| Regra | Regra (Completa) | Severidade | Código | Descrição |',
+                  '| --- | --- | --- | --- | --- |'
+              ]
+              for achado in achados[:30]:
+                  completa = str(achado.get('check_id') or '-')
+                  curta = completa.rsplit('.', 1)[-1]
+                  extra = achado.get('extra') or {}
+                  local = f"{achado.get('path') or '-'}:{(achado.get('start') or {}).get('line', '-')}"
+                  linhas.append(
+                      f'| {celula(curta)} | {celula(completa, 200)} | '
+                      f'{celula(extra.get("severity"))} | `{celula(local, 180)}` | '
+                      f'{celula(extra.get("message"), 140)} |'
+                  )
+              if len(achados) > 30:
+                  linhas.append(f'\nExibidos 30 de {len(achados)} findings. Os demais estão no log do SAST.')
+          else:
+              linhas.append('Nenhum finding identificado pelas regras executadas.')
+          if dados.get('errors'):
+              linhas.append('\n**Atenção:** o Semgrep registrou erros ou avisos. Consulte o log do SAST.')
+          linhas.append('\nOs achados precisam de triagem para classificação como verdadeiro ou falso positivo.')
+
+          resumo = '\n'.join(linhas) + '\n'
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as saida:
+              saida.write(f'total={len(achados)}\n')
+              saida.write('resumo=' + base64.b64encode(resumo.encode()).decode() + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as saida:
+              saida.write(resumo)
+          PY
+
+  sca:
+    name: SCA - OSV-Scanner
+    runs-on: ubuntu-latest
+    outputs:
+      resumo: ${{ steps.resultados.outputs.resumo }}
+      total: ${{ steps.resultados.outputs.total }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Preparar análise
+        run: rm -f osv.json
+
+      # Achados não reprovam a execução; erros na geração ou leitura do resultado são sinalizados.
+      - name: Analisar dependências
+        id: osv
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@v2.7.0
+        with:
+          scan-args: |-
+            --recursive
+            --format=json
+            --output=osv.json
+            ./
+
+      - name: Resumir findings SCA
+        id: resultados
+        if: ${{ always() }}
+        run: |
+          python3 - <<'PY'
+          import base64
+          import html
+          import json
+          import os
+          import re
+          from pathlib import Path
+          from urllib.parse import quote
+
+          def celula(valor, limite=140):
+              texto = ' '.join(str(valor if valor is not None else '-').split())
+              texto = html.escape(texto[:limite], quote=False)
+              return texto.replace('|', '&#124;').replace('`', '&#96;')
+
+          def caminho(valor):
+              texto = str(valor or '-')
+              for prefixo in ('/github/workspace/', '/github/workspace'):
+                  if texto.startswith(prefixo):
+                      return texto[len(prefixo):].lstrip('/') or '.'
+              return texto
+
+          def versoes_corrigidas(vulnerabilidades, ids, nome, ecossistema):
+              encontradas = []
+              for vuln in vulnerabilidades:
+                  if vuln.get('id') not in ids:
+                      continue
+                  for afetado in vuln.get('affected') or []:
+                      pacote = afetado.get('package') or {}
+                      if pacote.get('name') != nome or pacote.get('ecosystem') != ecossistema:
+                          continue
+                      for faixa in afetado.get('ranges') or []:
+                          if faixa.get('type') not in ('ECOSYSTEM', 'SEMVER'):
+                              continue
+                          for evento in faixa.get('events') or []:
+                              versao = evento.get('fixed')
+                              if versao and versao not in encontradas:
+                                  encontradas.append(versao)
+              return ', '.join(encontradas[:3]) or '-'
+
+          arquivo = Path('osv.json')
+          if not arquivo.is_file():
+              raise SystemExit('OSV-Scanner não gerou osv.json. Verifique o log do scan.')
+          dados = json.loads(arquivo.read_text(encoding='utf-8'))
+          if not isinstance(dados, dict) or not isinstance(dados.get('results'), list):
+              raise SystemExit('Formato inesperado no resultado do OSV-Scanner.')
+
+          achados = []
+          for resultado in dados['results']:
+              origem = caminho((resultado.get('source') or {}).get('path'))
+              for item in resultado.get('packages') or []:
+                  pacote = item.get('package') or {}
+                  nome = pacote.get('name') or '-'
+                  versao = pacote.get('version') or '-'
+                  ecossistema = pacote.get('ecosystem') or '-'
+                  vulnerabilidades = item.get('vulnerabilities') or []
+                  grupos = item.get('groups') or []
+                  conjuntos = [g.get('ids') or [] for g in grupos] if grupos else [[v.get('id')] for v in vulnerabilidades]
+                  for ids in conjuntos:
+                      ids = [str(x) for x in ids if x]
+                      if not ids:
+                          continue
+                      referencia = ids[0]
+                      correcoes = versoes_corrigidas(vulnerabilidades, ids, nome, ecossistema)
+                      achados.append((nome, versao, referencia, correcoes, origem))
+
+          linhas = ['## SCA - OSV-Scanner', '', f'**Findings: {len(achados)}**', '']
+          if achados:
+              linhas += [
+                  '| Dependência | Versão | Vulnerabilidade | Versão corrigida (OSV) | Arquivo de origem |',
+                  '| --- | --- | --- | --- | --- |'
+              ]
+              for nome, versao, vuln, correcao, origem in achados[:30]:
+                  # O ID é codificado para não inserir Markdown vindo do scanner no endereço.
+                  url = 'https://osv.dev/vulnerability/' + quote(vuln, safe='')
+                  link = f'[{celula(vuln)}]({url})' if re.fullmatch(r'[A-Za-z0-9._-]+', vuln) else celula(vuln)
+                  linhas.append(
+                      f'| {celula(nome)} | {celula(versao)} | {link} | '
+                      f'{celula(correcao)} | `{celula(origem, 180)}` |'
+                  )
+              if len(achados) > 30:
+                  linhas.append(f'\nExibidos 30 de {len(achados)} findings. Os demais estão no log do SCA.')
+          else:
+              linhas.append('Nenhuma vulnerabilidade identificada nas dependências reconhecidas.')
+          linhas.append('\nA versão corrigida é informada pelo OSV quando disponível. Verifique a compatibilidade antes de atualizar a dependência.')
+
+          resumo = '\n'.join(linhas) + '\n'
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as saida:
+              saida.write(f'total={len(achados)}\n')
+              saida.write('resumo=' + base64.b64encode(resumo.encode()).decode() + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as saida:
+              saida.write(resumo)
+          PY
+
+  overview:
+    name: Overview - resultados
+    if: ${{ always() }}
+    needs: [sast, sca]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consolidar resultados
+        env:
+          SAST_STATUS: ${{ needs.sast.result }}
+          SCA_STATUS: ${{ needs.sca.result }}
+          SAST_TOTAL: ${{ needs.sast.outputs.total }}
+          SCA_TOTAL: ${{ needs.sca.outputs.total }}
+          SAST_RESUMO: ${{ needs.sast.outputs.resumo }}
+          SCA_RESUMO: ${{ needs.sca.outputs.resumo }}
+          RUN_SHA: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import base64
+          import os
+
+          linhas = [
+              '# Overview - AppSec Scans', '',
+              f'**Commit:** `{os.environ["RUN_SHA"][:12]}`', '',
+              '| Análise | Execução | Findings |',
+              '| --- | --- | ---: |',
+              f'| SAST - Semgrep | {os.environ["SAST_STATUS"]} | {os.environ.get("SAST_TOTAL") or "Indisponível"} |',
+              f'| SCA - OSV-Scanner | {os.environ["SCA_STATUS"]} | {os.environ.get("SCA_TOTAL") or "Indisponível"} |',
+              ''
+          ]
+          for nome, chave in [('SAST - Semgrep', 'SAST_RESUMO'), ('SCA - OSV-Scanner', 'SCA_RESUMO')]:
+              valor = os.environ.get(chave)
+              if valor:
+                  try:
+                      linhas.append(base64.b64decode(valor, validate=True).decode('utf-8'))
+                      continue
+                  except (ValueError, UnicodeError):
+                      pass
+              linhas.extend([f'## {nome}', '', 'Resumo indisponível. Verifique o log do respectivo job.', ''])
+          linhas.append('**Para a atividade:** compare os resultados de execuções anteriores e posteriores às correções, considerando o mesmo finding e o commit analisado.')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as saida:
+              saida.write('\n'.join(linhas) + '\n')
+          PY
