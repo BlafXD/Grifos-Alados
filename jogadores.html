@@ -76,11 +76,9 @@
     <a href="#" class="nav-link" data-section="ficha">📖 Ficha</a>
     <a href="#" class="nav-link" data-section="loja">🏪 Loja</a>
     <a href="#" class="nav-link" data-section="perigos">📚 Consultas</a>
-    <a href="#" class="nav-link" data-section="viagem">🐎 Viagem</a>
     <a href="#" class="nav-link" data-section="bases">🏰 Bases</a>
     <a href="#" class="nav-link" data-section="mesa">🎲 Mesa</a>
     <a href="backup.html" class="nav-link nav-link--externo">💾 Backup</a>
-        <a href="#" class="nav-link" data-section="caderno">📚 Caderno da campanha</a>
     <a href="index.html" id="ga-nav-irmao" class="nav-link nav-link--externo"
        title="Abrir a ferramenta do mestre, na mesma campanha">🧭 Mestre</a>
   </div>
@@ -92,7 +90,6 @@
 <main id="ga-conteudo" tabindex="-1">
 
 <!-- ══════════════════ NOTÍCIAS (a gazeta de Arton) ══════════════════ -->
-<section id="caderno"><div id="caderno-content" class="ga-caderno"></div></section>
 <section id="noticias" class="active">
   <div class="wrapper">
     <p class="nc-vazio" role="status">Carregando notícias…</p>
@@ -128,11 +125,8 @@
       <button type="button" class="cr-subtab" data-cr-tab="deuses">⛩ Deuses de Arton</button>
       <button type="button" class="cr-subtab" data-cr-tab="devotos">🙏 Poderes Concedidos</button>
       <button type="button" class="cr-subtab" data-cr-tab="consultor">🔎 Consultor de tudo</button>
-      <button type="button" class="cr-subtab" data-cr-tab="arsenal">⚔ Arsenal &amp; Regras</button>
-      <button type="button" class="cr-subtab" data-cr-tab="acoes">🎬 Ações &amp; Combate</button>
+      <button type="button" class="cr-subtab" data-cr-tab="regras">📖 Regras</button>
       <button type="button" class="cr-subtab" data-cr-tab="condicoes">🌀 Condições</button>
-      <button type="button" class="cr-subtab" data-cr-tab="ameacas">👹 Regras de Ameaças</button>
-      <button type="button" class="cr-subtab" data-cr-tab="magia">✨ Regras de Magia</button>
       <button type="button" class="cr-subtab" data-cr-tab="magias">✨ Magias</button>
       <button type="button" class="cr-subtab" data-cr-tab="culinaria">🍳 Culinária</button>
       <button type="button" class="cr-subtab" data-cr-tab="urbano">🏙 Vida Urbana</button>
@@ -145,11 +139,19 @@
     <div id="deuses-content" data-cr-panel="deuses" hidden></div>
     <div id="consultor-content" data-cr-panel="consultor" hidden></div>
     <div id="devotos-content" data-cr-panel="devotos" hidden></div>
-    <div id="arsenal-content" data-cr-panel="arsenal" hidden></div>
-    <div id="acoes-content" data-cr-panel="acoes" hidden></div>
+    <div id="regras-content" data-cr-panel="regras" hidden>
+      <nav class="dv-modo" aria-label="Regras">
+        <button type="button" class="cr-subtab cr-subtab--ativa" data-regras-tab="arsenal">⚔ Arsenal &amp; Regras</button>
+        <button type="button" class="cr-subtab" data-regras-tab="acoes">🎬 Ações &amp; Combate</button>
+        <button type="button" class="cr-subtab" data-regras-tab="ameacas">👹 Regras de Ameaças</button>
+        <button type="button" class="cr-subtab" data-regras-tab="magia">✨ Regras de Magia</button>
+      </nav>
+      <div id="arsenal-content" data-regras-panel="arsenal"></div>
+      <div id="acoes-content" data-regras-panel="acoes" hidden></div>
+      <div id="ameacas-content" data-regras-panel="ameacas" hidden></div>
+      <div id="magia-content" data-regras-panel="magia" hidden></div>
+    </div>
     <div id="condicoes-content" data-cr-panel="condicoes" hidden></div>
-    <div id="ameacas-content" data-cr-panel="ameacas" hidden></div>
-    <div id="magia-content" data-cr-panel="magia" hidden></div>
     <div id="magias-content" data-cr-panel="magias" hidden></div>
     <div id="culinaria-content" data-cr-panel="culinaria" hidden></div>
     <div id="urbano-content" data-cr-panel="urbano" hidden></div>
@@ -159,11 +161,7 @@
 </section>
 
 <!-- ══════════════════ PAINEL DE VIAGEM ══════════════════ -->
-<section id="viagem">
-  <div class="wrapper">
-    <div id="viagem-content"></div>
-  </div>
-</section>
+<!-- Viagem agora é só do mestre (realocada para o Caderno, no index.html). -->
 
 <!-- ══════════════════ BASES DO GRUPO ══════════════════ -->
 <section id="bases">
@@ -298,13 +296,5 @@
 <script src="js/referencias-magias-data.js" defer></script>
 <script src="js/busca-regras.js" defer></script>
 <script src="js/consultor-tudo.js" defer></script>
-<script src="js/dominios-data.js" defer></script>
-<script src="js/dominios.js" defer></script>
-<script src="js/maldicoes-data.js" defer></script>
-<script src="js/itens-inteligentes.js" defer></script>
-<script src="js/caderno-store.js" defer></script>
-<script src="js/caderno.js" defer></script>
-<script src="js/caderno-dominios.js" defer></script>
-<script src="js/caderno-itens.js" defer></script>
 </body>
 </html>

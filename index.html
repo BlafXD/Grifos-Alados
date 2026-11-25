@@ -126,8 +126,6 @@
         <span class="nav-grupo-seta" aria-hidden="true">▾</span>
       </button>
       <div class="nav-grupo-menu" id="nav-menu-mundo">
-        <a href="#" class="nav-link" data-section="tempo">⏳ Tempo</a>
-        <a href="#" class="nav-link" data-section="viagem">🐎 Viagem</a>
         <a href="#" class="nav-link" data-section="bases">🏰 Bases</a>
       </div>
     </div>
@@ -155,7 +153,24 @@
 <main id="ga-conteudo" tabindex="-1">
 
 <!-- ══════════════════ NOTÍCIAS ══════════════════ -->
-<section id="caderno"><div id="caderno-content" class="ga-caderno"></div></section>
+<section id="caderno">
+  <div class="wrapper">
+    <nav class="cad-subtabs" aria-label="Caderno do mestre">
+      <button type="button" class="cr-subtab cr-subtab--ativa" data-cad-tab="viagens">🐎 Viagens</button>
+      <button type="button" class="cr-subtab" data-cad-tab="tempo">⏳ Tempo entre aventuras</button>
+      <button type="button" class="cr-subtab" data-cad-tab="ascensao">🔱 Ascensão de Deus menor</button>
+    </nav>
+    <div data-cad-panel="viagens">
+      <div id="viagem"><div id="viagem-content"><!-- Populado pelo viagem.js --></div></div>
+    </div>
+    <div data-cad-panel="tempo" hidden>
+      <div id="tempo"><div id="tempo-content"><!-- Populado pelo tempo.js --></div></div>
+    </div>
+    <div data-cad-panel="ascensao" hidden>
+      <div id="caderno-ascensao" class="ga-caderno"><!-- Populado pelo caderno.js (Ascensão) --></div>
+    </div>
+  </div>
+</section>
 <section id="noticias" class="active">
   <div class="wrapper">
     <p class="nc-vazio" role="status">Carregando notícias…</p>
@@ -398,11 +413,8 @@
       <button type="button" class="cr-subtab" data-cr-tab="deuses">⛩ Deuses de Arton</button>
       <button type="button" class="cr-subtab" data-cr-tab="devotos">🙏 Poderes Concedidos</button>
       <button type="button" class="cr-subtab" data-cr-tab="consultor">🔎 Consultor de tudo</button>
-      <button type="button" class="cr-subtab" data-cr-tab="arsenal">⚔ Arsenal &amp; Regras</button>
-      <button type="button" class="cr-subtab" data-cr-tab="acoes">🎬 Ações &amp; Combate</button>
+      <button type="button" class="cr-subtab" data-cr-tab="regras">📖 Regras</button>
       <button type="button" class="cr-subtab" data-cr-tab="condicoes">🌀 Condições</button>
-      <button type="button" class="cr-subtab" data-cr-tab="ameacas">👹 Regras de Ameaças</button>
-      <button type="button" class="cr-subtab" data-cr-tab="magia">✨ Regras de Magia</button>
       <button type="button" class="cr-subtab" data-cr-tab="magias">✨ Magias</button>
       <button type="button" class="cr-subtab" data-cr-tab="culinaria">🍳 Culinária</button>
       <button type="button" class="cr-subtab" data-cr-tab="urbano">🏙 Vida Urbana</button>
@@ -430,20 +442,28 @@
     <div id="devotos-content" data-cr-panel="devotos" hidden>
       <!-- Populado pelo devotos.js -->
     </div>
-    <div id="arsenal-content" data-cr-panel="arsenal" hidden>
-      <!-- Populado pelo regras-itens.js -->
-    </div>
-    <div id="acoes-content" data-cr-panel="acoes" hidden>
-      <!-- Populado pelo acoes.js -->
+    <div id="regras-content" data-cr-panel="regras" hidden>
+      <nav class="dv-modo" aria-label="Regras">
+        <button type="button" class="cr-subtab cr-subtab--ativa" data-regras-tab="arsenal">⚔ Arsenal &amp; Regras</button>
+        <button type="button" class="cr-subtab" data-regras-tab="acoes">🎬 Ações &amp; Combate</button>
+        <button type="button" class="cr-subtab" data-regras-tab="ameacas">👹 Regras de Ameaças</button>
+        <button type="button" class="cr-subtab" data-regras-tab="magia">✨ Regras de Magia</button>
+      </nav>
+      <div id="arsenal-content" data-regras-panel="arsenal">
+        <!-- Populado pelo regras-itens.js -->
+      </div>
+      <div id="acoes-content" data-regras-panel="acoes" hidden>
+        <!-- Populado pelo acoes.js -->
+      </div>
+      <div id="ameacas-content" data-regras-panel="ameacas" hidden>
+        <!-- Populado pelo ameacas.js -->
+      </div>
+      <div id="magia-content" data-regras-panel="magia" hidden>
+        <!-- Populado pelo magia-regras.js -->
+      </div>
     </div>
     <div id="condicoes-content" data-cr-panel="condicoes" hidden>
       <!-- Populado pelo condicoes.js -->
-    </div>
-    <div id="ameacas-content" data-cr-panel="ameacas" hidden>
-      <!-- Populado pelo ameacas.js -->
-    </div>
-    <div id="magia-content" data-cr-panel="magia" hidden>
-      <!-- Populado pelo magia-regras.js -->
     </div>
     <div id="magias-content" data-cr-panel="magias" hidden>
       <!-- Populado pelo magias-aba.js -->
@@ -464,13 +484,8 @@
 </section>
 
 <!-- ══════════════════ PAINEL DE VIAGEM ══════════════════ -->
-<section id="viagem">
-  <div class="wrapper">
-    <div id="viagem-content">
-      <!-- Populado pelo viagem.js -->
-    </div>
-  </div>
-</section>
+<!-- Viagem foi realocada para dentro do Caderno do mestre (#caderno). -->
+
 
 <!-- ══════════════════ ANOTAÇÕES DO MESTRE ══════════════════ -->
 <section id="anotacoes">
@@ -515,14 +530,7 @@
   </div>
 </section>
 
-<!-- ══════════════════ TEMPO ENTRE AVENTURAS ══════════════════ -->
-<section id="tempo">
-  <div class="wrapper">
-    <div id="tempo-content">
-      <!-- Populado pelo tempo.js -->
-    </div>
-  </div>
-</section>
+<!-- Tempo entre aventuras foi realocado para dentro do Caderno do mestre (#caderno). -->
 
 <!-- ══════ MESA (campanhas, salas, papeis) ══════ -->
 <section id="mesa">
@@ -690,13 +698,7 @@
 <script src="js/referencias-magias-data.js" defer></script>
 <script src="js/busca-regras.js" defer></script>
 <script src="js/consultor-tudo.js" defer></script>
-<script src="js/dominios-data.js" defer></script>
-<script src="js/dominios.js" defer></script>
-<script src="js/maldicoes-data.js" defer></script>
-<script src="js/itens-inteligentes.js" defer></script>
 <script src="js/caderno-store.js" defer></script>
 <script src="js/caderno.js" defer></script>
-<script src="js/caderno-dominios.js" defer></script>
-<script src="js/caderno-itens.js" defer></script>
 </body>
 </html>

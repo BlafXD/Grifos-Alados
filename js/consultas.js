@@ -23,6 +23,19 @@
         p.hidden = (p.dataset.crPanel !== alvo);
       });
     });
+
+    // alternador INTERNO da sub-aba "📖 Regras" (Arsenal / Ações / Ameaças /
+    // Magia num lugar só) — mesmo padrão, um nível abaixo dos cr-tabs.
+    sec.addEventListener('click', e => {
+      const btn = e.target.closest('[data-regras-tab]');
+      if (!btn) return;
+      const alvo = btn.dataset.regrasTab;
+      sec.querySelectorAll('[data-regras-tab]').forEach(b =>
+        b.classList.toggle('cr-subtab--ativa', b === btn));
+      sec.querySelectorAll('[data-regras-panel]').forEach(p => {
+        p.hidden = (p.dataset.regrasPanel !== alvo);
+      });
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

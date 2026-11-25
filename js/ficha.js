@@ -2498,9 +2498,6 @@
     const cartaoVida = `
         <div class="fi-cartao fi-vida">
             <h2 class="fi-cartao-tit">Vida &amp; Mana</h2>
-            <button type="button" class="fi-mini" data-acao="caderno-objetivos">Objetivo Heroico e jornada divina</button>
-            <button type="button" class="fi-mini" data-acao="caderno-itens">Itens especiais vinculados</button>
-            <div data-caderno-ficha="${esc(f.id)}">${window.GA_Caderno?.resumoFicha(f.id) || ''}</div>
           ${medidor(f, 'pv')}
           <div class="ga-dano-real"><label><span>Dano recebido</span>
             <input class="fi-num" type="number" min="1" step="1" inputmode="numeric" data-dano-real placeholder="Dano final" aria-label="Dano final recebido"></label>
@@ -8510,8 +8507,6 @@
     if (acao === 'pv-menos' || acao === 'pm-menos') {
       aplicarDano(f, acao.slice(0, 2), 1); return;
     }
-      if (acao === 'caderno-objetivos') { window.GA_Caderno?.abrir('objetivos', f.id); return; }
-      if (acao === 'caderno-itens') { window.GA_Caderno?.abrir('itens', f.id); return; }
       if (acao === 'dano-real') {
       const input = btn.closest('.ga-dano-real').querySelector('[data-dano-real]');
       const n = Number(input.value);
