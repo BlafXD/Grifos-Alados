@@ -1089,7 +1089,7 @@
   window.GA_Acess = {
     abrirPainel: abrirPainel,
     anunciar: anunciar,
-    prefs: function () { return Object.assign({}, prefs); },
+    prefs: function () { return { ...prefs }; },
     // As preferências chegando de fora — hoje, da gaveta da conta. O
     // <head> aplica as do localStorage antes da primeira pintura; isto
     // é para o que chega DEPOIS, sem esperar um F5.

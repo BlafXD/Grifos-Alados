@@ -11,7 +11,7 @@ window.GA_CadernoStore = (() => {
   const mestre=()=>window.GA_FIREBASE?!!window.GA_Mesa?.transmite():!window.GA_Sala?.ehJogador;
   const chave=()=>`grifosAlados.caderno.${uid()}.${sala()}.${mestre()?'mestre':'jogador'}`;
   const avisar=()=>ouvintes.forEach(f=>f());
-  function carregar(){try{const v=JSON.parse(localStorage.getItem(chave())||'null');dados=v?.dados?.versao===1?Object.assign(C.novo(),v.dados):C.novo();dirty=!!v?.dirty;}catch{dados=C.novo();dirty=false;erro='O caderno local não pôde ser lido. Exporte um backup antes de alterar dados.';}}
+  function carregar(){try{const v=JSON.parse(localStorage.getItem(chave())||'null');dados=v?.dados?.versao===1?{...C.novo(),...v.dados}:C.novo();dirty=!!v?.dirty;}catch{dados=C.novo();dirty=false;erro='O caderno local não pôde ser lido. Exporte um backup antes de alterar dados.';}}
   function salvar(){localStorage.setItem(chave(),JSON.stringify({dados,dirty}));}
   function editar(fn){C.exigir(mestre(),'Somente o mestre ou auxiliar pode registrar decisões da campanha.');const copia=C.copiar(dados);fn(copia);const anterior=dados,antes=dirty;dados=copia;dirty=true;try{salvar();}catch(e){dados=anterior;dirty=antes;throw e;}avisar();}
   async function publicar(){C.exigir(mestre()&&ref,'Entre como mestre em uma mesa para publicar.');C.exigir(remoto!==null,'Aguarde a leitura da mesa antes de publicar.');const local=C.copiar(dados),esperada=dados.revisao||0;local.revisao=esperada+1;const destino=ref,origem=assinatura;
@@ -22,13 +22,13 @@ window.GA_CadernoStore = (() => {
     const aindaIgual=JSON.stringify({...dados,revisao:local.revisao})===JSON.stringify(local);
     dados.revisao=local.revisao;dirty=!aindaIgual;remoto=C.copiar(local);salvar();avisar();
   }
-  function receberMesa(){C.exigir(remoto,'A mesa ainda não foi carregada.');dados=Object.assign(C.novo(),C.copiar(remoto));dirty=false;salvar();avisar();}
+  function receberMesa(){C.exigir(remoto,'A mesa ainda não foi carregada.');dados={...C.novo(),...C.copiar(remoto)};dirty=false;salvar();avisar();}
   async function propor(tipo,valor){C.exigir(['objetivo','ascensao','acordo'].includes(tipo),'Proposta inválida.');C.exigir(refPropostas&&mesa().escreve&&!mestre(),'Entre como jogador desta mesa para enviar uma proposta.');const id=C.uid();await refPropostas.child(uid()).child(id).set({id,tipo,valor:JSON.stringify(valor),uid:uid(),em:Date.now()});}
   async function removerProposta(dono,id){C.exigir(mestre()&&refPropostas,'Somente o mestre pode arquivar propostas.');await refPropostas.child(dono).child(id).remove();}
   function conectar(){const est=mesa(),nova=[uid(),sala(),mestre(),est.papel||''].join('|');if(nova===assinatura)return;
     if(ref)ref.off();if(leituraPropostas)leituraPropostas.off();ref=null;refPropostas=null;leituraPropostas=null;assinatura=nova;remoto=null;propostas={};erro='';carregar();
     const db=window.GA_Mesa?.db();if(db&&sala()!=='hub'&&est.souMembro){const base=db.ref('mesas/'+sala());ref=mestre()?base.child('caderno'):base.child('caderno/publico');const origem=nova;
-      ref.on('value',snap=>{if(assinatura!==origem)return;try{const raw=mestre()?snap.val()?.privado:snap.val(),v=typeof raw==='string'?JSON.parse(raw):raw;remoto=Object.assign(C.novo(),v||{});if(!dirty||!mestre()){dados=C.copiar(remoto);dirty=false;salvar();}avisar();}catch(e){erro='O caderno recebido não pôde ser lido: '+e.message;avisar();}},e=>{erro='Não foi possível ler o caderno da mesa: '+e.message;avisar();});
+      ref.on('value',snap=>{if(assinatura!==origem)return;try{const raw=mestre()?snap.val()?.privado:snap.val(),v=typeof raw==='string'?JSON.parse(raw):raw;remoto={...C.novo(),...(v||{})};if(!dirty||!mestre()){dados=C.copiar(remoto);dirty=false;salvar();}avisar();}catch(e){erro='O caderno recebido não pôde ser lido: '+e.message;avisar();}},e=>{erro='Não foi possível ler o caderno da mesa: '+e.message;avisar();});
       refPropostas=base.child('cadernoPropostas');leituraPropostas=mestre()?refPropostas:refPropostas.child(uid());
       leituraPropostas.on('value',snap=>{if(assinatura!==origem)return;propostas=mestre()?(snap.val()||{}):{[uid()]:snap.val()||{}};avisar();},e=>{if(assinatura!==origem)return;erro='Não foi possível ler propostas: '+e.message;avisar();});
     }avisar();

@@ -205,7 +205,7 @@
   // ── A LISTA ──────────────────────────────────────────────────────
   function emOrdem() {
     return Object.keys(linhas)
-      .map(id => Object.assign({ id: id }, linhas[id]))
+      .map(id => ({ id, ...linhas[id] }))
       //  Os "fora de combate" (💀) afundam para o fim da lista, mantendo
       //  a ordem entre si — saem da briga sem sumir (dá para reviver).
       .sort((a, b) => ((a.morto ? 1 : 0) - (b.morto ? 1 : 0)) || ((a.ordem || 0) - (b.ordem || 0)));
@@ -832,7 +832,7 @@
     painel.querySelectorAll('[data-ini-pv]').forEach(el => {
       const l = linhas[el.dataset.iniPv];
       if (!l) return;
-      const novo = pvHtml(Object.assign({ id: el.dataset.iniPv }, l), fichas);
+      const novo = pvHtml({ id: el.dataset.iniPv, ...l }, fichas);
       if (!novo) return;                       // a ficha sumiu: fica como está até o próximo render
       const molde = document.createElement('div');
       molde.innerHTML = novo;
