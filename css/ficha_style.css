@@ -437,6 +437,8 @@
   text-transform: lowercase;
   opacity: 0.85;
 }
+/* selo 🔱 Deus Menor — ao lado do de Nível, num tom distinto */
+.fi-selo-deus { margin-left: 0.4rem; background: var(--rust); }
 /* a mesma classe em duas linhas — a variante e a básica são uma classe
    só (Heróis de Arton, p. 22). Aviso em carmim; a ficha não trava. */
 .fi-classes-aviso {

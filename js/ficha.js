@@ -2202,6 +2202,7 @@
           </div>
           <span class="fi-nivel-selo">Nível <strong data-der="nivel">${nivel(f)}</strong>
             <em data-der="patamar">${patamar(nivel(f))}</em></span>
+          ${f.poderes.some(p => p.grupo === 'deus-menor') ? '<span class="fi-nivel-selo fi-selo-deus" title="Este personagem ascendeu a Deus Menor (tem dádivas divinas). As dádivas estão no cartão ⚔ Habilidades de classe e Poderes.">🔱 Deus Menor</span>' : ''}
           ${avisoMesmaClasse(f)}
           ${blocoCaminho(f)}
           ${blocoClasseInicial(f)}
@@ -5835,6 +5836,32 @@
   //  CONTINUA onde estava: quem já escreveu o poder à mão não perde uma
   //  linha (foi a condição que ele pôs).
   const GRUPO_CLASSE = { chave: 'classe', nome: 'Classe', emoji: '⚔' };
+  //  ── AS DÁDIVAS DE DEUS MENOR (25/11/2026) ────────────────────────
+  //  As 16 dádivas (Deuses de Arton, pp. 234–237) viram um GRUPO de poder
+  //  à parte, com seu card no ＋ Adicionar poder. Elas moram no motor da
+  //  ascensão (GA_Ascensao.dadivas); aqui viram poderes com pid 'dadiva:<id>'
+  //  para a ficha tratar igual aos outros. O Caderno é só do mestre e por
+  //  campanha, então não empurra para cá — quem joga um poder na ficha é o
+  //  próprio card. Ver [[reforma-do-caderno]].
+  const GRUPO_DEUS_MENOR = { chave: 'deus-menor', nome: 'Deus Menor', emoji: '🔱', quantos: 0 };
+  function dadivasComoPoderes() {
+    const A = window.GA_Ascensao;
+    if (!A || !Array.isArray(A.dadivas)) return [];
+    return A.dadivas.map(d => {
+      const req = [];
+      if (d.status) req.push('status divino ' + d.status);
+      if (d.naturezas) req.push(d.naturezas.join(' ou '));
+      if (d.requer) { const r = A.dadivas.find(x => x.id === d.requer); req.push('a dádiva ' + (r ? r.nome : d.requer)); }
+      const texto = [d.texto];
+      if (req.length) texto.push('Pré-requisito: ' + req.join('; ') + '.');
+      if (d.repete) texto.push('Pode ser escolhida mais de uma vez (para escolhas diferentes).');
+      texto.push('Dádiva divina — conta como bônus de estrutura (não acumula com bases, domínios e negócios).');
+      return { id: 'dadiva:' + d.id, nome: d.nome, grupo: 'deus-menor', magica: false,
+        livro: 'deuses', pagina: d.pagina, tags: '', deus: null,
+        texto: texto, preReq: null, custo: null, quadro: null };
+    });
+  }
+  function dadivaPseudo(pid) { return dadivasComoPoderes().find(p => p.id === pid) || null; }
   //  O ✦ que o livro imprime no fim de um poder: aquilo é MÁGICO, e
   //  importa em jogo. (A mesma marca dos statblocks, escrita aqui de
   //  novo — a ficha não puxa nada de criatura.)
@@ -5894,6 +5921,7 @@
   function gruposDePoder() {
     return (window.GA_PODERES_GRUPOS || []).concat(
       baseClasse().length ? [Object.assign({ quantos: baseClasse().length }, GRUPO_CLASSE)] : [GRUPO_CLASSE],
+      (window.GA_Ascensao && window.GA_Ascensao.dadivas) ? [Object.assign({ quantos: window.GA_Ascensao.dadivas.length }, GRUPO_DEUS_MENOR)] : [],
       [GRUPO_LIVRE]);
   }
   function grupoDePoder(chave) {
@@ -5907,6 +5935,7 @@
       const p = partesFixa(pid);
       return fixaPseudo(p.classe, p.nome);
     }
+    if (typeof pid === 'string' && pid.slice(0, 7) === 'dadiva:') return dadivaPseudo(pid);
     if (Array.isArray(window.GA_PODERES)) {
       const x = window.GA_PODERES.find(p => p.id === pid);
       if (x) return x;
@@ -10328,7 +10357,8 @@
     const daClasse = campo === 'classePoderes';
     const base = (window.GA_PODERES || []).filter(p => blocoDoGrupo(p.grupo) === campo)
       .concat(daClasse ? baseClasse() : [])
-      .concat(daClasse ? todasFixasPseudo() : []);
+      .concat(daClasse ? todasFixasPseudo() : [])
+      .concat(daClasse ? dadivasComoPoderes() : []);
     const gruposAqui = gruposDePoder().filter(g => g.chave !== 'livre' && blocoDoGrupo(g.chave) === campo);
     if (!base.length || !window.GA_abrirModal) return;
 
