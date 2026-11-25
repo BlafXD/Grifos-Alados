@@ -111,6 +111,34 @@
   box-shadow: inset 0 1px 3px rgba(26,16,8,0.12);
 }
 
+/* ── filtro de categoria (Consultor de tudo) ────────────────────── */
+.cr-filtro {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: -0.7rem 0 1.2rem;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.95rem;
+  color: var(--ink-faded);
+}
+.cr-filtro select {
+  flex: 1;
+  padding: 0.45rem 0.6rem;
+  font-family: var(--ga-fonte-corpo);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--parchment2);
+  border: 1px solid var(--ink-faded);
+}
+
+/* ── alternador Maiores/Menores (Deuses de Arton) ───────────────── */
+.dv-modo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
 /* ── grupos e listas ────────────────────────────────────────────── */
 .vc-grupo { margin-bottom: 1.9rem; }
 .vc-grupo-titulo {
