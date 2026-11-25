@@ -49,10 +49,12 @@
   }
 
   let _t = null;
+  let _sujo = false;   // esta aba tem edição ainda não gravada? (ver GA_SyncAbas)
   function _gravar() {
-    window.GA_guardar(STORAGE_KEY, JSON.stringify(dados));
+    if (window.GA_guardar(STORAGE_KEY, JSON.stringify(dados))) _sujo = false;
   }
-  function salvar()      { clearTimeout(_t); _t = setTimeout(_gravar, 250); }
+  function salvar()      { _sujo = true; clearTimeout(_t); _t = setTimeout(_gravar, 250); }
+  // grava sempre (o guard de "não atropelar" fica no fechar/esconder a aba)
   function salvarAgora() { clearTimeout(_t); _gravar(); }
 
   // ── AUXILIARES ───────────────────────────────────────────────────
@@ -465,8 +467,13 @@
     secao.addEventListener('click', aoClicar);
     secao.addEventListener('input', aoEntrada);
     secao.addEventListener('change', aoMudar);
-    window.addEventListener('beforeunload', salvarAgora);
-    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') salvarAgora(); });
+    // Ao fechar/esconder, só grava se ESTA aba tem edição pendente. Ver GA_SyncAbas.
+    window.addEventListener('beforeunload', () => { if (_sujo) salvarAgora(); });
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && _sujo) salvarAgora(); });
+
+    // conversa entre abas: outra aba mexeu no tempo → esta relê, a menos
+    // que tenha edição própria pendente. Ver GA_SyncAbas.
+    window.GA_SyncAbas({ chave: STORAGE_KEY, sujo: () => _sujo, recarregar: () => { carregar(); render(); } });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

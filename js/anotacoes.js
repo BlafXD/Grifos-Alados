@@ -63,13 +63,17 @@
   }
 
   let _saveTimer = null;
+  let _sujo = false;   // esta aba tem edição ainda não gravada? (ver GA_SyncAbas)
   function _gravar() {
-    window.GA_guardar(STORAGE_KEY, JSON.stringify(dados));
+    if (window.GA_guardar(STORAGE_KEY, JSON.stringify(dados))) _sujo = false;
   }
   function salvar() {
+    _sujo = true;
     clearTimeout(_saveTimer);
     _saveTimer = setTimeout(_gravar, 250);
   }
+  // gravação imediata — grava sempre (o guard de "não atropelar" fica
+  // nos handlers de fechar/esconder a aba). Ver GA_SyncAbas.
   function salvarAgora() {
     clearTimeout(_saveTimer);
     _gravar();
@@ -426,9 +430,19 @@
     secao.addEventListener('mousedown', window.GA_richDescMousedown);
     secao.addEventListener('paste', window.GA_richPaste);
 
-    window.addEventListener('beforeunload', salvarAgora);
+    // Ao fechar/esconder, só grava se ESTA aba tem edição pendente (não
+    // atropela o que outra aba salvou). Ver GA_SyncAbas.
+    window.addEventListener('beforeunload', () => { if (_sujo) salvarAgora(); });
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') salvarAgora();
+      if (document.visibilityState === 'hidden' && _sujo) salvarAgora();
+    });
+
+    // conversa entre abas: outra aba gravou estas anotações → esta relê,
+    // a menos que tenha edição própria pendente. Ver GA_SyncAbas.
+    window.GA_SyncAbas({
+      chave: STORAGE_KEY,
+      sujo: () => _sujo,
+      recarregar: () => { carregar(); render(); }
     });
   });
 

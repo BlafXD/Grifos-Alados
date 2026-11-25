@@ -130,14 +130,18 @@
 
   // ── PERSISTÊNCIA ─────────────────────────────────────────────────
   let _timer = null;
-  function salvar() { clearTimeout(_timer); _timer = setTimeout(() => { _timer = null; gravarTudo(); }, 250); }
+  let _sujo = false;   // esta aba tem edição ainda não gravada? (ver GA_SyncAbas)
+  function salvar() { _sujo = true; clearTimeout(_timer); _timer = setTimeout(() => { _timer = null; gravarTudo(); }, 250); }
+  // gravação imediata — usada ao trocar de ficha e por quem precisa
+  // persistir na hora. Grava sempre; o guard de "não atropelar o que
+  // outra aba salvou" fica no fechar/esconder a aba. Ver GA_SyncAbas.
   function salvarAgora() { clearTimeout(_timer); _timer = null; gravarTudo(); }
   // `avisar` é o que faz o PV da lista de iniciativa acompanhar o da
   // ficha. Fica no salvamento, e não em cada tecla, porque o salvamento
   // já é a rede que segura a digitação (250 ms).
   function gravarTudo() { gravar(); subir(); avisar(); }
   function gravar() {
-    try { window.GA_guardar(STORAGE_KEY, JSON.stringify(dados)); }
+    try { window.GA_guardar(STORAGE_KEY, JSON.stringify(dados)); _sujo = false; }
     catch (e) { console.warn('[ficha] não deu para salvar:', e && e.message); }
   }
   // Manda para a mesa a ficha que está aberta. Se for de outra pessoa
@@ -11002,9 +11006,29 @@
     window.addEventListener('resize', fecharBreakdown);
     secao.addEventListener('mousedown', window.GA_richDescMousedown);
     secao.addEventListener('paste', window.GA_richPaste);
-    window.addEventListener('beforeunload', () => { salvarAgora(); avisarAba('fechei', dados.aberta); });
+    // Ao fechar/esconder, só grava se ESTA aba tem edição pendente: uma aba
+    // parada (com retrato talvez velho de TODAS as fichas) não escreve por
+    // cima do que outra salvou. O ping "fechei" às abas irmãs vai sempre.
+    window.addEventListener('beforeunload', () => { if (_sujo) salvarAgora(); avisarAba('fechei', dados.aberta); });
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') salvarAgora();
+      if (document.visibilityState === 'hidden' && _sujo) salvarAgora();
+    });
+
+    // conversa entre abas: se outra aba do navegador gravar as MINHAS
+    // fichas (criar uma, mexer no PV de outra…), esta relê — a menos que
+    // tenha edição própria pendente. O `carregar` zera `dados.aberta`, então
+    // guardo qual ficha estava aberta e a reabro se ela ainda existir, para
+    // a releitura não fechar a ficha na cara de quem está olhando. Isto é
+    // só a convergência local; a conferência com a mesa/conta é à parte.
+    window.GA_SyncAbas({
+      chave: STORAGE_KEY,
+      sujo: () => _sujo,
+      recarregar: () => {
+        const abertaAntes = dados.aberta;
+        carregar();
+        if (abertaAntes && dados.fichas.some(f => f.id === abertaAntes)) dados.aberta = abertaAntes;
+        render();
+      }
     });
   }
   // O que o ficha-mesa.js chama. Ele cuida do Firebase; a ficha cuida

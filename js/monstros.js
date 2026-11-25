@@ -371,15 +371,19 @@
   const MAX_LOG = 15;   // nº máximo de rolagens guardadas no log
 
   let _saveTimer = null;
+  let _sujo = false;   // esta aba tem edição ainda não gravada? (ver GA_SyncAbas)
   function _gravar() {
-    window.GA_guardar(STORAGE_KEY, JSON.stringify(dados));
+    if (window.GA_guardar(STORAGE_KEY, JSON.stringify(dados))) _sujo = false;
   }
   // gravação adiada — evita escrever no disco a cada tecla digitada
   function salvar() {
+    _sujo = true;
     clearTimeout(_saveTimer);
     _saveTimer = setTimeout(_gravar, 250);
   }
-  // gravação imediata — usada ao sair/fechar a página
+  // gravação imediata — usada ao sair/fechar a página e por ações que
+  // precisam persistir na hora (não é adiável). Grava sempre; o guard de
+  // "não atropelar" fica nos handlers de fechar/esconder a aba, abaixo.
   function salvarAgora() {
     clearTimeout(_saveTimer);
     _gravar();
@@ -7985,10 +7989,20 @@
       });
     }
 
-    // garante que qualquer edição pendente seja gravada ao sair/fechar
-    window.addEventListener('beforeunload', salvarAgora);
+    // Ao fechar/esconder a aba, só grava se ESTA aba tem edição pendente:
+    // uma aba parada (com um retrato talvez velho de todo o bestiário) não
+    // escreve por cima do que outra aba salvou. Ver GA_SyncAbas.
+    window.addEventListener('beforeunload', () => { if (_sujo) salvarAgora(); });
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') salvarAgora();
+      if (document.visibilityState === 'hidden' && _sujo) salvarAgora();
+    });
+
+    // conversa entre abas: se outra aba do navegador gravar o bestiário,
+    // esta relê — a menos que tenha edição própria pendente. Ver GA_SyncAbas.
+    window.GA_SyncAbas({
+      chave: STORAGE_KEY,
+      sujo: () => _sujo,
+      recarregar: () => { carregar(); render(); }
     });
 
     // vida do veículo alterada na aba Viagem → atualiza o campo aqui (sem re-render)

@@ -152,6 +152,38 @@ window.GA_guardar = (function () {
   };
 })();
 
+// ── CONVERSA ENTRE ABAS DO MESMO NAVEGADOR ───────────────────────────
+// Duas abas do site abertas no mesmo navegador têm, cada uma, sua CÓPIA
+// dos dados na memória, carregada uma vez no início. Sem conversa, uma
+// aba parada guarda um retrato velho e, ao fechar, grava esse retrato por
+// cima do trabalho recente da outra — o clássico "last write wins", que
+// já engoliu fichas de criatura aqui. Este ajudante faz as abas irmãs se
+// avisarem: quando uma grava a chave, as outras RELEEM na hora — a menos
+// que a aba tenha edição própria ainda não gravada (aí não se mexe nela,
+// para não atropelar o que a pessoa está digitando). O evento `storage`
+// do navegador só dispara nas OUTRAS abas, nunca na que gravou, então não
+// há eco. O par com isto são os handlers de fechar/esconder a aba de cada
+// módulo, que só gravam se a aba tem edição pendente (`_sujo`) — assim uma
+// aba em dia (ou que nunca mexeu em nada) não sobrescreve nada ao ser
+// fechada; `salvarAgora` em si continua gravando sempre, para quem precisa
+// persistir uma mudança na hora.
+//
+//   GA_SyncAbas({
+//     chave:      'grifosAlados.algo'  ou  () => chaveDinamica,
+//     sujo:       () => boolean,   // esta aba tem edição não gravada?
+//     recarregar: () => void       // relê do localStorage + redesenha
+//   })
+window.GA_SyncAbas = function (opts) {
+  const chaveDe = (typeof opts.chave === 'function') ? opts.chave : function () { return opts.chave; };
+  window.addEventListener('storage', function (e) {
+    if (e.key !== chaveDe()) return;        // outra chave: não é comigo
+    if (e.newValue === null) return;        // remoção/limpeza: não apago a memória
+    if (typeof opts.sujo === 'function' && opts.sujo()) return;  // tenho edição minha: não atropelo
+    try { opts.recarregar(); }
+    catch (err) { console.warn('[sync-abas] releitura falhou (' + chaveDe() + '):', err && err.message); }
+  });
+};
+
 // ── CAIXA DE ENTRADA DOS JOGADORES (compartilhada) ───────────────────
 // Estamos na visão dos jogadores (jogadores.html)? Lá quase tudo é só
 // leitura, mas alguns campos são editáveis de propósito.
