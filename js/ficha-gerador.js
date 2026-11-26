@@ -447,15 +447,23 @@ window.GA_FichaGerador = (function () {
   //  A contagem exata por tabela de classe fica para uma leva de refinamento.
   // ════════════════════════════════════════════════════════════════
 
-  const CONJURADORES = ['arcanista', 'clerigo', 'druida', 'bardo', 'paladino', 'frade'];
+  //  Quem tem a habilidade Magias (conferido nos livros em 26/11/2026): o
+  //  PALADINO (T20 p. 82) e o Santo (Heróis p. 37) NÃO lançam magias — só
+  //  pegam magia por poder. As variantes contam pela classe básica.
+  const CONJURADORES = ['arcanista', 'clerigo', 'druida', 'bardo', 'frade'];
   function ehConjurador(base) { return CONJURADORES.indexOf(base) >= 0; }
+  //  Maior círculo que a classe lança NESTE nível. Arcanista, clérigo e frade:
+  //  2º no 5º nível, 3º no 9º… (T20 p. 37/57; Deuses p. 39). Bardo e druida:
+  //  2º no 6º, 3º no 10º, 4º no 14º — e param no 4º (T20 p. 44/61).
+  function circuloMax(base, nivel) {
+    if (!ehConjurador(base) || nivel < 1) return 0;
+    if (base === 'bardo' || base === 'druida') return nivel >= 14 ? 4 : nivel >= 10 ? 3 : nivel >= 6 ? 2 : 1;
+    return Math.min(5, 1 + Math.floor((nivel - 1) / 4));
+  }
 
   // ── O PRÉ-REQUISITO DE UM PODER, POLICIADO (11/11/2026) ──────────
   const sa = (s) => (window.GA_semAcento || (x => String(x || '').toLowerCase()))(String(s || ''));
   const NUMPT = { um: 1, uma: 1, outro: 1, outra: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5 };
-  //  Em que nível de personagem um conjurador costuma ganhar cada círculo
-  //  (aproximação — as tabelas variam por classe; o alvo é "plausível").
-  const CIRC_NIVEL = { 1: 1, 2: 4, 3: 8, 4: 12, 5: 16 };
 
   function periciaTreinadaPorNome(f, nome) {
     const ch = periciaChave(nome);
@@ -482,7 +490,7 @@ window.GA_FichaGerador = (function () {
     if (/lancar magias|habilidade de classe magias|conjurad|conjurar magias/.test(t)) {
       const mc = /(\d+)\s*(?:o|º|°)?\s*circulo/.exec(t);
       const circ = mc ? parseInt(mc[1], 10) : 1;
-      return ehConjurador(base) && nivel >= (CIRC_NIVEL[circ] || 99);
+      return circuloMax(base, nivel) >= circ;
     }
     m = /treinad[oa]\s+(?:em|na|no)\s+(.+)/.exec(t);          // "treinado em Luta (e/ou Y)"
     if (m) {
@@ -565,6 +573,59 @@ window.GA_FichaGerador = (function () {
   //  gerar(opts) — junta tudo e entrega a ficha pronta, aberta na tela.
   //    opts.nivel   1..20, ou ausente/0 = ao acaso
   // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════════
+  //  P4 — MAGIAS (26/11/2026), pelas regras de cada classe:
+  //    arcanista/necromante: 3 + 1 por nível, com o ajuste do Caminho
+  //      (D.magiasDoArcanista, a mesma conta da ficha); arcanas;
+  //    clérigo/frade: 3 + 1 por nível; divinas;
+  //    bardo/magimarcialista: 2 + 1 a cada nível par; arcanas de 3 escolas;
+  //    druida/ermitão: 2 + 1 a cada nível par; divinas de 3 escolas;
+  //    usurpador: nenhuma ("não aprende magias automaticamente", Heróis p. 41).
+  //  "A cada nível, aprende uma magia de qualquer círculo que possa lançar":
+  //  cada magia nova sai com o teto do nível em que foi aprendida.
+  // ════════════════════════════════════════════════════════════════
+  const ESCOLAS = ['Abjuração', 'Adivinhação', 'Convocação', 'Encantamento', 'Evocação', 'Ilusão', 'Necromancia', 'Transmutação'];
+  function magiasConhecidas(classeChave, base, nivel, caminho) {
+    if (classeChave === 'usurpador' || !ehConjurador(base) || nivel < 1) return 0;
+    if (base === 'arcanista') {
+      const r = caminho && D().magiasDoArcanista ? D().magiasDoArcanista(caminho, nivel) : null;
+      return r ? r.total : 3 + (nivel - 1);
+    }
+    if (base === 'clerigo' || base === 'frade') return 3 + (nivel - 1);
+    return 2 + Math.floor(nivel / 2);                       // bardo, druida
+  }
+  function addMagias(f, classeChave, nivel, base, caminho) {
+    const total = magiasConhecidas(classeChave, base, nivel, caminho);
+    if (!total || !Array.isArray(window.GA_MAGIAS)) return;
+    const lista = base === 'arcanista' || base === 'bardo' ? 'arcana' : 'divina';
+    let escolas = null;
+    if (base === 'bardo' || base === 'druida') {
+      escolas = pegarN(embaralhar(ESCOLAS), 3);
+      f.anotacoes = (f.anotacoes || '') + '\nEscolas de magia (' +(D().classe(classeChave) || {}).nome + '): ' + escolas.join(', ') + '. A escolha não pode ser mudada.';
+    }
+    //  o teto de círculo de cada magia, na ordem em que foi aprendida
+    const tetos = [];
+    for (let n = 1; n <= nivel; n++) {
+      const ganhou = magiasConhecidas(classeChave, base, n, caminho) - magiasConhecidas(classeChave, base, n - 1, caminho);
+      for (let k = 0; k < ganhou; k++) tetos.push(n === 1 ? 1 : circuloMax(base, n));
+    }
+    const pool = window.GA_MAGIAS.filter(m => (m.listas || []).indexOf(lista) >= 0 && (!escolas || escolas.indexOf(m.escola) >= 0));
+    const usadas = new Set();
+    tetos.forEach(teto => {
+      //  o círculo mais alto disponível na maior parte das vezes
+      let circ = chance(0.6) ? teto : 1 + rand(teto);
+      for (; circ >= 1; circ--) {
+        const op = pool.filter(m => m.circulo === circ && !usadas.has(m.id));
+        if (!op.length) continue;
+        const m = pick(op); usadas.add(m.id);
+        f.magias.push({ mid: m.id, nome: m.nome, circulo: m.circulo, pm: m.pm, tipo: m.tipo || '', escola: m.escola || '',
+          classe: classeChave, execucao: m.execucao || '', alcance: m.alcance || '', alvo: m.alvo || m.area || m.efeito || '',
+          duracao: m.duracao || '', resistencia: m.resistencia || '', resumo: m.resumo || '', obs: '' });
+        return;
+      }
+    });
+  }
+
   function gerar(opts) {
     opts = Object.assign({}, opts);
     if (!D() || !window.GA_Ficha || !window.GA_Ficha.criarEabrir) return null;
@@ -624,6 +685,7 @@ window.GA_FichaGerador = (function () {
       atributos: atributos,
       xp: (D().XP_POR_NIVEL && D().XP_POR_NIVEL[nivel]) || 0,
       poderes: [],
+      magias: [],
       pericias: {},
       oficios: [],
     };
@@ -643,6 +705,7 @@ window.GA_FichaGerador = (function () {
     addOrigem(f, opts.origem);
     addDivindade(f, base, opts);
     addPoderes(f, classe.chave, nivel, base, f.raca);
+    addMagias(f, classe.chave, nivel, base, caminho);
 
     window.GA_FichaEquipamento.gerar(f, nivel, opts.itens || 'nenhum', !!opts.fundamentalista);
     return window.GA_Ficha.criarEabrir(f);
@@ -660,7 +723,7 @@ window.GA_FichaGerador = (function () {
         <span>🎲 Sortear ficha</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
-      <p class="ga-modal-dica">Fixe o que quiser e deixe o restante ao acaso. A ficha fica editável; use o seletor de campanha nela para colocá-la em uma mesa. Magias e escolhas abertas de poderes ainda precisam de revisão.</p>
+      <p class="ga-modal-dica">Fixe o que quiser e deixe o restante ao acaso. A ficha fica editável; use o seletor de campanha nela para colocá-la em uma mesa. As magias saem pela regra da classe (quantas e de que círculo); as escolhas abertas de poderes ainda pedem revisão.</p>
       <div class="fi-ger-opcoes">
         <label class="fi-ger-nivelrad"><input type="radio" name="fiGerNivel" value="aleatorio" checked>
           <span>Nível ao acaso (1–20)</span></label>
