@@ -1128,10 +1128,25 @@
   //  depois deste arquivo, e é dele que vem o PV que aparece na lista.
   //  Registrar cedo demais aqui seria o mesmo defeito de antes, calado.
   let fichaLigada = false;
+  //  A FICHA MORREU (26/11/2026): chegou ao limite da p. 236 e a ficha se
+  //  marcou 💀 — a linha dela na iniciativa vai junto, e a vez passa a pular.
+  //  Só de vivo para morto: reviver continua sendo o clique do mestre.
+  function sincronizarMortos() {
+    if (!mando()) return;
+    const fichas = fichasVisiveis(), patch = {};
+    Object.keys(linhas).forEach(id => {
+      const l = linhas[id];
+      if (l.morto || l.tipo !== 'jogador') return;
+      const f = fichaDaLinha(Object.assign({ id }, l), fichas);
+      if (f && f.morto) patch['linhas/' + id + '/morto'] = true;
+    });
+    if (Object.keys(patch).length) gravar(patch);
+  }
   function ligarFicha() {
     if (fichaLigada || !window.GA_Ficha || !window.GA_Ficha.aoMudar) return;
     fichaLigada = true;
     window.GA_Ficha.aoMudar(function () {
+      sincronizarMortos();
       // com o dedo dentro do painel (ele digita a iniciativa de alguém),
       // redesenhar arrancaria o foco: só os PV são repintados
       if (painel && painel.contains(document.activeElement)) return pintarPvs();

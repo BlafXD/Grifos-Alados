@@ -289,7 +289,10 @@
   // ═══ O LADO DO MESTRE: o 🎯 controlador ═══════════════════════════
   function alvosDaMesa() {
     const lista = (window.GA_Ficha && window.GA_Ficha.visiveis) ? window.GA_Ficha.visiveis() : [];
-    return lista.filter(f => f && f.dono && f.id);
+    //  SÓ AS FICHAS VINCULADAS A ESTA CAMPANHA: as dos jogadores já vêm do
+    //  nó dela no banco, mas as fichas do próprio mestre, sem campanha, também
+    //  passavam pelo visiveis() — e iam parar na lista de quem rola.
+    return lista.filter(f => f && f.dono && f.id && f.mesa === sala());
   }
   function opcoesTeste(sel) {
     const c = catalogo();

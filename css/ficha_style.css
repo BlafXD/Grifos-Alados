@@ -5239,3 +5239,9 @@
 @media (pointer: coarse) {
   #ficha-content .fi-ci-pastilha { padding: 0.34rem 0.55rem; font-size: 0.84rem; }
 }
+
+/* Ferimentos & Morte do personagem (Tormenta20, p. 236) — 26/11/2026 */
+.fi-vital { margin: 0 0 0.6rem; padding: 0.5rem 0.7rem; border-left: 4px solid var(--carmim); background: var(--parchment2);
+  color: var(--ink); font-size: 0.95rem; line-height: 1.45; }
+.fi-vital small { color: var(--text-dim); margin-left: 0.3rem; }
+.fi-vital--morto { border-left-color: var(--ink); font-weight: 600; }

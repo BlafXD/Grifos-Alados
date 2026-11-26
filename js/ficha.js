@@ -1757,6 +1757,7 @@
   function aplicarDano(f, qual, n, porQue, tipo) {
     const antes = window.GA_HistoricoJogo?.foto(f, [qual + '.atual', qual + '.temp']);
     const rot = qual === 'pv' ? 'PV' : 'PM';
+    const pvAntes = pvAtual(f);
     const r = gastarPontos(f, qual, n);
     if (antes) window.GA_HistoricoJogo.registrar('ficha:' + (donoDe(f.id) || meuUid || 'local') + ':' + f.id, (f.nome || 'Personagem') + ' perdeu ' + n + ' ' + rot, antes, f);
     sujar(f.id, qual);
@@ -1771,6 +1772,7 @@
                  (partes.length ? ': ' + partes.join(' e ') : '') +
                  (r.temp && !r.atual ? ' — o ' + rot + ' nem foi tocado' : '') +
                  (sobra ? ' · ainda ' + (sobra === 1 ? 'resta 1 temporário' : 'restam ' + sobra + ' temporários') : '');
+    if (qual === 'pv') { const v = transicaoVital(f, pvAntes); if (v) ultimoDano += ' · ' + v; }
     atualizarDerivados();
     salvar();
   }
@@ -1779,7 +1781,9 @@
     const rot = qual === 'pv' ? 'PV' : 'PM';
     const preso = qual === 'pv' ? manchado(f) : 0;
     const noTeto = qual === 'pv' && preso > 0 && pvAtual(f) >= tetoPv(f);
+    const pvAntesCura = pvAtual(f);
     const ganho = curarPontos(f, qual, n);
+    const vital = qual === 'pv' ? transicaoVital(f, pvAntesCura) : '';
     if (antes) window.GA_HistoricoJogo.registrar('ficha:' + (donoDe(f.id) || meuUid || 'local') + ':' + f.id, (f.nome || 'Personagem') + ' recuperou ' + ganho + ' ' + rot, antes, f);
     sujar(f.id, qual);
     // o "o resto passaria do máximo" vira outra frase quando quem
@@ -1792,6 +1796,7 @@
       ? '✚ +' + ganho + ' ' + rot + porQue
       : '✚ nada a recuperar — o ' + rot +
         (noTeto ? ' já está no teto' + porQue : ' já está cheio');
+    if (vital) ultimoDano += ' · ' + vital;
     atualizarDerivados();
     salvar();
   }
@@ -2417,7 +2422,8 @@
   //  Desligado, um convite discreto. Ligado, uma faixa carmim que não
   //  deixa esquecer que os números estão em modo de luta — e o botão de
   //  sair, que restaura e pergunta antes.
-  function blocoCombate(f) {
+  function blocoCombate(f) { return faixaVital(f) + blocoCombateBase(f); }
+  function blocoCombateBase(f) {
     const on = f.combate && f.combate.ativo;
     //  Fora de combate (morto/inconsciente): não entra em novas iniciativas.
     const morto = `
@@ -5051,6 +5057,36 @@
   // negativo igual à metade de seus PV totais (o que for mais baixo),
   // você morre."
   function limiteMorte(max) { return Math.min(-10, -Math.floor(max / 2)); }
+
+  //  ── FERIMENTOS & MORTE DO PERSONAGEM (Tormenta20, p. 236) — 26/11/2026 ──
+  //  A conta já existia para o melhor amigo; agora vale para a ficha. Pela
+  //  regra, cair a 0 PV ou menos É ficar inconsciente e sangrando, e voltar a
+  //  PV positivo por cura É recobrar a consciência (e qualquer cura de 1 PV
+  //  estabiliza) — por isso as condições entram e saem sozinhas, dizendo o que
+  //  fizeram. Chegar ao limite marca 💀 (fora de combate); desmarcar é à mão.
+  function poeCond(f, nome) { const k = chaveCond(nome); if (acharCond(k) && f.condicoes.indexOf(k) < 0) { f.condicoes.push(k); return true; } return false; }
+  function tiraCond(f, nome) { const i = f.condicoes.indexOf(chaveCond(nome)); if (i >= 0) { f.condicoes.splice(i, 1); return true; } return false; }
+  function transicaoVital(f, antes) {
+    const agora = pvAtual(f), lim = limiteMorte(pvMax(f)), ditos = [];
+    if (antes > 0 && agora <= 0) {
+      const a = poeCond(f, 'Inconsciente'), b = poeCond(f, 'Sangrando');
+      if (a || b) { sujar(f.id, 'condicoes'); ditos.push('🩸 caiu: inconsciente e sangrando'); }
+    }
+    if (agora <= lim && !f.morto) { f.morto = true; sujar(f.id, 'morto'); ditos.push('💀 morreu (limite ' + lim + ' PV)'); }
+    if (antes <= 0 && agora > 0) {
+      const a = tiraCond(f, 'Inconsciente'), b = tiraCond(f, 'Sangrando');
+      if (a || b) { sujar(f.id, 'condicoes'); ditos.push('recobrou a consciência'); }
+    }
+    return ditos.join(' · ');
+  }
+  function faixaVital(f) {
+    const pv = pvAtual(f);
+    if (pv > 0) return '';
+    const lim = limiteMorte(pvMax(f));
+    if (pv <= lim || f.morto) return '<p class="fi-vital fi-vital--morto">💀 <strong>Morto</strong> — os PV chegaram a ' + pv + ' (o limite é ' + lim + '). <small>Tormenta20, p. 236</small></p>';
+    return '<p class="fi-vital">🩸 <strong>Caído</strong> — com 0 PV ou menos fica inconsciente e sangrando (Constituição CD 15 no início do turno). ' +
+      'Morre em <strong>' + lim + ' PV</strong>. Estabiliza com Cura (CD 15) ou qualquer cura de 1 PV. <small>Tormenta20, p. 236</small></p>';
+  }
   function estadoAmigo(f, a) {
     const pv = pvAmigoAtual(f, a), max = pvAmigoMax(f, a);
     if (pv <= limiteMorte(max)) return 'morto';
@@ -10868,6 +10904,7 @@
       if (!daMesaAtual(f)) return;
       saida.push({
         id: f.id, dono: dono || '',
+        mesa: f.mesa || '',      // a campanha a que a ficha está vinculada (o 🎯 controlador filtra por ela)
         nome: f.nome || '', jogador: f.jogador || '',
         nivel: nivel(f),
         // O desempate da lista de iniciativa. Em T20 o modificador é a
