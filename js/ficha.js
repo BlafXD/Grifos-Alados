@@ -446,6 +446,10 @@
     f.regras = (f.regras && typeof f.regras === 'object') ? f.regras : {};
     f.regras.defesaEpica = !!f.regras.defesaEpica;
     f.regras.lesoes = Math.max(0, parseInt(f.regras.lesoes, 10) || 0);
+    //  As situações especiais ligadas no cartão de Ataques (Tabela 5-3, p. 239).
+    const sit = (f.situacao && typeof f.situacao === 'object') ? f.situacao : {};
+    f.situacao = {};
+    SITUACOES.concat(SITUACOES_ALVO).forEach(x => { if (sit[x.k] === true) f.situacao[x.k] = true; });
     f.carga = f.carga || {};
     ['usada', 'outros'].forEach(k => { if (typeof f.carga[k] !== 'number') f.carga[k] = 0; });
     if (typeof f.cdAtributo !== 'string') f.cdAtributo = 'int';
@@ -4789,6 +4793,7 @@
           <span class="fi-cartao-nota">o valor de ataque <em>é</em> a perícia — Luta ou Pontaria</span>
         </h2>
         ${f.ataques.length > 1 ? barraBusca('ataques', filtroAtaques, 'buscar arma, tipo, dano, alcance…', true, soFavAtaques) : ''}
+        ${f.ataques.length ? blocoSituacao(f) : ''}
         <div class="fi-atq-cab">
           <span>Arma</span><span>Perícia</span><span>Extra</span><span>Ataque</span>
           <span>Dano</span><span title="Passos de dano — Tabela 3-2, p. 143">Passos</span><span></span><span>Crítico</span><span></span><span>Tipo</span><span>Alcance</span><span></span><span></span>
@@ -5056,6 +5061,55 @@
   // p. 236: "Quando seus pontos de vida chegam a –10 ou a um número
   // negativo igual à metade de seus PV totais (o que for mais baixo),
   // você morre."
+  //  ── SITUAÇÕES ESPECIAIS NO ATAQUE (Tabela 5-3, Tormenta20 p. 239) — 26/11/2026 ──
+  //  Chips no cartão de Ataques: o que está ligado entra SOZINHO no 🎲 do ataque.
+  //  O que o livro põe na Defesa do ALVO (caído, desprevenido, cobertura) vira
+  //  o mesmo número no ataque — a comparação com a Defesa normal dá igual.
+  //  Camuflagem e cegueira são chance de FALHA: o d10 é rolado junto.
+  const SITUACOES = [
+    { k: 'flanqueando', rot: 'Flanqueando', corpo: 2, dica: '+2 no ataque corpo a corpo' },
+    { k: 'elevado', rot: 'Posição elevada', v: 2, dica: '+2 no ataque' },
+    { k: 'caido', rot: 'Você caído', v: -5, dica: '−5 no ataque' },
+    { k: 'ofuscado', rot: 'Ofuscado', v: -2, dica: '−2 no ataque' },
+    { k: 'invisivel', rot: 'Invisível', v: 5, dica: '+5 no ataque (não contra alvo cego)' },
+    { k: 'cego', rot: 'Você cego', falha: 50, dica: '50% de chance de falha' },
+  ];
+  const SITUACOES_ALVO = [
+    { k: 'alvoCaido', rot: 'Alvo caído', corpo: 5, distancia: -5, dica: 'Defesa −5 contra corpo a corpo, +5 contra distância' },
+    { k: 'alvoCego', rot: 'Alvo cego', v: 5, dica: 'Defesa −5 (e o +5 de Invisível não vale contra ele)' },
+    { k: 'alvoDesprevenido', rot: 'Alvo desprevenido', v: 5, dica: 'Defesa −5' },
+    { k: 'alvoCobertura', rot: 'Alvo com cobertura leve', v: -5, dica: 'Defesa +5' },
+    { k: 'camLeve', rot: 'Alvo com camuflagem leve', falha: 20, dica: '20% de falha (1–2 no d10)' },
+    { k: 'camTotal', rot: 'Alvo com camuflagem total', falha: 50, dica: '50% de falha (1–5 no d10)' },
+    { k: 'coberturaTotal', rot: 'Alvo com cobertura total', bloqueia: true, dica: 'o alvo não pode ser atacado' },
+  ];
+  function ehCorpoACorpo(a) { return (a && a.pericia) !== 'pontaria'; }
+  //  O que as situações ligadas fazem NESTE ataque: {soma, partes[], falha%}
+  function situacaoNoAtaque(f, a) {
+    const sit = f.situacao || {}, corpo = ehCorpoACorpo(a);
+    let soma = 0, falha = 0; const partes = [];
+    SITUACOES.concat(SITUACOES_ALVO).forEach(x => {
+      if (!sit[x.k]) return;
+      if (x.k === 'invisivel' && sit.alvoCego) return;   // "não se aplica a alvos cegos"
+      let v = x.v || 0;
+      if (x.corpo !== undefined || x.distancia !== undefined) v = corpo ? (x.corpo || 0) : (x.distancia || 0);
+      if (v) { soma += v; partes.push(x.rot + ' ' + sinal(v)); }
+      if (x.falha) falha = Math.max(falha, x.falha);
+    });
+    return { soma, partes, falha };
+  }
+  function blocoSituacao(f) {
+    const sit = f.situacao || {};
+    const chip = x => `<button type="button" class="fi-sit${sit[x.k] ? ' fi-sit--on' : ''}" data-acao="situacao" data-k="${x.k}" aria-pressed="${!!sit[x.k]}" title="${esc(x.dica)}">${esc(x.rot)}</button>`;
+    const ligadas = SITUACOES.concat(SITUACOES_ALVO).some(x => sit[x.k]);
+    return `<div class="fi-situacao">
+        <span class="fi-sit-tit">🎯 Situação <small>(Tabela 5-3, p. 239 — entra sozinha no 🎲 do ataque)</small></span>
+        <span class="fi-sit-grupo"><em>Você:</em> ${SITUACOES.map(chip).join('')}</span>
+        <span class="fi-sit-grupo"><em>O alvo:</em> ${SITUACOES_ALVO.map(chip).join('')}</span>
+        ${ligadas ? '<button type="button" class="fi-sit-limpar" data-acao="situacao-limpar">limpar</button>' : ''}
+      </div>`;
+  }
+
   function limiteMorte(max) { return Math.min(-10, -Math.floor(max / 2)); }
 
   //  ── FERIMENTOS & MORTE DO PERSONAGEM (Tormenta20, p. 236) — 26/11/2026 ──
@@ -9179,9 +9233,33 @@
     }
     if (acao === 'rolar-ataque') {
       const a = f.ataques[+btn.dataset.i];
-      if (a) rolar(d20(valorAtaque(f, a)), quem(f) + ' · ' + (a.nome || 'ataque'), 'atq:' + btn.dataset.i, 'Ataque');
+      if (!a) return;
+      const st = situacaoNoAtaque(f, a), slot = 'atq:' + btn.dataset.i;
+      if ((f.situacao || {}).coberturaTotal) {
+        resultados[slot] = { erro: 'alvo com cobertura total — não pode ser atacado (p. 239)', curto: 'Ataque' };
+        return pintarResultado(slot);
+      }
+      const r = rolar(d20(valorAtaque(f, a) + st.soma), quem(f) + ' · ' + (a.nome || 'ataque') +
+        (st.partes.length ? ' (' + st.partes.join(', ') + ')' : ''), slot, 'Ataque' + (st.soma ? ' ' + sinal(st.soma) : ''));
+      //  camuflagem / cegueira: o d10 de falha vai junto, e a pílula diz o veredito
+      if (r && st.falha && resultados[slot] && window.GA_Dados) {
+        const d10 = window.GA_Dados.rolar(10), limite = st.falha / 10;
+        resultados[slot].detalhe += ' · falha ' + st.falha + '%: d10 = ' + d10 + (d10 <= limite ? ' → <strong>ERROU</strong>' : ' → passou pela falha');
+        pintarResultado(slot);
+      }
       return;
     }
+    if (acao === 'situacao') {
+      const k = btn.dataset.k;
+      if (!SITUACOES.concat(SITUACOES_ALVO).some(x => x.k === k)) return;
+      f.situacao = f.situacao || {};
+      if (f.situacao[k]) delete f.situacao[k]; else f.situacao[k] = true;
+      //  camuflagem leve e total não valem juntas
+      if (k === 'camLeve' && f.situacao.camLeve) delete f.situacao.camTotal;
+      if (k === 'camTotal' && f.situacao.camTotal) delete f.situacao.camLeve;
+      sujar(f.id, 'situacao'); salvar(); return render();
+    }
+    if (acao === 'situacao-limpar') { f.situacao = {}; sujar(f.id, 'situacao'); salvar(); return render(); }
     // O dano sai com o dado já andado pelos passos (Tabela 3-2), e o
     // crítico multiplica ESSE dado: os "dados de dano" da p. 142 são os da
     // arma como ela está agora.
