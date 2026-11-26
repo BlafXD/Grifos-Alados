@@ -4695,6 +4695,8 @@
   padding: 0.4rem 0.5rem; width: 100%;
 }
 .ea-campo select.ea-sel:focus { outline: 2px solid var(--foco); outline-offset: -1px; }
+/* "✨ Magia?": a linha do livro sob o campo (consulta, não preenche nada) */
+.ea-magia-dica { font-family: var(--ga-fonte-nota); font-size: 0.82rem; color: var(--text-mid); font-style: italic; }
 .ea-de { margin: 0; font-size: 0.9rem; color: var(--text-mid); }
 .ea-alvos-cab {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem;

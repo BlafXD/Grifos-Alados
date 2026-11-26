@@ -784,6 +784,9 @@
       if (window.GA_EfeitosArea && window.GA_EfeitosArea.abrirCriar) window.GA_EfeitosArea.abrirCriar();
       return;
     }
+    //  🎯 o controlador do mestre e ✨ a ajuda do jogador (js/disparos.js)
+    if (acao === 'controlador') { if (window.GA_Disparos) window.GA_Disparos.abrirControlador(); return; }
+    if (acao === 'ajuda') { if (window.GA_Disparos) window.GA_Disparos.abrirAjuda(); return; }
     if (acao === 'efeito-editar') {
       if (window.GA_EfeitosArea && window.GA_EfeitosArea.abrirCriar) window.GA_EfeitosArea.abrirCriar(null, btn.dataset.ef);
       return;
@@ -1008,7 +1011,9 @@
             'title="Rola 1d20 para cada criatura da cena narrada e traz os jogadores">' +
             (temLista ? '⚔ Montar de novo' : '⚔ Montar com a cena') + '</button>' +
           '<button type="button" class="ga-ini-btn ga-ini-btn--efeito" data-ini="efeito" ' +
-            'title="Disparar um efeito ou condição em área (Oração, Perdição, Abalado…) e marcar quem está sob ele — aparece sozinho na ficha de cada afetado">🔆 Efeito / condição</button>' +
+            'title="Disparar um efeito em área (uma magia, um poder ou uma condição) e marcar quem está sob ele — aparece sozinho na ficha de cada afetado">🔆 Efeito / condição</button>' +
+          (naMesa() ? '<button type="button" class="ga-ini-btn ga-ini-btn--controlador" data-ini="controlador" ' +
+            'title="Pedir um teste (perícia ou atributo, CD secreta ou não) que aparece na tela dos jogadores — e disparar o dano ou a condição em quem falhou">🎯 Controlador</button>' : '') +
           (temLista ? '<button type="button" class="ga-ini-btn" data-ini="ordena" title="Reordenar pelos valores">⇅ Ordenar</button>' +
                       '<button type="button" class="ga-ini-btn ga-ini-btn--x" data-ini="limpar">🗑 Limpar</button>' : '') +
         '</div>';
@@ -1021,6 +1026,12 @@
         if (local()) {
           corpo += '<p class="ga-ini-nota">Esta lista está só nesta tela. Entre numa mesa (aba 🎲) para os jogadores verem a ordem.</p>';
         }
+      }
+      //  O jogador (quem não manda na lista) ganha o ✨: mandar cura ou bônus
+      //  para um aliado da iniciativa, que aceita na tela dele (js/disparos.js).
+      if (!mando() && temLista && window.GA_Disparos && window.GA_Disparos.podeAjudar()) {
+        corpo += '<div class="ga-ini-acoes"><button type="button" class="ga-ini-btn ga-ini-btn--efeito" data-ini="ajuda" ' +
+          'title="Mandar cura ou um bônus (uma magia, um poder) para um aliado — entra na ficha dele quando ele aceitar">✨ Ajudar um aliado</button></div>';
       }
     }
 

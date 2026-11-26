@@ -120,9 +120,13 @@ html { scroll-behavior: smooth; }
   --cond-legivel: color-mix(in srgb, var(--cond) var(--cor-mistura), var(--ink));
 }
 
+/* O texto de fundo das caixas é EXEMPLO, não resposta (25/11/2026: "parecem
+   que ESTÃO ESCRITAS ali"). Itálico e mais claro, no site inteiro — quem
+   tem regra própria (busca da Loja, dano real…) continua com a dela. */
 input::placeholder, textarea::placeholder {
   color: var(--text-dim);
-  opacity: 1;
+  font-style: italic;
+  opacity: 0.6;
 }
 
 body {

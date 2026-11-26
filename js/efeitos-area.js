@@ -43,25 +43,26 @@
 
   const LOCAL_KEY = 'grifosAlados.efeitosAreaLocal';
 
-  // ── CARDÁPIO PRONTO — o disparador do mestre (12/11/2026) ────────
-  //  Preenche o formulário num clique: efeitos comuns (texto do livro) e
-  //  a Lista de Condições do T20 (GA_CONDICOES, texto integral). `lado` é
-  //  o lado padrão ao marcar os jogadores: buff → 🛡 aliado (ganha o
-  //  bônus); penalidade/condição → ⚔ inimigo (sofre o efeito). O mestre
-  //  ajusta os alvos depois — o efeito aparece sozinho na ficha de cada um.
-  const EFEITOS_PRONTOS = [
-    { nome: 'Oração', lado: 'bonus', dur: 'sustentada',
-      bonus: '+2 em testes de perícia e rolagens de dano',
-      contra: '−2 em testes de perícia e rolagens de dano' },
-    { nome: 'Bênção', lado: 'bonus', dur: 'cena',
-      bonus: '+1 em testes de ataque e rolagens de dano' },
-    { nome: 'Perdição', lado: 'contra', dur: 'cena',
-      contra: '−1 em testes de ataque e rolagens de dano' },
-  ];
+  // ── CONDIÇÃO PRONTA — o disparador do mestre (12/11/2026) ────────
+  //  Preenche o formulário num clique com a Lista de Condições do T20
+  //  (GA_CONDICOES, texto integral) e marca os JOGADORES como ⚔ inimigo
+  //  (quem sofre); o mestre ajusta os alvos depois.
+  //  REFORMA DE 25/11/2026 (pedido dele): saíram os três efeitos fixos
+  //  (Oração, Bênção, Perdição — eram só exemplo e prendiam o painel a eles);
+  //  no lugar, o campo "✨ Magia?" com as 254 magias do livro ou o que ele
+  //  escrever. E a condição pronta NÃO preenche mais a duração ("cena"):
+  //  quem decide quanto dura é o mestre.
   function catalogoCondicoes() {
     const C = window.GA_CONDICOES;
     if (!C || !Array.isArray(C.LISTA)) return [];
-    return C.LISTA.map(c => ({ nome: c.nome, lado: 'contra', dur: 'cena', contra: c.texto, tipo: c.tipo || '' }));
+    return C.LISTA.map(c => ({ nome: c.nome, lado: 'contra', contra: c.texto, tipo: c.tipo || '' }));
+  }
+  //  O que o livro diz da magia escolhida, numa linha (só para consulta).
+  function resumoMagia(m) {
+    return [m.tipo && m.circulo ? m.tipo + ' ' + m.circulo + 'º círculo' : '',
+            m.execucao ? 'execução: ' + m.execucao : '',
+            m.alcance ? 'alcance: ' + m.alcance : '',
+            m.duracao ? 'duração no livro: ' + m.duracao : ''].filter(Boolean).join(' · ');
   }
 
   function db() { return window.GA_Mesa ? window.GA_Mesa.db() : null; }
@@ -264,10 +265,12 @@
         Painel de combate (⚔) para escolher os alvos — ou crie o efeito assim mesmo e marque os
         alvos quando o combate começar.</p>`;
 
-    //  O cardápio pronto: efeitos comuns + a Lista de Condições. A ordem
-    //  no array é a ordem dos `value` (índice), que o handler usa de volta.
+    //  As condições prontas (o índice no array é o `value` da opção, que o
+    //  handler usa de volta) e a lista das magias do livro para o "✨ Magia?".
     const conds = catalogoCondicoes();
-    const prontos = EFEITOS_PRONTOS.concat(conds);
+    const prontos = conds;
+    const magias = Array.isArray(window.GA_MAGIAS) ? window.GA_MAGIAS : [];
+    const magiaInicial = editando ? (orig.magia || '') : '';
     const opPreset = (arr, off) => arr.map((p, i) =>
       `<option value="${off + i}">${esc(p.nome)}${p.tipo ? ' — ' + esc(p.tipo) : ''}</option>`).join('');
 
@@ -277,18 +280,21 @@
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
       <div class="ea-form">
-        <label class="ea-campo"><span>📋 Efeito pronto <em>(opcional — preenche os campos e marca os jogadores)</em></span>
+        <label class="ea-campo"><span>✨ Magia? <em>(opcional — escolha da lista ou escreva; vira o nome do efeito)</em></span>
+          <input type="text" id="eaMagia" list="eaMagiasLista" value="${esc(magiaInicial)}" placeholder="digite ou escolha da lista" autocomplete="off">
+          <datalist id="eaMagiasLista">${magias.map(m => `<option value="${esc(m.nome)}">`).join('')}</datalist>
+          <small class="ea-magia-dica" id="eaMagiaDica" hidden></small></label>
+        <label class="ea-campo"><span>🌀 Condição pronta <em>(opcional — preenche o efeito e marca os jogadores)</em></span>
           <select id="eaPronto" class="ea-sel">
-            <option value="">— escolher um efeito ou condição —</option>
-            <optgroup label="Efeitos">${opPreset(EFEITOS_PRONTOS, 0)}</optgroup>
-            <optgroup label="Condições (Tormenta 20)">${opPreset(conds, EFEITOS_PRONTOS.length)}</optgroup>
+            <option value="">— escolher uma condição —</option>
+            <optgroup label="Condições (Tormenta 20)">${opPreset(conds, 0)}</optgroup>
           </select></label>
         <div class="ea-campo ea-montar">
           <span>🔧 Montar o efeito <em>(opcional — escolha o quanto e o que afeta; preenche os campos abaixo)</em></span>
           <div class="ea-montar-linha">
             <span class="ea-montar-val">
               <button type="button" class="ea-mstep" data-mstep="-1" title="Diminuir">−</button>
-              <input type="number" id="eaMval" value="2" step="1" inputmode="numeric" aria-label="Valor do efeito">
+              <input type="number" id="eaMval" value="0" step="1" inputmode="numeric" aria-label="Valor do efeito">
               <button type="button" class="ea-mstep" data-mstep="1" title="Aumentar">+</button>
             </span>
             <span class="ea-montar-chips">
@@ -300,13 +306,13 @@
           </div>
         </div>
         <label class="ea-campo"><span>Nome do efeito</span>
-          <input type="text" id="eaNome" value="${esc(editando ? orig.nome : (f && f._efeitoNome || ''))}" placeholder="Oração, Bênção, Consagrar…" autocomplete="off"></label>
+          <input type="text" id="eaNome" value="${esc(editando ? orig.nome : (f && f._efeitoNome || ''))}" placeholder="o nome da magia ou do poder" autocomplete="off"></label>
         <label class="ea-campo"><span>O que os aliados ganham</span>
-          <input type="text" id="eaBonus" value="${esc(editando ? (orig.bonus || '') : (f && f._efeitoBonus || ''))}" placeholder="+1 em ataque, testes de perícia e resistência" autocomplete="off"></label>
+          <input type="text" id="eaBonus" value="${esc(editando ? (orig.bonus || '') : (f && f._efeitoBonus || ''))}" placeholder="ex.: +1 em ataque e dano" autocomplete="off"></label>
         <label class="ea-campo"><span>O que os inimigos sofrem <em>(opcional — o efeito contrário)</em></span>
-          <input type="text" id="eaContra" value="${esc(editando ? (orig.contrario || '') : '')}" placeholder="−1 em ataque, testes e resistência" autocomplete="off"></label>
+          <input type="text" id="eaContra" value="${esc(editando ? (orig.contrario || '') : '')}" placeholder="ex.: −1 em ataque e dano" autocomplete="off"></label>
         <label class="ea-campo ea-campo--curto"><span>Duração <em>(opcional)</em></span>
-          <input type="text" id="eaDur" value="${esc(editando ? (orig.duracao || '') : '')}" placeholder="cena, 5 rodadas, sustentada…" autocomplete="off"></label>
+          <input type="text" id="eaDur" value="${esc(editando ? (orig.duracao || '') : '')}" placeholder="ex.: 3 rodadas" autocomplete="off"></label>
         <div class="ea-campo">
           <span>Cura ou dano por turno <em>(opcional — vira um 🎲 no aviso de início de turno de quem recebe)</em></span>
           <div class="ea-turno-linha">
@@ -370,14 +376,35 @@
     // o cardápio pronto: preenche nome/efeito/duração e já marca os
     // JOGADORES no lado padrão (buff → aliado; penalidade/condição →
     // inimigo). As criaturas ficam como estão — o mestre as marca à mão.
+    //  ✨ MAGIA? — escolhida da lista (as 254 do livro) ou escrita à mão.
+    //  Vira o nome do efeito enquanto o mestre não escrever outro nome, e a
+    //  linha de baixo mostra o que o livro diz dela. A duração NÃO é
+    //  preenchida: fica só citada ("duração no livro"), quem decide é ele.
+    const campoMagia = overlay.querySelector('#eaMagia');
+    const campoNome = overlay.querySelector('#eaNome');
+    let nomeDaMagia = !!(magiaInicial && campoNome.value === magiaInicial);
+    function aoEscolherMagia() {
+      const txt = (campoMagia.value || '').trim();
+      if (!campoNome.value.trim() || nomeDaMagia) { campoNome.value = txt; nomeDaMagia = !!txt; }
+      const m = magias.find(x => semAcento(x.nome) === semAcento(txt));
+      const dica = overlay.querySelector('#eaMagiaDica');
+      dica.hidden = !m;
+      dica.textContent = m ? '📖 ' + resumoMagia(m) : '';
+    }
+    if (campoMagia) {
+      campoMagia.addEventListener('input', aoEscolherMagia);
+      campoNome.addEventListener('input', () => { nomeDaMagia = false; });
+      if (magiaInicial) aoEscolherMagia();
+    }
+
     const selPronto = overlay.querySelector('#eaPronto');
     if (selPronto) selPronto.addEventListener('change', () => {
       const p = prontos[parseInt(selPronto.value, 10)];
       if (!p) return;
       overlay.querySelector('#eaNome').value = p.nome || '';
+      nomeDaMagia = false;              // o nome agora é o da condição
       overlay.querySelector('#eaBonus').value = p.bonus || '';
       overlay.querySelector('#eaContra').value = p.contra || '';
-      overlay.querySelector('#eaDur').value = p.dur || '';
       const relPad = p.lado === 'bonus' ? 'aliado' : 'inimigo';
       overlay.querySelectorAll('.ea-alvo').forEach(row => {
         if (row.dataset.tipo !== 'jogador') return;
@@ -454,6 +481,7 @@
       const id = editando ? efeitoId : novoId();
       const efeito = {
         nome: nome, bonus: bonus, contrario: contra, duracao: dur,
+        magia: ((overlay.querySelector('#eaMagia') || {}).value || '').trim(),
         porTurno: porTurnoTxt, porTurnoTipo: turnoOn ? turnoOn.dataset.turnoTipo : '',
         de: editando ? (orig.de || deInicial) : deInicial,
         autorUid: editando ? (orig.autorUid || meuUid()) : meuUid(),

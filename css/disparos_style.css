@@ -1,0 +1,77 @@
+/* ═══════════════════════════════════════════════════════════════════
+   DISPAROS — o 🎯 controlador do mestre e os pop-ups do jogador
+   (js/disparos.js, 25/11/2026). Cores do resto do site (tokens), então o
+   modo noturno vale sozinho.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── o modal do controlador: mais largo que um modal comum ── */
+.ga-modal.gd-modal { width: min(96vw, 760px); max-width: min(96vw, 760px); }
+.gd-ctl { display: flex; flex-direction: column; gap: 0.8rem; }
+.gd-bloco { border: 1px solid var(--parchment3); border-radius: var(--raio, 4px); padding: 0.6rem 0.7rem; background: var(--parchment); }
+.gd-bloco-tit { margin: 0 0 0.4rem; font-family: var(--ga-fonte-rotulo); font-weight: 700; font-size: 0.78rem;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--rust-dark); display: flex; align-items: center; gap: 0.5rem; }
+.gd-alvos { display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; }
+.gd-alvo { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.98rem; }
+.gd-teste[hidden], .gd-ctl [hidden] { display: none; }
+.gd-teste { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: flex-end; }
+.gd-teste label, .gd-motivo, .gd-bloco > label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.9rem; color: var(--text-mid); }
+.gd-teste label.gd-check { flex-direction: row; align-items: center; gap: 0.35rem; }
+.gd-ctl input[type="text"], .gd-ctl input[type="number"], .gd-ctl select {
+  font-family: var(--ga-fonte-corpo); font-size: 0.98rem; color: var(--ink);
+  background: var(--parchment2); border: 1px solid var(--parchment3); border-radius: var(--raio, 4px); padding: 0.35rem 0.45rem;
+}
+.gd-ctl input[type="number"] { width: 6rem; }
+.gd-motivo input { width: 100%; box-sizing: border-box; }
+.gd-mini { margin: 0.35rem 0 0; font-size: 0.85rem; color: var(--text-dim); }
+.gd-link { background: none; border: none; padding: 0; color: var(--rust-dark); text-decoration: underline; cursor: pointer; font: inherit; }
+.gd-limpar { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.gd-vazio { margin: 0; font-style: italic; color: var(--text-dim); }
+.gd-recado { margin: 0.4rem 0 0; font-weight: 600; color: var(--ink); }
+
+/* ── as respostas, por lote ── */
+.gd-lote { border-top: 1px dashed var(--parchment3); padding-top: 0.5rem; margin-top: 0.5rem; }
+.gd-lote:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+.gd-lote-cab { margin: 0 0 0.3rem; }
+.gd-lote-cab small { color: var(--text-dim); margin-left: 0.3rem; }
+.gd-linhas { list-style: none; margin: 0 0 0.4rem; padding: 0; }
+.gd-linha { padding: 0.15rem 0; }
+.gd-linha-nome { font-weight: 600; margin-right: 0.3rem; }
+.gd-esperando { color: var(--text-dim); font-style: italic; }
+.gd-ok { color: var(--verde-dark, var(--verde)); font-weight: 700; }
+.gd-falhou { color: var(--carmim); font-weight: 700; }
+.gd-aplicado { font-size: 0.85rem; color: var(--text-mid); }
+.gd-aplicar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.5rem;
+  background: var(--parchment2); border-radius: var(--raio, 4px); padding: 0.4rem 0.5rem; }
+.gd-aplicar label { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.88rem; color: var(--text-mid); }
+.gd-aplicar-tit { font-weight: 700; font-size: 0.88rem; }
+.gd-in-curto { width: 7.5rem; }
+
+/* ── os botões ── */
+.gd-btn { font-family: var(--ga-fonte-corpo); font-size: 0.98rem; cursor: pointer; border-radius: var(--raio, 4px);
+  border: 1px solid var(--gold-dim, var(--gold)); background: var(--parchment2); color: var(--ink); padding: 0.4rem 0.8rem; min-height: 40px; }
+.gd-btn--forte { background: var(--faixa); color: var(--faixa-tinta); border-color: var(--faixa); font-weight: 700; }
+.gd-btn:disabled { opacity: 0.55; cursor: default; }
+
+/* ── a pilha de pop-ups na tela do jogador: no alto, grande, sem travar a página ── */
+.gd-pilha { position: fixed; top: 0.8rem; left: 50%; transform: translateX(-50%); z-index: 9000;
+  display: flex; flex-direction: column; gap: 0.6rem; width: min(94vw, 460px); pointer-events: none; }
+.gd-pop { pointer-events: auto; background: var(--parchment); color: var(--ink); border: 2px solid var(--gold);
+  border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); padding: 0.9rem 1rem; animation: gd-entra 0.25s ease-out; }
+.gd-pop--rolagem { border-color: var(--faixa); }
+.gd-pop--aplicado { border-color: var(--carmim); }
+.gd-pop--efeito { border-color: var(--verde, var(--gold)); }
+.gd-pop-de { margin: 0 0 0.2rem; font-size: 0.85rem; color: var(--text-mid); }
+.gd-pop-tit { margin: 0 0 0.3rem; font-family: var(--ga-fonte-titulo, 'Cinzel', Georgia, serif); font-size: 1.35rem; line-height: 1.25; }
+.gd-pop-cd { font-size: 0.95rem; font-weight: 700; color: var(--rust-dark); margin-left: 0.4rem; white-space: nowrap; }
+.gd-pop-motivo { margin: 0 0 0.3rem; font-style: italic; color: var(--text-mid); }
+.gd-pop-quem { margin: 0 0 0.3rem; font-weight: 600; }
+.gd-pop-conta { margin: 0 0 0.5rem; font-size: 1.25rem; font-weight: 700; }
+.gd-pop-conta small { font-size: 0.8rem; font-weight: 400; color: var(--text-dim); }
+.gd-pop-extra { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.9rem; color: var(--text-mid); margin-bottom: 0.6rem; }
+.gd-pop-extra input { width: 6rem; font-size: 1rem; padding: 0.3rem 0.4rem; color: var(--ink);
+  background: var(--parchment2); border: 1px solid var(--parchment3); border-radius: var(--raio, 4px); }
+.gd-pop-acoes { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.gd-pop-res { margin: 0.6rem 0 0; font-size: 1.1rem; }
+@keyframes gd-entra { from { transform: translateY(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
+:root.ga-sem-movimento .gd-pop { animation: none; }
+@media (prefers-reduced-motion: reduce) { .gd-pop { animation: none; } }

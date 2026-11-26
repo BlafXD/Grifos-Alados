@@ -11111,6 +11111,67 @@
       const f = (dados.fichas || []).find(x => x.id === fichaId);
       return f ? avisoDeTurno(f, rodada) : false;
     },
+    //  ── DISPAROS DA MESA (25/11/2026) ─────────────────────────────
+    //  O 🎯 controlador do mestre e o ✨ disparo para aliados (js/disparos.js)
+    //  falam com a ficha só por estas duas portas, e só com as fichas DESTE
+    //  aparelho — quem escreve a ficha é o dono dela, como sempre.
+    //  O BÔNUS de um teste: o número que a própria ficha mostraria (já com
+    //  treino, metade do nível, atributo, os ∑ do painel ⚡ e as lesões).
+    //  A ficha mora NESTE aparelho? (só o dono aplica o que chega de fora)
+    ehDaqui: function (fichaId) { return (dados.fichas || []).some(x => x.id === fichaId); },
+    bonusTeste: function (fichaId, alvo) {
+      const f = (dados.fichas || []).find(x => x.id === fichaId);
+      if (!f || !alvo) return null;
+      if (alvo.tipo === 'atributo') {
+        const a = (D.ATRIBUTOS || []).find(x => x.chave === alvo.chave);
+        return a ? { bonus: atr(f, a.chave), rotulo: a.nome, ficha: f.nome || 'Personagem' } : null;
+      }
+      const P = D.pericia(alvo.chave);
+      return P ? { bonus: valorPericia(f, alvo.chave), rotulo: P.nome, ficha: f.nome || 'Personagem' } : null;
+    },
+    //  APLICAR o que chegou de fora: dano (com tipo), cura, uma condição do
+    //  livro, ou um efeito no painel ⚡ (bônus com fonte e duração). Passa
+    //  pelos mesmos caminhos dos botões da ficha (temporários primeiro, PV
+    //  manchado, histórico de jogo) e sobe para a mesa por grupo. Devolve
+    //  uma frase do que aconteceu, para o aviso do pop-up.
+    aplicarDeFora: function (fichaId, acao) {
+      const f = (dados.fichas || []).find(x => x.id === fichaId);
+      if (!f || !acao) return '';
+      const porQue = String(acao.porQue || '').slice(0, 80);
+      const partes = [];
+      const n = v => Math.max(0, Math.round(Number(v) || 0));
+      if (n(acao.dano)) {
+        const tipo = String(acao.tipoDano || '').slice(0, 30);
+        aplicarDano(f, 'pv', n(acao.dano), porQue + (tipo ? (porQue ? ' — ' : '') + tipo : ''));
+        partes.push('−' + n(acao.dano) + ' PV' + (tipo ? ' de ' + tipo : ''));
+      }
+      if (n(acao.cura)) {
+        const antes = pvAtual(f);
+        aplicarCura(f, 'pv', n(acao.cura));        // o mesmo caminho do ✚ da ficha (teto, PV manchado, histórico)
+        const ganho = pvAtual(f) - antes;
+        partes.push(ganho ? '+' + ganho + ' PV' : 'PV já no máximo');
+      }
+      if (acao.condicao) {
+        const k = chaveCond(String(acao.condicao));
+        if (acharCond(k) && f.condicoes.indexOf(k) < 0) {
+          f.condicoes.push(k); sujar(f.id, 'condicoes');
+          partes.push('condição ' + acharCond(k).nome);
+        }
+      }
+      if (acao.efeito && typeof acao.efeito === 'object') {
+        const e = acao.efeito;
+        const alcance = EFEITO_ALCANCES.some(x => x.v === e.alcance) ? e.alcance : 'tudo';
+        const duracao = EFEITO_DURACOES.some(x => x.v === e.duracao) ? e.duracao : 'cena';
+        const valor = parseInt(e.valor, 10) || 0;
+        f.efeitosEmJogo.push({ id: novoId(), fonte: String(e.fonte || porQue || 'efeito').slice(0, 80),
+          valor: valor, alcance: alcance, pericia: '', duracao: duracao, somar: !!valor, ativo: true });
+        sujar(f.id, 'efeitosEmJogo');
+        partes.push((valor >= 0 ? '+' : '−') + Math.abs(valor) + ' (' + String(e.fonte || porQue || 'efeito').slice(0, 40) + ')');
+      }
+      if (!partes.length) return '';
+      salvar(); render();
+      return partes.join(' · ');
+    },
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
