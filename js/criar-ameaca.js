@@ -3172,7 +3172,12 @@
       ? '<p class="ca-nota">Mais ' + (itens.length - LIMITE) + ' — refine a busca.</p>' : '');
   }
 
-  function abrirModalBase(modo) {
+  function abrirModalBase(modo, jaEsperou) {
+    //  As fichas dos livros vêm no pacote do bestiário, que chega depois da
+    //  página (GA_Pacotes, faxina de 25/11/2026): espera UMA vez e abre.
+    if (!jaEsperou && window.GA_Pacotes && !window.GA_Pacotes.pronto('bestiario')) {
+      return window.GA_Pacotes.depois('bestiario', function () { abrirModalBase(modo, true); });
+    }
     const bando = modo === 'bando';
     const B = window.GA_FichasProntas;
     const livros = B ? B.livros().filter(function (l) { return l.disponivel; }) : [];

@@ -407,13 +407,20 @@ window.GA_FichasProntas = (function () {
                         title="${esc(l.nome)}">
                   <span class="fp-livro-ico">${l.icone}</span>
                   <span class="fp-livro-nome">${esc(l.curto)}</span>
-                  <span class="fp-livro-qtd">${n ? n : 'em breve'}</span>
+                  <span class="fp-livro-qtd">${n ? n : (bestiarioChegando() ? '…' : 'em breve')}</span>
                 </button>`;
       }).join('') + `</nav>`;
   }
 
   function corpoDoLivro(l) {
     const cats = categoriasDe(l);
+    if (!cats.length && bestiarioChegando()) {
+      return `
+        <div class="cr-embreve fp-embreve" role="status">
+          <strong>${l.icone} ${esc(l.nome)} — carregando as fichas…</strong>
+          <p>O bestiário chega logo depois da página (é o maior pedaço do site). Um instante.</p>
+        </div>`;
+    }
     if (!cats.length) {
       return `
         <div class="cr-embreve fp-embreve">
@@ -662,7 +669,19 @@ window.GA_FichasProntas = (function () {
       if (termo.trim()) reforcoSel = null;      // digitar desfaz a seleção de reforço
       aplicarFiltro(cont);
     });
+
+    //  O BESTIÁRIO CHEGA DEPOIS (faxina de 25/11/2026): a aba desenha com o
+    //  que tem, avisa que está carregando e se redesenha quando o pacote
+    //  chega. Abrir a aba antes disso pede o pacote na hora.
+    document.addEventListener('ga-pacote', e => {
+      if (e.detail && e.detail.nome === 'bestiario') render();
+    });
+    const nav = document.querySelector('.nav-link[data-section="fichas-prontas"]');
+    if (nav && window.GA_Pacotes) nav.addEventListener('click', () => window.GA_Pacotes.carregar('bestiario').catch(() => {}));
   }
+  //  O pacote ainda vem vindo? (enquanto isso, livro vazio é "carregando",
+  //  não "ainda não existe")
+  function bestiarioChegando() { return !!(window.GA_Pacotes && !window.GA_Pacotes.pronto('bestiario')); }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();

@@ -368,11 +368,9 @@
         const f = festa(v.mes, d);
         const ehHoje = !!hj && hj.mes === v.mes && hj.dia === d && hj.ano === a;
         const sel = d === v.dia;
-        const lembretes = window.GA_Caderno?.lembretesDia({ano:a,mes:v.mes,dia:d}) || [];
         const rot = (s ? s.nome + ', ' : '') + d + ' de ' + M.nome + (f ? ' — ' + f.nome : '') +
-                    (ehHoje ? ' (hoje na campanha)' : '') + (lembretes.length ? ' — '+lembretes.length+' obrigação(ões) pendente(s)' : '');
+                    (ehHoje ? ' (hoje na campanha)' : '');
         h += '<button type="button" class="cal-dia' + (f ? ' cal-dia--festa' : '') +
-             (lembretes.length ? ' cal-dia--obrigacao' : '') +
              (ehHoje ? ' cal-dia--hoje' : '') + (sel ? ' cal-dia--sel' : '') +
              '" data-cal-dia="' + d + '" aria-pressed="' + sel + '" title="' + esc(rot) +
              '" aria-label="' + esc(rot) + '">' + d + '</button>';
@@ -416,8 +414,6 @@
       navs.forEach(b => { b.disabled = !podeIr(+b.dataset.calNav); });
       caixa.innerHTML = v.mes === 0 ? gradeNimb() : gradeMes(a);
       info.innerHTML = linhaInfo(a);
-      const lembretes = window.GA_Caderno?.lembretesDia({ano:a,mes:v.mes,dia:v.dia,apos:v.apos}) || [];
-      if (lembretes.length) info.innerHTML += '<div class="cal-obrigacoes"><strong>Obrigações da campanha</strong>' + lembretes.map(l=>'<p>'+esc(l.personagem)+': '+esc(l.texto)+'<br><small>'+esc(l.fonte)+'</small></p>').join('') + '</div>';
     }
 
     function valor() {

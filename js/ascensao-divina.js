@@ -45,7 +45,14 @@ window.GA_Ascensao = (() => {
         const recompensas=acao.sucessos>=2?acao.sucessos-1+(acao.ousada?1:0):0;
         s.buscas.push({id:acao.id,nome:acao.nome||'Busca',finalidade:acao.finalidade,sucessos:acao.sucessos,ousada:!!acao.ousada,recompensas,castigos:acao.sucessos===0?1:0,consumidas:0,em:Date.now()});break;
       }
-      case 'ascender':exigir(s.status===0&&s.feitoAprovado&&saldo(s,'ascensao')>=2,'A ascensão exige feito aprovado e duas recompensas de buscas.');exigir(s.caminho!=='indeciso','Escolha o caminho.');exigir(naturezas.includes(s.natureza),'Natureza inválida.');if(s.caminho==='ascender')s.natureza='Mortal ascendido';exigir(s.caminho!=='guardiao'||s.divindade.trim(),'Registre o deus vinculado ao guardião.');consumir(s,'ascensao',2);s.status=1;s.ascendeu=true;break;
+      case 'ascender':exigir(s.status===0&&s.feitoAprovado&&saldo(s,'ascensao')>=2,'A ascensão exige feito aprovado e duas recompensas de buscas.');exigir(s.caminho!=='indeciso','Escolha o caminho.');exigir(naturezas.includes(s.natureza),'Natureza inválida.');if(s.caminho==='ascender')s.natureza='Mortal ascendido';exigir(s.caminho!=='guardiao'||s.divindade.trim(),'Registre o deus vinculado ao guardião.');consumir(s,'ascensao',2);s.status=1;s.ascendeu=true;
+        // DEVOÇÃO (Deuses de Arton, p. 234): quem ascende perde a devoção anterior e
+        // vira devoto de si mesmo; o guardião vira devoto do deus menor que serve.
+        // Fica registrado de quem ele era devoto e o que dependia disso — a ficha não
+        // é tocada daqui: quem revisa os poderes concedidos é o mestre, na ficha.
+        s.devocaoAnterior=String(acao.devocaoAnterior||'').trim().slice(0,120);
+        s.concedidosAnteriores=(Array.isArray(acao.concedidos)?acao.concedidos:[]).map(x=>String(x).slice(0,80)).filter(Boolean).slice(0,40);
+        s.devotoDe=s.caminho==='guardiao'?s.divindade.trim():'si mesmo';break;
       case 'evoluir':exigir(s.status>=1&&s.status<5,'A progressão de deus menor termina no status 5.');exigir(saldo(s,'evolucao')>=2,'São necessárias duas recompensas para subir um status.');consumir(s,'evolucao',2);s.status++;break;
       case 'dadiva':validarDadiva(s,acao.dadiva,(acao.escolha||'').trim());exigir(saldo(s,'dadiva')>=1,'A dádiva exige uma recompensa dedicada a ela.');consumir(s,'dadiva',1);s.dadivas.push({tipo:acao.dadiva,escolha:(acao.escolha||'').trim(),em:Date.now()});break;
       case 'desafio':exigir(s.status>=1,'Desafios divinos começam após ascender.');exigir(acao.periodo&&!s.desafios.some(d=>d.periodo===acao.periodo),'Já existe um desafio neste tempo entre aventuras.');exigir(Number.isInteger(acao.dado)&&acao.dado>=1&&acao.dado<=10,'Use um resultado de 1d10.');s.desafios.push({periodo:acao.periodo,dado:acao.dado,status:s.status,total:acao.dado+s.status,resolvido:false,resultado:''});break;
@@ -57,6 +64,10 @@ window.GA_Ascensao = (() => {
       case 'fama':exigir(acao.delta===1||acao.delta===-1,'Ajuste de fama inválido.');{const n=s.status+acao.delta;exigir(n>=0&&n<=5,'A fama (status divino) vai de 0 a 5.');s.status=n;}break;
       case 'remover-dadiva':{const i=acao.indice;exigir(Number.isInteger(i)&&s.dadivas[i],'Dádiva não encontrada.');s.dadivas.splice(i,1);}break;
       case 'trocar-dadiva':{const i=acao.indice;exigir(Number.isInteger(i)&&s.dadivas[i],'Dádiva a trocar não encontrada.');const antiga=s.dadivas[i];s.dadivas.splice(i,1);const escolha=(acao.escolha||'').trim();validarDadiva(s,acao.dadiva,escolha);s.dadivas.splice(i,0,{tipo:acao.dadiva,escolha,em:Date.now(),trocadaDe:antiga.tipo});}break;
+      // GUARDIÃO (quadro "Guardiões Divinos", p. 234): as dádivas são do deus; o
+      // guardião recebe as que, a critério do mestre, possam se aplicar a ele —
+      // e fica escrito quais o mestre autorizou.
+      case 'guardiao-dadiva':{exigir(s.caminho==='guardiao','Só um guardião divino recebe dádivas do deus que serve.');const i=acao.indice;exigir(Number.isInteger(i)&&s.dadivas[i],'Dádiva não encontrada.');s.dadivas[i].paraGuardiao=!!acao.valor;}break;
       default:throw new Error('Ação desconhecida.');
     }return s;
   }

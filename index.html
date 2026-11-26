@@ -604,28 +604,18 @@
 <script src="js/animais-data.js" defer></script>
 <script src="js/familiares-data.js" defer></script>
 <script src="js/npcs-data.js" defer></script>
-<!-- só do mestre: o fecho do Guia de NPCs (deuses menores e lendas).
-     Acrescenta uma categoria ao GUIA_NPCS, então vem logo depois dele. -->
-<script src="js/npcs-lendas-data.js" defer></script>
 <script src="js/deuses-artigos-data.js" defer></script>
 <script src="js/devotos-data.js" defer></script>
 <script src="js/criticos-data.js" defer></script>
 <script src="js/masmorra-data.js" defer></script>
 <script src="js/tormenta-data.js" defer></script>
-<script src="js/fichas-t20-data.js" defer></script>
-<script src="js/fichas-ameacas-arton-data.js" defer></script>
-<script src="js/deuses-arton-data.js" defer></script>
-<!-- a segunda metade do mesmo livro (aspectos, celestiais, fadas, gênios
-     e gigantes). Acrescenta categorias ao FICHAS_DEUSES_ARTON, então vem
-     logo depois dele. -->
-<script src="js/deuses-servos-data.js" defer></script>
-<!-- a cara de cada divindade (paleta e símbolo sagrado) nas fichas dos
-     avatares: o fichas-prontas.js lê, então vem antes dele. -->
-<script src="js/deuses-visual-data.js" defer></script>
-<!-- a regra opcional de recursos naturais (Ameaças p. 401): o bloco 🦴 de
-     cada ficha sai daqui, e o patamar vem da tabela do criar-ameaca-data,
-     lida só na hora de desenhar (todo defer já rodou nessa altura). -->
-<script src="js/recursos-naturais-data.js" defer></script>
+<!-- O BESTIÁRIO (~2 MB) NÃO ENTRA AQUI desde 25/11/2026: as fichas do básico,
+     de Ameaças e de Deuses de Arton, os servos dos deuses, a cara de cada
+     divindade, os recursos naturais e as lendas do Guia de NPCs chegam pelo
+     GA_Pacotes (js/script.js), logo depois que a página fica pronta — ou na
+     hora, se alguém abrir antes uma tela que precise deles. A lista e a ORDEM
+     moram lá (deuses-servos completa o deuses-arton; npcs-lendas completa o
+     npcs-data, que continua aqui porque o ⚔ Combates usa as raças dele). -->
 <script src="js/fichas-prontas.js" defer></script>
 <script src="js/criar-ameaca-data.js" defer></script>
 <script src="js/criar-ameaca-manual.js" defer></script>

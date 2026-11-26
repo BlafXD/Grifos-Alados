@@ -65,6 +65,17 @@
     tipo.addEventListener('change', correr);
     correr();
     montado = true;
+
+    //  O bestiário chega depois da página (GA_Pacotes): quando ele chega, a
+    //  categoria "Criatura" entra no filtro e a busca aberta é refeita.
+    document.addEventListener('ga-pacote', () => {
+      const novos = window.GA_BuscaRegras
+        ? [...new Set(window.GA_BuscaRegras.indice().map(r => r.tipo))].sort((a, b) => a.localeCompare(b, 'pt-BR')) : [];
+      const escolhido = tipo.value;
+      tipo.innerHTML = '<option value="">Todas</option>' + novos.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
+      tipo.value = novos.indexOf(escolhido) >= 0 ? escolhido : '';
+      correr();
+    });
   }
 
   function init() {

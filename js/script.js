@@ -176,6 +176,79 @@ window.GA_guardar = (function () {
   };
 })();
 
+// ── PACOTES DE DADOS SOB DEMANDA (faxina de 25/11/2026) ──────────────
+// O bestiário dos quatro livros (~2 MB: as fichas do básico, de Ameaças e
+// de Deuses de Arton, os servos dos deuses, as lendas do Guia de NPCs e o
+// que só o card das fichas lê) entrava INTEIRO antes de a página ficar
+// pronta — inclusive para quem só ia abrir a Loja. Agora ele chega DEPOIS:
+// no primeiro respiro do navegador após o carregamento, ou na hora, se
+// alguém abrir antes uma tela que precise dele (quem chama `carregar` recebe
+// a mesma promessa). Os arquivos de um pacote rodam na ORDEM da lista — o
+// deuses-servos completa o deuses-arton — e cada um roda uma vez só.
+// Quando um pacote termina, o documento recebe o evento `ga-pacote`
+// ({detail:{nome}}), e quem desenhou sem ele se redesenha.
+window.GA_Pacotes = (function () {
+  const PACOTES = {
+    bestiario: [
+      'js/fichas-t20-data.js', 'js/fichas-ameacas-arton-data.js',
+      'js/deuses-arton-data.js', 'js/deuses-servos-data.js',
+      'js/deuses-visual-data.js', 'js/recursos-naturais-data.js',
+      'js/npcs-lendas-data.js',
+    ],
+  };
+  const promessas = {}, prontos = {}, carregados = {};
+  function carregar(nome) {
+    if (promessas[nome]) return promessas[nome];
+    const arquivos = PACOTES[nome];
+    if (!arquivos) return Promise.reject(new Error('pacote desconhecido: ' + nome));
+    promessas[nome] = new Promise(function (resolve, reject) {
+      const faltam = arquivos.filter(function (src) { return !carregados[src]; });
+      let resta = faltam.length;
+      const fim = function () {
+        prontos[nome] = true;
+        resolve();
+        try { document.dispatchEvent(new CustomEvent('ga-pacote', { detail: { nome: nome } })); } catch (e) {}
+      };
+      if (!resta) return fim();
+      faltam.forEach(function (src) {
+        const s = document.createElement('script');
+        s.src = src;
+        s.async = false;                       // inserido pelo JS, mas roda na ordem da lista
+        s.onload = function () { carregados[src] = true; if (--resta === 0) fim(); };
+        s.onerror = function () {
+          delete promessas[nome];              // um próximo pedido tenta de novo (só o que faltou)
+          reject(new Error('não deu para carregar ' + src));
+        };
+        document.head.appendChild(s);
+      });
+    });
+    return promessas[nome];
+  }
+  // Só a página do mestre usa o bestiário (a dos jogadores nem tem a aba):
+  // lá ele é buscado sozinho, no primeiro respiro depois do carregamento.
+  function buscarNoRespiro() {
+    if (!document.getElementById('fichas-prontas')) return;
+    const vai = function () {
+      Object.keys(PACOTES).forEach(function (n) {
+        carregar(n).catch(function (e) { console.warn('[pacotes]', e && e.message); });
+      });
+    };
+    if (window.requestIdleCallback) window.requestIdleCallback(vai, { timeout: 3000 });
+    else setTimeout(vai, 800);
+  }
+  if (document.readyState === 'complete') buscarNoRespiro();
+  else window.addEventListener('load', buscarNoRespiro, { once: true });
+  return {
+    carregar: carregar,
+    pronto: function (nome) { return !!prontos[nome]; },
+    // garante o pacote e então faz `fn` (na hora, se ele já chegou)
+    depois: function (nome, fn) {
+      if (prontos[nome]) return fn();
+      carregar(nome).then(fn, function (e) { console.warn('[pacotes]', e && e.message); fn(); });
+    },
+  };
+})();
+
 // ── CONVERSA ENTRE ABAS DO MESMO NAVEGADOR ───────────────────────────
 // Duas abas do site abertas no mesmo navegador têm, cada uma, sua CÓPIA
 // dos dados na memória, carregada uma vez no início. Sem conversa, uma

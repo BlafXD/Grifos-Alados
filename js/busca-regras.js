@@ -21,6 +21,9 @@ window.GA_BuscaRegras = (()=>{
     add('Regra opcional',(window.GA_CadernoCore?.opcionais||[]).map(([id,nome,fonte])=>({id,nome,fonte,texto:'Regra opcional: '+nome+'. O texto completo está no livro — '+fonte+'.'})),d=>d.fonte);
     cache=out;return out;
   }
+  // O bestiário chega depois da página (GA_Pacotes): um índice montado antes
+  // dele ficaria sem as criaturas para sempre — então ele é refeito.
+  if(typeof document!=='undefined'&&document.addEventListener)document.addEventListener('ga-pacote',()=>{cache=null;});
   function buscar(q,tipo=''){const termos=window.GA_semAcento(q).split(/\s+/).filter(Boolean);return indice().filter(r=>(!tipo||r.tipo===tipo)&&termos.every(t=>r.busca.includes(t)));}
   return {indice,buscar,encontrar:id=>indice().find(r=>r.id===id)};
 })();

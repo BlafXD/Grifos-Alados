@@ -11081,7 +11081,12 @@
       if (window.GA_Mesa?.transmite()) Object.entries(remotas).forEach(([dono, fs]) => {
         Object.values(fs || {}).forEach(f => { if (!lista.some(x => x.f.id === f.id)) lista.push({ f, dono }); });
       });
+      //  `divindade` e `concedidos` (só leitura): ao ascender, o Caderno diz
+      //  ao mestre de quem ele era devoto e quais poderes dependiam disso
+      //  (Deuses de Arton, p. 234) — a ficha continua sendo editada só aqui.
       return lista.map(({ f, dono }) => ({ id:f.id, nome:f.nome || 'Sem nome', dono,
+        divindade: String(f.divindade || ''),
+        concedidos: (f.poderes || []).filter(p => p.grupo === 'concedido').map(p => String(p.nome || '')).filter(Boolean),
         inventario:(f.inventario || []).map(i => ({ id:i.id, nome:i.nome || 'Item sem nome' })) }));
     },
     //  O gerador (js/ficha-gerador.js) entrega uma ficha pré-preenchida;

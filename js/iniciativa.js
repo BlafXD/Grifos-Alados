@@ -43,11 +43,16 @@
   let linhas = {};            // id → { nome, tipo, ordem }
   let valores = {};           // id → { valor, mod }   (só o mestre)
   let atual = null, rodada = 1;
+  let quando = 0;             // última mexida na lista (para o "⏸ parado desde…")
+  const PARADO_MS = 6 * 60 * 60 * 1000;   // seis horas sem mexer = combate parado
   let turnoVisto;             // combatente + rodada já vistos: não repete o aviso de turno
   let refs = [], salaLigada = '';
   let recado = '';            // aviso de uma vez só, no lugar da lista vazia
 
-  const LOCAL_KEY   = 'grifosAlados.iniciativaLocal';    // a lista deste navegador
+  //  A lista deste navegador é POR CAMPANHA (faxina de 25/11/2026): era uma
+  //  chave só, e o combate velho da bancada aparecia em qualquer campanha.
+  const LOCAL_KEY   = window.GA_Sala ? window.GA_Sala.chave('grifosAlados.iniciativaLocal')
+                                     : 'grifosAlados.iniciativaLocal';
   const GRUPO_KEY   = 'grifosAlados.iniciativaGrupo';    // os nomes dos jogadores
   const ABERTO_KEY  = 'grifosAlados.iniciativaAberta';   // recolhido ou não
   const VISIVEL_KEY = 'grifosAlados.iniciativaVisivel';  // aberto pelo botão ⚔
@@ -63,7 +68,16 @@
     return _paginaMestre;
   }
   function naMesa() { return !!(mesa && mesa.souMembro); }
-  function local()  { return paginaDoMestre() && !naMesa(); }
+  //  A MESA AINDA ESTÁ RESPONDENDO (faxina de 25/11/2026). Numa página de
+  //  campanha, o login e o papel na mesa chegam um instante depois do F5.
+  //  Nesse meio-tempo a iniciativa se achava "fora de mesa" e desenhava a
+  //  lista LOCAL — o combate velho que aparecia ao recarregar. Agora ela
+  //  espera: sem lista, sem botões, até a mesa dizer quem é quem.
+  function resolvendo() {
+    return !!(window.GA_Sala && window.GA_Sala.id && mesa && mesa.configurado &&
+              (!mesa.pronto || (mesa.usuario && !mesa.papelLido)));
+  }
+  function local()  { return paginaDoMestre() && !naMesa() && !resolvendo(); }
   function mando()  { return local() || !!(mesa && mesa.transmite); }   // mestre ou auxiliar
   function base()    { return 'mesas/' + mesa.mesaId + '/iniciativa'; }
   //  Os valores moram FORA do nó da iniciativa, e não dentro dele: no
@@ -73,11 +87,16 @@
   function baseVal() { return 'mesas/' + mesa.mesaId + '/iniciativaValores'; }
 
   // ── A LISTA DESTE NAVEGADOR ──────────────────────────────────────
-  function zerar() { linhas = {}; valores = {}; atual = null; rodada = 1; turnoVisto = undefined; }
+  function zerar() { linhas = {}; valores = {}; atual = null; rodada = 1; quando = 0; turnoVisto = undefined; }
+  //  O carimbo vai com cada escrita: o do servidor na mesa, o do relógio aqui fora.
+  function carimbo() {
+    return (typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue)
+      ? firebase.database.ServerValue.TIMESTAMP : Date.now();
+  }
   function salvarLocal() {
     try {
       localStorage.setItem(LOCAL_KEY, JSON.stringify({
-        linhas: linhas, valores: valores, atual: atual, rodada: rodada,
+        linhas: linhas, valores: valores, atual: atual, rodada: rodada, atualizadoEm: (quando = Date.now()),
       }));
     } catch (e) {}
   }
@@ -88,6 +107,7 @@
       valores = (j && j.valores) || {};
       atual   = (j && j.atual)   || null;
       rodada  = (j && j.rodada)  || 1;
+      quando  = (j && j.atualizadoEm) || 0;
     } catch (e) { zerar(); }
     // A carga inicial só registra o turno. O primeiro clique em passar
     // já é um turno novo, inclusive quando só resta um combatente vivo.
@@ -178,6 +198,11 @@
       err => { if (r.ativa) console.warn('[iniciativa] ' + caminho + ':', err && err.message); });
   }
   function assinar() {
+    if (resolvendo()) {               // a mesa ainda não disse quem é quem: nada na tela
+      if (salaLigada === '@espera') return;
+      desligarRefs(); zerar(); salaLigada = '@espera';
+      return;
+    }
     if (local()) {                    // fora de mesa: a lista é a deste navegador
       if (salaLigada === '@local') return;
       desligarRefs(); salaLigada = '@local'; recado = '';
@@ -195,6 +220,7 @@
       linhas = (v && v.linhas) || {};
       atual = (v && v.atual) || null;
       rodada = (v && v.rodada) || 1;
+      quando = (v && typeof v.atualizadoEm === 'number') ? v.atualizadoEm : 0;
       aoMudarAtual();
     });
     // os valores são só do mestre — assinar sendo jogador daria um
@@ -279,6 +305,7 @@
       salvarLocal(); return render();
     }
     const b = db(); if (!b) return;
+    patch.atualizadoEm = carimbo();
     b.ref(base()).update(patch)
       .catch(e => console.warn('[iniciativa] não deu para gravar:', e && e.message));
   }
@@ -448,7 +475,7 @@
     const o = (opc && typeof opc === 'object') ? opc : { manterAtual: !!opc };
     const manterAtual = !!o.manterAtual;
     const ordenada = o.preservar ? lista.slice() : ordenar(lista);
-    const publico = { linhas: {}, rodada: o.rodada || (manterAtual ? (rodada || 1) : 1) };
+    const publico = { linhas: {}, rodada: o.rodada || (manterAtual ? (rodada || 1) : 1), atualizadoEm: carimbo() };
     const secreto = {};
     ordenada.forEach((l, i) => {
       const id = l.id || ('l' + Date.now().toString(36) + i.toString(36));
@@ -949,6 +976,16 @@
         //  para quem monta: os jogadores não precisam ver isto.
         if (temLista && recado) {
           corpo += '<p class="ga-ini-vazio ga-ini-vazio--alerta">⚠ ' + esc(recado) + botoesDoRecado() + '</p>';
+        }
+        //  UM COMBATE PARADO HÁ HORAS (faxina de 25/11/2026): a lista fica até
+        //  alguém limpar — o que é certo quando a luta continua na semana que
+        //  vem, mas confunde quando ela já acabou. Não se apaga nada sozinho:
+        //  o painel só diz desde quando ela está parada.
+        if (temLista && quando && Date.now() - quando > PARADO_MS) {
+          let dataTxt = '';
+          try { dataTxt = new Date(quando).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); } catch (e) {}
+          corpo += '<p class="ga-ini-prev ga-ini-prev--parado">⏸ Combate parado desde ' + esc(dataTxt) +
+            '. Se ele já acabou, 🗑 Limpar.</p>';
         }
         // Prévia de qual cena vai entrar — ANTES de montar, não depois. É o
         // que deixa ver, de cara, se o que vai subir para a mesa é a cena

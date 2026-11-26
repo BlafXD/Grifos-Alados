@@ -111,7 +111,9 @@
     refsMembro = [];
     membrosLigado = '';
   }
-  function ligar(caminho, cb) {
+  //  `aoFalhar`: quem precisa saber que a leitura VOLTOU, mesmo recusada
+  //  (o papel na mesa — ver `papelLido`).
+  function ligar(caminho, cb, aoFalhar) {
     const b = db(); if (!b) return;
     const ref = b.ref(caminho);
     const r = { ref: ref, cb: null, ativa: true };
@@ -119,7 +121,10 @@
     // "sem permissão" aqui é resposta, não falha: quer dizer que esta
     // pessoa não é dessa parte da mesa.
     r.cb = ref.on('value', snap => { if (r.ativa) { cb(snap.val()); avisar(); } },
-      err => console.warn('[mesa] ' + caminho + ':', err && err.message));
+      err => {
+        console.warn('[mesa] ' + caminho + ':', err && err.message);
+        if (r.ativa && aoFalhar) { aoFalhar(err); avisar(); }
+      });
   }
 
   function assinar() {
@@ -127,6 +132,7 @@
     const id = mesaId();
     est.membros = {}; est.pedidos = {}; est.meuPedido = null; est.papel = null;
     est.mesa = null; est.minhasMesas = {};
+    est.papelLido = false;   // a resposta de "eu sou membro?" ainda não voltou
 
     const u = est.usuario;
 
@@ -150,10 +156,11 @@
 
     // "eu sou membro?" — cada um lê o próprio nó, sempre
     ligar('mesas/' + id + '/membros/' + u.uid, v => {
+      est.papelLido = true;
       est.papel = (v && v.papel) || null;
       if (est.papel) { est.meuPedido = null; assinarDeMembro(id); }
       else desligarMembro();   // saiu da mesa, ou o mestre o removeu: solta as escutas de membro
-    });
+    }, () => { est.papelLido = true; est.papel = null; });
     ligar('mesas/' + id + '/pedidos/' + u.uid, v => { est.meuPedido = v || null; });
     // as mesas de que ele participa — índice que ele mesmo guarda
     ligar('usuarios/' + u.uid + '/mesas', v => { est.minhasMesas = v || {}; });
@@ -278,7 +285,12 @@
       // campanha sem dono pararia de funcionar por causa de um carimbo
       // de data que o site não lê em lugar nenhum.
       return b.ref('mesas/' + id).update({
-            nome: nomeLimpo, dono: u.uid, entradaLivre: true,
+            //  NASCE FECHADA (25/11/2026): quem abre o link PEDE e o mestre
+            //  aprova. Porta aberta continua a um clique, no ✒ Esta campanha —
+            //  mas deixar qualquer conta Google entrar sozinha é escolha dele,
+            //  não o padrão. Vale só para campanha NOVA; as que existem ficam
+            //  como estão (o update não toca `entradaLivre` de quem já tem dono).
+            nome: nomeLimpo, dono: u.uid, entradaLivre: false,
             ['membros/' + u.uid]: souMestre,
           })
         .then(() => b.ref('usuarios/' + u.uid + '/mesas/' + id).set(nomeLimpo))
@@ -392,6 +404,7 @@
     const p = papelAtual();
     return {
       pronto:      est.pronto,
+      papelLido:   !!est.papelLido,   // já se sabe se esta conta é da mesa (e com que papel)
       usuario:     est.usuario,
       papel:       est.papel,
       papelRotulo: p ? p.rotulo : '',

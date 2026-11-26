@@ -77,10 +77,11 @@ uma hospedagem para o site (**GitHub Pages**).
    > nunca chega ao banco. Escrever, idem — o dono escreve a sua, e o mestre
    > escreve todas (é o que deixa ele baixar o PV no meio do combate).
 
-   > 🚪 **Porta aberta é o padrão.** Uma mesa nasce com `entradaLivre: true`:
-   > quem abre o link e entra com o Google vira jogador num clique, e o mestre
-   > vê o nome aparecer na lista (e pode tirar). Quem quiser mesa fechada troca
-   > para "com aprovação" no cartão ✒ Esta mesa, e aí volta o pede-e-aprova.
+   > ✋ **Com aprovação é o padrão** (desde 25/11/2026). Uma mesa nasce com
+   > `entradaLivre: false`: quem abre o link e entra com o Google *pede* para
+   > entrar, e o mestre aprova (e escolhe o papel) na aba 🎲 Mesa. Quem quiser
+   > porta aberta troca para "🚪 Porta aberta" no cartão ✒ Esta campanha — aí
+   > quem entrar vira jogador num clique, e o mestre vê o nome aparecer na lista.
    >
    > 🎩 **Quem cria é dono.** Qualquer pessoa logada cria a campanha dela e a
    > mesa dela, e vira mestre daquilo — ninguém precisa autorizar. O nome da

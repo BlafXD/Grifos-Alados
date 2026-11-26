@@ -313,6 +313,12 @@
   font-weight: 600;
   color: var(--carmim);
 }
+/* combate parado há horas: aviso calmo, sem cor de erro (nada se perdeu) */
+.ga-ini-prev--parado {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ink);
+}
 
 /* a nota de "esta lista está só nesta tela" (fora de mesa) */
 .ga-ini-nota {

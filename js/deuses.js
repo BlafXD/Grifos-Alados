@@ -215,6 +215,14 @@
       const cont = document.getElementById('deuses-content');
       if (cont) cont.innerHTML = `<div class="cr-erro"><strong>Erro ao montar a aba:</strong><br>${esc(err && err.message || err)}</div>`;
     }
+    //  As fichas dos avatares vêm no pacote do bestiário, que chega depois da
+    //  página (GA_Pacotes): quando ele chega, os cards dos Maiores ganham o
+    //  atalho para a ficha do avatar.
+    document.addEventListener('ga-pacote', e => {
+      if (!(e.detail && e.detail.nome === 'bestiario')) return;
+      const ativo = document.querySelector('#deuses-content [data-dv-modo].cr-subtab--ativa');
+      if (!ativo || ativo.dataset.dvModo === 'maiores') mostrar('maiores');
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

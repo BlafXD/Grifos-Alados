@@ -6483,7 +6483,13 @@
     return B.livros().filter(l => l.disponivel);
   }
 
-  function abrirModalNPCs(si, ci) {
+  function abrirModalNPCs(si, ci, jaEsperou) {
+    //  O bestiário chega depois da página (GA_Pacotes, faxina de 25/11/2026):
+    //  sem ele o modal mostraria só o Guia de NPCs. Ainda não chegou? Espera
+    //  UMA vez (deu certo ou não) e abre com o que tiver.
+    if (!jaEsperou && window.GA_Pacotes && !window.GA_Pacotes.pronto('bestiario')) {
+      return window.GA_Pacotes.depois('bestiario', () => abrirModalNPCs(si, ci, true));
+    }
     fecharModalNPCs();
     _npcAlvo = { s: si, c: ci };
 

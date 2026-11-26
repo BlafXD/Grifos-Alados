@@ -7,12 +7,13 @@ const vm = require('node:vm');
 const source = fs.readFileSync(path.join(__dirname, '../js/iniciativa.js'), 'utf8');
 const json = value => JSON.parse(JSON.stringify(value));
 
-function ambiente(combate, { online = false, transmite = true } = {}) {
-  const storage = new Map([['grifosAlados.iniciativaLocal', JSON.stringify(combate)]]);
+function ambiente(combate, { online = false, transmite = true, sala = '', mesaExtra = {} } = {}) {
+  const CHAVE = 'grifosAlados.iniciativaLocal' + (sala ? '@' + sala : '');
+  const storage = new Map([[CHAVE, JSON.stringify(combate)]]);
   const avisos = [], subscriptions = [], panels = [];
   let listener;
   let mesa = { mesaId: 'campanha', souMembro: online, transmite,
-    usuario: { uid: 'mestre' }, membros: {}, minhasMesas: {} };
+    usuario: { uid: 'mestre' }, membros: {}, minhasMesas: {}, ...mesaExtra };
   const initial = { ...combate };
   function node() {
     return { innerHTML: '', handlers: {}, classList: { add() {}, remove() {} },
@@ -39,6 +40,7 @@ function ambiente(combate, { online = false, transmite = true } = {}) {
     GA_Ficha: { avisoTurno(id, rodada) { avisos.push({ id, rodada }); }, visiveis: () => [] },
     GA_Mesa: { db: () => db, aoMudar(cb) { listener = cb; cb(mesa); } },
   };
+  if (sala) window.GA_Sala = { id: sala, chave: k => k + '@' + sala };
   vm.runInNewContext(source, {
     window, console, confirm: () => true,
     setTimeout: () => 0, clearTimeout() {},
@@ -53,7 +55,7 @@ function ambiente(combate, { online = false, transmite = true } = {}) {
     click(acao, id) {
       panels.at(-1).handlers.click({ preventDefault() {}, target: { closest: () => ({ dataset: { ini: acao, id } }) } });
     },
-    saved() { return JSON.parse(storage.get('grifosAlados.iniciativaLocal')); },
+    saved() { return JSON.parse(storage.get(CHAVE)); },
   };
 }
 
@@ -175,4 +177,16 @@ test('tirar e invocar conservam a ordem feita à mão', () => {
   assert.deepEqual(ordem().filter(n => n !== 'Capanga'), ['Dragão', 'Anão', 'Clériga'], 'os de antes ficam onde estavam');
   assert.ok(ordem().indexOf('Capanga') > ordem().indexOf('Anão'), 'o 12 entra depois do 20');
   assert.equal(h.saved().linhas[h.saved().atual].nome, 'Anão', 'a vez não mudou de dono');
+});
+
+// Faxina de 25/11/2026: no F5 de uma página de campanha, enquanto o login e o
+// papel não voltam, a iniciativa não desenha a lista local (o "combate velho").
+test('na campanha, nada da lista local aparece enquanto a mesa responde', () => {
+  const h = ambiente(quatro('a'), { sala: 'campanha',
+    mesaExtra: { configurado: true, pronto: false, papelLido: false, usuario: null, souMembro: false } });
+  assert.equal(h.api.combatentes().length, 0, 'login ainda não voltou');
+  h.change({ pronto: true, usuario: { uid: 'mestre' } });
+  assert.equal(h.api.combatentes().length, 0, 'o papel na mesa ainda não voltou');
+  h.change({ papelLido: true });                    // respondeu: não é membro → a lista desta campanha
+  assert.equal(h.api.combatentes().length, 4);
 });

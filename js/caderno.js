@@ -29,7 +29,11 @@
       const alvo=b.dataset.cadTab;
       bar.querySelectorAll('[data-cad-tab]').forEach(x=>x.classList.toggle('cr-subtab--ativa',x===b));
       sec.querySelectorAll('[data-cad-panel]').forEach(p=>{p.hidden=(p.dataset.cadPanel!==alvo);});
+      if(alvo==='ascensao')render();   // o seletor de ficha pega as fichas criadas depois do 1º desenho
     });
+    // Voltar ao Caderno com a Ascensão aberta também redesenha (mesmo motivo).
+    const nav=document.querySelector('.nav-link[data-section="caderno"]');
+    if(nav)nav.addEventListener('click',()=>{const p=sec.querySelector('[data-cad-panel="ascensao"]');if(p&&!p.hidden)render();});
   }
 
   // ── Ascensão de Deus menor ───────────────────────────────────────
@@ -69,12 +73,27 @@
     const a=A.dadivas.find(x=>x.id===g.tipo);
     const abaixo=a&&a.status&&s.status<a.status;   // a fama caiu abaixo do que o poder exige
     const ref=s.id+'|'+i;
-    return `<details class="ga-cad-card" data-cad-aberto="dad:${esc(s.id)}:${i}"><summary>${esc(a?a.nome:g.tipo)} ${esc(g.escolha||'')}${abaixo?' ⚠':''}</summary>
+    const guardiao=s.caminho==='guardiao';
+    return `<details class="ga-cad-card" data-cad-aberto="dad:${esc(s.id)}:${i}"><summary>${esc(a?a.nome:g.tipo)} ${esc(g.escolha||'')}${abaixo?' ⚠':''}${guardiao&&g.paraGuardiao?' · 🛡 vale para o guardião':''}</summary>
       ${linhas(a?a.texto:'')}<small>Deuses de Arton, p. ${a?a.pagina:'—'}</small>
       ${abaixo?aviso('Requer status '+a.status+'; a fama atual é '+s.status+'.'):''}
-      <p>${btn('remover-dadiva','Remover poder',ref)}</p>
+      ${guardiao?dica(g.paraGuardiao?'Você autorizou: o guardião também recebe este benefício.':'Este benefício é do deus. Se ele puder se aplicar ao guardião, autorize abaixo (a critério do mestre, quadro "Guardiões Divinos", p. 234).'):''}
+      <p>${btn('remover-dadiva','Remover poder',ref)}${guardiao?btn(g.paraGuardiao?'guardiao-tirar':'guardiao-dar',g.paraGuardiao?'Não vale para o guardião':'Vale para o guardião',ref):''}</p>
       ${s.status>=1?form('trocar-dadiva',select('dadiva','Trocar por',A.dadivas.map(x=>[x.id,x.nome]),g.tipo)+input('escolha','Escolha exigida (perícia, atributo ou magia)',g.escolha),'Trocar poder',ref):''}
     </details>`;
+  }
+
+  // A DEVOÇÃO depois de ascender (Deuses de Arton, p. 234): quem ascende perde a
+  // devoção anterior e vira devoto de si mesmo; o guardião vira devoto do deus que
+  // serve. O Caderno não mexe na ficha — diz o que mudou e o que revisar nela.
+  function devocao(s){
+    const guardiao=s.caminho==='guardiao';
+    const deus=s.devotoDe&&s.devotoDe!=='si mesmo'?s.devotoDe:s.divindade;
+    let t=guardiao?'O guardião passa a ser devoto do deus menor que serve'+(deus?' ('+deus+')':'')+'.':'Ao ascender, o personagem perde a devoção anterior e passa a ser devoto de si mesmo.';
+    if(s.devocaoAnterior)t+=' Era devoto de '+s.devocaoAnterior+'.';
+    const lista=s.concedidosAnteriores||[];
+    if(lista.length)t+=' Revise na ficha os poderes concedidos que vinham dessa devoção: '+lista.join(', ')+'.';
+    return `<p class="ga-cad-devocao">⛩ ${esc(t)} <small>(Deuses de Arton, p. 234)</small></p>`;
   }
 
   function ascensao(d){return guia()
@@ -83,8 +102,8 @@
     +(d.ascensoes.length?'':vazio('Nenhum candidato registrado ainda.'))
     +d.ascensoes.map(s=>{const foiDeus=A.jaAscendeu(s),limite=2*s.status,excesso=s.dadivas.length-limite;
       return artigo(s.nome,`<p><strong>${status(s)}</strong> • ${s.caminho==='indeciso'?'Sem decisão sobre ascender':s.caminho==='guardiao'?'Guardião de '+esc(s.divindade):'Ascensão própria'} • ${btn('remover-divino','Remover',s.id)}</p>
-      ${foiDeus?`<p class="ga-cad-fama">⚖ Fama (status divino) — ajuste do mestre: ${s.status>0?btn('fama-menos','− Perder fama',s.id):''} <strong>${s.status}</strong> / 5 ${s.status<5?btn('fama-mais','+ Ganhar fama',s.id):''}</p>`:''}
-      ${s.status===0&&!s.feitoAprovado?form('editar-divino',select('caminho','Decisão',[['indeciso','Ainda não decidiu'],['ascender','Tornar-se deus menor'],['guardiao','Ser guardião de uma divindade']],s.caminho)+select('natureza','Natureza da divindade',A.naturezas,s.natureza)+input('divindade','Divindade vinculada ao guardião',s.divindade)+input('conceito','Conceito',s.conceito)+area('feito','Feito realizado em jogo',s.feito),'Salvar candidatura',s.id):linhas(s.conceito+'\n'+s.feito)}
+      ${foiDeus?`<p class="ga-cad-fama">⚖ Fama (status divino) — ajuste do mestre: ${s.status>0?btn('fama-menos','− Perder fama',s.id):''} <strong>${s.status}</strong> / 5 ${s.status<5?btn('fama-mais','+ Ganhar fama',s.id):''}</p>${devocao(s)}`:''}
+      ${s.status===0&&!s.feitoAprovado?form('editar-divino',select('caminho','Decisão',[['indeciso','Ainda não decidiu'],['ascender','Tornar-se deus menor'],['guardiao','Ser guardião de uma divindade']],s.caminho)+`<div data-so-guardiao${s.caminho==='guardiao'?'':' hidden'}>${select('natureza','Natureza do deus que o guardião serve',A.naturezas,s.natureza)}${input('divindade','Nome do deus menor que ele serve',s.divindade)}</div>`+input('conceito','Conceito',s.conceito)+area('feito','Feito realizado em jogo',s.feito),'Salvar candidatura',s.id):linhas(s.conceito+'\n'+s.feito)}
       <p>Feito ${s.feitoAprovado?'aprovado':'aguardando aprovação'}.</p>${s.feitoAprovado?'':s.caminho==='indeciso'?dica('Para aprovar o feito, escolha antes a Decisão (tornar-se deus menor ou guardião) e salve a candidatura.'):btn('aprovar-feito','Aprovar feito realizado',s.id)}
       <p>Recompensas disponíveis: ascensão ${A.saldo(s,'ascensao')} · evolução ${A.saldo(s,'evolucao')} · dádivas ${A.saldo(s,'dadiva')}.</p>
       ${s.feitoAprovado?dica('Busca = tempo entre aventuras dedicado à divindade (3 testes contra CD 20 + metade do nível). Finalidade: para que esta busca conta — Ascender (virar deus), Elevar status (subir a fama) ou Conquistar dádiva (ganhar um poder). Sucessos: 2 dão 1 recompensa, 3 dão 2; 0 ou 1 não dão nenhuma.')+form('busca-divina',input('nome','Nome da busca')+select('finalidade','Finalidade',s.status===0?[['ascensao','Ascender']]:[['evolucao','Elevar status'],['dadiva','Conquistar dádiva']])+input('sucessos','Sucessos nos três testes',2,'number','min="0" max="3" step="1"'),'Registrar resultado da busca',s.id):''}
@@ -109,7 +128,9 @@
     if(a==='remover-dadiva'&&!confirm('Remover este poder (dádiva) da divindade?'))return;
     S.editar(d=>{
       if(a==='aprovar-feito')divino(d,id,{tipo:'feito'});
-      else if(a==='ascender')divino(d,id,{tipo:'ascender'});
+      else if(a==='ascender'){const s=d.ascensoes.find(x=>x.id===id),fx=fichas().find(f=>s&&f.id===s.fichaId);divino(d,id,{tipo:'ascender',devocaoAnterior:fx?.divindade||'',concedidos:fx?.concedidos||[]});}
+      else if(a==='guardiao-dar')divino(d,id,{tipo:'guardiao-dadiva',indice:+idx,valor:true});
+      else if(a==='guardiao-tirar')divino(d,id,{tipo:'guardiao-dadiva',indice:+idx,valor:false});
       else if(a==='evoluir')divino(d,id,{tipo:'evoluir'});
       else if(a==='fama-mais')divino(d,id,{tipo:'fama',delta:1});
       else if(a==='fama-menos')divino(d,id,{tipo:'fama',delta:-1});
@@ -132,6 +153,9 @@
     });
   }catch(err){erro=err.message;const r=root(),alvo=r&&r.querySelector('.ga-cad-erro');if(alvo){alvo.hidden=false;alvo.textContent=erro;alvo.scrollIntoView({block:'nearest'});}}}
 
-  function init(){const sec=document.getElementById('caderno');if(!sec)return;abas();const r=root();if(r){r.addEventListener('click',clicar);r.addEventListener('submit',enviar);}S.aoMudar(render);render();}
+  // Natureza e nome do deus só fazem sentido para o GUARDIÃO: quem ascende vira
+  // sempre Mortal ascendido (p. 234). Os dois campos aparecem conforme a Decisão.
+  function aoMudarDecisao(e){const sel=e.target.closest('select[name="caminho"]');if(!sel)return;sel.closest('form').querySelectorAll('[data-so-guardiao]').forEach(x=>{x.hidden=sel.value!=='guardiao';});}
+  function init(){const sec=document.getElementById('caderno');if(!sec)return;abas();const r=root();if(r){r.addEventListener('click',clicar);r.addEventListener('submit',enviar);r.addEventListener('change',aoMudarDecisao);}S.aoMudar(render);render();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
