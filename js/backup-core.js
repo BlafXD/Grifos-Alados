@@ -78,7 +78,9 @@ window.GA_Backup = (() => {
     // levadas para a recuperação antes da escrita, e a nuvem permanece suspensa.
     localStorage.setItem(BLOQUEIO,'aplicando');
     await new Promise(r=>setTimeout(r,300));
-    if([...antes].some(([k,v])=>localStorage.getItem(k)!==v)){localStorage.setItem(BLOQUEIO,'offline');throw new Error('Os dados mudaram em outra aba. Reabra a prévia antes de restaurar.');}
+    // Nada foi gravado ainda: a trava sai, em vez de deixar o site em modo de
+    // recuperação (offline) por uma restauração que nem começou (revisão 25/11).
+    if([...antes].some(([k,v])=>localStorage.getItem(k)!==v)){localStorage.removeItem(BLOQUEIO);throw new Error('Os dados mudaram em outra aba. Reabra a prévia antes de restaurar.');}
     let db;
     try{
       db=await banco();

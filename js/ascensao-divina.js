@@ -45,7 +45,7 @@ window.GA_Ascensao = (() => {
         const recompensas=acao.sucessos>=2?acao.sucessos-1+(acao.ousada?1:0):0;
         s.buscas.push({id:acao.id,nome:acao.nome||'Busca',finalidade:acao.finalidade,sucessos:acao.sucessos,ousada:!!acao.ousada,recompensas,castigos:acao.sucessos===0?1:0,consumidas:0,em:Date.now()});break;
       }
-      case 'ascender':exigir(s.status===0&&s.feitoAprovado&&saldo(s,'ascensao')>=2,'A ascensão exige feito aprovado e duas recompensas de buscas.');exigir(s.caminho!=='indeciso','Escolha o caminho.');exigir(naturezas.includes(s.natureza),'Natureza inválida.');if(s.caminho==='ascender')s.natureza='Mortal ascendido';exigir(s.caminho!=='guardiao'||s.divindade.trim(),'Registre o deus vinculado ao guardião.');consumir(s,'ascensao',2);s.status=1;break;
+      case 'ascender':exigir(s.status===0&&s.feitoAprovado&&saldo(s,'ascensao')>=2,'A ascensão exige feito aprovado e duas recompensas de buscas.');exigir(s.caminho!=='indeciso','Escolha o caminho.');exigir(naturezas.includes(s.natureza),'Natureza inválida.');if(s.caminho==='ascender')s.natureza='Mortal ascendido';exigir(s.caminho!=='guardiao'||s.divindade.trim(),'Registre o deus vinculado ao guardião.');consumir(s,'ascensao',2);s.status=1;s.ascendeu=true;break;
       case 'evoluir':exigir(s.status>=1&&s.status<5,'A progressão de deus menor termina no status 5.');exigir(saldo(s,'evolucao')>=2,'São necessárias duas recompensas para subir um status.');consumir(s,'evolucao',2);s.status++;break;
       case 'dadiva':validarDadiva(s,acao.dadiva,(acao.escolha||'').trim());exigir(saldo(s,'dadiva')>=1,'A dádiva exige uma recompensa dedicada a ela.');consumir(s,'dadiva',1);s.dadivas.push({tipo:acao.dadiva,escolha:(acao.escolha||'').trim(),em:Date.now()});break;
       case 'desafio':exigir(s.status>=1,'Desafios divinos começam após ascender.');exigir(acao.periodo&&!s.desafios.some(d=>d.periodo===acao.periodo),'Já existe um desafio neste tempo entre aventuras.');exigir(Number.isInteger(acao.dado)&&acao.dado>=1&&acao.dado<=10,'Use um resultado de 1d10.');s.desafios.push({periodo:acao.periodo,dado:acao.dado,status:s.status,total:acao.dado+s.status,resolvido:false,resultado:''});break;
@@ -61,5 +61,14 @@ window.GA_Ascensao = (() => {
     }return s;
   }
   function desafio(total,status){if(total<=6)return 'Nenhum desafio.';if(total<=8)return 'Súplicas dos Fiéis: Religião ou perícia do conceito aprovada, CD '+(20+2*status)+'. Falha: PM máximos −1 por nível durante a próxima aventura.';if(total===9)return 'Ladainha Incessante: fatigado na próxima aventura, mesmo se imune.';if(total===10)return 'Reza Torta: frustrado na próxima aventura, mesmo se imune.';if(total===11)return 'Inquisidores: status divino reduzido em 1 durante a próxima aventura.';if(total===12)return 'Visita Extraplanar: um espírito de ND equivalente ao grupo aparece na próxima aventura.';if(total===13)return 'Interferência Pessoal: um item mágico escolhido aleatoriamente é destruído.';return 'Maldição de Deus Maior: três testes de perícias diferentes; exige três sucessos. Falha reduz o status em 1 e deixa alquebrado na próxima aventura.';}
-  return {novo,comando,saldo,validarDadiva,dadivas,naturezas,desafio};
+  // JÁ FOI DEUS? (revisão de 25/11/2026) Quem ascendeu e perdeu a fama até
+  // 0 continua sendo um deus caído, não um candidato: o ⚖ precisa continuar
+  // ali para devolver a fama. A marca nasce no "ascender"; para os registros
+  // de antes dela, vale ter gastado as duas recompensas de ascensão.
+  function jaAscendeu(s){return !!(s&&(s.ascendeu||s.status>=1||(s.dadivas||[]).length>0||(s.buscas||[]).filter(b=>b.finalidade==='ascensao').reduce((n,b)=>n+(b.consumidas||0),0)>=2));}
+  // Por que esta dádiva AINDA não serve para este deus — '' = serve. Só os
+  // pré-requisitos dela (status, natureza, dádiva exigida, repetição); a
+  // escolha (perícia/atributo) e o teto de 2×status ficam com o validarDadiva.
+  function motivoDadiva(s,id){const d=dadivas.find(x=>x.id===id);if(!d)return 'inexistente';if((s.status||0)<(d.status||1))return 'pede status '+(d.status||1);if(d.naturezas&&!d.naturezas.includes(s.natureza))return 'só '+d.naturezas.join(' ou ');if(d.requer&&!(s.dadivas||[]).some(x=>x.tipo===d.requer)){const r=dadivas.find(x=>x.id===d.requer);return 'pede '+(r?r.nome:d.requer);}if(!d.repete&&(s.dadivas||[]).some(x=>x.tipo===id))return 'já tem';return '';}
+  return {novo,comando,saldo,validarDadiva,dadivas,naturezas,desafio,jaAscendeu,motivoDadiva};
 })();

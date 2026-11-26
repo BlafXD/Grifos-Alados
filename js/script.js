@@ -88,11 +88,35 @@ window.GA_limparQuebras = function (texto) {
   return blocos.join('\n');
 };
 
+// ── DOCUMENTO INERTE para desmontar HTML de fora ─────────────────────
+// Um innerHTML numa <div> criada pelo `document` da página CARREGA as
+// imagens na hora — e o `onerror` de um <img src=x> roda, mesmo com a div
+// solta e mesmo que o limpador a apague logo depois (provado na revisão de
+// 25/11/2026: o veneno disparava antes da limpeza). Num documento criado
+// pelo `implementation`, sem janela, nada carrega e nenhum script roda —
+// é ali que todo HTML vindo de jogador, do banco ou de backup é aberto.
+window.GA_docInerte = (function () {
+  let doc = null;
+  return function () {
+    if (!doc) {
+      doc = (document.implementation && document.implementation.createHTMLDocument)
+        ? document.implementation.createHTMLDocument('')
+        : null;
+    }
+    return doc;
+  };
+})();
+
 // Converte um trecho de HTML (ex.: caixa de ataques das fichas) em texto
 // plano, preservando as quebras de linha de <br>, <div> e <p>.
 window.htmlParaTexto = function (html) {
   if (html == null) return '';
-  const div = document.createElement('div');
+  const inerte = window.GA_docInerte();
+  if (!inerte) {   // sem documento inerte (fora de navegador): só tira as tags, sem montar nada
+    return String(html).replace(/<\s*br\s*\/?>/gi, '\n').replace(/<\/\s*(div|p|li)\s*>/gi, '\n')
+      .replace(/<[^>]*>/g, '').replace(/[ \t]+\n/g, '\n').trim();
+  }
+  const div = inerte.createElement('div');
   div.innerHTML = String(html)
     .replace(/<\s*br\s*\/?>/gi, '\n')
     .replace(/<\/\s*(div|p|li)\s*>/gi, '\n');
@@ -298,8 +322,17 @@ window.GA_limparHtml = (function () {
     });
     return ok.join(';');
   }
-  return function (html) {
-    const cont = document.createElement('div');
+  //  `extras.classes`: classes a mais que podem sobreviver NESTA chamada
+  //  (o log de rolagens guarda o 20/1 natural em span.mz-d20-max/min).
+  return function (html, extras) {
+    const permitidas = (extras && Array.isArray(extras.classes) && extras.classes.length)
+      ? Object.assign({}, CLASSES_OK, extras.classes.reduce((o, c) => { o[c] = 1; return o; }, {}))
+      : CLASSES_OK;
+    // Desmontado num documento INERTE (ver GA_docInerte): um <img onerror>
+    // aqui não carrega nem roda — só vira nó para ser jogado fora.
+    const inerte = window.GA_docInerte();
+    if (!inerte) return window.GA_esc(html);   // sem como desmontar com segurança: vira texto
+    const cont = inerte.createElement('div');
     cont.innerHTML = String(html == null ? '' : html);
     (function processar(pai) {
       let n = pai.firstChild;
@@ -317,7 +350,7 @@ window.GA_limparHtml = (function () {
           // — a nuvem é desenhada pelo itens-descricoes.js (texto puro) —
           // e os grifos/caixas de leitura aplicados pela barra (span.mz-*)
           const classes = String(n.getAttribute('class') || '')
-            .split(/\s+/).filter(c => CLASSES_OK[c]);
+            .split(/\s+/).filter(c => permitidas[c]);
           const ehTip = classes.indexOf('ga-tip') >= 0;
           const tip = ehTip ? n.getAttribute('data-tip') : null;
           while (n.attributes.length) n.removeAttribute(n.attributes[0].name);

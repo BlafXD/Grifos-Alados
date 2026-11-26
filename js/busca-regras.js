@@ -16,7 +16,9 @@ window.GA_BuscaRegras = (()=>{
     add('Deus menor',window.GA_DEUSES_MENORES,d=>d.livro+', p. '+d.pagina);
     add('Dádiva',window.GA_Ascensao?.dadivas,d=>'Deuses de Arton, p. '+d.pagina);
     add('Objetivo heroico',window.GA_CadernoCore?.objetivos,'Heróis de Arton, pp. 292–293');
-    add('Regra opcional',window.GA_CadernoCore?.opcionais.map(([id,nome,texto])=>({id,nome,texto})),d=>d.texto);
+    // o 3º campo de cada opcional é a FONTE, não o texto: sem isto, o card
+    // repetia a página duas vezes e não dizia o que a regra é
+    add('Regra opcional',(window.GA_CadernoCore?.opcionais||[]).map(([id,nome,fonte])=>({id,nome,fonte,texto:'Regra opcional: '+nome+'. O texto completo está no livro — '+fonte+'.'})),d=>d.fonte);
     cache=out;return out;
   }
   function buscar(q,tipo=''){const termos=window.GA_semAcento(q).split(/\s+/).filter(Boolean);return indice().filter(r=>(!tipo||r.tipo===tipo)&&termos.every(t=>r.busca.includes(t)));}

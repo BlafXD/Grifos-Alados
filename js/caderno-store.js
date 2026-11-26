@@ -8,7 +8,18 @@ window.GA_CadernoStore = (() => {
   const mesa=()=>window.GA_Mesa?.estado()||{};
   const uid=()=>mesa().usuario?.uid||'local';
   const sala=()=>window.GA_Sala?.id||'hub';
-  const mestre=()=>window.GA_FIREBASE?!!window.GA_Mesa?.transmite():!window.GA_Sala?.ehJogador;
+  //  QUEM EDITA (revisão de 25/11/2026). O Caderno só existe no index.html,
+  //  a página do mestre, e lá ele é editável na bancada, sem login e com o
+  //  Firebase fora do ar. A trava é só para quem a mesa CONFIRMA que é
+  //  jogador ou espectador (abriu a página do mestre pelo link errado).
+  //  Antes, com o Firebase configurado, exigia ser mestre DESTA mesa — e no
+  //  site publicado a Ascensão recusava tudo na bancada e sem login.
+  const mestre=()=>{
+    if(window.GA_Sala?.ehJogador)return false;
+    const e=mesa();
+    if(window.GA_FIREBASE&&window.GA_Sala?.id&&e.usuario&&e.papel&&!window.GA_Mesa?.transmite())return false;
+    return true;
+  };
   const chave=()=>`grifosAlados.caderno.${uid()}.${sala()}.${mestre()?'mestre':'jogador'}`;
   const avisar=()=>ouvintes.forEach(f=>f());
   function carregar(){try{const v=JSON.parse(localStorage.getItem(chave())||'null');dados=v?.dados?.versao===1?{...C.novo(),...v.dados}:C.novo();dirty=!!v?.dirty;}catch{dados=C.novo();dirty=false;erro='O caderno local não pôde ser lido. Exporte um backup antes de alterar dados.';}}

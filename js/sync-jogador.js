@@ -21,25 +21,24 @@
     lojaLog:        GA_Sala.chave('grifosAlados.lojaLog'),
     lojaLogSel:     GA_Sala.chave('grifosAlados.lojaLogSel'),
     lojaComunidade: GA_Sala.chave('grifosAlados.lojaComunidade'),
-    viagens:        GA_Sala.chave('grifosAlados.viagens'),
+    //  as Viagens SAÍRAM (25/11/2026): viraram 100% do mestre, no Caderno
     bases:          GA_Sala.chave('grifosAlados.bases'),
   };
   // cada chave pertence a um módulo; cada módulo é redesenhado UMA vez.
   const MODULO = {
     lojaLog: 'loja', lojaLogSel: 'loja', lojaComunidade: 'loja',
-    viagens: 'viagem', bases: 'bases',
+    bases: 'bases',
   };
   // O snapshot é completo. Uma chave ausente significa que o mestre a
   // apagou; conservar a cópia anterior ressuscita dados de uma mesa encerrada.
   // Valores vazios explícitos também limpam módulos que guardam estado em memória.
   const VAZIOS = {
     lojaLog: '[]', lojaLogSel: '', lojaComunidade: '',
-    viagens: '{"viagens":[]}', bases: '{"bases":[]}',
+    bases: '{"bases":[]}',
   };
   function redesenhar(mod) {
     try {
       if (mod === 'loja'   && window.GA_Loja)   return GA_Loja.recarregar(), true;
-      if (mod === 'viagem' && window.GA_Viagem) return GA_Viagem.recarregar(), true;
       if (mod === 'bases'  && window.GA_Bases)  return GA_Bases.recarregar(), true;
     } catch (e) { console.warn('[sync-jogador] re-render', mod, e && e.message); }
     return false;   // módulo não está nesta página

@@ -21,3 +21,23 @@ test('perda de fama (mestre): ajusta status 0–5 sem descartar dádivas; remove
   const antes=s.dadivas[0].tipo;s=A.comando(s,{tipo:'trocar-dadiva',indice:0,dadiva:'vigor'},true);assert.equal(s.dadivas[0].tipo,'vigor');assert.notEqual(s.dadivas[0].tipo,antes);
   assert.throws(()=>A.comando(s,{tipo:'trocar-dadiva',indice:0,dadiva:'atributo',escolha:'Força'},true),/Status divino insuficiente/);});
 test('o desafio divino 13 é Interferência Pessoal (não Intolerância Mágica)',()=>{const A=contexto().GA_Ascensao;assert.match(A.desafio(13,0),/Interferência Pessoal/);assert.ok(!/Intolerância/.test(A.desafio(13,0)));});
+
+// Revisão de 25/11/2026: o deus que perde a fama toda continua deus caído
+// (o ⚖ não some), e o seletor sabe por que uma dádiva ainda não serve.
+test('quem ascendeu e caiu a 0 sem dádivas continua deus caído, não candidato',()=>{const A=contexto().GA_Ascensao;let s=A.novo('Ana','f');
+  assert.equal(A.jaAscendeu(s),false,'cadastro não é ascensão');
+  Object.assign(s,{caminho:'ascender',feitoAprovado:true});
+  s=A.comando(s,{tipo:'busca',id:'b1',nome:'Busca',finalidade:'ascensao',sucessos:3},true);
+  s=A.comando(s,{tipo:'ascender'},true);assert.equal(s.status,1);assert.equal(s.ascendeu,true);
+  s=A.comando(s,{tipo:'fama',delta:-1},true);assert.equal(s.status,0);assert.equal(s.dadivas.length,0);
+  assert.equal(A.jaAscendeu(s),true,'caiu, mas ascendeu');
+  s=A.comando(s,{tipo:'fama',delta:1},true);assert.equal(s.status,1,'o ⚖ devolve a fama');
+  const antigo=A.novo('Bia');antigo.buscas=[{finalidade:'ascensao',recompensas:2,consumidas:2}];
+  assert.equal(A.jaAscendeu(antigo),true,'registro de antes da marca: as 2 recompensas gastas contam');
+});
+test('motivoDadiva aponta status, natureza, dádiva exigida e repetição',()=>{const A=contexto().GA_Ascensao;const s=A.novo('Ana');s.status=1;
+  const livres=A.dadivas.filter(d=>A.motivoDadiva(s,d.id)==='');assert.ok(livres.length>0,'algumas servem logo no status 1');
+  const alta=A.dadivas.find(d=>(d.status||1)>1);if(alta)assert.match(A.motivoDadiva(s,alta.id),/status/);
+  const comNatureza=A.dadivas.find(d=>d.naturezas&&!d.naturezas.includes(s.natureza));if(comNatureza)assert.match(A.motivoDadiva(s,comNatureza.id),/^só /);
+  const unica=A.dadivas.find(d=>!d.repete&&A.motivoDadiva(s,d.id)==='');s.dadivas.push({tipo:unica.id,escolha:'x'});assert.equal(A.motivoDadiva(s,unica.id),'já tem');
+});

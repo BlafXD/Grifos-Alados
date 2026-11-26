@@ -126,3 +126,53 @@ test('resposta de iniciativa de uma sessão encerrada não substitui a lista atu
   assert.equal(h.api.rodadaAtual(), 3);
   assert.deepEqual(json(h.api.combatentes()).map(x => x.nome), ['Aria', 'Borin']);
 });
+
+// ── Revisão de 25/11/2026: a vez não pode pular ninguém nem voltar ao topo ──
+function quatro(atual) {
+  return {
+    linhas: {
+      a: { nome: 'Anão', tipo: 'jogador', ordem: 0 },
+      b: { nome: 'Bugbear', tipo: 'criatura', ordem: 1 },
+      c: { nome: 'Clériga', tipo: 'jogador', ordem: 2 },
+      d: { nome: 'Dragão', tipo: 'criatura', ordem: 3 },
+    },
+    valores: { a: { valor: 20, mod: 2 }, b: { valor: 15, mod: 1 }, c: { valor: 10, mod: 0 }, d: { valor: 5, mod: 0 } },
+    atual, rodada: 1,
+  };
+}
+
+test('quem morre no próprio turno não rouba a vez de quem vem depois', () => {
+  const h = ambiente(quatro('b'));
+  h.click('morto', 'b');
+  h.api.passar();
+  assert.equal(h.saved().atual, 'c', 'a vez segue para a Clériga, não volta ao topo');
+  assert.equal(h.saved().rodada, 1, 'a rodada não vira no meio');
+  h.api.passar();
+  assert.equal(h.saved().atual, 'd');
+  h.api.passar();
+  assert.deepEqual([h.saved().atual, h.saved().rodada], ['a', 2], 'só depois do último é que vira a rodada');
+});
+
+test('tirar quem está com a vez passa a vez adiante (e vira a rodada só no fim)', () => {
+  const h = ambiente(quatro('c'));
+  h.click('tira', 'c');
+  assert.equal(h.saved().linhas[h.saved().atual].nome, 'Dragão');
+  assert.equal(h.saved().rodada, 1);
+  const h2 = ambiente(quatro('d'));
+  h2.click('tira', 'd');
+  assert.equal(h2.saved().linhas[h2.saved().atual].nome, 'Anão');
+  assert.equal(h2.saved().rodada, 2);
+});
+
+test('tirar e invocar conservam a ordem feita à mão', () => {
+  const data = quatro('a');
+  data.linhas.d.ordem = -1;           // o mestre subiu o Dragão para o topo à mão
+  const h = ambiente(data);
+  const ordem = () => Object.values(h.saved().linhas).sort((x, y) => x.ordem - y.ordem).map(x => x.nome);
+  h.click('tira', 'b');
+  assert.deepEqual(ordem(), ['Dragão', 'Anão', 'Clériga']);
+  h.api.invocar('Capanga', 1, 12);   // sem GA_Dados o d20 vale 0: entra com 12
+  assert.deepEqual(ordem().filter(n => n !== 'Capanga'), ['Dragão', 'Anão', 'Clériga'], 'os de antes ficam onde estavam');
+  assert.ok(ordem().indexOf('Capanga') > ordem().indexOf('Anão'), 'o 12 entra depois do 20');
+  assert.equal(h.saved().linhas[h.saved().atual].nome, 'Anão', 'a vez não mudou de dono');
+});

@@ -13,7 +13,12 @@
 (function () {
   'use strict';
 
-  const STORAGE_KEY = 'grifosAlados.tempo';
+  //  UMA GAVETA POR CAMPANHA (revisão de 25/11/2026). O Tempo mora no
+  //  Caderno do mestre, que é por campanha — mas a chave era uma só, e toda
+  //  campanha via o mesmo registro. Agora segue o GA_Sala como as Viagens:
+  //  `grifosAlados.tempo@<campanha>`. O que já existia continua na bancada
+  //  (o endereço sem ?mesa=), onde a chave é a de sempre.
+  const STORAGE_KEY = window.GA_Sala ? window.GA_Sala.chave('grifosAlados.tempo') : 'grifosAlados.tempo';
 
   const BUSCAS        = window.TEMPO_BUSCAS || [];
   const CONSEQ        = window.TEMPO_CONSEQUENCIAS || [];

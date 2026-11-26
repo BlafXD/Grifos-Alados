@@ -27,6 +27,12 @@
   'use strict';
 
   const esc = window.GA_esc;
+  //  TEXTO RICO VINDO DE FORA (revisão de 25/11/2026). As notas da ficha
+  //  são HTML (grifos, negrito), e a ficha também chega do BANCO — a do
+  //  jogador sobe para a mesa e o mestre a abre; a gaveta da conta e os
+  //  backups trazem outras. O normalizar só garante que é texto; quem
+  //  garante que é HTML INOFENSIVO é isto, na hora de desenhar.
+  const rico = html => window.GA_limparHtml ? window.GA_limparHtml(html || '') : esc(html || '');
   const D = window.GA_FichaData;
   const STORAGE_KEY = 'grifosAlados.fichasPersonagem';
 
@@ -2671,7 +2677,7 @@
                data-ph="${ehEscudo
                  ? 'Mitral, +1 de encanto, a melhoria Espinhos, o poder que ele concede…'
                  : 'Couro batido, −1 de penalidade por ser delicada, +1 de encanto, as melhorias…'}"
-               >${p.notas}</div>
+               >${rico(p.notas)}</div>
         </div>` : ''}
       </li>`;
     };
@@ -4766,7 +4772,7 @@
           <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
                data-campo="ataques.${i}.notas"
                data-ph="O que esta arma faz: o encanto, o efeito no crítico, a habilidade que custa PM…"
-               >${a.notas}</div>
+               >${rico(a.notas)}</div>
         </div>` : ''}
       </li>`;
     }).join('');
@@ -4875,7 +4881,7 @@
           <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
                data-campo="maos.${i}.notas"
                data-ph="O que esta mão dá: +1 na Defesa com o escudo, a CD do foco arcano, o bônus de Atuação do instrumento…"
-               >${m.notas}</div>
+               >${rico(m.notas)}</div>
         </div>` : ''}
       </li>`;
     }).join('');
@@ -5276,7 +5282,7 @@
             <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
                  data-campo="parceiros.${i}.notas"
                  data-ph="Quem é, de onde veio, que perícias o Ajudante escolheu, o tipo de dano do Destruidor…"
-                 >${p.notas}</div>
+                 >${rico(p.notas)}</div>
           </div>` : ''}
         </li>`;
     }).join('');
@@ -5843,7 +5849,10 @@
   //  para a ficha tratar igual aos outros. O Caderno é só do mestre e por
   //  campanha, então não empurra para cá — quem joga um poder na ficha é o
   //  próprio card. Ver [[reforma-do-caderno]].
-  const GRUPO_DEUS_MENOR = { chave: 'deus-menor', nome: 'Deus Menor', emoji: '🔱', quantos: 0 };
+  //  SEM `quantos` aqui: quem conta é o gruposDePoder(), com o
+  //  Object.assign({ quantos: 16 }, este) — um `quantos: 0` neste objeto
+  //  passava por cima e o chip mostrava "🔱 Deus Menor 0" (revisão 25/11).
+  const GRUPO_DEUS_MENOR = { chave: 'deus-menor', nome: 'Deus Menor', emoji: '🔱' };
   function dadivasComoPoderes() {
     const A = window.GA_Ascensao;
     if (!A || !Array.isArray(A.dadivas)) return [];
@@ -7442,7 +7451,7 @@
             <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
                  data-campo="inventario.${i}.notas"
                  data-ph="O que este item faz: o encanto, o dano extra, a habilidade que custa PM…"
-                 >${it.notas}</div>
+                 >${rico(it.notas)}</div>
           </div>` : ''}
         </li>`;
     }).join('');
@@ -7566,7 +7575,7 @@
       <div class="ga-rich-wrap ga-rich-wrap--barra" data-jog-edita>
         ${barra}
         <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
-             data-campo="${campo}" data-ph="${esc(dica)}">${html || ''}</div>
+             data-campo="${campo}" data-ph="${esc(dica)}">${rico(html)}</div>
       </div>`;
   }
   //  Raça e origem e Classe e poderes viraram cartões de poder (têm

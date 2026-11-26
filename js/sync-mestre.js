@@ -38,7 +38,9 @@
     lojaLog:        GA_Sala.chave('grifosAlados.lojaLog'),
     lojaLogSel:     GA_Sala.chave('grifosAlados.lojaLogSel'),
     lojaComunidade: GA_Sala.chave('grifosAlados.lojaComunidade'),
-    viagens:        GA_Sala.chave('grifosAlados.viagens'),
+    //  As VIAGENS não vão mais para o banco (25/11/2026): viraram 100% do
+    //  mestre (moram no Caderno) e a página dos jogadores não tem a aba.
+    //  Mandá-las era só expor no nó `dados`, que é de leitura pública.
     bases:          GA_Sala.chave('grifosAlados.bases'),
   };
   const NOME_POR_CHAVE = {};
@@ -390,7 +392,7 @@
   //  sendo conflito, e continua decidida pelo "📤 Mandar a daqui".
   const MODULO_DA_CHAVE = {
     lojaLog: 'GA_Loja', lojaLogSel: 'GA_Loja', lojaComunidade: 'GA_Loja',
-    viagens: 'GA_Viagem', bases: 'GA_Bases',
+    bases: 'GA_Bases',
   };
   let baixando = false;
   function baixarOqueFalta() {
@@ -531,7 +533,6 @@
   const PARTES = [
     { nome: '🏪 Loja',    chaves: ['lojaLog', 'lojaLogSel', 'lojaComunidade'] },
     { nome: '🏰 Bases',   chaves: ['bases'] },
-    { nome: '🐎 Viagens', chaves: ['viagens'] },
   ];
   function partesEmConflito() {
     return PARTES.filter(p => p.chaves.some(k => conflitos[k])).map(p => ({

@@ -219,7 +219,11 @@
     est.erro = ''; est.aviso = '';
     a.signOut().catch(e => console.warn('[mesa] sair:', e && e.message));
   }
-  function nomeDe(u) { return (u && (u.displayName || u.email)) || 'sem nome'; }
+  //  O nome vai para `membros`, que TODO membro da mesa lê: conta sem nome
+  //  aparece pela parte antes do @, nunca pelo e-mail inteiro (o e-mail
+  //  completo só vai no pedido, que só o mestre lê).
+  function antesDoArroba(email) { return String(email || '').split('@')[0]; }
+  function nomeDe(u) { return (u && (u.displayName || antesDoArroba(u.email))) || 'sem nome'; }
 
   function recado(e, quando) {
     const m = ((e && (e.code || e.message)) || '').toString().toLowerCase();
@@ -344,7 +348,7 @@
     const p = est.pedidos[uid] || {};
     const patch = {};
     patch['membros/' + uid] = {
-      nome: p.nome || p.email || uid,
+      nome: p.nome || antesDoArroba(p.email) || uid,
       papel: papelDe(papel) ? papel : 'jogador',
       desde: agora(),
     };

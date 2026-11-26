@@ -58,6 +58,8 @@
     'grifosAlados.viagens',
     'grifosAlados.bases',
     'grifosAlados.basesJogadoresInventario',
+    // o Tempo entre aventuras (no Caderno do mestre) também é da campanha
+    'grifosAlados.tempo',
   ];
 
   //  ARMADILHA DE ORDEM, consertada em 01/11/2026. Esta pergunta é

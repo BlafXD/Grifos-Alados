@@ -6,7 +6,17 @@ const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'js/ficha-mesa.js'), 'utf8');
-const rules = JSON.parse(fs.readFileSync(path.join(root, 'firebase-rules.json'), 'utf8')).rules;
+// As regras do banco moram em Inútil/ (fora do git, desde 22/11/2026). Procura
+// nos dois lugares; sem o arquivo, os testes de regra são PULADOS com o motivo
+// à vista — antes a falta derrubava o arquivo de testes inteiro.
+function lerRegras() {
+  for (const p of ['firebase-rules.json', 'Inútil/firebase-rules.json']) {
+    try { return JSON.parse(fs.readFileSync(path.join(root, p), 'utf8')).rules; } catch (e) {}
+  }
+  return null;
+}
+const rules = lerRegras();
+const SEM_REGRAS = rules ? false : 'firebase-rules.json não encontrado (nem na raiz nem em Inútil/)';
 const ficha = { id: 'mael', nome: 'Mael', mesa: 'nuevosol', pv: { atual: 25 } };
 const contaPath = 'usuarios/jogador/fichas/mael';
 const mesaPath = 'mesas/nuevosol/fichas/jogador/mael';
@@ -110,7 +120,7 @@ test('os endereços do mestre e do jogador escolhem a mesma campanha', () => {
   }
 });
 
-test('regras: jogador acessa sua ficha; mestre edita pela mesa sem acessar a conta alheia', () => {
+test('regras: jogador acessa sua ficha; mestre edita pela mesa sem acessar a conta alheia', { skip: SEM_REGRAS }, () => {
   const database = { mesas: { nuevosol: { dono: 'mestre', membros: {
     mestre: { papel: 'mestre' }, jogador: { papel: 'jogador' }, outro: { papel: 'jogador' },
   } } } };

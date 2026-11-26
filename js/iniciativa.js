@@ -211,15 +211,28 @@
       .sort((a, b) => ((a.morto ? 1 : 0) - (b.morto ? 1 : 0)) || ((a.ordem || 0) - (b.ordem || 0)));
   }
   function quantas() { return Object.keys(linhas).length; }
-  function idSeguinte() {
-    const lista = emOrdem();
+  //  A ORDEM DE PASSAR A VEZ é a da lista, SEM afundar os mortos (revisão
+  //  de 25/11/2026). A tela mostra o 💀 no fim, mas quem morre NO PRÓPRIO
+  //  turno continua marcando o lugar dele na rodada: procurar o "próximo"
+  //  a partir do fim da lista virava a rodada e todo mundo que vinha
+  //  depois dele perdia a vez.
+  function emOrdemDeTurno() {
+    return Object.keys(linhas)
+      .map(id => ({ id, ...linhas[id] }))
+      .sort((a, b) => ((a.ordem || 0) - (b.ordem || 0)) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  }
+  //  `de`: de quem se procura o próximo (o atual, se omitido). `semEle`:
+  //  essa linha não conta como candidata — é a que está saindo da lista.
+  function idSeguinte(de, semEle) {
+    const lista = emOrdemDeTurno();
     if (!lista.length) return null;
-    const i = lista.findIndex(l => l.id === atual);
+    const ref = de === undefined ? atual : de;
+    const i = lista.findIndex(l => l.id === ref);
     //  O turno PULA quem está fora de combate (💀): procura o próximo VIVO,
     //  dando a volta. Se ninguém mais está vivo, não há a quem passar.
     for (let k = 1; k <= lista.length; k++) {
       const cand = lista[(i + k) % lista.length];
-      if (cand && !cand.morto) {
+      if (cand && !cand.morto && !(semEle && cand.id === ref)) {
         return { proximo: cand.id, virou: i >= 0 && (i + k) >= lista.length };
       }
     }
@@ -421,10 +434,21 @@
     });
   }
 
-  function gravarLista(lista, manterAtual) {
+  //  `opc` (ou o antigo `true` = manter o atual):
+  //    manterAtual — a vez continua com quem está;
+  //    preservar   — a lista JÁ vem na ordem da mesa (com o arrasto e as
+  //                  setas do mestre): só renumera, NÃO reordena por valor.
+  //                  Ordenar por valor é de quem monta do zero ou aperta
+  //                  "ordenar" (revisão de 25/11/2026: ✕, ＋ e 🐾 desfaziam
+  //                  a ordem feita à mão);
+  //    atual/rodada — quem fica com a vez e em que rodada (tirar quem está
+  //                  jogando passa a vez adiante, e não para o topo).
+  function gravarLista(lista, opc) {
     if (!mando()) return;
-    const ordenada = ordenar(lista);
-    const publico = { linhas: {}, rodada: manterAtual ? (rodada || 1) : 1 };
+    const o = (opc && typeof opc === 'object') ? opc : { manterAtual: !!opc };
+    const manterAtual = !!o.manterAtual;
+    const ordenada = o.preservar ? lista.slice() : ordenar(lista);
+    const publico = { linhas: {}, rodada: o.rodada || (manterAtual ? (rodada || 1) : 1) };
     const secreto = {};
     ordenada.forEach((l, i) => {
       const id = l.id || ('l' + Date.now().toString(36) + i.toString(36));
@@ -439,7 +463,8 @@
       secreto[id] = { valor: (l.valor == null ? null : l.valor), mod: l.mod || 0 };
     });
     const ids = Object.keys(publico.linhas);
-    publico.atual = (manterAtual && ids.indexOf(atual) >= 0) ? atual : (ids.length ? ids[0] : null);
+    const pedido = o.atual !== undefined ? o.atual : (manterAtual ? atual : null);
+    publico.atual = (pedido && ids.indexOf(pedido) >= 0) ? pedido : (ids.length ? ids[0] : null);
 
     if (local()) {
       linhas = publico.linhas; valores = secreto;
@@ -569,7 +594,30 @@
     if (alvo && alvo.tipo === 'jogador') esquecerDoGrupo(alvo.nome);
     const lista = listaAtual().filter(l => l.id !== id);
     if (!lista.length) return limpar();
-    gravarLista(lista, true);
+    const opc = { manterAtual: true, preservar: true };
+    //  Tirar quem está COM A VEZ passa a vez ao próximo vivo — antes ela
+    //  voltava ao topo e o primeiro da lista agia duas vezes na rodada.
+    if (id === atual) {
+      const p = idSeguinte(id, true);
+      if (p) { opc.atual = p.proximo; if (p.virou) opc.rodada = (rodada || 1) + 1; }
+    }
+    gravarLista(lista, opc);
+  }
+
+  //  Encaixa linhas NOVAS na ordem que já está na mesa, sem mexer nela:
+  //  cada nova entra logo DEPOIS do último vivo de valor maior ou igual ao
+  //  dela (sem valor conta como o menor de todos — o jogador que ainda vai
+  //  rolar fica no fim dos vivos), e os mortos continuam embaixo. Quem o
+  //  mestre pôs no topo à mão continua lá.
+  function encaixar(existentes, novas) {
+    const val = l => (l.valor == null ? -Infinity : l.valor);
+    const lista = existentes.slice();
+    novas.forEach(n => {
+      let ultimo = -1;
+      lista.forEach((l, i) => { if (!l.morto && val(l) >= val(n)) ultimo = i; });
+      lista.splice(ultimo + 1, 0, n);
+    });
+    return lista;
   }
 
   // Aceita vários nomes de uma vez ("Cleber, Zézinho, Elias"): é assim
@@ -585,7 +633,7 @@
     }));
     nomes.forEach(lembrarNoGrupo);
     recado = '';
-    gravarLista(listaAtual().concat(novas), true);
+    gravarLista(encaixar(listaAtual(), novas), { manterAtual: true, preservar: true });
   }
 
   // Capangas invocados por uma habilidade (ex. Servos do Dragão) somados
@@ -607,7 +655,7 @@
       });
     }
     recado = '';
-    gravarLista(listaAtual().concat(novas), true);
+    gravarLista(encaixar(listaAtual(), novas), { manterAtual: true, preservar: true });
     // traz o painel à vista e pisca — senão o mestre invoca e não vê onde
     // os capangas entraram, se o painel estava fechado ou recolhido
     visivel = true; guardar(VISIVEL_KEY, '1');

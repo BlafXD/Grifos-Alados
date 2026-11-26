@@ -366,7 +366,11 @@
         normalizarMasmorra(c);
       });
     });
+    jaCarregou = true;
   }
+  // O 1º carregar() acontece no init (DOMContentLoaded, mais abaixo). Até
+  // lá, `dados` é só o esqueleto — e quem pede redesenho antes disso espera.
+  let jaCarregou = false;
 
   const MAX_LOG = 15;   // nº máximo de rolagens guardadas no log
 
@@ -7877,6 +7881,11 @@
     function olhar() {
       if (!window.GA_Mesa || !window.GA_Mesa.aoMudar) return false;
       window.GA_Mesa.aoMudar(function () {
+        //  O aoMudar responde NA HORA, e este bloco se registra antes do
+        //  init (que fica mais abaixo): sem esta espera, o render() rodava
+        //  com o esqueleto de `dados` e quebrava em `dados.painel` — um
+        //  aviso no console a cada carga (revisão de 25/11/2026).
+        if (!jaCarregou) return;
         let agora = '';
         try { agora = JSON.stringify(window.GA_Mesa.minhasMesas() || {}); } catch (e) {}
         agora += '|' + ((window.GA_Mesa.mesaId && window.GA_Mesa.mesaId()) || '');

@@ -131,13 +131,30 @@
 
     if (!secao.classList.contains('active')) link.click();
 
-    const sel = estado.subaba[alvo];
-    if (sel) {
-      const btn = secao.querySelector(sel);
-      if (btn) btn.click();
-    }
+    //  A SUB-ABA ESPERA O FIM DA FILA (revisão de 25/11/2026). Um `defer`
+    //  roda com o readyState já em "interactive" (ver o fim do arquivo):
+    //  esta restauração acontecia na hora, ANTES dos scripts que vêm depois
+    //  deste no HTML — o caderno.js entre eles. O clique na sub-aba do
+    //  Caderno caía num botão ainda sem ouvinte, e o F5 voltava sempre para
+    //  🐎 Viagens. A aba principal segue na hora (o script.js já a escuta);
+    //  a sub-aba e a rolagem vão para o DOMContentLoaded, que só dispara
+    //  depois de todos os `defer`.
+    depoisDeTudo(function () {
+      const sel = estado.subaba[alvo];
+      if (sel) {
+        const btn = secao.querySelector(sel);
+        if (btn) btn.click();
+      }
+      irPara(estado.scroll[alvo] || 0);
+    });
+  }
 
-    irPara(estado.scroll[alvo] || 0);
+  function depoisDeTudo(fn) {
+    let feito = false;
+    const uma = function () { if (feito) return; feito = true; fn(); };
+    if (document.readyState === 'complete') return uma();
+    document.addEventListener('DOMContentLoaded', uma, { once: true });
+    window.addEventListener('load', uma, { once: true });   // se o DOMContentLoaded já passou
   }
 
   if (document.readyState === 'loading') {

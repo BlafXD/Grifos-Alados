@@ -243,7 +243,9 @@
     const u = mesa.usuario;
     const linha = {
       uid:      u.uid,
-      autor:    u.displayName || u.email || 'alguém',
+      //  O log é lido por TODOS da mesa: sem nome na conta, vai só a parte
+      //  antes do @, nunca o e-mail inteiro.
+      autor:    u.displayName || String(u.email || '').split('@')[0] || 'alguém',
       criatura: String(entrada.criatura || ''),
       pericia:  String(entrada.pericia || ''),
       formula:  String(entrada.formula || ''),
@@ -425,6 +427,13 @@
     catch (e) { return ''; }
   }
 
+  const CLASSES_DA_FORMULA = ['mz-d20-max', 'mz-d20-min'];
+  function limparFormula(html) {
+    return window.GA_limparHtml
+      ? window.GA_limparHtml(html || '', { classes: CLASSES_DA_FORMULA })
+      : esc(html || '');
+  }
+
   function linha(r) {
     let pe = '';
     if (r.oculta) {
@@ -444,7 +453,10 @@
       '<div class="ga-rol-quem">' + esc(r.autor || '') +
         (r.criatura ? ' <span class="ga-rol-alvo">' + esc(r.criatura) + '</span>' : '') + '</div>' +
       (r.pericia ? '<div class="ga-rol-pericia">' + esc(r.pericia) + '</div>' : '') +
-      '<div class="ga-rol-formula">' + (r.formula || '') + '</div>' +
+      //  A fórmula é HTML (o <strong> do total e o 20/1 natural pintados),
+      //  e chega do BANCO — escrita por qualquer membro da mesa. Passa pelo
+      //  limpador, que só deixa a formatação e essas duas classes.
+      '<div class="ga-rol-formula">' + limparFormula(r.formula) + '</div>' +
       pe +
     '</div>';
   }

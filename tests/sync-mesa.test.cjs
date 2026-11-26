@@ -123,9 +123,15 @@ test('jogadores deixam de mostrar os dados apagados da campanha', () => {
   h.receive('mesas/alpha/dados', { bases: '{"bases":[{"id":"b1"}]}', viagens: '{"viagens":[{"id":"v1"}]}' });
   h.receive('mesas/alpha/dados', null);
   assert.deepEqual(JSON.parse(h.values.get('grifosAlados.bases@alpha')), { bases: [] });
-  assert.deepEqual(JSON.parse(h.values.get('grifosAlados.viagens@alpha')), { viagens: [] });
   assert.equal(h.values.get('grifosAlados.lojaLog@alpha'), '[]');
   assert(h.redesenhos.includes('bases'));
+});
+
+// 25/11/2026: a Viagem virou 100% do mestre — o sync do jogador nem a grava.
+test('as viagens não descem mais para os jogadores', () => {
+  const h = ambiente('jogador');
+  h.receive('mesas/alpha/dados', { viagens: '{"viagens":[{"id":"v1"}]}' });
+  assert.equal(h.values.get('grifosAlados.viagens@alpha'), undefined);
 });
 
 test('trocar de conta cancela a edição de inventário ainda não enviada', () => {
