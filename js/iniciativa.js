@@ -155,6 +155,14 @@
   //  O nome vale pelos DOIS lados da ficha — o do personagem e o de
   //  quem joga —, porque o mestre tanto digita "Zézinho" quanto
   //  "Cleber" no campo de quem faltou.
+  //  Entre várias fichas da mesma pessoa, a da campanha ABERTA vence: a
+  //  ficha do mestre de outra mesa não entra no combate desta (ideia 12).
+  function daCampanha(arr) {
+    const aqui = (window.GA_Sala && window.GA_Sala.id) || (mesa && mesa.mesaId) || '';
+    if (!aqui) return arr;
+    const so = arr.filter(f => f.mesa === aqui);
+    return so.length ? so : arr.filter(f => !f.mesa);
+  }
   function fichaDaLinha(l, fichas) {
     if (!l || l.tipo !== 'jogador') return null;
     const lista = fichas || fichasVisiveis();
@@ -163,15 +171,15 @@
       const f = lista.find(x => x.id === l.fichaId);
       if (f) return f;
     }
-    const doNome = lista.filter(f => chave(f.nome) && chave(f.nome) === chave(l.nome));
+    const doNome = daCampanha(lista.filter(f => chave(f.nome) && chave(f.nome) === chave(l.nome)));
     if (l.uid) {
-      const daPessoa = lista.filter(f => f.dono === l.uid);
+      const daPessoa = daCampanha(lista.filter(f => f.dono === l.uid));
       const casado = doNome.find(f => f.dono === l.uid);
       if (casado) return casado;
       if (daPessoa.length) return maisNova(daPessoa);
     }
     if (doNome.length) return maisNova(doNome);
-    const doJogador = lista.filter(f => chave(f.jogador) && chave(f.jogador) === chave(l.nome));
+    const doJogador = daCampanha(lista.filter(f => chave(f.jogador) && chave(f.jogador) === chave(l.nome)));
     if (doJogador.length) return maisNova(doJogador);
     return null;
   }
@@ -179,7 +187,7 @@
   //  só, é ela; com várias, a mexida mais recentemente (e o nome do
   //  personagem aparece na nuvem, para o engano não ser mudo).
   function fichaDoMembro(uid, fichas) {
-    const dele = (fichas || fichasVisiveis()).filter(f => f.dono === uid);
+    const dele = daCampanha((fichas || fichasVisiveis()).filter(f => f.dono === uid));
     return dele.length ? maisNova(dele) : null;
   }
 

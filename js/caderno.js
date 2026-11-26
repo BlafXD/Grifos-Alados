@@ -62,7 +62,16 @@
     <h4>Perder a fama</h4><p>"Uma divindade menor ausente, que não demonstra afeição ou preocupação por seus servos, acaba por perder seu respeito e sua fé" (p. 237). Quando os fiéis somem, o status cai — use o <strong>⚖</strong> para ajustar à mão. Perder fama não apaga dádivas sozinho: o caderno avisa o que passou do limite e você decide remover ou trocar.</p>
   </details>`;}
   const fichas=()=>window.GA_Ficha?.referenciasCaderno?.()||window.GA_Ficha?.minhasFichas()||[];
-  function escolhaFicha(){return select('fichaId','Ficha',[['','Selecione uma ficha'],...fichas().map(f=>[f.id,f.nome||'Sem nome'])]);}
+  //  Seletor de ficha com filtro de campanha e conta (ideia 12, js/seletor-ficha.js),
+  //  agrupado por campanha: as fichas de anos atrás não se misturam com as de agora.
+  function escolhaFicha(){
+    const L=fichas(),SF=window.GA_SeletorFicha;
+    if(!SF)return select('fichaId','Ficha',[['','Selecione uma ficha'],...L.map(f=>[f.id,f.nome||'Sem nome'])]);
+    const grupos={};
+    L.forEach(f=>{const g=f.contaSo?'🔒 só na conta':(f.mesa?(f.mesaNome||f.mesa):'sem campanha');(grupos[g]=grupos[g]||[]).push(f);});
+    const ops=Object.keys(grupos).sort().map(g=>`<optgroup label="${esc(g)}">${grupos[g].map(f=>`<option value="${esc(f.id)}"${SF.attrs(f)}>${esc(f.nome||'Sem nome')}${f.minha?'':' — '+esc(f.donoNome||'jogador')}</option>`).join('')}</optgroup>`).join('');
+    return `<div class="sf-seletor sf-seletor--form" data-sf="caderno">${SF.controles('caderno',L)}<label>Ficha<select name="fichaId"><option value="">Selecione uma ficha</option>${ops}</select></label></div>`;
+  }
   const status=s=>s.status>=1?'Status divino '+s.status:(A.jaAscendeu(s)?'Sem fama — status 0 (perdeu a divindade)':'Candidato — ainda não ascendeu');
   // As 16 dádivas, com as que este deus ainda NÃO pode pegar desabilitadas e
   // o motivo ao lado (antes apareciam todas e só davam erro ao enviar).
@@ -116,7 +125,7 @@
 
   // Redesenhar troca o painel inteiro: os <details> abertos (o 📖 guia, o
   // histórico, uma dádiva) voltam abertos, em vez de fechar a cada clique.
-  function render(){const r=root();if(!r)return;const abertos=new Set([...r.querySelectorAll('details[data-cad-aberto]')].filter(x=>x.open).map(x=>x.dataset.cadAberto));const est=S.estado(),d=est.dados;r.innerHTML=`<p class="ga-cad-erro" role="alert" ${erro||est.erro?'':'hidden'}>${esc(erro||est.erro)}</p>`+ascensao(d);r.querySelectorAll('details[data-cad-aberto]').forEach(x=>{if(abertos.has(x.dataset.cadAberto))x.open=true;});}
+  function render(){const r=root();if(!r)return;const abertos=new Set([...r.querySelectorAll('details[data-cad-aberto]')].filter(x=>x.open).map(x=>x.dataset.cadAberto));const est=S.estado(),d=est.dados;r.innerHTML=`<p class="ga-cad-erro" role="alert" ${erro||est.erro?'':'hidden'}>${esc(erro||est.erro)}</p>`+ascensao(d);r.querySelectorAll('details[data-cad-aberto]').forEach(x=>{if(abertos.has(x.dataset.cadAberto))x.open=true;});window.GA_SeletorFicha?.aplicarTodos(r);}
   // O aviso de erro mora no alto do painel: depois de um clique que falhou,
   // leva a pessoa até ele (antes o clique parecia não fazer nada).
   function mostrarErro(){const alvo=root()?.querySelector('.ga-cad-erro');if(alvo&&!alvo.hidden)alvo.scrollIntoView({block:'nearest'});}

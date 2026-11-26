@@ -5269,3 +5269,14 @@
 .fi-sit:hover { border-color: var(--rust); }
 .fi-sit--on { background: var(--faixa); border-color: var(--faixa); color: var(--faixa-tinta); }
 .fi-sit-limpar { font: inherit; font-size: 0.78rem; background: none; border: 0; text-decoration: underline; cursor: pointer; color: var(--text-dim, inherit); }
+
+/* Seletor de ficha com filtro (ideia 12, js/seletor-ficha.js) — 26/11/2026 */
+.sf-filtros { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.8rem; font-size: 0.85rem; }
+.sf-campo { display: inline-flex; align-items: center; gap: 0.35rem; }
+.sf-campo select, .sf-busca { font: inherit; font-size: 0.85rem; padding: 0.15rem 0.4rem; border: 1px solid var(--parchment3);
+  border-radius: var(--raio); background: var(--parchment); color: var(--text); max-width: 16rem; }
+.sf-busca { width: 10rem; }
+.sf-conta-vazio { font-style: italic; opacity: 0.75; }
+.fi-sf-linha { margin: 0 0 0.4rem; }
+.sf-seletor--form { display: flex; flex-direction: column; gap: 0.35rem; }
+.sf-seletor [hidden] { display: none !important; }

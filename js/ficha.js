@@ -1924,10 +1924,12 @@
         <h1>Ficha de Personagem</h1>
         <p class="fi-subtitulo">A matemática do livro, feita sozinha — o resto é seu, para escrever</p>
       </div>
+      <div class="sf-seletor" data-sf="ficha">
+      ${window.GA_SeletorFicha && (dados.fichas.length + sfItensDaBarra().length) > 3 ? '<div class="fi-sf-linha">' + window.GA_SeletorFicha.controles('ficha', sfItensDaBarra()) + '</div>' : ''}
       <div class="fi-barra">
         ${dados.fichas.map(x => `
           <button type="button" class="fi-aba ${x.id === dados.aberta ? 'fi-aba--ativa' : ''}${retidas[x.id] ? ' fi-aba--retida' : ''}"
-                  data-acao="abrir" data-id="${esc(x.id)}"${retidas[x.id] ? ' title="Esta ficha espera você escolher entre a deste navegador e a do banco"' : ''}>
+                  data-acao="abrir" data-id="${esc(x.id)}"${sfAttrs(x)}${retidas[x.id] ? ' title="Esta ficha espera você escolher entre a deste navegador e a do banco"' : ''}>
             ${retidas[x.id] ? '⚠ ' : ''}${esc(x.nome || '(sem nome)')}
           </button>`).join('')}
         <button type="button" class="fi-add" data-acao="nova">＋ Nova ficha</button>
@@ -1936,6 +1938,7 @@
       </div>
       ${lobbyFichas()}
       ${barraDaMesa()}
+      </div>
       ${avisoDeSincronia(f)}
       ${avisoAbaConcorrente(f)}
 `;
@@ -1958,6 +1961,7 @@
            Clique em <strong>＋ Nova ficha</strong>: escolha a classe e o nível, digite os seis atributos,
            e o resto — PV, PM, Defesa, carga e as 29 perícias — sai sozinho.</p>`;
       cont.innerHTML = html;
+      if (window.GA_SeletorFicha) window.GA_SeletorFicha.aplicarTodos(cont);
       return;
     }
 
@@ -2033,6 +2037,7 @@
           🗑 ${donoAberta ? 'Tirar esta ficha da mesa' : 'Apagar esta ficha'}</button>
       </div>`;
     cont.innerHTML = html;
+    if (window.GA_SeletorFicha) window.GA_SeletorFicha.aplicarTodos(cont);
     // o innerHTML apagou os resultados — recoloca cada um no seu lugar
     Object.keys(resultados).forEach(pintarResultado);
     // …e o desenho sai inteiro: é aqui que as 🔍 barras voltam a esconder o
@@ -2073,7 +2078,7 @@
         <div class="fi-barra fi-barra--gaveta">
           <span class="fi-barra-rot" title="Ficam guardadas na sua conta, não neste aparelho">🗄 Na sua conta</span>
           ${faltando.map(f => `
-            <button type="button" class="fi-aba fi-aba--gaveta" data-acao="trazer" data-id="${esc(f.id)}"
+            <button type="button" class="fi-aba fi-aba--gaveta" data-acao="trazer" data-id="${esc(f.id)}"${sfAttrs(f)}
                     title="Trazer esta ficha para este aparelho — ela continua na sua conta">
               ⬇ ${esc(f.nome || '(sem nome)')}
               <em>${esc(resumoDaFicha(f))}</em>
@@ -2084,6 +2089,18 @@
       🗄 As suas fichas ficam guardadas em <strong>${esc(quem)}</strong> — entre com ela em qualquer
       aparelho e elas aparecem${faltando.length ? ' (é o que está logo acima)' : ''}.</p>`;
     return html;
+  }
+  //  Seletor com filtro (ideia 12, js/seletor-ficha.js): os data-* de cada aba
+  function sfAttrs(f, extra) {
+    if (!window.GA_SeletorFicha) return '';
+    return window.GA_SeletorFicha.attrs(Object.assign({ id: f.id, nome: f.nome, mesa: f.mesa || '', mesaNome: f.mesaNome || '',
+      contaSo: !!f.contaSo, minha: true }, extra || {}));
+  }
+  function sfItensDaBarra() {
+    const itens = dados.fichas.map(f => ({ nome: f.nome, mesa: f.mesa || '', mesaNome: f.mesaNome || '', contaSo: !!f.contaSo, minha: true }));
+    try { soNaGaveta().forEach(f => itens.push({ nome: f.nome, mesa: f.mesa || '', mesaNome: f.mesaNome || '', contaSo: !!f.contaSo, minha: true })); } catch (e) {}
+    try { fichasDaMesa().forEach(({ uid, ficha }) => itens.push({ nome: ficha.nome, mesa: ficha.mesa || salaAtual().id, dono: uid, donoNome: nomeDoDono(uid, ficha) })); } catch (e) {}
+    return itens;
   }
   function resumoDaFicha(f) {
     const c = (f.classes || []).filter(x => x.classe && x.nivel > 0)
@@ -2111,7 +2128,7 @@
         <div class="fi-barra fi-barra--gaveta">
           <span class="fi-barra-rot" title="Ficam guardadas nesta mesa, não neste aparelho">📡 Nesta mesa</span>
           ${minhaFaltando.map(f => `
-            <button type="button" class="fi-aba fi-aba--gaveta" data-acao="trazer-mesa" data-id="${esc(f.id)}"
+            <button type="button" class="fi-aba fi-aba--gaveta" data-acao="trazer-mesa" data-id="${esc(f.id)}"${sfAttrs(f, { mesa: f.mesa || salaAtual().id })}
                     title="Trazer esta ficha para este aparelho — ela continua na mesa">
               ⬇ ${esc(f.nome || '(sem nome)')}
               <em>${esc(resumoDaFicha(f))}</em>
@@ -2123,9 +2140,9 @@
         <div class="fi-barra fi-barra--mesa">
           <span class="fi-barra-rot" title="Só o mestre e o auxiliar recebem estas fichas">👥 Da mesa, ao vivo</span>
           ${daMesa.length ? daMesa.map(({ uid, ficha }) => `
-            <span class="fi-aba-mesa-wrap">
+            <span class="fi-aba-mesa-wrap" data-sf-embrulho>
             <button type="button" class="fi-aba fi-aba--mesa ${ficha.id === dados.aberta ? 'fi-aba--ativa' : ''}"
-                    data-acao="abrir" data-id="${esc(ficha.id)}"
+                    data-acao="abrir" data-id="${esc(ficha.id)}"${sfAttrs(ficha, { mesa: ficha.mesa || salaAtual().id, minha: false, dono: uid, donoNome: nomeDoDono(uid, ficha) })}
                     title="Ficha de ${esc(nomeDoDono(uid, ficha))} — você pode consultar, rolar e mexer">
               ${esc(ficha.nome || '(sem nome)')}
               <em>${esc(nomeDoDono(uid, ficha))}</em>
@@ -11200,6 +11217,8 @@
       //  ao mestre de quem ele era devoto e quais poderes dependiam disso
       //  (Deuses de Arton, p. 234) — a ficha continua sendo editada só aqui.
       return lista.map(({ f, dono }) => ({ id:f.id, nome:f.nome || 'Sem nome', dono,
+        mesa: String(f.mesa || ''), mesaNome: String(f.mesaNome || ''), contaSo: !!f.contaSo,
+        minha: dono === (meuUid || 'local'), donoNome: dono === (meuUid || 'local') ? '' : nomeDoDono(dono, f),
         divindade: String(f.divindade || ''),
         concedidos: (f.poderes || []).filter(p => p.grupo === 'concedido').map(p => String(p.nome || '')).filter(Boolean),
         inventario:(f.inventario || []).map(i => ({ id:i.id, nome:i.nome || 'Item sem nome' })) }));
