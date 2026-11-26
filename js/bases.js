@@ -17,12 +17,12 @@
   let dados = { bases: [] };
 
   // ── PERSISTÊNCIA ─────────────────────────────────────────────────
+  //  Leitura pela GA_GuardaLocal (26/11/2026): JSON estragado vira uma
+  //  cópia guardada à parte, em vez de ser sobrescrito pelo próximo salvar.
   function carregar() {
-    try {
-      const txt = localStorage.getItem(STORAGE_KEY);
-      if (txt) dados = JSON.parse(txt);
-    } catch (e) { console.warn('[bases] não carregou:', e.message); }
-    if (!dados || typeof dados !== 'object') dados = {};
+    const lido = window.GA_GuardaLocal ? window.GA_GuardaLocal.ler(STORAGE_KEY) : { dados: null };
+    dados = lido.dados;
+    if (!dados || typeof dados !== 'object' || Array.isArray(dados)) dados = {};
     if (!Array.isArray(dados.bases)) dados.bases = [];
     dados.bases = dados.bases.filter(b => b && typeof b === 'object' && !Array.isArray(b));
     dados.bases.forEach(normalizarBase);
@@ -141,13 +141,32 @@
       ? window.GA_limparHtml(b.inventarioHtml) : window.GA_nl2br(b.inventario);
     if (!Array.isArray(b.comodos)) b.comodos = [];
     if (!Array.isArray(b.mobilias)) b.mobilias = [];
-    b.comodos = b.comodos.filter(c => c && comodoDef(c.chave));
-    b.comodos.forEach(c => { if (!c.id) c.id = uid('cm'); });
-    b.mobilias = b.mobilias.filter(m => m && mobiliaDef(m.chave));
-    b.mobilias.forEach(m => { if (!m.id) m.id = uid('mb'); if (typeof m.comodoId !== 'string') m.comodoId = ''; });
+    //  Cômodo ou mobília que o catálogo não conhece NÃO some mais (antes o
+    //  filtro apagava calado e o próximo salvar perdia de vez): fica, com
+    //  aviso na tela e um ✕ para quem quiser tirar.
+    b.comodos = b.comodos.filter(c => c && typeof c === 'object' && typeof c.chave === 'string');
+    b.comodos.forEach(c => {
+      if (!c.id) c.id = uid('cm');
+      //  manutenção não paga: "um dos cômodos da base é danificado e deixa de
+      //  fornecer seus bônus até ser reparado" (Heróis de Arton, p. 246)
+      c.danificado = c.danificado === true;
+    });
+    b.mobilias = b.mobilias.filter(m => m && typeof m === 'object' && typeof m.chave === 'string');
+    const idsComodo = new Set(b.comodos.map(c => c.id));
+    b.mobilias.forEach(m => {
+      if (!m.id) m.id = uid('mb');
+      if (typeof m.comodoId !== 'string' || (m.comodoId && !idsComodo.has(m.comodoId))) m.comodoId = '';
+    });
   }
 
-  function pegarBase(el) { return dados.bases[+el.dataset.b]; }
+  //  Pelo ID, não pela posição: se outra aba, a mesa ou a conta trocarem a
+  //  lista enquanto a tela está aberta, a edição não cai na base vizinha.
+  function pegarBase(el) {
+    const id = el && el.dataset && el.dataset.bid;
+    if (id) return dados.bases.find(b => b.id === id) || null;
+    return dados.bases[+el.dataset.b] || null;
+  }
+  function idxBase(el) { const b = pegarBase(el); return b ? dados.bases.indexOf(b) : -1; }
 
   // ── CÁLCULOS ─────────────────────────────────────────────────────
   function fatorSitio(b) { return b.sitio ? 0.5 : 1; }
@@ -172,14 +191,19 @@
     const cMobilias = b.mobilias.reduce((s, m) => s + (mobiliaDef(m.chave) ? mobiliaDef(m.chave).preco : 0), 0);
 
     let seg = (b.tipo && tipoDef(b.tipo) ? (tipoDef(b.tipo).seg || 0) : 0) + (b.segAjuste || 0);
-    b.comodos.forEach(c => { const d = comodoDef(c.chave); if (d && d.seg) seg += d.seg; });
-    b.mobilias.forEach(m => { const d = mobiliaDef(m.chave); if (d && d.seg) seg += d.seg; });
-    seg = Math.max(0, seg);
+    const danificados = new Set(b.comodos.filter(c => c.danificado).map(c => c.id));
+    b.comodos.forEach(c => { const d = comodoDef(c.chave); if (d && d.seg && !c.danificado) seg += d.seg; });
+    //  a mobília de um cômodo danificado também para (ela "complementa" o cômodo)
+    b.mobilias.forEach(m => { const d = mobiliaDef(m.chave); if (d && d.seg && !danificados.has(m.comodoId)) seg += d.seg; });
+    //  "Um número de 0 a 20 que representa as defesas da base" (Heróis p. 246)
+    const segBruta = Math.max(0, seg);
+    seg = Math.min(20, segBruta);
 
     return {
       maxComodos: pd.comodos, usados: b.comodos.length, manut: pd.manut,
       custoPorte: cPorte, custoComodos: cComodos, custoMobilias: cMobilias,
-      total: cPorte + cComodos + cMobilias, seg: seg,
+      total: cPorte + cComodos + cMobilias, seg: seg, segBruta: segBruta,
+      danificados: danificados.size,
     };
   }
 
@@ -265,6 +289,7 @@
           <input type="file" id="bsImportFile" accept=".json,application/json" aria-label="Arquivo .json de bases para importar" hidden>
         </div>
       </div>
+      ${window.GA_GuardaLocal ? window.GA_GuardaLocal.avisoEstragado(STORAGE_KEY, 'Bases') : ''}
       ${htmlCatalogo()}`;
 
     if (dados.bases.length === 0) {
@@ -291,7 +316,7 @@
   }
 
   function construirBase(b, bi) {
-    const ds = `data-b="${bi}"`;
+    const ds = `data-b="${bi}" data-bid="${esc(b.id)}"`;
     const c = calc(b);
     const pd = porteDef(b.porte);
     const td = b.tipo ? tipoDef(b.tipo) : null;
@@ -376,7 +401,8 @@
             </span>
           </div>
         </div>
-        ${c.seg > 20 ? `<div class="bs-nota">Pela regra, a segurança máxima é 20.</div>` : ''}
+        ${c.segBruta > 20 ? `<div class="bs-nota">A soma dá ${c.segBruta}, mas a segurança vai de 0 a 20 (Heróis de Arton, p. 246).</div>` : ''}
+        ${c.danificados ? `<div class="bs-nota bs-nota--alerta">🔧 ${c.danificados} cômodo${c.danificados === 1 ? '' : 's'} danificado${c.danificados === 1 ? '' : 's'} (manutenção não paga): sem bônus até o reparo — uma ação entre aventuras e metade do custo do cômodo (p. 246).</div>` : ''}
       </div>`;
 
     // ── Cômodos ──
@@ -389,15 +415,26 @@
       comodosLista = `<p class="bs-vazio-mini">Nenhum cômodo. Cada cômodo custa ${moeda(CUSTO_COMODO * fatorSitio(b))} para construir.</p>`;
     } else {
       comodosLista = b.comodos.map((c2, ci) => {
-        const d = comodoDef(c2.chave); if (!d) return '';
+        const d = comodoDef(c2.chave);
+        if (!d) return `
+          <div class="bs-item bs-item--desconhecido">
+            <div class="bs-item-cab">
+              <span class="bs-item-nome">⚠ Cômodo que o catálogo não conhece: <code>${esc(c2.chave)}</code></span>
+              <button class="bs-mini bs-mini--del" data-acao="del-comodo" ${ds} data-i="${ci}" title="Remover cômodo">✕</button>
+            </div>
+            <div class="bs-item-efeito">Ficou guardado para não se perder. Se ele foi renomeado, adicione o novo e remova este.</div>
+          </div>`;
         const faltam = prereqFaltando(b, c2.chave);
         return `
           <div class="bs-item">
             <div class="bs-item-cab">
               <span class="bs-item-nome">🚪 ${esc(d.nome)}</span>
-              ${d.seg ? `<span class="bs-tag-seg">🛡 +${d.seg}</span>` : ''}
+              ${d.seg ? `<span class="bs-tag-seg${c2.danificado ? ' bs-tag-seg--off' : ''}">🛡 +${d.seg}</span>` : ''}
+              ${c2.danificado ? `<span class="bs-tag-dano" title="Sem bônus até o reparo (Heróis p. 246)">🔧 danificado · reparo ${moeda(CUSTO_COMODO * fatorSitio(b) / 2)}</span>` : ''}
               <span class="bs-item-custo">${moeda(CUSTO_COMODO * fatorSitio(b))}</span>
-              <button class="bs-mini bs-mini--del" data-acao="del-comodo" data-b="${bi}" data-i="${ci}" title="Remover cômodo">✕</button>
+              <button class="bs-mini${c2.danificado ? ' bs-mini--on' : ''}" data-acao="dano-comodo" ${ds} data-i="${ci}" aria-pressed="${c2.danificado}"
+                      title="${c2.danificado ? 'Reparado — o cômodo volta a dar seus bônus' : 'Marcar como danificado (manutenção não paga, p. 246): perde os bônus até o reparo'}">🔧</button>
+              <button class="bs-mini bs-mini--del" data-acao="del-comodo" ${ds} data-i="${ci}" title="Remover cômodo">✕</button>
             </div>
             <div class="bs-item-efeito">${esc(d.efeito)}</div>
             ${faltam.length ? `<div class="bs-item-prereq">⚠ requer ${faltam.map(esc).join(', ')}</div>` : ''}
@@ -425,8 +462,18 @@
         const d = comodoDef(c2.chave);
         return { id: c2.id, nome: d ? d.nome : c2.chave };
       });
+      //  "Cada cômodo pode conter uma mobília" (Heróis de Arton, p. 250)
+      const porComodo = {};
+      b.mobilias.forEach(m => { if (m.comodoId) porComodo[m.comodoId] = (porComodo[m.comodoId] || 0) + 1; });
       mobLista = b.mobilias.map((m, mi) => {
-        const d = mobiliaDef(m.chave); if (!d) return '';
+        const d = mobiliaDef(m.chave);
+        if (!d) return `
+          <div class="bs-item bs-item--desconhecido">
+            <div class="bs-item-cab">
+              <span class="bs-item-nome">⚠ Mobília que o catálogo não conhece: <code>${esc(m.chave)}</code></span>
+              <button class="bs-mini bs-mini--del" data-acao="del-mobilia" ${ds} data-i="${mi}" title="Remover mobília">✕</button>
+            </div>
+          </div>`;
         const vincOpts = `<option value="">Exterior / avulsa</option>` + comodoVinc.map(cv =>
           `<option value="${cv.id}" ${cv.id === m.comodoId ? 'selected' : ''}>${esc(cv.nome)}</option>`).join('');
         return `
@@ -435,13 +482,14 @@
               <span class="bs-item-nome">🪑 ${esc(d.nome)}</span>
               ${d.seg ? `<span class="bs-tag-seg">🛡 +${d.seg}</span>` : ''}
               <span class="bs-item-custo">${moeda(d.preco)}</span>
-              <button class="bs-mini bs-mini--del" data-acao="del-mobilia" data-b="${bi}" data-i="${mi}" title="Remover mobília">✕</button>
+              <button class="bs-mini bs-mini--del" data-acao="del-mobilia" ${ds} data-i="${mi}" title="Remover mobília">✕</button>
             </div>
             <div class="bs-item-efeito">${esc(d.efeito)}</div>
             <div class="bs-item-onde">Instalação: ${esc(d.onde)}</div>
             <label class="bs-item-vinc">Instalada em
-              <select class="bs-select bs-select--mini" data-campo="mobilia-comodo" data-b="${bi}" data-i="${mi}">${vincOpts}</select>
+              <select class="bs-select bs-select--mini" data-campo="mobilia-comodo" ${ds} data-i="${mi}">${vincOpts}</select>
             </label>
+            ${m.comodoId && porComodo[m.comodoId] > 1 ? '<div class="bs-item-prereq">⚠ outra mobília já está neste cômodo — cada cômodo comporta uma (Heróis de Arton, p. 250)</div>' : ''}
           </div>`;
       }).join('');
     }
@@ -530,38 +578,68 @@
     }
     if (acao === 'del-base') {
       const b = pegarBase(alvo);
-      if (b && (b.nome || b.comodos.length || b.mobilias.length || b.residentes || b.inventario)
-          && !confirm('Remover esta base e tudo dela?')) return;
-      dados.bases.splice(+alvo.dataset.b, 1);
-      salvar(); render(); return;
+      if (!b) return;
+      if ((b.comodos.length || b.mobilias.length || b.residentes || b.inventario)
+          && !confirm('Remover a base «' + (b.nome || 'sem nome') + '» e tudo dela?')) return;
+      const i = dados.bases.indexOf(b);
+      dados.bases.splice(i, 1);
+      salvarAgora(); render();
+      //  a caixa dos jogadores no banco só é limpa quando o "desfazer" expira
+      desfazerOu('Base «' + (b.nome || 'sem nome') + '» removida',
+        () => { dados.bases.splice(Math.min(i, dados.bases.length), 0, b); salvarAgora(); render(); },
+        () => { ['residentes', 'inventario', 'jogadores'].forEach(c => limparInbox(b.id, c)); });
+      return;
     }
     if (acao === 'toggle-base') {
-      const b = pegarBase(alvo); b.aberta = !b.aberta;
+      const b = pegarBase(alvo); if (!b) return; b.aberta = !b.aberta;
       salvar(); render(); return;
     }
     if (acao === 'toggle-visivel') {
-      const b = pegarBase(alvo); b.visivelJogadores = !b.visivelJogadores;
+      const b = pegarBase(alvo); if (!b) return; b.visivelJogadores = !b.visivelJogadores;
       salvar(); render(); return;
     }
     if (acao === 'subir-base' || acao === 'descer-base') {
-      const i = +alvo.dataset.b;
+      const i = idxBase(alvo);
       const j = (acao === 'subir-base') ? i - 1 : i + 1;
-      if (j < 0 || j >= dados.bases.length) return;
+      if (i < 0 || j < 0 || j >= dados.bases.length) return;
       const tmp = dados.bases[i]; dados.bases[i] = dados.bases[j]; dados.bases[j] = tmp;
       salvar(); render(); return;
     }
     if (acao === 'del-comodo') {
-      const b = dados.bases[+alvo.dataset.b];
-      b.comodos.splice(+alvo.dataset.i, 1);
-      salvar(); render(); return;
+      const b = pegarBase(alvo); if (!b) return;
+      const i = +alvo.dataset.i, c = b.comodos[i]; if (!c) return;
+      b.comodos.splice(i, 1);
+      //  a mobília que estava nele fica solta (não aponta para o nada)
+      const soltas = b.mobilias.filter(m => m.comodoId === c.id);
+      soltas.forEach(m => { m.comodoId = ''; });
+      salvarAgora(); render();
+      const d = comodoDef(c.chave);
+      desfazerOu('Cômodo ' + (d ? d.nome : c.chave) + ' removido', () => {
+        b.comodos.splice(Math.min(i, b.comodos.length), 0, c);
+        soltas.forEach(m => { m.comodoId = c.id; });
+        salvarAgora(); render();
+      });
+      return;
     }
     if (acao === 'del-mobilia') {
-      const b = dados.bases[+alvo.dataset.b];
-      b.mobilias.splice(+alvo.dataset.i, 1);
+      const b = pegarBase(alvo); if (!b) return;
+      const i = +alvo.dataset.i, m = b.mobilias[i]; if (!m) return;
+      b.mobilias.splice(i, 1);
+      salvarAgora(); render();
+      const d = mobiliaDef(m.chave);
+      desfazerOu('Mobília ' + (d ? d.nome : m.chave) + ' removida', () => {
+        b.mobilias.splice(Math.min(i, b.mobilias.length), 0, m); salvarAgora(); render();
+      });
+      return;
+    }
+    if (acao === 'dano-comodo') {
+      const b = pegarBase(alvo); if (!b) return;
+      const c = b.comodos[+alvo.dataset.i]; if (!c) return;
+      c.danificado = !c.danificado;
       salvar(); render(); return;
     }
     if (acao === 'seg-menos' || acao === 'seg-mais') {
-      const b = pegarBase(alvo);
+      const b = pegarBase(alvo); if (!b) return;
       b.segAjuste = (parseInt(b.segAjuste, 10) || 0) + (acao === 'seg-mais' ? 1 : -1);
       salvar(); render(); return;
     }
@@ -579,6 +657,11 @@
       if (inp) inp.click();
       return;
     }
+  }
+
+  function desfazerOu(texto, aoDesfazer, depois) {
+    if (window.GA_GuardaLocal) window.GA_GuardaLocal.desfazer(texto, aoDesfazer, depois);
+    else if (depois) depois();
   }
 
   // input — caixas de texto/número (não re-renderiza, mantém o foco)
@@ -741,16 +824,23 @@
   //  página. Resolve a corrida do 1º carregamento (init lê antes do sync
   //  escrever) e não pisca a tela.
   window.GA_Bases = {
-    recarregar: function () { carregar(); render(); },
+    recarregar: function () { carregar(); redesenharDeFora(); },
     // Chegou algo na caixa de entrada compartilhada. `souODono` = estamos no
     // index.html do mestre (aí a edição é absorvida para o arquivo dele e a
     // entrada é esvaziada). Devolve true se a tela precisa ser redesenhada.
     receberInbox: function (mapa, souODono) {
       const mudou = window.GA_basesAbsorverInbox(mapa, souODono);
-      if (mudou) render();
+      if (mudou) redesenharDeFora();
       return mudou;
     },
   };
+  //  o que chega de FORA (outra aba, a mesa, a conta) não redesenha debaixo
+  //  do cursor de quem está escrevendo: espera ele sair do campo
+  function redesenharDeFora() {
+    const cont = document.getElementById('bases-content');
+    if (window.GA_GuardaLocal && cont) window.GA_GuardaLocal.redesenhar(cont, render);
+    else render();
+  }
 
   // ── INICIALIZAÇÃO ────────────────────────────────────────────────
   function init() {
@@ -775,7 +865,7 @@
 
     // conversa entre abas: outra aba mexeu nas bases → esta relê, a menos
     // que tenha edição própria pendente. Ver GA_SyncAbas.
-    window.GA_SyncAbas({ chave: STORAGE_KEY, sujo: () => _sujo, recarregar: () => { carregar(); render(); } });
+    window.GA_SyncAbas({ chave: STORAGE_KEY, sujo: () => _sujo, recarregar: () => { carregar(); redesenharDeFora(); } });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
@@ -847,7 +937,7 @@
         chave: STORAGE_KEY,
         politica: 'perguntar',
         paraGuardar: semEstadoDeTela,
-        aoReceber: function () { carregar(); render(); },
+        aoReceber: function () { carregar(); redesenharDeFora(); },
       };
       if (window.GA_Gaveta) window.GA_Gaveta.registrar(inscricao);
       else (window.GA_GavetaFila = window.GA_GavetaFila || []).push(inscricao);

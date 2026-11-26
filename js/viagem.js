@@ -74,12 +74,12 @@
   let dados = { viagens: [] };
 
   // ── PERSISTÊNCIA ─────────────────────────────────────────────────
+  //  Leitura pela GA_GuardaLocal (26/11/2026): JSON estragado vira uma
+  //  cópia guardada à parte, em vez de ser sobrescrito pelo próximo salvar.
   function carregar() {
-    try {
-      const txt = localStorage.getItem(STORAGE_KEY);
-      if (txt) dados = JSON.parse(txt);
-    } catch (e) { console.warn('[viagem] não carregou:', e.message); }
-    if (!dados || typeof dados !== 'object') dados = {};
+    const lido = window.GA_GuardaLocal ? window.GA_GuardaLocal.ler(STORAGE_KEY) : { dados: null };
+    dados = lido.dados;
+    if (!dados || typeof dados !== 'object' || Array.isArray(dados)) dados = {};
     if (!Array.isArray(dados.viagens)) dados.viagens = [];
     dados.viagens = dados.viagens.filter(v => v && typeof v === 'object' && !Array.isArray(v));
     dados.viagens.forEach(normalizarViagem);
@@ -168,7 +168,7 @@
     if (typeof v.transporte.deslocManual !== 'string') v.transporte.deslocManual = '';
     ['terrenoDificil', 'climaRuim', 'marcha'].forEach(k => { if (typeof v[k] !== 'boolean') v[k] = false; });
     ['distTotal', 'distFeita', 'suprimentos'].forEach(k => { if (typeof v[k] !== 'string') v[k] = ''; });
-    if (typeof v.dias !== 'number') v.dias = parseInt(v.dias, 10) || 0;
+    v.dias = Math.max(0, typeof v.dias === 'number' && isFinite(v.dias) ? Math.floor(v.dias) : (parseInt(v.dias, 10) || 0));
     if (!Array.isArray(v.diario)) v.diario = [];
     if (!Array.isArray(v.paradas)) v.paradas = [];
     v.diario = v.diario.filter(d => d && typeof d === 'object' && !Array.isArray(d));
@@ -192,7 +192,21 @@
     });
   }
 
-  function pegarViagem(el) { return dados.viagens[+el.dataset.v]; }
+  //  Pelo ID, não pela posição (26/11/2026): se outra aba ou a conta
+  //  trocarem a lista com a tela aberta, a edição não cai na viagem vizinha.
+  function pegarViagem(el) {
+    const id = el && el.dataset && el.dataset.vid;
+    if (id) return dados.viagens.find(v => v.id === id) || null;
+    return dados.viagens[+el.dataset.v] || null;
+  }
+  function itemDe(v, lista, el, chaveIdx, chaveId) {
+    if (!v) return null;
+    const id = el.dataset[chaveId];
+    if (id) return v[lista].find(x => x.id === id) || null;
+    return v[lista][+el.dataset[chaveIdx]] || null;
+  }
+  const diarioDe = (el) => itemDe(pegarViagem(el), 'diario', el, 'd', 'did');
+  const paradaDe = (el) => itemDe(pegarViagem(el), 'paradas', el, 'p', 'pid');
 
   // ── CÁLCULO DE RITMO E PROGRESSO ─────────────────────────────────
   // Deslocamento (m) que vale para o ritmo: do veículo/montaria escolhido
@@ -251,8 +265,8 @@
     return { kmH: kmH, kmDia: kmH * 8 };
   }
   function progresso(v) {
-    const total = parseFloat(String(v.distTotal).replace(',', '.')) || 0;
-    const feita = parseFloat(String(v.distFeita).replace(',', '.')) || 0;
+    const total = Math.max(0, parseFloat(String(v.distTotal).replace(',', '.')) || 0);
+    const feita = Math.max(0, parseFloat(String(v.distFeita).replace(',', '.')) || 0);
     const pct = total > 0 ? Math.max(0, Math.min(100, feita / total * 100)) : 0;
     const faltam = Math.max(0, total - feita);
     const r = ritmo(v);
@@ -277,7 +291,8 @@
           <button class="vg-backup-btn vg-backup-btn--imp" data-acao="importar-backup" title="Carregar um backup .json">⬆ Importar</button>
           <input type="file" id="vgImportFile" accept=".json,application/json" aria-label="Arquivo .json de viagens para importar" hidden>
         </div>
-      </div>`;
+      </div>
+      ${window.GA_GuardaLocal ? window.GA_GuardaLocal.avisoEstragado(STORAGE_KEY, 'Viagens') : ''}`;
 
     if (dados.viagens.length === 0) {
       html += `<p class="vg-vazio">Nenhuma viagem ainda. Crie a primeira para começar a jornada.</p>`;
@@ -310,7 +325,7 @@
     // ── Ritmo & Distância (com meio de transporte) ──
     const t = v.transporte || { tipo: 'pe', chave: '' };
     const chk = (campo, on, rotulo) =>
-      `<label class="vg-chk"><input type="checkbox" data-campo="${campo}" data-v="${vi}" ${on ? 'checked' : ''}> ${rotulo}</label>`;
+      `<label class="vg-chk"><input type="checkbox" data-campo="${campo}" data-v="${vi}" data-vid="${esc(v.id)}" ${on ? 'checked' : ''}> ${rotulo}</label>`;
 
     // seletor de meio de transporte (a pé / veículos / montarias compráveis)
     const veics = window.VEICULOS || [];
@@ -334,11 +349,11 @@
         ? `<label class="vg-campo-inline vg-desloc-manual">Metros
             <input type="number" class="vg-input vg-input--num" min="0" step="0.5"
                    placeholder="ex.: 15" value="${esc(v.deslocManual)}"
-                   data-campo="deslocManual" data-v="${vi}"></label>
+                   data-campo="deslocManual" data-v="${vi}" data-vid="${esc(v.id)}"></label>
            <span class="vg-desloc-dica">deslocamento do mais lento, já com efeitos de velocidade</span>`
         : '';
       deslocUI = `<label class="vg-campo-inline">Deslocamento do grupo (mais lento)
-        <select class="vg-select" data-campo="desloc" data-v="${vi}">${opts}</select></label>${manualUI}`;
+        <select class="vg-select" data-campo="desloc" data-v="${vi}" data-vid="${esc(v.id)}">${opts}</select></label>${manualUI}`;
     } else {
       // veículo/montaria: usa o deslocamento da ficha ou permite digitar à mão
       const obj = transporteAtual(v);
@@ -349,12 +364,12 @@
         ? `<label class="vg-campo-inline vg-desloc-manual">Metros
             <input type="number" class="vg-input vg-input--num" min="0" step="0.5"
                    placeholder="ex.: 15" value="${esc(t.deslocManual)}"
-                   data-campo="transpDeslocManual" data-v="${vi}"></label>
+                   data-campo="transpDeslocManual" data-v="${vi}" data-vid="${esc(v.id)}"></label>
            <span class="vg-desloc-dica">deslocamento já com efeitos de velocidade</span>`
         : `<div class="vg-desloc-fix">Deslocamento: <strong>${esc(deslocEfetivo(v))} m</strong>`
           + (obj ? ` <span class="vg-desloc-fonte">— ${esc(obj.nome)}</span>` : '') + `</div>`;
       deslocUI = `<label class="vg-campo-inline">Deslocamento
-        <select class="vg-select" data-campo="deslocModoTransp" data-v="${vi}">${opts}</select></label>${manualUI}`;
+        <select class="vg-select" data-campo="deslocModoTransp" data-v="${vi}" data-vid="${esc(v.id)}">${opts}</select></label>${manualUI}`;
     }
 
     const blocoRitmo = `
@@ -362,7 +377,7 @@
         <h3 class="vg-bloco-tit">🧭 Ritmo &amp; Distância</h3>
         <div class="vg-linha">
           <label class="vg-campo-inline vg-campo-inline--full">Meio de transporte
-            <select class="vg-select" data-campo="transporte" data-v="${vi}">${topts}</select>
+            <select class="vg-select" data-campo="transporte" data-v="${vi}" data-vid="${esc(v.id)}">${topts}</select>
           </label>
         </div>
         <div class="vg-linha">${deslocUI}</div>
@@ -383,24 +398,24 @@
         <h3 class="vg-bloco-tit">📍 Progresso</h3>
         <div class="vg-linha">
           <label class="vg-campo-inline">Distância total (km)
-            <input class="vg-num" type="text" inputmode="decimal" data-campo="distTotal" data-v="${vi}" value="${esc(v.distTotal)}" placeholder="0">
+            <input class="vg-num" type="text" inputmode="decimal" data-campo="distTotal" data-v="${vi}" data-vid="${esc(v.id)}" value="${esc(v.distTotal)}" placeholder="0">
           </label>
           <label class="vg-campo-inline">Percorrido (km)
-            <input class="vg-num" type="text" inputmode="decimal" data-campo="distFeita" data-v="${vi}" value="${esc(v.distFeita)}" placeholder="0">
+            <input class="vg-num" type="text" inputmode="decimal" data-campo="distFeita" data-v="${vi}" data-vid="${esc(v.id)}" value="${esc(v.distFeita)}" placeholder="0">
           </label>
         </div>
         <div class="vg-bar"><div class="vg-bar-fill" style="width:${p.pct}%"></div></div>
         <div class="vg-bar-txt">${fmt(p.pct)}% · faltam <strong>${fmt(p.faltam)} km</strong>${p.diasRest != null && p.faltam > 0 ? ` · ~${p.diasRest} dia${p.diasRest !== 1 ? 's' : ''} neste ritmo` : ''}</div>
         <div class="vg-linha vg-linha--dias">
           <span class="vg-dias-rot">Dias de viagem</span>
-          <button class="vg-step" data-acao="dia-menos" data-v="${vi}" title="–1 dia">−</button>
-          <input class="vg-dias" type="text" inputmode="numeric" data-campo="dias" data-v="${vi}" aria-label="Dias de viagem já percorridos" value="${esc(v.dias)}">
-          <button class="vg-step" data-acao="dia-mais" data-v="${vi}" title="+1 dia">＋</button>
+          <button class="vg-step" data-acao="dia-menos" data-v="${vi}" data-vid="${esc(v.id)}" title="–1 dia">−</button>
+          <input class="vg-dias" type="text" inputmode="numeric" data-campo="dias" data-v="${vi}" data-vid="${esc(v.id)}" aria-label="Dias de viagem já percorridos" value="${esc(v.dias)}">
+          <button class="vg-step" data-acao="dia-mais" data-v="${vi}" data-vid="${esc(v.id)}" title="+1 dia">＋</button>
           <span class="vg-dica">guia faz Sobrevivência/dia para não se perder</span>
         </div>
         <div class="vg-linha">
           <label class="vg-campo-inline vg-campo-inline--full">Suprimentos / rações
-            <input class="vg-input" type="text" data-campo="suprimentos" data-v="${vi}" value="${esc(v.suprimentos)}" placeholder="Ex.: 5 rações por personagem">
+            <input class="vg-input" type="text" data-campo="suprimentos" data-v="${vi}" data-vid="${esc(v.id)}" value="${esc(v.suprimentos)}" placeholder="Ex.: 5 rações por personagem">
           </label>
         </div>
         <div class="vg-dica">sem comida/água: Fortitude/dia (CD 15 +1) → fatigado → exausto → inconsciente → morte.</div>
@@ -409,9 +424,9 @@
     // ── Diário de viagem ──
     let atalhos = '';
     ATALHOS_DIARIO.forEach((a, ai) => {
-      atalhos += `<button class="vg-atalho" data-acao="quick-diario" data-v="${vi}" data-prefixo="${esc(a.prefixo)}">${esc(a.rotulo)}</button>`;
+      atalhos += `<button class="vg-atalho" data-acao="quick-diario" data-v="${vi}" data-vid="${esc(v.id)}" data-prefixo="${esc(a.prefixo)}">${esc(a.rotulo)}</button>`;
     });
-    atalhos += `<button class="vg-atalho vg-atalho--sorte" data-acao="sortear-ermos" data-v="${vi}"
+    atalhos += `<button class="vg-atalho vg-atalho--sorte" data-acao="sortear-ermos" data-v="${vi}" data-vid="${esc(v.id)}"
                   title="Sorteia entre os Outros Elementos dos Ermos (Tormenta20, p. 269): nada, covil, ruína ou santuário">🎲 O que aparece no caminho</button>`;
     let diarioItens = '';
     if (v.diario.length === 0) {
@@ -427,14 +442,14 @@
           <div class="vg-diario-item${d.visivelJogadores ? '' : ' vg-item--oculto'}">
             <div class="ga-rich-wrap" data-jog-edita>
               <div class="vg-textarea ga-rich" contenteditable="true" spellcheck="true"
-                   data-campo="diario-texto" data-v="${vi}" data-d="${di}"
+                   data-campo="diario-texto" data-v="${vi}" data-vid="${esc(v.id)}" data-d="${di}" data-did="${esc(d.id)}"
                    data-ph="O que aconteceu…">${d.textoHtml}</div>
               <button type="button" class="ga-rich-btn" data-rich-desc
                       title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">※</button>
             </div>
-            ${botaoVisivel(d, 'toggle-visivel-diario', `data-v="${vi}" data-d="${di}"`,
+            ${botaoVisivel(d, 'toggle-visivel-diario', `data-v="${vi}" data-vid="${esc(v.id)}" data-d="${di}" data-did="${esc(d.id)}"`,
                            'os jogadores não veem esta linha até você revelar')}
-            <button class="vg-del" data-acao="del-diario" data-v="${vi}" data-d="${di}" title="Remover">✕</button>
+            <button class="vg-del" data-acao="del-diario" data-v="${vi}" data-vid="${esc(v.id)}" data-d="${di}" data-did="${esc(d.id)}" title="Remover">✕</button>
           </div>`;
       });
     }
@@ -458,16 +473,16 @@
         paradasHtml += `
           <div class="vg-parada${pa.visivelJogadores ? '' : ' vg-item--oculto'}">
             <div class="vg-parada-cab">
-              <input class="vg-parada-nome" type="text" data-campo="parada-nome" data-v="${vi}" data-p="${pi}"
+              <input class="vg-parada-nome" type="text" data-campo="parada-nome" data-v="${vi}" data-vid="${esc(v.id)}" data-p="${pi}" data-pid="${esc(pa.id)}"
                      value="${esc(pa.nome)}" placeholder="Nome da parada (ex.: Santuário de Khalmyr)">
               ${tagOculta(pa, 'Esta parada não é enviada para jogadores.html')}
-              ${botaoVisivel(pa, 'toggle-visivel-parada', `data-v="${vi}" data-p="${pi}"`,
+              ${botaoVisivel(pa, 'toggle-visivel-parada', `data-v="${vi}" data-vid="${esc(v.id)}" data-p="${pi}" data-pid="${esc(pa.id)}"`,
                              'os jogadores não veem esta parada até você revelar')}
-              <button class="vg-del" data-acao="del-parada" data-v="${vi}" data-p="${pi}" title="Remover">✕</button>
+              <button class="vg-del" data-acao="del-parada" data-v="${vi}" data-vid="${esc(v.id)}" data-p="${pi}" data-pid="${esc(pa.id)}" title="Remover">✕</button>
             </div>
             <div class="ga-rich-wrap" data-jog-edita>
               <div class="vg-textarea vg-textarea--parada ga-rich" contenteditable="true" spellcheck="true"
-                   data-campo="parada-texto" data-v="${vi}" data-p="${pi}"
+                   data-campo="parada-texto" data-v="${vi}" data-vid="${esc(v.id)}" data-p="${pi}" data-pid="${esc(pa.id)}"
                    data-ph="Narração / efeito desta parada…">${pa.textoHtml}</div>
               <button type="button" class="ga-rich-btn" data-rich-desc
                       title="Pendurar uma descrição no trecho selecionado — escreva a sua ou busque na base (itens, magias, condições…). A nuvem aparece ao passar o mouse; CLIQUE no trecho para fixá-la e copiar">※</button>
@@ -480,20 +495,20 @@
         <h3 class="vg-bloco-tit">⛩ Paradas narradas</h3>
         ${ehJogador() ? `<p class="vg-dica">Vocês também escrevem nestas caixas — o que anotarem chega ao mestre e aos outros jogadores.</p>` : ''}
         <div class="vg-paradas-lista">${paradasHtml}</div>
-        ${ehJogador() ? '' : `<button class="vg-add vg-add--parada" data-acao="add-parada" data-v="${vi}">＋ Parada</button>`}
+        ${ehJogador() ? '' : `<button class="vg-add vg-add--parada" data-acao="add-parada" data-v="${vi}" data-vid="${esc(v.id)}">＋ Parada</button>`}
       </div>`;
 
     return `
       <div class="vg-viagem ${v.aberta ? 'vg-aberta' : ''}${v.visivelJogadores ? '' : ' vg-viagem--oculta'}">
         <div class="vg-viagem-cab">
-          <button class="vg-toggle" data-acao="toggle-viagem" data-v="${vi}" title="Expandir / recolher">${v.aberta ? '▾' : '▸'}</button>
-          <input class="vg-nome" type="text" data-campo="nome" data-v="${vi}" value="${esc(v.nome)}" placeholder="Nome da viagem">
+          <button class="vg-toggle" data-acao="toggle-viagem" data-v="${vi}" data-vid="${esc(v.id)}" title="Expandir / recolher">${v.aberta ? '▾' : '▸'}</button>
+          <input class="vg-nome" type="text" data-campo="nome" data-v="${vi}" data-vid="${esc(v.id)}" value="${esc(v.nome)}" placeholder="Nome da viagem">
           ${tagOculta(v, 'Esta viagem não é enviada para jogadores.html')}
-          ${botaoVisivel(v, 'toggle-visivel-viagem', `data-v="${vi}"`,
+          ${botaoVisivel(v, 'toggle-visivel-viagem', `data-v="${vi}" data-vid="${esc(v.id)}"`,
                          'rascunho / jornada futura que os jogadores ainda não conhecem')}
-          <button class="vg-mover" data-acao="subir-viagem" data-v="${vi}" ${semSubir} title="Mover para cima">↑</button>
-          <button class="vg-mover" data-acao="descer-viagem" data-v="${vi}" ${semDescer} title="Mover para baixo">↓</button>
-          <button class="vg-del" data-acao="del-viagem" data-v="${vi}" title="Remover viagem">✕</button>
+          <button class="vg-mover" data-acao="subir-viagem" data-v="${vi}" data-vid="${esc(v.id)}" ${semSubir} title="Mover para cima">↑</button>
+          <button class="vg-mover" data-acao="descer-viagem" data-v="${vi}" data-vid="${esc(v.id)}" ${semDescer} title="Mover para baixo">↓</button>
+          <button class="vg-del" data-acao="del-viagem" data-v="${vi}" data-vid="${esc(v.id)}" title="Remover viagem">✕</button>
         </div>
         <div class="vg-viagem-corpo">
           <div class="vg-grade">
@@ -525,11 +540,11 @@
         <h3 class="vg-bloco-tit">🚗 ${esc(veic.nome)} <span class="vg-ficha-tam">${esc(veic.tamanho)}</span></h3>
         <div class="vg-pv" data-vpv-box="${esc(v.id)}">
           <span class="vg-pv-rot">PV do veículo</span>
-          <button class="vg-step" data-acao="veic-pv-menos" data-v="${vi}" title="−1 PV">−</button>
-          <input class="vg-pv-in" type="text" inputmode="numeric" data-campo="veic-pv" data-v="${vi}" data-vpv="${esc(v.id)}" aria-label="PV atual do veículo ${esc(veic.nome)}" value="${esc(info.pvAtual)}">
+          <button class="vg-step" data-acao="veic-pv-menos" data-v="${vi}" data-vid="${esc(v.id)}" title="−1 PV">−</button>
+          <input class="vg-pv-in" type="text" inputmode="numeric" data-campo="veic-pv" data-v="${vi}" data-vid="${esc(v.id)}" data-vpv="${esc(v.id)}" aria-label="PV atual do veículo ${esc(veic.nome)}" value="${esc(info.pvAtual)}">
           <span class="vg-pv-max">/ ${esc(info.pvMax)}</span>
-          <button class="vg-step" data-acao="veic-pv-mais" data-v="${vi}" title="+1 PV">＋</button>
-          <button class="vg-pv-full" data-acao="veic-pv-full" data-v="${vi}" title="Restaurar PV cheio">↺ cheio</button>
+          <button class="vg-step" data-acao="veic-pv-mais" data-v="${vi}" data-vid="${esc(v.id)}" title="+1 PV">＋</button>
+          <button class="vg-pv-full" data-acao="veic-pv-full" data-v="${vi}" data-vid="${esc(v.id)}" title="Restaurar PV cheio">↺ cheio</button>
         </div>
         <div class="vg-ficha-stats">
           ${row('Deslocamento', veic.desloc)}
@@ -558,7 +573,7 @@
       <div class="vg-bloco">
         <h3 class="vg-bloco-tit">⚔ Combate em viagem</h3>
         <p class="vg-dica">Assalto na estrada, briga em carroça, perseguição… deixe pronto pra estourar.</p>
-        <button class="vg-add vg-add--combate" data-acao="criar-combate" data-v="${vi}">⚔ Criar cena de combate no Monstros</button>
+        <button class="vg-add vg-add--combate" data-acao="criar-combate" data-v="${vi}" data-vid="${esc(v.id)}">⚔ Criar cena de combate no Monstros</button>
         ${minis ? `<div class="vg-combate-regras"><span class="vg-combate-rot">Regras rápidas de veículo em combate</span>${minis}</div>` : ''}
       </div>`;
   }
@@ -617,67 +632,73 @@
       salvar(); render(); return;
     }
     if (acao === 'del-viagem') {
-      if (!confirm('Remover esta viagem e tudo dela?')) return;
-      const fora = dados.viagens.splice(+alvo.dataset.v, 1)[0];
-      if (fora) fora.diario.concat(fora.paradas).forEach(it => limparInbox(it.id, 'texto'));
-      salvar(); render(); return;
+      const v = pegarViagem(alvo); if (!v) return;
+      if (!confirm('Remover a viagem «' + (v.nome || 'sem nome') + '» e tudo dela?')) return;
+      const i = dados.viagens.indexOf(v);
+      dados.viagens.splice(i, 1);
+      salvarAgora(); render();
+      //  a caixa dos jogadores no banco só é limpa quando o "desfazer" expira
+      desfazerOu('Viagem «' + (v.nome || 'sem nome') + '» removida',
+        () => { dados.viagens.splice(Math.min(i, dados.viagens.length), 0, v); salvarAgora(); render(); },
+        () => { v.diario.concat(v.paradas).forEach(it => limparInbox(it.id, 'texto')); });
+      return;
     }
     if (acao === 'toggle-viagem') {
-      const v = pegarViagem(alvo); v.aberta = !v.aberta;
+      const v = pegarViagem(alvo); if (!v) return; v.aberta = !v.aberta;
       salvar(); render(); return;
     }
     if (acao === 'toggle-visivel-viagem') {
-      const v = pegarViagem(alvo); v.visivelJogadores = !v.visivelJogadores;
+      const v = pegarViagem(alvo); if (!v) return; v.visivelJogadores = !v.visivelJogadores;
       salvar(); render(); return;
     }
     if (acao === 'toggle-visivel-diario') {
-      const d = pegarViagem(alvo).diario[+alvo.dataset.d];
+      const d = diarioDe(alvo); if (!d) return;
       d.visivelJogadores = !d.visivelJogadores;
       if (!d.visivelJogadores) limparInbox(d.id, 'texto');   // some da vista deles
       salvar(); render(); return;
     }
     if (acao === 'toggle-visivel-parada') {
-      const pa = pegarViagem(alvo).paradas[+alvo.dataset.p];
+      const pa = paradaDe(alvo); if (!pa) return;
       pa.visivelJogadores = !pa.visivelJogadores;
       if (!pa.visivelJogadores) limparInbox(pa.id, 'texto');
       salvar(); render(); return;
     }
     if (acao === 'subir-viagem' || acao === 'descer-viagem') {
-      const i = +alvo.dataset.v;
+      const i = dados.viagens.indexOf(pegarViagem(alvo));
       const j = (acao === 'subir-viagem') ? i - 1 : i + 1;
-      if (j < 0 || j >= dados.viagens.length) return;
+      if (i < 0 || j < 0 || j >= dados.viagens.length) return;
       const tmp = dados.viagens[i]; dados.viagens[i] = dados.viagens[j]; dados.viagens[j] = tmp;
       salvar(); render(); return;
     }
     if (acao === 'dia-mais' || acao === 'dia-menos') {
-      const v = pegarViagem(alvo);
+      const v = pegarViagem(alvo); if (!v) return;
       v.dias = Math.max(0, (parseInt(v.dias, 10) || 0) + (acao === 'dia-mais' ? 1 : -1));
       salvar(); render(); return;
     }
     if (acao === 'veic-pv-menos' || acao === 'veic-pv-mais') {
-      const v = pegarViagem(alvo); const info = pvInfo(v);
+      const v = pegarViagem(alvo); const info = v && pvInfo(v);
       if (info) { _aplicarPV(v, info.pvAtual + (acao === 'veic-pv-mais' ? 1 : -1)); render(); }
       return;
     }
     if (acao === 'veic-pv-full') {
-      const v = pegarViagem(alvo); const info = pvInfo(v);
+      const v = pegarViagem(alvo); const info = v && pvInfo(v);
       if (info) { _aplicarPV(v, info.pvMax); render(); }
       return;
     }
     if (acao === 'quick-diario') {
-      const v = pegarViagem(alvo);
+      const v = pegarViagem(alvo); if (!v) return;
       const prefixo = alvo.dataset.prefixo || '';
       v.diario.push({ id: uid('d'), texto: prefixo, textoHtml: esc(prefixo), visivelJogadores: true });
       salvar(); render(); return;
     }
     if (acao === 'sortear-ermos') {
-      const v = pegarViagem(alvo);
+      const v = pegarViagem(alvo); if (!v) return;
       const linha = sortearEventoErmos();
       v.diario.push({ id: uid('d'), texto: linha, textoHtml: esc(linha), visivelJogadores: false });
       salvar(); render(); return;
     }
     if (acao === 'criar-combate') {
-      const v = pegarViagem(alvo);
+      const v = pegarViagem(alvo); if (!v) return;
       if (!window.GA_Monstros || typeof window.GA_Monstros.criarCombateViagem !== 'function') {
         alert('Não foi possível falar com a aba Monstros. Recarregue a página e tente de novo.');
         return;
@@ -695,18 +716,23 @@
     }
     // ao remover, a entrada da caixa compartilhada some junto — senão uma
     // edição pendente de jogador voltaria como uma linha fantasma
-    if (acao === 'del-diario') {
-      const fora = pegarViagem(alvo).diario.splice(+alvo.dataset.d, 1)[0];
-      if (fora) limparInbox(fora.id, 'texto');
-      salvar(); render(); return;
+    if (acao === 'del-diario' || acao === 'del-parada') {
+      //  antes o ✕ apagava DIRETO, sem confirmar nem desfazer
+      const v = pegarViagem(alvo); if (!v) return;
+      const lista = acao === 'del-diario' ? v.diario : v.paradas;
+      const item = acao === 'del-diario' ? diarioDe(alvo) : paradaDe(alvo);
+      if (!item) return;
+      const i = lista.indexOf(item);
+      lista.splice(i, 1);
+      salvarAgora(); render();
+      desfazerOu(acao === 'del-diario' ? 'Linha do diário removida' : 'Parada «' + (item.nome || 'sem nome') + '» removida',
+        () => { lista.splice(Math.min(i, lista.length), 0, item); salvarAgora(); render(); },
+        () => limparInbox(item.id, 'texto'));
+      return;
     }
     if (acao === 'add-parada') {
-      pegarViagem(alvo).paradas.push({ id: uid('p'), nome: '', texto: '', textoHtml: '', visivelJogadores: true });
-      salvar(); render(); return;
-    }
-    if (acao === 'del-parada') {
-      const fora = pegarViagem(alvo).paradas.splice(+alvo.dataset.p, 1)[0];
-      if (fora) limparInbox(fora.id, 'texto');
+      const v = pegarViagem(alvo); if (!v) return;
+      v.paradas.push({ id: uid('p'), nome: '', texto: '', textoHtml: '', visivelJogadores: true });
       salvar(); render(); return;
     }
     if (acao === 'exportar-json') { exportarJSON(); return; }
@@ -716,6 +742,18 @@
       if (inp) inp.click();
       return;
     }
+  }
+
+  function desfazerOu(texto, aoDesfazer, depois) {
+    if (window.GA_GuardaLocal) window.GA_GuardaLocal.desfazer(texto, aoDesfazer, depois);
+    else if (depois) depois();
+  }
+  //  o que chega de FORA (outra aba, a conta) não redesenha debaixo do
+  //  cursor de quem está escrevendo: espera ele sair do campo
+  function redesenharDeFora() {
+    const cont = document.getElementById('viagem-content');
+    if (window.GA_GuardaLocal && cont) window.GA_GuardaLocal.redesenhar(cont, render);
+    else render();
   }
 
   // input — campos de texto/número/textarea (não re-renderiza)
@@ -731,7 +769,7 @@
     if (campo === 'suprimentos') { v.suprimentos = el.value; salvar(); return; }
     if (campo === 'deslocManual') { v.deslocManual = el.value; salvar(); atualizarRitmo(el); return; }
     if (campo === 'transpDeslocManual') { v.transporte.deslocManual = el.value; salvar(); atualizarRitmo(el); return; }
-    if (campo === 'dias')        { v.dias = parseInt(el.value, 10) || 0; salvar(); return; }
+    if (campo === 'dias')        { v.dias = Math.max(0, parseInt(el.value, 10) || 0); salvar(); return; }
     if (campo === 'distTotal' || campo === 'distFeita') {
       v[campo] = el.value; salvar(); atualizarProgresso(el); return;
     }
@@ -741,9 +779,9 @@
     // é o que fazem com a caixa de entrada: o jogador põe a edição lá, para
     // chegar ao mestre; o mestre tira o que houver lá, para uma edição
     // antiga dos jogadores não voltar por cima da dele depois.
-    if (campo === 'diario-texto')  { escreverItem(v.diario[+el.dataset.d], el); return; }
-    if (campo === 'parada-texto')  { escreverItem(v.paradas[+el.dataset.p], el); return; }
-    if (campo === 'parada-nome')   { v.paradas[+el.dataset.p].nome = el.value; salvar(); return; }
+    if (campo === 'diario-texto')  { escreverItem(diarioDe(el), el); return; }
+    if (campo === 'parada-texto')  { escreverItem(paradaDe(el), el); return; }
+    if (campo === 'parada-nome')   { const pa = paradaDe(el); if (pa) { pa.nome = el.value; salvar(); } return; }
   }
 
   function escreverItem(item, el) {
@@ -762,7 +800,7 @@
     const campo = el.dataset && el.dataset.campo;
     if (campo === 'transporte') {
       const parts = String(el.value).split(':');
-      const v = pegarViagem(el);
+      const v = pegarViagem(el); if (!v) return;
       const tipo = parts[0] || 'pe', chave = parts.slice(1).join(':');
       let pvAtual = null;
       if (tipo === 'veiculo') {
@@ -772,14 +810,15 @@
       v.transporte = { tipo: tipo, chave: chave, pvAtual: pvAtual, manual: false, deslocManual: '' };
       salvar(); render(); return;
     }
-    if (campo === 'desloc') { pegarViagem(el).desloc = el.value; salvar(); render(); return; }
+    if (el.id === 'vgImportFile') { aoEscolherBackup(e); return; }
+    const v = pegarViagem(el); if (!v) return;
+    if (campo === 'desloc') { v.desloc = el.value; salvar(); render(); return; }
     if (campo === 'deslocModoTransp') {
-      pegarViagem(el).transporte.manual = (el.value === 'manual'); salvar(); render(); return;
+      v.transporte.manual = (el.value === 'manual'); salvar(); render(); return;
     }
     if (campo === 'terrenoDificil' || campo === 'climaRuim' || campo === 'marcha') {
-      pegarViagem(el)[campo] = el.checked; salvar(); render(); return;
+      v[campo] = el.checked; salvar(); render(); return;
     }
-    if (el.id === 'vgImportFile') { aoEscolherBackup(e); return; }
   }
 
   // ── BACKUP ───────────────────────────────────────────────────────
@@ -843,9 +882,31 @@
         x.paradas.forEach(p => { p.id = uid('p'); });
       });
       if (!viagens.length) { alert('Nenhuma viagem válida no arquivo.'); return; }
-      const sub = dados.viagens.length && confirm('OK = SUBSTITUIR todas as viagens atuais.\nCancelar = ADICIONAR as do arquivo às atuais.');
-      dados.viagens = sub ? viagens : dados.viagens.concat(viagens);
-      salvarAgora(); render();
+      const aplicar = (substituir) => {
+        const antes = dados.viagens.slice();
+        dados.viagens = substituir ? viagens : dados.viagens.concat(viagens);
+        salvarAgora(); render();
+        desfazerOu(substituir ? 'Viagens substituídas pelo arquivo' : viagens.length + ' viagem(ns) adicionada(s)',
+          () => { dados.viagens = antes; salvarAgora(); render(); });
+      };
+      if (!dados.viagens.length || !window.GA_abrirModal) { aplicar(false); return; }
+      //  antes era um confirm em que "Cancelar" ADICIONAVA — quem queria
+      //  desistir acabava importando. Agora são três botões com nome.
+      const overlay = window.GA_abrirModal(`
+        <div class="ga-modal-cab"><span>⬆ Importar viagens</span><button class="ga-modal-x" data-ga-fechar title="Fechar">✕</button></div>
+        <p class="ga-modal-dica">O arquivo traz <strong>${viagens.length} viagem(ns)</strong>. Você tem ${dados.viagens.length} no momento.</p>
+        <div class="ga-modal-acoes">
+          <button class="ga-btn-sec" data-ga-fechar>Cancelar</button>
+          <button class="ga-btn-sec" data-imp-modo="adicionar">➕ Adicionar</button>
+          <button class="ga-btn-principal" data-imp-modo="substituir">♻ Substituir tudo</button>
+        </div>`);
+      overlay.addEventListener('click', ev => {
+        const btn = ev.target.closest('[data-imp-modo]');
+        if (!btn) return;
+        const sub = btn.dataset.impModo === 'substituir';
+        if (sub && !confirm('Isto troca as ' + dados.viagens.length + ' viagens atuais pelas do arquivo. Continuar?')) return;
+        overlay._fechar(); aplicar(sub);
+      });
     };
     leitor.onerror = () => alert('Não foi possível ler o arquivo.');
     leitor.readAsText(arq);
@@ -867,13 +928,13 @@
     },
     // edição dos jogadores: sync-jogador relê o localStorage e redesenha
     // as viagens transmitidas pelo mestre, sem recarregar a página.
-    recarregar: function () { carregar(); render(); },
+    recarregar: function () { carregar(); redesenharDeFora(); },
     // Chegou algo na caixa de entrada compartilhada. `souODono` = estamos no
     // index.html do mestre (aí a edição é absorvida para o arquivo dele e a
     // entrada é esvaziada). Devolve true se a tela precisou ser redesenhada.
     receberInbox: function (mapa, souODono) {
       const mudou = absorverInbox(mapa, souODono);
-      if (mudou) render();
+      if (mudou) redesenharDeFora();
       return mudou;
     },
   };
@@ -901,7 +962,7 @@
 
     // conversa entre abas: outra aba mexeu nas viagens → esta relê, a menos
     // que tenha edição própria pendente. Ver GA_SyncAbas.
-    window.GA_SyncAbas({ chave: STORAGE_KEY, sujo: () => _sujo, recarregar: () => { carregar(); render(); } });
+    window.GA_SyncAbas({ chave: STORAGE_KEY, sujo: () => _sujo, recarregar: () => { carregar(); redesenharDeFora(); } });
 
     // sincroniza o PV do veículo quando a aba Monstros o altera (mesma vida)
     window.addEventListener('ga-veiculo-pv', function (e) {
@@ -955,7 +1016,7 @@
         chave: STORAGE_KEY,
         politica: 'perguntar',
         paraGuardar: semEstadoDeTela,
-        aoReceber: function () { carregar(); render(); },
+        aoReceber: function () { carregar(); redesenharDeFora(); },
       };
       if (window.GA_Gaveta) window.GA_Gaveta.registrar(inscricao);
       else (window.GA_GavetaFila = window.GA_GavetaFila || []).push(inscricao);

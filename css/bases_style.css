@@ -318,3 +318,10 @@ color: var(--ink-faded);
   .bs-base-tag { display: none; }
   .bs-base-cab { gap: 0.3rem; }
 }
+
+/* robustez (26/11/2026): cômodo danificado, item que o catálogo não conhece */
+.bs-tag-dano { font-size: 0.78rem; padding: 0.05rem 0.45rem; border-radius: 999px; border: 1px dashed var(--rust); color: var(--rust-dark, var(--rust)); }
+.bs-tag-seg--off { text-decoration: line-through; opacity: 0.6; }
+.bs-mini--on { background: var(--faixa); color: var(--faixa-tinta); border-color: var(--faixa); }
+.bs-item--desconhecido { border-style: dashed; }
+.bs-nota--alerta { border-left: 3px solid var(--rust); padding-left: 0.5rem; }

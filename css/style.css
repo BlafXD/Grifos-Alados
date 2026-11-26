@@ -3057,3 +3057,16 @@ footer { display: flex; flex-direction: column; align-items: center; gap: 0.55re
 .ga-dano-real small { flex-basis:100%; font-family:var(--ga-fonte-nota); font-size:.78rem; line-height:1.5; color:var(--ink-faded); }
 .ga-historico-linha { display:flex; gap:.7rem; align-items:center; justify-content:space-between; padding:.7rem 0; border-bottom:1px solid var(--gold); }
 .ga-historico-linha small { display:block; }
+
+/* GA_GuardaLocal (js/guarda-local.js) — aviso de arquivo estragado e "Desfazer" (26/11/2026) */
+.gl-aviso { margin: 0.6rem 0; padding: 0.6rem 0.8rem; border: 2px solid var(--rust); border-radius: var(--raio, 6px);
+  background: var(--parchment); color: var(--text); }
+.gl-aviso-acoes { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
+.gl-btn { font: inherit; font-size: 0.85rem; padding: 0.2rem 0.6rem; cursor: pointer; border-radius: var(--raio, 6px);
+  border: 1px solid var(--faixa); background: var(--faixa); color: var(--faixa-tinta); }
+.gl-btn--sec { background: transparent; color: var(--text); border-color: var(--parchment3); }
+.gl-pilha { position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%); z-index: 9000;
+  display: flex; flex-direction: column; gap: 0.4rem; max-width: calc(100vw - 2rem); }
+.gl-toast { display: flex; align-items: center; gap: 0.8rem; padding: 0.5rem 0.8rem; border-radius: var(--raio, 6px);
+  background: var(--faixa); color: var(--faixa-tinta); box-shadow: 0 4px 14px rgba(0,0,0,.3); font-size: 0.92rem; }
+.gl-toast .gl-btn { background: var(--faixa-tinta); color: var(--faixa); border-color: var(--faixa-tinta); }
