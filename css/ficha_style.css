@@ -5285,3 +5285,7 @@
 .fi-pod-magica--mao { outline: 1px dashed currentColor; outline-offset: 1px; }
 .fi-pod-magica-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0.3rem 0; }
 .fi-pod-magica-linha small { opacity: 0.8; }
+
+/* limite de morte sempre visível embaixo da barra de PV (p. 236) */
+.fi-limite-morte { margin: 0.2rem 0 0; font-size: 0.85em; color: var(--text-dim, inherit); }
+.fi-limite-morte strong { color: var(--carmim); }

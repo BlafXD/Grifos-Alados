@@ -262,12 +262,17 @@
     if (!lista.length) return null;
     const ref = de === undefined ? atual : de;
     const i = lista.findIndex(l => l.id === ref);
+    //  SURPRESA (p. 231): o surpreendido "não age na primeira rodada" — o
+    //  turno pula ele SÓ enquanto a rodada for a 1ª.
+    const rod = rodada || 1;
     //  O turno PULA quem está fora de combate (💀): procura o próximo VIVO,
     //  dando a volta. Se ninguém mais está vivo, não há a quem passar.
     for (let k = 1; k <= lista.length; k++) {
       const cand = lista[(i + k) % lista.length];
+      const virou = i >= 0 && (i + k) >= lista.length;
+      if (cand && cand.surpreso && (virou ? rod + 1 : rod) === 1) continue;
       if (cand && !cand.morto && !(semEle && cand.id === ref)) {
-        return { proximo: cand.id, virou: i >= 0 && (i + k) >= lista.length };
+        return { proximo: cand.id, virou: virou };
       }
     }
     return null;
@@ -488,6 +493,7 @@
     ordenada.forEach((l, i) => {
       const id = l.id || ('l' + Date.now().toString(36) + i.toString(36));
       const linha = { nome: String(l.nome || ''), tipo: l.tipo === 'jogador' ? 'jogador' : 'criatura', ordem: i };
+      if (l.surpreso) linha.surpreso = true;   // 😱 não age na 1ª rodada (p. 231)
       if (l.morto) linha.morto = true;    // a marca "fora de combate" sobrevive a montar/ordenar/adicionar
       // De quem é a linha e qual ficha ela puxa. É público, como o resto
       // da lista — e não abre nada: quem lê a FICHA continua sendo só o
@@ -499,7 +505,9 @@
     });
     const ids = Object.keys(publico.linhas);
     const pedido = o.atual !== undefined ? o.atual : (manterAtual ? atual : null);
-    publico.atual = (pedido && ids.indexOf(pedido) >= 0) ? pedido : (ids.length ? ids[0] : null);
+    //  sem pedido, a vez abre no 1º que pode agir (nem 💀, nem 😱 na 1ª rodada)
+    const primeiro = ids.find(id => !publico.linhas[id].morto && !(publico.linhas[id].surpreso && publico.rodada === 1)) || ids[0];
+    publico.atual = (pedido && ids.indexOf(pedido) >= 0) ? pedido : (ids.length ? primeiro : null);
 
     if (local()) {
       linhas = publico.linhas; valores = secreto;
@@ -517,7 +525,7 @@
   // A lista de agora, no formato que o gravarLista come.
   function listaAtual() {
     return emOrdem().map(l => ({
-      id: l.id, nome: l.nome, tipo: l.tipo, morto: !!l.morto,
+      id: l.id, nome: l.nome, tipo: l.tipo, morto: !!l.morto, surpreso: !!l.surpreso,
       uid: l.uid || '', fichaId: l.fichaId || '',
       valor: (valores[l.id] && valores[l.id].valor != null) ? valores[l.id].valor : null,
       mod: (valores[l.id] && valores[l.id].mod) || 0,
@@ -528,7 +536,10 @@
     if (!mando()) return;
     const p = idSeguinte();
     if (!p) return;
-    gravar(p.virou ? { atual: p.proximo, rodada: (rodada || 1) + 1 } : { atual: p.proximo });
+    const patch = p.virou ? { atual: p.proximo, rodada: (rodada || 1) + 1 } : { atual: p.proximo };
+    //  a 1ª rodada acabou: a surpresa acabou junto
+    if (p.virou) Object.keys(linhas).forEach(id => { if (linhas[id].surpreso) patch['linhas/' + id + '/surpreso'] = null; });
+    gravar(patch);
   }
 
   // As setas trocam as vizinhas na ordem VISÍVEL. Renumerar todas
@@ -817,6 +828,31 @@
       const al = linhas[id]; if (!al) return;
       return gravar({ ['linhas/' + id + '/morto']: !al.morto });
     }
+    if (acao === 'surpreso') {
+      const al = linhas[id]; if (!al) return;
+      const patch = { ['linhas/' + id + '/surpreso']: al.surpreso ? null : true };
+      //  marcou quem está com a vez na 1ª rodada: a vez passa adiante
+      if (!al.surpreso && id === atual && (rodada || 1) === 1) {
+        linhas[id].surpreso = true; const p = idSeguinte(id, true); linhas[id].surpreso = false;
+        if (p) { patch.atual = p.proximo; if (p.virou) patch.rodada = 2; }
+      }
+      return gravar(patch);
+    }
+    if (acao === 'surpresa-lado') {
+      //  um lado inteiro não percebeu o outro: marca/desmarca todos dele
+      const tipo = btn.dataset.tipo;
+      const dele = Object.keys(linhas).filter(k => linhas[k].tipo === tipo);
+      const ligar = dele.some(k => !linhas[k].surpreso);
+      const patch = {};
+      dele.forEach(k => { patch['linhas/' + k + '/surpreso'] = ligar ? true : null; });
+      if (ligar && dele.indexOf(atual) >= 0 && (rodada || 1) === 1) {
+        dele.forEach(k => { linhas[k].surpreso = true; });
+        const p = idSeguinte(atual, true);
+        dele.forEach(k => { linhas[k].surpreso = false; });
+        if (p) { patch.atual = p.proximo; if (p.virou) patch.rodada = 2; }
+      }
+      return gravar(patch);
+    }
     if (acao === 'tira')    return remover(id);
     if (acao === 'ordena')  return reordenar();
     if (acao === 'add')     return acrescentarDoCampo();
@@ -891,6 +927,9 @@
         '<button type="button" class="ga-ini-mini ga-ini-mini--morto' + (l.morto ? ' ga-ini-mini--on' : '') +
           '" data-ini="morto" data-id="' + esc(l.id) + '" title="' +
           (l.morto ? 'Reviver — volta para a ordem do combate' : 'Fora de combate (morto/inconsciente) — sai da ordem, o turno pula') + '">💀</button>' +
+        '<button type="button" class="ga-ini-mini ga-ini-mini--surpresa' + (l.surpreso ? ' ga-ini-mini--on' : '') +
+          '" data-ini="surpreso" data-id="' + esc(l.id) + '" title="' +
+          (l.surpreso ? 'Tirar a surpresa' : 'Surpreendido: não percebeu os inimigos — fica desprevenido e não age na 1ª rodada (p. 231)') + '">😱</button>' +
         '<button type="button" class="ga-ini-mini ga-ini-mini--x" data-ini="tira" data-id="' + esc(l.id) + '" title="Tirar da lista">✕</button>' +
       '</span>'
       : '';
@@ -904,6 +943,8 @@
         (mando() ? ' title="Dar a vez a esta linha"' : ' disabled') + '>' +
         '<span class="ga-ini-ico" aria-hidden="true">' + icone + '</span>' +
         '<span class="ga-ini-txt">' + esc(l.nome) + '</span>' +
+        (l.surpreso && (rodada || 1) === 1
+          ? '<span class="ga-ini-surpresa" title="Surpreendido (p. 231): desprevenido (−5 na Defesa e em Reflexos) e não age na 1ª rodada">😱 surpreso</span>' : '') +
       '</button>' +
       '<span class="ga-ini-pvcel">' + pvHtml(l, fichas) + '</span>' + controles +
     '</li>';
@@ -1007,6 +1048,9 @@
           if (prev && prev.foraDaCampanha) {
             corpo += '<p class="ga-ini-prev ga-ini-prev--alerta">⚠ a cena "narrando" agora é de outra campanha — ' +
               '"⚔ Montar" vai pedir os nomes na mão. Escolha a cena certa no Painel de combate.</p>';
+          } else if (prev && prev.doPainel) {
+            corpo += '<p class="ga-ini-prev">Pronta para montar: as ' + prev.criaturas.length +
+              ' criatura' + (prev.criaturas.length > 1 ? 's' : '') + ' fixadas (◫) no Painel de combate</p>';
           } else if (prev && prev.nome) {
             corpo += '<p class="ga-ini-prev">Pronta para montar: cena «' + esc(prev.nome) + '»' +
               (prev.criaturas.length
@@ -1022,6 +1066,10 @@
             'title="Disparar um efeito em área (uma magia, um poder ou uma condição) e marcar quem está sob ele — aparece sozinho na ficha de cada afetado">🔆 Efeito / condição</button>' +
           (naMesa() ? '<button type="button" class="ga-ini-btn ga-ini-btn--controlador" data-ini="controlador" ' +
             'title="Pedir um teste (perícia ou atributo, CD secreta ou não) que aparece na tela dos jogadores — e disparar o dano ou a condição em quem falhou">🎯 Controlador</button>' : '') +
+          (temLista && (rodada || 1) === 1
+            ? '<button type="button" class="ga-ini-btn" data-ini="surpresa-lado" data-tipo="jogador" title="Os jogadores não perceberam os inimigos: todos ficam surpreendidos na 1ª rodada (p. 231)">😱 Grupo surpreso</button>' +
+              '<button type="button" class="ga-ini-btn" data-ini="surpresa-lado" data-tipo="criatura" title="As criaturas não perceberam o grupo: todas ficam surpreendidas na 1ª rodada (p. 231)">😱 Criaturas surpresas</button>'
+            : '') +
           (temLista ? '<button type="button" class="ga-ini-btn" data-ini="ordena" title="Reordenar pelos valores">⇅ Ordenar</button>' +
                       '<button type="button" class="ga-ini-btn ga-ini-btn--x" data-ini="limpar">🗑 Limpar</button>' : '') +
         '</div>';

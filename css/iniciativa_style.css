@@ -374,3 +374,8 @@
   margin-top: 0.45rem;
 }
 .ga-ini-recado-acoes .ga-ini-btn { text-decoration: none; }
+
+/* 😱 surpresa (Tormenta20 p. 231) — 26/11/2026 */
+.ga-ini-mini--surpresa.ga-ini-mini--on { background: var(--faixa); color: var(--faixa-tinta); border-color: var(--faixa); }
+.ga-ini-surpresa { margin-left: 0.35rem; padding: 0 0.3rem; border-radius: 3px; font-size: 0.75em;
+  background: var(--faixa); color: var(--faixa-tinta); white-space: nowrap; }

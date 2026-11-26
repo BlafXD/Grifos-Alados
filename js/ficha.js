@@ -2824,7 +2824,7 @@
         <span class="fi-barra-temp" data-der="${qual}barratemp" style="width:${fatia(temp, max, temp)}%"></span>
         ${ehPv ? `<span class="fi-barra-mancha" data-der="pvbarramancha"
               style="width:${fatia(preso, max, temp)}%"></span>` : ''}
-      </div>`;
+      </div>${ehPv ? `<p class="fi-limite-morte" title="Tormenta20, p. 236: morre com −10 PV ou com PV negativos iguais à metade do PV máximo — o que for mais baixo">💀 Se chegar a <strong data-der="pvmorte">${limiteMorte(max)}</strong> PV, morre.</p>` : ''}`;
   }
   // ── 🩶 OS PV MANCHADOS, NA TELA ──────────────────────────────────
   //  Uma linha por mancha: quantos pontos, e o que os solta. O ✓ é o
@@ -7771,6 +7771,7 @@
       if (d === 'patamar')   el.textContent = patamar(n);
       if (d === 'treino')    el.textContent = sinal(treino(n, true));
       if (d === 'pvmax')     el.textContent = pvMax(f);
+      if (d === 'pvmorte')   el.textContent = limiteMorte(pvMax(f));
       if (d === 'pmmax')     el.textContent = pmMax(f);
       if (d === 'defesa')    el.textContent = defesa(f);
       if (d === 'cargamax' || d === 'cargamax2' || d === 'cargamax3') el.textContent = cargaMax(f);

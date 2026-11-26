@@ -190,3 +190,23 @@ test('na campanha, nada da lista local aparece enquanto a mesa responde', () => 
   h.change({ papelLido: true });                    // respondeu: não é membro → a lista desta campanha
   assert.equal(h.api.combatentes().length, 4);
 });
+
+// ── Surpresa (Tormenta20 p. 231), 26/11/2026 ──
+test('surpreendido não age na 1ª rodada e volta a agir na 2ª', () => {
+  const data = quatro('a'); data.linhas.b.surpreso = true; data.linhas.d.surpreso = true;
+  const h = ambiente(data);
+  h.api.passar();
+  assert.equal(h.saved().atual, 'c', 'pula o Bugbear surpreso');
+  h.api.passar();
+  assert.deepEqual([h.saved().atual, h.saved().rodada], ['a', 2], 'pula o Dragão e vira a rodada');
+  assert.ok(!h.saved().linhas.b.surpreso, 'a surpresa acaba com a 1ª rodada');
+  h.api.passar();
+  assert.equal(h.saved().atual, 'b', 'na 2ª rodada o Bugbear age');
+});
+
+test('marcar surpreso quem está com a vez passa a vez adiante', () => {
+  const h = ambiente(quatro('a'));
+  h.click('surpreso', 'a');
+  assert.equal(h.saved().atual, 'b');
+  assert.equal(h.saved().linhas.a.surpreso, true);
+});

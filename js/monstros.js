@@ -7808,11 +7808,30 @@
     if (!ref) return foraDaCampanha ? nada : null;
     const c = dados.sessoes[ref.si].cenas[ref.ci];
     if (!c) return foraDaCampanha ? nada : null;
+    //  SÓ QUEM ESTÁ NO PAINEL (26/11/2026). Pedido dele: a cena tem várias
+    //  criaturas, mas nem todas entram na luta — e o PNJ aliado criado na
+    //  hora também tem de entrar. Então: havendo criatura fixada (◫) no
+    //  Painel de combate, a iniciativa monta com AS FIXADAS (de qualquer
+    //  cena desta campanha). Painel vazio = a cena inteira, como antes.
+    const conectada = (window.GA_Mesa && window.GA_Mesa.mesaId()) || '';
+    const fixadas = [];
+    (dados.painel || []).forEach(id => {
+      if (!id) return;
+      dados.sessoes.forEach(s => {
+        if (conectada && s.mesa && s.mesa !== conectada) return;
+        (s.cenas || []).forEach(cn => {
+          const cr = (cn.criaturas || []).find(x => x.id === id);
+          if (cr && fixadas.indexOf(cr) < 0) fixadas.push(cr);
+        });
+      });
+    });
+    const doPainel = fixadas.length > 0;
     return {
       nome: c.nome || 'Cena',
+      doPainel: doPainel,
       foraDaCampanha: false,
       largada: null,
-      criaturas: (c.criaturas || []).map(cr => ({
+      criaturas: (doPainel ? fixadas : (c.criaturas || [])).map(cr => ({
         nome: cr.nome || '(criatura sem nome)',
         // o modificador de Iniciativa da ficha; em T20 ele é o valor de
         // Destreza da criatura, então serve também de desempate
