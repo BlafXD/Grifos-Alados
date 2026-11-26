@@ -192,7 +192,7 @@ window.GA_Pacotes = (function () {
     bestiario: [
       'js/fichas-t20-data.js', 'js/fichas-ameacas-arton-data.js',
       'js/deuses-arton-data.js', 'js/deuses-servos-data.js',
-      'js/deuses-visual-data.js', 'js/recursos-naturais-data.js',
+      'js/deuses-visual-data.js',
       'js/npcs-lendas-data.js',
     ],
   };

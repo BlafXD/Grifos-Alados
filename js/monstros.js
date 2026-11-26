@@ -1959,6 +1959,100 @@
       </div>`;
   }
 
+  // ── 🦴 EXTRAIR RECURSOS DA CRIATURA VENCIDA (26/11/2026) ───────────
+  //  Ameaças de Arton, p. 401–402 (regra opcional): o recurso sai da linha
+  //  do tipo (Tab. 3-5), a quantidade do tamanho, a CD é 15 + ND, leva
+  //  1 hora de Sobrevivência ou Ofício, e FALHANDO OS RECURSOS ESTRAGAM.
+  //  Por isso a tentativa fica gravada na criatura (`cr.extracao`): a mesma
+  //  carcaça não rende duas vezes. O ✕ apaga a tentativa — decisão do mestre.
+  //  Deu certo → o recurso vai para a mochila da ficha aberta ou para o
+  //  inventário de uma Base.
+  function rnDaCriatura(cr) {
+    const RN = window.GA_RECURSOS_NATURAIS;
+    if (!RN || !cr.tipoTamanho) return null;
+    return RN.daFicha({ tipo: cr.tipoTamanho, nd: cr.nd, texto: (cr.tesouro || '') + ' ' + htmlParaTexto(cr.equipamento || '') });
+  }
+  function rnValor(r, rec) {
+    if (!rec) return '';
+    if (rec.valePatamar && r.patamar) return 'T$ ' + r.patamar.valor.toLocaleString('pt-BR') + ' por unidade, em matéria-prima para ' + r.patamar.qualidade;
+    return rec.chave === 'mantimento' ? 'vale como alimento, não em T$' : 'serve independente do patamar';
+  }
+  function construirBlocoExtracao(cr, ds) {
+    const RN = window.GA_RECURSOS_NATURAIS;
+    const r = rnDaCriatura(cr);
+    if (!r) return '';
+    const x = cr.extracao || {};
+    const cab = `<summary class="mz-sub-cab">🦴 Extrair recursos <small>(${esc(r.tipoNome)} ${esc(r.tamanhoNome)} · ND ${esc(r.nd)})</small></summary>`;
+    if (r.minuscula) return `<details class="mz-rn">${cab}<p class="mz-rn-nota">Criatura Minúscula: pequena demais para produzir recursos (Ameaças de Arton, p. 401).</p></details>`;
+    const rec = x.recurso ? RN.recurso(x.recurso) : null;
+    const cdTxt = r.cd != null ? 'CD <strong>' + r.cd + '</strong> (15 + ND ' + esc(r.nd) + ')' : 'CD 15 + ND (ND ' + esc(r.nd) + ' sem número — você define)';
+    const chips = r.faixas.map(f => `<button type="button" class="mz-sit${x.recurso === f.recurso.chave ? ' mz-sit--on' : ''}" data-acao="rn-escolher" data-rn="${f.recurso.chave}" ${ds}
+        title="${esc(f.recurso.vira)}" ${x.ok != null ? 'disabled' : ''}>${f.rotulo ? esc(f.rotulo) + ' ' : ''}${f.recurso.icone} ${esc(f.recurso.nome)}</button>`).join('');
+    let corpo = '';
+    if (x.ok == null) {
+      corpo = `
+        <p class="mz-rn-nota">Escolha o recurso que faz sentido para a criatura, ou role 1d6 na linha do ${esc(r.tipoNome)}:</p>
+        <div class="mz-rn-chips">${chips}
+          <button type="button" class="mz-cond-add" data-acao="rn-rolar" ${ds}>🎲 Rolar 1d6</button></div>
+        ${x.d6 && !x.recurso ? '<p class="mz-rn-nota">1d6 = ' + x.d6 + ': o vão da tabela (é assim no livro). Escolha o recurso ou role de novo.</p>' : ''}
+        ${x.d6 && x.recurso ? '<p class="mz-rn-nota">1d6 = ' + x.d6 + '</p>' : ''}
+        ${r.vaos.length ? '<p class="mz-rn-nota">⚠ A linha do ' + esc(r.tipoNome) + ' deixa o ' + r.vaos.join(' e o ') + ' sem recurso (Tabela 3-5).</p>' : ''}
+        ${r.especial ? '<p class="mz-rn-nota">ℹ Esta criatura já tem recurso especial no tesouro: ' + esc(r.especial) + ' Recurso natural é para quem não tem — complementar é decisão sua.</p>' : ''}
+        <p class="mz-rn-conta"><strong>${r.unidades}</strong> unidade${r.unidades > 1 ? 's' : ''} (${esc(r.tamanhoNome)}) · 1 hora · Sobrevivência ou Ofício relacionado, ${cdTxt}. Falhando, os recursos estragam.</p>
+        <div class="mz-rn-teste">
+          <label>Resultado do teste <input type="number" class="mz-rn-num" data-rn-teste inputmode="numeric"></label>
+          <button type="button" class="mz-cond-add" data-acao="rn-testar" ${ds} ${rec ? '' : 'disabled title="Escolha o recurso antes"'}>Conferir</button>
+          ${r.cd == null ? `<button type="button" class="mz-cond-add" data-acao="rn-marcar" data-ok="1" ${ds} ${rec ? '' : 'disabled'}>✔ Passou</button>
+            <button type="button" class="mz-cond-add" data-acao="rn-marcar" data-ok="0" ${ds} ${rec ? '' : 'disabled'}>✖ Falhou</button>` : ''}
+        </div>`;
+    } else if (!x.ok) {
+      corpo = `<p class="mz-rn-res mz-rn-res--ruim">✖ Falhou${x.teste != null ? ' (' + x.teste + ' contra CD ' + r.cd + ')' : ''}: ${rec ? rec.icone + ' ' + esc(rec.nome) : 'o recurso'} estragou. Esta carcaça não rende mais.
+        <button type="button" class="mz-cond-x" data-acao="rn-limpar" ${ds} title="Apagar a tentativa (decisão do mestre)">✕</button></p>`;
+    } else {
+      const bases = (window.GA_Bases && window.GA_Bases.lista) ? window.GA_Bases.lista() : [];
+      corpo = `<p class="mz-rn-res">✔ Extraído${x.teste != null ? ' (' + x.teste + ' contra CD ' + r.cd + ')' : ''}: ${rec.icone} <strong>${esc(rec.nome)} × ${r.unidades}</strong> · ${esc(rnValor(r, rec))}.
+        <button type="button" class="mz-cond-x" data-acao="rn-limpar" ${ds} title="Apagar a tentativa (decisão do mestre)">✕</button></p>
+        ${x.entregue ? '<p class="mz-rn-nota">📦 ' + esc(x.entregue) + '</p>' : `
+        <div class="mz-rn-chips">
+          <button type="button" class="mz-cond-add" data-acao="rn-entregar" data-para="ficha" ${ds} title="Entra na mochila da ficha aberta na aba 📜 Ficha">🎒 Na ficha aberta</button>
+          ${bases.map(b => `<button type="button" class="mz-cond-add" data-acao="rn-entregar" data-para="base" data-base="${esc(b.id)}" ${ds}>🏠 ${esc(b.nome)}</button>`).join('')}
+        </div>`}`;
+    }
+    return `<details class="mz-rn"${cr.extracao ? ' open' : ''}>${cab}<div class="mz-rn-corpo">${corpo}
+      <p class="mz-rn-fonte">📖 Ameaças de Arton, p. 401–402 · Tabelas 3-5 e 3-6</p></div></details>`;
+  }
+  function acaoExtracao(acao, alvo) {
+    const cr = pegarCriatura(alvo); if (!cr) return;
+    const RN = window.GA_RECURSOS_NATURAIS, r = rnDaCriatura(cr);
+    if (!RN || !r) return;
+    const x = cr.extracao = cr.extracao || {};
+    if (acao === 'rn-limpar') { if (!confirm('Apagar esta tentativa de extração? A carcaça volta a poder ser extraída.')) return; cr.extracao = null; }
+    else if (acao === 'rn-escolher') { x.recurso = alvo.dataset.rn; x.d6 = null; }
+    else if (acao === 'rn-rolar') { const s = RN.sortear(r.tipo); x.d6 = s.d6; x.recurso = s.recurso ? s.recurso.chave : ''; }
+    else if (acao === 'rn-testar') {
+      const inp = alvo.parentElement.querySelector('[data-rn-teste]');
+      const v = parseInt(inp && inp.value, 10);
+      if (isNaN(v) || r.cd == null) { if (inp) inp.focus(); return; }
+      x.teste = v; x.ok = v >= r.cd;
+    } else if (acao === 'rn-marcar') { x.teste = null; x.ok = alvo.dataset.ok === '1'; }
+    else if (acao === 'rn-entregar') {
+      const rec = RN.recurso(x.recurso); if (!rec || !x.ok) return;
+      const nome = rec.nome + ' de ' + (cr.nome || 'criatura');
+      const obs = 'Recurso natural (Ameaças p. 401) · ' + rnValor(r, rec) + ' · vira: ' + rec.vira;
+      if (alvo.dataset.para === 'ficha') {
+        const res = window.GA_Ficha && window.GA_Ficha.receberItem
+          ? window.GA_Ficha.receberItem({ nome: nome, qtd: r.unidades, espacos: 1, obs: obs, pagar: false }) : null;
+        if (!res || !res.ok) { alert('Nenhuma ficha aberta — abra a ficha de quem vai levar na aba 📜 Ficha e clique de novo.'); return; }
+        x.entregue = 'na mochila de ' + res.personagem + ' (espaço 1 por unidade — acerte na ficha se precisar)';
+      } else {
+        const ok = window.GA_Bases && window.GA_Bases.guardar && window.GA_Bases.guardar(alvo.dataset.base, nome + ' × ' + r.unidades + ' — ' + obs);
+        if (!ok) return;
+        x.entregue = 'no inventário da base ' + ok;
+      }
+    } else return;
+    salvar(); render();
+  }
+
   // ── FERRAMENTA: CRÍTICOS (efeitos & falhas, regras opcionais) ────
   // Rola Efeitos Críticos (Tab. 4-3/4-4) e Falhas Críticas (Tab. 4-6).
   // Os selects usam data-campo (salvos pelo handler genérico, sem render);
@@ -3548,6 +3642,7 @@
           ${construirBarraEfeitos(cr)}
 
           ${construirBarraMorte(cr, ds)}
+          ${construirBlocoExtracao(cr, ds)}
 
           ${construirBarraCriticos(cr, ds)}
 
@@ -4116,6 +4211,7 @@
     if (acao === 'inserir-poder-concedido') { inserirPoderConcedido(alvo); return; }
     if (acao === 'invocar') { invocarCapangas(alvo); return; }
     if (acao === 'rolar-livre') { rolarLivre(alvo); return; }
+    if (/^rn-/.test(acao)) { acaoExtracao(acao, alvo); return; }
     if (acao === 'situacao-cr' || acao === 'situacao-cr-limpar') {
       const cr = pegarCriatura(alvo); if (!cr) return;
       if (acao === 'situacao-cr-limpar') cr.situacao = {};

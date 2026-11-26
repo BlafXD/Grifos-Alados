@@ -825,6 +825,18 @@
   //  escrever) e não pisca a tela.
   window.GA_Bases = {
     recarregar: function () { carregar(); redesenharDeFora(); },
+    //  para o 🦴 Extrair recursos do ⚔ Combates (26/11/2026): a lista das
+    //  bases desta campanha e uma linha a mais no inventário de uma delas.
+    lista: function () { return (dados.bases || []).map(b => ({ id: b.id, nome: b.nome || 'Base sem nome' })); },
+    guardar: function (id, linha) {
+      const b = (dados.bases || []).find(x => x.id === id);
+      if (!b) return '';
+      const txt = String(linha || '').trim();
+      b.inventario = (b.inventario ? b.inventario.replace(/\s+$/, '') + '\n' : '') + txt;
+      b.inventarioHtml = (b.inventarioHtml ? b.inventarioHtml + '<br>' : '') + window.GA_esc(txt);
+      salvar(); redesenharDeFora();
+      return b.nome || 'sem nome';
+    },
     // Chegou algo na caixa de entrada compartilhada. `souODono` = estamos no
     // index.html do mestre (aí a edição é absorvida para o arquivo dele e a
     // entrada é esvaziada). Devolve true se a tela precisa ser redesenhada.

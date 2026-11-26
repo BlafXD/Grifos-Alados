@@ -3540,3 +3540,17 @@ color: var(--ink-faded); margin-right: 0.2rem;
 .mz-sit:hover { border-color: var(--rust); }
 .mz-sit--on { background: var(--faixa); border-color: var(--faixa); color: var(--faixa-tinta); }
 .mz-sit-limpar { font: inherit; font-size: 0.78rem; background: none; border: 0; text-decoration: underline; cursor: pointer; color: var(--text-dim, inherit); }
+
+/* 🦴 extrair recursos da criatura vencida (Ameaças p. 401–402) — 26/11/2026 */
+.mz-rn { margin: 0.4rem 0; padding: 0.35rem 0.6rem; border: 1px dashed var(--parchment3); border-radius: var(--raio); }
+.mz-rn > summary { cursor: pointer; font-weight: 700; font-size: 0.9rem; }
+.mz-rn > summary small { font-weight: 400; opacity: 0.75; }
+.mz-rn-corpo { display: grid; gap: 0.4rem; margin-top: 0.4rem; }
+.mz-rn-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; align-items: center; }
+.mz-rn-nota, .mz-rn-conta, .mz-rn-fonte { margin: 0; font-size: 0.85rem; }
+.mz-rn-fonte { opacity: 0.7; font-size: 0.78rem; }
+.mz-rn-teste { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; font-size: 0.85rem; }
+.mz-rn-num { width: 4.5rem; }
+.mz-rn-res { margin: 0; padding: 0.35rem 0.5rem; border-left: 4px solid var(--verde, green); background: var(--parchment2); }
+.mz-rn-res--ruim { border-left-color: var(--carmim); }
+.mz-sit:disabled { opacity: 0.55; cursor: default; }
