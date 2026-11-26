@@ -1031,7 +1031,10 @@
       //  para um aliado da iniciativa, que aceita na tela dele (js/disparos.js).
       if (!mando() && temLista && window.GA_Disparos && window.GA_Disparos.podeAjudar()) {
         corpo += '<div class="ga-ini-acoes"><button type="button" class="ga-ini-btn ga-ini-btn--efeito" data-ini="ajuda" ' +
-          'title="Mandar cura ou um bônus (uma magia, um poder) para um aliado — entra na ficha dele quando ele aceitar">✨ Ajudar um aliado</button></div>';
+          'title="Mandar cura ou um bônus (uma magia, um poder) para um aliado — entra na ficha dele quando ele aceitar">✨ Ajudar um aliado</button>' +
+          //  o 🔆 efeito em área também é do jogador (a Oração dele, a Bênção dela)
+          '<button type="button" class="ga-ini-btn ga-ini-btn--efeito" data-ini="efeito" ' +
+          'title="Lançar um efeito em área (uma magia, um poder) e marcar quem está sob ele — aparece na ficha de cada um">🔆 Efeito em área</button></div>';
       }
     }
 

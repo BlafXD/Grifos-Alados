@@ -75,3 +75,5 @@
 @keyframes gd-entra { from { transform: translateY(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
 :root.ga-sem-movimento .gd-pop { animation: none; }
 @media (prefers-reduced-motion: reduce) { .gd-pop { animation: none; } }
+.gd-resumo { margin: 0 0 0.4rem; font-size: 0.92rem; }
+.gd-in-mini { width: 4.2rem; }

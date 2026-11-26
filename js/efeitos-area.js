@@ -57,6 +57,11 @@
     if (!C || !Array.isArray(C.LISTA)) return [];
     return C.LISTA.map(c => ({ nome: c.nome, lado: 'contra', contra: c.texto, tipo: c.tipo || '' }));
   }
+  //  "Abalado — Medo": o tipo da condição pelo nome do livro, não pela chave.
+  function nomeTipo(chave) {
+    const t = ((window.GA_CONDICOES && window.GA_CONDICOES.TIPOS) || []).find(x => x.chave === chave);
+    return t ? t.nome : chave;
+  }
   //  O que o livro diz da magia escolhida, numa linha (só para consulta).
   function resumoMagia(m) {
     return [m.tipo && m.circulo ? m.tipo + ' ' + m.circulo + 'º círculo' : '',
@@ -272,7 +277,7 @@
     const magias = Array.isArray(window.GA_MAGIAS) ? window.GA_MAGIAS : [];
     const magiaInicial = editando ? (orig.magia || '') : '';
     const opPreset = (arr, off) => arr.map((p, i) =>
-      `<option value="${off + i}">${esc(p.nome)}${p.tipo ? ' — ' + esc(p.tipo) : ''}</option>`).join('');
+      `<option value="${off + i}">${esc(p.nome)}${p.tipo ? ' — ' + esc(nomeTipo(p.tipo)) : ''}</option>`).join('');
 
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
@@ -280,6 +285,8 @@
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
       <div class="ea-form">
+        <div class="ea-bloco">
+          <p class="ea-bloco-tit">1 · O que é</p>
         <label class="ea-campo"><span>✨ Magia? <em>(opcional — escolha da lista ou escreva; vira o nome do efeito)</em></span>
           <input type="text" id="eaMagia" list="eaMagiasLista" value="${esc(magiaInicial)}" placeholder="digite ou escolha da lista" autocomplete="off">
           <datalist id="eaMagiasLista">${magias.map(m => `<option value="${esc(m.nome)}">`).join('')}</datalist>
@@ -289,6 +296,11 @@
             <option value="">— escolher uma condição —</option>
             <optgroup label="Condições (Tormenta 20)">${opPreset(conds, 0)}</optgroup>
           </select></label>
+        <label class="ea-campo"><span>Nome do efeito</span>
+          <input type="text" id="eaNome" value="${esc(editando ? orig.nome : (f && f._efeitoNome || ''))}" placeholder="o nome da magia ou do poder" autocomplete="off"></label>
+        </div>
+        <div class="ea-bloco">
+          <p class="ea-bloco-tit">2 · O que faz</p>
         <div class="ea-campo ea-montar">
           <span>🔧 Montar o efeito <em>(opcional — escolha o quanto e o que afeta; preenche os campos abaixo)</em></span>
           <div class="ea-montar-linha">
@@ -305,12 +317,11 @@
             </span>
           </div>
         </div>
-        <label class="ea-campo"><span>Nome do efeito</span>
-          <input type="text" id="eaNome" value="${esc(editando ? orig.nome : (f && f._efeitoNome || ''))}" placeholder="o nome da magia ou do poder" autocomplete="off"></label>
         <label class="ea-campo"><span>O que os aliados ganham</span>
           <input type="text" id="eaBonus" value="${esc(editando ? (orig.bonus || '') : (f && f._efeitoBonus || ''))}" placeholder="ex.: +1 em ataque e dano" autocomplete="off"></label>
         <label class="ea-campo"><span>O que os inimigos sofrem <em>(opcional — o efeito contrário)</em></span>
           <input type="text" id="eaContra" value="${esc(editando ? (orig.contrario || '') : '')}" placeholder="ex.: −1 em ataque e dano" autocomplete="off"></label>
+          <div class="ea-lado">
         <label class="ea-campo ea-campo--curto"><span>Duração <em>(opcional)</em></span>
           <input type="text" id="eaDur" value="${esc(editando ? (orig.duracao || '') : '')}" placeholder="ex.: 3 rodadas" autocomplete="off"></label>
         <div class="ea-campo">
@@ -321,9 +332,13 @@
             <button type="button" class="ea-rel ea-rel--dano${onIf(editando && orig.porTurnoTipo === 'dano')}" data-turno-tipo="dano" title="Dano por turno">💥 dano</button>
           </div>
         </div>
+          </div>
+        </div>
+        <div class="ea-bloco">
+          <p class="ea-bloco-tit">3 · Quem está na área</p>
         <p class="ea-de">De <strong>${esc(deInicial)}</strong></p>
         <div class="ea-alvos-cab">
-          <span>Quem está na área</span>
+          <span></span>
           ${lista.length ? `
             <span class="ea-marcar-todos">
               <button type="button" class="ea-rel-todos" data-marcar="aliado" title="Marca todo mundo da lista como aliado de uma vez">🛡 todos aliados</button>
@@ -332,12 +347,16 @@
             </span>` : ''}
         </div>
         <div class="ea-alvos" id="eaAlvos">${linhasAlvos}</div>
+        </div>
         <p class="ea-recado" id="eaRecado" hidden></p>
         <div class="ga-modal-acoes">
           <button type="button" class="ga-btn-sec" data-ga-fechar>Cancelar</button>
           <button type="button" class="ga-btn-principal" id="eaCriar">${editando ? '💾 Salvar alterações' : '🔆 Criar efeito'}</button>
         </div>
       </div>`);
+
+    const caixaEa = overlay.querySelector('.ga-modal');
+    if (caixaEa) caixaEa.classList.add('ea-modal');
 
     // os três botões de relação por combatente (um aceso por vez)
     overlay.querySelectorAll('.ea-alvo').forEach(row => {

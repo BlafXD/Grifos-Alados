@@ -5245,3 +5245,14 @@
   color: var(--ink); font-size: 0.95rem; line-height: 1.45; }
 .fi-vital small { color: var(--text-dim); margin-left: 0.3rem; }
 .fi-vital--morto { border-left-color: var(--ink); font-weight: 600; }
+
+/* "Novo efeito em área" em três blocos (26/11/2026: "está um pouco feinho") */
+.ga-modal.ea-modal { width: min(96vw, 720px); max-width: min(96vw, 720px); }
+.ea-form { gap: 0.8rem; }
+.ea-bloco { display: flex; flex-direction: column; gap: 0.55rem; border: 1px solid var(--parchment3);
+  border-radius: var(--raio); padding: 0.65rem 0.75rem; background: var(--parchment); }
+.ea-bloco-tit { margin: 0; font-family: var(--ga-fonte-rotulo); font-weight: 700; font-size: 0.78rem;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--rust-dark); }
+.ea-lado { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0.55rem; align-items: start; }
+.ea-lado .ea-campo--curto input { max-width: none; }
+.ea-bloco .ea-de { margin-top: -0.2rem; }

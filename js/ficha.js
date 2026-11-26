@@ -11195,6 +11195,16 @@
           partes.push('condição ' + acharCond(k).nome);
         }
       }
+      //  dano POR TURNO da condição (veneno, chamas…): entra como um efeito
+      //  "outros" que o aviso de início de turno rola e conta para baixo
+      if (acao.condicao && acao.condTurno && acao.condTurno.dado) {
+        const dado = String(acao.condTurno.dado).slice(0, 20);
+        const turnos = Math.max(0, parseInt(acao.condTurno.turnos, 10) || 0);
+        f.condicoesLivres.push({ id: novoId(), tipo: 'outros', texto: String(acao.condicao).slice(0, 40) + (porQue ? ' (' + porQue.slice(0, 40) + ')' : ''),
+          magia: false, porTurno: dado, porTurnoTipo: 'dano', turnos: turnos });
+        sujar(f.id, 'condicoesLivres');
+        partes.push(dado + ' por turno' + (turnos ? ' por ' + turnos + ' turnos' : ''));
+      }
       if (acao.efeito && typeof acao.efeito === 'object') {
         const e = acao.efeito;
         const alcance = EFEITO_ALCANCES.some(x => x.v === e.alcance) ? e.alcance : 'tudo';

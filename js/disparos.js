@@ -119,10 +119,20 @@
       else if (d.tipo === 'aplicar' && !d.aplicado && recente(d)) { tratados.add(id); aplicarDoMestre(id, d); }
       else if (d.tipo === 'efeito' && !d.resposta && recente(d)) { tratados.add(id); popupEfeito(id, d); }
     });
+    //  dano sugerido que ficou sem decisão (F5, aba fechada): volta a aparecer
+    Object.keys(caixa).forEach(id => {
+      const d = caixa[id];
+      if (!d || d.tipo !== 'aplicar' || !d.aplicado || !d.aplicado.danoPendente || d.danoDecidido || tratados.has('sug:' + id)) return;
+      if (!(window.GA_Ficha && window.GA_Ficha.ehDaqui && window.GA_Ficha.ehDaqui(d.fichaId)) || !recente(d)) return;
+      tratados.add('sug:' + id); tratados.add(id);
+      mostrarAplicado(id, d, d.acao || {}, '');
+    });
     //  Respondido em OUTRA aba (ou apagado pelo mestre): o cartão daqui some.
     Object.keys(abertos).forEach(id => {
       const c = abertos[id], d = caixa[id];
       if (c._respondiAqui) return;
+      const idReal = id.indexOf('sug:') === 0 ? id.slice(4) : id, dr = caixa[idReal];
+      if (id !== idReal) { if (!dr || dr.danoDecidido) { fecharCartao(c); delete abertos[id]; } return; }
       if (!d || d.resposta || d.aplicado) { fecharCartao(c); delete abertos[id]; }
     });
   }
@@ -223,24 +233,50 @@
     });
   }
 
+  //  O QUE O MESTRE MANDA APLICAR (26/11/2026, pedido dele): a CONDIÇÃO entra
+  //  direto na ficha; o DANO chega como SUGESTÃO — o jogador confere RD,
+  //  magias, poderes e a ajuda dos outros antes, ajusta o número e só então
+  //  aplica (ou diz que já resolveu). Nada de PV sumindo sem ele ver a conta.
   function aplicarDoMestre(id, d) {
     const acao = d.acao || {};
     //  a ficha precisa estar AQUI: sem ela, outra aba/aparelho do jogador aplica
     if (!(window.GA_Ficha && window.GA_Ficha.ehDaqui && window.GA_Ficha.ehDaqui(d.fichaId))) { tratados.delete(id); return; }
-    reivindicar(id, 'aplicado', { em: Date.now(), msg: '' }).then(ok => {
-      if (!ok) return;
-      const msg = window.GA_Ficha.aplicarDeFora(d.fichaId, acao) || 'nada a aplicar';
+    tratados.add('sug:' + id);   // o cartão de sugestão é este — o laço do "pendente" não abre outro
+    reivindicar(id, 'aplicado', { em: Date.now(), msg: '', danoPendente: !!acao.dano }).then(ok => {
+      if (!ok) { tratados.delete('sug:' + id); return; }
+      const semDano = Object.assign({}, acao); delete semDano.dano; delete semDano.tipoDano;
+      const msg = window.GA_Ficha.aplicarDeFora(d.fichaId, semDano) || '';
       completar(id, 'aplicado', { msg: msg });
-      mostrarAplicado(d, acao, msg);
+      mostrarAplicado(id, d, acao, msg);
     });
   }
-  function mostrarAplicado(d, acao, msg) {
+  function mostrarAplicado(id, d, acao, msg) {
+    const temDano = !!acao.dano;
     const c = cartao(`
-      <p class="gd-pop-de">⚔ ${esc(d.deNome || 'O mestre')}</p>
-      <h3 class="gd-pop-tit">${esc(d.fichaNome || 'Seu personagem')}: ${esc(msg)}</h3>
-      ${acao.porQue ? `<p class="gd-pop-motivo">${esc(acao.porQue)}</p>` : ''}
-      <div class="gd-pop-acoes"><button type="button" class="gd-btn" data-gd-ok data-gd-foco>Entendi</button></div>`, 'gd-pop--aplicado');
-    c.querySelector('[data-gd-ok]').addEventListener('click', () => fecharCartao(c));
+      <p class="gd-pop-de">⚔ ${esc(d.deNome || 'O mestre')}${acao.porQue ? ' — ' + esc(acao.porQue) : ''}</p>
+      <h3 class="gd-pop-tit">${esc(d.fichaNome || 'Seu personagem')}</h3>
+      ${msg ? '<p class="gd-pop-quem">🌀 Entrou na ficha: ' + esc(msg) + '</p>' : ''}
+      ${temDano ? `<p class="gd-pop-conta">💥 Sugestão de dano: ${acao.dano}${acao.tipoDano ? ' de ' + esc(acao.tipoDano) : ''}</p>
+        <p class="gd-pop-motivo">O dano acima <strong>ainda não foi aplicado</strong> na sua ficha. Confira RD, magias, poderes e ajuda dos aliados, ajuste o número e aplique.</p>
+        <label class="gd-pop-extra">Dano a aplicar <input type="number" min="0" step="1" value="${acao.dano}" data-gd-valor></label>
+        <div class="gd-pop-acoes">
+          <button type="button" class="gd-btn gd-btn--forte" data-gd-aplicar-dano data-gd-foco>Aplicar na ficha</button>
+          <button type="button" class="gd-btn" data-gd-ignorar>Não aplicar (já resolvi)</button>
+        </div>` : '<div class="gd-pop-acoes"><button type="button" class="gd-btn" data-gd-ok data-gd-foco>Entendi</button></div>'}`, 'gd-pop--aplicado', temDano ? 'sug:' + id : null);
+    if (!temDano) { c.querySelector('[data-gd-ok]').addEventListener('click', () => fecharCartao(c)); return; }
+    c._respondiAqui = true;
+    const decidir = (valor) => {
+      reivindicar(id, 'danoDecidido', { valor: valor, em: Date.now() }).then(ok => {
+        if (ok && valor > 0) {
+          const m = window.GA_Ficha.aplicarDeFora(d.fichaId, { dano: valor, tipoDano: acao.tipoDano || '', porQue: acao.porQue || '' });
+          completar(id, 'danoDecidido', { msg: m || '' });
+        }
+        fecharCartao(c);
+      });
+    };
+    c.querySelector('[data-gd-aplicar-dano]').addEventListener('click', () =>
+      decidir(Math.max(0, parseInt(c.querySelector('[data-gd-valor]').value, 10) || 0)));
+    c.querySelector('[data-gd-ignorar]').addEventListener('click', () => decidir(0));
   }
 
   function textoDaAcao(acao) {
@@ -303,7 +339,8 @@
   }
   function opcoesCondicao() {
     const L = (window.GA_CONDICOES && window.GA_CONDICOES.LISTA) || [];
-    return '<option value="">— nenhuma —</option>' + L.map(x => `<option value="${esc(x.nome)}">${esc(x.nome)}</option>`).join('');
+    const T = {}; ((window.GA_CONDICOES && window.GA_CONDICOES.TIPOS) || []).forEach(t => { T[t.chave] = t.nome; });
+    return '<option value="">— nenhuma —</option>' + L.map(x => `<option value="${esc(x.nome)}">${esc(x.nome)}${T[x.tipo] ? ' — ' + esc(T[x.tipo]) : ''}</option>`).join('');
   }
 
   //  Os pedidos agrupados por LOTE (um "🎲 Pedir" = um lote), do mais novo.
@@ -339,7 +376,12 @@
       const cd = cdDe(primeiro);
       const linhas = l.itens.map(d => {
         const r = d.resposta;
-        const ap = l.aplicados.filter(a => a.fichaId === d.fichaId).map(a => a.aplicado ? '✔ ' + (a.aplicado.msg || 'aplicado') : '⏳ a aplicar').join(' · ');
+        const ap = l.aplicados.filter(a => a.fichaId === d.fichaId).map(a => {
+          const partes = [];
+          if (a.aplicado && a.aplicado.msg) partes.push('🌀 ' + a.aplicado.msg);
+          if (a.acao && a.acao.dano) partes.push(a.danoDecidido ? (a.danoDecidido.valor ? '💥 aplicou ' + a.danoDecidido.valor + ' de ' + a.acao.dano + ' sugeridos' : '💥 não aplicou os ' + a.acao.dano + ' sugeridos') : '💥 ' + a.acao.dano + ' sugeridos — esperando o jogador');
+          return partes.join(' · ') || (a.aplicado ? '✔ recebido' : '⏳ a caminho');
+        }).join(' · ');
         let estado = '<span class="gd-esperando">⏳ esperando o jogador rolar</span>';
         if (r && typeof r.total === 'number') {
           const passou = cd == null ? null : r.total >= cd;
@@ -349,19 +391,31 @@
         return `<li class="gd-linha"><span class="gd-linha-nome">🧑 ${esc(d.fichaNome || 'ficha')}</span> ${estado}${ap ? ' <span class="gd-aplicado">' + esc(ap) + '</span>' : ''}</li>`;
       }).join('');
       const resp = l.itens.filter(d => d.resposta && typeof d.resposta.total === 'number').length;
+      const rolou = l.itens.filter(d => d.resposta && typeof d.resposta.total === 'number');
+      const passaram = cd == null ? [] : rolou.filter(d => d.resposta.total >= cd).map(d => d.fichaNome);
+      const falharam = cd == null ? [] : rolou.filter(d => d.resposta.total < cd).map(d => d.fichaNome);
+      const resumo = cd == null ? '' : '<p class="gd-resumo">' +
+        (passaram.length ? '<span class="gd-ok">✔ passaram:</span> ' + esc(passaram.join(', ')) : '') +
+        (passaram.length && falharam.length ? ' · ' : '') +
+        (falharam.length ? '<span class="gd-falhou">✖ falharam:</span> ' + esc(falharam.join(', ')) : '') + '</p>';
       return `
         <div class="gd-lote" data-gd-lote="${esc(l.id)}">
           <p class="gd-lote-cab"><strong>${esc((primeiro.alvo && primeiro.alvo.rotulo) || 'Teste')}</strong> · CD ${cd == null ? '?' : cd}${typeof primeiro.cd === 'number' ? ' (revelada)' : ' (secreta)'}
             ${primeiro.motivo ? ' · ' + esc(primeiro.motivo) : ''} <small>${resp}/${l.itens.length} rolaram</small></p>
           <ul class="gd-linhas">${linhas}</ul>
+          ${resumo}
           <div class="gd-aplicar">
             <span class="gd-aplicar-tit">💥 Dano</span>
             <input type="text" class="gd-in-curto" data-gd-dano placeholder="ex.: 6d6 ou 21" aria-label="Dano (número ou dado)">
             <select data-gd-tipo aria-label="Tipo de dano"><option value="">sem tipo</option>${TIPOS_DANO.map(t => `<option>${esc(t)}</option>`).join('')}</select>
             <label>quem falhou <select data-gd-falhou aria-label="Quem falhou recebe"><option value="1">total</option><option value="0.5">metade</option><option value="0">nada</option></select></label>
             <label>quem passou <select data-gd-passou aria-label="Quem passou recebe"><option value="0.5">metade</option><option value="0">nada</option><option value="1">total</option></select></label>
-            <span class="gd-aplicar-tit">🌀 Quem falhou fica</span>
-            <select data-gd-cond aria-label="Condição para quem falhou">${opcoesCondicao()}</select>
+            <span class="gd-aplicar-tit">🌀 Condição</span>
+            <select data-gd-cond aria-label="Condição">${opcoesCondicao()}</select>
+            <label>para <select data-gd-cond-quem aria-label="Quem recebe a condição"><option value="falhou">quem falhou</option><option value="todos">todos que rolaram</option></select></label>
+            <label>dano por turno <input type="text" class="gd-in-curto" data-gd-turno-dado placeholder="ex.: 1d12" aria-label="Dano por turno da condição"></label>
+            <label>por <input type="number" min="0" step="1" class="gd-in-mini" data-gd-turnos placeholder="turnos" aria-label="Quantos turnos"> turnos</label>
+            <span class="gd-mini">O dano vai como sugestão: o jogador confere RD e magias antes de aplicar.</span>
             <button type="button" class="gd-btn gd-btn--forte" data-gd-aplicar="${esc(l.id)}">Aplicar</button>
           </div>
         </div>`;
@@ -480,6 +534,10 @@
     const fFalhou = parseFloat(el.querySelector('[data-gd-falhou]').value);
     const fPassou = parseFloat(el.querySelector('[data-gd-passou]').value);
     const condicao = el.querySelector('[data-gd-cond]').value;
+    const condTodos = el.querySelector('[data-gd-cond-quem]').value === 'todos';
+    const turnoDado = (el.querySelector('[data-gd-turno-dado]').value || '').trim();
+    const turnos = Math.max(0, parseInt(el.querySelector('[data-gd-turnos]').value, 10) || 0);
+    if (turnoDado && window.GA_Dados) { try { window.GA_Dados.avaliar(turnoDado); } catch (e) { window.alert('Dano por turno inválido: ' + (e && e.message)); return; } }
     let dano = 0, danoRot = '';
     if (danoTxt) {
       if (/^\d+$/.test(danoTxt)) dano = parseInt(danoTxt, 10);
@@ -499,7 +557,10 @@
       const fator = passou ? fPassou : fFalhou;
       const acao = { porQue: motivo };
       if (dano && fator > 0) { acao.dano = Math.floor(dano * fator); if (tipo) acao.tipoDano = tipo; }
-      if (condicao && !passou) acao.condicao = condicao;
+      if (condicao && (condTodos || !passou)) {
+        acao.condicao = condicao;
+        if (turnoDado) acao.condTurno = { dado: turnoDado, turnos: turnos };
+      }
       if (!acao.dano && !acao.condicao) return;
       const id = novoId();
       patch[d.uid + '/' + id] = { tipo: 'aplicar', de: meuUid(), deNome: meuNome(), em: carimbo(), lote: l.id,
