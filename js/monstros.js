@@ -2514,7 +2514,7 @@
     if (!texto) return [];
     const achados = [];
     const vistos = {};
-    const reBloco = /\b(Corpo a Corpo|À Dist[âa]ncia)\s+([^.]+?)\./g;
+    const reBloco = /(\bCorpo a Corpo|À Dist[âa]ncia)\s+([^.]+?)\./g;
     let mb;
     while ((mb = reBloco.exec(texto))) {
       dividirForaDeParenteses(mb[2], [' e ', ', ', ' ou ']).forEach(parte => {
@@ -2523,6 +2523,7 @@
         const chave = r.nome.toLowerCase() + '|' + r.bonus + '|' + r.dado;
         if (vistos[chave]) return;
         vistos[chave] = 1;
+        r.corpo = /^Corpo/i.test(mb[1]);
         achados.push(r);
       });
     }
@@ -2550,22 +2551,70 @@
     (extraDados || []).forEach(d => { txt += d; });
     return txt;
   }
+  //  ── SITUAÇÕES ESPECIAIS NOS ATAQUES DA CRIATURA (Tabela 5-3, p. 239) ──
+  //  26/11/2026, a título de TESTE (pedido dele: "quero ver o que você vai
+  //  fazer"). As mesmas situações da ficha do jogador, em chips por criatura:
+  //  o que está ligado entra no 🎯 ataque; camuflagem e cegueira rolam o d10
+  //  de falha junto. O que é Defesa do ALVO vira o mesmo número no ataque.
+  const SIT_CR = [
+    { k: 'flanqueando', rot: 'Flanqueando', corpo: 2, dica: '+2 no ataque corpo a corpo' },
+    { k: 'elevado', rot: 'Posição elevada', v: 2, dica: '+2 no ataque' },
+    { k: 'caido', rot: 'Caída', v: -5, dica: '−5 no ataque' },
+    { k: 'ofuscado', rot: 'Ofuscada', v: -2, dica: '−2 no ataque' },
+    { k: 'invisivel', rot: 'Invisível', v: 5, dica: '+5 no ataque (não contra alvo cego)' },
+    { k: 'cego', rot: 'Cega', falha: 50, dica: '50% de chance de falha' },
+  ];
+  const SIT_CR_ALVO = [
+    { k: 'alvoCaido', rot: 'Alvo caído', corpo: 5, distancia: -5, dica: 'Defesa −5 contra corpo a corpo, +5 contra distância' },
+    { k: 'alvoCego', rot: 'Alvo cego', v: 5, dica: 'Defesa −5' },
+    { k: 'alvoDesprevenido', rot: 'Alvo desprevenido', v: 5, dica: 'Defesa −5 (o surpreendido também fica assim)' },
+    { k: 'alvoCobertura', rot: 'Cobertura leve', v: -5, dica: 'Defesa +5' },
+    { k: 'camLeve', rot: 'Camuflagem leve', falha: 20, dica: '20% de falha (1–2 no d10)' },
+    { k: 'camTotal', rot: 'Camuflagem total', falha: 50, dica: '50% de falha (1–5 no d10)' },
+  ];
+  function situacaoCr(cr, corpo) {
+    const sit = cr.situacao || {};
+    let soma = 0, falha = 0; const partes = [];
+    SIT_CR.concat(SIT_CR_ALVO).forEach(x => {
+      if (!sit[x.k]) return;
+      if (x.k === 'invisivel' && sit.alvoCego) return;
+      let v = x.v || 0;
+      if (x.corpo !== undefined || x.distancia !== undefined) v = corpo ? (x.corpo || 0) : (x.distancia || 0);
+      if (v) { soma += v; partes.push(x.rot + ' ' + (v > 0 ? '+' : '−') + Math.abs(v)); }
+      if (x.falha) falha = Math.max(falha, x.falha);
+    });
+    return { soma, partes, falha };
+  }
+  function chipsSituacaoCr(cr, ds) {
+    const sit = cr.situacao || {};
+    const chip = x => `<button type="button" class="mz-sit${sit[x.k] ? ' mz-sit--on' : ''}" data-acao="situacao-cr" data-k="${x.k}" ${ds} aria-pressed="${!!sit[x.k]}" title="${esc(x.dica)}">${esc(x.rot)}</button>`;
+    const alguma = SIT_CR.concat(SIT_CR_ALVO).some(x => sit[x.k]);
+    return `<div class="mz-situacao">
+        <span class="mz-sit-tit">🎯 Situação <small>(Tab. 5-3, p. 239 — entra no 🎯 ataque)</small></span>
+        <span class="mz-sit-grupo"><em>Ela:</em> ${SIT_CR.map(chip).join('')}</span>
+        <span class="mz-sit-grupo"><em>O alvo:</em> ${SIT_CR_ALVO.map(chip).join('')}</span>
+        ${alguma ? `<button type="button" class="mz-sit-limpar" data-acao="situacao-cr-limpar" ${ds}>limpar</button>` : ''}
+      </div>`;
+  }
   function blocoAtaqueBotoes(cr, ds) {
     const achados = ataquesDe(cr);
     if (!achados.length) return '';
     const bd = bonusVivosDistincao(cr);
     const temExtra = !!(bd.ataque || bd.danoBonus || bd.danoDados.length);
     return `
+          ${chipsSituacaoCr(cr, ds)}
           <div class="mz-atk-roll">
             ${achados.map(a => {
-              const bonusFinal = _somarBonusTexto(a.bonus, bd.ataque);
+              const st = situacaoCr(cr, a.corpo);
+              const bonusFinal = _somarBonusTexto(a.bonus, (bd.ataque || 0) + st.soma);
+              const nota = (st.partes.length ? ' — situação: ' + st.partes.join(', ') : '') + (st.falha ? ' — e o d10 de falha (' + st.falha + '%)' : '');
               const dadoFinal  = _somarDadoDano(a.dado, bd.danoBonus, bd.danoDados);
               return `
               <span class="mz-atk-roll-linha">
                 <span class="mz-atk-roll-nome">${esc(a.nome)} ${esc(bonusFinal)}</span>
                 <button type="button" class="mz-atk-roll-btn" data-acao="rolar-livre" ${ds}
-                        data-expr="1d20${bonusFinal}" data-rotulo="${esc(a.nome)} (ataque)"
-                        title="Rola 1d20${esc(bonusFinal)}${temExtra ? ' — já soma o bônus da distinção' : ''}">🎯 ataque</button>
+                        data-expr="1d20${bonusFinal}" data-rotulo="${esc(a.nome)} (ataque)" data-falha="${st.falha || ''}"
+                        title="Rola 1d20${esc(bonusFinal)}${temExtra ? ' — já soma o bônus da distinção' : ''}${esc(nota)}">🎯 ataque${st.soma || st.falha ? ' ⚑' : ''}</button>
                 <button type="button" class="mz-atk-roll-btn mz-atk-roll-btn--dano" data-acao="rolar-livre" ${ds}
                         data-expr="${esc(dadoFinal)}" data-rotulo="${esc(a.nome)} (dano)"
                         title="Rola ${esc(dadoFinal)}${temExtra ? ' — já soma o bônus da distinção' : ''}">💥 dano</button>
@@ -2582,6 +2631,14 @@
     try {
       if (window.GA_Rolagens) window.GA_Rolagens.rolarEPublicar(expr, rot);
       else if (window.GA_Dados) window.GA_Dados.avaliar(expr);
+      //  camuflagem/cegueira (Tab. 5-3): o d10 da chance de falha, junto
+      const falha = parseInt(btn.dataset.falha, 10);
+      if (falha) {
+        const ate = falha / 10;
+        const rotF = rot + ' — chance de falha ' + falha + '% (1' + (ate > 1 ? '–' + ate : '') + ' no d10 = erra)';
+        if (window.GA_Rolagens) window.GA_Rolagens.rolarEPublicar('1d10', rotF);
+        else if (window.GA_Dados) window.GA_Dados.avaliar('1d10');
+      }
     } catch (e) { console.warn('[monstros] não deu para rolar "' + expr + '":', e && e.message); }
   }
 
@@ -4059,6 +4116,12 @@
     if (acao === 'inserir-poder-concedido') { inserirPoderConcedido(alvo); return; }
     if (acao === 'invocar') { invocarCapangas(alvo); return; }
     if (acao === 'rolar-livre') { rolarLivre(alvo); return; }
+    if (acao === 'situacao-cr' || acao === 'situacao-cr-limpar') {
+      const cr = pegarCriatura(alvo); if (!cr) return;
+      if (acao === 'situacao-cr-limpar') cr.situacao = {};
+      else { cr.situacao = cr.situacao || {}; const k = alvo.dataset.k; if (cr.situacao[k]) delete cr.situacao[k]; else cr.situacao[k] = true; }
+      salvar(); render(); return;
+    }
     if (acao === 'devoto-marcar') {
       const ferr = alvo.closest('.mz-ferr');
       const sel = ferr && ferr.querySelector('.mz-dev-deus');
