@@ -721,6 +721,10 @@
       marca: !!(p && p.marca),
       // o selo ✦ do livro: habilidade mágica, alvo de Dissipar Magia
       magica: !!(p && p.magica),
+      //  a marca ✦ à mão (ideia 19, 26/11/2026): 'sim'/'nao' sobrepõe o livro;
+      //  vazio = vale o livro. Para poder de ESCOLHA (De Outro Mundo, Golpe
+      //  Pessoal…) e para o escrito à mão.
+      magicaMao: (p && (p.magicaMao === 'sim' || p.magicaMao === 'nao')) ? p.magicaMao : '',
       livro: String((p && p.livro) || ''),
       pagina: (p && typeof p.pagina === 'number') ? p.pagina : 0,
       tags: String((p && p.tags) || ''),
@@ -6153,7 +6157,11 @@
       : null;
     const fonte = fontePoder(p);
     const base = daBasePoder(p.pid);
-    const magica = (base && base.magica) || p.magica;
+    //  O LIVRO manda (a auditoria de 12/11 conferiu os 2.006): um ✦ antigo
+    //  salvo na ficha não sobrevive ao livro que o tirou. Só a marca à mão
+    //  (magicaMao) passa por cima.
+    const magicaLivro = base ? !!base.magica : !!p.magica;
+    const magica = p.magicaMao === 'sim' ? true : p.magicaMao === 'nao' ? false : magicaLivro;
     //  O custo em PM deste poder: o que o texto do livro deixa ler, e o
     //  que o jogador escreveu por cima (29/10/2026).
     const kPm = chavePmPoder(p);
@@ -6165,7 +6173,7 @@
                 title="${fechado ? 'Abrir' : 'Recolher'} o texto de ${esc(p.nome)}">
           <span class="fi-pod-seta" aria-hidden="true">${fechado ? '▸' : '▾'}</span>
           <span class="fi-pod-nome">${esc(p.nome)}</span>
-          ${magica ? `<span class="fi-pod-magica" title="${esc(DICA_MAGICA)}">✦<span>mágica</span></span>` : ''}
+          ${magica ? `<span class="fi-pod-magica${p.magicaMao ? ' fi-pod-magica--mao' : ''}" title="${esc(DICA_MAGICA)}${p.magicaMao ? ' — marcada à mão' : ''}">✦<span>mágica</span></span>` : ''}
           ${p.tags ? `<span class="fi-pod-tag">${esc(p.tags)}</span>` : ''}
           ${p.deus ? `<span class="fi-pod-tag fi-pod-tag--deus">${esc(p.deus)}</span>` : ''}
           ${p.contaTormenta ? '<span class="fi-pod-tag fi-pod-tag--conta">🩸 conta como Tormenta</span>' : ''}
@@ -6192,6 +6200,11 @@
           <div class="fi-pod-desc">${textoDoPoder(p)}</div>
           ${p.preReq ? `<p class="fi-pod-req"><strong>Pré-requisito:</strong> ${esc(p.preReq)}</p>` : ''}
           ${p.custo ? `<p class="fi-pod-req"><strong>Custo:</strong> ${esc(p.custo)}</p>` : ''}
+          <p class="fi-pod-magica-linha">
+            <button type="button" class="fi-mini${p.magicaMao ? ' fi-mini--on' : ''}" data-acao="poder-magica" data-i="${i}"
+                    title="Para poder em que a magia depende da sua escolha, ou escrito à mão">${magica ? '✦ tirar a marca de mágica' : '✦ marcar como mágica'}</button>
+            <small>${base ? (magicaLivro ? 'o livro imprime o ✦ neste poder' : 'o livro não imprime o ✦ neste poder') : 'poder escrito à mão'}${p.magicaMao ? ' · <strong>marcado à mão</strong> (clique de novo para voltar ao livro)' : ''}</small>
+          </p>
           ${escala ? `<p class="fi-pod-agora"><strong>Agora:</strong> ${esc(escala.txt)}
             ${escala.calc ? `<em>${esc(escala.calc)}</em>` : ''}</p>` : ''}
           ${cPm.caixa}
@@ -9275,6 +9288,17 @@
       if (k === 'camLeve' && f.situacao.camLeve) delete f.situacao.camTotal;
       if (k === 'camTotal' && f.situacao.camTotal) delete f.situacao.camLeve;
       sujar(f.id, 'situacao'); salvar(); return render();
+    }
+    if (acao === 'poder-magica') {
+      const p = f.poderes[+btn.dataset.i];
+      if (!p) return;
+      if (p.magicaMao) p.magicaMao = '';
+      else {
+        const b = daBasePoder(p.pid);
+        const livro = b ? !!b.magica : !!p.magica;
+        p.magicaMao = livro ? 'nao' : 'sim';
+      }
+      sujar(f.id, 'poderes'); salvar(); return render();
     }
     if (acao === 'situacao-limpar') { f.situacao = {}; sujar(f.id, 'situacao'); salvar(); return render(); }
     // O dano sai com o dado já andado pelos passos (Tabela 3-2), e o

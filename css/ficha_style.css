@@ -5280,3 +5280,8 @@
 .fi-sf-linha { margin: 0 0 0.4rem; }
 .sf-seletor--form { display: flex; flex-direction: column; gap: 0.35rem; }
 .sf-seletor [hidden] { display: none !important; }
+
+/* ✦ marcada à mão (ideia 19, 26/11/2026) */
+.fi-pod-magica--mao { outline: 1px dashed currentColor; outline-offset: 1px; }
+.fi-pod-magica-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0.3rem 0; }
+.fi-pod-magica-linha small { opacity: 0.8; }
