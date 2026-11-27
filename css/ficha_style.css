@@ -5357,3 +5357,67 @@
   .fi-ident--dobrado > :not(.fi-ident-resumo) { display: none !important; }
   .fi-ident--dobrado .fi-ident-resumo { border-bottom: 0; margin-bottom: 0; }
 }
+
+/* ═══ 🌫 O CLIMA DA FICHA (26/11/2026, TESTE) ══════════════════════
+   Só as BORDAS da tela, de leve, e só com a aba da ficha aberta.
+   Uma camada para a condição (data-clima) e outra para a vida (--dor). */
+#fiClima { display: none; position: fixed; inset: 0; z-index: 800; pointer-events: none; }
+body:has(section.active #ficha-content) #fiClima { display: block; }
+html.ga-sem-clima #fiClima { display: none !important; }
+.fi-clima-cond, .fi-clima-vida { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease, background 0.6s ease; }
+#fiClima[data-clima] .fi-clima-cond {
+  opacity: 1;
+  background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 58%, var(--clima, transparent) 118%);
+}
+/* a cor e a "respiração" de cada clima */
+#fiClima[data-clima="cego"]      { --clima: rgba(255, 255, 255, 0.92); }
+#fiClima[data-clima="ofuscado"]  { --clima: rgba(255, 238, 160, 0.85); }
+#fiClima[data-clima="surdo"]     { --clima: rgba(120, 120, 132, 0.55); }
+#fiClima[data-clima="medo"]      { --clima: rgba(80, 35, 110, 0.45); }
+#fiClima[data-clima="pavor"]     { --clima: rgba(70, 20, 100, 0.7); }
+#fiClima[data-clima="confuso"]   { --clima: rgba(170, 80, 220, 0.5); }
+#fiClima[data-clima="encanto"]   { --clima: rgba(235, 110, 190, 0.55); }
+#fiClima[data-clima="fascinio"]  { --clima: rgba(240, 195, 80, 0.6); }
+#fiClima[data-clima="veneno"]    { --clima: rgba(95, 160, 40, 0.6); }
+#fiClima[data-clima="fogo"]      { --clima: rgba(255, 105, 20, 0.7); }
+#fiClima[data-clima="sangue"]    { --clima: rgba(140, 0, 10, 0.55); }
+#fiClima[data-clima="fraqueza"]  { --clima: rgba(105, 92, 78, 0.55); }
+#fiClima[data-clima="mente"]     { --clima: rgba(55, 80, 135, 0.5); }
+#fiClima[data-clima="preso"]     { --clima: rgba(60, 80, 30, 0.6); }
+#fiClima[data-clima="lento"]     { --clima: rgba(90, 160, 225, 0.55); }
+#fiClima[data-clima="pedra"]     { --clima: rgba(125, 125, 118, 0.75); }
+#fiClima[data-clima="atordoado"] { --clima: rgba(255, 250, 200, 0.75); }
+#fiClima[data-clima="guarda"]    { --clima: rgba(235, 140, 40, 0.45); }
+#fiClima[data-clima="chao"]      { --clima: rgba(105, 70, 30, 0.55); }
+#fiClima[data-clima="apagado"]   { --clima: rgba(0, 0, 0, 0.82); }
+/* o chão pesa embaixo; o resto é igual nas quatro bordas */
+#fiClima[data-clima="chao"] .fi-clima-cond {
+  background: linear-gradient(to top, var(--clima) 0%, transparent 32%); }
+/* os que se mexem: fogo treme, pavor e atordoado pulsam, confuso troca de cor */
+#fiClima[data-clima="fogo"] .fi-clima-cond      { animation: fi-clima-treme 1.6s ease-in-out infinite; }
+#fiClima[data-clima="pavor"] .fi-clima-cond     { animation: fi-clima-pulsa 1.4s ease-in-out infinite; }
+#fiClima[data-clima="atordoado"] .fi-clima-cond { animation: fi-clima-pulsa 0.9s ease-in-out infinite; }
+#fiClima[data-clima="veneno"] .fi-clima-cond    { animation: fi-clima-pulsa 3.5s ease-in-out infinite; }
+#fiClima[data-clima="confuso"] .fi-clima-cond   { animation: fi-clima-gira 4s linear infinite; }
+@keyframes fi-clima-treme { 0%,100% { opacity: 1; } 20% { opacity: .7; } 45% { opacity: .95; } 70% { opacity: .6; } }
+@keyframes fi-clima-pulsa { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
+@keyframes fi-clima-gira  { to { filter: hue-rotate(360deg); } }
+
+/* a vida: vermelho que cresce com a --dor (0 a 1) e "bate" como coração */
+#fiClima.fi-clima--dor .fi-clima-vida {
+  opacity: 1;
+  background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent calc(68% - 22% * var(--dor)),
+    rgba(150, 0, 0, calc(0.25 + 0.55 * var(--dor))) 125%);
+  animation: fi-clima-coracao calc(1.6s - 0.7s * var(--dor)) ease-in-out infinite;
+}
+@keyframes fi-clima-coracao { 0%,100% { opacity: 1; } 12% { opacity: .75; } 24% { opacity: 1; } 36% { opacity: .8; } }
+
+html.ga-sem-movimento #fiClima * { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  html:not(.ga-sem-movimento) #fiClima .fi-clima-cond,
+  html:not(.ga-sem-movimento) #fiClima .fi-clima-vida { animation-duration: 1.6s !important; animation-iteration-count: infinite !important; }
+}
+@media (max-width: 720px) {
+  /* o 🎲 flutuante sobe acima da barra do celular */
+  body:has(section.active .fi-celbar) .ga-dado-pilha { bottom: 5.2rem; }
+}

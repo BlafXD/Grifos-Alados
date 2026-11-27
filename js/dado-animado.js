@@ -129,7 +129,7 @@
         dado.classList.remove('ga-dado--rolando');
         dado.classList.add('ga-dado--parou');
         if (lados === 20 && valor === 20) dado.classList.add('ga-dado--critico');
-        if (valor === 1) dado.classList.add('ga-dado--falha');
+        if (lados === 20 && valor === 1) dado.classList.add('ga-dado--falha');
         dado.setAttribute('aria-label', 'Dado de ' + lados + ': ' + valor);
         resolve();
       };
@@ -154,5 +154,69 @@
     });
   }
 
-  window.GA_DadoAnimado = { rolar: rolar, somLigado: somLigado, ligarSom: ligarSom };
+  // ── O DADO EM TODA ROLAGEM (26/11/2026) ──────────────────────────
+  //  Chamado pelo GA_Rolagens.rolarEPublicar — perícias, ataques e dano da
+  //  ficha, os 🎯/💥 do ⚔ Combates. Um cartãozinho flutuante embaixo, no
+  //  meio da tela, que NÃO trava nada: o dado rola, para, mostra o total e
+  //  some sozinho (ou com um clique). Com um d20 na conta, o dado para no
+  //  NATURAL e o total vem ao lado; sem d20 (dano), ele para no total.
+  function pilhaToast() {
+    let p = document.getElementById('gaDadoPilha');
+    if (!p) {
+      p = document.createElement('div');
+      p.id = 'gaDadoPilha'; p.className = 'ga-dado-pilha';
+      p.setAttribute('aria-live', 'polite');
+      document.body.appendChild(p);
+    }
+    return p;
+  }
+  function mostrar(r, rotulo, expr) {
+    if (!r || typeof r.total !== 'number' || !document.body) return;
+    const d20 = (r.dados || []).find(d => d.lados === 20);
+    const natural = d20 ? d20.rolls[0] : null;
+    const p = pilhaToast();
+    while (p.children.length >= 3) p.removeChild(p.firstChild);
+    const card = document.createElement('div');
+    card.className = 'ga-dado-toast';
+    card.title = 'Clique para fechar';
+    const esc = window.GA_esc || (s => String(s));
+    card.innerHTML = '<div class="ga-dado-toast-dado"></div>' +
+      '<div class="ga-dado-toast-txt"><span class="ga-dado-toast-rot">' + esc(rotulo || expr || 'Rolagem') + '</span>' +
+      '<span class="ga-dado-toast-tot" hidden>' + (natural != null ? esc(expr || '') + ' = ' : '') + '<strong>' + esc(r.total) + '</strong></span></div>';
+    p.appendChild(card);
+    const tirar = () => { if (card.parentNode) card.parentNode.removeChild(card); };
+    card.addEventListener('click', tirar);
+    const alvo = card.querySelector('.ga-dado-toast-dado');
+    rolar(alvo, natural != null ? natural : r.total, natural != null ? 20 : 0).then(() => {
+      const som = alvo.querySelector('.ga-dado-som'); if (som) som.remove();   // o 🔊 mora no pop-up
+      card.querySelector('.ga-dado-toast-tot').hidden = false;
+      setTimeout(tirar, 2600);
+    });
+  }
+  //  quanto esperar antes de mostrar um número que o dado ainda vai "tirar"
+  function duracao() { return semMovimento() ? 0 : DURACAO; }
+
+  // ── O SINO DA VEZ (26/11/2026) ───────────────────────────────────
+  //  "É a sua vez!": dois toques de sino, curtos e suaves (seno com um
+  //  harmônico), no mesmo 🔊/🔇 dos dados.
+  function sino() {
+    if (!somLigado()) return;
+    try {
+      const c = audio(); if (!c) return;
+      if (c.state === 'suspended') c.resume();
+      [[880, 0], [1318.5, 0.16]].forEach(([fr, dt]) => {
+        const t = c.currentTime + dt;
+        [1, 2.01].forEach((h, k) => {
+          const o = c.createOscillator(); o.type = 'sine'; o.frequency.value = fr * h;
+          const g = c.createGain();
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.exponentialRampToValueAtTime(k ? 0.04 : 0.16, t + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+          o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 1);
+        });
+      });
+    } catch (e) {}
+  }
+
+  window.GA_DadoAnimado = { rolar: rolar, mostrar: mostrar, duracao: duracao, sino: sino, somLigado: somLigado, ligarSom: ligarSom };
 })();

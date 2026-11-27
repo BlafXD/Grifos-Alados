@@ -1795,7 +1795,9 @@
     } catch (err) {
       resultados[slot] = { erro: err.message || 'não deu para rolar', curto: curto || '' };
     }
-    pintarResultado(slot);
+    //  o número na pílula espera o 🎲 animado "tirar" o valor (26/11/2026)
+    const espera = (r && window.GA_DadoAnimado && window.GA_DadoAnimado.duracao) ? window.GA_DadoAnimado.duracao() : 0;
+    if (espera) setTimeout(() => pintarResultado(slot), espera); else pintarResultado(slot);
     pintarHistorico();
     return r;
   }
@@ -2132,6 +2134,7 @@
           🗑 ${donoAberta ? 'Tirar esta ficha da mesa' : 'Apagar esta ficha'}</button>
       </div>`;
     cont.innerHTML = html;
+    pintarClima(f);      // 🌫 o clima das bordas segue a ficha aberta
     if (window.GA_SeletorFicha) window.GA_SeletorFicha.aplicarTodos(cont);
     // o innerHTML apagou os resultados — recoloca cada um no seu lugar
     Object.keys(resultados).forEach(pintarResultado);
@@ -7863,8 +7866,58 @@
   // ═══ SÓ OS NÚMEROS, SEM REDESENHAR ════════════════════════════════
   //  Redesenhar a aba a cada tecla tira o cursor do campo. Então quem
   //  muda de valor é marcado com data-der e reescrito aqui.
+  //  ── 🌫 O CLIMA DA FICHA (26/11/2026, TESTE — pedido dele) ─────────
+  //  Com uma condição, as BORDAS da tela ganham o tom dela, bem de leve
+  //  (cego: esbranquiçado; em chamas: laranja tremendo; envenenado: verde…).
+  //  Com pouca vida (≤ 10% do máximo) entra um vermelho que fica mais forte
+  //  quanto mais perto do limite de morte. Só desenha: nada muda na conta.
+  //  Desliga no painel ⚙ ("Sem clima de condição na ficha"); o "Menos
+  //  movimento" para as pulsações. Com várias condições, vale a mais forte
+  //  da lista abaixo (a ordem é a do quanto ela muda a cena).
+  const CLIMA_ORDEM = [
+    ['inconsciente', 'apagado'], ['petrificado', 'pedra'], ['paralisado', 'preso'], ['em-chamas', 'fogo'],
+    ['sangrando', 'sangue'], ['cego', 'cego'], ['apavorado', 'pavor'], ['confuso', 'confuso'],
+    ['envenenado', 'veneno'], ['doente', 'veneno'], ['enjoado', 'veneno'], ['atordoado', 'atordoado'],
+    ['pasmo', 'atordoado'], ['enfeiticado', 'encanto'], ['fascinado', 'fascinio'], ['agarrado', 'preso'],
+    ['enredado', 'preso'], ['imovel', 'preso'], ['lento', 'lento'], ['exausto', 'fraqueza'],
+    ['debilitado', 'fraqueza'], ['fatigado', 'fraqueza'], ['fraco', 'fraqueza'], ['esmorecido', 'mente'],
+    ['frustrado', 'mente'], ['alquebrado', 'mente'], ['ofuscado', 'ofuscado'], ['surdo', 'surdo'],
+    ['abalado', 'medo'], ['indefeso', 'guarda'], ['caido', 'chao'], ['desprevenido', 'guarda'],
+    ['surpreendido', 'guarda'], ['vulneravel', 'guarda'], ['sobrecarregado', 'chao'],
+  ];
+  function climaDa(f) {
+    const tem = {}; (f.condicoes || []).forEach(k => { tem[k] = 1; });
+    const achou = CLIMA_ORDEM.find(([k]) => tem[k]);
+    return achou ? achou[1] : '';
+  }
+  //  0 (nada) a 1 (no limite da morte)
+  function dorDa(f) {
+    const max = pvMax(f), pv = pvAtual(f) + (f.pv.temp || 0);
+    if (!max || f.morto) return f.morto ? 1 : 0;
+    if (pv > max * 0.1) return 0;
+    if (pv > 0) return 0.22 + 0.18 * (1 - pv / (max * 0.1));
+    const lim = limiteMorte(max);
+    return Math.min(1, 0.45 + 0.55 * (pv / lim));
+  }
+  let climaFixo = null;
+  function pintarClima(f) {
+    let el = document.getElementById('fiClima');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'fiClima'; el.setAttribute('aria-hidden', 'true');
+      el.innerHTML = '<span class="fi-clima-cond"></span><span class="fi-clima-vida"></span>';
+      document.body.appendChild(el);
+    }
+    //  a vitrine (climaDemo) fica presa nesta aba até recarregar
+    const clima = climaFixo ? climaFixo.clima : (f ? climaDa(f) : ''),
+          dor = climaFixo ? climaFixo.dor : (f ? dorDa(f) : 0);
+    if (clima) el.setAttribute('data-clima', clima); else el.removeAttribute('data-clima');
+    el.style.setProperty('--dor', dor.toFixed(2));
+    el.classList.toggle('fi-clima--dor', dor > 0);
+  }
   function atualizarDerivados() {
     const f = fichaAberta();
+    pintarClima(f);
     if (!f || !secao) return;
     const n = nivel(f);
     secao.querySelectorAll('[data-der]').forEach(el => {
@@ -11434,6 +11487,12 @@
     //  A iniciativa chama quando o turno chega numa ficha deste aparelho:
     //  abre o aviso de início de turno. Devolve false se a ficha não é daqui
     //  ou não há nada "por turno" a resolver.
+    //  🌫 só para VER o clima (vitrine/teste): pinta um clima e uma dor (0–1)
+    //  sem mexer em ficha nenhuma; fica preso nesta aba até recarregar (climaDemo() sem nada solta).
+    climaDemo: function (clima, dor) {
+      climaFixo = (clima || dor) ? { clima: clima || '', dor: dor || 0 } : null;
+      pintarClima(fichaAberta());
+    },
     avisoTurno: function (fichaId, rodada) {
       const f = (dados.fichas || []).find(x => x.id === fichaId);
       return f ? avisoDeTurno(f, rodada) : false;

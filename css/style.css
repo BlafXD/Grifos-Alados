@@ -3172,3 +3172,36 @@ html.ga-sem-movimento .ga-brilho-bom, html.ga-sem-movimento .ga-brilho-ruim { an
   html:not(.ga-sem-movimento) .ga-brilho-bom { animation-duration: 1.3s !important; animation-iteration-count: infinite !important; }
   html:not(.ga-sem-movimento) .ga-brilho-ruim { animation-duration: 4.2s !important; animation-iteration-count: infinite !important; }
 }
+
+/* ═══ 🎲 O DADO EM TODA ROLAGEM: o cartãozinho flutuante (26/11/2026) ═══ */
+.ga-dado-pilha { position: fixed; left: 50%; bottom: 3.6rem; transform: translateX(-50%); z-index: 10050;
+  display: flex; flex-direction: column-reverse; gap: 0.4rem; align-items: center; pointer-events: none; }
+.ga-dado-toast { pointer-events: auto; cursor: pointer; display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.35rem 0.9rem 0.35rem 0.4rem; background: var(--parchment); color: var(--text);
+  border: 1px solid var(--parchment3); border-radius: 999px; box-shadow: 0 4px 16px rgba(0,0,0,.28);
+  animation: ga-toast-entra 0.2s ease-out both; }
+.ga-dado-toast .ga-dado { width: 3.6rem; height: 3.6rem; margin: 0; }
+.ga-dado-toast .ga-dado-num { font-size: 1.05rem; top: 0.25rem; }
+.ga-dado-toast-txt { display: flex; flex-direction: column; line-height: 1.2; max-width: 16rem; }
+.ga-dado-toast-rot { font-size: 0.85rem; opacity: 0.85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ga-dado-toast-tot { font-size: 0.9rem; }
+.ga-dado-toast-tot strong { font-size: 1.35rem; }
+@keyframes ga-toast-entra { from { opacity: 0; transform: translateY(0.6rem); } to { opacity: 1; transform: none; } }
+
+/* ═══ ⚔ "É A SUA VEZ!" (js/iniciativa.js) ════════════════════════ */
+.ga-sua-vez { position: fixed; left: 50%; top: 4.2rem; transform: translateX(-50%); z-index: 10060;
+  padding: 0.7rem 1.4rem; border-radius: 10px; cursor: pointer; text-align: center; max-width: 92vw;
+  background: var(--faixa); color: var(--faixa-tinta); font-size: 1.35rem; font-family: var(--fonte-titulo, inherit);
+  box-shadow: 0 6px 24px rgba(0,0,0,.35), 0 0 0 3px var(--gold-deep, #b8860b);
+  animation: ga-sua-vez-entra 0.45s cubic-bezier(.2,1.4,.4,1) both; }
+.ga-sua-vez-ico { display: inline-block; animation: ga-sua-vez-ico 0.8s ease-in-out 2; }
+.ga-sua-vez--saindo { animation: ga-sua-vez-sai 0.5s ease-in both; }
+@keyframes ga-sua-vez-entra { from { opacity: 0; transform: translate(-50%, -1.2rem) scale(.85); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
+@keyframes ga-sua-vez-sai { to { opacity: 0; transform: translate(-50%, -0.8rem); } }
+@keyframes ga-sua-vez-ico { 50% { transform: rotate(-18deg) scale(1.2); } }
+@media (prefers-reduced-motion: reduce) {
+  html:not(.ga-sem-movimento) .ga-dado-toast { animation-duration: 0.2s !important; }
+  html:not(.ga-sem-movimento) .ga-sua-vez { animation-duration: 0.45s !important; }
+  html:not(.ga-sem-movimento) .ga-sua-vez-ico { animation-duration: 0.8s !important; animation-iteration-count: 2 !important; }
+  html:not(.ga-sem-movimento) .ga-sua-vez--saindo { animation-duration: 0.5s !important; }
+}

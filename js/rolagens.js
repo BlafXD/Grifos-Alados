@@ -152,6 +152,8 @@
     return {
       total: totalFmt,
       detalhe: detalhar(tokens) + ' = <strong>' + totalFmt + '</strong>',
+      //  os dados que saíram, um a um — é o que o 🎲 animado mostra (26/11/2026)
+      dados: tokens.filter(t => t.tipo === 'dado').map(t => ({ lados: t.lados, rolls: t.rolls.slice() })),
     };
   }
 
@@ -317,6 +319,9 @@
   function rolarEPublicar(expr, rotulo) {
     const r = avaliar(expr);            // estoura se a expressão não presta
     publicar({ criatura: rotulo ? '🎲 ' + rotulo : '', pericia: expr, formula: r.detalhe, tipo: 'chat' });
+    //  🎲 o dado rola na tela, com som (26/11/2026) — ficha, Combates, todo
+    //  🎯/💥 passa por aqui. Só mostra: o número já saiu acima.
+    try { if (window.GA_DadoAnimado && window.GA_DadoAnimado.mostrar) window.GA_DadoAnimado.mostrar(r, rotulo, expr); } catch (e) {}
     return r;
   }
 

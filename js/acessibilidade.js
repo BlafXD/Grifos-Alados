@@ -57,7 +57,8 @@
     peleNova:     'ga-pele-nova',
     contraste:    'ga-contraste',
     semMovimento: 'ga-sem-movimento',
-    focoForte:    'ga-foco-forte'
+    focoForte:    'ga-foco-forte',
+    semClima:     'ga-sem-clima'
   };
 
   let ligado = false;                 // já passamos pelo iniciar()?
@@ -909,6 +910,8 @@
       sub: 'Escurece os rótulos apagados e engrossa as bordas do pergaminho.' },
     { id: 'semMovimento', tit: 'Menos movimento',
       sub: 'Desliga as transições e a textura de papel que cobre a página.' },
+    { id: 'semClima', tit: 'Sem clima de condição na ficha',
+      sub: 'Desliga o tom nas bordas da tela que a ficha ganha com uma condição (cego, em chamas…) ou com pouca vida.' },
     { id: 'focoForte', tit: 'Foco sempre visível',
       sub: 'Mostra o anel de foco também para quem navega com o mouse.' },
     //  O único desta lista que NÃO facilita a leitura — e está aqui por

@@ -278,6 +278,24 @@
     return null;
   }
 
+  //  ⚔ "É A SUA VEZ!" (26/11/2026, pedido dele): quando o turno chega numa
+  //  ficha DESTE aparelho, uma faixa grande no alto da tela por ~3 s e dois
+  //  toques de sino (o mesmo 🔊/🔇 dos dados). No celular, o painel mudar de
+  //  cor sozinho passava batido.
+  function suaVez(nome) {
+    try { if (window.GA_DadoAnimado && window.GA_DadoAnimado.sino) window.GA_DadoAnimado.sino(); } catch (e) {}
+    let el = document.getElementById('gaSuaVez');
+    if (el) el.remove();
+    el = document.createElement('div');
+    el.id = 'gaSuaVez'; el.className = 'ga-sua-vez'; el.setAttribute('role', 'status');
+    el.innerHTML = '<span class="ga-sua-vez-ico" aria-hidden="true">⚔</span> É a sua vez' +
+      (nome ? ', <strong>' + esc(nome) + '</strong>' : '') + '!';
+    el.addEventListener('click', () => el.remove());
+    document.body.appendChild(el);
+    setTimeout(() => { if (el.parentNode) el.classList.add('ga-sua-vez--saindo'); }, 2800);
+    setTimeout(() => { if (el.parentNode) el.remove(); }, 3400);
+  }
+
   //  RODADAS AUTOMÁTICAS: quando o turno chega numa linha ligada a uma ficha
   //  DESTE aparelho, abre o aviso de início de turno (Sangrando, Em Chamas,
   //  sustentadas, Outros). A 1ª sincronização só registra — não abre sozinho
@@ -292,6 +310,9 @@
     const fid = l && l.fichaId;
     if (fid && window.GA_Ficha && window.GA_Ficha.avisoTurno) {
       try { window.GA_Ficha.avisoTurno(String(fid), rodada); } catch (e) {}
+      let minha = false;
+      try { minha = !!(window.GA_Ficha.ehDaqui && window.GA_Ficha.ehDaqui(String(fid))); } catch (e) {}
+      if (minha) suaVez(l.nome);
     }
   }
 
