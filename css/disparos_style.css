@@ -94,3 +94,8 @@
 .gd-pop-x:hover, .gd-pop-x:focus-visible { background: var(--carmim); color: var(--parchment); border-color: var(--carmim); }
 .gd-pop-num:not(:empty) { display: inline-block; margin-bottom: 0.25rem; padding: 0.05rem 0.45rem; border-radius: 999px;
   font-size: 0.75rem; font-weight: 700; background: var(--parchment3); color: var(--ink); }
+/* 🛡 reduzir dano / não sofrer a condição (27/11/2026) */
+.gd-pop-reduz { display: flex; align-items: flex-end; gap: 0.5rem; flex-wrap: wrap; }
+.gd-pop-reduz .gd-pop-extra { margin-bottom: 0.6rem; }
+.gd-pop-reduz .gd-btn { margin-bottom: 0.6rem; }
+.gd-pop-cond { margin: 0.2rem 0 0.6rem; }

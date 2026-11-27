@@ -2494,14 +2494,14 @@
               <em>uma só, escolhida na criação — e por ela veio um poder geral extra</em></h3>
             <select class="fi-sel fi-compl-sel" data-acao="escolher-complicacao"
                     aria-label="Escolher uma complicação da lista do livro">${opcoesComplicacoes()}</select>
-            ${caixaRicaCampo('blocos.complicacoes', f.blocos.complicacoes, dicaDoBloco('complicacoes'))}
+            ${caixaRicaCampo('blocos.complicacoes', f.blocos.complicacoes, dicaDoBloco('complicacoes'), true)}
           </div>
           <div class="fi-compl-caixa">
             <h3 class="fi-compl-tit">⏳ Complicações de idade
               <em>uma por faixa etária: adulto 1, maduro 2, velho 3, ancião 4</em></h3>
             <select class="fi-sel fi-compl-sel" data-acao="escolher-complicacao-idade"
                     aria-label="Escolher uma complicação de idade da lista do livro">${opcoesComplicacoesIdade()}</select>
-            ${caixaRicaCampo('blocos.complicacoesIdade', f.blocos.complicacoesIdade, dicaDoBloco('complicacoesIdade'))}
+            ${caixaRicaCampo('blocos.complicacoesIdade', f.blocos.complicacoesIdade, dicaDoBloco('complicacoesIdade'), true)}
           </div>
         </div>
         <p class="fi-nota">Complicação <strong>conta como habilidade</strong>: se ela impõe uma condição, você a
@@ -7841,10 +7841,12 @@
     return caixaRicaCampo('blocos.' + b.campo, f.blocos[b.campo], b.dica);
   }
   // A mesma caixa, para qualquer campo da ficha (as anotações do amigo).
-  function caixaRicaCampo(campo, html, dica) {
-    const barra = window.GA_barraRica ? window.GA_barraRica() : '';
+  //  `semBarra`: a caixa continua texto rico (Ctrl+B/I, colar formatado),
+  //  só sem a fileira de ferramentas — as Complicações pediram (27/11/2026).
+  function caixaRicaCampo(campo, html, dica, semBarra) {
+    const barra = (!semBarra && window.GA_barraRica) ? window.GA_barraRica() : '';
     return `
-      <div class="ga-rich-wrap ga-rich-wrap--barra" data-jog-edita>
+      <div class="ga-rich-wrap${barra ? ' ga-rich-wrap--barra' : ''}" data-jog-edita>
         ${barra}
         <div class="fi-texto ga-rich" contenteditable="true" spellcheck="true"
              data-campo="${campo}" data-ph="${esc(dica)}">${rico(html)}</div>
@@ -8661,7 +8663,7 @@
     }
 
     if (acao === 'add-defesa-fonte') {
-      f.defesa.fontes.push({ id: novoId(), valor: 2, de: '' });
+      f.defesa.fontes.push({ id: novoId(), valor: 0, de: '' });   // começa em 0 (pedido dele, 27/11/2026)
       sujar(f.id, 'defesa'); salvar(); return render();
     }
     if (acao === 'tira-defesa-fonte') {
@@ -11520,6 +11522,26 @@
     //  pelos mesmos caminhos dos botões da ficha (temporários primeiro, PV
     //  manchado, histórico de jogo) e sobe para a mesa por grupo. Devolve
     //  uma frase do que aconteceu, para o aviso do pop-up.
+    //  "🛡 Não sofrer a condição" do pop-up do mestre (27/11/2026): tira a
+    //  condição que o disparo pôs e o dano por turno que veio com ela.
+    desfazerCondicao: function (fichaId, acao) {
+      const f = (dados.fichas || []).find(x => x.id === fichaId);
+      if (!f || !acao || !acao.condicao) return '';
+      const k = chaveCond(String(acao.condicao));
+      const i = f.condicoes.indexOf(k);
+      if (i >= 0) { f.condicoes.splice(i, 1); sujar(f.id, 'condicoes'); }
+      if (acao.condTurno && acao.condTurno.dado) {
+        const pre = String(acao.condicao).slice(0, 40);
+        for (let j = f.condicoesLivres.length - 1; j >= 0; j--) {
+          const l = f.condicoesLivres[j];
+          if (l.porTurno === String(acao.condTurno.dado).slice(0, 20) && String(l.texto || '').indexOf(pre) === 0) {
+            f.condicoesLivres.splice(j, 1); sujar(f.id, 'condicoesLivres'); break;
+          }
+        }
+      }
+      salvar(); render();
+      return (acharCond(k) || {}).nome || String(acao.condicao);
+    },
     aplicarDeFora: function (fichaId, acao) {
       const f = (dados.fichas || []).find(x => x.id === fichaId);
       if (!f || !acao) return '';

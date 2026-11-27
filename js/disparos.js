@@ -291,15 +291,37 @@
     const c = cartao(`
       <p class="gd-pop-de">⚔ ${esc(d.deNome || 'O mestre')}${acao.porQue ? ' — ' + esc(acao.porQue) : ''}</p>
       <h3 class="gd-pop-tit">${esc(d.fichaNome || 'Seu personagem')}</h3>
-      ${msg ? '<p class="gd-pop-quem">🌀 Entrou na ficha: ' + esc(msg) + '</p>' : ''}
+      ${msg ? '<p class="gd-pop-quem" data-gd-cond-msg>🌀 Entrou na ficha: ' + esc(msg) + '</p>' : ''}
+      ${acao.condicao && !(d.aplicado && d.aplicado.condRecusada) ? `<div class="gd-pop-acoes gd-pop-cond">
+          <button type="button" class="gd-btn" data-gd-sem-cond title="Passou na resistência, é imune, ou uma habilidade evita: a condição sai da ficha e o mestre é avisado">🛡 Não sofrer a condição</button>
+        </div>` : ''}
       ${temDano ? `<p class="gd-pop-conta">💥 Sugestão de dano: ${acao.dano}${acao.tipoDano ? ' de ' + esc(acao.tipoDano) : ''}</p>
         <p class="gd-pop-motivo">O dano acima <strong>ainda não foi aplicado</strong> na sua ficha. Confira RD, magias, poderes e ajuda dos aliados, ajuste o número e aplique.</p>
+        <div class="gd-pop-reduz">
+          <label class="gd-pop-extra">🛡 Reduzir dano em <small>(RD, resistência, magia…)</small>
+            <input type="number" min="0" step="1" value="0" inputmode="numeric" data-gd-reduz></label>
+          <button type="button" class="gd-btn" data-gd-metade title="Passou no teste de resistência e o efeito diz &quot;metade do dano&quot;">½ Metade</button>
+        </div>
         <label class="gd-pop-extra">Dano a aplicar <input type="number" min="0" step="1" value="${acao.dano}" data-gd-valor></label>
         <div class="gd-pop-acoes">
           <button type="button" class="gd-btn gd-btn--forte" data-gd-aplicar-dano data-gd-foco>Aplicar na ficha</button>
           <button type="button" class="gd-btn" data-gd-ignorar>Não aplicar (já resolvi)</button>
         </div>` : '<div class="gd-pop-acoes"><button type="button" class="gd-btn" data-gd-ok data-gd-foco>Entendi</button></div>'}`, 'gd-pop--aplicado', temDano ? 'sug:' + id : null);
+    //  🛡 não sofrer a condição: tira da ficha e avisa o mestre (no próprio registro)
+    const semCond = c.querySelector('[data-gd-sem-cond]');
+    if (semCond) semCond.addEventListener('click', () => {
+      const nome = window.GA_Ficha && window.GA_Ficha.desfazerCondicao ? window.GA_Ficha.desfazerCondicao(d.fichaId, acao) : '';
+      completar(id, 'aplicado', { condRecusada: true, msg: '🛡 não sofreu ' + (nome || 'a condição') });
+      semCond.parentNode.innerHTML = '<p class="gd-pop-quem">🛡 Você não sofreu <strong>' + esc(nome || 'a condição') + '</strong> — saiu da ficha e o mestre foi avisado.</p>';
+      const m = c.querySelector('[data-gd-cond-msg]'); if (m) m.remove();
+    });
     if (!temDano) { c.querySelector('[data-gd-ok]').addEventListener('click', () => fecharCartao(c)); return; }
+    //  🛡 reduzir: o "Dano a aplicar" acompanha (sugestão − redução, nunca < 0)
+    const base = Math.max(0, parseInt(acao.dano, 10) || 0);
+    const inReduz = c.querySelector('[data-gd-reduz]'), inValor = c.querySelector('[data-gd-valor]');
+    const recalcular = () => { inValor.value = String(Math.max(0, base - (Math.max(0, parseInt(inReduz.value, 10) || 0)))); };
+    inReduz.addEventListener('input', recalcular);
+    c.querySelector('[data-gd-metade]').addEventListener('click', () => { inReduz.value = String(base - Math.floor(base / 2)); recalcular(); });
     c._respondiAqui = true;
     const decidir = (valor) => {
       reivindicar(id, 'danoDecidido', { valor: valor, em: Date.now() }).then(ok => {
@@ -706,6 +728,10 @@
     _lotes: lotes,
     //  🎲 para ver o pop-up de teste sem mesa (26/11/2026): GA_Disparos.demo() no console.
     //  Não grava nada no banco nem no log — só desenha o cartão e rola o dado.
+    //  o quadro de dano + condição, só para ver (não grava nada; o 🛡 da
+    //  condição só mexe se `fichaId` for uma ficha deste aparelho)
+    demoAplicar: (fichaId) => mostrarAplicado('demo', { deNome: 'O mestre (demonstração)', fichaNome: 'Seu personagem', fichaId: fichaId || '' },
+      { dano: 14, tipoDano: 'fogo', porQue: 'Bola de Fogo', condicao: 'Em Chamas' }, 'condição Em Chamas'),
     demo: (rotulo, cd) => popupRolagem('demo', { deNome: 'O mestre (demonstração)', alvo: { rotulo: rotulo || 'Percepção' },
       cd: typeof cd === 'number' ? cd : 15, motivo: 'Um barulho na caverna…', fichaNome: 'Seu personagem' }),
   };
