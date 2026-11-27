@@ -5289,3 +5289,7 @@
 /* limite de morte sempre visível embaixo da barra de PV (p. 236) */
 .fi-limite-morte { margin: 0.2rem 0 0; font-size: 0.85em; color: var(--text-dim, inherit); }
 .fi-limite-morte strong { color: var(--carmim); }
+
+/* ⚙ condições na conta (26/11/2026) */
+.fi-cond-auto { display: flex; align-items: center; gap: 0.4rem; margin: 0.5rem 0 0.2rem; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
+.fi-cond-pen { margin: 0.2rem 0; }

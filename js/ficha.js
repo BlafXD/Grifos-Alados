@@ -446,6 +446,7 @@
     f.regras = (f.regras && typeof f.regras === 'object') ? f.regras : {};
     f.regras.defesaEpica = !!f.regras.defesaEpica;
     f.regras.lesoes = Math.max(0, parseInt(f.regras.lesoes, 10) || 0);
+    f.regras.condAuto = !!f.regras.condAuto;   // ⚙ condições na conta (26/11/2026)
     //  As situações especiais ligadas no cartão de Ataques (Tabela 5-3, p. 239).
     const sit = (f.situacao && typeof f.situacao === 'object') ? f.situacao : {};
     f.situacao = {};
@@ -1324,11 +1325,82 @@
     return (f.regras && f.regras.defesaEpica) ? Math.floor(nivel(f) / 2) : 0;
   }
   function lesoes(f) { return (f.regras && f.regras.lesoes) || 0; }
+
+  //  ── ⚙ CONDIÇÕES NA CONTA (26/11/2026, pedido dele: um ALTERNADOR) ──
+  //  Desligado (o padrão), a ficha só MOSTRA, como sempre foi. Ligado
+  //  (f.regras.condAuto), os −X das condições do livro entram nas contas.
+  //  A regra da p. 394 manda: condições de MESMO efeito não se somam
+  //  ("desprevenido e vulnerável sofre –5 na Defesa, não –7") — então cada
+  //  efeito pega só o MAIOR. As que trazem outras dentro (Exausto = debilitado,
+  //  lento e vulnerável) são abertas antes. Ficam de fora, de propósito, o que
+  //  não é número fixo: Caído na Defesa (depende de quem ataca: use o chip da
+  //  Situação no alvo), Indefeso em Reflexos (falha automática), deslocamento.
+  const COND_DENTRO = {
+    'exausto': ['debilitado', 'lento', 'vulneravel'], 'fatigado': ['fraco', 'vulneravel'],
+    'cego': ['desprevenido', 'lento'], 'agarrado': ['desprevenido', 'imovel'],
+    'enredado': ['lento', 'vulneravel'], 'indefeso': ['desprevenido'],
+    'atordoado': ['desprevenido'], 'surpreendido': ['desprevenido'],
+    'inconsciente': ['indefeso', 'desprevenido'], 'paralisado': ['imovel', 'indefeso', 'desprevenido'],
+    'petrificado': ['inconsciente', 'indefeso', 'desprevenido'],
+  };
+  //  efeito → [condição, quanto]
+  const COND_PEN = {
+    defesa:    [['desprevenido', 5], ['vulneravel', 2], ['indefeso', 10]],
+    reflexos:  [['desprevenido', 5]],
+    medo:      [['abalado', 2], ['apavorado', 5]],
+    fisico:    [['fraco', 2], ['debilitado', 5]],
+    mental:    [['frustrado', 2], ['esmorecido', 5]],
+    cego:      [['cego', 5]],
+    ataque:    [['ofuscado', 2], ['enredado', 2], ['agarrado', 2]],
+    corpo:     [['caido', 5]],
+    percepcao: [['ofuscado', 2], ['fascinado', 5]],
+    iniciativa:[['surdo', 5]],
+  };
+  const NOME_PEN = { defesa: 'Defesa', reflexos: 'Reflexos', medo: 'perícias', fisico: 'For/Des/Con e perícias delas',
+    mental: 'Int/Sab/Car e perícias delas', cego: 'perícias de For/Des', ataque: 'ataque', corpo: 'ataque corpo a corpo',
+    percepcao: 'Percepção', iniciativa: 'Iniciativa' };
+  function condAutoLigada(f) { return !!(f && f.regras && f.regras.condAuto); }
+  function condPen(f) {
+    const vazio = {};
+    if (!condAutoLigada(f) || !Array.isArray(f.condicoes)) return vazio;
+    const tem = {};
+    const abrir = k => { if (tem[k]) return; tem[k] = 1; (COND_DENTRO[k] || []).forEach(abrir); };
+    f.condicoes.forEach(abrir);
+    const out = {};
+    Object.keys(COND_PEN).forEach(ef => {
+      let melhor = null;
+      COND_PEN[ef].forEach(([k, v]) => { if (tem[k] && (!melhor || v > melhor.v)) melhor = { v: v, de: k }; });
+      if (melhor) out[ef] = melhor;
+    });
+    //  o "Você caído" do chip da Situação já tira os −5: não conta duas vezes
+    if (out.corpo && f.situacao && f.situacao.caido) delete out.corpo;
+    return out;
+  }
+  function nomeCondK(k) { const c = acharCond(k); return c ? c.nome : k; }
+  //  o −X total de uma perícia (sem o ataque, que soma por fora)
+  function penCondPericia(f, P, e) {
+    const c = condPen(f);
+    if (!P || !Object.keys(c).length) return { v: 0, partes: [] };
+    const a = atrPericia(P, e), partes = [];
+    const add = ef => { if (c[ef]) partes.push({ v: c[ef].v, de: c[ef].de }); };
+    add('medo');
+    if (a === 'for' || a === 'des' || a === 'con') add('fisico');
+    if (a === 'int' || a === 'sab' || a === 'car') add('mental');
+    if (a === 'for' || a === 'des') add('cego');
+    if (P.chave === 'percepcao') add('percepcao');
+    if (P.chave === 'reflexos') add('reflexos');
+    if (P.chave === 'iniciativa') add('iniciativa');
+    return { v: partes.reduce((s, x) => s + x.v, 0), partes };
+  }
+  function textoPenCond(partes) {
+    return partes.length ? 'Condições na conta: ' + partes.map(x => '−' + x.v + ' ' + nomeCondK(x.de)).join(' · ') : '';
+  }
   function defesa(f) {
     return 10 + somaAtrDefesa(f) + defesaDasPecas(f) +
            f.defesa.armadura + f.defesa.escudo + f.defesa.outros + somaFontesDefesa(f) +
            defesaEpica(f) +                     // regra opcional Defesa Épica (p.297)
-           bonusEmJogo(f, 'defesa');            // os efeitos em jogo com ✓ somar
+           bonusEmJogo(f, 'defesa') -           // os efeitos em jogo com ✓ somar
+           ((condPen(f).defesa || {}).v || 0);  // ⚙ condições na conta (só se ligado)
   }
   // Carga = 10 espaços + 2 por ponto de Força, ou −1 por ponto negativo (p. 141)
   function cargaMax(f) {
@@ -1410,6 +1482,7 @@
     //  mudar, e a linha da perícia diz de onde ele vem.
     if (P.chave === D.PERICIA_DO_TAMANHO) v += modFurtividade(f);
     v += bonusEmJogo(f, 'pericia', P.chave);     // os efeitos em jogo com ✓ somar
+    v -= penCondPericia(f, P, e).v;               // ⚙ condições na conta (só se ligado)
     return v;
   }
 
@@ -1456,7 +1529,13 @@
   function cdHabilidades(f) { return cdBase(f) + (f.cdHabOutros || 0); }
   //  O 'tudo'/'pericias' já veio pela perícia (o ataque É um teste dela); aqui
   //  só se acrescenta o alcance 'ataque e dano', para não contar duas vezes.
-  function valorAtaque(f, a) { return valorPericia(f, a.pericia) + (a.extra || 0) + bonusEmJogo(f, 'ataque'); }
+  function valorAtaque(f, a) { return valorPericia(f, a.pericia) + (a.extra || 0) + bonusEmJogo(f, 'ataque') - penCondAtaque(f, a); }
+  //  ⚙ condições na conta: o −2 de ataque (Ofuscado, Enredado, Agarrado) e
+  //  o −5 do Caído no corpo a corpo (p. 394)
+  function penCondAtaque(f, a) {
+    const c = condPen(f);
+    return ((c.ataque || {}).v || 0) + (ehCorpoACorpo(a) ? ((c.corpo || {}).v || 0) : 0);
+  }
   function pvAtual(f) { return f.pv.atual == null ? pvMax(f) : f.pv.atual; }
   function pmAtual(f) { return f.pm.atual == null ? pmMax(f) : f.pm.atual; }
 
@@ -3083,6 +3162,7 @@
     if (f.defesa.escudo)   p.push('escudo ' + sinal(f.defesa.escudo));
     if (f.defesa.outros)   p.push('outros ' + sinal(f.defesa.outros));
     if (defesaEpica(f))    p.push('Defesa Épica ' + sinal(defesaEpica(f)));
+    if (condPen(f).defesa) p.push(esc(nomeCondK(condPen(f).defesa.de)) + ' −' + condPen(f).defesa.v);
     ((f.defesa.fontes) || []).forEach(x => {
       if (x.valor) p.push((x.de ? esc(x.de) : 'fonte') + ' ' + sinal(x.valor));
     });
@@ -3127,6 +3207,7 @@
       if (f.defesa.escudo)   L.push({ rot: 'escudo (à mão)', val: f.defesa.escudo });
       if (f.defesa.outros)   L.push({ rot: 'outros', val: f.defesa.outros });
       if (defesaEpica(f))    L.push({ rot: 'Defesa Épica', val: defesaEpica(f) });
+      if (condPen(f).defesa) L.push({ rot: nomeCondK(condPen(f).defesa.de) + ' (⚙ condição)', val: -condPen(f).defesa.v });
       ((f.defesa.fontes) || []).forEach(x => { if (x.valor) L.push({ rot: x.de || 'fonte', val: x.valor }); });
       efj('defesa');
       return { rot: 'Defesa', total: defesa(f), linhas: L, sinalTotal: false };
@@ -3954,6 +4035,13 @@
     return true;
   }
 
+  //  O que o ⚙ está tirando agora, em uma linha — para conferir na mesa.
+  function blocoPenCond(f) {
+    const c = condPen(f), ks = Object.keys(c);
+    if (!ks.length) return '<p class="fi-conta fi-cond-pen">⚙ Nenhuma condição com número fixo agora.</p>';
+    return '<p class="fi-conta fi-cond-pen">⚙ Na conta agora: ' + ks.map(ef =>
+      '<strong>−' + c[ef].v + '</strong> ' + esc(NOME_PEN[ef]) + ' <small>(' + esc(nomeCondK(c[ef].de)) + ')</small>').join(' · ') + '</p>';
+  }
   function blocoCondicoes(f) {
     const minhas = condicoesDa(f);
     const livres = condLivres(f);
@@ -3983,11 +4071,15 @@
         ${livres.length ? `<ul class="fi-condl-lista">${livres.map(linhaCondLivre).join('')}</ul>` : ''}
         <p class="fi-conta fi-condl-conta" data-der="sustconta"
            ${contaSustentadas(f) ? '' : 'hidden'}>${contaSustentadas(f)}</p>
+        <label class="fi-cond-auto" title="Ligado: os −2/−5 das condições do livro entram sozinhos na Defesa, nas perícias e nos ataques. Desligado: a ficha só mostra, e a conta é sua.">
+          <input type="checkbox" data-acao="cond-auto" ${condAutoLigada(f) ? 'checked' : ''}>
+          ⚙ Aplicar os −X das condições nas contas</label>
+        ${condAutoLigada(f) ? blocoPenCond(f) : ''}
         <p class="fi-nota">Passe o mouse (ou toque) numa etiqueta para ler o texto inteiro do livro.
-          <strong>A ficha mostra, não aplica</strong>: os −2 e os −5 continuam por sua conta, porque
-          condições de mesmo efeito <em>não se somam</em> — "um personagem desprevenido e vulnerável
-          sofre –5 na Defesa, não –7" (p. 394). No fim da cena, todas terminam, a menos que a condição
-          diga o contrário.</p>
+          ${condAutoLigada(f)
+            ? 'Com o ⚙ ligado, cada efeito conta <strong>uma vez só</strong>, pelo maior — condições de mesmo efeito <em>não se somam</em> ("desprevenido e vulnerável sofre –5 na Defesa, não –7", p. 394). Ficam por sua conta o que não é número fixo: Caído na Defesa, falha automática em Reflexos do Indefeso, deslocamento e ações perdidas.'
+            : '<strong>A ficha mostra, não aplica</strong>: os −2 e os −5 continuam por sua conta, porque condições de mesmo efeito <em>não se somam</em> — "um personagem desprevenido e vulnerável sofre –5 na Defesa, não –7" (p. 394). Ligue o ⚙ acima para a ficha fazer a conta.'}
+          No fim da cena, todas terminam, a menos que a condição diga o contrário.</p>
       </div>`;
   }
 
@@ -4568,7 +4660,7 @@
       if (p.multipla) return linhasOficio(f, p);
       const e = f.pericias[p.chave];
       const v = valorPericia(f, p.chave);
-      const bEfj = bonusEmJogo(f, 'pericia', p.chave);   // modificada por efeito em jogo?
+      const bEfj = bonusEmJogo(f, 'pericia', p.chave) || penCondPericia(f, p, e).v;   // modificada por efeito em jogo ou condição?
       //  O botão de rolar virou DOIS — o nome e o número —, com o
       //  seletor de atributo entre eles, onde antes ficava o "DES"
       //  escrito. Um <select> dentro de um <button> não abre (e o
@@ -4586,7 +4678,7 @@
             ' (Tabela 2-1, p. 115); se um poder, um item ou uma classe sua mandar outro, escolha aqui — muda só esta perícia.')}
           <button type="button" class="fi-per-rolar fi-per-rolar--val" data-acao="rolar-pericia" data-p="${p.chave}"
                   title="Rolar 1d20 ${sinal(v)} de ${esc(p.nome)}">
-            <span class="fi-per-val${bEfj ? ' fi-per-val--efj' : ''}" data-der="per:${p.chave}"${bEfj ? ' title="' + esc(resumoEfj(f, 'pericia', p.chave)) + '"' : ''}>${sinal(v)}</span>
+            <span class="fi-per-val${bEfj ? ' fi-per-val--efj' : ''}" data-der="per:${p.chave}"${bEfj ? ' title="' + esc([resumoEfj(f, 'pericia', p.chave), textoPenCond(penCondPericia(f, p, e).partes)].filter(Boolean).join(' · ')) + '"' : ''}>${sinal(v)}</span>
             <span class="fi-per-dado" aria-hidden="true">🎲</span>
           </button>
           <input class="fi-num fi-num--mini" type="number" value="${e.outros}"
@@ -8499,6 +8591,11 @@
     if (acao === 'regra-defesa-epica') {
       if (!f.regras) f.regras = {};
       f.regras.defesaEpica = !f.regras.defesaEpica;
+      sujar(f.id, 'regras'); salvar(); return render();
+    }
+    if (acao === 'cond-auto') {
+      if (!f.regras) f.regras = {};
+      f.regras.condAuto = !f.regras.condAuto;
       sujar(f.id, 'regras'); salvar(); return render();
     }
     if (acao === 'lesao-mais' || acao === 'lesao-menos') {
