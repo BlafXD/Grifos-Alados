@@ -379,3 +379,18 @@
 .ga-ini-mini--surpresa.ga-ini-mini--on { background: var(--faixa); color: var(--faixa-tinta); border-color: var(--faixa); }
 .ga-ini-surpresa { margin-left: 0.35rem; padding: 0 0.3rem; border-radius: 3px; font-size: 0.75em;
   background: var(--faixa); color: var(--faixa-tinta); white-space: nowrap; }
+
+/* ── ABERTA, ELA CRESCE (26/11/2026, pedido dele) ──────────────────
+   Em 19rem o mestre, com os 5 botões de controle por linha, ficava com
+   o nome reduzido à primeira letra. Fechada continua pequena no canto;
+   aberta (não é toda hora) ganha largura, altura e letra maior. */
+.ga-coluna-mesa:has(.ga-ini:not(.ga-ini--fechado)) { width: min(31rem, 94vw); }
+.ga-ini:not(.ga-ini--fechado) .ga-ini-lista { max-height: min(30rem, 62vh); padding: 0.45rem 0.5rem; }
+.ga-ini:not(.ga-ini--fechado) .ga-ini-nome { font-size: 1.05rem; padding: 0.3rem 0.15rem; }
+.ga-ini:not(.ga-ini--fechado) .ga-ini-pos { font-size: 0.75rem; }
+.ga-ini:not(.ga-ini--fechado) .ga-ini-linha { grid-template-columns: 1.6rem minmax(0, 1fr) 3.8rem; gap: 0.3rem; padding: 0.15rem 0.2rem; }
+.ga-ini:not(.ga-ini--fechado) .ga-ini-lista--mando .ga-ini-linha { grid-template-columns: 1.6rem minmax(7rem, 1fr) 3.8rem 3rem auto; }
+.ga-ini:not(.ga-ini--fechado) .ga-ini-val { font-size: 1rem; }
+/* aberta, o nome comprido quebra em duas linhas em vez de virar "…" */
+.ga-ini:not(.ga-ini--fechado) .ga-ini-nome { flex-wrap: wrap; row-gap: 0.1rem; }
+.ga-ini:not(.ga-ini--fechado) .ga-ini-txt { white-space: normal; line-height: 1.15; overflow-wrap: anywhere; flex: 1 1 8rem; }
