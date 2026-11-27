@@ -2253,6 +2253,8 @@
   }
 
   // ── IDENTIDADE ───────────────────────────────────────────────────
+  const CHAVE_IDENT_CEL = 'grifosAlados.fichaIdentAberta';
+  function identAbertaCel() { try { return localStorage.getItem(CHAVE_IDENT_CEL) === '1'; } catch (e) { return false; } }
   function bloqueIdentidade(f) {
     const opsTam = D.TAMANHOS.map(t =>
       `<option value="${esc(t)}" ${t === f.tamanho ? 'selected' : ''}>${esc(t)}</option>`).join('');
@@ -2280,8 +2282,20 @@
         </div>`;
     }).join('');
 
+    //  📱 No celular a identificação vem DOBRADA numa linha (26/11/2026): ela
+    //  ocupava a primeira tela inteira, e no jogo quase não se mexe nela. O
+    //  ✎ abre para editar; a escolha fica lembrada neste aparelho. No
+    //  computador o resumo nem aparece e nada é escondido (só CSS).
+    const classesTxt = f.classes.filter(c => c.classe).map(c => {
+      const C = D.classe(c.classe); return (C ? C.nome : c.classe) + ' ' + c.nivel; }).join(' / ');
+    const resumo = [f.raca, f.origem, classesTxt].filter(Boolean).join(' · ');
     return `
-      <div class="fi-cartao fi-ident">
+      <div class="fi-cartao fi-ident${identAbertaCel() ? '' : ' fi-ident--dobrado'}">
+        <button type="button" class="fi-ident-resumo" data-acao="ident-cel" aria-expanded="${identAbertaCel()}">
+          <span class="fi-ident-resumo-nome">${esc(f.nome || 'Personagem sem nome')}</span>
+          <span class="fi-ident-resumo-linha">${esc(resumo || 'sem raça, origem nem classe ainda')} · Nível ${nivel(f)}</span>
+          <span class="fi-ident-resumo-ac">${identAbertaCel() ? '▴ fechar' : '✎ editar'}</span>
+        </button>
         ${blocoCampanhaFicha(f)}
         <div class="fi-ident-nomes">
           <label class="fi-campo fi-campo--largo">
@@ -8795,6 +8809,10 @@
     //  Tudo passa por gastarPontos/curarPontos: é lá que a regra dos
     //  temporários mora, e é o que impede o engano de tirar do PV
     //  atual enquanto ainda há escudo temporário em pé.
+    if (acao === 'ident-cel') {
+      try { localStorage.setItem(CHAVE_IDENT_CEL, identAbertaCel() ? '0' : '1'); } catch (e) {}
+      return render();
+    }
     if (acao === 'cel-ir') {
       const alvo = secao && secao.querySelector(btn.dataset.alvo);
       const menu = btn.closest('details'); if (menu) menu.open = false;

@@ -5341,3 +5341,19 @@
 @media (max-width: 380px) {
   .fi-celbar-btn, .fi-celbar-ir > summary { min-width: 2.2rem; min-height: 2.3rem; font-size: 1.05rem; }
 }
+
+/* 📱 identificação dobrada numa linha no celular (26/11/2026) */
+.fi-ident-resumo { display: none; }
+@media (max-width: 720px) {
+  .fi-ident-resumo {
+    display: grid; grid-template-columns: 1fr auto; gap: 0.1rem 0.6rem; width: 100%;
+    font: inherit; text-align: left; background: none; border: 0; padding: 0.2rem 0 0.5rem;
+    color: var(--text); cursor: pointer; border-bottom: 1px solid var(--parchment3); margin-bottom: 0.5rem;
+  }
+  .fi-ident-resumo-nome { font-family: var(--fonte-titulo, inherit); font-size: 1.25rem; font-weight: 700; color: var(--rust-dark, inherit); }
+  .fi-ident-resumo-linha { grid-column: 1; font-size: 0.88rem; opacity: 0.85; }
+  .fi-ident-resumo-ac { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 0.85rem;
+    padding: 0.45rem 0.7rem; border: 1px solid var(--parchment3); border-radius: 6px; white-space: nowrap; }
+  .fi-ident--dobrado > :not(.fi-ident-resumo) { display: none !important; }
+  .fi-ident--dobrado .fi-ident-resumo { border-bottom: 0; margin-bottom: 0; }
+}
