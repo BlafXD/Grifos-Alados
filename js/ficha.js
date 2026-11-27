@@ -1392,6 +1392,18 @@
     if (P.chave === 'iniciativa') add('iniciativa');
     return { v: partes.reduce((s, x) => s + x.v, 0), partes };
   }
+  //  ── ✨ O BRILHO DOS NÚMEROS MEXIDOS (26/11/2026, pedido dele) ──
+  //  Número que um efeito mexeu (⚡ efeitos em jogo com ∑ — magias, poderes,
+  //  efeitos em área puxados para o painel — e as condições com o ⚙ ligado)
+  //  ganha cor: o que SOBE fica vivo, com um brilho que passa rápido; o que
+  //  DESCE fica apagado, com uma sombra que passa devagar. Saldo zero, nada.
+  function brilho(n) { return n > 0 ? ' ga-brilho-bom' : n < 0 ? ' ga-brilho-ruim' : ''; }
+  function efPericia(f, P, e) { return P ? bonusEmJogo(f, 'pericia', P.chave) - penCondPericia(f, P, e).v : 0; }
+  function efAtaque(f, a) {
+    const P = D.pericia(a.pericia);
+    return efPericia(f, P, f.pericias[a.pericia]) + bonusEmJogo(f, 'ataque') - penCondAtaque(f, a);
+  }
+  function efDefesa(f) { return bonusEmJogo(f, 'defesa') - ((condPen(f).defesa || {}).v || 0); }
   function textoPenCond(partes) {
     return partes.length ? 'Condições na conta: ' + partes.map(x => '−' + x.v + ' ' + nomeCondK(x.de)).join(' · ') : '';
   }
@@ -2682,7 +2694,7 @@
           <h2 class="fi-cartao-tit">Defesa &amp; Carga</h2>
           <div class="fi-grande">
             <span class="fi-grande-rot">Defesa</span>
-            <strong class="fi-grande-val" data-der="defesa">${defesa(f)}</strong>
+            <strong class="fi-grande-val${brilho(efDefesa(f))}" data-der="defesa">${defesa(f)}</strong>
             ${botaoBd('defesa', 'a Defesa')}
           </div>
           <p class="fi-conta" data-der="defconta">${contaDefesa(f)}</p>
@@ -3429,7 +3441,7 @@
     return `
       <span class="fi-cond" style="--cond:${t ? t.cor : 'var(--rust-dark)'}"
             tabindex="0" aria-describedby="${id}">
-        <span class="fi-cond-nome">${esc(x.c.nome)}</span>
+        <span class="fi-cond-nome ga-brilho-ruim">${esc(x.c.nome)}</span>
         ${t ? `<span class="fi-cond-tipo">${esc(t.nome)}</span>` : ''}
         ${efeito ? `<span class="fi-cond-efeito">${esc(efeito)}</span>` : ''}
         <button type="button" class="fi-mini fi-mini--x" data-acao="tira-condicao" data-i="${i}"
@@ -3613,7 +3625,7 @@
         <li class="fi-turno-atq">
           <span class="fi-turno-atq-nome">${esc(a.nome || 'ataque sem nome')}</span>
           <button type="button" class="ga-btn-sec fi-turno-b" data-acao="turno-atq" data-i="${i}"
-                  title="Rolar 1d20 ${sinal(valorAtaque(f, a))}">🎯 ${sinal(valorAtaque(f, a))}</button>
+                  title="Rolar 1d20 ${sinal(valorAtaque(f, a))}">🎯 <span class="${brilho(efAtaque(f, a))}">${sinal(valorAtaque(f, a))}</span></button>
           ${temDano ? `<button type="button" class="ga-btn-sec fi-turno-b" data-acao="turno-dano" data-i="${i}"
                   title="${esc(tituloDano(a, f))}">💥 ${esc(danoComExtras(a, f).expr)}</button>
           <button type="button" class="ga-btn-sec fi-turno-b fi-turno-b--crit" data-acao="turno-crit" data-i="${i}"
@@ -4169,7 +4181,7 @@
       return `
         <li class="fi-ea${inimigo ? ' fi-ea--inimigo' : ''}">
           <div class="fi-ea-topo">
-            <span class="fi-ea-nome">🔆 ${esc(e.nome)}</span>
+            <span class="fi-ea-nome">🔆 <span class="${inimigo ? 'ga-brilho-ruim' : 'ga-brilho-bom'}">${esc(e.nome)}</span></span>
             ${e.de ? `<span class="fi-ea-de">de ${esc(e.de)}</span>` : ''}
             <span class="fi-ea-rel">${inimigo ? '⚔ contra você' : '🛡 em você'}</span>
             ${jaNoPainel
@@ -4723,7 +4735,7 @@
             ' (Tabela 2-1, p. 115); se um poder, um item ou uma classe sua mandar outro, escolha aqui — muda só esta perícia.')}
           <button type="button" class="fi-per-rolar fi-per-rolar--val" data-acao="rolar-pericia" data-p="${p.chave}"
                   title="Rolar 1d20 ${sinal(v)} de ${esc(p.nome)}">
-            <span class="fi-per-val${bEfj ? ' fi-per-val--efj' : ''}" data-der="per:${p.chave}"${bEfj ? ' title="' + esc([resumoEfj(f, 'pericia', p.chave), textoPenCond(penCondPericia(f, p, e).partes)].filter(Boolean).join(' · ')) + '"' : ''}>${sinal(v)}</span>
+            <span class="fi-per-val${bEfj ? ' fi-per-val--efj' : ''}${brilho(efPericia(f, p, e))}" data-der="per:${p.chave}"${bEfj ? ' title="' + esc([resumoEfj(f, 'pericia', p.chave), textoPenCond(penCondPericia(f, p, e).partes)].filter(Boolean).join(' · ')) + '"' : ''}>${sinal(v)}</span>
             <span class="fi-per-dado" aria-hidden="true">🎲</span>
           </button>
           <input class="fi-num fi-num--mini" type="number" value="${e.outros}"
@@ -4898,7 +4910,7 @@
                title="Bônus extra deste ataque (arma mágica, poder…)">
         <span class="fi-atq-rolagem">
           <button type="button" class="fi-atq-val" data-acao="rolar-ataque" data-i="${i}"
-                  title="Rolar 1d20 ${sinal(valorAtaque(f, a))} de ataque">${sinal(valorAtaque(f, a))} 🎲</button>
+                  title="Rolar 1d20 ${sinal(valorAtaque(f, a))} de ataque"><span class="fi-atq-num${brilho(efAtaque(f, a))}">${sinal(valorAtaque(f, a))}</span> 🎲</button>
           ${botaoBd('ataque:' + i, a.nome || 'o ataque')}
         </span>
         <input class="fi-txt fi-txt--mini" type="text" value="${esc(a.dano)}" data-campo="ataques.${i}.dano"
@@ -8002,7 +8014,7 @@
     // o botão de ataque não é [data-der] (é botão), mas o valor dele muda
     secao.querySelectorAll('[data-acao="rolar-ataque"]').forEach(b => {
       const a = f.ataques[+b.dataset.i];
-      if (a) b.textContent = sinal(valorAtaque(f, a)) + ' 🎲';
+      if (a) { const sp = b.querySelector('.fi-atq-num'); if (sp) { sp.textContent = sinal(valorAtaque(f, a)); sp.className = 'fi-atq-num' + brilho(efAtaque(f, a)); } else b.textContent = sinal(valorAtaque(f, a)) + ' 🎲'; }
     });
     // e a dica do 💥 Crítico segue o que está escrito no campo "19/×3" —
     // com o dado já andado pelos passos

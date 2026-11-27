@@ -202,12 +202,22 @@
       <div class="gd-pop-acoes">
         <button type="button" class="gd-btn gd-btn--forte" data-gd-rolar data-gd-foco>🎲 Rolar</button>
       </div>
+      <div class="gd-pop-dado" data-gd-dado hidden></div>
       <p class="gd-pop-res" data-gd-res hidden></p>`, 'gd-pop--rolagem', id);
-    c.querySelector('[data-gd-rolar]').addEventListener('click', function () {
+    c.querySelector('[data-gd-rolar]').addEventListener('click', async function () {
       const extra = parseInt(c.querySelector('[data-gd-extra]').value, 10) || 0;
       const d20 = rolarD20();
       const total = d20 + bonus + extra;
       const res = c.querySelector('[data-gd-res]');
+      //  🎲 o dado rola na tela antes do resultado (26/11/2026). O número já
+      //  saiu acima — a animação só mostra; trava o botão para não rolar duas vezes.
+      this.disabled = true;
+      c.querySelector('[data-gd-extra]').disabled = true;
+      const palco = c.querySelector('[data-gd-dado]');
+      if (palco && window.GA_DadoAnimado) {
+        palco.hidden = false;
+        try { await window.GA_DadoAnimado.rolar(palco, d20, 20); } catch (e) {}
+      }
       let veredito = '';
       if (typeof d.cd === 'number') veredito = total >= d.cd ? ' — ✔ passou!' : ' — ✖ não passou';
       res.hidden = false;
@@ -219,6 +229,7 @@
       acoes.innerHTML = '<button type="button" class="gd-btn" data-gd-ok>Fechar</button>';
       acoes.querySelector('[data-gd-ok]').addEventListener('click', () => fecharCartao(c));
       c._respondiAqui = true;
+      if (id === 'demo') { res.innerHTML = res.innerHTML.replace('enviado ao mestre', 'demonstração — nada foi enviado'); return; }
       reivindicar(id, 'resposta', { d20: d20, bonus: bonus, extra: extra, total: total, em: Date.now() }).then(ok => {
         if (!ok) { res.innerHTML = 'Este pedido já foi respondido em outra aba ou aparelho.'; return; }
       //  também no log de rolagens da mesa (sem a CD, que pode ser secreta)
@@ -668,6 +679,10 @@
     aoMudar: fn => { if (typeof fn === 'function') ouvintes.push(fn); },
     //  para testes: o que o mestre vê agora
     _lotes: lotes,
+    //  🎲 para ver o pop-up de teste sem mesa (26/11/2026): GA_Disparos.demo() no console.
+    //  Não grava nada no banco nem no log — só desenha o cartão e rola o dado.
+    demo: (rotulo, cd) => popupRolagem('demo', { deNome: 'O mestre (demonstração)', alvo: { rotulo: rotulo || 'Percepção' },
+      cd: typeof cd === 'number' ? cd : 15, motivo: 'Um barulho na caverna…', fichaNome: 'Seu personagem' }),
   };
 
   //  O GA_Mesa vem antes deste arquivo nas duas páginas, mas a segunda
