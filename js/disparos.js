@@ -174,14 +174,39 @@
     if (id) abertos[id] = c;
     c.className = 'gd-pop' + (classe ? ' ' + classe : '');
     c.setAttribute('role', 'dialog');
-    c.innerHTML = html;
+    //  ✕ clássico no canto (27/11/2026, pedido dele). Fechar um pedido de
+    //  teste SEM rolar pergunta antes: o mestre ficaria sem a resposta.
+    c.innerHTML = '<button type="button" class="gd-pop-x" aria-label="Fechar" title="Fechar">✕</button>' +
+      '<span class="gd-pop-num" aria-hidden="true"></span>' + html;
+    c.querySelector('.gd-pop-x').addEventListener('click', () => {
+      if (c.classList.contains('gd-pop--rolagem') && !c._respondiAqui &&
+          !window.confirm('Fechar sem rolar? O mestre fica sem a sua resposta.')) return;
+      fecharCartao(c);
+    });
     pilha().appendChild(c);
+    contarPilha();
+    //  o foco fica no PRIMEIRO pedido: focar o segundo rolava a pilha e
+    //  escondia o topo do primeiro
     const foco = c.querySelector('[data-gd-foco]');
-    if (foco) setTimeout(() => { try { foco.focus(); } catch (e) {} }, 30);
+    const primeiro = pilha().querySelector('.gd-pop') === c;
+    if (foco && primeiro) setTimeout(() => { try { foco.focus({ preventScroll: true }); } catch (e) {} }, 30);
     return c;
+  }
+  //  Dois ou mais pedidos ao mesmo tempo: cada cartão diz "1 de 2", e a
+  //  pilha ganha uma faixa no topo — o segundo não fica escondido.
+  function contarPilha() {
+    const p = document.getElementById('gdPilha'); if (!p) return;
+    const cards = p.querySelectorAll('.gd-pop'), n = cards.length;
+    cards.forEach((c, i) => { const s = c.querySelector('.gd-pop-num'); if (s) s.textContent = n > 1 ? (i + 1) + ' de ' + n : ''; });
+    let cab = p.querySelector('.gd-pilha-cab');
+    if (n > 1) {
+      if (!cab) { cab = document.createElement('div'); cab.className = 'gd-pilha-cab'; p.insertBefore(cab, p.firstChild); }
+      cab.textContent = '📨 ' + n + ' pedidos do mestre — role para ver todos';
+    } else if (cab) cab.remove();
   }
   function fecharCartao(c) {
     if (c && c.parentNode) c.parentNode.removeChild(c);
+    contarPilha();
     Object.keys(abertos).forEach(k => { if (abertos[k] === c) delete abertos[k]; });
   }
 
