@@ -2077,7 +2077,7 @@
     ];
     if (!abas.some(a => a.id === abaAberta)) abaAberta = 'ataques';
 
-    html += `
+    html += barraCelular(f) + `
       <div class="fi-palco">
         <div class="fi-coluna fi-coluna--principal">
           ${bloqueIdentidade(f)}${blocoCombate(f)}${blocoComplicacoes(f)}${blocoCondicoes(f)}${blocoEfeitosArea(f)}${blocoEfeitosEmJogo(f)}
@@ -4041,6 +4041,37 @@
     if (!ks.length) return '<p class="fi-conta fi-cond-pen">⚙ Nenhuma condição com número fixo agora.</p>';
     return '<p class="fi-conta fi-cond-pen">⚙ Na conta agora: ' + ks.map(ef =>
       '<strong>−' + c[ef].v + '</strong> ' + esc(NOME_PEN[ef]) + ' <small>(' + esc(nomeCondK(c[ef].de)) + ')</small>').join(' · ') + '</p>';
+  }
+  //  ── 📱 A BARRA DO CELULAR (26/11/2026) ───────────────────────────
+  //  No celular a ficha tem ~9.500px de altura, e a Vida & Mana fica a
+  //  4.000px do topo: no meio do combate o jogador rolava a tela inteira
+  //  para tirar 1 PV. A barra fica presa embaixo (só em tela estreita —
+  //  o CSS a esconde no computador) com o PV e o PM e os mesmos −/+ do
+  //  medidor (mesmas ações, mesma regra de dano/cura), e um "Ir para"
+  //  que pula direto para cada parte da ficha.
+  const CEL_IR = [
+    ['.fi-ident', '👤 Topo'], ['.fi-vida', '❤ Vida & Mana'], ['.fi-condicoes', '🌀 Condições'],
+    ['.fi-atributos', '💪 Atributos'], ['.fi-abas-cartao', '⚔ Ataques, magias, inventário'], ['.fi-pericias', '🎯 Perícias'],
+  ];
+  function barraCelular(f) {
+    const pv = pvAtual(f) + (f.pv.temp || 0), pm = pmAtual(f) + (f.pm.temp || 0);
+    return `<nav class="fi-celbar" aria-label="Atalhos da ficha">
+        <span class="fi-celbar-rec fi-celbar-rec--pv">
+          <button type="button" class="fi-celbar-btn" data-acao="pv-menos" aria-label="−1 PV">−</button>
+          <span class="fi-celbar-val">❤ <b data-der="celpv">${pv}</b><i>/<span data-der="celpvmax">${pvMax(f)}</span></i></span>
+          <button type="button" class="fi-celbar-btn" data-acao="pv-mais" aria-label="+1 PV">+</button>
+        </span>
+        <span class="fi-celbar-rec fi-celbar-rec--pm">
+          <button type="button" class="fi-celbar-btn" data-acao="pm-menos" aria-label="−1 PM">−</button>
+          <span class="fi-celbar-val">✦ <b data-der="celpm">${pm}</b><i>/<span data-der="celpmmax">${pmMax(f)}</span></i></span>
+          <button type="button" class="fi-celbar-btn" data-acao="pm-mais" aria-label="+1 PM">+</button>
+        </span>
+        <details class="fi-celbar-ir">
+          <summary aria-label="Ir para uma parte da ficha">☰</summary>
+          <div class="fi-celbar-menu">${CEL_IR.map(([sel, rot]) =>
+            `<button type="button" data-acao="cel-ir" data-alvo="${sel}">${rot}</button>`).join('')}</div>
+        </details>
+      </nav>`;
   }
   function blocoCondicoes(f) {
     const minhas = condicoesDa(f);
@@ -7864,6 +7895,10 @@
       if (d === 'treino')    el.textContent = sinal(treino(n, true));
       if (d === 'pvmax')     el.textContent = pvMax(f);
       if (d === 'pvmorte')   el.textContent = limiteMorte(pvMax(f));
+      if (d === 'celpv')     el.textContent = pvAtual(f) + (f.pv.temp || 0);
+      if (d === 'celpm')     el.textContent = pmAtual(f) + (f.pm.temp || 0);
+      if (d === 'celpvmax')  el.textContent = pvMax(f);
+      if (d === 'celpmmax')  el.textContent = pmMax(f);
       if (d === 'pmmax')     el.textContent = pmMax(f);
       if (d === 'defesa')    el.textContent = defesa(f);
       if (d === 'cargamax' || d === 'cargamax2' || d === 'cargamax3') el.textContent = cargaMax(f);
@@ -8760,6 +8795,12 @@
     //  Tudo passa por gastarPontos/curarPontos: é lá que a regra dos
     //  temporários mora, e é o que impede o engano de tirar do PV
     //  atual enquanto ainda há escudo temporário em pé.
+    if (acao === 'cel-ir') {
+      const alvo = secao && secao.querySelector(btn.dataset.alvo);
+      const menu = btn.closest('details'); if (menu) menu.open = false;
+      if (alvo) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
     if (acao === 'pv-menos' || acao === 'pm-menos') {
       aplicarDano(f, acao.slice(0, 2), 1); return;
     }

@@ -5293,3 +5293,51 @@
 /* ⚙ condições na conta (26/11/2026) */
 .fi-cond-auto { display: flex; align-items: center; gap: 0.4rem; margin: 0.5rem 0 0.2rem; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
 .fi-cond-pen { margin: 0.2rem 0; }
+
+/* ── 📱 barra do celular: PV/PM com −/+ e "Ir para" (26/11/2026) ── */
+.fi-celbar { display: none; }
+@media (max-width: 720px) {
+  .fi-celbar {
+    display: flex; align-items: center; gap: 0.25rem; box-sizing: border-box; justify-content: space-between;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 900;
+    padding: 0.4rem 0.45rem calc(0.4rem + env(safe-area-inset-bottom, 0px));
+    background: var(--faixa); color: var(--faixa-tinta);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.25);
+  }
+  .fi-celbar-rec { display: flex; align-items: center; gap: 0.25rem; }
+  .fi-celbar-val { min-width: 3.2rem; text-align: center; font-size: 1rem; white-space: nowrap; }
+  .fi-celbar-val i { font-style: normal; opacity: 0.75; font-size: 0.85em; }
+  .fi-celbar-btn, .fi-celbar-ir > summary {
+    min-width: 2.4rem; min-height: 2.4rem; border-radius: 8px; font-size: 1.2rem; line-height: 1;
+    border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; touch-action: manipulation;
+  }
+  .fi-celbar-ir { position: relative; }
+  .fi-celbar-ir > summary { list-style: none; }
+  .fi-celbar-ir > summary::-webkit-details-marker { display: none; }
+  .fi-celbar-menu {
+    position: absolute; right: 0; bottom: calc(100% + 0.5rem); display: grid; width: min(16rem, calc(100vw - 1.2rem));
+    background: var(--parchment); color: var(--text); border: 1px solid var(--parchment3);
+    border-radius: 8px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); overflow: hidden;
+  }
+  .fi-celbar-menu button { font: inherit; text-align: left; padding: 0.75rem 0.9rem; min-height: 2.75rem;
+    background: none; border: 0; border-bottom: 1px solid var(--parchment3); color: inherit; cursor: pointer; }
+  .fi-celbar-menu button:last-child { border-bottom: 0; }
+  /* o "Ir para" não para atrás do cabeçalho fixo do topo */
+  #ficha-content .fi-cartao { scroll-margin-top: 4.5rem; }
+  /* o selo da conexão (e outros flutuantes de baixo) sobem acima da barra */
+  body:has(section.active .fi-celbar) .ga-jog-chip { bottom: 4rem; }
+  /* o fim da ficha não some atrás da barra */
+  #ficha-content { padding-bottom: 4.5rem; }
+  /* alvos de toque: os −/+ e os mini-botões da ficha ficam do tamanho do dedo */
+  #ficha-content .fi-passo { min-width: 2.4rem; min-height: 2.4rem; }
+  #ficha-content .fi-mini { min-width: 2rem; min-height: 2rem; }
+}
+@media (max-width: 720px) {
+  /* telas de 320–360px: os grupos encolhem em vez de vazar */
+  .fi-celbar-rec { flex: 1 1 0; min-width: 0; justify-content: space-between; }
+  .fi-celbar-val { min-width: 0; font-size: 0.95rem; }
+}
+@media (max-width: 380px) {
+  .fi-celbar-btn, .fi-celbar-ir > summary { min-width: 2.2rem; min-height: 2.3rem; font-size: 1.05rem; }
+}
