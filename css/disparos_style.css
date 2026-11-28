@@ -135,3 +135,34 @@
 @media (max-width: 420px) { .gd-nivel-op span { font-size: 0.68rem; } }
 /* 🔆 a faixa de Efeito / condição: âmbar fixo (fundo que não inverte → texto que não inverte) */
 .ga-lanc--efeito { color: #f6ecd2; background: #6b4a12; }
+
+/* ═══ 🌡 INTENSIDADE AO VIVO (28/11/2026) ════════════════════════════
+   A coluna da esquerda do controlador: um cartão por jogador com as
+   condições da ficha e os 5 níveis (um clique muda na hora). */
+.ga-modal.gd-modal { width: min(96vw, 1120px); max-width: min(96vw, 1120px); }
+.gd-ctl-grade { display: grid; grid-template-columns: minmax(15rem, 20rem) minmax(0, 1fr); gap: 0.9rem; align-items: start; }
+@media (max-width: 820px) { .gd-ctl-grade { grid-template-columns: 1fr; } }
+.gd-vivo { position: sticky; top: 0; display: flex; flex-direction: column; gap: 0.5rem; padding: 0.6rem 0.65rem;
+  border: 1px solid var(--gold-dim, var(--parchment3)); border-radius: var(--raio, 4px); background: var(--parchment2); }
+.gd-vivo .gd-mini { margin: -0.2rem 0 0.1rem; }
+#gdAoVivo { display: flex; flex-direction: column; gap: 0.45rem; max-height: 62vh; overflow-y: auto; }
+.gd-vivo-todos { display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; padding: 0 0.1rem 0.35rem;
+  border-bottom: 1px dashed var(--parchment3); font-size: 0.8rem; color: var(--text-mid); }
+.gd-vivo-card { padding: 0.45rem 0.55rem; border: 1px solid var(--parchment3); border-left: 4px solid var(--parchment3);
+  border-radius: var(--raio, 4px); background: var(--parchment); transition: border-color 0.2s ease; }
+.gd-vivo-card--ativo { border-left-color: var(--rust); }
+.gd-vivo-nome { margin: 0 0 0.3rem; font-weight: 700; color: var(--ink); }
+.gd-vivo-nome small { font-weight: 400; color: var(--text-dim); }
+.gd-vivo-conds { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 0.3rem; }
+.gd-vivo-cond { padding: 0.05rem 0.45rem; font-size: 0.78rem; border-radius: 999px; color: var(--ink);
+  background: var(--parchment2); border: 1px solid var(--parchment3); }
+.gd-vivo-sem { font-size: 0.8rem; font-style: italic; color: var(--text-dim); }
+.gd-vivo-tela { margin: 0 0 0.35rem; font-size: 0.8rem; color: var(--text-mid); }
+.gd-vivo-nvs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.2rem; }
+.gd-vivo-todos .gd-vivo-nvs { width: 9.5rem; }
+.gd-vivo-nv { padding: 0.2rem 0; font: inherit; font-weight: 700; font-size: 0.85rem; cursor: pointer; color: var(--ink);
+  background: var(--parchment2); border: 1px solid var(--parchment3); border-radius: var(--raio, 4px);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease; }
+.gd-vivo-nv:hover { border-color: var(--nv); }
+.gd-vivo-nv:active { transform: scale(0.94); }
+.gd-vivo-nv.gd-on { color: #fff; background: var(--nv); border-color: var(--nv); }

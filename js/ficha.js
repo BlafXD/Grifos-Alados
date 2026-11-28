@@ -11492,6 +11492,9 @@
     },
     recarregar: () => { carregar(); render(); },
     visiveis: visiveis,                // as fichas que este navegador enxerga
+    //  🌡 para o controlador do mestre: qual clima a ficha mostra e o nome da condição pela chave
+    climaDaFicha: f => (f ? climaDa(f) : ''),
+    nomeCond: k => { const c = acharCond(k); return c ? c.nome : k; },
     aoMudar: escutar,                  // avisa quando qualquer número muda
     receberItem: receberItem,          // um item comprado na 🏪 Loja
     abrirNaTela: abrirNaTela,          // trazer uma ficha para a frente
