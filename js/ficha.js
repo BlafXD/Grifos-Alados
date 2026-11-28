@@ -7918,7 +7918,8 @@
   let climaFixo = null;
   //  🌡 intensidade vinda do 🎯 Controlador do mestre (27/11): 0 desliga,
   //  1 é o normal, 4 o extremo; a prévia mostra um clima sem a condição.
-  let climaNivel = 1, climaPrevia = '';
+  //  POR PERSONAGEM (28/11): fichaId → { nivel, previa }; ficha sem entrada vale nível 1.
+  let climaPorFicha = {};
   function pintarClima(f) {
     let el = document.getElementById('fiClima');
     if (!el) {
@@ -7928,9 +7929,10 @@
       document.body.appendChild(el);
     }
     //  a vitrine (climaDemo) fica presa nesta aba até recarregar
-    const clima = climaFixo ? climaFixo.clima : (climaPrevia || (f ? climaDa(f) : '')),
+    const meu = (f && climaPorFicha[f.id]) || { nivel: 1, previa: '' };
+    const clima = climaFixo ? climaFixo.clima : (meu.previa || (f ? climaDa(f) : '')),
           dor = climaFixo ? climaFixo.dor : (f ? dorDa(f) : 0);
-    const nv = climaFixo && climaFixo.nivel != null ? climaFixo.nivel : climaNivel;
+    const nv = climaFixo && climaFixo.nivel != null ? climaFixo.nivel : meu.nivel;
     if (clima && nv > 0) el.setAttribute('data-clima', clima); else el.removeAttribute('data-clima');
     el.setAttribute('data-nivel', String(nv));
     el.style.setProperty('--int', String(nv));
@@ -11522,11 +11524,15 @@
     //  ou não há nada "por turno" a resolver.
     //  🌫 só para VER o clima (vitrine/teste): pinta um clima e uma dor (0–1)
     //  sem mexer em ficha nenhuma; fica preso nesta aba até recarregar (climaDemo() sem nada solta).
-    climaIntensidade: function (nivel, previa) {
-      const nv = Math.max(0, Math.min(4, Math.round(Number(nivel) || 0)));
-      const pv = String(previa || '').replace(/[^a-z]/g, '');
-      if (nv === climaNivel && pv === climaPrevia) return;
-      climaNivel = nv; climaPrevia = pv; pintarClima(fichaAberta());
+    //  🌡 o nível de cada ficha deste aparelho, vindo do 🎯 Controlador: { fichaId: { nivel, previa } }
+    climaIntensidade: function (mapa) {
+      const novo = {};
+      Object.keys(mapa || {}).forEach(id => {
+        const c = mapa[id] || {};
+        novo[id] = { nivel: Math.max(0, Math.min(4, Math.round(Number(c.nivel) || 0))), previa: String(c.previa || '').replace(/[^a-z]/g, '') };
+      });
+      if (JSON.stringify(novo) === JSON.stringify(climaPorFicha)) return;
+      climaPorFicha = novo; pintarClima(fichaAberta());
     },
     climaDemo: function (clima, dor, nivel) {
       climaFixo = (clima || dor) ? { clima: clima || '', dor: dor || 0, nivel: nivel == null ? null : nivel } : null;
