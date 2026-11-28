@@ -156,6 +156,7 @@
 .gd-vivo-conds { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 0.3rem; }
 .gd-vivo-cond { padding: 0.05rem 0.45rem; font-size: 0.78rem; border-radius: 999px; color: var(--ink);
   background: var(--parchment2); border: 1px solid var(--parchment3); }
+.gd-vivo-cond--mao { font-style: italic; border-style: dashed; }
 .gd-vivo-sem { font-size: 0.8rem; font-style: italic; color: var(--text-dim); }
 .gd-vivo-tela { margin: 0 0 0.35rem; font-size: 0.8rem; color: var(--text-mid); }
 .gd-vivo-nvs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.2rem; }

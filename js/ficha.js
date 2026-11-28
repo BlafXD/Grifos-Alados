@@ -7887,8 +7887,22 @@
     ['abalado', 'medo'], ['indefeso', 'guarda'], ['caido', 'chao'], ['desprevenido', 'guarda'],
     ['surpreendido', 'guarda'], ['vulneravel', 'guarda'], ['sobrecarregado', 'chao'],
   ];
-  function climaDa(f) {
+  //  As condições que pesam no clima: as marcadas da lista do livro E as que
+  //  o jogador ESCREVEU à mão em "✎ Outros" (28/11/2026 — um "Inconsciente"
+  //  escrito à mão não acendia nada, nem no 🎯 Controlador do mestre). O
+  //  texto vale se tiver o nome da condição como palavra: "inconsciente",
+  //  "Em chamas (1d6)", "caído no chão". As sustentadas não contam.
+  function condicoesDoClima(f) {
     const tem = {}; (f.condicoes || []).forEach(k => { tem[k] = 1; });
+    (f.condicoesLivres || []).forEach(l => {
+      if (!l || l.tipo === 'sustentada' || !l.texto) return;
+      const s = '-' + chaveCond(l.texto) + '-';
+      CLIMA_ORDEM.forEach(([k]) => { if (s.indexOf('-' + k + '-') >= 0) tem[k] = 1; });
+    });
+    return tem;
+  }
+  function climaDa(f) {
+    const tem = condicoesDoClima(f);
     const achou = CLIMA_ORDEM.find(([k]) => tem[k]);
     return achou ? achou[1] : '';
   }
@@ -11268,6 +11282,11 @@
         pm: { atual: pmAtual(f), max: pmMax(f), temp: f.pm.temp || 0 },
         defesa: defesa(f),
         morto: !!f.morto,           // fora de combate: o iniciativa.js usa para não montar
+        //  🌡 o painel ao vivo do 🎯 Controlador mostra e controla o clima de cada
+        //  jogador: precisa das condições (as do livro e as escritas à mão)
+        condicoes: Array.isArray(f.condicoes) ? f.condicoes.slice() : [],
+        condicoesLivres: (f.condicoesLivres || []).filter(l => l && l.tipo !== 'sustentada' && l.texto)
+          .map(l => ({ tipo: l.tipo, texto: l.texto })),
         atualizadoEm: f.atualizadoEm || 0,
       });
     }

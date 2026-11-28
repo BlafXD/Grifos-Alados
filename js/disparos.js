@@ -484,7 +484,7 @@
   // ═══ 🎯 A ABINHA DO CONTROLADOR (27/11/2026, pedido dele) ═════════
   //  Um botão na coluna flutuante (entre a ⚔ Iniciativa e as 🎲 Rolagens),
   //  só para mestre/auxiliar; o controlador abre no meio da tela.
-  let painelCtl = null;
+  let painelCtl = null, ouveFicha = false;
 
   //  🌡 INTENSIDADE DO CLIMA: o mestre escolhe, por jogador ou para todos,
   //  o quanto as condições pesam na tela dele (0 desliga, 1 é o normal, 4 é
@@ -524,9 +524,11 @@
     return todos + alvos.map(f => {
       const c = climaDe(f.dono), nivel = c ? c.nivel : 1, previa = c && c.previa ? c.previa : '';
       const conds = Array.isArray(f.condicoes) ? f.condicoes : [];
+      const amao = (f.condicoesLivres || []).map(l => l && l.texto).filter(Boolean);
       const naTela = previa || (F.climaDaFicha ? F.climaDaFicha(f) : '');
-      const chips = conds.length
-        ? conds.map(k => `<span class="gd-vivo-cond">${esc(F.nomeCond ? F.nomeCond(k) : k)}</span>`).join('')
+      const chips = (conds.length || amao.length)
+        ? conds.map(k => `<span class="gd-vivo-cond">${esc(F.nomeCond ? F.nomeCond(k) : k)}</span>`).join('') +
+          amao.map(t => `<span class="gd-vivo-cond gd-vivo-cond--mao" title="Escrita à mão pelo jogador">✎ ${esc(t)}</span>`).join('')
         : '<span class="gd-vivo-sem">sem condição</span>';
       return `<div class="gd-vivo-card${naTela && nivel > 0 ? ' gd-vivo-card--ativo' : ''}">
         <p class="gd-vivo-nome">🧑 ${esc(f.nome || 'ficha')}${f.jogador ? ' <small>' + esc(f.jogador) + '</small>' : ''}</p>
@@ -688,6 +690,9 @@
         aberta (o endereço com <code>?mesa=</code>) e de você entrar na conta como mestre ou auxiliar dela.</p>`);
       return;
     }
+    //  a ficha de um jogador mudou (pôs ou tirou condição): o painel 🌡 ao vivo
+    //  redesenha na hora — liga uma vez só
+    if (!ouveFicha && window.GA_Ficha && window.GA_Ficha.aoMudar) { ouveFicha = true; window.GA_Ficha.aoMudar(avisar); }
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab"><span>🎯 Controlador do mestre</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button></div>
@@ -717,7 +722,19 @@
       const resp = overlay.querySelector('#gdRespostas');
       if (resp && !resp.contains(document.activeElement)) resp.innerHTML = htmlRespostas();
       const vivo = overlay.querySelector('#gdAoVivo');
-      if (vivo) { const h = htmlAoVivo(); if (vivo.innerHTML !== h && !vivo.contains(document.activeElement)) vivo.innerHTML = h; }
+      //  aqui só há botões (nada sendo digitado): redesenha sempre, e devolve o foco ao mesmo botão
+      if (vivo) {
+        const h = htmlAoVivo();
+        if (vivo.innerHTML !== h) {
+          const fo = vivo.contains(document.activeElement) ? document.activeElement : null;
+          const chave = fo && fo.dataset ? [fo.dataset.gdVivo, fo.dataset.nivel, fo.dataset.gdVivoSemPrevia] : null;
+          vivo.innerHTML = h;
+          if (chave) {
+            const igual = Array.from(vivo.querySelectorAll('button')).find(b => b.dataset.gdVivo === chave[0] && b.dataset.nivel === chave[1] && b.dataset.gdVivoSemPrevia === chave[2]);
+            if (igual) igual.focus({ preventScroll: true });
+          }
+        }
+      }
       overlay.querySelectorAll('[data-gd-nivel-de]').forEach(s => {
         const c = climaDe(s.dataset.gdNivelDe);
         s.textContent = c ? '🌡 ' + c.nivel + (c.previa ? ' · prévia' : '') : '🌡 1';
