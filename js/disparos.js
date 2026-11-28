@@ -99,7 +99,7 @@
       ligadaTodas = assinaturaM;
       if (assinaturaM) {
         const r1 = refTodas = b.ref(base());
-        cbTodas = r1.on('value', snap => { if (refTodas !== r1) return; todas = snap.val() || {}; avisar(); },
+        cbTodas = r1.on('value', snap => { if (refTodas !== r1) return; todas = snap.val() || {}; aplicarClima(); avisar(); },
           err => console.warn('[disparos] caixas da mesa:', err && err.message));
         const r2 = refCds = b.ref('mesas/' + sala() + '/disparosCd');
         cbCds = r2.on('value', snap => { if (refCds !== r2) return; cds = snap.val() || {}; avisar(); },
@@ -499,14 +499,19 @@
     ['sangue', 'Sangrando'], ['cego', 'Cego'], ['veneno', 'Envenenado'], ['pavor', 'Apavorado'], ['confuso', 'Confuso'],
     ['atordoado', 'Atordoado'], ['lento', 'Lento'], ['pedra', 'Petrificado'], ['encanto', 'Enfeitiçado']];
   function idClima(fichaId) { return 'clima-' + String(fichaId || '').replace(/[.#$\[\]\/]/g, '_'); }
-  //  no aparelho do jogador: o nível de CADA ficha dele, para a ficha aberta usar o seu
+  //  o nível de CADA ficha, para a ficha aberta usar o seu. No aparelho do
+  //  jogador vem da caixa dele; no do MESTRE vem também das caixas de todos
+  //  (28/11: o mestre abria a ficha do Heliantor na própria tela e não via o
+  //  nível que tinha mandado — o aparelho dele só lia a caixa dele).
   function aplicarClima() {
     if (!window.GA_Ficha || !window.GA_Ficha.climaIntensidade) return;
     const mapa = {};
-    Object.keys(caixa).forEach(id => {
-      const c = caixa[id];
-      if (c && c.tipo === 'clima' && c.fichaId && typeof c.nivel === 'number') mapa[c.fichaId] = { nivel: c.nivel, previa: c.previa || '' };
+    const juntar = cx => Object.keys(cx || {}).forEach(id => {
+      const c = cx[id];
+      if (c && c.tipo === 'clima' && c.fichaId && typeof c.nivel === 'number') mapa[c.fichaId] = { nivel: c.nivel, previa: c.previa || '', niveis: c.niveis || null };
     });
+    Object.keys(todas).forEach(uid => juntar(todas[uid]));
+    juntar(caixa);
     window.GA_Ficha.climaIntensidade(mapa);
   }
   //  no aparelho do mestre: o nível de uma ficha (null = nunca mexeu, vale 1)
@@ -514,9 +519,10 @@
     const c = todas[uid] && todas[uid][idClima(fichaId)];
     return (c && typeof c.nivel === 'number') ? c : null;
   }
-  function registroClima(uid, fichaId, fichaNome, nivel, previa) {
+  function registroClima(uid, fichaId, fichaNome, nivel, previa, niveis) {
     return { tipo: 'clima', de: meuUid(), deNome: meuNome().slice(0, 80), em: carimbo(), fichaId: fichaId,
-      fichaNome: String(fichaNome || 'ficha').slice(0, 80), nivel: nivel, previa: previa || null };
+      fichaNome: String(fichaNome || 'ficha').slice(0, 80), nivel: nivel, previa: previa || null,
+      niveis: (niveis && Object.keys(niveis).length) ? niveis : null };
   }
 
   //  🌡 AO VIVO (28/11/2026, pedido dele): a coluna da esquerda do
@@ -531,39 +537,55 @@
     const alvos = alvosDaMesa();
     const F = window.GA_Ficha || {};
     if (!alvos.length) return '<p class="gd-vazio">Nenhuma ficha de jogador nesta campanha ainda.</p>';
-    const botoes = (uid, atual, fichaId) => NIVEIS.map(n => `<button type="button" class="gd-vivo-nv gd-nivel-op--${n[0]}${String(atual) === n[0] ? ' gd-on' : ''}"
-      data-gd-vivo="${esc(uid)}" data-ficha="${esc(fichaId || '')}" data-nivel="${n[0]}" title="${esc(n[1])}" aria-pressed="${String(atual) === n[0]}">${n[0]}</button>`).join('');
-    const todos = `<div class="gd-vivo-todos"><span>Todos de uma vez</span><div class="gd-vivo-nvs">${botoes('*', -1)}</div></div>`;
+    const botoes = (uid, fichaId, cond, atual, rotulo) => `<div class="gd-vivo-nvs" role="group" aria-label="${esc(rotulo)}">` +
+      NIVEIS.map(n => `<button type="button" class="gd-vivo-nv gd-nivel-op--${n[0]}${String(atual) === n[0] ? ' gd-on' : ''}"
+        data-gd-vivo="${esc(uid)}" data-ficha="${esc(fichaId || '')}" data-cond="${esc(cond || '')}" data-nivel="${n[0]}"
+        title="${esc(n[1])}" aria-pressed="${String(atual) === n[0]}">${n[0]}</button>`).join('') + '</div>';
+    const todos = `<div class="gd-vivo-todos"><span>Tudo de todos</span>${botoes('*', '', '', -1, 'Nível de tudo, para todos')}</div>`;
     return todos + alvos.map(f => {
-      const c = climaDe(f.dono, f.id), nivel = c ? c.nivel : 1, previa = c && c.previa ? c.previa : '';
-      const conds = Array.isArray(f.condicoes) ? f.condicoes : [];
-      const amao = (f.condicoesLivres || []).map(l => l && l.texto).filter(Boolean);
-      const naTela = previa || (F.climaDaFicha ? F.climaDaFicha(f) : '');
-      const chips = (conds.length || amao.length)
-        ? conds.map(k => `<span class="gd-vivo-cond">${esc(F.nomeCond ? F.nomeCond(k) : k)}</span>`).join('') +
-          amao.map(t => `<span class="gd-vivo-cond gd-vivo-cond--mao" title="Escrita à mão pelo jogador">✎ ${esc(t)}</span>`).join('')
-        : '<span class="gd-vivo-sem">sem condição</span>';
-      return `<div class="gd-vivo-card${naTela && nivel > 0 ? ' gd-vivo-card--ativo' : ''}">
+      const c = climaDe(f.dono, f.id) || {};
+      const lista = F.climasDaFicha ? F.climasDaFicha(f) : [];
+      const naTela = F.climaEscolhido ? F.climaEscolhido(f, c) : { clima: '', chave: '' };
+      //  o que o jogador escreveu à mão e não casa com nenhuma condição do livro: só aparece
+      const chaves = {}; lista.forEach(x => { chaves[x.chave] = 1; });
+      const soTexto = (f.condicoesLivres || []).map(l => l && l.texto).filter(t => t && !(F.condDoTexto && F.condDoTexto(t)));
+      const semEfeito = (Array.isArray(f.condicoes) ? f.condicoes : []).filter(k => !chaves[k]);
+      const linhas = lista.map(x => {
+        const nv = (c.niveis && typeof c.niveis[x.chave] === 'number') ? c.niveis[x.chave] : (typeof c.nivel === 'number' ? c.nivel : 1);
+        const tela = !c.previa && naTela.chave === x.chave;
+        return `<div class="gd-vivo-linha${tela ? ' gd-vivo-linha--tela' : ''}">
+          <span class="gd-vivo-cond${x.amao ? ' gd-vivo-cond--mao' : ''}" title="${x.amao ? 'Escrita à mão pelo jogador' : ''}">${x.amao ? '✎ ' : ''}${esc(x.nome)}
+            <small>${esc(ROTULO_CLIMA[x.clima] || x.clima)}${tela ? ' · <b>na tela</b>' : ''}</small></span>
+          ${botoes(f.dono, f.id, x.chave, nv, 'Intensidade de ' + x.nome + ' em ' + (f.nome || 'ficha'))}
+        </div>`;
+      }).join('');
+      const extras = semEfeito.map(k => `<span class="gd-vivo-cond gd-vivo-cond--sem" title="Sem desenho na tela">${esc(F.nomeCond ? F.nomeCond(k) : k)}</span>`).join('') +
+        (soTexto.map(t => `<span class="gd-vivo-cond gd-vivo-cond--mao gd-vivo-cond--sem" title="Escrita à mão; não casa com nenhuma condição do livro">✎ ${esc(t)}</span>`).join(''));
+      return `<div class="gd-vivo-card${naTela.clima ? ' gd-vivo-card--ativo' : ''}">
         <p class="gd-vivo-nome">🧑 ${esc(f.nome || 'ficha')}${f.jogador ? ' <small>' + esc(f.jogador) + '</small>' : ''}</p>
-        <div class="gd-vivo-conds">${chips}</div>
-        <p class="gd-vivo-tela">${naTela
-          ? 'Na tela: <strong>' + esc(ROTULO_CLIMA[naTela] || naTela) + '</strong>' + (previa ? ' <em>(prévia)</em> <button type="button" class="gd-link" data-gd-vivo-sem-previa="' + esc(f.dono) + '" data-ficha="' + esc(f.id) + '">tirar prévia</button>' : '')
-          : 'Nada na tela'}</p>
-        <div class="gd-vivo-nvs" role="group" aria-label="Intensidade para ${esc(f.nome || 'ficha')}">${botoes(f.dono, nivel, f.id)}</div>
+        ${linhas || (extras ? '' : '<span class="gd-vivo-sem">sem condição</span>')}
+        ${extras ? `<div class="gd-vivo-conds">${extras}</div>` : ''}
+        ${c.previa ? `<p class="gd-vivo-tela">Na tela: <strong>${esc(ROTULO_CLIMA[c.previa] || c.previa)}</strong> <em>(prévia, nível ${c.nivel})</em>
+          <button type="button" class="gd-link" data-gd-vivo-sem-previa="${esc(f.dono)}" data-ficha="${esc(f.id)}">tirar prévia</button></p>` : ''}
       </div>`;
     }).join('');
   }
-  //  manda o nível na hora; a prévia de quem tinha uma continua (a não ser que peça para tirar).
-  //  `fichas` = [{ uid, id, nome }]. Se o banco recusar, diz na tela (antes só ia para o console).
-  function nivelAoVivo(fichas, nivel, tirarPrevia) {
+  //  manda o nível na hora. Com `cond`, mexe só naquela condição daquela
+  //  ficha; sem `cond` ("Tudo de todos"), vira o nível geral e apaga os de
+  //  cada condição. A prévia de quem tinha uma continua (a não ser que peça
+  //  para tirar). `fichas` = [{ uid, id, nome }]. Se o banco recusar, diz na tela.
+  function nivelAoVivo(fichas, nivel, tirarPrevia, cond) {
     const b = db(); if (!b || !fichas.length) return;
     const recado = document.getElementById('gdVivoRecado');
     const dizer = t => { if (recado) { recado.hidden = !t; recado.textContent = t || ''; } };
     const patch = {};
     fichas.forEach(f => {
-      const c = climaDe(f.uid, f.id);
-      patch[f.uid + '/' + idClima(f.id)] = registroClima(f.uid, f.id, f.nome,
-        nivel == null ? (c ? c.nivel : 1) : nivel, tirarPrevia ? null : ((c && c.previa) || null));
+      const c = climaDe(f.uid, f.id) || {};
+      let geral = typeof c.nivel === 'number' ? c.nivel : 1, niveis = Object.assign({}, c.niveis || {});
+      if (nivel != null && cond) niveis[cond] = nivel;
+      else if (nivel != null) { geral = nivel; niveis = {}; }
+      patch[f.uid + '/' + idClima(f.id)] = registroClima(f.uid, f.id, f.nome, geral,
+        tirarPrevia ? null : (c.previa || null), niveis);
     });
     b.ref(base()).update(patch)
       .then(() => dizer(''))
@@ -576,7 +598,7 @@
 
   function htmlControlador() {
     const alvos = alvosDaMesa();
-    const nivelTxt = (uid, fichaId) => { const c = climaDe(uid, fichaId); return c ? '🌡 ' + c.nivel + (c.previa ? ' · prévia' : '') : '🌡 1'; };
+    const nivelTxt = (uid, fichaId) => { const c = climaDe(uid, fichaId); return c ? '🌡 ' + c.nivel + (c.niveis ? ' · por condição' : '') + (c.previa ? ' · prévia' : '') : '🌡 1'; };
     return `
      <div class="gd-ctl-grade">
       <aside class="gd-vivo" aria-label="Intensidade dos efeitos atuais">
@@ -639,8 +661,9 @@
     const previa = normal ? '' : el.querySelector('#gdPrevia').value;
     const b = db(); if (!b) return dizer('Sem conexão com a mesa.');
     const patch = {};
+    //  o bloco da direita é o "geral" dos marcados: tudo nesse nível (apaga o de cada condição)
     marcados.forEach(cb => {
-      patch[cb.dataset.uid + '/' + idClima(cb.value)] = registroClima(cb.dataset.uid, cb.value, cb.dataset.nome, nivel, previa);
+      patch[cb.dataset.uid + '/' + idClima(cb.value)] = registroClima(cb.dataset.uid, cb.value, cb.dataset.nome, nivel, previa, null);
     });
     b.ref(base()).update(patch)
       .then(() => dizer(normal ? 'De volta ao normal.' : 'Enviado: nível ' + nivel + (previa ? ' com prévia' : '') + '.'))
@@ -656,7 +679,7 @@
       const vv = e.target.closest('[data-gd-vivo]');
       if (vv) {
         const fichas = vv.dataset.gdVivo === '*' ? alvosDaMesa().map(f => ({ uid: f.dono, id: f.id, nome: f.nome })) : [fichaDoAlvo(vv.dataset.ficha)].filter(Boolean);
-        return nivelAoVivo(fichas, parseInt(vv.dataset.nivel, 10) || 0, false);
+        return nivelAoVivo(fichas, parseInt(vv.dataset.nivel, 10) || 0, false, vv.dataset.cond || '');
       }
       const sp = e.target.closest('[data-gd-vivo-sem-previa]');
       if (sp) return nivelAoVivo([fichaDoAlvo(sp.dataset.ficha)].filter(Boolean), null, true);
@@ -750,17 +773,17 @@
         const h = htmlAoVivo();
         if (vivo.innerHTML !== h) {
           const fo = vivo.contains(document.activeElement) ? document.activeElement : null;
-          const chave = fo && fo.dataset ? [fo.dataset.gdVivo, fo.dataset.nivel, fo.dataset.gdVivoSemPrevia, fo.dataset.ficha] : null;
+          const chave = fo && fo.dataset ? [fo.dataset.gdVivo, fo.dataset.nivel, fo.dataset.gdVivoSemPrevia, fo.dataset.ficha, fo.dataset.cond] : null;
           vivo.innerHTML = h;
           if (chave) {
-            const igual = Array.from(vivo.querySelectorAll('button')).find(b => b.dataset.gdVivo === chave[0] && b.dataset.nivel === chave[1] && b.dataset.gdVivoSemPrevia === chave[2] && b.dataset.ficha === chave[3]);
+            const igual = Array.from(vivo.querySelectorAll('button')).find(b => b.dataset.gdVivo === chave[0] && b.dataset.nivel === chave[1] && b.dataset.gdVivoSemPrevia === chave[2] && b.dataset.ficha === chave[3] && b.dataset.cond === chave[4]);
             if (igual) igual.focus({ preventScroll: true });
           }
         }
       }
       overlay.querySelectorAll('[data-gd-nivel-de]').forEach(s => {
         const c = climaDe(s.dataset.gdNivelDe, s.dataset.ficha);
-        s.textContent = c ? '🌡 ' + c.nivel + (c.previa ? ' · prévia' : '') : '🌡 1';
+        s.textContent = c ? '🌡 ' + c.nivel + (c.niveis ? ' · por condição' : '') + (c.previa ? ' · prévia' : '') : '🌡 1';
       });
     };
     ouvintes.push(repintar);

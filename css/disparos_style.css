@@ -167,3 +167,19 @@
 .gd-vivo-nv:hover { border-color: var(--nv); }
 .gd-vivo-nv:active { transform: scale(0.94); }
 .gd-vivo-nv.gd-on { color: #fff; background: var(--nv); border-color: var(--nv); }
+
+/* 🌡 POR CONDIÇÃO (28/11/2026): uma linha por condição no cartão do jogador,
+   com os seus 5 níveis; a que está NA TELA fica marcada */
+.ga-modal.gd-modal { width: min(96vw, 1180px); max-width: min(96vw, 1180px); }
+.gd-ctl-grade { grid-template-columns: minmax(17rem, 23rem) minmax(0, 1fr); }
+@media (max-width: 860px) { .gd-ctl-grade { grid-template-columns: 1fr; } }
+.gd-vivo-linha { display: grid; grid-template-columns: minmax(0, 1fr) 9.5rem; align-items: center; gap: 0.4rem;
+  padding: 0.3rem 0.35rem; margin: 0 -0.35rem; border-radius: var(--raio, 4px); }
+.gd-vivo-linha + .gd-vivo-linha { border-top: 1px dotted var(--parchment3); }
+.gd-vivo-linha--tela { background: color-mix(in srgb, var(--rust) 12%, transparent); }
+.gd-vivo-linha .gd-vivo-cond { display: flex; flex-direction: column; align-items: flex-start; gap: 0.05rem;
+  padding: 0; font-size: 0.88rem; border: 0; background: none; min-width: 0; }
+.gd-vivo-linha .gd-vivo-cond small { font-size: 0.72rem; color: var(--text-dim); }
+.gd-vivo-linha .gd-vivo-cond small b { color: var(--rust-dark); }
+.gd-vivo-cond--sem { opacity: 0.7; }
+.gd-vivo-nv { padding: 0.18rem 0; font-size: 0.8rem; }

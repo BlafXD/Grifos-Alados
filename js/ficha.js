@@ -7906,6 +7906,34 @@
     const achou = CLIMA_ORDEM.find(([k]) => tem[k]);
     return achou ? achou[1] : '';
   }
+  //  🌡 POR CONDIÇÃO (28/11/2026, pedido dele): as condições da ficha que têm
+  //  desenho na tela, da mais forte para a mais fraca — cada uma com o seu
+  //  nível no 🎯 Controlador. `amao`: veio de "✎ Outros", não da lista.
+  function climasDaFicha(f) {
+    if (!f) return [];
+    const tem = condicoesDoClima(f), daLista = {};
+    (f.condicoes || []).forEach(k => { daLista[k] = 1; });
+    return CLIMA_ORDEM.filter(([k]) => tem[k]).map(([k, clima]) => {
+      const c = acharCond(k);
+      return { chave: k, clima: clima, nome: c ? c.nome : k, amao: !daLista[k] };
+    });
+  }
+  //  o nível de UMA condição: o dela, se o mestre mexeu; senão o geral da ficha; senão 1
+  function nivelDaCond(cfg, chave) {
+    if (cfg && cfg.niveis && typeof cfg.niveis[chave] === 'number') return cfg.niveis[chave];
+    return cfg && typeof cfg.nivel === 'number' ? cfg.nivel : 1;
+  }
+  //  O que aparece na tela: a prévia do mestre, se houver; senão a condição
+  //  mais forte que NÃO está em 0 (pôr uma em 0 deixa a de baixo aparecer).
+  function climaEscolhido(f, cfg) {
+    const geral = cfg && typeof cfg.nivel === 'number' ? cfg.nivel : 1;
+    if (cfg && cfg.previa) return { clima: cfg.previa, nivel: geral, chave: '' };
+    for (const c of climasDaFicha(f)) {
+      const n = nivelDaCond(cfg, c.chave);
+      if (n > 0) return { clima: c.clima, nivel: n, chave: c.chave };
+    }
+    return { clima: '', nivel: geral, chave: '' };
+  }
   //  0 (nada) a 1 (no limite da morte)
   function dorDa(f) {
     const max = pvMax(f), pv = pvAtual(f) + (f.pv.temp || 0);
@@ -7918,7 +7946,8 @@
   let climaFixo = null;
   //  🌡 intensidade vinda do 🎯 Controlador do mestre (27/11): 0 desliga,
   //  1 é o normal, 4 o extremo; a prévia mostra um clima sem a condição.
-  //  POR PERSONAGEM (28/11): fichaId → { nivel, previa }; ficha sem entrada vale nível 1.
+  //  POR PERSONAGEM E POR CONDIÇÃO (28/11): fichaId → { nivel, previa, niveis: { chave: n } };
+  //  ficha sem entrada vale nível 1 em tudo.
   let climaPorFicha = {};
   function pintarClima(f) {
     let el = document.getElementById('fiClima');
@@ -7929,10 +7958,10 @@
       document.body.appendChild(el);
     }
     //  a vitrine (climaDemo) fica presa nesta aba até recarregar
-    const meu = (f && climaPorFicha[f.id]) || { nivel: 1, previa: '' };
-    const clima = climaFixo ? climaFixo.clima : (meu.previa || (f ? climaDa(f) : '')),
+    const esc = climaEscolhido(f, f && climaPorFicha[f.id]);
+    const clima = climaFixo ? climaFixo.clima : esc.clima,
           dor = climaFixo ? climaFixo.dor : (f ? dorDa(f) : 0);
-    const nv = climaFixo && climaFixo.nivel != null ? climaFixo.nivel : meu.nivel;
+    const nv = climaFixo && climaFixo.nivel != null ? climaFixo.nivel : esc.nivel;
     if (clima && nv > 0) el.setAttribute('data-clima', clima); else el.removeAttribute('data-clima');
     el.setAttribute('data-nivel', String(nv));
     el.style.setProperty('--int', String(nv));
@@ -11515,6 +11544,9 @@
     visiveis: visiveis,                // as fichas que este navegador enxerga
     //  🌡 para o controlador do mestre: qual clima a ficha mostra e o nome da condição pela chave
     climaDaFicha: f => (f ? climaDa(f) : ''),
+    condDoTexto: t => { const s = '-' + chaveCond(t || '') + '-'; const k = CLIMA_ORDEM.find(([c]) => s.indexOf('-' + c + '-') >= 0); return k ? k[0] : ''; },
+    climasDaFicha: climasDaFicha,             // [{ chave, clima, nome, amao }] da mais forte à mais fraca
+    climaEscolhido: climaEscolhido,           // (ficha, { nivel, previa, niveis }) → { clima, nivel, chave } na tela
     nomeCond: k => { const c = acharCond(k); return c ? c.nome : k; },
     aoMudar: escutar,                  // avisa quando qualquer número muda
     receberItem: receberItem,          // um item comprado na 🏪 Loja
@@ -11529,7 +11561,10 @@
       const novo = {};
       Object.keys(mapa || {}).forEach(id => {
         const c = mapa[id] || {};
-        novo[id] = { nivel: Math.max(0, Math.min(4, Math.round(Number(c.nivel) || 0))), previa: String(c.previa || '').replace(/[^a-z]/g, '') };
+        const nv = x => Math.max(0, Math.min(4, Math.round(Number(x) || 0)));
+        const niveis = {};
+        Object.keys(c.niveis || {}).forEach(k => { if (typeof c.niveis[k] === 'number') niveis[k] = nv(c.niveis[k]); });
+        novo[id] = { nivel: typeof c.nivel === 'number' ? nv(c.nivel) : 1, previa: String(c.previa || '').replace(/[^a-z]/g, ''), niveis: niveis };
       });
       if (JSON.stringify(novo) === JSON.stringify(climaPorFicha)) return;
       climaPorFicha = novo; pintarClima(fichaAberta());
