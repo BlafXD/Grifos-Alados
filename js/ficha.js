@@ -7902,6 +7902,9 @@
     return Math.min(1, 0.45 + 0.55 * (pv / lim));
   }
   let climaFixo = null;
+  //  🌡 intensidade vinda do 🎯 Controlador do mestre (27/11): 0 desliga,
+  //  1 é o normal, 4 o extremo; a prévia mostra um clima sem a condição.
+  let climaNivel = 1, climaPrevia = '';
   function pintarClima(f) {
     let el = document.getElementById('fiClima');
     if (!el) {
@@ -7911,9 +7914,13 @@
       document.body.appendChild(el);
     }
     //  a vitrine (climaDemo) fica presa nesta aba até recarregar
-    const clima = climaFixo ? climaFixo.clima : (f ? climaDa(f) : ''),
+    const clima = climaFixo ? climaFixo.clima : (climaPrevia || (f ? climaDa(f) : '')),
           dor = climaFixo ? climaFixo.dor : (f ? dorDa(f) : 0);
-    if (clima) el.setAttribute('data-clima', clima); else el.removeAttribute('data-clima');
+    const nv = climaFixo && climaFixo.nivel != null ? climaFixo.nivel : climaNivel;
+    if (clima && nv > 0) el.setAttribute('data-clima', clima); else el.removeAttribute('data-clima');
+    el.setAttribute('data-nivel', String(nv));
+    el.style.setProperty('--int', String(nv));
+    if (!el.querySelector('.fi-clima-extra')) el.insertAdjacentHTML('beforeend', '<span class="fi-clima-extra"><i></i><i></i></span>');
     el.style.setProperty('--dor', dor.toFixed(2));
     el.classList.toggle('fi-clima--dor', dor > 0);
   }
@@ -11491,8 +11498,14 @@
     //  ou não há nada "por turno" a resolver.
     //  🌫 só para VER o clima (vitrine/teste): pinta um clima e uma dor (0–1)
     //  sem mexer em ficha nenhuma; fica preso nesta aba até recarregar (climaDemo() sem nada solta).
-    climaDemo: function (clima, dor) {
-      climaFixo = (clima || dor) ? { clima: clima || '', dor: dor || 0 } : null;
+    climaIntensidade: function (nivel, previa) {
+      const nv = Math.max(0, Math.min(4, Math.round(Number(nivel) || 0)));
+      const pv = String(previa || '').replace(/[^a-z]/g, '');
+      if (nv === climaNivel && pv === climaPrevia) return;
+      climaNivel = nv; climaPrevia = pv; pintarClima(fichaAberta());
+    },
+    climaDemo: function (clima, dor, nivel) {
+      climaFixo = (clima || dor) ? { clima: clima || '', dor: dor || 0, nivel: nivel == null ? null : nivel } : null;
       pintarClima(fichaAberta());
     },
     avisoTurno: function (fichaId, rodada) {

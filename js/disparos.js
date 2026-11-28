@@ -112,6 +112,7 @@
   const abertos = {};   // id → cartão na tela (para sumir se outra aba responder)
   function recente(d) { return !d.em || typeof d.em !== 'number' || (Date.now() - d.em) < VALIDADE_MS; }
   function tratarMinhaCaixa() {
+    aplicarClima();
     Object.keys(caixa).forEach(id => {
       const d = caixa[id];
       if (!d || typeof d !== 'object' || tratados.has(id)) return;
@@ -480,27 +481,61 @@
     }).join('');
   }
 
-  function abrirControlador() {
-    if (!window.GA_abrirModal) return;
-    if (!mando()) {
-      window.GA_abrirModal(`<div class="ga-modal-cab"><span>🎯 Controlador do mestre</span>
-        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button></div>
-        <p class="gd-vazio">O controlador manda pedidos para a tela dos jogadores, então ele precisa de uma campanha
-        aberta (o endereço com <code>?mesa=</code>) e de você entrar na conta como mestre ou auxiliar dela.</p>`);
-      return;
-    }
+  // ═══ 🎯 A ABINHA DO CONTROLADOR (27/11/2026, pedido dele) ═════════
+  //  Antes era um modal; agora mora na coluna flutuante, entre a ⚔
+  //  Iniciativa e as 🎲 Rolagens, e só aparece para mestre/auxiliar.
+  //  Recolhe pelo título, como as outras duas.
+  const CTL_ABERTO_KEY = 'grifosAlados.controladorAberto';
+  let painelCtl = null, ctlAberto = false, ctlAssinatura = '';
+  try { ctlAberto = localStorage.getItem(CTL_ABERTO_KEY) === '1'; } catch (e) {}
+
+  //  🌡 INTENSIDADE DO CLIMA: o mestre escolhe, por jogador ou para todos,
+  //  o quanto as condições pesam na tela dele (0 desliga, 1 é o normal, 4 é
+  //  o extremo: o inconsciente quase fecha os olhos, o fogo sobe pela tela).
+  //  Vai na caixa do jogador, no id fixo `clima` — a mesma permissão que o
+  //  pedido de teste já usa; nenhuma regra nova do Firebase.
+  const NIVEIS = [['0', '0 · desligado'], ['1', '1 · leve (normal)'], ['2', '2 · forte'], ['3', '3 · intenso'], ['4', '4 · extremo']];
+  const PREVIAS = [['', '— só a condição real —'], ['apagado', 'Inconsciente (olhos fechando)'], ['fogo', 'Em Chamas (fogo)'],
+    ['sangue', 'Sangrando'], ['cego', 'Cego'], ['veneno', 'Envenenado'], ['pavor', 'Apavorado'], ['confuso', 'Confuso'],
+    ['atordoado', 'Atordoado'], ['lento', 'Lento'], ['pedra', 'Petrificado'], ['encanto', 'Enfeitiçado']];
+  function aplicarClima() {
+    const c = caixa.clima;
+    if (!window.GA_Ficha || !window.GA_Ficha.climaIntensidade) return;
+    if (c && typeof c === 'object' && typeof c.nivel === 'number') window.GA_Ficha.climaIntensidade(c.nivel, c.previa || '');
+    else window.GA_Ficha.climaIntensidade(1, '');
+  }
+  function climaDe(uid) {
+    const c = todas[uid] && todas[uid].clima;
+    return (c && typeof c.nivel === 'number') ? c : null;
+  }
+
+  function htmlControlador() {
     const alvos = alvosDaMesa();
-    const overlay = window.GA_abrirModal(`
-      <div class="ga-modal-cab"><span>🎯 Controlador do mestre</span>
-        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button></div>
+    const nivelTxt = uid => { const c = climaDe(uid); return c ? '🌡 ' + c.nivel + (c.previa ? ' · prévia' : '') : '🌡 1'; };
+    return `
       <div class="gd-ctl">
         <div class="gd-bloco">
-          <p class="gd-bloco-tit">1 · Quem rola</p>
+          <p class="gd-bloco-tit">1 · Quem</p>
           ${alvos.length ? `<div class="gd-alvos">${alvos.map(f => `
             <label class="gd-alvo"><input type="checkbox" data-gd-alvo value="${esc(f.id)}" data-uid="${esc(f.dono)}" data-nome="${esc(f.nome || 'ficha')}">
-              🧑 ${esc(f.nome || 'ficha')}${f.jogador ? ' <small>(' + esc(f.jogador) + ')</small>' : ''}</label>`).join('')}</div>
+              🧑 ${esc(f.nome || 'ficha')}${f.jogador ? ' <small>(' + esc(f.jogador) + ')</small>' : ''} <small class="gd-nivel" data-gd-nivel-de="${esc(f.dono)}">${nivelTxt(f.dono)}</small></label>`).join('')}</div>
             <p class="gd-mini"><button type="button" class="gd-link" data-gd-todos="1">marcar todos</button> · <button type="button" class="gd-link" data-gd-todos="">ninguém</button></p>`
           : '<p class="gd-vazio">Nenhuma ficha de jogador nesta campanha ainda — o jogador precisa vincular a ficha dele à mesa.</p>'}
+        </div>
+        <div class="gd-bloco gd-bloco--clima">
+          <p class="gd-bloco-tit">🌡 Intensidade das condições</p>
+          <p class="gd-mini">O quanto a condição pesa na tela de quem está marcado acima (as bordas, o fogo, os olhos fechando…).
+            Não muda nenhuma conta da ficha — e o jogador que desligou o clima no ⚙ não vê.</p>
+          <label class="gd-slider">Nível <input type="range" id="gdNivel" min="0" max="4" step="1" value="2" list="gdNiveis">
+            <output id="gdNivelTxt">${esc(NIVEIS[2][1])}</output></label>
+          <datalist id="gdNiveis">${NIVEIS.map(n => `<option value="${n[0]}"></option>`).join('')}</datalist>
+          <label class="gd-motivo">Prévia <small>(mostra um clima mesmo sem a condição — para testar)</small>
+            <select id="gdPrevia">${PREVIAS.map(p => `<option value="${esc(p[0])}">${esc(p[1])}</option>`).join('')}</select></label>
+          <p class="gd-recado" id="gdRecadoClima" hidden></p>
+          <div class="ga-modal-acoes">
+            <button type="button" class="gd-btn" data-gd-clima="normal" title="Volta os marcados ao nível 1, sem prévia">↺ Normal</button>
+            <button type="button" class="ga-btn-principal" data-gd-clima="enviar">🌡 Enviar</button>
+          </div>
         </div>
         <div class="gd-bloco">
           <p class="gd-bloco-tit">2 · O teste</p>
@@ -518,35 +553,104 @@
           <p class="gd-bloco-tit">3 · Respostas <button type="button" class="gd-link gd-limpar" data-gd-limpar>🧹 limpar tudo</button></p>
           <div id="gdRespostas">${htmlRespostas()}</div>
         </div>
-      </div>`);
-    const caixaModal = overlay.querySelector('.ga-modal');
-    if (caixaModal) caixaModal.classList.add('gd-modal');
+      </div>`;
+  }
 
-    // as respostas chegam sozinhas (o modal fica aberto enquanto os jogadores rolam)
-    const repintar = () => {
-      const alvo = overlay.querySelector('#gdRespostas');
-      if (!alvo || !overlay.isConnected) {          // o modal fechou: sai da lista
-        const i = ouvintes.indexOf(repintar); if (i >= 0) ouvintes.splice(i, 1);
-        return;
+  function enviarClima(el, normal) {
+    const recado = el.querySelector('#gdRecadoClima');
+    const dizer = t => { recado.hidden = !t; recado.textContent = t || ''; };
+    const marcados = Array.from(el.querySelectorAll('[data-gd-alvo]:checked'));
+    if (!marcados.length) return dizer('Marque, no bloco 1, quem recebe.');
+    const nivel = normal ? 1 : parseInt(el.querySelector('#gdNivel').value, 10) || 0;
+    const previa = normal ? '' : el.querySelector('#gdPrevia').value;
+    const b = db(); if (!b) return dizer('Sem conexão com a mesa.');
+    const patch = {};
+    new Set(marcados.map(cb => cb.dataset.uid)).forEach(uid => {
+      patch[uid + '/clima'] = { tipo: 'clima', de: meuUid(), em: carimbo(), nivel: nivel, previa: previa || null };
+    });
+    b.ref(base()).update(patch)
+      .then(() => dizer(normal ? 'De volta ao normal.' : 'Enviado: nível ' + nivel + (previa ? ' com prévia' : '') + '.'))
+      .catch(err => dizer('O banco recusou: ' + (err && err.message)));
+  }
+
+  function montarPainelCtl() {
+    if (painelCtl) return painelCtl;
+    const el = painelCtl = document.createElement('div');
+    el.id = 'gaControlador';
+    el.addEventListener('click', e => {
+      if (e.target.closest('[data-gd-ctl-toggle]')) {
+        ctlAberto = !ctlAberto;
+        try { localStorage.setItem(CTL_ABERTO_KEY, ctlAberto ? '1' : '0'); } catch (err) {}
+        ctlAssinatura = ''; return pintarPainel();
       }
-      if (alvo.contains(document.activeElement)) return;   // não arranca o que ele está digitando
-      alvo.innerHTML = htmlRespostas();
-    };
-    ouvintes.push(repintar);
-
-    overlay.addEventListener('click', e => {
       const todos = e.target.closest('[data-gd-todos]');
-      if (todos) { overlay.querySelectorAll('[data-gd-alvo]').forEach(cb => { cb.checked = !!todos.dataset.gdTodos; }); return; }
-      if (e.target.closest('#gdPedir')) return pedir(overlay);
+      if (todos) { el.querySelectorAll('[data-gd-alvo]').forEach(cb => { cb.checked = !!todos.dataset.gdTodos; }); return; }
+      if (e.target.closest('#gdPedir')) return pedir(el);
+      const cl = e.target.closest('[data-gd-clima]');
+      if (cl) return enviarClima(el, cl.dataset.gdClima === 'normal');
       const ap = e.target.closest('[data-gd-aplicar]');
       if (ap) return aplicarLote(ap.closest('.gd-lote'), ap.dataset.gdAplicar);
       if (e.target.closest('[data-gd-limpar]')) {
-        if (!window.confirm('Apagar todos os pedidos e respostas desta mesa? (As fichas não mudam.)')) return;
+        if (!window.confirm('Apagar todos os pedidos e respostas desta mesa? (As fichas não mudam; a intensidade volta ao normal.)')) return;
         const b = db();
         if (b) b.ref('mesas/' + sala()).update({ disparos: null, disparosCd: null })
           .catch(err => console.warn('[disparos] limpar:', err && err.message));
       }
     });
+    el.addEventListener('input', e => {
+      if (e.target.id === 'gdNivel') {
+        const o = el.querySelector('#gdNivelTxt'), n = NIVEIS[parseInt(e.target.value, 10)] || NIVEIS[1];
+        if (o) o.textContent = n[1];
+      }
+    });
+    return el;
+  }
+
+  //  Redesenha inteiro só quando muda QUEM aparece (ou abriu/fechou); fora
+  //  disso só as respostas e os 🌡 — o que o mestre digitou não se perde.
+  function pintarPainel() {
+    if (!mando()) { if (painelCtl && painelCtl.parentNode) painelCtl.remove(); ctlAssinatura = ''; return; }
+    const el = montarPainelCtl();
+    if (!el.parentNode) {
+      const col = window.GA_ColunaMesa ? window.GA_ColunaMesa() : document.body;
+      const rol = document.getElementById('gaRolagens');
+      if (rol && rol.parentNode === col) col.insertBefore(el, rol); else col.appendChild(el);
+    }
+    const alvos = alvosDaMesa();
+    const assin = (ctlAberto ? 'A' : 'F') + '|' + alvos.map(f => f.id + ':' + (f.nome || '')).join(',');
+    if (assin !== ctlAssinatura) {
+      const marcados = new Set(Array.from(el.querySelectorAll('[data-gd-alvo]:checked')).map(cb => cb.value));
+      ctlAssinatura = assin;
+      el.className = 'ga-ctl' + (ctlAberto ? '' : ' ga-ctl--fechado');
+      el.innerHTML = '<div class="ga-ctl-cab"><button type="button" class="ga-ctl-tit" data-gd-ctl-toggle title="Recolher / abrir">🎯 Controlador</button>' +
+        '<button type="button" class="ga-ctl-x" data-gd-ctl-toggle title="' + (ctlAberto ? 'Recolher' : 'Abrir') + '">' + (ctlAberto ? '▾' : '▴') + '</button></div>' +
+        (ctlAberto ? '<div class="ga-ctl-corpo">' + htmlControlador() + '</div>' : '');
+      el.querySelectorAll('[data-gd-alvo]').forEach(cb => { if (marcados.has(cb.value)) cb.checked = true; });
+      return;
+    }
+    if (!ctlAberto) return;
+    const resp = el.querySelector('#gdRespostas');
+    if (resp && !resp.contains(document.activeElement)) resp.innerHTML = htmlRespostas();
+    el.querySelectorAll('[data-gd-nivel-de]').forEach(s => {
+      const c = climaDe(s.dataset.gdNivelDe);
+      s.textContent = c ? '🌡 ' + c.nivel + (c.previa ? ' · prévia' : '') : '🌡 1';
+    });
+  }
+  ouvintes.push(pintarPainel);
+  //  as fichas dos jogadores chegam do banco sem avisar aqui: confere de tempos em tempos (só compara a lista)
+  setInterval(() => { if (mando()) pintarPainel(); }, 3000);
+
+  function abrirControlador() {
+    if (!mando()) {
+      if (window.GA_abrirModal) window.GA_abrirModal(`<div class="ga-modal-cab"><span>🎯 Controlador do mestre</span>
+        <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button></div>
+        <p class="gd-vazio">O controlador manda pedidos para a tela dos jogadores, então ele precisa de uma campanha
+        aberta (o endereço com <code>?mesa=</code>) e de você entrar na conta como mestre ou auxiliar dela.</p>`);
+      return;
+    }
+    ctlAberto = true; try { localStorage.setItem(CTL_ABERTO_KEY, '1'); } catch (e) {}
+    ctlAssinatura = ''; pintarPainel();
+    if (painelCtl) painelCtl.scrollIntoView({ block: 'nearest' });
   }
 
   function pedir(overlay) {
@@ -720,6 +824,7 @@
   // ═══ INÍCIO ═══════════════════════════════════════════════════════
   window.GA_Disparos = {
     abrirControlador: abrirControlador,
+    _climaDaCaixa: () => caixa.clima || null,
     abrirAjuda: abrirAjuda,
     podeControlar: mando,
     podeAjudar: escreve,
@@ -740,7 +845,7 @@
   //  chance no DOMContentLoaded fica (ver [[defer-readystate-interactive]]).
   function init(segunda) {
     if (window.GA_Mesa && window.GA_Mesa.aoMudar) {
-      window.GA_Mesa.aoMudar(e => { mesa = e; ligar(); avisar(); });
+      window.GA_Mesa.aoMudar(e => { mesa = e; ligar(); avisar(); pintarPainel(); });
       return;
     }
     if (!segunda && document.readyState !== 'complete') {

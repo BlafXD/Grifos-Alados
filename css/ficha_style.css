@@ -5367,7 +5367,10 @@ html.ga-sem-clima #fiClima { display: none !important; }
 .fi-clima-cond, .fi-clima-vida { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease, background 0.6s ease; }
 #fiClima[data-clima] .fi-clima-cond {
   opacity: 1;
-  background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent 58%, var(--clima, transparent) 118%);
+  /* 🌡 --int (0–4, do 🎯 Controlador do mestre): 1 dá o desenho de sempre,
+     4 fecha a borda até perto do meio da tela */
+  background: radial-gradient(ellipse 75% 70% at 50% 50%, transparent calc(64% - 6% * var(--int, 1)),
+    var(--clima, transparent) calc(130% - 12% * var(--int, 1)));
 }
 /* a cor e a "respiração" de cada clima */
 #fiClima[data-clima="cego"]      { --clima: rgba(255, 255, 255, 0.92); }
@@ -5412,10 +5415,71 @@ html.ga-sem-clima #fiClima { display: none !important; }
 }
 @keyframes fi-clima-coracao { 0%,100% { opacity: 1; } 12% { opacity: .75; } 24% { opacity: 1; } 36% { opacity: .8; } }
 
+/* ── 🌡 OS NÍVEIS FORTES (27/11/2026, teste dele) ───────────────────
+   Do nível 2 em diante entra uma camada a mais (.fi-clima-extra, com
+   duas peças <i>): pálpebras no inconsciente, labaredas no fogo, sangue
+   escorrendo do alto… e um filtro no que está POR TRÁS (backdrop-filter):
+   a ficha borra, apaga a cor ou muda de tom. 0 desliga tudo. */
+#fiClima[data-nivel="0"] .fi-clima-vida { opacity: 0 !important; }
+.fi-clima-extra { position: absolute; inset: 0; display: none; --forca: calc(var(--int, 1) - 1); }
+.fi-clima-extra i { position: absolute; left: 0; right: 0; display: block; }
+#fiClima[data-clima]:not([data-nivel="0"]):not([data-nivel="1"]) .fi-clima-extra { display: block; }
+
+/* 😴 INCONSCIENTE: os olhos fechando. No 4 sobra uma fresta; pisca devagar */
+#fiClima[data-clima="apagado"] .fi-clima-extra { backdrop-filter: blur(calc(var(--forca) * 1.3px)) brightness(calc(1 - 0.12 * var(--forca))); }
+#fiClima[data-clima="apagado"] .fi-clima-extra i { height: calc(var(--forca) * 12%); background: #050302;
+  --dur: 5.5s; animation: fi-clima-palpebra var(--dur) ease-in-out infinite; }
+#fiClima[data-clima="apagado"] .fi-clima-extra i:first-child { top: 0; transform-origin: top;
+  border-radius: 0 0 50% 50% / 0 0 40% 40%; box-shadow: 0 0.8rem 1.6rem 0.2rem #050302; }
+#fiClima[data-clima="apagado"] .fi-clima-extra i:last-child { bottom: 0; transform-origin: bottom;
+  border-radius: 50% 50% 0 0 / 40% 40% 0 0; box-shadow: 0 -0.8rem 1.6rem 0.2rem #050302; }
+@keyframes fi-clima-palpebra { 0%, 100% { transform: scaleY(0.8); } 45% { transform: scaleY(1); } 52% { transform: scaleY(1.04); } 60% { transform: scaleY(0.86); } }
+
+/* 🔥 EM CHAMAS: labaredas sobem de baixo, brilho quente em cima */
+#fiClima[data-clima="fogo"] .fi-clima-extra { backdrop-filter: saturate(calc(1 + 0.25 * var(--forca))) sepia(calc(0.08 * var(--forca))); }
+#fiClima[data-clima="fogo"] .fi-clima-extra i:last-child { bottom: -2%; height: calc(6% + var(--forca) * 11%); transform-origin: bottom;
+  background:
+    radial-gradient(ellipse 9% 100% at 8% 100%, rgba(255, 230, 120, .95), transparent 70%),
+    radial-gradient(ellipse 11% 85% at 24% 100%, rgba(255, 140, 20, .9), transparent 70%),
+    radial-gradient(ellipse 8% 110% at 41% 100%, rgba(255, 210, 90, .95), transparent 70%),
+    radial-gradient(ellipse 12% 80% at 58% 100%, rgba(255, 110, 10, .9), transparent 70%),
+    radial-gradient(ellipse 9% 105% at 75% 100%, rgba(255, 220, 110, .95), transparent 70%),
+    radial-gradient(ellipse 11% 90% at 92% 100%, rgba(255, 120, 15, .9), transparent 70%),
+    linear-gradient(to top, rgba(255, 90, 0, .85), rgba(255, 60, 0, 0) 75%);
+  filter: blur(2px); --dur: 0.7s; animation: fi-clima-labareda var(--dur) ease-in-out infinite alternate; }
+#fiClima[data-clima="fogo"] .fi-clima-extra i:first-child { top: 0; height: calc(var(--forca) * 9%);
+  background: linear-gradient(to bottom, rgba(255, 80, 0, .55), transparent); --dur: 1.1s; animation: fi-clima-treme var(--dur) ease-in-out infinite; }
+@keyframes fi-clima-labareda { 0% { transform: scaleY(0.85) skewX(-2deg); } 50% { transform: scaleY(1.08) skewX(1.5deg); } 100% { transform: scaleY(0.95) skewX(3deg); filter: blur(2px) hue-rotate(-12deg); } }
+
+/* 🩸 SANGRANDO: escorre do alto */
+#fiClima[data-clima="sangue"] .fi-clima-extra i:first-child { top: 0; height: calc(var(--forca) * 12%); transform-origin: top;
+  background: repeating-linear-gradient(90deg, rgba(120, 0, 8, .9) 0 3%, rgba(120, 0, 8, .55) 3% 5%, rgba(120, 0, 8, .8) 5% 9%);
+  -webkit-mask: linear-gradient(to bottom, #000 30%, transparent); mask: linear-gradient(to bottom, #000 30%, transparent);
+  --dur: 4s; animation: fi-clima-escorre var(--dur) ease-in infinite alternate; }
+@keyframes fi-clima-escorre { from { transform: scaleY(0.7); } to { transform: scaleY(1.25); } }
+
+/* os que só mexem no que está por trás */
+#fiClima[data-clima="cego"] .fi-clima-extra      { backdrop-filter: blur(calc(var(--forca) * 2px)) brightness(calc(1 + 0.12 * var(--forca))) contrast(calc(1 - 0.15 * var(--forca))); }
+#fiClima[data-clima="ofuscado"] .fi-clima-extra  { backdrop-filter: brightness(calc(1 + 0.1 * var(--forca))) blur(calc(var(--forca) * 0.6px)); }
+#fiClima[data-clima="veneno"] .fi-clima-extra    { backdrop-filter: blur(calc(var(--forca) * 0.8px)) hue-rotate(calc(var(--forca) * 12deg)) saturate(calc(1 - 0.1 * var(--forca)));
+  --dur: 5s; animation: fi-clima-enjoo var(--dur) ease-in-out infinite; }
+#fiClima[data-clima="atordoado"] .fi-clima-extra { --dur: 1.2s; animation: fi-clima-tonto var(--dur) ease-in-out infinite; }
+#fiClima[data-clima="confuso"] .fi-clima-extra   { --dur: 6s; animation: fi-clima-tom var(--dur) linear infinite; }
+#fiClima[data-clima="pedra"] .fi-clima-extra     { backdrop-filter: grayscale(calc(0.25 * var(--forca))) contrast(calc(1 + 0.05 * var(--forca))); }
+#fiClima[data-clima="lento"] .fi-clima-extra     { backdrop-filter: saturate(calc(1 - 0.15 * var(--forca))) hue-rotate(calc(var(--forca) * -8deg)); }
+#fiClima[data-clima="pavor"] .fi-clima-extra     { backdrop-filter: brightness(calc(1 - 0.1 * var(--forca))) saturate(calc(1 - 0.15 * var(--forca))); }
+#fiClima[data-clima="encanto"] .fi-clima-extra,
+#fiClima[data-clima="fascinio"] .fi-clima-extra  { backdrop-filter: blur(calc(var(--forca) * 0.5px)) saturate(calc(1 + 0.2 * var(--forca))); }
+@keyframes fi-clima-enjoo { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(calc(var(--forca) * 3px)); } }
+@keyframes fi-clima-tonto { 0%, 100% { backdrop-filter: blur(0); } 50% { backdrop-filter: blur(calc(var(--forca) * 1.5px)); } }
+@keyframes fi-clima-tom   { from { backdrop-filter: hue-rotate(0deg) blur(calc(var(--forca) * 0.4px)); } to { backdrop-filter: hue-rotate(360deg) blur(calc(var(--forca) * 0.4px)); } }
+
 html.ga-sem-movimento #fiClima * { animation: none !important; }
 @media (prefers-reduced-motion: reduce) {
   html:not(.ga-sem-movimento) #fiClima .fi-clima-cond,
-  html:not(.ga-sem-movimento) #fiClima .fi-clima-vida { animation-duration: 1.6s !important; animation-iteration-count: infinite !important; }
+  html:not(.ga-sem-movimento) #fiClima .fi-clima-vida,
+  html:not(.ga-sem-movimento) #fiClima .fi-clima-extra,
+  html:not(.ga-sem-movimento) #fiClima .fi-clima-extra i { animation-duration: var(--dur, 1.6s) !important; animation-iteration-count: infinite !important; }
 }
 @media (max-width: 720px) {
   /* o 🎲 flutuante sobe acima da barra do celular */
