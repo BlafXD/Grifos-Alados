@@ -5487,12 +5487,12 @@ html.ga-sem-clima #fiClima { display: none !important; }
 #fiClima[data-clima="apagado"] .fi-clima-cond { opacity: 0.6; }
 #fiClima[data-clima="fogo"] .fi-clima-extra { backdrop-filter: saturate(calc(1 + 0.25 * var(--forca))) sepia(calc(0.08 * var(--forca))); }
 
-/* 🩸 SANGRANDO: escorre do alto */
-#fiClima[data-clima="sangue"] .fi-clima-extra i:first-child { top: 0; height: calc(var(--forca) * 12%); transform-origin: top;
-  background: repeating-linear-gradient(90deg, rgba(120, 0, 8, .9) 0 3%, rgba(120, 0, 8, .55) 3% 5%, rgba(120, 0, 8, .8) 5% 9%);
-  -webkit-mask: linear-gradient(to bottom, #000 30%, transparent); mask: linear-gradient(to bottom, #000 30%, transparent);
-  --dur: 4s; animation: fi-clima-escorre var(--dur) ease-in infinite alternate; }
-@keyframes fi-clima-escorre { from { transform: scaleY(0.7); } to { transform: scaleY(1.25); } }
+/* com o <canvas> desenhando (js/clima-fx.js), a borda de CSS fica mais
+   fraca: quem pinta a cor agora é o desenho de cada condição */
+#fiClima.fi-clima--fx .fi-clima-cond { opacity: 0.45; }
+#fiClima[data-clima="fraqueza"] .fi-clima-extra { backdrop-filter: grayscale(calc(0.25 + 0.2 * var(--forca))) blur(calc(var(--forca) * 0.4px)); }
+#fiClima[data-clima="mente"] .fi-clima-extra    { backdrop-filter: saturate(calc(1 - 0.2 * var(--forca))) hue-rotate(calc(var(--forca) * 8deg)); }
+#fiClima[data-clima="surdo"] .fi-clima-extra    { backdrop-filter: blur(calc(var(--forca) * 0.4px)) contrast(calc(1 - 0.08 * var(--forca))); }
 
 /* os que só mexem no que está por trás */
 #fiClima[data-clima="cego"] .fi-clima-extra      { backdrop-filter: blur(calc(var(--forca) * 2px)) brightness(calc(1 + 0.12 * var(--forca))) contrast(calc(1 - 0.15 * var(--forca))); }
