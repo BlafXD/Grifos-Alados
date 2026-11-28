@@ -610,8 +610,8 @@
     }
     if (!painelCtl.parentNode) {
       const col = window.GA_ColunaMesa ? window.GA_ColunaMesa() : document.body;
-      const rol = document.getElementById('gaRolagens');
-      if (rol && rol.parentNode === col) col.insertBefore(painelCtl, rol); else col.appendChild(painelCtl);
+      const depois = document.getElementById('gaEfeitosLanc') || document.getElementById('gaRolagens');
+      if (depois && depois.parentNode === col) col.insertBefore(painelCtl, depois); else col.appendChild(painelCtl);
     }
     const n = esperando();
     const html = '<span class="ga-lanc-ico" aria-hidden="true">🎯</span><span class="ga-lanc-tit">Controlador</span>' +

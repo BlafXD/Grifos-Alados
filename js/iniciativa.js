@@ -1083,8 +1083,6 @@
           '<button type="button" class="ga-ini-btn ga-ini-btn--forte" data-ini="montar" ' +
             'title="Rola 1d20 para cada criatura da cena narrada e traz os jogadores">' +
             (temLista ? '⚔ Montar de novo' : '⚔ Montar com a cena') + '</button>' +
-          '<button type="button" class="ga-ini-btn ga-ini-btn--efeito" data-ini="efeito" ' +
-            'title="Disparar um efeito em área (uma magia, um poder ou uma condição) e marcar quem está sob ele — aparece sozinho na ficha de cada afetado">🔆 Efeito / condição</button>' +
           (temLista && (rodada || 1) === 1
             ? '<button type="button" class="ga-ini-btn" data-ini="surpresa-lado" data-tipo="jogador" title="Os jogadores não perceberam os inimigos: todos ficam surpreendidos na 1ª rodada (p. 231)">😱 Grupo surpreso</button>' +
               '<button type="button" class="ga-ini-btn" data-ini="surpresa-lado" data-tipo="criatura" title="As criaturas não perceberam o grupo: todas ficam surpreendidas na 1ª rodada (p. 231)">😱 Criaturas surpresas</button>'
@@ -1148,6 +1146,8 @@
   }
   window.GA_Iniciativa = {
     abrir: abrir,
+    mando: mando,   // mestre/auxiliar (ou o mestre offline): as faixas 🎯/🔆 da coluna
+
     quantas: quantas,
     invocar: invocar,
     rodadaAtual: function () { return rodada; },

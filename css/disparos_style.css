@@ -133,3 +133,5 @@
 .gd-nivel-op--0 { --nv: #7b7466; } .gd-nivel-op--1 { --nv: #c9a227; } .gd-nivel-op--2 { --nv: #e07a1f; }
 .gd-nivel-op--3 { --nv: #c8401c; } .gd-nivel-op--4 { --nv: #9b0d12; }
 @media (max-width: 420px) { .gd-nivel-op span { font-size: 0.68rem; } }
+/* 🔆 a faixa de Efeito / condição: âmbar fixo (fundo que não inverte → texto que não inverte) */
+.ga-lanc--efeito { color: #f6ecd2; background: #6b4a12; }

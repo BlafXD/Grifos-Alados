@@ -5246,16 +5246,68 @@
 .fi-vital small { color: var(--text-dim); margin-left: 0.3rem; }
 .fi-vital--morto { border-left-color: var(--ink); font-weight: 600; }
 
-/* "Novo efeito em área" em três blocos (26/11/2026: "está um pouco feinho") */
-.ga-modal.ea-modal { width: min(96vw, 720px); max-width: min(96vw, 720px); }
-.ea-form { gap: 0.8rem; }
-.ea-bloco { display: flex; flex-direction: column; gap: 0.55rem; border: 1px solid var(--parchment3);
-  border-radius: var(--raio); padding: 0.65rem 0.75rem; background: var(--parchment); }
-.ea-bloco-tit { margin: 0; font-family: var(--ga-fonte-rotulo); font-weight: 700; font-size: 0.78rem;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--rust-dark); }
+/* ═══ 🔆 A JANELA DE EFEITOS E CONDIÇÕES (27/11/2026) ══════════════
+   Abre pela faixa da coluna, no meio da tela. Larga: à esquerda O QUE
+   (blocos 1 e 2), à direita QUEM (bloco 3); no celular, um embaixo do
+   outro. No alto, os efeitos já ativos; embaixo, o rodapé fixo. */
+.ga-modal.ea-modal { width: min(96vw, 1040px); max-width: min(96vw, 1040px); }
+.ea-sub { margin: -0.2rem 0 0.7rem; font-family: var(--ga-fonte-nota); font-style: italic; font-size: 0.92rem; color: var(--text-mid); }
+.ea-grade { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 0.8rem; align-items: start; }
+.ea-col { display: flex; flex-direction: column; gap: 0.8rem; min-width: 0; }
+@media (max-width: 760px) { .ea-grade { grid-template-columns: 1fr; } }
+.ea-bloco { position: relative; display: flex; flex-direction: column; gap: 0.55rem; border: 1px solid var(--parchment3);
+  border-radius: var(--raio); padding: 0.7rem 0.8rem; background: var(--parchment);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 2px 6px rgba(26, 16, 8, 0.12); }
+.ea-bloco--alvos { position: sticky; top: 0; }
+.ea-bloco-tit { margin: 0; display: flex; align-items: center; gap: 0.5rem; font-family: var(--ga-fonte-rotulo); font-weight: 700;
+  font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rust-dark); }
+.ea-num { display: inline-grid; place-items: center; width: 1.45rem; height: 1.45rem; border-radius: 50%; flex: 0 0 auto;
+  font-size: 0.8rem; letter-spacing: 0; color: var(--faixa-tinta, var(--parchment)); background: var(--rust-dark);
+  box-shadow: 0 0 0 2px var(--parchment), 0 0 0 3px var(--gold-dim, var(--rust)); }
 .ea-lado { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0.55rem; align-items: start; }
 .ea-lado .ea-campo--curto input { max-width: none; }
 .ea-bloco .ea-de { margin-top: -0.2rem; }
+.ea-alvos { max-height: 46vh; }
+.ea-alvo { padding: 0.3rem 0.35rem; border-radius: var(--raio); transition: background 0.15s ease; }
+.ea-alvo:nth-child(odd) { background: var(--parchment2); }
+.ea-alvo:has(.ea-rel--aliado.ea-on) { background: color-mix(in srgb, var(--azul) 14%, transparent); }
+.ea-alvo:has(.ea-rel--inimigo.ea-on) { background: color-mix(in srgb, var(--carmim) 14%, transparent); }
+.ea-rel, .ea-chip, .ea-cond, .ea-rel-todos { transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease; }
+.ea-rel:active, .ea-chip:active, .ea-cond:active { transform: scale(0.96); }
+
+/* as condições prontas: botões com a cor do tipo (Medo, Mental, Veneno…) */
+.ea-cond-busca { width: 100%; box-sizing: border-box; padding: 0.4rem 0.55rem; font: inherit; font-size: 0.95rem; color: var(--ink);
+  background: var(--parchment2); border: 1px solid var(--parchment3); border-radius: var(--raio); }
+.ea-cond-busca:focus { outline: 2px solid var(--foco); outline-offset: -1px; }
+.ea-conds { display: flex; flex-wrap: wrap; gap: 0.3rem; max-height: 9.5rem; overflow-y: auto; padding: 0.15rem; }
+.ea-cond { display: inline-flex; align-items: baseline; gap: 0.3rem; padding: 0.25rem 0.55rem 0.25rem 0.45rem; cursor: pointer;
+  font: inherit; font-size: 0.88rem; color: var(--ink); background: var(--parchment2);
+  border: 1px solid var(--parchment3); border-left: 4px solid var(--tipo); border-radius: 999px; }
+.ea-cond small { font-size: 0.68rem; color: var(--text-dim); }
+.ea-cond:hover { border-color: var(--tipo); background: color-mix(in srgb, var(--tipo) 12%, var(--parchment2)); }
+.ea-cond.ea-on { color: #fff; background: var(--tipo); border-color: var(--tipo); }
+.ea-cond.ea-on small { color: rgba(255, 255, 255, 0.85); }
+.ea-cond[hidden] { display: none; }
+
+/* os ativos agora */
+.ea-ativos:empty { display: none; }
+.ea-ativos { margin: 0 0 0.8rem; padding: 0.55rem 0.65rem; border: 1px dashed var(--gold-dim, var(--parchment3)); border-radius: var(--raio);
+  background: color-mix(in srgb, var(--gold-light, #e8c56a) 10%, var(--parchment)); }
+.ea-ativos-tit { margin: 0 0 0.4rem; font-family: var(--ga-fonte-rotulo); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-mid); }
+.ea-ativos-lista { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.ea-ativo { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.25rem 0.2rem 0.6rem; border-radius: 999px;
+  background: var(--parchment2); border: 1px solid var(--parchment3); font-size: 0.9rem; }
+.ea-ativo-nome { font-weight: 700; color: var(--ink); }
+.ea-ativo small { color: var(--text-dim); font-size: 0.78rem; }
+.ea-ativo-bt { width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 1px solid var(--parchment3); background: var(--parchment);
+  color: var(--ink); cursor: pointer; font-size: 0.8rem; line-height: 1; }
+.ea-ativo-bt:hover { background: var(--gold-pale); }
+.ea-ativo-bt--x:hover { color: #fff; background: var(--carmim); border-color: var(--carmim); }
+
+/* o rodapé fica preso embaixo da janela enquanto ela rola */
+.ea-pe { position: sticky; bottom: -1.5rem; margin: 0 0 -1.5rem; padding: 0.6rem 0 1.5rem; background: var(--parchment);
+  border-top: 1px solid var(--parchment3); z-index: 2; }
 
 /* Situações especiais no ataque (Tabela 5-3, p. 239) — 26/11/2026 */
 .fi-situacao { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.7rem; margin: 0.2rem 0 0.55rem;

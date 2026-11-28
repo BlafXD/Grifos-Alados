@@ -57,11 +57,6 @@
     if (!C || !Array.isArray(C.LISTA)) return [];
     return C.LISTA.map(c => ({ nome: c.nome, lado: 'contra', contra: c.texto, tipo: c.tipo || '' }));
   }
-  //  "Abalado — Medo": o tipo da condição pelo nome do livro, não pela chave.
-  function nomeTipo(chave) {
-    const t = ((window.GA_CONDICOES && window.GA_CONDICOES.TIPOS) || []).find(x => x.chave === chave);
-    return t ? t.nome : chave;
-  }
   //  O que o livro diz da magia escolhida, numa linha (só para consulta).
   function resumoMagia(m) {
     return [m.tipo && m.circulo ? m.tipo + ' ' + m.circulo + 'º círculo' : '',
@@ -243,6 +238,49 @@
     }
     return 'fora';
   }
+  //  A faixa "ativos agora" no alto da janela (sem o que está sendo editado).
+  function htmlAtivos(exceto) {
+    const ids = Object.keys(efeitos).filter(id => id !== exceto && efeitos[id])
+      .sort((a, b) => (efeitos[b].criadoEm || 0) - (efeitos[a].criadoEm || 0));
+    if (!ids.length) return '';
+    return '<p class="ea-ativos-tit">Ativos agora</p><div class="ea-ativos-lista">' + ids.map(id => {
+      const e = efeitos[id], alvos = Object.values(e.alvos || {});
+      const al = alvos.filter(a => a && a.rel === 'aliado').length, ini = alvos.filter(a => a && a.rel === 'inimigo').length;
+      return '<span class="ea-ativo"><span class="ea-ativo-nome">🔆 ' + esc(e.nome || 'efeito') + '</span>' +
+        '<small>' + (e.de ? 'de ' + esc(e.de) + ' · ' : '') + (al ? '🛡 ' + al + ' ' : '') + (ini ? '⚔ ' + ini : '') +
+        (e.duracao ? ' · ' + esc(e.duracao) : '') + '</small>' +
+        '<button type="button" class="ea-ativo-bt" data-ea-editar="' + esc(id) + '" title="Editar — remarcar quem entrou ou saiu">✎</button>' +
+        '<button type="button" class="ea-ativo-bt ea-ativo-bt--x" data-ea-tirar="' + esc(id) + '" title="Encerrar para todos">✕</button></span>';
+    }).join('') + '</div>';
+  }
+
+  //  🔆 A FAIXA DA COLUNA (27/11/2026, pedido dele): como a do 🎯
+  //  Controlador — na coluna flutuante, abre a janela no meio da tela. Só
+  //  aparece para quem manda na iniciativa (o botão saiu de dentro dela).
+  let lanc = null;
+  function pintarLancador() {
+    const pode = !!(window.GA_Iniciativa && window.GA_Iniciativa.mando && window.GA_Iniciativa.mando());
+    if (!pode) { if (lanc && lanc.parentNode) lanc.remove(); return; }
+    if (!lanc) {
+      lanc = document.createElement('button');
+      lanc.type = 'button'; lanc.id = 'gaEfeitosLanc'; lanc.className = 'ga-lanc ga-lanc--efeito';
+      lanc.title = 'Disparar um efeito em área (magia, poder ou condição) e marcar quem está sob ele';
+      lanc.addEventListener('click', () => abrirCriar());
+    }
+    if (!lanc.parentNode) {
+      const col = window.GA_ColunaMesa ? window.GA_ColunaMesa() : document.body;
+      const rol = document.getElementById('gaRolagens');
+      if (rol && rol.parentNode === col) col.insertBefore(lanc, rol); else col.appendChild(lanc);
+    }
+    const n = Object.keys(efeitos).length;
+    const html = '<span class="ga-lanc-ico" aria-hidden="true">🔆</span><span class="ga-lanc-tit">Efeito / condição</span>' +
+      (n ? '<span class="ga-lanc-selo" title="Efeitos ativos agora">' + n + '</span>' : '') +
+      '<span class="ga-lanc-abre" aria-hidden="true">⤢</span>';
+    if (lanc.innerHTML !== html) lanc.innerHTML = html;
+  }
+  ouvintes.push(pintarLancador);
+  setInterval(pintarLancador, 2000);
+
   //  `f` = ficha de quem lança (opcional). `efeitoId` REABRE um efeito já
   //  ativo para editar — inclusive remarcar quem entrou/saiu da área (#2).
   function abrirCriar(f, efeitoId) {
@@ -276,31 +314,38 @@
     const prontos = conds;
     const magias = Array.isArray(window.GA_MAGIAS) ? window.GA_MAGIAS : [];
     const magiaInicial = editando ? (orig.magia || '') : '';
-    const opPreset = (arr, off) => arr.map((p, i) =>
-      `<option value="${off + i}">${esc(p.nome)}${p.tipo ? ' — ' + esc(nomeTipo(p.tipo)) : ''}</option>`).join('');
 
     const overlay = window.GA_abrirModal(`
       <div class="ga-modal-cab">
-        <span>${editando ? '✎ Editar efeito em área' : '🔆 Novo efeito em área'}</span>
+        <span>${editando ? '✎ Editar efeito' : '🔆 Efeitos e condições'}</span>
         <button type="button" class="ga-modal-x" data-ga-fechar aria-label="Fechar">✕</button>
       </div>
+      <p class="ea-sub">${editando ? 'Mude o que quiser — inclusive quem entrou ou saiu da área.'
+        : 'Uma magia, um poder ou uma condição: escolha o que é, o que faz e quem está sob ele. Aparece sozinho na ficha de cada afetado.'}</p>
+      <div class="ea-ativos" id="eaAtivos">${htmlAtivos(efeitoId)}</div>
       <div class="ea-form">
+       <div class="ea-grade">
+        <div class="ea-col">
         <div class="ea-bloco">
-          <p class="ea-bloco-tit">1 · O que é</p>
+          <p class="ea-bloco-tit"><span class="ea-num">1</span> O que é</p>
         <label class="ea-campo"><span>✨ Magia? <em>(opcional — escolha da lista ou escreva; vira o nome do efeito)</em></span>
           <input type="text" id="eaMagia" list="eaMagiasLista" value="${esc(magiaInicial)}" placeholder="digite ou escolha da lista" autocomplete="off">
           <datalist id="eaMagiasLista">${magias.map(m => `<option value="${esc(m.nome)}">`).join('')}</datalist>
           <small class="ea-magia-dica" id="eaMagiaDica" hidden></small></label>
-        <label class="ea-campo"><span>🌀 Condição pronta <em>(opcional — preenche o efeito e marca os jogadores)</em></span>
-          <select id="eaPronto" class="ea-sel">
-            <option value="">— escolher uma condição —</option>
-            <optgroup label="Condições (Tormenta 20)">${opPreset(conds, 0)}</optgroup>
-          </select></label>
+        <div class="ea-campo">
+          <span>🌀 Condição pronta <em>(opcional — um clique preenche o efeito e marca os jogadores)</em></span>
+          <input type="search" id="eaCondBusca" class="ea-cond-busca" placeholder="🔍 procurar condição (ex.: chamas, medo, cego)" autocomplete="off">
+          <div class="ea-conds" id="eaConds">${conds.map((p, i) => {
+            const T = ((window.GA_CONDICOES && window.GA_CONDICOES.TIPOS) || []).find(x => x.chave === p.tipo);
+            return `<button type="button" class="ea-cond" data-pronto="${i}" data-busca="${esc(semAcento(p.nome + ' ' + (T ? T.nome : '')))}"
+              title="${esc(p.contra || '')}" style="--tipo:${T ? T.cor : 'var(--ink-faded)'}">${esc(p.nome)}${T ? '<small>' + esc(T.nome) + '</small>' : ''}</button>`;
+          }).join('')}</div>
+        </div>
         <label class="ea-campo"><span>Nome do efeito</span>
           <input type="text" id="eaNome" value="${esc(editando ? orig.nome : (f && f._efeitoNome || ''))}" placeholder="o nome da magia ou do poder" autocomplete="off"></label>
         </div>
         <div class="ea-bloco">
-          <p class="ea-bloco-tit">2 · O que faz</p>
+          <p class="ea-bloco-tit"><span class="ea-num">2</span> O que faz</p>
         <div class="ea-campo ea-montar">
           <span>🔧 Montar o efeito <em>(opcional — escolha o quanto e o que afeta; preenche os campos abaixo)</em></span>
           <div class="ea-montar-linha">
@@ -334,8 +379,10 @@
         </div>
           </div>
         </div>
-        <div class="ea-bloco">
-          <p class="ea-bloco-tit">3 · Quem está na área</p>
+        </div>
+        <div class="ea-col">
+        <div class="ea-bloco ea-bloco--alvos">
+          <p class="ea-bloco-tit"><span class="ea-num">3</span> Quem está na área</p>
         <p class="ea-de">De <strong>${esc(deInicial)}</strong></p>
         <div class="ea-alvos-cab">
           <span></span>
@@ -348,8 +395,10 @@
         </div>
         <div class="ea-alvos" id="eaAlvos">${linhasAlvos}</div>
         </div>
+        </div>
+       </div>
         <p class="ea-recado" id="eaRecado" hidden></p>
-        <div class="ga-modal-acoes">
+        <div class="ga-modal-acoes ea-pe">
           <button type="button" class="ga-btn-sec" data-ga-fechar>Cancelar</button>
           <button type="button" class="ga-btn-principal" id="eaCriar">${editando ? '💾 Salvar alterações' : '🔆 Criar efeito'}</button>
         </div>
@@ -416,10 +465,15 @@
       if (magiaInicial) aoEscolherMagia();
     }
 
-    const selPronto = overlay.querySelector('#eaPronto');
-    if (selPronto) selPronto.addEventListener('change', () => {
-      const p = prontos[parseInt(selPronto.value, 10)];
+    const busca = overlay.querySelector('#eaCondBusca');
+    if (busca) busca.addEventListener('input', () => {
+      const q = semAcento(busca.value.trim());
+      overlay.querySelectorAll('.ea-cond').forEach(b => { b.hidden = !!q && b.dataset.busca.indexOf(q) < 0; });
+    });
+    overlay.querySelectorAll('.ea-cond').forEach(btn => btn.addEventListener('click', () => {
+      const p = prontos[parseInt(btn.dataset.pronto, 10)];
       if (!p) return;
+      overlay.querySelectorAll('.ea-cond').forEach(b => b.classList.toggle('ea-on', b === btn));
       overlay.querySelector('#eaNome').value = p.nome || '';
       nomeDaMagia = false;              // o nome agora é o da condição
       overlay.querySelector('#eaBonus').value = p.bonus || '';
@@ -429,7 +483,25 @@
         if (row.dataset.tipo !== 'jogador') return;
         row.querySelectorAll('.ea-rel').forEach(b => b.classList.toggle('ea-on', b.dataset.rel === relPad));
       });
+    }));
+
+    //  os efeitos ATIVOS no alto: ✎ reabre aquele, ✕ encerra para todos;
+    //  a faixa se redesenha sozinha quando a mesa muda
+    overlay.querySelector('#eaAtivos').addEventListener('click', e => {
+      const ed = e.target.closest('[data-ea-editar]');
+      if (ed) { overlay._fechar(); abrirCriar(null, ed.dataset.eaEditar); return; }
+      const x = e.target.closest('[data-ea-tirar]');
+      if (x) {
+        const ef = efeitos[x.dataset.eaTirar];
+        if (!window.confirm('Encerrar «' + ((ef && ef.nome) || 'efeito') + '» para todos?')) return;
+        remover(x.dataset.eaTirar);
+      }
     });
+    const repintarAtivos = () => {
+      if (!overlay.isConnected) { ouvintes = ouvintes.filter(fn => fn !== repintarAtivos); return; }
+      const el = overlay.querySelector('#eaAtivos'); if (el) el.innerHTML = htmlAtivos(efeitoId);
+    };
+    ouvintes.push(repintarAtivos);
 
     // o COMPOSITOR 🔧: o valor (±) e os alcances montam os dois campos de
     // texto (como o painel ⚡ "O que está me afetando agora" da ficha).
