@@ -7921,6 +7921,8 @@
     el.setAttribute('data-nivel', String(nv));
     el.style.setProperty('--int', String(nv));
     if (!el.querySelector('.fi-clima-extra')) el.insertAdjacentHTML('beforeend', '<span class="fi-clima-extra"><i></i><i></i></span>');
+    //  🔥 fogo e 😴 olhos fechando se mexem num <canvas> (js/clima-fx.js)
+    if (window.GA_ClimaFx) window.GA_ClimaFx.atualizar(el, (clima && nv > 0) ? clima : '', nv);
     el.style.setProperty('--dor', dor.toFixed(2));
     el.classList.toggle('fi-clima--dor', dor > 0);
   }
