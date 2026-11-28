@@ -1085,8 +1085,6 @@
             (temLista ? '⚔ Montar de novo' : '⚔ Montar com a cena') + '</button>' +
           '<button type="button" class="ga-ini-btn ga-ini-btn--efeito" data-ini="efeito" ' +
             'title="Disparar um efeito em área (uma magia, um poder ou uma condição) e marcar quem está sob ele — aparece sozinho na ficha de cada afetado">🔆 Efeito / condição</button>' +
-          (naMesa() ? '<button type="button" class="ga-ini-btn ga-ini-btn--controlador" data-ini="controlador" ' +
-            'title="Pedir um teste (perícia ou atributo, CD secreta ou não) que aparece na tela dos jogadores — e disparar o dano ou a condição em quem falhou">🎯 Controlador</button>' : '') +
           (temLista && (rodada || 1) === 1
             ? '<button type="button" class="ga-ini-btn" data-ini="surpresa-lado" data-tipo="jogador" title="Os jogadores não perceberam os inimigos: todos ficam surpreendidos na 1ª rodada (p. 231)">😱 Grupo surpreso</button>' +
               '<button type="button" class="ga-ini-btn" data-ini="surpresa-lado" data-tipo="criatura" title="As criaturas não perceberam o grupo: todas ficam surpreendidas na 1ª rodada (p. 231)">😱 Criaturas surpresas</button>'
