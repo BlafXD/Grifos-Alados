@@ -416,6 +416,10 @@
       valor: (x && typeof x.valor === 'number') ? x.valor : 0,   // normalmente positivo; aceita negativo (uma penalidade)
       escopo: String((x && x.escopo) || 'todas'),                // 'todas' ou o chave de uma classe (fonte antiga, sem escopo, vale para todas)
       de: String((x && x.de) || ''),                             // "Magia Ilimitada (+Int)", "item", "acordo da mesa"…
+      //  🔑 em vez de um número fixo, soma o ATRIBUTO-CHAVE de cada magia —
+      //  é a Magia Ilimitada (p. 131): "Você soma seu atributo-chave no limite
+      //  de PM". Com magias de atributos diferentes, cada uma soma o seu.
+      atrChave: !!(x && x.atrChave),
     }));
     // ── REDUÇÃO DE CUSTO DE PM, POR ESCOLA (11/11/2026, pedido dele) ─
     //  Poderes e itens que baixam o custo de magia — e quase sempre de UMA
@@ -684,6 +688,11 @@
       // origem/poder geral). Decide o teto de PM por uso (p. 224). Ver
       // classeDaMagia/limiteDaMagia e o seletor em cartaoMagia.
       classe: String((m && m.classe) || ''),
+      // 🔑 o atributo-chave DESTA magia (28/11/2026): vazio = o da ficha. Um
+      // Qareen clérigo lança as da Tatuagem Mística e da Grande Marca de
+      // Wynna com CARISMA (Heróis p. 89) — muda a CD dela e o que a Magia
+      // Ilimitada soma no teto de PM. Ver atrDaMagia/cdDaMagia.
+      atr: (m && D.ATRIBUTOS.some(a => a.chave === m.atr)) ? m.atr : '',
       execucao: String((m && m.execucao) || ''),
       alcance: String((m && m.alcance) || ''),
       alvo: String((m && m.alvo) || ''),
@@ -3656,7 +3665,7 @@
       const cara = p.total > resta;
       return `
         <li class="fi-turno-mag${cara ? ' fi-turno-mag--cara' : ''}">
-          <span class="fi-turno-mag-nome">${esc(m.nome)}${m.circulo ? ' <em>' + m.circulo + 'º</em>' : ''}</span>
+          <span class="fi-turno-mag-nome">${esc(m.nome)}${m.circulo ? ' <em>' + m.circulo + 'º</em>' : ''}${m.atr ? ' <em>🔑 ' + esc(atrCurto(m.atr)) + ' · CD ' + cdDaMagia(f, m) + '</em>' : ''}</span>
           ${p.total ? `<button type="button" class="ga-btn-sec fi-turno-b${p.trocado ? ' fi-pm-selo--meu' : ''}"
                   data-acao="turno-magia-pm" data-i="${i}" ${cara ? 'disabled' : ''}
                   title="${cara ? 'Você só tem ' + resta + ' PM' : 'Gastar ' + p.total + ' PM'}${p.trocado ? ' — o SEU custo; no livro são ' + p.livro : ''}"
@@ -6901,9 +6910,13 @@
       const ops = `<option value="todas" ${x.escopo === 'todas' ? 'selected' : ''}>todas as magias</option>` +
         classes.map(c => `<option value="${esc(c.classe)}" ${x.escopo === c.classe ? 'selected' : ''}>${esc(D.classe(c.classe).nome)}</option>`).join('');
       return `
-      <li class="fi-desl-linha">
-        <input class="fi-num fi-num--mini" type="number" step="1" value="${x.valor}"
-               data-campo="pmLimite.fontes.${i}.valor" title="Quanto este poder/item soma ao teto de PM por magia (ou tira, com o sinal −)">
+      <li class="fi-desl-linha${x.atrChave ? ' fi-desl-linha--atr' : ''}">
+        ${x.atrChave
+          ? '<span class="fi-pmlim-atr" title="Soma o atributo-chave de CADA magia: Sabedoria nas do clérigo, Carisma nas da Tatuagem Mística…">＋ atributo-chave</span>'
+          : `<input class="fi-num fi-num--mini" type="number" step="1" value="${x.valor}"
+               data-campo="pmLimite.fontes.${i}.valor" title="Quanto este poder/item soma ao teto de PM por magia (ou tira, com o sinal −)">`}
+        <button type="button" class="fi-mini${x.atrChave ? ' fi-mini--on' : ''}" data-acao="pm-fonte-atr" data-i="${i}" aria-pressed="${x.atrChave}"
+                title="${x.atrChave ? 'Agora soma o atributo-chave de cada magia. Clique para voltar a um número fixo.' : 'Somar o ATRIBUTO-CHAVE de cada magia em vez de um número fixo (é o que a Magia Ilimitada faz, p. 131)'}">🔑</button>
         <select class="fi-sel fi-sel--mini" data-campo="pmLimite.fontes.${i}.escopo" title="A quais magias este aumento se aplica: todas, ou só as de uma classe">${ops}</select>
         <input class="fi-txt" type="text" value="${esc(x.de)}" data-campo="pmLimite.fontes.${i}.de"
                placeholder="Magia Ilimitada (+Int), item…" autocomplete="off">
@@ -6917,9 +6930,11 @@
           <span class="fi-desl-rot">Fontes do limite</span>
           <button type="button" class="fi-add fi-add--menor" data-acao="add-pm-fonte"
                   title="Um poder, um item ou um acordo que aumenta o seu teto de PM por magia — e fica escrito de onde veio">＋ Acrescentar</button>
+          <button type="button" class="fi-add fi-add--menor" data-acao="add-pm-ilimitada"
+                  title="Magia Ilimitada (Tormenta 20, p. 131): soma o atributo-chave de cada magia no teto de PM — o Carisma nas magias do Qareen, a Sabedoria nas de clérigo…">＋ Magia Ilimitada</button>
         </div>
         ${linhas ? `<ul class="fi-desl-lista">${linhas}</ul>`
-          : '<p class="fi-desl-vazio">Nenhuma fonte. Use para <strong>Magia Ilimitada</strong> (que sobe conforme o seu atributo-chave de conjuração), um item ou um acordo da mesa que deixem você gastar mais PM por magia — e diga de qual classe ela vale.</p>'}
+          : '<p class="fi-desl-vazio">Nenhuma fonte. O <strong>＋ Magia Ilimitada</strong> já soma o atributo-chave de cada magia (o 🔑 da linha); use o <strong>＋ Acrescentar</strong> para um item ou um acordo da mesa com número fixo — e diga de qual classe ela vale.</p>'}
       </div>`;
   }
   function blocoLimitePm(f) {
@@ -7142,10 +7157,45 @@
   function somaFontesLimiteMagia(f, m) {
     const k = classeDaMagia(f, m);
     return ((f.pmLimite && f.pmLimite.fontes) || []).reduce((s, x) => {
-      if (!x.valor) return s;
-      if (x.escopo === 'todas' || (k && x.escopo === k)) return s + x.valor;
+      const v = x.atrChave ? atr(f, atrDaMagia(f, m)) : x.valor;
+      if (!v) return s;
+      if (x.escopo === 'todas' || (k && x.escopo === k)) return s + v;
       return s;
     }, 0);
+  }
+  //  ── 🔑 O ATRIBUTO-CHAVE DE CADA MAGIA (28/11/2026, pedido dele) ────
+  //  A ficha tem UM atributo das CDs (cdAtributo), mas há magias que o livro
+  //  manda lançar com outro: a Tatuagem Mística do Qareen e a Grande Marca de
+  //  Wynna dão magias "(atributo-chave Carisma)" (Heróis p. 89) — num clérigo,
+  //  cuja CD é de Sabedoria. Então cada magia pode dizer o seu (`m.atr`).
+  //  O atributo DA MAGIA: o escolhido nela; senão o da classe que a deu
+  //  (multiclasse); senão o da ficha. É o que a Magia Ilimitada soma.
+  function atrDaMagia(f, m) {
+    if (m && D.ATRIBUTOS.some(a => a.chave === m.atr)) return m.atr;
+    const k = classeDaMagia(f, m);
+    if (k) { const a = atrChaveDaClasse(f, f.classes.find(c => c.classe === k)); if (a) return a; }
+    return f.cdAtributo;
+  }
+  //  A CD DA MAGIA: com atributo próprio, 10 + ⌊nível÷2⌋ + ESSE atributo (+ o
+  //  "Outros" da CD de magia); sem, é a CD de magias da ficha, como sempre foi.
+  function cdDaMagia(f, m) {
+    if (!(m && m.atr)) return cdMagias(f);
+    return 10 + Math.floor(nivel(f) / 2) + atr(f, m.atr) + (f.cdMagiaOutros || 0);
+  }
+  function seletorAtrMagia(f, m, i) {
+    const ops = D.ATRIBUTOS.map(a =>
+      `<option value="${a.chave}" ${m.atr === a.chave ? 'selected' : ''}>${esc(a.nome)}</option>`).join('');
+    return `
+      <div class="fi-mag-atr${m.atr ? ' fi-mag-atr--proprio' : ''}">
+        <label><span>🔑 Atributo-chave</span>
+          <select class="fi-sel fi-sel--mini" data-campo="magias.${i}.atr"
+                  title="Com qual atributo você lança ESTA magia. Mude só quando o livro mandar — ex.: Qareen, Tatuagem Mística e Grande Marca de Wynna: «atributo-chave Carisma». Muda a CD desta magia e o que a Magia Ilimitada soma no teto de PM.">
+            <option value="" ${m.atr ? '' : 'selected'}>o da ficha (${esc(atrCurto(f.cdAtributo))})</option>
+            ${ops}
+          </select></label>
+        <span class="fi-mag-atr-val">CD <strong data-der="cdmagia:${esc(m.id)}">${cdDaMagia(f, m)}</strong></span>
+        <span class="fi-mag-atr-val">teto <strong data-der="tetomagia:${esc(m.id)}">${limiteDaMagia(f, m)}</strong> PM</span>
+      </div>`;
   }
   //  O teto DE VERDADE desta magia. Nunca abaixo de 1 — um teto de 0
   //  esconderia o aviso até nas magias que o jogador pode mesmo lançar.
@@ -7619,6 +7669,7 @@
           <span class="fi-mag-nome">${esc(m.nome)}</span>
           ${m.escola ? `<span class="fi-mag-tag">${esc(m.escola)}</span>` : ''}
           ${m.tipo ? `<span class="fi-mag-tag fi-mag-tag--tipo">${esc(m.tipo)}</span>` : ''}
+          ${m.atr ? `<span class="fi-mag-tag fi-mag-tag--atr" title="Esta magia usa ${esc(nomeAtr(m.atr))} como atributo-chave">🔑 ${esc(atrCurto(m.atr))} · CD <span data-der="cdmagia:${esc(m.id)}">${cdDaMagia(f, m)}</span></span>` : ''}
         </button>
         <span class="fi-mag-acoes">
           <button type="button" class="fi-mini fi-mag-fav${m.fav ? ' fi-mag-fav--on' : ''}" data-acao="fav-magia" data-i="${i}"
@@ -7644,6 +7695,7 @@
           </div>
           <div class="fi-mag-desc">${descricaoDaMagia(m)}</div>
           ${seletorClasseMagia(f, m, i)}
+          ${seletorAtrMagia(f, m, i)}
           ${blocoAprimoramentos(f, m, i)}
           ${caixaCustoPm(f, chavePmMagia(m), p.livro,
              p.livro ? p.livro + ' PM' : 'sem custo', m.nome, 'magia', true)}
@@ -8048,6 +8100,8 @@
       if (d === 'invconta')  el.innerHTML = contaCarga(f);
       if (d === 'cargamaxconta') el.textContent = contaCargaMax(f);
       if (d === 'cdmag') el.textContent = cdMagias(f);
+      if (d.slice(0, 8) === 'cdmagia:') { const mg = f.magias.find(x => x.id === d.slice(8)); if (mg) el.textContent = cdDaMagia(f, mg); }
+      if (d.slice(0, 10) === 'tetomagia:') { const mg = f.magias.find(x => x.id === d.slice(10)); if (mg) el.textContent = limiteDaMagia(f, mg); }
       if (d === 'cdhab') el.textContent = cdHabilidades(f);
       if (d === 'desloc')    el.textContent = deslocamento(f);
       if (d === 'desloc2')   el.textContent = f.deslocamento;
@@ -8375,7 +8429,7 @@
           campo.indexOf('efeitosEmJogo.') === 0 ||   // trocar o alcance mostra/esconde a perícia e refaz os totais
           /^parceiros\.\d+\.(tipo|nivel)$/.test(campo) ||
           campo === 'tamanho' || campo === 'cdAtributo' || campo === 'pvAtr' ||
-          /^magias\.\d+\.classe$/.test(campo)) return render();
+          /^magias\.\d+\.(classe|atr)$/.test(campo)) return render();
       atualizarDerivados();
       return;
     }
@@ -8730,11 +8784,20 @@
     //  As fontes do LIMITE DE PM por magia (Magia Ilimitada, item, acordo):
     //  o mesmo padrão das Fontes de Defesa. Nasce com +2, que é o aumento
     //  mais comum, e o jogador acerta o número e escreve de onde vem.
-    if (acao === 'add-pm-fonte') {
+    if (acao === 'add-pm-fonte' || acao === 'add-pm-ilimitada') {
       if (!f.pmLimite || typeof f.pmLimite !== 'object') f.pmLimite = { fontes: [] };
       if (!Array.isArray(f.pmLimite.fontes)) f.pmLimite.fontes = [];
-      f.pmLimite.fontes.push({ id: novoId(), valor: 2, escopo: 'todas', de: '' });
+      //  ＋ Magia Ilimitada: já vem somando o atributo-chave de cada magia (p. 131)
+      f.pmLimite.fontes.push(acao === 'add-pm-ilimitada'
+        ? { id: novoId(), valor: 0, escopo: 'todas', de: 'Magia Ilimitada (p. 131)', atrChave: true }
+        : { id: novoId(), valor: 2, escopo: 'todas', de: '' });
       sujar(f.id, 'pmLimite'); salvar(); return render();
+    }
+    //  🔑 a fonte passa a somar o atributo-chave de cada magia (ou volta ao número fixo)
+    if (acao === 'pm-fonte-atr') {
+      const x = f.pmLimite && Array.isArray(f.pmLimite.fontes) ? f.pmLimite.fontes[+btn.dataset.i] : null;
+      if (x) { x.atrChave = !x.atrChave; sujar(f.id, 'pmLimite'); salvar(); }
+      return render();
     }
     if (acao === 'tira-pm-fonte') {
       if (f.pmLimite && Array.isArray(f.pmLimite.fontes)) f.pmLimite.fontes.splice(+btn.dataset.i, 1);

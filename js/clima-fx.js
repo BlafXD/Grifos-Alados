@@ -8,8 +8,8 @@
 //
 //   🔥 fogo     — (refeito 28/11, direção "cinema") poucas brasas macias
 //                 subindo; a cor quente e o calor que tremula são do CSS.
-//   ❄ lento e 🪨 pedra saíram do canvas (28/11): são só CSS — a tela esfria
-//                 / perde a cor e as bordas embaçam / viram pedra macia.
+//   (❄ lento e 🪨 pedra chegaram a virar só CSS em 28/11 e VOLTARAM no mesmo
+//   dia: ele preferiu o gelo e a pedra do canvas.)
 //   😴 apagado  — duas pálpebras em forma de amêndoa, de borda macia, que
 //                 pesam devagar, "cochilam" (quase fecham), lutam e reabrem.
 //                 Quanto maior o nível, menor a fresta e mais vezes cochila.
@@ -523,6 +523,78 @@
     },
   });
 
+  // ── ❄ LENTO: gelo cristalizando nas bordas e flocos que caem devagar demais
+  const lento = {
+    iniciar(e) { e.p = []; e.cob = 0; },
+    passo(e, dt) {
+      const W = canvas.width, H = canvas.height;
+      cobrir(e, dt, 0.15 + 0.35 * (nivel / 4));
+      galhosProntos(e, W, H, (w, h) => gerarGalhos(w, h, 34, 4, 0.12, 0.32));
+      e.sobra = (e.sobra || 0) + 6 * F() * dt;
+      while (e.sobra >= 1) { e.sobra--; e.p.push({ x: Math.random() * W, y: -4, r: aleat(0.8, 2), vida: aleat(8, 14), idade: 0, s: Math.random() * 6.28 }); }
+      for (let i = e.p.length - 1; i >= 0; i--) {
+        const p = e.p[i]; p.idade += dt;
+        if (p.idade > p.vida) { e.p.splice(i, 1); continue; }
+        p.y += dt * 9; p.x += Math.sin(e.t * 0.5 + p.s) * dt * 4;
+      }
+    },
+    quadro(e) {
+      const W = canvas.width, H = canvas.height;
+      ctx.save(); ctx.clearRect(0, 0, W, H);
+      vinheta('150,200,240', 0.45 * F(), 0.4);
+      ctx.lineCap = 'round';
+      for (const s of e.g) {
+        if (s.prof > e.cob) continue;
+        ctx.globalAlpha = 0.6 * (1 - s.prof / Math.max(0.01, e.cob) * 0.7);
+        ctx.strokeStyle = s.n ? '#e8f6ff' : '#cdeaff'; ctx.lineWidth = s.w * 0.7;
+        ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
+      }
+      for (const p of e.p) { ctx.globalAlpha = 0.8 * vaiVem(p.idade / p.vida); ctx.fillStyle = '#eef8ff'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }
+      ctx.restore();
+    },
+  };
+
+  // ── 🪨 PETRIFICADO: a pedra sobe pelas bordas, granulada, e racha
+  let texturaPedra = null;
+  function pedraTextura() {
+    if (texturaPedra) return texturaPedra;
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const g = c.getContext('2d'); g.fillStyle = '#7d7a72'; g.fillRect(0, 0, 128, 128);
+    for (let i = 0; i < 2200; i++) {
+      const v = Math.floor(aleat(70, 160)); g.fillStyle = `rgba(${v},${v - 3},${v - 10},${aleat(0.2, 0.6)})`;
+      g.fillRect(Math.random() * 128, Math.random() * 128, aleat(1, 3), aleat(1, 3));
+    }
+    return (texturaPedra = c);
+  }
+  const pedra = {
+    iniciar(e) { e.cob = 0; },
+    passo(e, dt) {
+      cobrir(e, dt, 0.2 + 0.6 * (nivel / 4));
+      galhosProntos(e, canvas.width, canvas.height, (w, h) => gerarGalhos(w, h, 18, 7, 0.9, 0.22));
+    },
+    quadro(e) {
+      const W = canvas.width, H = canvas.height, R = Math.hypot(W, H) / 2;
+      ctx.save(); ctx.clearRect(0, 0, W, H);
+      // a pedra: a textura, recortada por uma vinheta que avança com a cobertura
+      ctx.fillStyle = ctx.createPattern(pedraTextura(), 'repeat'); ctx.globalAlpha = 0.92; ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'destination-in'; ctx.globalAlpha = 1;
+      const miolo = Math.max(0.05, 0.95 - e.cob * 0.85);
+      const g = ctx.createRadialGradient(W / 2, H / 2, R * miolo, W / 2, H / 2, R * (miolo + 0.22));
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,1)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      // as rachaduras, escuras com uma beirada clara
+      ctx.globalCompositeOperation = 'source-over'; ctx.lineCap = 'round';
+      for (const s of e.g) {
+        if (s.prof > e.cob) continue;
+        ctx.globalAlpha = 0.85; ctx.strokeStyle = '#2b2925'; ctx.lineWidth = s.w;
+        ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
+        ctx.globalAlpha = 0.35; ctx.strokeStyle = '#c9c4b8'; ctx.lineWidth = Math.max(0.6, s.w * 0.35);
+        ctx.beginPath(); ctx.moveTo(s.x1 + 1, s.y1 + 1); ctx.lineTo(s.x2 + 1, s.y2 + 1); ctx.stroke();
+      }
+      ctx.restore();
+    },
+  };
+
   // ── 🌿 PRESO (paralisado, agarrado, enredado, imóvel): cipós crescem dos
   //    cantos e das bordas, com folhas, balançando de leve
   const preso = {
@@ -649,7 +721,7 @@
   const EFEITOS = {
     fogo: brasas, apagado: olhos, sangue: sangue, cego: cego, ofuscado: ofuscado, veneno: veneno,
     pavor: medoFx(true), medo: medoFx(false), confuso: confuso, atordoado: atordoado, encanto: encanto,
-    fascinio: fascinio, preso: preso, fraqueza: fraqueza, mente: mente,
+    fascinio: fascinio, lento: lento, pedra: pedra, preso: preso, fraqueza: fraqueza, mente: mente,
     surdo: surdo, guarda: guarda, chao: chao,
   };
 
