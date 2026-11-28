@@ -5485,7 +5485,6 @@ html.ga-sem-clima #fiClima { display: none !important; }
 #fiClima[data-clima="apagado"] .fi-clima-extra { display: block;
   backdrop-filter: blur(calc(max(0, var(--fecha, 0) - 0.3) * 8px)) brightness(calc(1 - var(--fecha, 0) * 0.25)) saturate(calc(1 - var(--fecha, 0) * 0.5)); }
 #fiClima[data-clima="apagado"] .fi-clima-cond { opacity: 0.6; }
-#fiClima[data-clima="fogo"] .fi-clima-extra { backdrop-filter: saturate(calc(1 + 0.25 * var(--forca))) sepia(calc(0.08 * var(--forca))); }
 
 /* com o <canvas> desenhando (js/clima-fx.js), a borda de CSS fica mais
    fraca: quem pinta a cor agora é o desenho de cada condição */
@@ -5501,8 +5500,6 @@ html.ga-sem-clima #fiClima { display: none !important; }
   --dur: 5s; animation: fi-clima-enjoo var(--dur) ease-in-out infinite; }
 #fiClima[data-clima="atordoado"] .fi-clima-extra { --dur: 1.2s; animation: fi-clima-tonto var(--dur) ease-in-out infinite; }
 #fiClima[data-clima="confuso"] .fi-clima-extra   { --dur: 6s; animation: fi-clima-tom var(--dur) linear infinite; }
-#fiClima[data-clima="pedra"] .fi-clima-extra     { backdrop-filter: grayscale(calc(0.25 * var(--forca))) contrast(calc(1 + 0.05 * var(--forca))); }
-#fiClima[data-clima="lento"] .fi-clima-extra     { backdrop-filter: saturate(calc(1 - 0.15 * var(--forca))) hue-rotate(calc(var(--forca) * -8deg)); }
 #fiClima[data-clima="pavor"] .fi-clima-extra     { backdrop-filter: brightness(calc(1 - 0.1 * var(--forca))) saturate(calc(1 - 0.15 * var(--forca))); }
 #fiClima[data-clima="encanto"] .fi-clima-extra,
 #fiClima[data-clima="fascinio"] .fi-clima-extra  { backdrop-filter: blur(calc(var(--forca) * 0.5px)) saturate(calc(1 + 0.2 * var(--forca))); }
@@ -5510,11 +5507,59 @@ html.ga-sem-clima #fiClima { display: none !important; }
 @keyframes fi-clima-tonto { 0%, 100% { backdrop-filter: blur(0); } 50% { backdrop-filter: blur(calc(var(--forca) * 1.5px)); } }
 @keyframes fi-clima-tom   { from { backdrop-filter: hue-rotate(0deg) blur(calc(var(--forca) * 0.4px)); } to { backdrop-filter: hue-rotate(360deg) blur(calc(var(--forca) * 0.4px)); } }
 
+/* ═══ 🎬 CINEMA (28/11/2026, pedido dele: "sutil", sem textura) ═══════
+   Duas camadas que só FILTRAM o que está por trás, sem desenhar nada:
+   .fi-clima-cine — a tela toda muda de clima de leve (tom, cor, brilho);
+   .fi-clima-borda — só as bordas (máscara radial): embaçam, perdem a cor
+   ou esquentam. Tudo cresce com --int (o nível 0–4 do 🎯 Controlador). */
+.fi-clima-cine, .fi-clima-borda { position: absolute; inset: 0; display: none; }
+@keyframes fi-cine-respira { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+@keyframes fi-cine-calor   { from { opacity: 0.72; transform: translateY(0); } to { opacity: 1; transform: translateY(-0.5%); } }
+@keyframes fi-cine-avanca  { from { transform: scale(1.06); } to { transform: scale(1); } }
+
+/* 🔥 EM CHAMAS: as cores esquentam; embaixo, um calor que tremula e desfoca
+   de leve (+ as brasas macias do js/clima-fx.js) */
+#fiClima[data-clima="fogo"] .fi-clima-cine { display: block;
+  backdrop-filter: sepia(calc(0.025 * var(--int, 1))) saturate(calc(1 + 0.05 * var(--int, 1))) brightness(calc(1 + 0.01 * var(--int, 1))); }
+#fiClima[data-clima="fogo"] .fi-clima-cond { opacity: 0.3 !important; }
+#fiClima[data-clima="fogo"] .fi-clima-borda { display: block;
+  background: radial-gradient(ellipse 130% 60% at 50% 112%, rgba(255, 110, 25, calc(0.11 * var(--int, 1))) 0%,
+    rgba(255, 80, 10, calc(0.05 * var(--int, 1))) 45%, transparent 78%);
+  backdrop-filter: blur(calc(0.4px * var(--int, 1)));
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent calc(22% + 9% * var(--int, 1)));
+          mask-image: linear-gradient(to top, #000 0%, transparent calc(22% + 9% * var(--int, 1)));
+  --dur: 2.6s; animation: fi-cine-calor var(--dur) ease-in-out infinite alternate; }
+
+/* ❄ LENTO: a tela esfria e as bordas viram vidro embaçado, respirando devagar */
+#fiClima[data-clima="lento"] .fi-clima-cine { display: block;
+  backdrop-filter: saturate(calc(1 - 0.1 * var(--int, 1))) hue-rotate(calc(-5deg * var(--int, 1))) brightness(calc(1 + 0.012 * var(--int, 1))); }
+#fiClima[data-clima="lento"] .fi-clima-borda { display: block;
+  background: rgba(205, 232, 255, calc(0.07 * var(--int, 1)));
+  backdrop-filter: blur(calc(1.4px * var(--int, 1))) brightness(1.06) saturate(0.7);
+  -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, transparent calc(62% - 9% * var(--int, 1)), #000 calc(100% - 6% * var(--int, 1)));
+          mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, transparent calc(62% - 9% * var(--int, 1)), #000 calc(100% - 6% * var(--int, 1)));
+  --dur: 7s; animation: fi-cine-respira var(--dur) ease-in-out infinite; }
+#fiClima[data-clima="lento"] .fi-clima-cond { opacity: 0.55; }
+
+/* 🪨 PETRIFICADO: a cor vai embora; as bordas viram pedra macia (cinza,
+   sem textura) que avança e recua bem devagar */
+#fiClima[data-clima="pedra"] .fi-clima-cine { display: block;
+  backdrop-filter: grayscale(calc(0.15 * var(--int, 1))) contrast(calc(1 + 0.03 * var(--int, 1))); }
+#fiClima[data-clima="pedra"] .fi-clima-borda { display: block;
+  background: rgba(128, 124, 114, calc(0.11 * var(--int, 1)));
+  backdrop-filter: grayscale(1) brightness(0.82) contrast(1.12);
+  -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, transparent calc(70% - 11% * var(--int, 1)), #000 calc(98% - 8% * var(--int, 1)));
+          mask-image: radial-gradient(ellipse 75% 70% at 50% 50%, transparent calc(70% - 11% * var(--int, 1)), #000 calc(98% - 8% * var(--int, 1)));
+  --dur: 9s; animation: fi-cine-avanca var(--dur) ease-in-out infinite alternate; }
+#fiClima[data-clima="pedra"] .fi-clima-cond { opacity: 0.5; }
+
 html.ga-sem-movimento #fiClima * { animation: none !important; }
 @media (prefers-reduced-motion: reduce) {
   html:not(.ga-sem-movimento) #fiClima .fi-clima-cond,
   html:not(.ga-sem-movimento) #fiClima .fi-clima-vida,
   html:not(.ga-sem-movimento) #fiClima .fi-clima-extra,
+  html:not(.ga-sem-movimento) #fiClima .fi-clima-cine,
+  html:not(.ga-sem-movimento) #fiClima .fi-clima-borda,
   html:not(.ga-sem-movimento) #fiClima .fi-clima-extra i { animation-duration: var(--dur, 1.6s) !important; animation-iteration-count: infinite !important; }
 }
 @media (max-width: 720px) {

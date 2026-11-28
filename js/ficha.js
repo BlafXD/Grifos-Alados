@@ -7966,6 +7966,8 @@
     el.setAttribute('data-nivel', String(nv));
     el.style.setProperty('--int', String(nv));
     if (!el.querySelector('.fi-clima-extra')) el.insertAdjacentHTML('beforeend', '<span class="fi-clima-extra"><i></i><i></i></span>');
+    //  🎬 as camadas do "cinema" (28/11): o filtro da tela toda e o das bordas, por baixo de tudo
+    if (!el.querySelector('.fi-clima-cine')) el.insertAdjacentHTML('afterbegin', '<span class="fi-clima-cine"></span><span class="fi-clima-borda"></span>');
     //  🔥 fogo e 😴 olhos fechando se mexem num <canvas> (js/clima-fx.js)
     if (window.GA_ClimaFx) window.GA_ClimaFx.atualizar(el, (clima && nv > 0) ? clima : '', nv);
     el.style.setProperty('--dor', dor.toFixed(2));

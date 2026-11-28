@@ -6,9 +6,10 @@
 //  ("o fogo não se mexe", "o fechar dos olhos tá feio" — pedido dele), então
 //  esses moram aqui, num <canvas> por cima da tela, desenhado quadro a quadro:
 //
-//   🔥 fogo     — partículas que sobem em línguas que andam de lado, faíscas
-//                 que voam alto e um brilho quente que pulsa embaixo. Do
-//                 nível 3 em diante as chamas sobem também pelas laterais.
+//   🔥 fogo     — (refeito 28/11, direção "cinema") poucas brasas macias
+//                 subindo; a cor quente e o calor que tremula são do CSS.
+//   ❄ lento e 🪨 pedra saíram do canvas (28/11): são só CSS — a tela esfria
+//                 / perde a cor e as bordas embaçam / viram pedra macia.
 //   😴 apagado  — duas pálpebras em forma de amêndoa, de borda macia, que
 //                 pesam devagar, "cochilam" (quase fecham), lutam e reabrem.
 //                 Quanto maior o nível, menor a fresta e mais vezes cochila.
@@ -53,136 +54,6 @@
     if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; return true; }
     return false;
   }
-
-  // ═══ 🔥 FOGO ══════════════════════════════════════════════════════
-  //  As cores da chama, do miolo (quase branco) à fumaça: 32 "carimbos"
-  //  redondos pré-desenhados, um por idade — desenhar um carimbo pronto é
-  //  muito mais barato que montar um gradiente por partícula.
-  const RAMPA = [
-    [0.00, [255, 250, 220]], [0.12, [255, 226, 120]], [0.30, [255, 156, 40]],
-    [0.55, [235, 82, 18]], [0.78, [150, 34, 10]], [1.00, [50, 14, 8]],
-  ];
-  function corNa(t) {
-    for (let i = 1; i < RAMPA.length; i++) {
-      if (t <= RAMPA[i][0]) {
-        const [t0, c0] = RAMPA[i - 1], [t1, c1] = RAMPA[i], k = (t - t0) / (t1 - t0);
-        return c0.map((v, j) => Math.round(v + (c1[j] - v) * k));
-      }
-    }
-    return RAMPA[RAMPA.length - 1][1];
-  }
-  let carimbos = null;
-  function fazerCarimbos() {
-    if (carimbos) return carimbos;
-    carimbos = [];
-    for (let i = 0; i < 32; i++) {
-      const c = document.createElement('canvas'); c.width = c.height = 64;
-      const g = c.getContext('2d'), [r, gg, b] = corNa(i / 31);
-      const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-      grad.addColorStop(0, `rgba(${r},${gg},${b},1)`);
-      grad.addColorStop(0.4, `rgba(${r},${gg},${b},0.55)`);
-      grad.addColorStop(1, `rgba(${r},${gg},${b},0)`);
-      g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
-      carimbos.push(c);
-    }
-    return carimbos;
-  }
-  //  por nível (0–4): altura da chama (fração da tela), quantas nascem, faíscas, laterais
-  const FOGO = [
-    null,
-    { alt: 0.13, taxa: 0.55, faisca: 4,  lado: 0 },
-    { alt: 0.20, taxa: 0.85, faisca: 10, lado: 0 },
-    { alt: 0.30, taxa: 1.15, faisca: 20, lado: 0.5 },
-    { alt: 0.42, taxa: 1.5,  faisca: 34, lado: 1 },
-  ];
-  //  as "línguas": a altura da chama varia ao longo da borda e anda de lado
-  function lingua(x, t) {
-    return 0.55 + 0.25 * Math.sin(x * 0.021 + t * 1.9) + 0.2 * Math.sin(x * 0.047 - t * 2.7) * Math.sin(t * 0.8 + x * 0.004);
-  }
-  const fogo = {
-    iniciar(e) { e.p = []; e.f = []; e.sobra = 0; e.sobraF = 0; fazerCarimbos(); },
-    passo(e, dt) {
-      const W = canvas.width, H = canvas.height, cfg = FOGO[nivel] || FOGO[1], t = e.t;
-      // nascem embaixo, ao longo da borda
-      e.sobra += W * cfg.taxa * dt * 2.2;
-      while (e.sobra >= 1) {
-        e.sobra--;
-        const x = Math.random() * W, l = Math.max(0.15, lingua(x / ESCALA, t));
-        const vida = aleat(0.55, 1.05) * (0.7 + l * 0.6);
-        e.p.push({ x, y: H + aleat(0, 6), vx: aleat(-8, 8), vy: -(H * cfg.alt * l) / vida * aleat(0.8, 1.15),
-          r: aleat(10, 20) * (0.8 + nivel * 0.12), vida, idade: 0, s: Math.random() * 6.28 });
-      }
-      // nas laterais (nível 3 e 4)
-      if (cfg.lado) {
-        e.sobraL = (e.sobraL || 0) + H * cfg.lado * dt * 1.6;
-        while (e.sobraL >= 1) {
-          e.sobraL--;
-          const esq = Math.random() < 0.5, y = H * aleat(0.25, 1.05), vida = aleat(0.4, 0.8);
-          e.p.push({ x: esq ? aleat(-4, W * 0.025) : W - aleat(-4, W * 0.025), y, vx: esq ? aleat(4, 16) : -aleat(4, 16),
-            vy: -aleat(40, 90), r: aleat(8, 15) * (0.8 + nivel * 0.1), vida, idade: 0, s: Math.random() * 6.28 });
-        }
-      }
-      // faíscas
-      e.sobraF += cfg.faisca * dt;
-      while (e.sobraF >= 1) {
-        e.sobraF--;
-        e.f.push({ x: Math.random() * W, y: H - aleat(0, H * cfg.alt * 0.4), vx: aleat(-15, 15), vy: -aleat(40, 110),
-          vida: aleat(1.6, 3.6), idade: 0, s: Math.random() * 6.28, r: aleat(0.8, 1.8) });
-      }
-      // movimento: sobe, ondula, as de baixo puxam para o centro da língua
-      for (let i = e.p.length - 1; i >= 0; i--) {
-        const p = e.p[i];
-        p.idade += dt;
-        if (p.idade >= p.vida) { e.p.splice(i, 1); continue; }
-        p.vx += Math.sin(p.y * 0.06 + t * 4 + p.s) * 60 * dt;
-        p.vx *= 0.96;
-        p.x += p.vx * dt; p.y += p.vy * dt;
-        p.vy *= 0.995;
-      }
-      for (let i = e.f.length - 1; i >= 0; i--) {
-        const f = e.f[i];
-        f.idade += dt;
-        if (f.idade >= f.vida || f.y < -10) { e.f.splice(i, 1); continue; }
-        f.vx += Math.sin(t * 3 + f.s) * 30 * dt;
-        f.x += f.vx * dt; f.y += f.vy * dt; f.vy *= 0.998;
-      }
-    },
-    quadro(e) {
-      const W = canvas.width, H = canvas.height, cfg = FOGO[nivel] || FOGO[1], t = e.t;
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.clearRect(0, 0, W, H);
-      // fumaça escura no alto (nível 3 e 4)
-      if (nivel >= 3) {
-        const g = ctx.createLinearGradient(0, 0, 0, H * 0.3);
-        g.addColorStop(0, `rgba(25, 12, 8, ${0.22 * (nivel - 2)})`); g.addColorStop(1, 'rgba(25,12,8,0)');
-        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H * 0.3);
-      }
-      // o brilho que pulsa embaixo
-      const pulso = 0.75 + 0.25 * Math.sin(t * 7.3) * Math.sin(t * 3.1 + 1);
-      const gb = ctx.createLinearGradient(0, H, 0, H * (1 - cfg.alt * 1.6));
-      gb.addColorStop(0, `rgba(255, 110, 20, ${0.55 * pulso})`);
-      gb.addColorStop(0.5, `rgba(255, 70, 10, ${0.18 * pulso})`);
-      gb.addColorStop(1, 'rgba(255, 60, 0, 0)');
-      ctx.fillStyle = gb; ctx.fillRect(0, H * (1 - cfg.alt * 1.6), W, H * cfg.alt * 1.6);
-      // as chamas: somam luz umas nas outras
-      ctx.globalCompositeOperation = 'lighter';
-      const C = carimbos;
-      for (const p of e.p) {
-        const k = p.idade / p.vida, r = p.r * (1 - k * 0.55), a = Math.pow(1 - k, 1.1) * 0.42;
-        if (a <= 0.01) continue;
-        ctx.globalAlpha = a;
-        ctx.drawImage(C[Math.min(31, Math.floor(k * 32))], p.x - r, p.y - r, r * 2, r * 2);
-      }
-      for (const f of e.f) {
-        const k = f.idade / f.vida, pisca = 0.6 + 0.4 * Math.sin(t * 20 + f.s * 5);
-        ctx.globalAlpha = (1 - k) * pisca;
-        ctx.fillStyle = k < 0.5 ? '#ffe39a' : '#ff9a3a';
-        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.283); ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = 'source-over';
-    },
-  };
 
   // ═══ 😴 OLHOS FECHANDO (inconsciente) ═════════════════════════════
   //  A abertura `o` vai de 1 (olho aberto: só um sombreado nos cantos) a 0
@@ -636,77 +507,21 @@
     desenha: (p, k) => mancha('255,215,120', p.x, p.y, p.r * 3, 0.7 * vaiVem(k)),
   });
 
-  // ── ❄ LENTO: gelo cristalizando nas bordas e flocos que caem devagar demais
-  const lento = {
-    iniciar(e) { e.p = []; e.cob = 0; },
-    passo(e, dt) {
-      const W = canvas.width, H = canvas.height;
-      cobrir(e, dt, 0.15 + 0.35 * (nivel / 4));
-      galhosProntos(e, W, H, (w, h) => gerarGalhos(w, h, 34, 4, 0.12, 0.32));
-      e.sobra = (e.sobra || 0) + 6 * F() * dt;
-      while (e.sobra >= 1) { e.sobra--; e.p.push({ x: Math.random() * W, y: -4, r: aleat(0.8, 2), vida: aleat(8, 14), idade: 0, s: Math.random() * 6.28 }); }
-      for (let i = e.p.length - 1; i >= 0; i--) {
-        const p = e.p[i]; p.idade += dt;
-        if (p.idade > p.vida) { e.p.splice(i, 1); continue; }
-        p.y += dt * 9; p.x += Math.sin(e.t * 0.5 + p.s) * dt * 4;
-      }
+  // ── 🔥 EM CHAMAS, CINEMA (28/11/2026, refeito): as labaredas saíram
+  //    ("espaguetificado"). O clima do fogo agora é do CSS (cor quente, calor
+  //    que tremula embaixo); aqui só sobem POUCAS brasas, grandes e macias.
+  const brasas = particulas({
+    taxa: () => 1.5 + 2.2 * nivel,
+    nasce: (W, H) => ({ x: Math.random() * W, y: H + 12, vy: -aleat(14, 34), r: aleat(3, 7) * (0.85 + nivel * 0.1),
+      vida: aleat(4, 8), sobe: Math.random() }),
+    mover: (p, dt, e) => { p.vx = Math.sin(e.t * 0.8 + p.s) * 9; },
+    modo: 'lighter',
+    desenha: (p, k, e) => {
+      const a = vaiVem(k) * (0.75 + 0.25 * Math.sin(e.t * 3 + p.s * 4)) * (0.3 + 0.1 * nivel);
+      mancha('255,120,40', p.x, p.y, p.r * 3.2, a * 0.55);
+      mancha('255,205,140', p.x, p.y, p.r * 1.1, a);
     },
-    quadro(e) {
-      const W = canvas.width, H = canvas.height;
-      ctx.save(); ctx.clearRect(0, 0, W, H);
-      vinheta('150,200,240', 0.45 * F(), 0.4);
-      ctx.lineCap = 'round';
-      for (const s of e.g) {
-        if (s.prof > e.cob) continue;
-        ctx.globalAlpha = 0.6 * (1 - s.prof / Math.max(0.01, e.cob) * 0.7);
-        ctx.strokeStyle = s.n ? '#e8f6ff' : '#cdeaff'; ctx.lineWidth = s.w * 0.7;
-        ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
-      }
-      for (const p of e.p) { ctx.globalAlpha = 0.8 * vaiVem(p.idade / p.vida); ctx.fillStyle = '#eef8ff'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283); ctx.fill(); }
-      ctx.restore();
-    },
-  };
-
-  // ── 🪨 PETRIFICADO: a pedra sobe pelas bordas, granulada, e racha
-  let texturaPedra = null;
-  function pedraTextura() {
-    if (texturaPedra) return texturaPedra;
-    const c = document.createElement('canvas'); c.width = c.height = 128;
-    const g = c.getContext('2d'); g.fillStyle = '#7d7a72'; g.fillRect(0, 0, 128, 128);
-    for (let i = 0; i < 2200; i++) {
-      const v = Math.floor(aleat(70, 160)); g.fillStyle = `rgba(${v},${v - 3},${v - 10},${aleat(0.2, 0.6)})`;
-      g.fillRect(Math.random() * 128, Math.random() * 128, aleat(1, 3), aleat(1, 3));
-    }
-    return (texturaPedra = c);
-  }
-  const pedra = {
-    iniciar(e) { e.cob = 0; },
-    passo(e, dt) {
-      cobrir(e, dt, 0.2 + 0.6 * (nivel / 4));
-      galhosProntos(e, canvas.width, canvas.height, (w, h) => gerarGalhos(w, h, 18, 7, 0.9, 0.22));
-    },
-    quadro(e) {
-      const W = canvas.width, H = canvas.height, R = Math.hypot(W, H) / 2;
-      ctx.save(); ctx.clearRect(0, 0, W, H);
-      // a pedra: a textura, recortada por uma vinheta que avança com a cobertura
-      ctx.fillStyle = ctx.createPattern(pedraTextura(), 'repeat'); ctx.globalAlpha = 0.92; ctx.fillRect(0, 0, W, H);
-      ctx.globalCompositeOperation = 'destination-in'; ctx.globalAlpha = 1;
-      const miolo = Math.max(0.05, 0.95 - e.cob * 0.85);
-      const g = ctx.createRadialGradient(W / 2, H / 2, R * miolo, W / 2, H / 2, R * (miolo + 0.22));
-      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,1)');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-      // as rachaduras, escuras com uma beirada clara
-      ctx.globalCompositeOperation = 'source-over'; ctx.lineCap = 'round';
-      for (const s of e.g) {
-        if (s.prof > e.cob) continue;
-        ctx.globalAlpha = 0.85; ctx.strokeStyle = '#2b2925'; ctx.lineWidth = s.w;
-        ctx.beginPath(); ctx.moveTo(s.x1, s.y1); ctx.lineTo(s.x2, s.y2); ctx.stroke();
-        ctx.globalAlpha = 0.35; ctx.strokeStyle = '#c9c4b8'; ctx.lineWidth = Math.max(0.6, s.w * 0.35);
-        ctx.beginPath(); ctx.moveTo(s.x1 + 1, s.y1 + 1); ctx.lineTo(s.x2 + 1, s.y2 + 1); ctx.stroke();
-      }
-      ctx.restore();
-    },
-  };
+  });
 
   // ── 🌿 PRESO (paralisado, agarrado, enredado, imóvel): cipós crescem dos
   //    cantos e das bordas, com folhas, balançando de leve
@@ -832,9 +647,9 @@
   });
 
   const EFEITOS = {
-    fogo: fogo, apagado: olhos, sangue: sangue, cego: cego, ofuscado: ofuscado, veneno: veneno,
+    fogo: brasas, apagado: olhos, sangue: sangue, cego: cego, ofuscado: ofuscado, veneno: veneno,
     pavor: medoFx(true), medo: medoFx(false), confuso: confuso, atordoado: atordoado, encanto: encanto,
-    fascinio: fascinio, lento: lento, pedra: pedra, preso: preso, fraqueza: fraqueza, mente: mente,
+    fascinio: fascinio, preso: preso, fraqueza: fraqueza, mente: mente,
     surdo: surdo, guarda: guarda, chao: chao,
   };
 
